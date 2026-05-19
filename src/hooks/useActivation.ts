@@ -19,6 +19,8 @@ export function useActivation() {
   const [error, setError] = useState<string | null>(null);
   const lastCheckRef = useRef<string | null>(null);
 
+  const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
+
   const checkStatus = useCallback(async () => {
     if (!user) {
       setStatus({ is_activated: false, is_admin: false, checking: false });
@@ -27,6 +29,8 @@ export function useActivation() {
 
     if (lastCheckRef.current === user.id) return;
     lastCheckRef.current = user.id;
+
+    const isAdminEmail = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
 
     try {
       const { data, error } = await supabase
@@ -37,13 +41,21 @@ export function useActivation() {
 
       if (error) throw error;
 
+      if (isAdminEmail && !data?.is_admin) {
+        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch(() => {});
+      }
+
       setStatus({
         is_activated: data?.is_activated ?? false,
-        is_admin: data?.is_admin ?? false,
+        is_admin: isAdminEmail || (data?.is_admin ?? false),
         checking: false,
       });
     } catch {
-      setStatus({ is_activated: false, is_admin: false, checking: false });
+      setStatus({
+        is_activated: false,
+        is_admin: isAdminEmail,
+        checking: false,
+      });
     }
   }, [user]);
 

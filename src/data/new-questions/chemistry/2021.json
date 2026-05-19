@@ -20,8 +20,8 @@
         "text": "Confidence Interval"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Precision refers to the closeness of two or more measurements to each other, which is synonymous with reproducibility or repeatability.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -48,8 +48,8 @@
         "text": "Henry Mosley"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Ernest Rutherford conducted the famous alpha-particle scattering experiment in 1909, which led to the discovery of the atomic nucleus.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -76,8 +76,8 @@
         "text": "electron donor."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "According to the Brønsted-Lowry theory, an acid is defined as a substance that donates a proton (H+) to another substance.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -132,8 +132,8 @@
         "text": "supersaturated solution."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "A standard solution is a solution whose concentration is accurately known and is typically used in titrations.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -156,8 +156,8 @@
         "text": "The molecule is covalent."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "CCl4 has a tetrahedral geometry where the four polar C-Cl bonds are arranged symmetrically, causing their dipole moments to cancel out.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -200,8 +200,8 @@
         "text": "an electron has more electrical energy than a proton"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "The highest principal quantum number in the configuration 1s2 2s2 2p6 3s2 3p6 4s2 3d1 is 4, placing the element in period 4.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -244,8 +244,8 @@
         "text": "[Ar] 4s 2   3d 3"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "The second ionization energy is the energy required to remove an electron from a unipositive ion (X+) to form a dipositive ion (X2+).",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -380,8 +380,8 @@
         "text": "attraction"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Since force equals mass times acceleration (F=ma), for a given electric field force, the lighter electron experiences a much greater acceleration and deflection than the heavier proton.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -744,8 +744,8 @@
         "text": "Nitrogen"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Atoms bond to achieve a lower energy state, which corresponds to a stable electronic configuration, usually a noble gas octet.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -796,8 +796,8 @@
         "text": "Sodium is a metal, chloride is a non-metal"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Nitrogen exists as a diatomic gas (N2) and does not exhibit allotropy, unlike carbon, sulphur, and phosphorus which have multiple allotropic forms.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -896,8 +896,8 @@
         "text": "5-pentyn-1-oic acid"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "The chloride ion (Cl-) has three occupied electron shells (n=3), whereas the sodium ion (Na+) has only two (n=2), making the chloride ion larger.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -924,8 +924,8 @@
         "text": "Isotopic series"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Diagonal relationships exist between Be-Al, B-Si, and Li-Mg; Mg and Al are adjacent in the same period, not diagonally related.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -1152,8 +1152,8 @@
         "text": "Cellulose"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "In the propagation step of a free radical reaction, a radical reacts with a molecule to form a new molecule and a new radical, as seen in CH4 + Cl• → CH3• + HCl.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,

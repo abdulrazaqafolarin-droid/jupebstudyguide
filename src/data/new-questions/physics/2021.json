@@ -772,8 +772,8 @@
         "text": "electromagnetic wave."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Both microwaves and radio waves are forms of electromagnetic radiation, differing primarily in their wavelengths and frequencies within the electromagnetic spectrum. They both travel at the speed of light in a vacuum and do not require a medium for propagation.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2021,
@@ -796,8 +796,8 @@
         "text": "Spherical aberration"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Spherical aberration is an optical defect in curved mirrors where parallel rays striking the mirror at different distances from the principal axis do not converge at a single focal point, leading to a blurred image. This occurs because the spherical shape does not perfectly focus all incident parallel rays.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2021,

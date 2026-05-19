@@ -48,8 +48,8 @@
         "text": "– 14"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "A+B = (3-1)i + (-1+2)j + (3-1)k = 2i + j + 2k. The dot product (2i + j + 2k) . (-3i + 5j - 3k) = (2*-3) + (1*5) + (2*-3) = -6 + 5 - 6 = -14.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -76,8 +76,8 @@
         "text": "Gravitational and frictional forces"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "A stationary object on a floor is acted upon by the downward gravitational force (weight) and the upward normal force exerted by the floor.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -384,8 +384,8 @@
         "text": "1.33"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Using Snell's Law, n = sin(i)/sin(r) = sin(30)/sin(22) = 0.5 / 0.3746 = 1.3347, which rounds to 1.35.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -412,8 +412,8 @@
         "text": "8 33   𝑘𝑔"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Heat lost by copper = mcΔT = 2 * 400 * 100 = 80,000 J. Heat gained by ice = mLf, so m = 80,000 / 330,000 = 8/33 kg.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -524,8 +524,8 @@
         "text": "Electromagnetism"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Electrostatics is the branch of physics that deals with the phenomena and properties of stationary or slow-moving electric charges.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -552,8 +552,8 @@
         "text": "I and III only"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Electric lines of force originate from positive charges, terminate on negative charges, and repel each other; they never intersect.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -580,8 +580,8 @@
         "text": "𝑋   and   𝑌   are both negative"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Electric field lines originate from positive charges and move away from them; if lines are shown pointing away from both X and Y, both are positive.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -748,8 +748,8 @@
         "text": "1.00"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Using Snell's Law, n = sin(30)/sin(19.24) = 0.5 / 0.3295 = 1.517, which rounds to 1.52.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -916,8 +916,8 @@
         "text": "Tensional force"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Magnetic force is a field force that acts over a distance without physical contact, unlike normal, frictional, or tensional forces.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1056,8 +1056,8 @@
         "text": "It can be drawn in the absence of an electric field"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "By definition, an equipotential surface is a surface where the potential is constant, and electric field lines are always perpendicular to these surfaces.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1168,8 +1168,8 @@
         "text": "The atom does not contain a nucleus"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Rutherford's alpha-particle scattering experiment led to the discovery that the positive charge and most of the mass of an atom are concentrated in a small nucleus.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1280,8 +1280,8 @@
         "text": "𝑛 = ∞ 𝑠𝑡𝑎𝑡𝑒"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "The ground state is the lowest energy state of an atom, making it the most stable configuration for an electron.",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1364,8 +1364,8 @@
         "text": "𝐼 ∝   1 𝐴 3"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "The intensity of a wave is directly proportional to the square of its amplitude (I ∝ A^2).",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,

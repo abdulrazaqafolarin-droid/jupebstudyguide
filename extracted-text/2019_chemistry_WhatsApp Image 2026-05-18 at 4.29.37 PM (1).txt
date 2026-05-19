@@ -1,0 +1,91 @@
+13. When 4 mol of nitrogen dioxide was put into a 1 dm³ container and heated to a constant temperature, the equilibrium mixture contained 0.8 mol of oxygen. What is the numerical value of equilibrium constant, Kc, at the temperature of the experiment?
+A. 0.8
+B. 2.4
+C. 1.6
+D. 1.0
+
+14. In which of the following reactions is the change in entropy positive?
+A. 2Ag⁺(aq) + Zn(s) → Zn²⁺(aq) + 2Ag(s)
+B. 2SO₃(g) → 2SO₂(g) + O₂(g)
+C. 2HF(g) → H₂(g) + F₂(g)
+D. H₂O(s) → H₂O(l)
+
+15. A system in which only energy is transferred between the system and the surroundings is
+A. open system.
+B. closed system.
+C. isolated system.
+D. adiabatic.
+
+16. Which of these orbitals is the most stable?
+A. 3d
+B. 4p
+C. 5p
+D. 5d
+
+17. Identify the species A in the radioactive reaction represented by the equation below.
+²³⁸Th → ²³⁴U + A
+A. α
+B. β
+C. γ
+D. He
+
+18. Arrange the following elements in order of decreasing reducing power Na, Rb, K, Cs
+A. Cs > K > Rb > Na
+B. Na > K > Cs > Rb
+C. Cs > Rb > K > Na
+D. Cs < K < Na < Rb
+
+19. Hydride of the halogens with the highest stability to heat is
+A. HCl
+B. HBr
+C. HF
+D. HI
+
+20. Hydrocarbons which react with ammoniacal copper(I)chloride solution conform to the general molecular formula _____
+A. CnHn
+B. CnH2n
+C. CnH2n+2
+D. CnH2n-2
+
+21. In the coordination compounds, [Co(NH₃)₆]F₃, if the primary valences of Co and Fe are both +3, x?
+A. 2
+B. 1
+C. 3
+
+22. Which of the following is TRUE about sodium chloride in the solid state?
+A. Its ions are linked by metallic bonds
+B. It exists as aggregate of ions
+C. It conducts electricity
+D. It exists as discrete molecules
+
+23. A method of preventing corrosion that involves coating steel with zinc metal is called
+A. painting
+B. enameling
+C. electroplating
+D. galvanizing
+
+24. Which type of radioactive decay produces a daughter nucleus with a higher atomic number?
+A. α
+B. β-
+C. γ
+
+25. For a reaction that is second order with respect to a reactant, A, how many times does the rate increase if the concentration of A increases by a factor of 2?
+A. 1 time
+B. 2 times
+C. 3 times
+D. 4 times
+
+26. What is the number of atoms present in 21.6 g of silver? [Ag=108 gmol⁻¹, Nₐ=6.023 x 10²³ mol⁻¹]
+A. 0.2 x 10²³
+B. 1.204 x 10²³
+C. 6.02 x 10²³
+D. 1.08 x 10²³
+
+27. Transition metal atoms without unpaired electrons are said to be _____
+A. diamagnetic
+B. paramagnetic
+C. ferromagnetic
+D. anti-ferromagnetic
+
+28. Strontium is an element in Group 2 of the Periodic Table. Which of the following statements about strontium is NOT correct?
+A. Its first ionization energy is lower than t

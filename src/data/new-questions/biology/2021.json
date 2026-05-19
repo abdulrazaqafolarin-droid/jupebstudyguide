@@ -48,8 +48,8 @@
         "text": "Letuce."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Cactus is a xerophyte adapted to arid environments, whereas the others are hydrophytes or water-associated plants.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -104,8 +104,8 @@
         "text": "dorso-ventrally flattened body."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "A dorso-ventrally flattened body allows the cockroach to navigate and hide within narrow cracks and crevices.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -132,8 +132,8 @@
         "text": "keep the temperature of the testes at a constant 45°C."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "The scrotum houses the testes outside the body cavity to maintain a temperature slightly lower than core body temperature, which is necessary for viable sperm production.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -212,8 +212,8 @@
         "text": "an aldehyde group and an ester group."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "A peptide bond is formed through a condensation reaction between the carboxyl group of one amino acid and the amino group of another.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -296,8 +296,8 @@
         "text": "Species."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "In the taxonomic hierarchy, Class is the highest and most inclusive rank among the options provided, containing the largest number of individuals.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -348,8 +348,8 @@
         "text": "Psychrophiles."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Microorganisms are classified as psychrophiles, mesophiles, or thermophiles based on their optimal growth temperatures; 'Agarmophiles' is not a standard scientific term.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -404,8 +404,8 @@
         "text": "Mode of defence."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "The chain of infection includes the infectious agent, reservoir, and susceptible host; the 'mode of defence' refers to the host's immunity rather than a link in the transmission chain.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -484,8 +484,8 @@
         "text": "general."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "In binomial nomenclature, the first name is the generic name (genus) and the second name is the specific epithet (species).",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -540,8 +540,8 @@
         "text": "tendril."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Cocoyam is a typical example of a corm, which is a swollen, underground vertical stem that stores food.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -568,8 +568,8 @@
         "text": "Pesticides application."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Habitat destruction is widely recognized as the primary and most devastating cause of animal extinction globally.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -596,8 +596,8 @@
         "text": "plasmolysis."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Diffusion is the passive process by which molecules move from an area of high concentration to an area of low concentration.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -760,8 +760,8 @@
         "text": "Savanna."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "The Arctic tundra has a very short growing season due to extreme cold, low light intensity, and the presence of permafrost.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -780,8 +780,8 @@
         "text": "Rattus rattus."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Glycogen is the primary storage polysaccharide in animals like the rat (Rattus rattus), while algae like Spirogyra store starch.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -972,8 +972,8 @@
         "text": "Parasites."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Heterotrophs are organisms that cannot produce their own food and must ingest complex organic molecules from other sources.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1028,8 +1028,8 @@
         "text": "formation of the different sexes"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Chiasmata are the physical points of contact where genetic material is exchanged between homologous chromosomes, resulting in genetic variability.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1056,8 +1056,8 @@
         "text": "John Needham"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Louis Pasteur's work on pasteurization and disproving spontaneous generation was fundamental to developing modern sterilization techniques, as he demonstrated that microorganisms cause spoilage and disease. His experiments showed that heating could prevent microbial growth, leading to the concept of sterilization.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1108,8 +1108,8 @@
         "text": "Conjugation"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Transformation is the process by which a bacterium takes up naked DNA from its external environment and incorporates it into its own genome. This mechanism is a key form of horizontal gene transfer in bacteria.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1192,8 +1192,8 @@
         "text": "Cellular"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "After fertilization, the zygote undergoes a series of rapid mitotic divisions called cleavage, which produces a multicellular structure known as a blastula. The blastula is typically a hollow ball of cells surrounding a fluid-filled cavity.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1272,8 +1272,8 @@
         "text": "the cytoplasm of microorganisms is transparent"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Staining techniques are crucial in microbiology because the cytoplasm of most microorganisms is transparent and colorless, making them difficult to observe under a light microscope. Stains add color and increase the contrast between the cells and their background, allowing for better visualization of cellular morphology and structures.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1300,8 +1300,8 @@
         "text": "Withstand HCl in the host’s stomach."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Probiotic microorganisms are selected for their beneficial effects and must be non-pathogenic and non-toxic to the host. Therefore, exhibiting toxicity or pathogenicity to the host's microflora or the host itself is an undesirable characteristic for a probiotic.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1356,8 +1356,8 @@
         "text": "Coli.   [4 marks]  (d)   Define intermediate host.   [1 mark]  BIO 004: ZOOLOGY  7 (a) Enumerate   FIVE   reasons why Monotremes and Marsupials are special categories of mammals.   [2½ marks]  (b)   List   FIVE   biological advancements of Amphibians over Fishes.   [2½ marks]  (c)   Explain ultrafiltration.   [5 marks]  8 (a)   Name the constituents of a balanced diet and state their importance in the diet.   [4 marks]  (b)   What are the modifications and the mechanisms associated with the following habits; i. Filter feeding in mosquito larva   [3 marks]  ii. Parasitic feeding in tapeworms   [3 marks]"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Monerans (bacteria and archaea) are classified using a combination of characteristics. Physical appearance (I), such as cell shape and arrangement, is a basic morphological criterion. Nutritional requirements (II), including their mode of obtaining energy and carbon (e.g., autotrophic, heterotrophic), are crucial for understanding their metabolic diversity. Cell chemistry (III), which encompasses aspects like cell wall composition (e.g., Gram staining) and molecular characteristics (e.g., DNA sequencing), provides highly definitive and fundamental information for classification. While all three are used, options B and C present combinations. Option C (Nutritional requirements and Cell chemistry) represents a more comprehensive and often more definitive set of criteria for detailed classification compared to physical appearance alone, which can be less discriminatory at finer levels. Therefore, II and III together form a strong basis for classification.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,

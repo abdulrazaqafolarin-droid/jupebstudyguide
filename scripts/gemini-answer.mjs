@@ -11,28 +11,48 @@ if (!GEMINI_KEY) {
   process.exit(1);
 }
 
-async function callGemini(prompt) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 4096,
-          responseMimeType: 'application/json',
-        },
-      }),
+async function callGemini(prompt, retries = 3) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await new Promise(r => setTimeout(r, 2000)); // rate limit buffer
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 4096,
+              responseMimeType: 'application/json',
+            },
+          }),
+        }
+      );
+      if (!res.ok) {
+        const err = await res.text();
+        if ((res.status === 503 || res.status === 429) && attempt < retries) {
+          const wait = attempt * 8000;
+          console.log(`    ${res.status} overload, retry ${attempt}/${retries} in ${wait/1000}s...`);
+          await new Promise(r => setTimeout(r, wait));
+          continue;
+        }
+        throw new Error(`Gemini error (${res.status}): ${err}`);
+      }
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } catch (e) {
+      if (attempt < retries && !e.message?.startsWith('Gemini error')) {
+        const wait = attempt * 5000;
+        console.log(`    network retry ${attempt}/${retries} in ${wait/1000}s...`);
+        await new Promise(r => setTimeout(r, wait));
+        continue;
+      }
+      throw e;
     }
-  );
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini error (${res.status}): ${err}`);
   }
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  return '';
 }
 
 async function answerBatch(questions) {
@@ -40,19 +60,27 @@ async function answerBatch(questions) {
     `${i + 1}. ${q.question}\n${q.options.map(o => `${o.label}. ${o.text}`).join('\n')}`
   ).join('\n\n');
 
-  const prompt = `You are a JUPEB exam expert. For each MCQ below, determine the SINGLE correct answer and provide a brief explanation.
+  const prompt = `You are a JUPEB exam expert. For each MCQ below, determine the SINGLE correct answer and provide a 1-2 sentence explanation.
 
-Reply with ONLY a JSON array:
-[{ "idx": 1, "correctAnswer": "A", "explanation": "..." }]
+Return ONLY a valid JSON array. No other text, no markdown formatting.
+Example: [{"idx":1,"correctAnswer":"A","explanation":"..."}]
 
 Questions:
 ${qText}`;
 
   const response = await callGemini(prompt);
   try {
-    return JSON.parse(response.match(/\[[\s\S]*\]/)?.[0] || '[]');
-  } catch {
-    console.error('Failed to parse response:', response.slice(0, 200));
+    let cleaned = response.trim();
+    if (cleaned.startsWith('```')) {
+      cleaned = cleaned.replace(/```json?\n?/g, '').replace(/```\n?/g, '').trim();
+    }
+    const start = cleaned.indexOf('[');
+    const end = cleaned.lastIndexOf(']');
+    if (start === -1 || end === -1) throw new Error('No JSON array found');
+    return JSON.parse(cleaned.slice(start, end + 1));
+  } catch (e) {
+    console.error('  Parse error:', e.message.substring(0, 80));
+    console.error('  Response:', response.replace(/\n/g, ' ').substring(0, 250));
     return [];
   }
 }
@@ -60,6 +88,7 @@ ${qText}`;
 async function main() {
   const subjects = fs.readdirSync(DATA_DIR);
   let totalAnswered = 0;
+  let totalSkipped = 0;
 
   for (const subject of subjects) {
     const subjectDir = path.join(DATA_DIR, subject);
@@ -71,15 +100,15 @@ async function main() {
       const mcqs = questions.filter(q => q.category === 'objective' && (!q.correctAnswer || q.correctAnswer === 'TBD'));
 
       if (mcqs.length === 0) {
-        console.log(`${subject}/${yf}: all answered already`);
+        console.log(`${subject}/${yf}: all answered`);
         continue;
       }
 
-      console.log(`\n${subject} ${yf.replace('.json', '')}: ${mcqs.length} unanswered MCQs`);
+      console.log(`\n${subject} ${yf.replace('.json', '')}: ${mcqs.length} unanswered`);
 
-      for (let i = 0; i < mcqs.length; i += 20) {
-        const batch = mcqs.slice(i, i + 20);
-        console.log(`  Batch ${Math.floor(i / 20) + 1}/${Math.ceil(mcqs.length / 20)}...`);
+      for (let i = 0; i < mcqs.length; i += 15) {
+        const batch = mcqs.slice(i, i + 15);
+        console.log(`  Batch ${Math.floor(i / 15) + 1}/${Math.ceil(mcqs.length / 15)} (${batch.length} Qs)...`);
         const answers = await answerBatch(batch);
 
         for (const ans of answers) {
@@ -90,6 +119,7 @@ async function main() {
             totalAnswered++;
           }
         }
+        console.log(`    got ${answers.length} answers`);
       }
 
       fs.writeFileSync(filePath, JSON.stringify(questions, null, 2));
@@ -97,7 +127,8 @@ async function main() {
   }
 
   console.log(`\nDone! ${totalAnswered} questions answered.`);
-  console.log('Then run: node scripts/generate-ts.mjs && node scripts/copy-imports.mjs');
+  console.log('Run: node scripts/generate-ts.mjs');
+  console.log('Then copy src/data/new-data-files/*.ts to src/data/imported-questions/');
 }
 
 main().catch(console.error);

@@ -20,8 +20,8 @@
         "text": "1𝑠 2 2𝑠 2 3𝑠 2 2𝑝 6 4𝑠 2 2𝑝 6"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Copper has an exceptional electronic configuration where an electron from the 4s orbital promotes to the 3d orbital to achieve a more stable, completely filled 3d subshell.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -76,8 +76,8 @@
         "text": "Photoelectronic energy"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Ionization energy is defined as the minimum energy required to remove the most loosely bound electron from an isolated gaseous atom in its ground state.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -104,8 +104,8 @@
         "text": "Ionization energy"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Atomic radius increases down a group because each successive element has an additional electron shell, increasing the distance between the nucleus and the outermost electrons.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -160,8 +160,8 @@
         "text": "Amphiprotic"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "At 25°C, a solution is acidic if its hydroxide-ion concentration is less than 1.0 x 10^-7 mol/dm3; here, 1.5 x 10^-9 indicates an acidic solution.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -188,8 +188,8 @@
         "text": "All digits in a number"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Significant figures include all certain digits in a measurement plus the first uncertain or estimated digit, encompassing all digits that contribute to the precision of the value.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -244,8 +244,8 @@
         "text": "Ions with higher molecular weight absorb higher frequencies of light"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Mass spectrometry works on the principle that moving ions are deflected by a magnetic field according to their mass-to-charge ratio, with heavier ions being deflected less.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -384,8 +384,8 @@
         "text": "𝐹 −"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Among isoelectronic species (ions with the same number of electrons), the one with the highest atomic number (Mg, with 12 protons) has the strongest nuclear pull and thus the smallest radius.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -412,8 +412,8 @@
         "text": "0.98𝑔"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Based on the reaction 2Na + 2H2O -> 2NaOH + H2, 500cm3 of H2 is 0.0223 moles, which reacts with 0.0446 moles of Na, weighing approximately 1.03g.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -440,8 +440,8 @@
         "text": "52.55%"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "The molar mass of MgSO4.7H2O is 246g/mol and the mass of 7H2O is 126g/mol; the percentage is calculated as (126/246) x 100 = 51.2%.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -468,8 +468,8 @@
         "text": "30𝑐𝑚 3"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Using the dilution equation C1V1 = C2V2, we have 5 x V1 = 0.5 x 300, which solves to V1 = 30cm3.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -580,8 +580,8 @@
         "text": "Environment"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "In thermodynamics, the system is the specific part of the universe under observation or study, while the rest is known as the surroundings.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -636,8 +636,8 @@
         "text": "𝑀 𝑟   =   𝑃𝑉 𝑚𝑅𝑇"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "By substituting the number of moles (n = m/Mr) into the ideal gas equation PV = nRT, rearranging for Mr gives the expression Mr = mRT/PV.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -664,8 +664,8 @@
         "text": "Van der waals"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Ammonium chloride contains ionic bonds between NH4+ and Cl-, and covalent/dative bonds within the NH4+ ion, but Van der Waals forces are not a primary bonding type within this compound.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -692,8 +692,8 @@
         "text": "Increases the vapour pressure"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "The presence of a non-volatile solute lowers the vapor pressure of the solvent, requiring a higher temperature to reach atmospheric pressure, thus increasing the boiling point.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -832,8 +832,8 @@
         "text": "Strong caustic solution with liberation of hydrogen"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Group I metals react with water to produce hydrogen gas and a metal hydroxide, which is a strong alkaline or caustic solution.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -972,8 +972,8 @@
         "text": "51.00 𝑎𝑚𝑢"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "The atomic mass is calculated as the sum of (isotopic mass × fractional abundance) for each isotope. Summing (49.9461 × 0.0435) + (51.9405 × 0.8379) + (52.9407 × 0.0950) + (53.9389 × 0.0236) gives approximately 51.9968 amu, which rounds to 51.99 amu.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -1028,8 +1028,8 @@
         "text": "𝑁𝑎𝑙"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Silver bromide (AgBr) forms a pale yellow precipitate that is slightly soluble in aqueous ammonia. Sodium bromide (NaBr) will react with silver nitrate to produce AgBr.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -1112,8 +1112,8 @@
         "text": "Both electrons move to B because B is more electronegative"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Homolytic cleavage involves the symmetrical breaking of a covalent bond, where each atom retains one electron from the shared pair. This process results in the formation of radicals, not charged ions.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -1224,8 +1224,8 @@
         "text": "8"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Butyne is an alkyne, containing a carbon-carbon triple bond. A triple bond consists of one sigma (σ) bond and two pi (π) bonds. Since each pi bond contains two electrons, a triple bond has a total of 4 pi electrons.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -1336,8 +1336,8 @@
         "text": "Homologues"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Iodohexane (C6H13I) and 2-iodooctane (C8H17I) have different molecular formulas, specifically differing by two CH2 units. They belong to the same homologous series of haloalkanes, making them homologues.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,
@@ -1364,8 +1364,8 @@
         "text": "Ethane"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Bond length decreases as bond order increases. Propyne contains a carbon-carbon triple bond (C≡C), which has the highest bond order (3) among the options, making it the shortest carbon-carbon bond.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2018,

@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
-  const key = process.env.VITE_OPENROUTER_API_KEY;
-  if (!key) return res.status(500).json({ error: 'No API key' });
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return res.status(500).json({ error: 'Gemini API key not configured' });
 
   const { questions } = req.body || {};
   if (!questions?.length) return res.status(400).json({ error: 'No questions' });
@@ -18,22 +18,29 @@ Questions:
 ${qText}`;
 
   try {
-    const apiRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${key}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://jupebstudyguide-main.vercel.app',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-3.1-pro-preview',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.1,
-        max_tokens: 4096,
-      }),
-    });
+    const apiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 4096,
+            responseMimeType: 'application/json',
+          },
+        }),
+      }
+    );
+
+    if (!apiRes.ok) {
+      const errText = await apiRes.text();
+      throw new Error(`Gemini error (${apiRes.status}): ${errText}`);
+    }
+
     const data = await apiRes.json();
-    const text = data.choices?.[0]?.message?.content || '';
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const json = JSON.parse(text.match(/\[[\s\S]*\]/)?.[0] || '[]');
     res.status(200).json({ answers: json });
   } catch (e) {

@@ -1,41 +1,38 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { fileBase64, mimeType, documentName, subject, documentText } = await req.json();
-    
-    // Get user from authorization header
+
     const authHeader = req.headers.get("authorization");
     let userId: string | null = null;
-    
+
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const authSupabase = createClient(supabaseUrl, supabaseKey, {
         global: { headers: { Authorization: authHeader } }
       });
-      
       const { data: { user } } = await authSupabase.auth.getUser();
       userId = user?.id || null;
     }
-    
+
     if (!documentName || !subject) {
       return new Response(
         JSON.stringify({ error: "Missing required fields: documentName, subject" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-    
+
     if (!userId) {
       return new Response(
         JSON.stringify({ error: "Authentication required" }),
@@ -43,9 +40,9 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
     const systemPrompt = `You are an expert at extracting exam questions from documents and images. Your task is to parse the provided content and extract ALL questions with their answers and explanations.
@@ -84,58 +81,17 @@ Return a JSON object with this exact format:
   ]
 }`;
 
-    let messages: any[] = [
-      { role: "system", content: systemPrompt }
-    ];
+    const userInstruction = `Document name: ${documentName}\nSubject: ${subject}\n\nPlease extract ALL exam questions from this document. Look carefully for question numbers, options (A, B, C, D), and any mathematical formulas or diagrams.`;
 
-    // Build the user message based on input type
+    let geminiParts: any[] = [];
+
     if (fileBase64 && mimeType) {
-      // Image or PDF as base64 - use vision capabilities
-      const isImage = mimeType.startsWith('image/');
-      const isPdf = mimeType === 'application/pdf';
-      
-      if (isImage) {
-        // Direct image input with vision
-        messages.push({
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Document name: ${documentName}\nSubject: ${subject}\n\nPlease extract ALL exam questions from this image. Look carefully for question numbers, options (A, B, C, D), and any mathematical formulas or diagrams.`
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:${mimeType};base64,${fileBase64}`
-              }
-            }
-          ]
-        });
-      } else if (isPdf) {
-        // For PDFs, we need to send multiple pages as images
-        // Gemini can handle PDFs directly as inline_data
-        messages.push({
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Document name: ${documentName}\nSubject: ${subject}\n\nPlease extract ALL exam questions from this PDF document. Look carefully for question numbers, options (A, B, C, D), and any mathematical formulas or diagrams. The document may contain multiple pages.`
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:${mimeType};base64,${fileBase64}`
-              }
-            }
-          ]
-        });
-      }
-    } else if (documentText) {
-      // Plain text input (legacy support)
-      messages.push({
-        role: "user",
-        content: `Document name: ${documentName}\nSubject: ${subject}\n\nDocument content:\n${documentText}`
+      geminiParts.push({
+        inlineData: { mimeType, data: fileBase64 }
       });
+      geminiParts.push({ text: userInstruction });
+    } else if (documentText) {
+      geminiParts.push({ text: `${userInstruction}\n\nDocument content:\n${documentText}` });
     } else {
       return new Response(
         JSON.stringify({ error: "No document content provided. Please upload a file." }),
@@ -143,55 +99,47 @@ Return a JSON object with this exact format:
       );
     }
 
-    console.log("Sending document to AI for parsing...");
-    console.log("Document:", documentName, "Subject:", subject, "Has base64:", !!fileBase64);
-
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: messages,
-        response_format: { type: "json_object" },
-        max_tokens: 16000,
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: geminiParts }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 16384,
+            responseMimeType: "application/json",
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
+      const errText = await response.text();
+      console.error("Gemini error:", response.status, errText);
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
       return new Response(
         JSON.stringify({ error: "Failed to parse document. Please try a smaller file or different format." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const aiResponse = await response.json();
-    const content = aiResponse.choices?.[0]?.message?.content;
-    
+    const data = await response.json();
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
     if (!content) {
       return new Response(
         JSON.stringify({ error: "No response from AI" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    console.log("AI response received, parsing...");
 
     let parsedQuestions;
     try {
@@ -213,9 +161,6 @@ Return a JSON object with this exact format:
       );
     }
 
-    console.log(`Extracted ${parsedQuestions.questions.length} questions`);
-
-    // Store questions in Supabase
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -234,7 +179,7 @@ Return a JSON object with this exact format:
       user_id: userId,
     }));
 
-    const { data, error } = await supabase
+    const { data: insertData, error } = await supabase
       .from('custom_questions')
       .insert(questionsToInsert)
       .select();
@@ -247,13 +192,11 @@ Return a JSON object with this exact format:
       );
     }
 
-    console.log(`Saved ${data.length} questions to database`);
-
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        questionsCount: data.length,
-        questions: data 
+      JSON.stringify({
+        success: true,
+        questionsCount: insertData.length,
+        questions: insertData
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

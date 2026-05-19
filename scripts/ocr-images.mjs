@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const IMAGE_DIR = 'C:\\Users\\HP\\Downloads\\Past questions';
+const IMAGE_DIR = path.join(__dirname, '..', 'Past questions', 'New folder');
 const OUTPUT_DIR = path.join(__dirname, '..', 'extracted-text');
 
 const OPENROUTER_KEY = process.env.VITE_OPENROUTER_API_KEY || '';

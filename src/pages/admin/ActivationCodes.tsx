@@ -79,8 +79,8 @@ export default function AdminActivationCodes() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-5 h-5" /> Admin
+          <button onClick={() => navigate("/admin")} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-5 h-5" /> Dashboard
           </button>
           <h1 className="font-semibold">Activation Code Manager</h1>
           <Button variant="ghost" size="sm" onClick={signOut}>

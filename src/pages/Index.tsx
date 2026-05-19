@@ -22,8 +22,6 @@ import { useStatsSync } from '@/hooks/useStatsSync';
 import { useScoreAwarder } from '@/hooks/useScoreAwarder';
 import LeaderboardPanel from '@/components/LeaderboardPanel';
 import { useAuth } from '@/contexts/AuthContext';
-import { useActivation } from '@/hooks/useActivation';
-import ActivationPrompt from '@/components/ActivationPrompt';
 import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, LogOut, FileText, Library, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import rutexLogo from '@/assets/rutex-logo.jpg';
@@ -108,9 +106,6 @@ const Index = () => {
     reorderSubjects,
     isStarted: isSyllabusStarted,
   } = useSyllabusProgress();
-
-  // Activation gate
-  const { status: activationStatus } = useActivation();
 
   // Push current stats to public leaderboard (debounced upsert)
   useStatsSync({
@@ -252,11 +247,6 @@ const Index = () => {
     setSelectedSubject(null);
     setQuizPlan(null);
   };
-
-  // Activation gate: non-activated, non-admin users see the prompt
-  if (!activationStatus.is_activated && !activationStatus.is_admin) {
-    return <ActivationPrompt />;
-  }
 
   // Study view
   if (currentView === 'study' && selectedSubject) {

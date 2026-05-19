@@ -27,14 +27,16 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content, className =
     );
     
     // Fix chemical equations - proper subscripts for formulas like H2O, CO2, NaCl
+    const ELEMENTS = new Set(['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','Cl','Ar','K','Ca','Sc','Ti','V','Cr','Mn','Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe','Cs','Ba','La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu','Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn','Fr','Ra','Ac','Th','Pa','U','Np','Pu','Am','Cm','Bk','Cf','Es','Fm','Md','No','Lr']);
+    const SUBSCRIPT: Record<string, string> = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉'};
     processedContent = processedContent.replace(
       /\b([A-Z][a-z]?)(\d+)/g,
       (match, element, number) => {
-        // Only process if not already in math mode
+        if (!ELEMENTS.has(element)) return match;
         if (processedContent.includes(`$${match}$`) || processedContent.includes(`$${element}_{${number}}`)) {
           return match;
         }
-        return `${element}₂`.replace('₂', number === '2' ? '₂' : number === '3' ? '₃' : number === '4' ? '₄' : number);
+        return element + number.split('').map(c => SUBSCRIPT[c] || c).join('');
       }
     );
     

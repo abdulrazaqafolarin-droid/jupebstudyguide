@@ -90,7 +90,8 @@ export function QuestionViewer({
   const handleSubmitAll = useCallback(() => {
     const all: AnswerEntry[] = questions.map((q) => {
       const answer = answers[q.id] ?? theoryAnswers[q.id] ?? "";
-      const isCorrect = q.correctAnswer
+      const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
+      const isCorrect = hasRealAnswer
         ? answer.toUpperCase() === q.correctAnswer.toUpperCase()
         : true;
       return { questionId: q.id, answer, isCorrect };

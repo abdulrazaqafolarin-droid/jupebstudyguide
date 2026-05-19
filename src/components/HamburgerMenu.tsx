@@ -52,13 +52,21 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     permission, requestPermission,
   } = useNotificationsContext();
 
+  const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
+
   useEffect(() => {
     if (!user) { setIsAdmin(false); setProfileName(null); setProfileAvatar(null); return; }
-    supabase.from("profiles").select("is_admin, display_name, avatar_url").eq("id", user.id).single().then(({ data }) => {
+    const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+    supabase.from("profiles").select("is_admin, display_name, avatar_url").eq("user_id", user.id).single().then(({ data }) => {
       if (data) {
-        setIsAdmin(data.is_admin ?? false);
+        setIsAdmin(data.is_admin || emailAdmin);
         setProfileName(data.display_name);
         setProfileAvatar(data.avatar_url);
+      } else {
+        setIsAdmin(emailAdmin);
+      }
+      if (emailAdmin && data && !data.is_admin) {
+        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch(() => {});
       }
     });
   }, [user]);

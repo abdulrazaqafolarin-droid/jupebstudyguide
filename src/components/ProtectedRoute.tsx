@@ -30,6 +30,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <ActivationGate>{children}</ActivationGate>;
 };
 
+const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
+
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const [checking, setChecking] = useState(true);
@@ -37,9 +39,17 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) { setChecking(false); return; }
+
     supabase.from("profiles").select("is_admin").eq("user_id", user.id).single().then(({ data, error }) => {
       if (error) console.error("Admin check failed:", error.message);
-      setIsAdmin(data?.is_admin ?? false);
+      const dbAdmin = data?.is_admin ?? false;
+      const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+
+      if (emailAdmin && !dbAdmin) {
+        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch(() => {});
+      }
+
+      setIsAdmin(dbAdmin || emailAdmin);
       setChecking(false);
     }).catch((err) => { console.error("Admin check error:", err); setChecking(false); });
   }, [user]);

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Smartphone, Monitor, CheckCircle, Loader2 } from "lucide-react";
+import { Download, Smartphone, Monitor, CheckCircle, Loader2, Shield, Zap } from "lucide-react";
 
-const GITHUB_REPO = "abdulrazaqafolarin-droid/jupebstudyguide-main";
+const GITHUB_REPO = "abdulrazaqafolarin-droid/jupebstudyguide";
 const RELEASES_URL = `https://github.com/${GITHUB_REPO}/releases`;
+const APP_URL = "https://jupebstudyguide-main.vercel.app";
 
 function getPlatform(): "android" | "ios" | "desktop" {
   const ua = navigator.userAgent;
@@ -15,21 +16,32 @@ function getPlatform(): "android" | "ios" | "desktop" {
 export default function DownloadApp() {
   const [platform, setPlatform] = useState<"android" | "ios" | "desktop">("desktop");
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const [versionFound, setVersionFound] = useState(false);
+  const [versionLoading, setVersionLoading] = useState(true);
+  const [versionError, setVersionError] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     setPlatform(getPlatform());
+    setVersionLoading(true);
     fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`)
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
-        if (data?.tag_name) setLatestVersion(data.tag_name);
+        if (data?.tag_name) {
+          setLatestVersion(data.tag_name);
+          setVersionFound(true);
+        }
+        setVersionLoading(false);
       })
-      .catch(() => {});
+      .catch(() => { setVersionError(true); setVersionLoading(false); });
   }, []);
 
   const downloadAPK = () => {
     setDownloading(true);
-    window.open(`${RELEASES_URL}/latest/download/app-debug.apk`, "_blank");
+    const apkUrl = versionFound
+      ? `${RELEASES_URL}/latest/download/app-debug.apk`
+      : `${RELEASES_URL}`;
+    window.open(apkUrl, "_blank");
     setTimeout(() => setDownloading(false), 3000);
   };
 
@@ -44,7 +56,7 @@ export default function DownloadApp() {
           <Smartphone className="h-12 w-12 mx-auto text-primary" />
           <h1 className="text-2xl font-bold">JUPEB Master App</h1>
           <p className="text-sm text-muted-foreground">
-            Download the native Android app for the best experience
+            Get the best experience with the native Android app or PWA
           </p>
         </div>
 
@@ -68,36 +80,56 @@ export default function DownloadApp() {
                 ) : (
                   <Download className="h-5 w-5" />
                 )}
-                {downloading ? "Downloading..." : "Download APK"}
+                {downloading ? "Opening..." : "Download APK"}
               </button>
 
               <div className="text-xs text-muted-foreground text-center space-y-1">
-                {latestVersion && (
-                  <p>Latest version: {latestVersion}</p>
-                )}
+                {versionLoading && <p className="animate-pulse">Checking for latest version...</p>}
+                {!versionLoading && latestVersion && <p>Latest version: {latestVersion}</p>}
+                {!versionLoading && !versionFound && !versionError && <p>No release found yet — APK is being built via CI</p>}
+                {versionError && <p>Could not check for updates. Default APK link will be used.</p>}
                 <p>Version 1.0.0 | ~15MB | Android 8.0+</p>
               </div>
 
               <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
-                <p className="font-medium">Installation steps:</p>
+                <p className="font-medium flex items-center gap-1.5">
+                  <Shield className="h-3 w-3" /> Installation steps:
+                </p>
                 <ol className="list-decimal list-inside text-muted-foreground space-y-0.5">
                   <li>Tap "Download APK" above</li>
-                  <li>Open the downloaded file</li>
-                  <li>Tap "Install anyway" if prompted</li>
+                  <li>Open the downloaded file when ready</li>
+                  <li>Tap "Install anyway" if prompted by Play Protect</li>
                   <li>Open JUPEB Master from your app drawer</li>
                 </ol>
               </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">Or use PWA</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => window.location.href = "/"}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium rounded-xl border border-border hover:bg-muted/50 transition-all"
+              >
+                <Zap className="h-4 w-4 text-primary" />
+                Open Web App (Add to Home Screen)
+              </button>
             </div>
           ) : platform === "ios" ? (
             <div className="text-center space-y-3 py-4">
               <Monitor className="h-10 w-10 mx-auto text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                iOS app coming soon. For now, use the web app or install it as a PWA:
+                iOS app coming soon. For now, use the PWA:
               </p>
               <ol className="text-xs text-left text-muted-foreground list-decimal list-inside space-y-1">
-                <li>Tap Share button <span className="font-medium">(square with arrow)</span></li>
+                <li>Tap Share <span className="font-medium">(square with arrow)</span></li>
                 <li>Scroll down and tap <span className="font-medium">Add to Home Screen</span></li>
-                <li>Tap <span className="font-medium">Add</span></li>
+                <li>Tap <span className="font-medium">Add</span> (top right)</li>
               </ol>
               <a
                 href="/"
@@ -110,12 +142,17 @@ export default function DownloadApp() {
             <div className="text-center space-y-3 py-4">
               <Monitor className="h-10 w-10 mx-auto text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                You're on a desktop. Scan this QR code from your Android phone to download:
+                You're on a desktop. Open this page on your Android phone, or scan:
               </p>
               <div className="flex justify-center">
-                <div className="w-40 h-40 bg-muted rounded-xl flex items-center justify-center text-xs text-muted-foreground">
-                  QR code placeholder
-                </div>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(APP_URL + "/download")}`}
+                  alt="QR Code to download page"
+                  className="w-40 h-40 rounded-xl"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
               </div>
               <a
                 href={RELEASES_URL}
@@ -124,7 +161,14 @@ export default function DownloadApp() {
                 className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 <Download className="h-4 w-4" />
-                Download APK (Desktop)
+                View Releases on GitHub
+              </a>
+              <a
+                href="/"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl border border-border hover:bg-muted/50 transition-colors"
+              >
+                <Zap className="h-4 w-4" />
+                Open Web App
               </a>
             </div>
           )}

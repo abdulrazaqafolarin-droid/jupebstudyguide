@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat } from '@/lib/ai-service';
+import { streamChat as aiStreamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { searchRelevantChunks, getTextbookCount } from '@/lib/rag';
 import { TextbookUploader } from './TextbookUploader';
@@ -76,7 +76,7 @@ export const FloatingAITutor = () => {
     }
   }, [isOpen, isMinimized, showChatList]);
 
-  const streamChat = useCallback(async (userMessage: string) => {
+  const handleStreamChat = useCallback(async (userMessage: string) => {
     if (!activeChatId) return;
     const chatId = activeChatId;
     const userMsg: AIMessage = {
@@ -104,7 +104,7 @@ export const FloatingAITutor = () => {
     let acc = '';
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
-    await streamChat(systemPrompt, newMsgs, {
+    await aiStreamChat(systemPrompt, newMsgs, {
       onDelta: (text) => {
         acc += text;
         assistantContentRef.current = acc;
@@ -132,12 +132,12 @@ export const FloatingAITutor = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if ((!input.trim() && !attachment) || isLoading) return;
-    streamChat(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
+    handleStreamChat(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
   };
 
   const handleQuickPrompt = (prompt: string) => {
     if (isLoading) return;
-    streamChat(prompt);
+    handleStreamChat(prompt);
   };
 
   const handleClose = () => {

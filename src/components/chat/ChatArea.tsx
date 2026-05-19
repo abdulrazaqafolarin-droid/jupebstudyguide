@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, ArrowLeft, ImagePlus, Reply, X, Users, Camera } from 'lucide-react';
+import { Send, ArrowLeft, ImagePlus, Reply, X, Users, Camera, Check, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Message, Conversation } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,13 +26,26 @@ interface ChatAreaProps {
 
 function TypingIndicator() {
   return (
-    <div className="flex justify-start mb-2">
-      <div className="bg-secondary rounded-2xl rounded-bl-md px-4 py-2.5 flex items-center gap-1">
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+    <div className="flex justify-start mb-2 pl-1">
+      <div className="bg-secondary/80 rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-1">
+        <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+        <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+        <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
       </div>
     </div>
+  );
+}
+
+function MessageStatus({ isRead, isOwn }: { isRead: boolean; isOwn: boolean }) {
+  if (!isOwn) return null;
+  return (
+    <span className="ml-1">
+      {isRead ? (
+        <CheckCheck className="w-3.5 h-3.5 text-blue-400 inline" />
+      ) : (
+        <Check className="w-3.5 h-3.5 text-muted-foreground/60 inline" />
+      )}
+    </span>
   );
 }
 
@@ -56,15 +69,12 @@ export function ChatArea({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const activeConv = conversations.find(c => c.id === activeConversation);
   const isGroup = activeConv?.is_group;
   const groupName = activeConv?.group_name;
 
-  const otherUserId = isGroup
-    ? null
-    : activeConv?.other_user?.user_id;
+  const otherUserId = isGroup ? null : activeConv?.other_user?.user_id;
   const otherOnline = otherUserId ? isOnline(otherUserId) : false;
   const showTyping = otherUserId ? isTyping(otherUserId) : false;
 
@@ -88,6 +98,8 @@ export function ChatArea({
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     onTyping(e.target.value.trim().length > 0);
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
   }, [onTyping]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -103,7 +115,7 @@ export function ChatArea({
     if (url) onSendImage(url);
   }, [onUploadImage, onSendImage]);
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>, useCamera?: boolean) => {
+  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     handleImageSelected(file);
@@ -114,14 +126,14 @@ export function ChatArea({
 
   if (!activeConversation) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
-        <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
-          <svg className="w-8 h-8 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground bg-muted/20">
+        <div className="w-20 h-20 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
+          <svg className="w-10 h-10 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </div>
-        <p className="text-lg font-medium">Select a conversation</p>
-        <p className="text-sm mt-1 opacity-60">Or search for users to start chatting</p>
+        <p className="text-lg font-medium">JUPEB Chat</p>
+        <p className="text-sm mt-1 opacity-60">Select a conversation or find someone to chat with</p>
       </div>
     );
   }
@@ -138,42 +150,42 @@ export function ChatArea({
   });
 
   return (
-    <>
+    <div className="flex-1 flex flex-col min-w-0 bg-gradient-to-b from-background to-muted/20">
       {/* Header */}
-      <div className="h-14 border-b border-border flex items-center px-4 gap-3 shrink-0 bg-card/50 backdrop-blur-sm z-10">
+      <div className="h-14 border-b border-border flex items-center px-4 gap-3 shrink-0 bg-card/80 backdrop-blur-sm z-10">
         {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0">
-            <ArrowLeft className="w-4 h-4" />
+          <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0 -ml-1">
+            <ArrowLeft className="w-5 h-5" />
           </Button>
         )}
         <div className="relative shrink-0">
           <UserAvatar
-            url={activeConv?.other_user?.avatar_url}
+            url={isGroup ? undefined : activeConv?.other_user?.avatar_url}
             name={isGroup ? groupName : activeConv?.other_user?.display_name}
-            className="w-8 h-8 ring-0"
+            className="w-9 h-9 ring-0"
           />
           {!isGroup && otherOnline && (
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-accent rounded-full border-2 border-card" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-accent rounded-full border-[2.5px] border-card" />
           )}
         </div>
-        <div className="flex flex-col min-w-0">
-          <span className="font-medium text-sm leading-tight truncate">
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="font-semibold text-sm leading-tight truncate">
             {isGroup ? (groupName || 'Group') : (activeConv?.other_user?.display_name || 'User')}
           </span>
           <span className="text-[10px] leading-tight text-muted-foreground">
-            {isGroup ? 'Group conversation' : (showTyping ? 'typing...' : otherOnline ? 'Online' : 'Offline')}
+            {isGroup ? `${(activeConv as any)?.participants?.length || 0} members` : (showTyping ? 'Typing...' : otherOnline ? 'Online' : 'Offline')}
           </span>
         </div>
         {isGroup && (
-          <div className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
-            <Users className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary/50 px-2.5 py-1 rounded-full">
+            <Users className="w-3 h-3" />
             <span>Group</span>
           </div>
         )}
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1 scrollbar-thin">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
@@ -182,8 +194,8 @@ export function ChatArea({
           <>
             {groupedMessages.map((group) => (
               <div key={group.date}>
-                <div className="flex items-center justify-center my-4">
-                  <span className="text-[10px] text-muted-foreground bg-secondary/50 px-3 py-1 rounded-full">
+                <div className="flex items-center justify-center my-3">
+                  <span className="text-[10px] text-muted-foreground bg-secondary/50 px-3 py-1 rounded-full font-medium">
                     {group.date}
                   </span>
                 </div>
@@ -194,40 +206,36 @@ export function ChatArea({
                   const hasReactions = msg.reactions && Object.keys(msg.reactions).some(k => msg.reactions![k].length > 0);
 
                   return (
-                    <div key={msg.id} className="group">
+                    <div key={msg.id} className="group/message">
                       <motion.div
-                        initial={{ opacity: 0, y: 8 }}
+                        initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className={cn(
-                          'flex mb-0.5',
-                          isOwn ? 'justify-end' : 'justify-start'
-                        )}
+                        transition={{ duration: 0.15 }}
+                        className={cn('flex mb-0.5', isOwn ? 'justify-end' : 'justify-start')}
                       >
                         <div className={cn('max-w-[75%]', isOwn ? 'items-end' : 'items-start')}>
                           {/* Reply indicator */}
                           {msg.reply_to_id && (
                             <div className={cn(
                               'mb-0.5 px-3 py-1.5 rounded-lg text-xs border-l-2 opacity-70 max-w-[200px]',
-                              isOwn ? 'bg-primary-foreground/10 border-primary-foreground/30 mr-1' : 'bg-muted border-muted-foreground/30 ml-1'
+                              isOwn ? 'bg-primary/20 border-primary-foreground/30 mr-1' : 'bg-muted border-muted-foreground/30 ml-1'
                             )}>
-                              <p className="font-medium text-[10px] mb-0.5">Replying</p>
+                              <p className="font-medium text-[10px] mb-0.5 text-muted-foreground">Replying</p>
                               <p className="truncate">{group.messages.find(m => m.id === msg.reply_to_id)?.content || 'original message'}</p>
                             </div>
                           )}
 
                           <div className={cn(
-                            'px-3.5 py-2 rounded-2xl text-sm leading-relaxed',
+                            'px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm',
                             isOwn
-                              ? 'bg-primary text-primary-foreground rounded-br-md'
-                              : 'bg-secondary text-foreground rounded-bl-md'
+                              ? 'bg-primary text-primary-foreground rounded-br-sm'
+                              : 'bg-secondary/80 text-foreground rounded-bl-sm'
                           )}>
-                            {/* Image message */}
                             {msg.message_type === 'image' && msg.image_url && (
                               <img
                                 src={msg.image_url}
                                 alt="Shared image"
-                                className="max-w-full rounded-lg mb-1 max-h-60 object-cover cursor-pointer"
+                                className="max-w-full rounded-lg mb-1.5 max-h-60 object-cover cursor-pointer hover:opacity-95 transition-opacity"
                                 onClick={() => window.open(msg.image_url, '_blank')}
                                 loading="lazy"
                               />
@@ -242,9 +250,7 @@ export function ChatArea({
                               )}>
                                 {format(new Date(msg.created_at), 'h:mm a')}
                                 {msg.is_edited && <span className="text-[9px]">(edited)</span>}
-                                {isOwn && (
-                                  <span className="ml-0.5">{msg.is_read ? '✓✓' : '✓'}</span>
-                                )}
+                                <MessageStatus isRead={msg.is_read} isOwn={isOwn} />
                               </p>
                             )}
                           </div>
@@ -261,16 +267,31 @@ export function ChatArea({
                             </div>
                           )}
 
-                          {/* Reply button */}
-                          <button
-                            onClick={() => setReplyTo(msg)}
-                            className={cn(
-                              'opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-muted-foreground hover:text-foreground p-1',
-                              isOwn ? 'text-right' : 'text-left'
+                          {/* Hover actions - reply and react */}
+                          <div className={cn(
+                            'flex gap-0.5 mt-0.5',
+                            isOwn ? 'justify-end' : 'justify-start',
+                            'opacity-0 group-hover/message:opacity-100 transition-opacity'
+                          )}>
+                            <button
+                              onClick={() => setReplyTo(msg)}
+                              className="p-1 rounded-full hover:bg-secondary transition-colors"
+                              title="Reply"
+                            >
+                              <Reply className="w-3 h-3 text-muted-foreground" />
+                            </button>
+                            {onReact && (
+                              <div className="p-1 rounded-full hover:bg-secondary transition-colors">
+                                <MessageReactions
+                                  reactions={{}}
+                                  messageId={msg.id}
+                                  currentUserId={user?.id || ''}
+                                  onReact={onReact}
+                                  compact
+                                />
+                              </div>
                             )}
-                          >
-                            <Reply className="w-3 h-3 inline-block" />
-                          </button>
+                          </div>
                         </div>
                       </motion.div>
                     </div>
@@ -282,9 +303,9 @@ export function ChatArea({
             <AnimatePresence>
               {showTyping && (
                 <motion.div
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
+                  exit={{ opacity: 0, y: 6 }}
                   transition={{ duration: 0.15 }}
                 >
                   <TypingIndicator />
@@ -307,13 +328,14 @@ export function ChatArea({
               exit={{ height: 0, opacity: 0 }}
               className="border-b border-border overflow-hidden"
             >
-              <div className="px-4 py-2 flex items-center gap-2 bg-secondary/30">
+              <div className="px-4 py-2 flex items-center gap-2 bg-secondary/20">
+                <div className="w-0.5 h-8 bg-primary rounded-full shrink-0" />
                 <Reply className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-medium text-muted-foreground">Replying</p>
-                  <p className="text-xs truncate">{replyMsg.content || 'Image'}</p>
+                  <p className="text-[10px] font-medium text-primary">Replying</p>
+                  <p className="text-xs truncate text-muted-foreground">{replyMsg.content || 'Photo'}</p>
                 </div>
-                <button onClick={() => setReplyTo(null)} className="p-1 rounded hover:bg-secondary transition-colors">
+                <button onClick={() => setReplyTo(null)} className="p-1 rounded-lg hover:bg-secondary/50 transition-colors shrink-0">
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -321,8 +343,8 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
-        <div className="p-3">
-          <div className="flex items-end gap-2 max-w-3xl mx-auto">
+        <div className="px-3 py-2.5">
+          <div className="flex items-end gap-2">
             {onUploadImage && (
               <>
                 <input
@@ -330,58 +352,40 @@ export function ChatArea({
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => handleFileInput(e, false)}
+                  onChange={handleFileInput}
                 />
-                <input
-                  ref={cameraInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={(e) => handleFileInput(e, true)}
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
+                <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="shrink-0 rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground"
-                  title="Upload image"
+                  className="shrink-0 w-9 h-9 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition-all active:scale-90"
+                  title="Send photo"
                 >
                   <ImagePlus className="w-4 h-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => cameraInputRef.current?.click()}
-                  className="shrink-0 rounded-xl h-10 w-10 text-muted-foreground hover:text-foreground"
-                  title="Take photo"
-                >
-                  <Camera className="w-4 h-4" />
-                </Button>
+                </button>
               </>
             )}
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onBlur={() => onTyping(false)}
-              placeholder="Type a message..."
-              rows={1}
-              className="flex-1 resize-none bg-secondary/50 border border-border/50 rounded-xl px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 max-h-32 scrollbar-thin"
-              style={{ minHeight: '40px' }}
-            />
-            <Button
-              size="icon"
+            <div className="flex-1 relative">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onBlur={() => onTyping(false)}
+                placeholder="Type a message..."
+                rows={1}
+                className="w-full resize-none bg-secondary/40 border border-border/40 rounded-2xl px-4 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40 max-h-32 scrollbar-thin transition-all"
+                style={{ minHeight: '40px' }}
+              />
+            </div>
+            <button
               onClick={handleSend}
               disabled={!input.trim()}
-              className="shrink-0 rounded-xl h-10 w-10 bg-primary hover:bg-primary/90"
+              className="shrink-0 w-9 h-9 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all active:scale-90 shadow-sm"
             >
-              <Send className="w-4 h-4" />
-            </Button>
+              <Send className="w-4 h-4 text-primary-foreground" />
+            </button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

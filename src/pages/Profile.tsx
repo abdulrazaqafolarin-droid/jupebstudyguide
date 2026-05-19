@@ -48,7 +48,7 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     setSaving(true);
-    const { error } = await updateProfile({ display_name: displayName.trim() || null });
+    const { error } = await updateProfile({ display_name: displayName.trim() });
     setSaving(false);
     if (error) toast.error('Save failed');
     else toast.success('Profile saved');
@@ -138,7 +138,7 @@ export default function ProfilePage() {
               maxLength={40}
               className="bg-background"
             />
-            <Button onClick={handleSave} disabled={saving || !displayName.trim()} className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity">
+            <Button onClick={handleSave} disabled={saving} className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity">
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Save changes
             </Button>

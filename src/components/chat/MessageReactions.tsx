@@ -9,9 +9,10 @@ interface MessageReactionsProps {
   messageId: string;
   currentUserId: string;
   onReact: (messageId: string, emoji: string) => void;
+  compact?: boolean;
 }
 
-export function MessageReactions({ reactions, messageId, currentUserId, onReact }: MessageReactionsProps) {
+export function MessageReactions({ reactions, messageId, currentUserId, onReact, compact }: MessageReactionsProps) {
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +34,7 @@ export function MessageReactions({ reactions, messageId, currentUserId, onReact 
   return (
     <div className="relative" ref={pickerRef}>
       <div className="flex items-center gap-0.5 flex-wrap">
-        {Object.entries(reactions).map(([emoji, users]) => (
+        {!compact && Object.entries(reactions).map(([emoji, users]) => (
           <button
             key={emoji}
             onClick={() => onReact(messageId, emoji)}
@@ -51,7 +52,7 @@ export function MessageReactions({ reactions, messageId, currentUserId, onReact 
           onClick={() => setShowPicker(!showPicker)}
           className="p-0.5 rounded-full hover:bg-secondary transition-colors opacity-50 hover:opacity-100"
         >
-          <SmilePlus className="w-3.5 h-3.5" />
+          <SmilePlus className={compact ? "w-3.5 h-3.5 text-muted-foreground" : "w-3.5 h-3.5"} />
         </button>
       </div>
 

@@ -55,7 +55,9 @@ export default function LeaderboardPage() {
           profile: profs?.find((p) => p.user_id === w.champion_user_id) ?? null,
         }))
       );
-    })();
+    })().catch(() => {
+      setChampionDetails(championEntries.map(w => ({ ...w, profile: null })));
+    });
   }, [pastChampions]);
 
   return (

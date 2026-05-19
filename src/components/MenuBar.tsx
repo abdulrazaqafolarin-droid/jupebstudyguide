@@ -17,10 +17,16 @@ export default function MenuBar({ streakData }: MenuBarProps) {
   const [isAdmin, setIsAdmin] = useState(false);
   const { unreadCount } = useNotifications({ hasStudiedToday: streakData?.hasStudiedToday ?? false, currentStreak: streakData?.currentStreak ?? 0 });
 
+  const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
+
   useEffect(() => {
     if (!user) { setIsAdmin(false); return; }
+    const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
     supabase.from("profiles").select("is_admin").eq("user_id", user.id).single().then(({ data }) => {
-      setIsAdmin(data?.is_admin ?? false);
+      setIsAdmin(data?.is_admin || emailAdmin);
+      if (emailAdmin && data && !data.is_admin) {
+        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch(() => {});
+      }
     });
   }, [user]);
 

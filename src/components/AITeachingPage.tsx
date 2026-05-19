@@ -63,7 +63,7 @@ export const AITeachingPage = ({ task, topic, onBack, onComplete }: AITeachingPa
   const messagesRef = useRef<Message[]>([]);
   useEffect(() => { messagesRef.current = messages; }, [messages]);
 
-  const streamChat = useCallback(async (userMessage: string, isInitial = false) => {
+  const handleStreamChat = useCallback(async (userMessage: string, isInitial = false) => {
     const userMsg: Message = { role: 'user', content: userMessage };
     
     let newMessages: Message[];
@@ -132,13 +132,13 @@ ${task.learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
 Please teach me this topic thoroughly, step by step. Start from the fundamentals and build up. Make sure I understand each concept before moving to the next. Use A-level examples from past JUPEB questions where relevant. Ask me questions to check my understanding as we go.`;
 
     setMessages([{ role: 'user', content: initialPrompt }]);
-    streamChat(initialPrompt, true);
+    handleStreamChat(initialPrompt, true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if ((!input.trim() && !attachment) || isLoading) return;
-    streamChat(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
+    handleStreamChat(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

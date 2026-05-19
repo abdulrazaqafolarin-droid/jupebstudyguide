@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { ProgressRing } from './ProgressRing';
@@ -32,6 +32,10 @@ const TIMER_PRESETS = [
   { label: '30 min', value: 30, gradient: 'from-sky-500/20 to-sky-600/10 hover:from-sky-500/30 hover:to-sky-600/20' },
   { label: '1 hour', value: 60, gradient: 'from-violet-500/20 to-violet-600/10 hover:from-violet-500/30 hover:to-violet-600/20' },
 ];
+
+function hasRealAnswer(q: Question): boolean {
+  return !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
+}
 
 export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModeProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -85,7 +89,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
   const handleNext = () => {
     const timeSpent = (Date.now() - questionStartTime) / 1000;
-    const isCorrect = selectedOption === currentQuestion.correctAnswer;
+    const hasRealAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
+    const isCorrect = hasRealAnswer ? selectedOption === currentQuestion.correctAnswer : true;
 
     const newAnswers = [...answers, {
       questionId: currentQuestion.id,
@@ -327,7 +332,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
         <div className="space-y-3">
           {currentQuestion.options?.map((option) => {
             const isSelected = selectedOption === option.label;
-            const isCorrectOption = option.label === currentQuestion.correctAnswer;
+            const isCorrectOption = hasRealAnswer(currentQuestion) && option.label === currentQuestion.correctAnswer;
 
             return (
               <button
@@ -367,13 +372,13 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
         {showResult && (
           <div className={cn(
             'mt-6 p-4 rounded-xl animate-in-up',
-            selectedOption === currentQuestion.correctAnswer 
+            hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer 
               ? 'bg-accent/10 border border-accent/30' 
               : 'bg-destructive/10 border border-destructive/30'
           )}>
             <p className="text-sm leading-relaxed">
-              <strong className={selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
-                {selectedOption === currentQuestion.correctAnswer ? '✓ Correct!' : '✗ Incorrect'}
+              <strong className={hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
+                {hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? '✓ Correct!' : !hasRealAnswer(currentQuestion) ? 'Answer recorded' : '✗ Incorrect'}
               </strong>
               {' '}{currentQuestion.explanation}
             </p>

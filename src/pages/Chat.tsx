@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 type Tab = 'chats' | 'friends';
 
@@ -29,8 +30,12 @@ const Chat = () => {
   };
 
   const handleStartConversation = async (userId: string) => {
-    await chat.startConversation(userId);
-    if (isMobile) setShowSidebar(false);
+    try {
+      await chat.startConversation(userId);
+      if (isMobile) setShowSidebar(false);
+    } catch {
+      toast.error('Failed to start conversation');
+    }
   };
 
   const handleBackToSidebar = () => {

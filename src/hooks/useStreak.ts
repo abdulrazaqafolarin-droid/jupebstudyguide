@@ -29,10 +29,9 @@ export function useStreak() {
     lastDate.setHours(0, 0, 0, 0);
     const daysDiff = Math.floor((today.getTime() - lastDate.getTime()) / 86_400_000);
     if (daysDiff > 1) {
-      setStreakData({ ...streakData, currentStreak: 0 });
+      setStreakData(prev => ({ ...prev, currentStreak: 0 }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streakData.lastStudyDate]);
+  }, [streakData.lastStudyDate, streakData.currentStreak, setStreakData]);
 
   const recordStudySession = useCallback((questionsAnswered: number = 1) => {
     setStreakData(prev => {

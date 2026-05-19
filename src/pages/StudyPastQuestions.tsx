@@ -184,9 +184,10 @@ export default function StudyPastQuestions() {
       autoSubmittedRef.current = true;
       const results = questions.map((q) => {
         const answer = userAnswers[q.id] || "";
-        const isCorrect = q.correctAnswer
+        const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
+        const isCorrect = hasRealAnswer
           ? answer.toUpperCase() === q.correctAnswer.toUpperCase()
-          : false;
+          : true;
         return { questionId: q.id, answer, isCorrect };
       });
       setQuizResults(results);

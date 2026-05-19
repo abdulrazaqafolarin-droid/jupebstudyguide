@@ -18,6 +18,7 @@ type StudyMode = 'learn' | 'review';
 export const StudyView = ({ questions, subject, onBack }: StudyViewProps) => {
   const [mode, setMode] = useState<StudyMode>('learn');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [shuffleKey, setShuffleKey] = useState(0);
   const { updateProgress, getDueQuestions, getStats } = useStudyProgress();
   const { currentStreak, recordStudySession } = useStreak();
 
@@ -29,7 +30,7 @@ export const StudyView = ({ questions, subject, onBack }: StudyViewProps) => {
       return getDueQuestions(questions);
     }
     return [...questions].sort(() => Math.random() - 0.5);
-  }, [mode, questions, getDueQuestions]);
+  }, [mode, questions, getDueQuestions, shuffleKey]);
 
   const currentQuestion = studyQueue[currentIndex];
   const hasQuestions = studyQueue.length > 0;
@@ -49,6 +50,7 @@ export const StudyView = ({ questions, subject, onBack }: StudyViewProps) => {
 
   const handleShuffle = () => {
     setCurrentIndex(0);
+    setShuffleKey(k => k + 1);
   };
 
   return (

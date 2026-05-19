@@ -39,13 +39,11 @@ export async function markAnswer(
   const subject = typeof question.subject === "string" ? question.subject : "general";
   const systemPrompt = SUBJECT_MARKING_PROMPTS[subject] ?? "You are a JAMB/WAEC examiner. Mark fairly and constructively.";
 
-  const questionText = question.question
-    ?? (question.title ? `${question.title}\n${question.objective ?? ""}` : "")
-    ?? "See question details above";
+  const questionText = question.question || (question.title ? `${question.title}\n${question.objective || ""}` : "") || "See question details above";
 
-  const expectedAnswer = question.correctAnswer
-    ?? question.answerGuide
-    ?? "See marking scheme";
+  const expectedAnswer = (question.correctAnswer && question.correctAnswer !== "TBD" ? question.correctAnswer : null)
+    || question.answerGuide
+    || "See marking scheme";
 
   let imageNote = "";
   if (imageContext) {

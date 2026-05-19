@@ -206,6 +206,9 @@ export default function AdminDashboard() {
             <h1 className="font-semibold">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate("/admin/codes")} className="hidden sm:flex gap-1.5">
+              <Key className="w-3.5 h-3.5" /> Codes
+            </Button>
             <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={signOut}>
               Sign Out

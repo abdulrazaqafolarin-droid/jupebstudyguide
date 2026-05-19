@@ -31,7 +31,11 @@ const Chat = () => {
 
   const handleStartConversation = async (userId: string) => {
     try {
-      await chat.startConversation(userId);
+      const convId = await chat.startConversation(userId);
+      if (!convId) {
+        toast.error('Could not create conversation');
+        return;
+      }
       if (isMobile) setShowSidebar(false);
     } catch {
       toast.error('Failed to start conversation');

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -44,6 +45,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
+      <ErrorBoundary>
       <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<Auth />} />
         <Route path="/download" element={<DownloadApp />} />
@@ -120,6 +122,7 @@ function AnimatedRoutes() {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </ErrorBoundary>
     </AnimatePresence>
   );
 }

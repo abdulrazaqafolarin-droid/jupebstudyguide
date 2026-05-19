@@ -59,7 +59,7 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
   const handleComplete = () => {
     // Calculate mastery score based on self-assessment
     const checkedCount = Object.values(selfAssessment).filter(Boolean).length;
-    const masteryScore = (checkedCount / task.learningObjectives.length) * 100;
+    const masteryScore = task.learningObjectives.length > 0 ? (checkedCount / task.learningObjectives.length) * 100 : 100;
     onComplete(Math.round(masteryScore));
   };
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { ProgressRing } from './ProgressRing';
-import { Check, X, Clock, Trophy, RotateCcw, Star, Zap, Target, Brain, ArrowRight, Timer, AlertTriangle } from 'lucide-react';
+import { Check, X, Clock, Trophy, RotateCcw, Star, Zap, Target, Brain, ArrowRight, Timer, AlertTriangle, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -117,6 +117,16 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
       onComplete(result);
     }
   };
+
+  if (!questions.length) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-20">
+        <BookOpen className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
+        <p className="text-muted-foreground font-medium">No questions available</p>
+        <p className="text-sm text-muted-foreground/60 mt-1">Check back later or try a different subject.</p>
+      </div>
+    );
+  }
 
   if (quizComplete) {
     const correctCount = answers.filter(a => a.isCorrect).length;

@@ -1,0 +1,7 @@
+project_id = "lsjlehxmfnjpyyjgqdas"
+
+[functions.ai-tutor]
+verify_jwt = false
+
+[functions.parse-document]
+verify_jwt = false

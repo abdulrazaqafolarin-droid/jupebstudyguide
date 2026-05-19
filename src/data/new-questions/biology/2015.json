@@ -1,0 +1,1478 @@
+[
+  {
+    "id": "bio-2015-import-1",
+    "question": "Which of the following diseases could be exclusively associated with a river basin?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Malaria"
+      },
+      {
+        "label": "B",
+        "text": "Syphilis"
+      },
+      {
+        "label": "C",
+        "text": "Onchocerciasis"
+      },
+      {
+        "label": "D",
+        "text": "Cholera"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-2",
+    "question": "In mammals, the function of the sebaceous gland is to ________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "produce sweat"
+      },
+      {
+        "label": "B",
+        "text": "secrete sodium"
+      },
+      {
+        "label": "C",
+        "text": "secrete water"
+      },
+      {
+        "label": "D",
+        "text": "produce sebum"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-3",
+    "question": "Osteoporosis is a disease of the ___________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "lungs"
+      },
+      {
+        "label": "B",
+        "text": "skin"
+      },
+      {
+        "label": "C",
+        "text": "bones"
+      },
+      {
+        "label": "D",
+        "text": "eyes"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-4",
+    "question": "The type of reproduction that is common to both Hydra and yeast is _______________",
+    "options": [
+      {
+        "label": "A",
+        "text": "grafting"
+      },
+      {
+        "label": "B",
+        "text": "budding"
+      },
+      {
+        "label": "C",
+        "text": "conjugation"
+      },
+      {
+        "label": "D",
+        "text": "binary fission"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-5",
+    "question": "The difference between the largest and the smallest data values is the ______________",
+    "options": [
+      {
+        "label": "A",
+        "text": "variance"
+      },
+      {
+        "label": "B",
+        "text": "interquartile range"
+      },
+      {
+        "label": "C",
+        "text": "range"
+      },
+      {
+        "label": "D",
+        "text": "coefficient of variation"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-6",
+    "question": "The function of ribosomes in cells is",
+    "options": [
+      {
+        "label": "A",
+        "text": "protein synthesis"
+      },
+      {
+        "label": "B",
+        "text": "starch synthesis"
+      },
+      {
+        "label": "C",
+        "text": "transport of materials"
+      },
+      {
+        "label": "D",
+        "text": "lipid storage."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-7",
+    "question": "Which statement correctly describes homologous chromosomes?",
+    "options": [
+      {
+        "label": "A",
+        "text": "They are formed during meiosis"
+      },
+      {
+        "label": "B",
+        "text": "They are held together by centromeres"
+      },
+      {
+        "label": "C",
+        "text": "They are identical"
+      },
+      {
+        "label": "D",
+        "text": "They carry the same gene loci"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-8",
+    "question": "Which one of the following is a correct outline of the main events in photosynthesis?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Oxygen reacts with a carbohydrate to produce water and carbon-dioxide in the presence of light."
+      },
+      {
+        "label": "B",
+        "text": "Light join carbon-dioxide to an acceptor compound which is then reduced by hydrogen obtained   from water."
+      },
+      {
+        "label": "C",
+        "text": "Light splits water and the resulting hydroxyl group combines with a compound which has incorporated carbon-dioxide"
+      },
+      {
+        "label": "D",
+        "text": "Carbon-dioxide combines with an acceptor compound and this is reduced by hydrogen split from water by light."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-9",
+    "question": "Breathing movement in mammals is accompanied by regular movement of the diaphragm and the ____________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "intercostal muscles"
+      },
+      {
+        "label": "B",
+        "text": "vertebral column"
+      },
+      {
+        "label": "C",
+        "text": "clavicle"
+      },
+      {
+        "label": "D",
+        "text": "pleural cavity"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-10",
+    "question": "Organisms that require oxygen to grow are called ___________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "psychrophilic organisms"
+      },
+      {
+        "label": "B",
+        "text": "thermophilic organisms"
+      },
+      {
+        "label": "C",
+        "text": "aerobes"
+      },
+      {
+        "label": "D",
+        "text": "hyperthermophiles."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-11",
+    "question": "Organisms that retain the blue/purple colour in their cell wall in gram staining technique are _____________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "microaerophile"
+      },
+      {
+        "label": "B",
+        "text": "viable cells"
+      },
+      {
+        "label": "C",
+        "text": "gram positive organisms"
+      },
+      {
+        "label": "D",
+        "text": "gram negative organisms."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-12",
+    "question": "Which of the following nitrogenous base is found in RNA but not in DNA?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Adenine"
+      },
+      {
+        "label": "B",
+        "text": "Thymine"
+      },
+      {
+        "label": "C",
+        "text": "Uracil"
+      },
+      {
+        "label": "D",
+        "text": "Guanine."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-13",
+    "question": "The study of groups of organisms is called ____________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ecology"
+      },
+      {
+        "label": "B",
+        "text": "Autecology"
+      },
+      {
+        "label": "C",
+        "text": "Gynecology"
+      },
+      {
+        "label": "D",
+        "text": "Synecology"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-14",
+    "question": "Genetic rearrangement between nonsister chromatids is known as _____________",
+    "options": [
+      {
+        "label": "A",
+        "text": "cross over"
+      },
+      {
+        "label": "B",
+        "text": "synapsis"
+      },
+      {
+        "label": "C",
+        "text": "random fertilization"
+      },
+      {
+        "label": "D",
+        "text": "character"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-15",
+    "question": "One of the following is not a type of dormancy.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Induced"
+      },
+      {
+        "label": "B",
+        "text": "Innate"
+      },
+      {
+        "label": "C",
+        "text": "Enforced"
+      },
+      {
+        "label": "D",
+        "text": "Applied"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-16",
+    "question": "The terrestrial species of class Gastropoda prevent water loss by means of _______",
+    "options": [
+      {
+        "label": "A",
+        "text": "Apiphragm."
+      },
+      {
+        "label": "B",
+        "text": "Nephridia."
+      },
+      {
+        "label": "C",
+        "text": "Radula."
+      },
+      {
+        "label": "D",
+        "text": "Epiphragm."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-17",
+    "question": "The first forms of life on Earth were thought to be ____________",
+    "options": [
+      {
+        "label": "A",
+        "text": "single-celled plants."
+      },
+      {
+        "label": "B",
+        "text": "prokaryotes"
+      },
+      {
+        "label": "C",
+        "text": "insects"
+      },
+      {
+        "label": "D",
+        "text": "large animals such as dinosaurs"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-18",
+    "question": "Which polysaccharide is usually found in the cell walls of fungi?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Starch"
+      },
+      {
+        "label": "B",
+        "text": "Glycogen"
+      },
+      {
+        "label": "C",
+        "text": "Chitin"
+      },
+      {
+        "label": "D",
+        "text": "Cellulose"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-19",
+    "question": "What adaptation do seed plants have in addition to the seed that is not found in seedless plants?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Gametophytes"
+      },
+      {
+        "label": "B",
+        "text": "Vascular tissue"
+      },
+      {
+        "label": "C",
+        "text": "Pollen"
+      },
+      {
+        "label": "D",
+        "text": "Chlorophyll"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-20",
+    "question": "Prokaryotes stain as Gram-positive or Gramnegative because of differences in the ____________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cell wall."
+      },
+      {
+        "label": "B",
+        "text": "Cytoplasm."
+      },
+      {
+        "label": "C",
+        "text": "Nucleus."
+      },
+      {
+        "label": "D",
+        "text": "Chromosome."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-21",
+    "question": "External fertilization occurs in ______________ type of environment?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Aquatic"
+      },
+      {
+        "label": "B",
+        "text": "Forested"
+      },
+      {
+        "label": "C",
+        "text": "Savanna"
+      },
+      {
+        "label": "D",
+        "text": "Steppe"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-22",
+    "question": "What kind of ecosystem are exotic species especially threatening to?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Deserts"
+      },
+      {
+        "label": "B",
+        "text": "Marine ecosystems"
+      },
+      {
+        "label": "C",
+        "text": "Islands"
+      },
+      {
+        "label": "D",
+        "text": "Tropical forests"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-23",
+    "question": "Each neurone contains _______________",
+    "options": [
+      {
+        "label": "A",
+        "text": "soma, dendrites and axon"
+      },
+      {
+        "label": "B",
+        "text": "sensory, association and motor"
+      },
+      {
+        "label": "C",
+        "text": "cerebrum,cerebellum and hypothalamus"
+      },
+      {
+        "label": "D",
+        "text": "afferent, efferent and mixed"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-24",
+    "question": "One of these statements is not true about Berry and Drupe.",
+    "options": [
+      {
+        "label": "A",
+        "text": "They both have thin epicarp"
+      },
+      {
+        "label": "B",
+        "text": "They both have fleshy succulent mesocarp"
+      },
+      {
+        "label": "C",
+        "text": "Their endocarp is edible"
+      },
+      {
+        "label": "D",
+        "text": "They both have seed"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-25",
+    "question": "Antibiotic discovery was done by the Scottish bacteriologist __________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Alexander Penicillius"
+      },
+      {
+        "label": "B",
+        "text": "Alexander Fleming"
+      },
+      {
+        "label": "C",
+        "text": "Alexandes Fleming"
+      },
+      {
+        "label": "D",
+        "text": "AlexandesPenicillius"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-26",
+    "question": "The type of cell division which forms the basis of Mendel’s law of segregation is _______________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mitosis"
+      },
+      {
+        "label": "B",
+        "text": "Meiosis"
+      },
+      {
+        "label": "C",
+        "text": "Somatic"
+      },
+      {
+        "label": "D",
+        "text": "Synoptic"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-27",
+    "question": "Archaebacteria is simply ____________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "A prokaryotes without cell wall"
+      },
+      {
+        "label": "B",
+        "text": "An eukaryotes without cell wall"
+      },
+      {
+        "label": "C",
+        "text": "A prokaryote without a peptidoglycan cell wall"
+      },
+      {
+        "label": "D",
+        "text": "An eukaryotes without a peptidoglycan cell wall"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-28",
+    "question": "Leucosoleniabelongs to class _________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Calcispongiae"
+      },
+      {
+        "label": "B",
+        "text": "Hexactinellida"
+      },
+      {
+        "label": "C",
+        "text": "Demospongiae"
+      },
+      {
+        "label": "D",
+        "text": "Porifera"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-29",
+    "question": "A pseudopodia that is threadlike, branched and interconnected is known as ___________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Lobopodia"
+      },
+      {
+        "label": "B",
+        "text": "Actinopodia"
+      },
+      {
+        "label": "C",
+        "text": "Filopodia"
+      },
+      {
+        "label": "D",
+        "text": "Reticulopodia"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-30",
+    "question": "Photosynthetic microphylls are found in ________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Division Psilophyta"
+      },
+      {
+        "label": "B",
+        "text": "Division Lycophyta"
+      },
+      {
+        "label": "C",
+        "text": "Division Sphenophyta"
+      },
+      {
+        "label": "D",
+        "text": "Division Pterophyta"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-31",
+    "question": "Polio myelitis is an infectious disease caused by ________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "virus"
+      },
+      {
+        "label": "B",
+        "text": "protozoan"
+      },
+      {
+        "label": "C",
+        "text": "bacterium"
+      },
+      {
+        "label": "D",
+        "text": "fungus"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-32",
+    "question": "Which of these is a trace element?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Iron"
+      },
+      {
+        "label": "B",
+        "text": "Copper"
+      },
+      {
+        "label": "C",
+        "text": "Calcium"
+      },
+      {
+        "label": "D",
+        "text": "Sulphur"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-33",
+    "question": "Which of these diseases cannot be prevented by immunization?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Polio myelitis"
+      },
+      {
+        "label": "B",
+        "text": "Tuberculosis"
+      },
+      {
+        "label": "C",
+        "text": "Cholera"
+      },
+      {
+        "label": "D",
+        "text": "Onchocerciasis"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-34",
+    "question": "Hydra removes undigested food by _________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "passing it through the anus"
+      },
+      {
+        "label": "B",
+        "text": "passing it through the mouth"
+      },
+      {
+        "label": "C",
+        "text": "means of contractile vacuole"
+      },
+      {
+        "label": "D",
+        "text": "digesting it through the body surface"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-35",
+    "question": "Which of the following is INCORRECT? The prothallus of a fern _______",
+    "options": [
+      {
+        "label": "A",
+        "text": "is a flattened heart shaped structure."
+      },
+      {
+        "label": "B",
+        "text": "is green because its cells contain chloroplast."
+      },
+      {
+        "label": "C",
+        "text": "is the dominant plant."
+      },
+      {
+        "label": "D",
+        "text": "bears the sexual organs."
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-36",
+    "question": "The science of taxonomy has two branches namely _____________ and ________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Biology naming and biochemistry"
+      },
+      {
+        "label": "B",
+        "text": "Nomenclature and Classification"
+      },
+      {
+        "label": "C",
+        "text": "Botany and systematic"
+      },
+      {
+        "label": "D",
+        "text": "Microbiology and systematic"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-37",
+    "question": "To complement biotic analysis in measuring environmental factors the following are studied Except",
+    "options": [
+      {
+        "label": "A",
+        "text": "Soil"
+      },
+      {
+        "label": "B",
+        "text": "Water"
+      },
+      {
+        "label": "C",
+        "text": "Topography"
+      },
+      {
+        "label": "D",
+        "text": "Geography"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-38",
+    "question": "The period between inoculation of bacteria in culture medium and the beginning of multiplication is known as ________________",
+    "options": [
+      {
+        "label": "A",
+        "text": "log phase"
+      },
+      {
+        "label": "B",
+        "text": "lag phase"
+      },
+      {
+        "label": "C",
+        "text": "stationary phase"
+      },
+      {
+        "label": "D",
+        "text": "decline phase"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-39",
+    "question": "Small proteinaceous infectious particles that do not contain nucleic acid genome that codes for their progeny are _______________",
+    "options": [
+      {
+        "label": "A",
+        "text": "bacteria"
+      },
+      {
+        "label": "B",
+        "text": "viruses"
+      },
+      {
+        "label": "C",
+        "text": "HIV"
+      },
+      {
+        "label": "D",
+        "text": "prion"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-40",
+    "question": "Example of all-purpose media used in cultivation of bacteria by a bacteriologist is ___________",
+    "options": [
+      {
+        "label": "A",
+        "text": "selenitc A agar"
+      },
+      {
+        "label": "B",
+        "text": "blood agar"
+      },
+      {
+        "label": "C",
+        "text": "nutrient agar"
+      },
+      {
+        "label": "D",
+        "text": "tryptone soy agar"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-41",
+    "question": "Which of the following is not a characteristic feature of the phylum Cnidaria?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Polymorphism"
+      },
+      {
+        "label": "B",
+        "text": "Cephalisation"
+      },
+      {
+        "label": "C",
+        "text": "Body of two-germ layers"
+      },
+      {
+        "label": "D",
+        "text": "Nematocysts"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-42",
+    "question": "Which of the following groups of plants are not considered as lower plants?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pteridophytes"
+      },
+      {
+        "label": "B",
+        "text": "Bryophytes"
+      },
+      {
+        "label": "C",
+        "text": "Cryptogams"
+      },
+      {
+        "label": "D",
+        "text": "Spermatophytes"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-43",
+    "question": "Non-living bodies in the cell includes one of these, _____________",
+    "options": [
+      {
+        "label": "A",
+        "text": "Starch grains"
+      },
+      {
+        "label": "B",
+        "text": "Chloroplast"
+      },
+      {
+        "label": "C",
+        "text": "Ribosomes"
+      },
+      {
+        "label": "D",
+        "text": "Cell wall"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-44",
+    "question": "Alternation of generation in plants involves which of the following?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Processes in two sexual pathways"
+      },
+      {
+        "label": "B",
+        "text": "Processes in one single sexual pathway"
+      },
+      {
+        "label": "C",
+        "text": "Spores dispersal alone"
+      },
+      {
+        "label": "D",
+        "text": "Processes in homogamy alone"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-45",
+    "question": "Which of these is not a form of respiration in Amphibians?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cuteneous"
+      },
+      {
+        "label": "B",
+        "text": "Tubular"
+      },
+      {
+        "label": "C",
+        "text": "Pulmunary"
+      },
+      {
+        "label": "D",
+        "text": "Buccal-Pharyngeal"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-46",
+    "question": "The factor that least affects food shortage in the sub-saharan Africa is _____________",
+    "options": [
+      {
+        "label": "A",
+        "text": "flooding"
+      },
+      {
+        "label": "B",
+        "text": "pests"
+      },
+      {
+        "label": "C",
+        "text": "mixed cropping"
+      },
+      {
+        "label": "D",
+        "text": "drought"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-47",
+    "question": "Which one of the following factors may not directly affect population density of organisms?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Edaphic"
+      },
+      {
+        "label": "B",
+        "text": "Nutritional"
+      },
+      {
+        "label": "C",
+        "text": "Mortality"
+      },
+      {
+        "label": "D",
+        "text": "Emmigration"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-48",
+    "question": "One of the major causes of laboratory acquired infection is inhalation of _________",
+    "options": [
+      {
+        "label": "A",
+        "text": "air"
+      },
+      {
+        "label": "B",
+        "text": "water"
+      },
+      {
+        "label": "C",
+        "text": "particles"
+      },
+      {
+        "label": "D",
+        "text": "infectious aerosol"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-49",
+    "question": "The major cell of the specific immune system are _______________",
+    "options": [
+      {
+        "label": "A",
+        "text": "bone marrow cells"
+      },
+      {
+        "label": "B",
+        "text": "erythrocytes"
+      },
+      {
+        "label": "C",
+        "text": "lymphocytes"
+      },
+      {
+        "label": "D",
+        "text": "monocytes"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2015-import-50",
+    "question": "The normal microbacter of the stomach include all of the following except: BIOLOGY ESSAY QUESTIONS ESSAY QUESTIONS: Answer FOUR Questions in all; One from each Course TIME: 2HRS 1. (a). State 6 differences between sexual and asexual reproduction 6 marks (b). Write short notes on any 2 of the following: i. Haplontic life cycle ii. Diplontic life cycle iii. Haplodiplontic life cycle 4 marks BIO 001: GEN BIOLOGY 2. (a). Define the following terms i. Genotype ii. Phenotype iii. Hybrid iv. Dominant character. 4 marks (b). State clearly Mendel’s first and second laws of inheritance 2 marks (c). If a pure breeding brown coloured rat BB is crossed with a pure breeding White rat bb, using diagrams only, show the genotype of the offspring up to the second filial generation. 4 marks BIO 001: GEN BIOLOGY 3. Describe the formation of two molecules of pyruvate during respiration 10 marks BIO 003: MICRO BIOLOGY 4. (a). Define the following terms i. Aseptic Technique ii. Antigens iii. Antibodies iv. Immunity 4 marks (b). List 6 rules that must be observed for any aseptic technique 6 marks BIO 003: MICRO BIOLOGY 5. (a). How does water in the soil enter the root hair of a plant? 6marks (b) Name the tissue that conducts water from the root to the stem and leaves in a flowering Plant? 4marks BIO 002: BASIC BOTANY 6. (a). State five functions of testosterone 5 marks (b). With aid of diagram only, describe mature spermatozoon 5 marks BIO 004: FUNDAMENTALS OF ZOOLOGY 7. (a). What is a tissue? 1 mark (b). How are plant tissue formed 3 marks (c). Describe the structure and function of two vascular tissues 6 marks BIO 002: BASIC BOTANY 8. (a). List any 6 characteristics of the phylum mullusca 6 marks (b).Give 4 economic importance of the sub- class pulmonata 4 marks BIO 004: FUNDAMENTALS OF ZOOLOGY",
+    "options": [
+      {
+        "label": "A",
+        "text": "Streptococcus"
+      },
+      {
+        "label": "B",
+        "text": "Staphylococcus"
+      },
+      {
+        "label": "C",
+        "text": "Lactobacillus"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2015,
+    "category": "objective"
+  },
+  {
+    "question": ": \n Questions in all; One from each Course TIME: 2HRS",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-1"
+  },
+  {
+    "question": "1. (a). State 6 differences between sexual and asexual reproduction   6 marks (b). Write short notes on any 2 of the following: i.   Haplontic life cycle ii.   Diplontic life cycle iii.   Haplodiplontic life cycle   4 marks  BIO 001: GEN BIOLOGY",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-2"
+  },
+  {
+    "question": "2. (a). Define the following terms i.   Genotype ii.   Phenotype iii.   Hybrid iv.   Dominant character.   4 marks (b). State clearly Mendel’s first and second laws of inheritance   2 marks (c). If a pure breeding brown coloured rat BB is crossed with a pure breeding White rat bb, using diagrams only, show the genotype of the offspring up to the second filial generation. 4 marks  BIO 001: GEN BIOLOGY  3. Describe the formation of two molecules of pyruvate during respiration   10 marks  BIO 003: ",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-3"
+  },
+  {
+    "question": "4. (a). Define the following terms i.   Aseptic Technique ii.   Antigens iii.   Antibodies iv.   Immunity   4 marks (b). List 6 rules that must be observed for any aseptic technique   6 marks  BIO 003: MICRO BIOLOGY",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-4"
+  },
+  {
+    "question": "5. (a).   How does water in the soil enter the root hair of a plant?   6marks (b) Name the tissue that conducts water from the root to the stem and leaves in a flowering Plant?   4marks  BIO 002: BASIC BOTANY\n\n=== PAGE 10 ===",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-5"
+  },
+  {
+    "question": "6. (a). State five functions of testosterone   5 marks (b). With aid of diagram only, describe mature spermatozoon   5 marks  BIO 004: FUNDAMENTALS OF ZOOLOGY",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-6"
+  },
+  {
+    "question": "7. (a). What is a tissue?   1 mark (b). How are plant tissue formed   3 marks (c). Describe the structure and function of two vascular tissues   6 marks  BIO 002: BASIC BOTANY",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-7"
+  },
+  {
+    "question": "8. (a). List any 6 characteristics of the phylum mullusca   6 marks (b).Give 4 economic importance of the sub- class pulmonata   4 marks  BIO 004: FUNDAMENTALS OF ZOOLOGY",
+    "answerGuide": "",
+    "markScheme": [],
+    "totalMarks": 10,
+    "subject": "biology",
+    "year": 2015,
+    "category": "theory",
+    "id": "bio-2015-import-theory-8"
+  }
+]

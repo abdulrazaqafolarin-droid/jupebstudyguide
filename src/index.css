@@ -1,0 +1,350 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* JUPEB Study App - Chalkboard-inspired Academic Design System */
+
+@layer base {
+  :root {
+    /* Dark chalkboard theme - inspired by academic settings */
+    --background: 220 20% 10%;
+    --foreground: 45 20% 95%;
+
+    --card: 220 18% 14%;
+    --card-foreground: 45 20% 95%;
+
+    --popover: 220 18% 12%;
+    --popover-foreground: 45 20% 95%;
+
+    /* Warm amber/gold - knowledge and enlightenment */
+    --primary: 38 92% 50%;
+    --primary-foreground: 220 20% 10%;
+
+    --secondary: 220 15% 20%;
+    --secondary-foreground: 45 20% 95%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 55%;
+
+    /* Teal accent for correct answers */
+    --accent: 168 76% 42%;
+    --accent-foreground: 220 20% 10%;
+
+    /* Red for incorrect */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 45 20% 95%;
+
+    --border: 220 15% 22%;
+    --input: 220 15% 18%;
+    --ring: 38 92% 50%;
+
+    --radius: 0.75rem;
+
+    /* Subject colors */
+    --physics: 220 90% 56%;
+    --chemistry: 142 70% 45%;
+    --biology: 340 75% 55%;
+    --math: 280 70% 55%;
+
+    /* Gradients */
+    --gradient-gold: linear-gradient(135deg, hsl(38 92% 50%), hsl(45 95% 60%));
+    --gradient-card: linear-gradient(145deg, hsl(220 18% 14%), hsl(220 18% 12%));
+    --gradient-success: linear-gradient(135deg, hsl(168 76% 42%), hsl(158 70% 50%));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(220 20% 5% / 0.5);
+    --shadow-glow: 0 0 30px -5px hsl(38 92% 50% / 0.3);
+    --shadow-card: 0 8px 32px -8px hsl(220 20% 5% / 0.6);
+
+    --sidebar-background: 220 18% 12%;
+    --sidebar-foreground: 45 20% 95%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 220 20% 10%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 45 20% 95%;
+    --sidebar-border: 220 15% 22%;
+    --sidebar-ring: 38 92% 50%;
+
+    /* Emil's custom easing curves */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  /* Math and code styling */
+  code, .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  /* Flashcard flip animation */
+  .flashcard-container {
+    perspective: 1500px;
+  }
+
+  .flashcard {
+    transform-style: preserve-3d;
+    transition: transform 0.5s var(--ease-in-out);
+  }
+
+  .flashcard.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .flashcard-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .flashcard-back {
+    transform: rotateY(180deg);
+  }
+
+  /* Subject badges */
+  .subject-physics {
+    @apply bg-[hsl(var(--physics))] text-white;
+  }
+
+  .subject-chemistry {
+    @apply bg-[hsl(var(--chemistry))] text-white;
+  }
+
+  .subject-biology {
+    @apply bg-[hsl(var(--biology))] text-white;
+  }
+
+  .subject-math {
+    @apply bg-[hsl(var(--math))] text-white;
+  }
+
+  /* Glow effects */
+  .glow-gold {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .glow-success {
+    box-shadow: 0 0 30px -5px hsl(var(--accent) / 0.4);
+  }
+
+  /* Progress bar animation */
+  .progress-fill {
+    transition: width 0.4s var(--ease-out);
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-transform duration-200;
+    transition-timing-function: var(--ease-out);
+  }
+
+  .card-hover:hover {
+    @apply -translate-y-1;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Chalk texture overlay */
+  .chalk-texture {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  /* Formula styling */
+  .formula {
+    @apply font-mono bg-secondary/50 px-2 py-1 rounded text-primary;
+  }
+
+  /* Global custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 3px;
+    transition: background-color 0.2s;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground));
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground));
+  }
+
+  /* Focus ring */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring) / 0.6);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Selection */
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-gold);
+  }
+
+  .bg-gradient-gold {
+    background-image: var(--gradient-gold);
+  }
+
+  .animate-in-up {
+    animation: slideInUp 0.4s var(--ease-out) both;
+  }
+
+  .animate-in-down {
+    animation: slideInDown 0.4s var(--ease-out) both;
+  }
+
+  .animate-in-left {
+    animation: slideInLeft 0.4s var(--ease-out) both;
+  }
+
+  .animate-in-right {
+    animation: slideInRight 0.4s var(--ease-out) both;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s var(--ease-out) both;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out both;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--border) / 0.2) 25%,
+      hsl(var(--border) / 0.4) 50%,
+      hsl(var(--border) / 0.2) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  .animate-mesh {
+    animation: meshShift 15s ease-in-out infinite alternate;
+  }
+
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-6 { animation-delay: 0.3s; }
+  .stagger-7 { animation-delay: 0.35s; }
+  .stagger-8 { animation-delay: 0.4s; }
+
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideInDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-24px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px -5px hsl(38 92% 50% / 0.3); }
+    50% { box-shadow: 0 0 40px -5px hsl(38 92% 50% / 0.5); }
+  }
+
+  @keyframes meshShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}

@@ -8,13 +8,14 @@ import { toast } from 'sonner';
 import { Subject, SUBJECT_INFO } from '@/types/question';
 import { chatCompletion } from '@/lib/ai-service';
 import { DOCUMENT_PARSE_PROMPT } from '@/lib/prompts';
+import Tesseract from 'tesseract.js';
 
 interface DocumentUploadProps {
   onUploadComplete: () => void;
   onClose: () => void;
 }
 
-type UploadStatus = 'idle' | 'reading' | 'parsing' | 'saving' | 'complete' | 'error';
+type UploadStatus = 'idle' | 'reading' | 'ocr' | 'parsing' | 'saving' | 'complete' | 'error';
 
 const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClose }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -23,6 +24,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
   const [progress, setProgress] = useState(0);
   const [questionsCount, setQuestionsCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
+  const [ocrProgress, setOcrProgress] = useState('');
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,50 +46,98 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
     }
   }, []);
 
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        // Remove the data URL prefix to get just the base64 data
-        const base64 = result.split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+  async function ocrImage(file: File): Promise<string> {
+    setOcrProgress('Initializing OCR engine...');
+    const { data } = await Tesseract.recognize(file, 'eng', {
+      logger: (m) => {
+        if (m.status === 'recognizing text') {
+          const pct = Math.round((m.progress || 0) * 100);
+          setOcrProgress(`OCR: ${pct}%`);
+          setProgress(20 + Math.round(pct * 0.3));
+        }
+      }
     });
-  };
+    setOcrProgress('');
+    return data.text;
+  }
+
+  async function extractPDFText(file: File): Promise<string> {
+    setOcrProgress('Loading PDF...');
+    const pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs";
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      setOcrProgress(`Reading page ${i}/${pdf.numPages}...`);
+      setProgress(20 + Math.round((i / pdf.numPages) * 30));
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map((item: { str: string }) => item.str).join(" ");
+      fullText += pageText + "\n\n";
+    }
+    if (fullText.trim().length < 50) {
+      setOcrProgress('PDF appears scanned. Running OCR on each page...');
+      fullText = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        setOcrProgress(`OCR page ${i}/${pdf.numPages}...`);
+        setProgress(20 + Math.round((i / pdf.numPages) * 30));
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const { data } = await Tesseract.recognize(canvas, 'eng');
+          fullText += data.text + "\n\n";
+        }
+      }
+    }
+    setOcrProgress('');
+    return fullText;
+  }
 
   const handleUpload = async () => {
     if (!selectedFile) return;
 
     try {
       setStatus('reading');
-      setProgress(20);
+      setProgress(10);
       
-      setStatus('parsing');
-      setProgress(40);
-
       let textContent: string;
+      const type = selectedFile.type;
 
-      if (selectedFile.type === 'text/plain') {
+      if (type === 'text/plain') {
         textContent = await selectedFile.text();
+        setProgress(50);
+      } else if (type.startsWith('image/')) {
+        setStatus('ocr');
+        setProgress(20);
+        textContent = await ocrImage(selectedFile);
+        setProgress(50);
+      } else if (type === 'application/pdf') {
+        setStatus('ocr');
+        setProgress(20);
+        textContent = await extractPDFText(selectedFile);
+        setProgress(50);
       } else {
-        setStatus('reading');
-        const base64Data = await fileToBase64(selectedFile);
-        const mimeType = selectedFile.type || 'application/pdf';
-        textContent = `[File: ${selectedFile.name}]\n[MIME: ${mimeType}]\n[Base64: ${base64Data.substring(0, 200)}...]`;
-        textContent += `\n\nNote: This is a ${mimeType} file. Extract all exam questions visible in this document.`;
+        throw new Error('Unsupported file type');
+      }
+
+      if (!textContent.trim()) {
+        throw new Error('No text could be extracted from the file. Try an image with clearer text.');
       }
 
       setStatus('parsing');
-      setProgress(50);
+      setProgress(60);
 
       const fullPrompt = DOCUMENT_PARSE_PROMPT + `\n\nDocument name: ${selectedFile.name}\nSubject: ${subject}\n\nDocument content:\n${textContent}`;
       const response = await chatCompletion(fullPrompt, []);
 
       setStatus('saving');
-      setProgress(70);
+      setProgress(80);
 
       let parsed: { questions: any[] };
       try {
@@ -101,7 +151,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
         throw new Error('No questions found in the document');
       }
 
-      setProgress(80);
+      setProgress(90);
 
       // Save to Supabase
       const { supabase } = await import('@/integrations/supabase/client');
@@ -153,7 +203,8 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
   const getStatusMessage = () => {
     switch (status) {
       case 'reading': return 'Reading document...';
-      case 'parsing': return 'AI is extracting questions with OCR...';
+      case 'ocr': return ocrProgress || 'Running OCR...';
+      case 'parsing': return 'AI is extracting questions...';
       case 'saving': return 'Saving questions...';
       case 'complete': return `Successfully added ${questionsCount} questions!`;
       case 'error': return errorMessage;

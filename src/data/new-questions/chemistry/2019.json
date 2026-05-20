@@ -180,8 +180,8 @@
         "text": "Its first ionization energy is lower than t"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Reaction: 2NO₂ ⇌ 2NO + O₂. Initial: 4 mol. Change: -1.6 mol NO₂, +1.6 mol NO, +0.8 mol O₂. Equilibrium: [NO₂]=2.4, [NO]=1.6, [O₂]=0.8. Kc = (1.6² * 0.8) / 2.4² = 1.6.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2019,

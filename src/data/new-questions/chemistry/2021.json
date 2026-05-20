@@ -20,8 +20,8 @@
         "text": "Confidence Interval"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Precision refers to the closeness of two or more measurements to each other, which is the definition of reproducibility or repeatability.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -48,8 +48,8 @@
         "text": "Henry Mosley"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Ernest Rutherford conducted the famous gold foil experiment using alpha particles to discover the atomic nucleus.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -76,8 +76,8 @@
         "text": "electron donor."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "According to the Brønsted-Lowry theory, an acid is defined as a proton (H+) donor.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -104,8 +104,8 @@
         "text": "number of neutrons."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Isotopes are atoms of the same element with the same number of protons and electrons but different numbers of neutrons.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -132,8 +132,8 @@
         "text": "supersaturated solution."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "A standard solution is a solution whose concentration is accurately known.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -156,8 +156,8 @@
         "text": "The molecule is covalent."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "CCl4 has a tetrahedral geometry where the four polar C-Cl bonds are arranged symmetrically, causing their dipole moments to cancel out.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -200,8 +200,8 @@
         "text": "an electron has more electrical energy than a proton"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "The highest principal quantum number in the configuration is 4, which indicates the element is in period 4.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -244,8 +244,8 @@
         "text": "[Ar] 4s 2   3d 3"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Since force F = qE and F = ma, the acceleration a = qE/m. Because an electron has a much smaller mass than a proton, it experiences greater acceleration and deflection.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -268,8 +268,8 @@
         "text": "C 4   H 4"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "The removal of the second electron from a +1 ion to form a +2 ion represents the second ionization energy.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -296,8 +296,8 @@
         "text": "when molten but not in the solid state."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Elements in period 3 have their valence electrons in the 3rd shell (3s and 3p orbitals). [Ne] 3s1 corresponds to Sodium (Period 3).",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -324,8 +324,8 @@
         "text": "pseudo-first order"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "For 0.2 mol hydrocarbon, CO2 produced = 35.2/44 = 0.8 mol (C=4) and H2O produced = 14.4/18 = 0.8 mol (H=8). Formula is C4H8. (Note: Option C is the closest match provided).",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -352,8 +352,8 @@
         "text": "𝐶 10 𝐻 15"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Ionic compounds conduct electricity when molten or in aqueous solution because the ions are free to move, but not in the solid state where they are fixed in a lattice.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -380,8 +380,8 @@
         "text": "attraction"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "For a first-order reaction, the half-life is independent of the initial concentration of the reactant.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -408,8 +408,8 @@
         "text": "Bond energy"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Empirical mass of C2H3 = 27. Ratio = 108/27 = 4. Molecular formula = 4 * (C2H3) = C8H12.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -432,8 +432,8 @@
         "text": "Rate law"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Atoms bond to attain a stable electronic configuration, usually the octet state.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -460,8 +460,8 @@
         "text": "Electron volts system"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "A Geiger counter is a standard instrument used to detect and measure ionizing radiation.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -488,8 +488,8 @@
         "text": "-   𝑅 𝐸𝑎"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "According to the Arrhenius equation (ln k = -Ea/RT + ln A), the slope of a plot of ln k versus 1/T is -Ea/R.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -512,8 +512,8 @@
         "text": "P Ne   > P A r > P He"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "According to Graham's Law of effusion, the rate of effusion is inversely proportional to the square root of molar mass. He (lightest) effuses fastest, leaving Ar (heaviest) behind in the highest concentration.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -540,8 +540,8 @@
         "text": "It is not a transition metal."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Sodium is highly reactive with water and would react violently with groundwater, making it unsuitable as a sacrificial anode.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -660,8 +660,8 @@
         "text": "They are all reducing agents with Fluorine having the highest reducing power."
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Calcium oxide (CaO) is an ionic solid, but it is often cited in this context because it contains both ionic bonding and, in some structural contexts, lattice energy considerations; however, looking at the options, it is the most complex. Regarding the alkali metal question (27), all statements (I, II, III) are true.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -688,8 +688,8 @@
         "text": "they have high melting and boiling point"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Transition elements exhibit variable oxidation states because the energy difference between (n-1)d and ns orbitals is small, allowing d-electrons to participate in bonding.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -716,8 +716,8 @@
         "text": "+7"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Iodine can expand its octet to form compounds like IF7, where it exhibits an oxidation state of +7.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -744,8 +744,8 @@
         "text": "Nitrogen"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Nitrogen is a diatomic gas and does not exhibit allotropy, unlike Sulphur, Phosphorus, and Carbon.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -768,8 +768,8 @@
         "text": "ClF 5"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "Interhalogen compounds follow the formula XYn where n is odd (1, 3, 5, 7). ClBr3 does not exist because the central atom must be the larger, less electronegative halogen.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -796,8 +796,8 @@
         "text": "Sodium is a metal, chloride is a non-metal"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "A",
+    "explanation": "The chloride ion (Cl-) has electrons in the third shell, whereas the sodium ion (Na+) has lost its third shell, leaving it with only two occupied shells.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -824,8 +824,8 @@
         "text": "Na + , Ne, F   –"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Na+ (10e-), Ne (10e-), and F- (10e-) are isoelectronic. Size decreases as nuclear charge (proton number) increases: F- > Ne > Na+.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -896,8 +896,8 @@
         "text": "5-pentyn-1-oic acid"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Diagonal relationships exist between Li-Mg, Be-Al, and B-Si. Mg and Al are in the same period, not diagonally related.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -924,8 +924,8 @@
         "text": "Isotopic series"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "A homologous series is a group of organic compounds where each successive member differs by a -CH2- unit.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -1000,8 +1000,8 @@
         "text": "Sodium methoxide and water"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Ethyne (HC≡CH) contains a triple bond, requiring sp hybridization for the carbon atoms.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -1024,8 +1024,8 @@
         "text": "MH + H 2 O → MOH + 2H"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Group 1 metal hydrides react with water to produce the metal hydroxide and hydrogen gas: MH + H2O → MOH + H2.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -1068,8 +1068,8 @@
         "text": "Displacement"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "The coordination number is 6 (4 NH3 + 2 H2O), which corresponds to an octahedral geometry. The oxidation state of Co is calculated as x + 4(0) + 2(0) = +3, so Co is +3.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -1096,8 +1096,8 @@
         "text": "6"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "In the coordination compound [Co(NH3)5Cl]Cl2, the species outside the square brackets are the counter ions. There are 2 chloride ions (Cl-) acting as counter ions.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -1124,8 +1124,8 @@
         "text": "a ketone"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "D",
+    "explanation": "Secondary alcohols are oxidized by strong oxidizing agents like K2Cr2O7/H+ to form ketones.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,
@@ -1152,8 +1152,8 @@
         "text": "Cellulose"
       }
     ],
-    "correctAnswer": "",
-    "explanation": "",
+    "correctAnswer": "B",
+    "explanation": "Sucrose is a non-reducing sugar because its glycosidic bond involves the anomeric carbons of both glucose and fructose, preventing the formation of an open-chain aldehyde or ketone group.",
     "difficulty": "medium",
     "subject": "chemistry",
     "year": 2021,

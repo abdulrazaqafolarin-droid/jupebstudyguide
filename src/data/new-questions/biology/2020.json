@@ -1,0 +1,126 @@
+[
+  {
+    "id": "bio-2020-import-1",
+    "question": "In mushroom, the function of the gills is to produce spores. Choose the option below that best describes the function of the hyphae produced by the mushroom 43. Which of these is a xerophyte? 44. Which of the following is NOT true of Bryophytes? 45. One of the following is not a causative organism of human malaria. 46. Choose the option that best describes the lag phase. It is the period when the 47. Identify the option which is not caused by a pathogen 48. A pharmaceutical company involved in the production of penicillin would find one of these organisms useful 49. A person who consumes mouldy bread is most likely to consume one of the following organisms. 50. A piece of yam fell into a solution of unknown concentration. After 5 days, the piece of yam was found to be of the same size because the solution it fell into is",
+    "options": [
+      {
+        "label": "A",
+        "text": "It assimilates the nutrients in the substrate"
+      },
+      {
+        "label": "B",
+        "text": "It absorbs nutrients from the substrate"
+      },
+      {
+        "label": "C",
+        "text": "It digests the nutrients in the substrate"
+      },
+      {
+        "label": "A",
+        "text": "Cactus"
+      },
+      {
+        "label": "B",
+        "text": "Moss"
+      },
+      {
+        "label": "C",
+        "text": "Fern"
+      },
+      {
+        "label": "A",
+        "text": "Possession of rhizoids"
+      },
+      {
+        "label": "B",
+        "text": "Production of spores"
+      },
+      {
+        "label": "C",
+        "text": "Alternation of generation"
+      },
+      {
+        "label": "A",
+        "text": "Plasmodium falciparum"
+      },
+      {
+        "label": "B",
+        "text": "Plasmodium ovale"
+      },
+      {
+        "label": "C",
+        "text": "Plasmodium vivax"
+      },
+      {
+        "label": "A",
+        "text": "bacteria are adjusting to the environment"
+      },
+      {
+        "label": "B",
+        "text": "environment is adjusting to the bacteria"
+      },
+      {
+        "label": "C",
+        "text": "bacteria records the highest growth rate"
+      },
+      {
+        "label": "A",
+        "text": "Malaria"
+      },
+      {
+        "label": "B",
+        "text": "Cancer"
+      },
+      {
+        "label": "C",
+        "text": "Measles"
+      },
+      {
+        "label": "A",
+        "text": "Bacteria"
+      },
+      {
+        "label": "B",
+        "text": "Protozoa"
+      },
+      {
+        "label": "C",
+        "text": "Fungi"
+      },
+      {
+        "label": "A",
+        "text": "Aspergillus sp"
+      },
+      {
+        "label": "B",
+        "text": "Penicillium sp"
+      },
+      {
+        "label": "C",
+        "text": "Mycelium sp"
+      },
+      {
+        "label": "A",
+        "text": "hypotonic"
+      },
+      {
+        "label": "B",
+        "text": "hypertonic"
+      },
+      {
+        "label": "C",
+        "text": "isotonic"
+      },
+      {
+        "label": "D",
+        "text": "hydrotonic"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  }
+]

@@ -20,8 +20,8 @@
         "text": "𝑀𝐿 −1 𝑇 2 , 𝑀𝐿 −2 𝑇 2   & 𝑀𝐿𝑇 −2"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -48,8 +48,8 @@
         "text": "– 14"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "A+B = (3-1)i + (-1+2)j + (3-1)k = 2i + j + 2k. The dot product (2i + j + 2k) . (-3i + 5j - 3k) = (2*-3) + (1*5) + (2*-3) = -6 + 5 - 6 = -14.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -76,8 +76,8 @@
         "text": "Gravitational and frictional forces"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "A stationary object on a floor is acted upon by the downward gravitational force (weight) and the upward normal force exerted by the floor.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -104,8 +104,8 @@
         "text": "Quadrupled"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -132,8 +132,8 @@
         "text": "5600𝑊"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -160,8 +160,8 @@
         "text": "400.5 𝑚/𝑠"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -188,8 +188,8 @@
         "text": "450 𝑚/𝑠"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -216,8 +216,8 @@
         "text": "3.41𝑠"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -244,8 +244,8 @@
         "text": "The heat that changes a unit mass of the liquid to vapor at the same temperature"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -272,8 +272,8 @@
         "text": "7.5𝑚"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -300,8 +300,8 @@
         "text": "1.75𝑚, 100𝑚/𝑠"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -328,8 +328,8 @@
         "text": "3.0𝐷"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -356,8 +356,8 @@
         "text": "Law of conservation of energy"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -384,8 +384,8 @@
         "text": "1.33"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Using Snell's Law, n = sin(i)/sin(r) = sin(30)/sin(22) = 0.5 / 0.3746 = 1.3347, which rounds to 1.35.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -412,8 +412,8 @@
         "text": "8 33   𝑘𝑔"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "Heat lost by copper = mcΔT = 2 * 400 * 100 = 80,000 J. Heat gained by ice = mLf, so m = 80,000 / 330,000 = 8/33 kg.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -440,8 +440,8 @@
         "text": "1800𝑁"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -468,8 +468,8 @@
         "text": "16𝑉"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -496,8 +496,8 @@
         "text": "1.0𝐴"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -524,8 +524,8 @@
         "text": "Electromagnetism"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "Electrostatics is the branch of physics that deals with the phenomena and properties of stationary or slow-moving electric charges.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -552,8 +552,8 @@
         "text": "I and III only"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Electric lines of force originate from positive charges, terminate on negative charges, and repel each other; they never intersect.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -580,8 +580,8 @@
         "text": "𝑋   and   𝑌   are both negative"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Electric field lines originate from positive charges and move away from them; if lines are shown pointing away from both X and Y, both are positive.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -608,8 +608,8 @@
         "text": "Reduction of friction"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -636,8 +636,8 @@
         "text": "Using a compass"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -664,8 +664,8 @@
         "text": "Allows current to flow in only one direction"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -692,8 +692,8 @@
         "text": "0.13𝑐𝑚 3"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -720,8 +720,8 @@
         "text": "IV only"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -748,8 +748,8 @@
         "text": "1.00"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "Using Snell's Law, n = sin(30)/sin(19.24) = 0.5 / 0.3295 = 1.517, which rounds to 1.52.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -776,8 +776,8 @@
         "text": "3.5 × 10 3 𝐽"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -804,8 +804,8 @@
         "text": "𝑀 3 𝐿𝑇 −2"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -832,8 +832,8 @@
         "text": "500𝐽"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -860,8 +860,8 @@
         "text": "2𝑦 𝑚"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -888,8 +888,8 @@
         "text": "Visible light→ Gamma ray → Infra ray → Radio wave → X-ray → Ultraviolet"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -916,8 +916,8 @@
         "text": "Tensional force"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Magnetic force is a field force that acts over a distance without physical contact, unlike normal, frictional, or tensional forces.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -944,8 +944,8 @@
         "text": "123.5Ω"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -972,8 +972,8 @@
         "text": "2.75𝐽"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1000,8 +1000,8 @@
         "text": "3.38 × 10 −2 /𝑑𝑎𝑦"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1028,8 +1028,8 @@
         "text": "110 𝑚𝑖𝑛𝑠"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1056,8 +1056,8 @@
         "text": "It can be drawn in the absence of an electric field"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "By definition, an equipotential surface is a surface where the potential is constant, and electric field lines are always perpendicular to these surfaces.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1084,8 +1084,8 @@
         "text": "The maximum kinetic energy   𝐸 𝐾𝑚𝑎𝑥   of an ejected electron is   𝐸 𝐾𝑚𝑎𝑥   = ℎ(𝑓 + 𝑓 0 )"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1112,8 +1112,8 @@
         "text": "8.43 𝑀𝑒𝑉"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1140,8 +1140,8 @@
         "text": "𝑛 𝑖   = 2 → 𝑛 𝑓   = 1"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1168,8 +1168,8 @@
         "text": "The atom does not contain a nucleus"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Rutherford's alpha-particle scattering experiment led to the discovery that the positive charge and most of the mass of an atom are concentrated in a small nucleus.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1196,8 +1196,8 @@
         "text": "7.42 × 10 −19 𝐽"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1224,8 +1224,8 @@
         "text": "Speed of light is constant"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1252,8 +1252,8 @@
         "text": "762𝑛𝑚"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1280,8 +1280,8 @@
         "text": "𝑛 = ∞ 𝑠𝑡𝑎𝑡𝑒"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "The ground state is the lowest energy state of an atom, making it the most stable configuration for an electron.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1308,8 +1308,8 @@
         "text": "Radioactive material"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1336,8 +1336,8 @@
         "text": "II and III only"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1364,8 +1364,8 @@
         "text": "𝐼 ∝   1 𝐴 3"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "The intensity of a wave is directly proportional to the square of its amplitude (I ∝ A^2).",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,
@@ -1388,8 +1388,8 @@
         "text": "3𝐾𝑣"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "physics",
     "year": 2018,

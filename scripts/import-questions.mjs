@@ -15,8 +15,12 @@ function parseFileInfo(filename) {
   else if (/chemistry/i.test(name)) subject = 'chemistry';
   else if (/physics/i.test(name)) subject = 'physics';
   else if (/mathematics|math/i.test(name)) subject = 'math';
-  const ym = name.match(/(20\d\d)/);
-  if (ym) year = parseInt(ym[1]);
+  const years = [...name.matchAll(/(20\d\d)/g)].map(m => parseInt(m[1]));
+  // Prefer the first year that's NOT a current/photo timestamp year (2025, 2026)
+  // Typically exam years are 2015-2024, so prefer those
+  const examYear = years.find(y => y >= 2014 && y <= 2025);
+  if (examYear) year = examYear;
+  else if (years.length > 0) year = years[0];
   const isPractical = /practical/i.test(name);
   return { subject, year, isPractical, name };
 }
@@ -99,13 +103,19 @@ for (const file of files) {
   }
 
   const text = fs.readFileSync(path.join(EXTRACTED_DIR, file), 'utf-8');
-  if (text.length < 500) {
-    console.log(`Skipping ${file}: too small (likely scanned)`);
+  if (text.length < 300) {
+    console.log(`Skipping ${file}: too small (${text.length} chars)`);
     continue;
   }
 
-  const mcqs = extractMCQs(text);
-  const theories = isPractical ? [] : extractTheories(text);
+  let mcqs, theories;
+  try {
+    mcqs = extractMCQs(text);
+    theories = isPractical ? [] : extractTheories(text);
+  } catch (err) {
+    console.log(`Skipping ${file}: parse error - ${err.message}`);
+    continue;
+  }
   const cat = isPractical ? 'practical' : 'objective';
 
   console.log(`${file}: ${(text.length/1024).toFixed(0)} KB, ${mcqs.length} MCQs, ${theories.length} theories`);

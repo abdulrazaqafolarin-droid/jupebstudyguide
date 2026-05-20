@@ -188,8 +188,8 @@
         "text": "(− ∞ ,   ∞ )"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -244,8 +244,8 @@
         "text": "1"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "The limit of (x^2 - 4)/(x - 2) as x approaches 2 is evaluated by factoring the numerator to (x-2)(x+2), canceling (x-2), and substituting x=2 to get 4.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -272,8 +272,8 @@
         "text": "∞"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Using L'Hopital's rule or algebraic simplification for the limit as x approaches infinity, the ratio of the leading coefficients of the quadratic terms results in 2.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -300,8 +300,8 @@
         "text": "1, -1, 2"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -328,8 +328,8 @@
         "text": "2x + 3"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -356,8 +356,8 @@
         "text": "20m/s"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "Velocity is the derivative of position s(t) = 3t^2 - 5t - 2, which is v(t) = 6t - 5. Substituting t=2 gives 6(2) - 5 = 7, but based on the provided options, 31 is the closest derived from a potential typo in the original function.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -400,8 +400,8 @@
         "text": "– 4x 23. Differentiate (x +y) 2  ="
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -536,8 +536,8 @@
         "text": "- 4  3"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "Using the product rule on y = (x-1)e^-x, dy/dx = (1)e^-x + (x-1)(-e^-x) = e^-x - xe^-x + e^-x = (2-x)e^-x.",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,
@@ -856,8 +856,8 @@
         "text": "3 Marks iii.   The number of voters who did not vote for any party.   4 Marks 2 (a) i.   Evaluate the determinant"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "AI-generated answer based on domain knowledge",
+    "correctAnswer": "",
+    "explanation": "",
     "difficulty": "medium",
     "subject": "math",
     "year": 2015,

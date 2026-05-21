@@ -9,12 +9,14 @@ export interface ActivationStatus {
   checking: boolean;
 }
 
+let cachedStatus: ActivationStatus | null = null;
+let cachedUserId: string | null = null;
+
 export function useActivation() {
   const { user } = useAuth();
-  const [status, setStatus] = useState<ActivationStatus>({
-    is_activated: false,
-    is_admin: false,
-    checking: true,
+  const [status, setStatus] = useState<ActivationStatus>(() => {
+    if (cachedStatus && cachedUserId === user?.id) return cachedStatus;
+    return { is_activated: false, is_admin: false, checking: true };
   });
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +24,9 @@ export function useActivation() {
 
   const checkStatus = useCallback(async () => {
     if (!user) {
-      setStatus({ is_activated: false, is_admin: false, checking: false });
+      cachedStatus = { is_activated: false, is_admin: false, checking: false };
+      cachedUserId = null;
+      setStatus(cachedStatus);
       return;
     }
 
@@ -44,17 +48,21 @@ export function useActivation() {
         supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch((e) => console.warn("Admin update failed:", e));
       }
 
-      setStatus({
+      cachedStatus = {
         is_activated: data?.is_activated ?? false,
         is_admin: isAdminEmail || (data?.is_admin ?? false),
         checking: false,
-      });
+      };
+      cachedUserId = user.id;
+      setStatus(cachedStatus);
     } catch {
-      setStatus({
+      cachedStatus = {
         is_activated: false,
         is_admin: isAdminEmail,
         checking: false,
-      });
+      };
+      cachedUserId = user.id;
+      setStatus(cachedStatus);
     }
   }, [user]);
 

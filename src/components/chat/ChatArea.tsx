@@ -273,13 +273,15 @@ export function ChatArea({
                             isOwn ? 'justify-end' : 'justify-start',
                             'opacity-0 group-hover/message:opacity-100 transition-opacity'
                           )}>
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-full h-6 w-6"
                               onClick={() => setReplyTo(msg)}
-                              className="p-1 rounded-full hover:bg-secondary transition-colors"
                               title="Reply"
                             >
-                              <Reply className="w-3 h-3 text-muted-foreground" />
-                            </button>
+                              <Reply className="w-3 h-3" />
+                            </Button>
                             {onReact && (
                               <div className="p-1 rounded-full hover:bg-secondary transition-colors">
                                 <MessageReactions
@@ -335,9 +337,9 @@ export function ChatArea({
                   <p className="text-[10px] font-medium text-primary">Replying</p>
                   <p className="text-xs truncate text-muted-foreground">{replyMsg.content || 'Photo'}</p>
                 </div>
-                <button onClick={() => setReplyTo(null)} className="p-1 rounded-lg hover:bg-secondary/50 transition-colors shrink-0">
+                <Button variant="ghost" size="icon" className="rounded-lg shrink-0" onClick={() => setReplyTo(null)}>
                   <X className="w-3.5 h-3.5" />
-                </button>
+                </Button>
               </div>
             </motion.div>
           )}
@@ -354,13 +356,16 @@ export function ChatArea({
                   className="hidden"
                   onChange={handleFileInput}
                 />
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 rounded-full"
                   onClick={() => fileInputRef.current?.click()}
-                  className="shrink-0 w-9 h-9 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition-all active:scale-90"
                   title="Send photo"
                 >
                   <ImagePlus className="w-4 h-4" />
-                </button>
+                </Button>
               </>
             )}
             <div className="flex-1 relative">
@@ -376,13 +381,15 @@ export function ChatArea({
                 style={{ minHeight: '40px' }}
               />
             </div>
-            <button
+            <Button
+              type="button"
+              size="icon"
+              className="shrink-0 rounded-full"
               onClick={handleSend}
               disabled={!input.trim()}
-              className="shrink-0 w-9 h-9 rounded-full bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all active:scale-90 shadow-sm"
             >
-              <Send className="w-4 h-4 text-primary-foreground" />
-            </button>
+              <Send className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>

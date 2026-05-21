@@ -360,10 +360,15 @@ export function useChat() {
 
     if (convError || !conv) return null;
 
-    await supabase.from('conversation_participants').insert([
-      { conversation_id: conv.id, user_id: user.id },
-      { conversation_id: conv.id, user_id: otherUserId },
-    ]);
+    const { error: partError } = await supabase.from('conversation_participants').insert(
+      { conversation_id: conv.id, user_id: user.id }
+    );
+    if (partError) return null;
+
+    const { error: otherError } = await supabase.from('conversation_participants').insert(
+      { conversation_id: conv.id, user_id: otherUserId }
+    );
+    if (otherError) return null;
 
     await fetchConversations();
     await openConversation(conv.id);

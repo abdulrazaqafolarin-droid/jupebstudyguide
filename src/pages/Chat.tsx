@@ -157,14 +157,11 @@ const Chat = () => {
                   </div>
                 ) : (
                   friends.friends.map((f) => (
-                    <button
+                    <div
                       key={f.user_id}
-                      onClick={() => {
-                        handleStartConversation(f.user_id);
-                      }}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors text-left group"
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/30 transition-colors"
                     >
-                      <div className="relative">
+                      <div className="relative shrink-0">
                         <UserAvatar
                           url={f.avatar_url}
                           name={f.display_name}
@@ -180,10 +177,16 @@ const Chat = () => {
                           {presence.isOnline(f.user_id) ? 'Online' : 'Offline'}
                         </p>
                       </div>
-                      <span className="text-[10px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                        Message →
-                      </span>
-                    </button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="h-8 text-xs shrink-0"
+                        onClick={() => handleStartConversation(f.user_id)}
+                      >
+                        <MessageCircle className="w-3.5 h-3.5 mr-1" />
+                        Chat
+                      </Button>
+                    </div>
                   ))
                 )}
               </div>

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 
 export interface ActivationStatus {
   is_activated: boolean;
@@ -18,8 +19,6 @@ export function useActivation() {
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastCheckRef = useRef<string | null>(null);
-
-  const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
 
   const checkStatus = useCallback(async () => {
     if (!user) {
@@ -42,7 +41,7 @@ export function useActivation() {
       if (error) throw error;
 
       if (isAdminEmail && !data?.is_admin) {
-        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch(() => {});
+        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch((e) => console.warn("Admin update failed:", e));
       }
 
       setStatus({
@@ -64,6 +63,12 @@ export function useActivation() {
   }, [checkStatus]);
 
   const validateCode = useCallback(async (code: string): Promise<{ success: boolean; error?: string; plan_type?: string }> => {
+    if (!user) {
+      setError("You must be logged in to activate.");
+      setValidating(false);
+      return { success: false, error: "Not authenticated" };
+    }
+
     setValidating(true);
     setError(null);
 
@@ -71,7 +76,7 @@ export function useActivation() {
       const normalized = code.trim().toUpperCase();
       const { data, error: rpcError } = await supabase.rpc("consume_activation_code", {
         p_code: normalized,
-        p_user_id: user?.id,
+        p_user_id: user.id,
       });
 
       if (rpcError) {

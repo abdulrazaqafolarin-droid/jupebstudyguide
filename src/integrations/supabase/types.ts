@@ -182,6 +182,12 @@ export type Database = {
           id: string
           is_read: boolean
           sender_id: string
+          message_type: string
+          reply_to_id: string | null
+          is_edited: boolean
+          reactions: Record<string, string[]>
+          image_url: string | null
+          group_name: string | null
         }
         Insert: {
           content: string
@@ -190,6 +196,12 @@ export type Database = {
           id?: string
           is_read?: boolean
           sender_id: string
+          message_type?: string
+          reply_to_id?: string | null
+          is_edited?: boolean
+          reactions?: Record<string, string[]>
+          image_url?: string | null
+          group_name?: string | null
         }
         Update: {
           content?: string
@@ -198,6 +210,12 @@ export type Database = {
           id?: string
           is_read?: boolean
           sender_id?: string
+          message_type?: string
+          reply_to_id?: string | null
+          is_edited?: boolean
+          reactions?: Record<string, string[]>
+          image_url?: string | null
+          group_name?: string | null
         }
         Relationships: [
           {
@@ -205,6 +223,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
         ]

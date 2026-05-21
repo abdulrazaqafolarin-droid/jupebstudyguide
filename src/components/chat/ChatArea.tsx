@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, ArrowLeft, ImagePlus, Reply, X, Users, Camera, Check, CheckCheck } from 'lucide-react';
+import { Send, ArrowLeft, ImagePlus, Reply, X, Users, Check, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Message, Conversation } from '@/hooks/useChat';
+import { Message, Conversation, Profile } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -173,7 +173,7 @@ export function ChatArea({
             {isGroup ? (groupName || 'Group') : (activeConv?.other_user?.display_name || 'User')}
           </span>
           <span className="text-[10px] leading-tight text-muted-foreground">
-            {isGroup ? `${(activeConv as any)?.participants?.length || 0} members` : (showTyping ? 'Typing...' : otherOnline ? 'Online' : 'Offline')}
+            {isGroup ? `${activeConv?.participants?.length || 0} members` : (showTyping ? 'Typing...' : otherOnline ? 'Online' : 'Offline')}
           </span>
         </div>
         {isGroup && (

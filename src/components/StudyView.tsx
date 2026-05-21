@@ -3,7 +3,7 @@ import { Question, Subject, SUBJECT_INFO } from '@/types/question';
 import { Flashcard } from './Flashcard';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useStreak } from '@/hooks/useStreak';
-import { ArrowLeft, Shuffle, BookOpen, Brain, Flame, Sparkles, Target, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Shuffle, BookOpen, Brain, Flame, Sparkles, Target } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 

@@ -21,9 +21,7 @@ function getDailyCount(): number {
     const { date, count } = JSON.parse(raw);
     const today = new Date().toISOString().slice(0, 10);
     return date === today ? count : 0;
-  } catch {
-    return 0;
-  }
+  } catch { console.warn('Failed to read daily notification count'); return 0; }
 }
 
 function incrementDailyCount() {
@@ -101,7 +99,8 @@ IMPORTANT:
       body: parsed.body ?? "Keep up the great work!",
       dedupe: `ai:${context.action}:${new Date().toISOString().slice(0, 10)}:${context.subject ?? "general"}`,
     };
-  } catch {
+  } catch (e) {
+    console.warn('AI notification generation failed:', e instanceof Error ? e.message : e);
     return null;
   }
 }

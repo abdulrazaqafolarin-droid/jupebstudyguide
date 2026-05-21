@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
           .select("is_admin")
           .eq("user_id", user.id)
           .single();
-        if (!profile?.is_admin && user.email !== process.env.ADMIN_EMAIL) {
+        if (!profile?.is_admin && user.email !== Deno.env.get("ADMIN_EMAIL")) {
           return new Response(
             JSON.stringify({ error: "Admin access required" }),
             { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }

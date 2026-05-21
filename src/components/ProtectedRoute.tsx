@@ -30,7 +30,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <ActivationGate>{children}</ActivationGate>;
 };
 
-const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
+import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -46,7 +46,7 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
       const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
 
       if (emailAdmin && !dbAdmin) {
-        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch(() => {});
+        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch((e) => console.warn("Admin profile update failed:", e));
       }
 
       setIsAdmin(dbAdmin || emailAdmin);

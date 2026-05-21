@@ -286,7 +286,8 @@ export function useAchievements(stats: AchievementStats) {
   const unlockedIds = useMemo(() => new Set(unlockedArr), [unlockedArr]);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement[]>([]);
 
-  // Check for new achievements
+  const statsKey = useMemo(() => JSON.stringify(stats), [stats]);
+
   useEffect(() => {
     const newUnlocks: Achievement[] = [];
     ACHIEVEMENTS.forEach(achievement => {
@@ -301,7 +302,7 @@ export function useAchievements(stats: AchievementStats) {
       setUnlockedArr([...next]);
       setNewlyUnlocked(prev => [...prev, ...newUnlocks]);
     }
-  }, [stats, unlockedIds, setUnlockedArr]);
+  }, [statsKey, unlockedIds, setUnlockedArr]);
 
   const clearNewlyUnlocked = () => {
     setNewlyUnlocked([]);

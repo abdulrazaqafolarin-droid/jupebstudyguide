@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { ProgressRing } from './ProgressRing';
-import { Check, X, Clock, Trophy, RotateCcw, Star, Zap, Target, Brain, ArrowRight, Timer, AlertTriangle, BookOpen } from 'lucide-react';
+import { Check, X, Clock, RotateCcw, ArrowRight, Timer, AlertTriangle, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -89,8 +89,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
   const handleNext = () => {
     const timeSpent = (Date.now() - questionStartTime) / 1000;
-    const hasRealAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
-    const isCorrect = hasRealAnswer ? selectedOption === currentQuestion.correctAnswer : true;
+    const hasCorrectAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
+    const isCorrect = hasCorrectAnswer ? selectedOption === currentQuestion.correctAnswer : true;
 
     const newAnswers = [...answers, {
       questionId: currentQuestion.id,
@@ -205,12 +205,14 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
                 <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
               </Button>
               <Button onClick={() => {
+                timer.stop();
                 setCurrentIndex(0);
                 setSelectedOption(null);
                 setAnswers([]);
                 setStartTime(Date.now());
                 setShowResult(false);
                 setQuizComplete(false);
+                setShowTimerSelect(true);
               }} className="flex-1 bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity">
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Try Again

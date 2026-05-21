@@ -39,22 +39,21 @@ export function useQuizTimer() {
   }, [stop]);
 
   useEffect(() => {
-    if (state === "running") {
-      intervalRef.current = setInterval(() => {
-        setRemaining((prev) => {
-          if (prev <= 1) {
-            clear();
-            setState("expired");
-            onExpireRef.current?.();
-            onExpireRef.current = null;
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
+    if (state !== "running") return;
+    intervalRef.current = setInterval(() => {
+      setRemaining((prev) => Math.max(0, prev - 1));
+    }, 1000);
     return clear;
   }, [state, clear]);
+
+  useEffect(() => {
+    if (state === "running" && remaining === 0 && duration > 0) {
+      clear();
+      setState("expired");
+      onExpireRef.current?.();
+      onExpireRef.current = null;
+    }
+  }, [remaining, state, duration, clear]);
 
   const progress = duration > 0 ? remaining / duration : 1;
   const formatted = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;

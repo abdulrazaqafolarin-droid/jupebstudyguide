@@ -64,7 +64,11 @@ export const AITeachingPage = ({ task, topic, onBack, onComplete }: AITeachingPa
   useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   const handleStreamChat = useCallback(async (userMessage: string, isInitial = false) => {
-    const userMsg: Message = { role: 'user', content: userMessage };
+    const userMsg: Message = {
+      role: 'user',
+      content: userMessage,
+      attachment: attachment ? { base64: attachment.base64, mimeType: attachment.mimeType, name: attachment.name } : undefined,
+    };
     
     let newMessages: Message[];
     if (isInitial) {
@@ -76,6 +80,7 @@ export const AITeachingPage = ({ task, topic, onBack, onComplete }: AITeachingPa
     }
     setIsLoading(true);
     setInput('');
+    clearAttachment();
 
     const syllabusContext = `\n\n--- Current Teaching Session ---
 Subject: ${task.subject}
@@ -96,7 +101,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
     let ragContext = "";
     try {
       ragContext = await searchRelevantChunks(userMessage);
-    } catch { /* ignore */ }
+    } catch (e) { console.warn('RAG search failed:', e); }
 
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
@@ -113,11 +118,11 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       },
       onDone: () => setIsLoading(false),
       onError: (err) => {
-        toast.error(err);
+        toast.error(err?.message ?? String(err));
         setIsLoading(false);
       },
     }, ragContext);
-  }, [topic, task]);
+  }, [topic, task, attachment, clearAttachment]);
 
   const startTeaching = () => {
     const initialPrompt = `I want to learn about \"${topic.name}\" step by step. This is Day ${task.day} of my JUPEB syllabus study plan.

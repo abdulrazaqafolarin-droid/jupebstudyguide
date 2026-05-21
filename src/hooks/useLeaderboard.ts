@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getWeekStart, getWeekEnd } from '@/lib/weekBoundary';
 
 export interface LeaderboardRow {
   user_id: string;
@@ -8,29 +9,6 @@ export interface LeaderboardRow {
   display_name: string | null;
   avatar_url: string | null;
   rank: number;
-}
-
-function getWeekStart(): string {
-  const now = new Date();
-  const day = now.getDay();
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
-  monday.setHours(0, 0, 0, 0);
-  return monday.toISOString();
-}
-
-function getWeekEnd(): string {
-  const now = new Date();
-  const day = now.getDay();
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
-  monday.setHours(0, 0, 0, 0);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
-  return sunday.toISOString();
 }
 
 /**
@@ -100,14 +78,19 @@ export function useLeaderboard(limit = 5) {
 
     fetchAll();
 
-    // Realtime subscription
+    // Realtime subscription with 500ms debounce
+    let debounceTimer: ReturnType<typeof setTimeout>;
     const channel = supabase
       .channel('leaderboard_home')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'score_events' }, () => fetchAll())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'score_events' }, () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => fetchAll(), 500);
+      })
       .subscribe();
 
     return () => {
       cancelled = true;
+      clearTimeout(debounceTimer);
       supabase.removeChannel(channel);
     };
   }, [limit]);

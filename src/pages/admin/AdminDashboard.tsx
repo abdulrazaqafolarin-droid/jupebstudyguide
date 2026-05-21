@@ -4,12 +4,11 @@ import { useActivation, useAdminCodes } from "@/hooks/useActivation";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ArrowLeft, Key, Copy, CheckCircle, Loader2, Shield,
-  Users, TrendingUp, AlertCircle, DollarSign, Activity,
-  UserCheck, BarChart3, Calendar, Download
+  Users, TrendingUp, DollarSign, Activity,
+  UserCheck, BarChart3, Download
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -17,7 +16,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area
 } from "recharts";
 

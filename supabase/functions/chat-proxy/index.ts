@@ -1,45 +1,37 @@
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { createClient } from "npm:@supabase/supabase-js@2";
+import { CORS_HEADERS, aiChatStream } from "../_shared/ai.ts";
+import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: CORS_HEADERS });
   }
 
   try {
-    const { action, systemPrompt, messages, text } = await req.json();
-
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not configured");
-    }
+    const encoder = new TextEncoder();
+    const { action, systemPrompt, messages, text, subject } = await req.json();
 
     if (action === "embed") {
-      if (!text) throw new Error("text is required for embedding");
-
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "models/embedding-001",
-            content: { parts: [{ text }] },
+      const ollamaRes = await fetch("http://localhost:11434/api/embeddings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "nomic-embed-text", prompt: text || "" }),
+      });
+      if (!ollamaRes.ok) {
+        const errText = await ollamaRes.text();
+        return new Response(
+          JSON.stringify({
+            embedding: [],
+            error: `Ollama embedding failed (${ollamaRes.status}): ${errText}`,
+            note: "Ensure Ollama is running locally with: ollama pull nomic-embed-text",
           }),
-        }
-      );
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Gemini embedding error (${res.status}): ${errText}`);
+          { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
       }
-
-      const data = await res.json();
+      const ollamaData = await ollamaRes.json();
       return new Response(
-        JSON.stringify({ embedding: data.embedding?.values || [] }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ embedding: ollamaData.embedding || [] }),
+        { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
 
@@ -47,64 +39,62 @@ Deno.serve(async (req) => {
       throw new Error("messages array is required");
     }
 
-    const systemMsg = systemPrompt || "You are a helpful assistant for JUPEB exam preparation.";
-    const chatMessages = messages.filter((m: any) => m.role !== "system");
+    let systemMsg = systemPrompt || "You are a helpful assistant for JUPEB exam preparation.";
+    let referencesEvent = "";
 
-    let fullPrompt = systemMsg + "\n\n---\n\n";
-    fullPrompt += chatMessages.map((m: any) => {
-      return `${m.role === "assistant" ? "Assistant" : "User"}: ${m.content}`;
-    }).join("\n\n");
+    const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
+    if (lastUserMsg?.content) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
-        }),
+      const chunks = await retrieveRelevantChunks(supabase, lastUserMsg.content, {
+        subject: subject || undefined,
+        maxChunks: 3,
+      });
+      const rag = buildRAGContext(chunks);
+      if (rag.promptBlock) {
+        systemMsg += rag.promptBlock;
+        referencesEvent = serializeReferencesEvent(rag.references);
       }
-    );
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      const errText = await response.text();
-      console.error("Gemini error:", response.status, errText);
-      return new Response(
-        JSON.stringify({ error: "AI service temporarily unavailable" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
     }
 
-    const data = await response.json();
-    const geminiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const chatMessages = (messages || []).filter((m: any) => m.role !== "system").map((m: any) => ({
+      role: m.role === "assistant" ? "assistant" : "user",
+      content: m.content,
+    }));
 
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      start(controller) {
-        const chunks = geminiText.match(/.{1,100}/g) || [geminiText];
-        for (const chunk of chunks) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: chunk } }] })}\n\n`));
+    const aiStream = await aiChatStream(
+      Deno.env,
+      systemMsg,
+      chatMessages,
+      { model: "llama-3.3-70b-versatile", temperature: 0.7, maxTokens: 2048 }
+    );
+
+    const combinedStream = new ReadableStream({
+      async start(controller) {
+        if (referencesEvent) {
+          controller.enqueue(encoder.encode(referencesEvent));
         }
-        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        const reader = aiStream.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          controller.enqueue(value);
+        }
         controller.close();
       },
     });
 
-    return new Response(stream, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    return new Response(combinedStream, {
+      headers: { ...CORS_HEADERS, "Content-Type": "text/event-stream" },
     });
   } catch (error) {
     console.error("chat-proxy error:", error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }
 });

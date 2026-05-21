@@ -89,7 +89,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
     let ragContext = "";
     try {
       ragContext = await searchRelevantChunks(userMessage);
-    } catch { /* RAG unavailable, continue without it */ }
+    } catch (e) { console.warn("RAG unavailable, continuing without it:", e); }
 
     await streamChat(systemPrompt, allMessages, {
       onDelta: (text) => {

@@ -54,7 +54,6 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <ProtectedLayout>
-                <FloatingAITutor />
                 <Index />
               </ProtectedLayout>
             </ProtectedRoute>
@@ -153,6 +152,7 @@ const App = () => (
         <InstallPrompt />
         <BrowserRouter>
           <AnimatedRoutes />
+          <FloatingAITutor />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

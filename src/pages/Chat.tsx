@@ -8,7 +8,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, MessageCircle, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -37,7 +36,8 @@ const Chat = () => {
         return;
       }
       if (isMobile) setShowSidebar(false);
-    } catch {
+    } catch (err) {
+      console.error('Start conversation error:', err);
       toast.error('Failed to start conversation');
     }
   };

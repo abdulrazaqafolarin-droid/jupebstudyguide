@@ -76,7 +76,8 @@ IMPORTANT: Return ONLY valid JSON. No markdown, no backticks, no extra text.`;
   try {
     const cleaned = raw.replace(/```(?:json)?\s*/gi, "").trim();
     return JSON.parse(cleaned) as MarkingResult;
-  } catch {
+  } catch (e) {
+    console.warn('Marking parse failed:', e instanceof Error ? e.message : e, 'Raw:', raw.slice(0, 200));
     return {
       score: 0,
       feedback: "Unable to parse marking result. Please review manually.",

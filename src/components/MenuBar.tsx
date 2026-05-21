@@ -5,6 +5,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 import { Button } from "@/components/ui/button";
 
 interface MenuBarProps {
@@ -16,8 +17,6 @@ export default function MenuBar({ streakData }: MenuBarProps) {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const { unreadCount } = useNotifications({ hasStudiedToday: streakData?.hasStudiedToday ?? false, currentStreak: streakData?.currentStreak ?? 0 });
-
-  const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
 
   useEffect(() => {
     if (!user) { setIsAdmin(false); return; }

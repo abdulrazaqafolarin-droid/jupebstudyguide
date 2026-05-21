@@ -74,75 +74,97 @@ export function useChat() {
         return;
       }
 
-      const enriched: Conversation[] = await Promise.all(
-        convData.map(async (conv) => {
-          const { data: participants } = await supabase
-            .from('conversation_participants')
-            .select('user_id')
-            .eq('conversation_id', conv.id);
+      // Batch: fetch all participants for all conversations at once
+      const { data: allParticipants } = await supabase
+        .from('conversation_participants')
+        .select('conversation_id, user_id')
+        .in('conversation_id', convIds);
 
-          const isGroup = (participants?.length || 0) > 2;
-          let otherUser: Profile | null = null;
-          let groupName: string | undefined;
+      const participantsByConv = new Map<string, string[]>();
+      for (const p of allParticipants ?? []) {
+        const list = participantsByConv.get(p.conversation_id) ?? [];
+        list.push(p.user_id);
+        participantsByConv.set(p.conversation_id, list);
+      }
 
-          if (isGroup) {
-            const otherParticipants = participants?.filter(p => p.user_id !== user.id) || [];
-            const participantIds = otherParticipants.map(p => p.user_id);
-            if (participantIds.length > 0) {
-              const { data: profiles } = await supabase
-                .from('profiles')
-                .select('*')
-                .in('user_id', participantIds);
-              const participantProfiles = (profiles || []) as Profile[];
-              otherUser = participantProfiles[0] || null;
-            }
+      // Collect all unique user IDs
+      const allUserIds = new Set<string>();
+      for (const userIds of participantsByConv.values()) {
+        for (const uid of userIds) allUserIds.add(uid);
+      }
 
-            const { data: firstMsg } = await supabase
-              .from('messages')
-              .select('group_name')
-              .eq('conversation_id', conv.id)
-              .not('group_name', 'is', null)
-              .order('created_at', { ascending: true })
-              .limit(1)
-              .single();
-            groupName = firstMsg?.group_name || undefined;
-          } else {
-            const otherParticipant = participants?.find(p => p.user_id !== user.id);
-            if (otherParticipant) {
-              const { data: profile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('user_id', otherParticipant.user_id)
-                .single();
-              otherUser = profile;
-            }
-          }
+      // Batch: fetch all profiles at once
+      const { data: allProfiles } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('user_id', [...allUserIds]);
 
-          const { data: lastMsg } = await supabase
-            .from('messages')
-            .select('*')
-            .eq('conversation_id', conv.id)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
+      const profileMap = new Map<string, Profile>();
+      for (const p of (allProfiles ?? []) as Profile[]) {
+        profileMap.set(p.user_id, p);
+      }
 
-          const { count } = await supabase
-            .from('messages')
-            .select('*', { count: 'exact', head: true })
-            .eq('conversation_id', conv.id)
-            .eq('is_read', false)
-            .neq('sender_id', user.id);
+      // Batch: fetch all last messages
+      // PostgreSQL: DISTINCT ON with conversation_id to get latest message per conv
+      const { data: allLastMsgs } = await supabase
+        .from('messages')
+        .select('*')
+        .in('conversation_id', convIds)
+        .order('created_at', { ascending: false });
+      // Group by conversation, take first (latest)
+      const lastMsgByConv = new Map<string, Message>();
+      for (const msg of (allLastMsgs ?? []) as Message[]) {
+        if (!lastMsgByConv.has(msg.conversation_id)) {
+          lastMsgByConv.set(msg.conversation_id, msg);
+        }
+      }
 
-          return {
-            ...conv,
-            other_user: otherUser,
-            last_message: lastMsg,
-            unread_count: count || 0,
-            is_group: isGroup,
-            group_name: groupName,
-          };
-        })
-      );
+      // Batch: fetch all unread counts
+      const { data: unreadData } = await supabase
+        .from('messages')
+        .select('conversation_id')
+        .in('conversation_id', convIds)
+        .eq('is_read', false)
+        .neq('sender_id', user.id);
+
+      const unreadCountMap = new Map<string, number>();
+      for (const msg of (unreadData ?? []) as { conversation_id: string }[]) {
+        unreadCountMap.set(msg.conversation_id, (unreadCountMap.get(msg.conversation_id) ?? 0) + 1);
+      }
+
+      // Batch: fetch group names (first message with group_name per conversation)
+      const { data: groupNameData } = await supabase
+        .from('messages')
+        .select('conversation_id, group_name')
+        .in('conversation_id', convIds)
+        .not('group_name', 'is', null)
+        .order('created_at', { ascending: true });
+
+      const groupNameByConv = new Map<string, string>();
+      for (const msg of (groupNameData ?? []) as { conversation_id: string; group_name: string }[]) {
+        if (!groupNameByConv.has(msg.conversation_id)) {
+          groupNameByConv.set(msg.conversation_id, msg.group_name);
+        }
+      }
+
+      const enriched: Conversation[] = convData.map((conv) => {
+        const convParticipantIds = participantsByConv.get(conv.id) ?? [];
+        const isGroup = convParticipantIds.length > 2;
+        const otherParticipantIds = convParticipantIds.filter(pid => pid !== user.id);
+        const otherUser = otherParticipantIds.length > 0 ? profileMap.get(otherParticipantIds[0]) ?? null : null;
+        const lastMsg = lastMsgByConv.get(conv.id) ?? null;
+        const unreadCount = unreadCountMap.get(conv.id) ?? 0;
+        const groupName = isGroup ? groupNameByConv.get(conv.id) : undefined;
+
+        return {
+          ...conv,
+          other_user: otherUser,
+          last_message: lastMsg,
+          unread_count: unreadCount,
+          is_group: isGroup,
+          group_name: groupName,
+        };
+      });
 
       setConversations(enriched);
     } catch (err) {
@@ -190,7 +212,7 @@ export function useChat() {
           setMessages(prev => [...prev, newMsg]);
 
           if (user && newMsg.sender_id !== user.id) {
-            supabase.from('messages').update({ is_read: true }).eq('id', newMsg.id).then();
+            supabase.from('messages').update({ is_read: true }).eq('id', newMsg.id).then().catch(() => {});
           }
 
           fetchConversations();
@@ -246,9 +268,10 @@ export function useChat() {
     if (error) {
       setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
       console.error('Error sending message:', error);
+      return;
     }
 
-    await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConversation);
+    await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConversation).catch(() => {});
   }, [user, activeConversation]);
 
   const sendImage = useCallback(async (imageUrl: string) => {
@@ -277,9 +300,10 @@ export function useChat() {
 
     if (error) {
       setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
+      return;
     }
 
-    await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConversation);
+    await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConversation).catch(() => {});
   }, [user, activeConversation]);
 
   const sendReaction = useCallback(async (messageId: string, emoji: string) => {
@@ -302,7 +326,7 @@ export function useChat() {
 
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions: updated } : m));
 
-    await supabase.from('messages').update({ reactions: updated }).eq('id', messageId);
+    await supabase.from('messages').update({ reactions: updated }).eq('id', messageId).catch(() => {});
   }, [user, messages]);
 
   const startConversation = useCallback(async (otherUserId: string): Promise<string | null> => {

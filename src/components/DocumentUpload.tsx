@@ -141,7 +141,8 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
 
       let parsed: { questions: any[] };
       try {
-        const jsonStr = response.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim();
+        const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)```/);
+        const jsonStr = jsonMatch ? jsonMatch[1].trim() : response.trim();
         parsed = JSON.parse(jsonStr);
       } catch {
         throw new Error('Failed to parse AI response. The model may not have returned valid JSON.');

@@ -12,6 +12,7 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Camera, DollarSign, Loader2, LogOut, Mail, MessageCircle, Trash2, ShieldAlert } from 'lucide-react';
+import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 
 export default function ProfilePage() {
@@ -159,11 +160,11 @@ export default function ProfilePage() {
               </p>
               <div className="flex flex-col gap-2">
                 <a
-                  href="mailto:abdulrazaqafolarin@gmail.com"
+                  href={`mailto:${ADMIN_EMAIL}`}
                   className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50"
                 >
                   <Mail className="w-4 h-4 shrink-0 text-accent" />
-                  abdulrazaqafolarin@gmail.com
+                  {ADMIN_EMAIL}
                 </a>
                 <a
                   href="https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code"

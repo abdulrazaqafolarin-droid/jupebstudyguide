@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
-import { questions, getQuestionsBySubject, getRandomQuestions } from '@/data/questions';
+import { questions, getQuestionsBySubject } from '@/data/questions';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
-import { UserSubjectCombination } from '@/types/syllabus';
 import { SubjectCard } from '@/components/SubjectCard';
 import { StudyView } from '@/components/StudyView';
 import { QuizMode, QuizResult } from '@/components/QuizMode';
@@ -22,7 +21,7 @@ import { useStatsSync } from '@/hooks/useStatsSync';
 import { useScoreAwarder } from '@/hooks/useScoreAwarder';
 import LeaderboardPanel from '@/components/LeaderboardPanel';
 import { useAuth } from '@/contexts/AuthContext';
-import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, LogOut, FileText, Library, X } from 'lucide-react';
+import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, FileText, Library, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import rutexLogo from '@/assets/rutex-logo.jpg';
 import { Button } from '@/components/ui/button';

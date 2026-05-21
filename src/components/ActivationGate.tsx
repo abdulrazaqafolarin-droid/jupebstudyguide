@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useActivation } from "@/hooks/useActivation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,10 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, MessageCircle, DollarSign } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 
 interface ActivationGateProps {
   children: React.ReactNode;
@@ -37,26 +35,13 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
   return <ActivationScreen email={user?.email || ""} onSignOut={signOut} />;
 };
 
+const ADMIN_WHATSAPP = ["2348124504552", "2347043353166"];
+
 const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => {
   const [code, setCode] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [planType, setPlanType] = useState("");
-  const [adminEmail, setAdminEmail] = useState("");
   const { validateCode, validating, error } = useActivation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    supabase
-      .from("profiles")
-      .select("user_id")
-      .eq("is_admin", true)
-      .limit(1)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setAdminEmail("abdulrazaqafolarin@gmail.com");
-        }
-      });
-  }, []);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,11 +53,10 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
       setPlanType(result.plan_type || "basic");
       setShowSuccess(true);
       setTimeout(() => {
-        navigate("/");
         window.location.reload();
       }, 2000);
     }
-  }, [code, validateCode, navigate]);
+  }, [code, validateCode]);
 
   const handlePaste = useCallback(async () => {
     try {
@@ -204,11 +188,11 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
               </p>
               <div className="space-y-2">
                 <a
-                  href={`mailto:${adminEmail || "abdulrazaqafolarin@gmail.com"}`}
+                  href={`mailto:${ADMIN_EMAIL}`}
                   className="flex items-center gap-2 text-xs text-primary hover:underline bg-secondary/30 rounded-lg px-3 py-2"
                 >
                   <Mail className="w-3.5 h-3.5 shrink-0" />
-                  {adminEmail || "abdulrazaqafolarin@gmail.com"}
+                  {ADMIN_EMAIL}
                 </a>
                 <a
                   href={`https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code`}

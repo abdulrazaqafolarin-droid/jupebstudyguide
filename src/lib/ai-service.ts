@@ -81,7 +81,7 @@ export async function streamChat(
           const parsed = JSON.parse(data);
           const delta = parsed.choices?.[0]?.delta?.content;
           if (delta) callbacks.onDelta(delta);
-        } catch {}
+        } catch (e) { console.warn('AI stream parse error:', e); }
       }
     }
     callbacks.onDone();
@@ -102,8 +102,23 @@ export async function chatCompletion(systemPrompt: string, messages: AIChatMessa
 }
 
 export async function generateEmbedding(text: string): Promise<number[]> {
+  // Try local Ollama directly first (available during dev, fastest)
+  try {
+    const ollamaRes = await fetch("http://localhost:11434/api/embeddings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "nomic-embed-text", prompt: text }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (ollamaRes.ok) {
+      const data = await ollamaRes.json();
+      if (data.embedding?.length) return data.embedding;
+    }
+  } catch { console.warn('Ollama unavailable, falling back to edge function'); }
+
+  // Fallback: route through edge function (works in production)
   if (!SUPABASE_URL || !SUPABASE_KEY) {
-    throw new Error("Supabase not configured");
+    throw new Error("Supabase not configured and Ollama unavailable");
   }
 
   const res = await fetch(FUNCTION_URL, {
@@ -121,5 +136,8 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   }
 
   const data = await res.json();
+  if (!data.embedding?.length) {
+    throw new Error("Empty embedding returned. Ensure Ollama is running (ollama serve) and nomic-embed-text is pulled.");
+  }
   return data.embedding as number[];
 }

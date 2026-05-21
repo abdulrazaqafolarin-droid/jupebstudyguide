@@ -49,6 +49,23 @@ export const FloatingAITutor = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const assistantContentRef = useRef('');
+  const fabRef = useRef<HTMLButtonElement>(null);
+  const dragRef = useRef({ isDragging: false, startX: 0, startY: 0, originX: 0, originY: 0 });
+  const clickPrevented = useRef(false);
+
+  const [fabPos, setFabPosRaw] = useState(() => {
+    try {
+      const raw = localStorage.getItem('jupeb-ai-fab-pos');
+      if (raw) return JSON.parse(raw);
+    } catch { /* invalid stored pos */ }
+    return { x: window.innerWidth - 80, y: window.innerHeight - 80 };
+  });
+  const setFabPos = useCallback((pos: { x: number; y: number }) => {
+    setFabPosRaw(pos);
+    try { localStorage.setItem('jupeb-ai-fab-pos', JSON.stringify(pos)); } catch { /* quota exceeded */ }
+  }, []);
+  const renderPos = useRef(fabPos);
+  const [isDragging, setIsDragging] = useState(false);
 
   const { attachment, isProcessing, addAttachment, clearAttachment } = useAttachment();
 
@@ -62,6 +79,99 @@ export const FloatingAITutor = () => {
     setMessages(prev => prev.filter((_, i) => i !== index));
     setTimeout(() => inputRef.current?.focus(), 50);
   }, [setMessages]);
+
+  const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+
+  const computePanelOrigin = useCallback((): { top: number; left: number; width: number } => {
+    const fabSize = 56;
+    const gap = 10;
+    const pw = 400;
+    const ph = Math.min(540, window.innerHeight - 100);
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const pad = 16;
+    let top: number;
+    const spaceAbove = fabPos.y - pad;
+    const spaceBelow = vh - (fabPos.y + fabSize) - pad;
+    if (spaceAbove >= ph) {
+      top = fabPos.y - ph - gap;
+    } else if (spaceBelow >= ph) {
+      top = fabPos.y + fabSize + gap;
+    } else {
+      top = clamp((vh - ph) / 2, pad, vh - ph - pad);
+    }
+    const spaceLeft = fabPos.x - pad;
+    const spaceRight = vw - (fabPos.x + fabSize) - pad;
+    let left: number;
+    if (spaceLeft >= pw) {
+      left = fabPos.x - pw - gap;
+    } else if (spaceRight >= pw) {
+      left = fabPos.x + fabSize + gap;
+    } else {
+      left = clamp((vw - pw) / 2, pad, vw - pw - pad);
+    }
+    return { top: clamp(top, pad, vh - ph - pad), left: clamp(left, pad, vw - pw - pad), width: pw };
+  }, [fabPos]);
+
+  useEffect(() => { renderPos.current = fabPos; }, [fabPos]);
+
+  const handleFabPointerDown = useCallback((e: React.PointerEvent) => {
+    clickPrevented.current = false;
+    dragRef.current = {
+      isDragging: false,
+      startX: e.clientX,
+      startY: e.clientY,
+      originX: fabPos.x,
+      originY: fabPos.y,
+    };
+    fabRef.current?.setPointerCapture(e.pointerId);
+  }, [fabPos]);
+
+  const handleFabPointerMove = useCallback((e: React.PointerEvent) => {
+    const el = fabRef.current;
+    if (!el) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    if (!dragRef.current.isDragging && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+      dragRef.current.isDragging = true;
+      clickPrevented.current = true;
+      el.style.transition = 'none';
+      setIsDragging(true);
+    }
+    if (dragRef.current.isDragging) {
+      const nx = dragRef.current.originX + dx;
+      const ny = dragRef.current.originY + dy;
+      renderPos.current = { x: nx, y: ny };
+      el.style.left = `${nx}px`;
+      el.style.top = `${ny}px`;
+    }
+  }, []);
+
+  const handleFabPointerUp = useCallback((e: React.PointerEvent) => {
+    const el = fabRef.current;
+    if (dragRef.current.isDragging) {
+      const btnSize = 56;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const thresh = 40;
+      const pad = 12;
+      let fx = clamp(renderPos.current.x, 0, vw - btnSize);
+      let fy = clamp(renderPos.current.y, 0, vh - btnSize);
+      if (fx < thresh) fx = pad;
+      else if (fx + btnSize > vw - thresh) fx = vw - btnSize - pad;
+      if (fy < thresh) fy = pad;
+      else if (fy + btnSize > vh - thresh) fy = vh - btnSize - pad;
+      if (el) {
+        el.style.transition = 'left 0.25s cubic-bezier(0.23,1,0.32,1), top 0.25s cubic-bezier(0.23,1,0.32,1)';
+        el.style.left = `${fx}px`;
+        el.style.top = `${fy}px`;
+      }
+      setFabPos({ x: fx, y: fy });
+      setTimeout(() => { if (el) el.style.transition = ''; }, 300);
+      setIsDragging(false);
+    }
+    dragRef.current.isDragging = false;
+  }, [setFabPos]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -99,7 +209,7 @@ export const FloatingAITutor = () => {
     let ragContext = "";
     try {
       ragContext = await searchRelevantChunks(userMessage);
-    } catch { /* ignore */ }
+    } catch (e) { console.warn('RAG search failed:', e); }
 
     let acc = '';
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
@@ -118,7 +228,11 @@ export const FloatingAITutor = () => {
       },
       onDone: async () => {
         if (assistantContentRef.current) {
-          await saveAssistantMessage(chatId, assistantContentRef.current);
+          try {
+            await saveAssistantMessage(chatId, assistantContentRef.current);
+          } catch {
+            console.warn('Save failed - chat may have been deleted during streaming');
+          }
         }
         setIsLoading(false);
       },
@@ -151,7 +265,7 @@ export const FloatingAITutor = () => {
   };
 
   useEffect(() => {
-    getTextbookCount().then(setTextbookCount).catch(() => {});
+    getTextbookCount().then(setTextbookCount).catch((e) => console.warn('Failed to get textbook count:', e));
   }, [showTextbooks]);
 
   // Hide entirely when not signed in (no anonymous chats).
@@ -162,17 +276,25 @@ export const FloatingAITutor = () => {
       <AnimatePresence>
         {!isOpen && (
           <motion.button
+            ref={fabRef}
             initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            animate={{ scale: isDragging ? 1.15 : 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsOpen(true)}
+            whileHover={{ scale: isDragging ? 1.15 : 1.1 }}
+            onPointerDown={handleFabPointerDown}
+            onPointerMove={handleFabPointerMove}
+            onPointerUp={(e) => {
+              handleFabPointerUp(e);
+              if (!clickPrevented.current) setIsOpen(true);
+            }}
+            style={{ left: renderPos.current.x, top: renderPos.current.y, touchAction: 'none' }}
             className={cn(
-              "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full",
+              "fixed z-50 w-14 h-14 rounded-full",
               "bg-gradient-to-br from-primary to-accent flex items-center justify-center",
-              "shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-shadow"
+              isDragging
+                ? "shadow-2xl shadow-primary/50 cursor-grabbing scale-110 ring-2 ring-primary/30"
+                : "shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 cursor-grab"
             )}
           >
             <MessageCircle className="w-6 h-6 text-primary-foreground" />
@@ -183,13 +305,14 @@ export const FloatingAITutor = () => {
 
       <div
         className={cn(
-          "fixed bottom-6 right-6 z-50",
-          "w-[400px] max-w-[calc(100vw-3rem)]",
+          "fixed z-50",
+          "max-w-[calc(100vw-3rem)]",
           isMinimized ? "h-auto" : "h-[540px] max-h-[calc(100vh-6rem)]",
           "bg-card rounded-2xl border border-border shadow-2xl shadow-black/20",
           "flex flex-col overflow-hidden transition-[opacity,transform] duration-200",
           isOpen ? "opacity-100 translate-y-0 scale-100 pointer-events-auto" : "opacity-0 translate-y-8 scale-95 pointer-events-none"
         )}
+        style={computePanelOrigin()}
       >
         {/* Header */}
         <div
@@ -311,7 +434,7 @@ export const FloatingAITutor = () => {
                     <div className="space-y-3 w-full">
                       {messages.map((msg, i) => (
                         <div
-                          key={i}
+                          key={msg.id || `msg-${i}`}
                           className={cn(
                             "flex gap-2 w-full",
                             msg.role === 'user' ? "justify-end" : "justify-start"

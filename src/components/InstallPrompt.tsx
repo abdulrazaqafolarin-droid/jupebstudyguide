@@ -12,12 +12,9 @@ const InstallPrompt: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(() => window.matchMedia('(display-mode: standalone)').matches);
 
   useEffect(() => {
-    // Check if already installed
-    const standalone = window.matchMedia('(display-mode: standalone)').matches;
-    setIsStandalone(standalone);
 
     // Check if iOS
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -38,7 +35,7 @@ const InstallPrompt: React.FC = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
     // For iOS, show prompt after delay if not installed
-    if (iOS && !standalone) {
+    if (iOS && !isStandalone) {
       const dismissed = localStorage.getItem('pwa-install-dismissed');
       if (!dismissed) {
         setTimeout(() => setShowPrompt(true), 5000);

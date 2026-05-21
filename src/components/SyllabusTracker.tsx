@@ -270,26 +270,31 @@ export const SyllabusTracker: React.FC<SyllabusTrackerProps> = ({
 };
 
 function calculateStreak(tasks: DailyTask[]): number {
-  let streak = 0;
+  const dates = tasks
+    .filter(t => t.isCompleted && t.completedAt)
+    .map(t => {
+      const d = new Date(t.completedAt!);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    })
+    .sort((a, b) => b - a);
+  
+  if (dates.length === 0) return 0;
+  
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const todayMs = today.getTime();
   
-  const sorted = [...tasks]
-    .filter(t => t.isCompleted && t.completedAt)
-    .sort((a, b) => b.day - a.day);
+  const diff = Math.round((todayMs - dates[0]) / (1000 * 60 * 60 * 24));
+  if (diff > 1) return 0;
   
-  for (const task of sorted) {
-    if (task.completedAt) {
-      const completedDate = new Date(task.completedAt);
-      completedDate.setHours(0, 0, 0, 0);
-      
-      const daysDiff = Math.floor((today.getTime() - completedDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff <= streak + 1) {
-        streak++;
-      } else {
-        break;
-      }
+  let streak = 1;
+  for (let i = 1; i < dates.length; i++) {
+    const gap = Math.round((dates[i - 1] - dates[i]) / (1000 * 60 * 60 * 24));
+    if (gap === 1) {
+      streak++;
+    } else {
+      break;
     }
   }
   

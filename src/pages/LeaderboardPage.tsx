@@ -8,7 +8,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import {
   Trophy, ArrowLeft, Crown, Loader2, TrendingUp,
-  Timer, Award, Sparkles, Star, Medal
+  Timer, Sparkles, Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

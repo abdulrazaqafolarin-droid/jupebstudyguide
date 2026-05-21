@@ -6,14 +6,9 @@ import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-
-interface Profile {
-  id: string;
-  user_id: string;
-  display_name: string | null;
-  avatar_url: string | null;
-}
+import type { Profile } from '@/hooks/useChat';
 
 interface GroupCreateDialogProps {
   isOpen: boolean;
@@ -76,7 +71,12 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
       .select()
       .single();
 
-    if (error || !conv) { setCreating(false); return; }
+    if (error || !conv) {
+      console.error('Group create error:', error);
+      toast.error('Failed to create group');
+      setCreating(false);
+      return;
+    }
 
     const members = allMembers.map(memberId => ({
       conversation_id: conv.id,
@@ -87,7 +87,12 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
       .from('conversation_participants')
       .insert(members);
 
-    if (memberError) { setCreating(false); return; }
+    if (memberError) {
+      console.error('Member insert error:', memberError);
+      toast.error('Failed to add members');
+      setCreating(false);
+      return;
+    }
 
     // Update group name in last message or metadata
     await supabase

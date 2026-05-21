@@ -51,7 +51,7 @@ function generateDailyTasks(
       
       // Generate checkpoint questions
       checkpoints.push(`Can you explain ${topic.name} in your own words?`);
-      checkpoints.push(`What are the key formulas/concepts in ${topic.subtopics[0]}?`);
+      checkpoints.push(`What are the key formulas/concepts in ${topic.subtopics[0] || 'this topic'}?`);
       
       topicIndex++;
     }
@@ -116,7 +116,7 @@ export function useSyllabusProgress() {
               lastStudiedAt: prev.lastStudiedAt ? new Date(prev.lastStudiedAt) : undefined,
             }
           : null;
-        const next = typeof updater === 'function' ? (updater as any)(prevHydrated) : updater;
+        const next = typeof updater === 'function' ? updater(prevHydrated as SyllabusProgress | null) : updater;
         if (!next) return null;
         return {
           ...next,

@@ -11,15 +11,6 @@ interface AchievementsPanelProps {
   totalCount: number;
 }
 
-const getRarityColor = (rarity: string) => {
-  switch (rarity) {
-    case 'legendary': return 'from-yellow-500 to-orange-600';
-    case 'epic': return 'from-purple-500 to-violet-600';
-    case 'rare': return 'from-blue-500 to-cyan-600';
-    default: return 'from-slate-400 to-slate-500';
-  }
-};
-
 const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
   unlockedAchievements,
   lockedAchievements,

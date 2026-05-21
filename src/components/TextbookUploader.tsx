@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { BookOpen, Upload, Loader2, CheckCircle, AlertCircle, Trash2, X, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { processPDF, clearAllTextbooks, getTextbookCount } from "@/lib/rag";
+import { processPDF, clearAllTextbooks } from "@/lib/rag";
 
 interface TextbookUploaderProps {
   onClose: () => void;

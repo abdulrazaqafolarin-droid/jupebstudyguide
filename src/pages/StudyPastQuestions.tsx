@@ -25,7 +25,6 @@ import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGr
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionViewer } from "@/components/study-past-questions/QuestionViewer";
 import { StudyTimer } from "@/components/study-past-questions/StudyTimer";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type View = "subjects" | "years" | "questions" | "bookmarks";
@@ -80,7 +79,10 @@ export default function StudyPastQuestions() {
   const [quizResults, setQuizResults] = useState<AnswerEntry[]>([]);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [selectedBookmarkId, setSelectedBookmarkId] = useState<string | null>(null);
-  const autoSubmittedRef = useRef(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<StudyQuestion[]>([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const tabCounts = useMemo(() => {
     const counts: Record<string, number> = { objective: 0, theory: 0, practical: 0 };
@@ -138,6 +140,37 @@ export default function StudyPastQuestions() {
     return bookmarkedQuestions.find((q) => q.id === selectedBookmarkId) ?? null;
   }, [selectedBookmarkId, bookmarkedQuestions]);
 
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+    if (query.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    const q = query.toLowerCase();
+    const results: StudyQuestion[] = [];
+    for (const year of STUDY_YEARS) {
+      for (const s of SUBJECTS) {
+        for (const c of CATEGORIES) {
+          for (const question of getStudyQuestionsBySubject(s, year, c)) {
+            if (
+              question.question.toLowerCase().includes(q) ||
+              (question.topic && question.topic.toLowerCase().includes(q)) ||
+              (question.explanation && question.explanation.toLowerCase().includes(q)) ||
+              (question.correctAnswer && question.correctAnswer.toLowerCase().includes(q))
+            ) {
+              results.push(question);
+              if (results.length >= 50) break;
+            }
+          }
+          if (results.length >= 50) break;
+        }
+        if (results.length >= 50) break;
+      }
+      if (results.length >= 50) break;
+    }
+    setSearchResults(results);
+  }, []);
+
   const handleSubjectSelect = (subject: Subject) => {
     selectSubject(subject);
     setView("years");
@@ -175,13 +208,7 @@ export default function StudyPastQuestions() {
   };
 
   useEffect(() => {
-    if (
-      timer.state === "expired" &&
-      !quizComplete &&
-      !autoSubmittedRef.current &&
-      questions.length > 0
-    ) {
-      autoSubmittedRef.current = true;
+    if (timer.state === "expired" && !quizComplete && questions.length > 0) {
       const results = questions.map((q) => {
         const answer = userAnswers[q.id] || "";
         const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
@@ -192,9 +219,6 @@ export default function StudyPastQuestions() {
       });
       setQuizResults(results);
       setQuizComplete(true);
-    }
-    if (timer.state !== "expired") {
-      autoSubmittedRef.current = false;
     }
   }, [timer.state, quizComplete, questions, userAnswers]);
 
@@ -226,28 +250,95 @@ export default function StudyPastQuestions() {
         <>
            <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
             <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2">
-              <button
-                onClick={() => navigate(-1)}
-                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                style={{ transitionProperty: "color", transitionDuration: "160ms", transitionTimingFunction: "ease-out" }}
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span className="text-sm font-medium">Back</span>
-              </button>
-              <h1 className="flex-1 text-center text-sm font-semibold truncate">Study Past Questions</h1>
-              <button
-                onClick={() => setView("bookmarks")}
-                className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
-                style={{ transitionProperty: "color, background-color", transitionDuration: "160ms", transitionTimingFunction: "ease-out" }}
-                aria-label="View bookmarked questions"
-              >
-                <Bookmark className="w-5 h-5 text-muted-foreground" />
-              </button>
+              {showSearch ? (
+                <div className="flex items-center gap-2 w-full">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    placeholder="Search questions..."
+                    className="flex-1 bg-secondary/50 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    autoFocus
+                  />
+                  <button
+                    onClick={() => { setShowSearch(false); setSearchQuery(""); setSearchResults([]); }}
+                    className="flex-shrink-0 p-1.5 rounded-lg hover:bg-accent transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="text-sm font-medium">Back</span>
+                  </button>
+                  <h1 className="flex-1 text-center text-sm font-semibold truncate">Study Past Questions</h1>
+                  <button
+                    onClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}
+                    className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
+                    aria-label="Search questions"
+                  >
+                    <Search className="w-5 h-5 text-muted-foreground" />
+                  </button>
+                  <button
+                    onClick={() => setView("bookmarks")}
+                    className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
+                    aria-label="View bookmarked questions"
+                  >
+                    <Bookmark className="w-5 h-5 text-muted-foreground" />
+                  </button>
+                </>
+              )}
             </div>
           </header>
 
           <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
             <AnimatePresence mode="wait">
+              {showSearch && searchQuery.length >= 2 ? (
+                <motion.div
+                  key="search-results"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-2"
+                >
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {searchResults.length === 0 ? "No questions found" : `${searchResults.length} question(s) found`}
+                  </p>
+                  {searchResults.map((q) => {
+                    const info = STUDY_SUBJECT_INFO[q.subject];
+                    return (
+                      <button
+                        key={q.id}
+                        onClick={() => {
+                          selectSubject(q.subject);
+                          selectYear(q.year);
+                          setShowSearch(false);
+                          setSearchQuery("");
+                          setSearchResults([]);
+                          setView("questions");
+                        }}
+                        className="w-full flex items-start gap-3 p-3 rounded-xl bg-card border text-left hover:bg-accent/50 transition-colors active:scale-[0.97]"
+                      >
+                        <span className="text-lg mt-0.5">{info.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium line-clamp-2">{q.question}</p>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                            <span className="tabular-nums">{q.year}</span>
+                            <span className="capitalize">{q.category}</span>
+                            {q.topic && <><span className="text-muted-foreground/40">&middot;</span><span className="truncate">{q.topic}</span></>}
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              ) : (
               <motion.div
                 key="subjects"
                 initial={PAGE_VARIANTS.initial}
@@ -267,6 +358,7 @@ export default function StudyPastQuestions() {
                   counts={subjectCounts}
                 />
               </motion.div>
+              )}
             </AnimatePresence>
           </main>
         </>

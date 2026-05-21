@@ -1,3 +1,5 @@
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 import type { StudyCategory } from "@/types/study-questions";
 
 const CATEGORY_LABELS: Record<StudyCategory, string> = {
@@ -17,7 +19,7 @@ interface YearAccordionProps {
   counts: Record<number, number>;
   categoryCounts?: Record<number, Record<StudyCategory, number>>;
   selectedYear: number | null;
-  onSelectYear: (year: number) => void;
+  onSelectYear: (year: number | null) => void;
 }
 
 export function YearAccordion({ years, counts, categoryCounts, selectedYear, onSelectYear }: YearAccordionProps) {
@@ -36,7 +38,7 @@ export function YearAccordion({ years, counts, categoryCounts, selectedYear, onS
             transition={{ delay: i * 0.03, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
           >
             <button
-              onClick={() => onSelectYear(isOpen ? null as unknown as number : year)}
+              onClick={() => onSelectYear(isOpen ? null : year)}
               className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-card border hover:bg-accent/50 transition-colors active:scale-[0.97]"
             >
               <div className="flex items-center gap-3">

@@ -412,7 +412,7 @@ export function QuestionViewer({
                       questionId={question.id}
                       subject={subject}
                       year={question.year}
-                      onSubmit={(text) => handleSubmitTheory(question.id)}
+                      onSubmit={(text) => handleSubmitTheory(question.id, text)}
                     />
                   )}
                 </div>

@@ -36,7 +36,7 @@ export function useScoreAwarder() {
       // Deduplicate in-flight requests
       if (pendingRef.current.has(refId)) {
         const result = await pendingRef.current.get(refId);
-        return result?.duplicate === false;
+        return result?.data?.duplicate === false;
       }
 
       const amount = extraAmount ?? SCORE_VALUES[reason];

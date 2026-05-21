@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Plus, MessageSquare, Users, UserPlus } from 'lucide-react';
+import { Search, MessageSquare, Users, UserPlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Conversation, Profile } from '@/hooks/useChat';

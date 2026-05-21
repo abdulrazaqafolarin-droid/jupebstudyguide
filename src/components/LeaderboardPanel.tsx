@@ -1,6 +1,6 @@
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Trophy, Loader2, ArrowRight, Medal, Target } from 'lucide-react';
+import { Trophy, Loader2, ArrowRight, Target } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';

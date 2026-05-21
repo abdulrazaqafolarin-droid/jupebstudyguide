@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { NotificationCenter } from "@/components/NotificationCenter";
@@ -51,8 +52,6 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     notifications, unreadCount, markAllRead, clear: clearNotifications,
     permission, requestPermission,
   } = useNotificationsContext();
-
-  const SUPER_ADMIN_EMAIL = "abdulrazaqafolarin@gmail.com";
 
   useEffect(() => {
     if (!user) { setIsAdmin(false); setProfileName(null); setProfileAvatar(null); return; }

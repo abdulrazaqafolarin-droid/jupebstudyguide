@@ -2,7 +2,9 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const PAT = 'sbp_6984133e729350ee53823f10122c39f1167f473b';
+// USAGE: set SUPABASE_TOKEN env var first!
+const PAT = process.env.SUPABASE_TOKEN;
+if (!PAT) { console.error('ERROR: Set SUPABASE_TOKEN env var'); process.exit(1); }
 const PROJECT_REF = 'gzyczowqqywesqhqqpdi';
 
 function runSQL(sql) {

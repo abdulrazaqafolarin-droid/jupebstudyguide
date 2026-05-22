@@ -176,9 +176,9 @@ export default function StudyPastQuestions() {
     setView("years");
   };
 
-  const handleYearSelect = (year: number) => {
+  const handleYearSelect = (year: number | null) => {
     selectYear(year);
-    setView("questions");
+    if (year !== null) setView("questions");
   };
 
   const handleBack = () => {
@@ -248,7 +248,8 @@ export default function StudyPastQuestions() {
     <div className="min-h-screen bg-background">
       {view === "subjects" && (
         <>
-           <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
+   <header className="sticky top-0 z-10 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl border-b border-border/50">
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2">
               {showSearch ? (
                 <div className="flex items-center gap-2 w-full">
@@ -258,12 +259,12 @@ export default function StudyPastQuestions() {
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
                     placeholder="Search questions..."
-                    className="flex-1 bg-secondary/50 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 bg-secondary/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 border border-border/40"
                     autoFocus
                   />
                   <button
                     onClick={() => { setShowSearch(false); setSearchQuery(""); setSearchResults([]); }}
-                    className="flex-shrink-0 p-1.5 rounded-lg hover:bg-accent transition-colors"
+                    className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -272,26 +273,31 @@ export default function StudyPastQuestions() {
                 <>
                   <button
                     onClick={() => navigate(-1)}
-                    className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
                   >
                     <ArrowLeft className="w-5 h-5" />
-                    <span className="text-sm font-medium">Back</span>
+                    <span className="text-sm font-medium hidden sm:inline">Back</span>
                   </button>
-                  <h1 className="flex-1 text-center text-sm font-semibold truncate">Study Past Questions</h1>
-                  <button
-                    onClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}
-                    className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
-                    aria-label="Search questions"
-                  >
-                    <Search className="w-5 h-5 text-muted-foreground" />
-                  </button>
-                  <button
-                    onClick={() => setView("bookmarks")}
-                    className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
-                    aria-label="View bookmarked questions"
-                  >
-                    <Bookmark className="w-5 h-5 text-muted-foreground" />
-                  </button>
+                  <div className="flex-1 text-center">
+                    <h1 className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Study Past Questions</h1>
+                    <p className="text-[10px] text-muted-foreground/60 -mt-0.5">JUPEB Exam Prep</p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}
+                      className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                      aria-label="Search questions"
+                    >
+                      <Search className="w-[18px] h-[18px] text-muted-foreground" />
+                    </button>
+                    <button
+                      onClick={() => setView("bookmarks")}
+                      className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                      aria-label="View bookmarked questions"
+                    >
+                      <Bookmark className="w-[18px] h-[18px] text-muted-foreground" />
+                    </button>
+                  </div>
                 </>
               )}
             </div>
@@ -366,17 +372,17 @@ export default function StudyPastQuestions() {
 
       {view === "years" && (
         <>
-           <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
+           <header className="sticky top-0 z-10 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl border-b border-border/50">
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2">
               <button
                 onClick={handleBack}
-                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                style={{ transitionProperty: "color", transitionDuration: "160ms", transitionTimingFunction: "ease-out" }}
+                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
               >
                 <ArrowLeft className="w-5 h-5" />
                 <span className="text-sm font-medium">Back</span>
               </button>
-              <h1 className="flex-1 text-center text-sm font-semibold truncate">
+              <h1 className="flex-1 text-center text-sm font-bold truncate">
                 {categoryLabel}
               </h1>
               <div className="flex-shrink-0 w-9" />
@@ -454,28 +460,28 @@ export default function StudyPastQuestions() {
 
       {view === "questions" && (
         <>
-           <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
+           <header className="sticky top-0 z-10 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl border-b border-border/50">
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2">
               <button
                 onClick={handleBack}
-                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                style={{ transitionProperty: "color", transitionDuration: "160ms", transitionTimingFunction: "ease-out" }}
+                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
               >
                 <ArrowLeft className="w-5 h-5" />
                 <span className="text-sm font-medium">Back</span>
               </button>
-              <h1 className="flex-1 text-center text-sm font-semibold truncate">
+              <h1 className="flex-1 text-center text-sm font-bold truncate">
                 {subjectLabel} &mdash; {selectedYear}
               </h1>
               <div className="flex-shrink-0 flex items-center gap-2">
                 {hasTimerRunning && (
-                  <div className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground bg-secondary/50 rounded-lg px-2.5 py-1 border border-border/30">
                     <Clock className="h-3.5 w-3.5" />
                     <span>{timer.formatted}</span>
                   </div>
                 )}
                 {timer.state === "expired" && (
-                  <div className="flex items-center gap-1.5 text-xs tabular-nums text-destructive font-medium">
+                  <div className="flex items-center gap-1.5 text-xs tabular-nums text-destructive font-medium bg-destructive/10 rounded-lg px-2.5 py-1 border border-destructive/20">
                     <AlertTriangle className="h-3.5 w-3.5" />
                     <span>Time&rsquo;s up</span>
                   </div>
@@ -517,63 +523,78 @@ export default function StudyPastQuestions() {
                   transition={PAGE_TRANSITION}
                   className="space-y-6"
                 >
-                  <div className="text-center py-8">
-                    <div className="text-5xl font-bold mb-2">{score}%</div>
-                    <p className="text-muted-foreground">
-                      {correctCount} of {totalCount} correct
-                    </p>
-                    <div className="mt-4 mx-auto max-w-xs h-2 rounded-full bg-muted overflow-hidden">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${score}%` }}
-                        transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-                      />
+                  <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-card to-secondary/30 p-8 text-center">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+                    <div className="relative z-10">
+                      <div className="text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{score}%</div>
+                      <p className="text-muted-foreground mt-2">
+                        {correctCount} of {totalCount} correct
+                      </p>
+                      <div className="mt-6 mx-auto max-w-xs h-3 rounded-full bg-muted/50 overflow-hidden ring-1 ring-border/20">
+                        <motion.div
+                          className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${score}%` }}
+                          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-4">
+                        {score >= 70 ? "Excellent work! " : score >= 50 ? "Good effort! " : "Keep practicing! "}
+                        {score >= 70 ? "🎉" : score >= 50 ? "💪" : "📚"}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-1 scrollbar-thin">
                     {quizResults.map((r, i) => {
                       const q = questions[i];
                       if (!q) return null;
                       return (
-                        <div
+                        <motion.div
                           key={r.questionId}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.03 }}
                           className={cn(
-                            "p-4 rounded-xl border",
+                            "p-4 rounded-xl border transition-all",
                             r.isCorrect
-                              ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
-                              : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
+                              ? "border-emerald-500/20 bg-gradient-to-r from-emerald-500/5 to-transparent"
+                              : "border-red-500/20 bg-gradient-to-r from-red-500/5 to-transparent"
                           )}
                         >
-                          <p className="text-sm font-medium mb-1.5">
-                            Q{i + 1}. {q.question}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Your answer:{" "}
-                            <span className="font-mono">
-                              {r.answer || "(skipped)"}
-                            </span>
-                          </p>
-                          {q.correctAnswer && (
-                            <p className="text-xs mt-0.5">
-                              {r.isCorrect ? (
-                                <span className="text-green-600 dark:text-green-400">
-                                  Correct
+                          <div className="flex items-start gap-3">
+                            <div className={cn(
+                              "shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mt-0.5",
+                              r.isCorrect ? "bg-emerald-500/20 text-emerald-500" : "bg-red-500/20 text-red-500"
+                            )}>
+                              {i + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium">{q.question}</p>
+                              <div className="flex items-center gap-2 mt-1.5 text-xs">
+                                <span className="text-muted-foreground">Your answer:</span>
+                                <span className={cn(
+                                  "font-mono font-medium px-1.5 py-0.5 rounded",
+                                  r.isCorrect
+                                    ? "text-emerald-500 bg-emerald-500/10"
+                                    : "text-red-500 bg-red-500/10"
+                                )}>
+                                  {r.answer || "(skipped)"}
                                 </span>
-                              ) : (
-                                <span className="text-red-600 dark:text-red-400">
-                                  Correct answer: {q.correctAnswer}
-                                </span>
+                              </div>
+                              {q.correctAnswer && !r.isCorrect && (
+                                <p className="text-xs mt-1 text-muted-foreground">
+                                  Correct: <span className="text-emerald-500 font-mono font-medium">{q.correctAnswer}</span>
+                                </p>
                               )}
-                            </p>
-                          )}
-                          {q.explanation && (
-                            <p className="text-xs text-muted-foreground mt-2 leading-relaxed border-t border-border pt-2">
-                              {q.explanation}
-                            </p>
-                          )}
-                        </div>
+                              {q.explanation && (
+                                <p className="text-xs text-muted-foreground/70 mt-2 pt-2 border-t border-border/30 leading-relaxed">
+                                  {q.explanation}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </motion.div>
                       );
                     })}
                   </div>
@@ -581,16 +602,14 @@ export default function StudyPastQuestions() {
                   <div className="flex gap-3 justify-center pt-2">
                     <button
                       onClick={handleRestartQuiz}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors active:scale-[0.97]"
-                      style={{ transitionProperty: "color, background-color", transitionDuration: "160ms", transitionTimingFunction: "ease-out" }}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
                     >
                       <RotateCcw className="h-4 w-4" />
                       Try Another Year
                     </button>
                     <button
                       onClick={() => setView("subjects")}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border bg-card text-sm font-medium hover:bg-accent transition-colors active:scale-[0.97]"
-                      style={{ transitionProperty: "color, background-color", transitionDuration: "160ms", transitionTimingFunction: "ease-out" }}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-border/60 bg-card text-sm font-medium hover:bg-accent/50 transition-all active:scale-95"
                     >
                       <BookOpen className="h-4 w-4" />
                       All Subjects

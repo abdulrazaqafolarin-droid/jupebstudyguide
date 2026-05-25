@@ -14,7 +14,7 @@ const TOP_COLORS = [
 
 export const LeaderboardPanel = () => {
   const { user } = useAuth();
-  const { rows, loading } = useLeaderboard(5);
+  const { rows, loading } = useLeaderboard(4);
 
   return (
     <Card className="border-border/50 overflow-hidden">

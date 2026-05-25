@@ -82,6 +82,12 @@ export function useNotifications(opts: { hasStudiedToday: boolean; currentStreak
     ));
   }, [setItems]);
 
+  const markReadByKind = useCallback((kind: NotificationKind) => {
+    setItems(prev => prev.map(i =>
+      (!i.read && i.kind === kind) ? { ...i, read: true } : i
+    ));
+  }, [setItems]);
+
   const clear = useCallback(() => setItems([]), [setItems]);
 
   const requestPermission = useCallback(async () => {
@@ -132,6 +138,7 @@ export function useNotifications(opts: { hasStudiedToday: boolean; currentStreak
     unreadCount,
     push,
     markAllRead,
+    markReadByKind,
     clear,
     permission,
     requestPermission,

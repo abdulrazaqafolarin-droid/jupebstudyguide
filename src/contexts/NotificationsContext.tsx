@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import { useNotifications, type AppNotification } from "@/hooks/useNotifications";
+import { useNotifications, type AppNotification, type NotificationKind } from "@/hooks/useNotifications";
 
 interface StreakData {
   hasStudiedToday: boolean;
@@ -12,6 +12,7 @@ interface NotificationsContextValue {
   push: (n: Omit<AppNotification, "id" | "createdAt" | "read">) => void;
   markAllRead: () => void;
   markReadExcept: (kinds: Set<string>) => void;
+  markReadByKind: (kind: NotificationKind) => void;
   clear: () => void;
   permission: NotificationPermission;
   requestPermission: () => Promise<NotificationPermission>;
@@ -29,7 +30,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   const value = useNotifications(streakData);
 
   return (
-    <NotificationsContext.Provider value={{ ...value, updateStreakData: setStreakData, markReadExcept: value.markReadExcept }}>
+    <NotificationsContext.Provider value={{ ...value, updateStreakData: setStreakData, markReadExcept: value.markReadExcept, markReadByKind: value.markReadByKind }}>
       {children}
     </NotificationsContext.Provider>
   );

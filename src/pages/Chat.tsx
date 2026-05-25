@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { toast } from 'sonner';
 
 type Tab = 'chats' | 'friends';
@@ -31,7 +32,20 @@ const Chat = () => {
   const [searchingUsers, setSearchingUsers] = useState(false);
   const [profileTarget, setProfileTarget] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const { markReadByKind } = useNotificationsContext();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Mark chat notifications as read when viewing page or switching conversation
+  useEffect(() => {
+    markReadByKind('chat_message');
+  }, [chat.activeConversation, markReadByKind]);
+
+  // Mark friend request notifications as read when on friends tab
+  useEffect(() => {
+    if (tab === 'friends') {
+      markReadByKind('friend_request');
+    }
+  }, [tab, markReadByKind]);
 
   useEffect(() => {
     if (addFriendQuery.trim().length < 2) { setAddFriendResults([]); return; }

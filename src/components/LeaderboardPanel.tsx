@@ -1,10 +1,21 @@
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { ACHIEVEMENTS } from '@/hooks/useAchievements';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Trophy, Loader2, ArrowRight, Target } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
+import UserAchievementPreview from './UserAchievementPreview';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+
+const achievementNameMap = new Map(ACHIEVEMENTS.map(a => [a.id, a.name]));
 
 const TOP_COLORS = [
   'from-yellow-500/20 to-yellow-600/10 border-yellow-500/30',
@@ -15,6 +26,12 @@ const TOP_COLORS = [
 export const LeaderboardPanel = () => {
   const { user } = useAuth();
   const { rows, loading } = useLeaderboard(4);
+  const [previewUser, setPreviewUser] = useState<{
+    user_id: string;
+    display_name: string | null;
+    avatar_url: string | null;
+    achievements: string[];
+  } | null>(null);
 
   return (
     <Card className="border-border/50 overflow-hidden">
@@ -45,40 +62,72 @@ export const LeaderboardPanel = () => {
           </div>
         ) : (
           <ol className="space-y-1">
-            {rows.map((r, i) => {
-              const isMe = r.user_id === user?.id;
-              return (
-                <li
-                  key={r.user_id}
-                  style={{ animationDelay: `${i * 0.06}s` }}
-                  className={cn(
-                    'flex items-center gap-3 p-2.5 rounded-lg transition-all duration-200 animate-in-up',
-                    isMe 
-                      ? 'bg-primary/10 border border-primary/30' 
-                      : 'hover:bg-secondary/40 border border-transparent',
-                    i < 3 && !isMe && cn('bg-gradient-to-r', TOP_COLORS[i])
-                  )}
-                >
-                  <span className="w-7 text-center">
-                    {i < 3 ? (
-                      <span className="text-lg">{['🥇', '🥈', '🥉'][i]}</span>
-                    ) : (
-                      <span className="text-sm font-bold text-muted-foreground">{i + 1}</span>
+              {rows.map((r, i) => {
+                const isMe = r.user_id === user?.id;
+                return (
+                  <li
+                    key={r.user_id}
+                    style={{ animationDelay: `${i * 0.06}s` }}
+                    onClick={() => {
+                      if (!isMe) {
+                        setPreviewUser({
+                          user_id: r.user_id,
+                          display_name: r.display_name,
+                          avatar_url: r.avatar_url,
+                          achievements: r.achievements,
+                        });
+                      }
+                    }}
+                    className={cn(
+                      'flex items-center gap-3 p-2.5 rounded-lg transition-all duration-200 animate-in-up',
+                      isMe 
+                        ? 'bg-primary/10 border border-primary/30' 
+                        : 'hover:bg-secondary/40 border border-transparent cursor-pointer active:scale-[0.99]',
+                      i < 3 && !isMe && cn('bg-gradient-to-r', TOP_COLORS[i])
                     )}
-                  </span>
-                  <UserAvatar
-                    name={r.display_name || 'Anon'}
-                    url={r.avatar_url}
-                    className="h-8 w-8 text-xs shrink-0"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium truncate">
-                      {r.display_name || 'Anonymous'} {isMe && <span className="text-[10px] text-primary font-semibold">(You)</span>}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {r.event_count} action{r.event_count !== 1 ? 's' : ''}
-                    </p>
-                  </div>
+                  >
+                    <span className="w-7 text-center">
+                      {i < 3 ? (
+                        <span className="text-lg">{['🥇', '🥈', '🥉'][i]}</span>
+                      ) : (
+                        <span className="text-sm font-bold text-muted-foreground">{i + 1}</span>
+                      )}
+                    </span>
+                    <UserAvatar
+                      name={r.display_name || 'Anon'}
+                      url={r.avatar_url}
+                      className="h-8 w-8 text-xs shrink-0"
+                    />
+                     <div className="min-w-0 flex-1">
+                       <p className="text-xs font-medium truncate">
+                         {r.display_name || 'Anonymous'} {isMe && <span className="text-[10px] text-primary font-semibold">(You)</span>}
+                       </p>
+                       <div className="flex items-center gap-1.5 mt-0.5">
+                         <p className="text-[10px] text-muted-foreground">
+                           {r.event_count} action{r.event_count !== 1 ? 's' : ''}
+                         </p>
+                         {r.achievements.length > 0 && (
+                           <TooltipProvider>
+                             <Tooltip>
+                               <TooltipTrigger asChild>
+                                 <span className="inline-flex items-center gap-0.5 text-[9px] text-primary/70 cursor-default">
+                                   <Trophy className="w-2 h-2" />
+                                   {r.achievements.length}
+                                 </span>
+                               </TooltipTrigger>
+                               <TooltipContent side="top" className="space-y-1 max-w-[180px]">
+                                 <p className="text-[10px] font-medium text-muted-foreground mb-1">Achievements</p>
+                               {r.achievements.map(id => (
+                                 <p key={id} className="text-xs truncate">
+                                   {achievementNameMap.get(id) || id}
+                                 </p>
+                               ))}
+                             </TooltipContent>
+                           </Tooltip>
+                         </TooltipProvider>
+                       )}
+                     </div>
+                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-primary">{r.week_score}</p>
                     <p className="text-[9px] text-muted-foreground">pts</p>
@@ -99,6 +148,12 @@ export const LeaderboardPanel = () => {
             </Link>
           </div>
         )}
+
+        <UserAchievementPreview
+          user={previewUser}
+          open={previewUser !== null}
+          onClose={() => setPreviewUser(null)}
+        />
       </CardContent>
     </Card>
   );

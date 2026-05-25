@@ -21,6 +21,7 @@ const navLinks = [
   { path: "/past-questions", label: "Past Questions", icon: BookOpen },
   { path: "/chat", label: "Study Chat", icon: MessageSquare },
   { path: "/leaderboard", label: "Leaderboard", icon: Trophy },
+  { path: "/achievements", label: "Achievements", icon: Trophy },
   { path: "/profile", label: "Profile", icon: User },
   { path: "/download", label: "Get App", icon: Download },
 ];

@@ -1,15 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeeklyLeaderboard, LeaderboardWeek } from "@/hooks/useWeeklyLeaderboard";
+import { ACHIEVEMENTS } from "@/hooks/useAchievements";
 import WeeklyCountdown from "@/components/WeeklyCountdown";
 import { UserAvatar } from "@/components/UserAvatar";
+import UserAchievementPreview from "@/components/UserAchievementPreview";
 import { Button } from "@/components/ui/button";
 import {
   Trophy, ArrowLeft, Crown, Loader2, TrendingUp,
   Timer, Sparkles, Star
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const MEDAL = ["🥇", "🥈", "🥉"];
@@ -29,6 +37,8 @@ interface ChampionWithProfile extends LeaderboardWeek {
   profile: { display_name: string | null; avatar_url: string | null } | null;
 }
 
+const achievementNameMap = new Map(ACHIEVEMENTS.map(a => [a.id, a.name]));
+
 export default function LeaderboardPage() {
   const { user } = useAuth();
   const { rows, loading, currentWeekStart, currentWeekEnd, pastChampions, myRank } =
@@ -36,6 +46,14 @@ export default function LeaderboardPage() {
 
   const [showPast, setShowPast] = useState(false);
   const [championDetails, setChampionDetails] = useState<ChampionWithProfile[]>([]);
+  const [previewUser, setPreviewUser] = useState<{
+    user_id: string;
+    display_name: string | null;
+    avatar_url: string | null;
+    achievements: string[];
+    week_score?: number;
+    rank?: number;
+  } | null>(null);
 
   useEffect(() => {
     const championEntries = pastChampions.filter((w) => w.champion_user_id);
@@ -179,11 +197,23 @@ export default function LeaderboardPage() {
                 return (
                   <div
                     key={r.user_id}
+                    onClick={() => {
+                      if (!isMe) {
+                        setPreviewUser({
+                          user_id: r.user_id,
+                          display_name: r.display_name,
+                          avatar_url: r.avatar_url,
+                          achievements: r.achievements,
+                          week_score: r.week_score,
+                          rank: r.rank,
+                        });
+                      }
+                    }}
                     className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl transition-colors",
+                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
                       isMe
                         ? "bg-primary/10 border border-primary/30 -mx-1 px-4"
-                        : "hover:bg-secondary/40"
+                        : "hover:bg-secondary/40 cursor-pointer active:scale-[0.99]"
                     )}
                   >
                     <RankIcon rank={r.rank} className="shrink-0 w-8 text-center" />
@@ -201,9 +231,31 @@ export default function LeaderboardPage() {
                           </span>
                         )}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {r.event_count} action{r.event_count !== 1 ? "s" : ""}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[10px] text-muted-foreground">
+                          {r.event_count} action{r.event_count !== 1 ? "s" : ""}
+                        </p>
+                        {r.achievements.length > 0 && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-0.5 text-[10px] text-primary/80 cursor-default">
+                                  <Trophy className="w-2.5 h-2.5" />
+                                  {r.achievements.length}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="space-y-1 max-w-[200px]">
+                                <p className="text-[10px] font-medium text-muted-foreground mb-1">Achievements</p>
+                                {r.achievements.map(id => (
+                                  <p key={id} className="text-xs truncate">
+                                    {achievementNameMap.get(id) || id}
+                                  </p>
+                                ))}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-bold text-primary">
@@ -217,6 +269,12 @@ export default function LeaderboardPage() {
             </div>
           )}
         </div>
+
+        <UserAchievementPreview
+          user={previewUser}
+          open={previewUser !== null}
+          onClose={() => setPreviewUser(null)}
+        />
       </main>
     </div>
   );

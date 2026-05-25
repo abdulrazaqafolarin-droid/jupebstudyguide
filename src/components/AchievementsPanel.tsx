@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Trophy, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Trophy, ChevronDown, ChevronUp, Sparkles, Star, Crown, Swords, ArrowRight } from 'lucide-react';
 import { Achievement } from '@/hooks/useAchievements';
 import AchievementBadge from './AchievementBadge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 interface AchievementsPanelProps {
   unlockedAchievements: Achievement[];
@@ -11,21 +12,28 @@ interface AchievementsPanelProps {
   totalCount: number;
 }
 
+const rarityIcons = {
+  common: Star,
+  uncommon: Star,
+  rare: Star,
+  epic: Swords,
+  legendary: Crown,
+};
+
 const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
   unlockedAchievements,
   lockedAchievements,
   totalCount,
 }) => {
   const [showLocked, setShowLocked] = useState(false);
-  const pct = (unlockedAchievements.length / totalCount) * 100;
+  const pct = totalCount > 0 ? (unlockedAchievements.length / totalCount) * 100 : 0;
 
-  // Count by rarity
-  const legendaries = unlockedAchievements.filter(a => a.rarity === 'legendary').length;
-  const epics = unlockedAchievements.filter(a => a.rarity === 'epic').length;
+  const legendaries = unlockedAchievements.filter(a => a.rarity === 'legendary');
+  const epics = unlockedAchievements.filter(a => a.rarity === 'epic');
+  const rares = unlockedAchievements.filter(a => a.rarity === 'rare');
 
   return (
     <div className="bg-card rounded-xl border border-border p-5 space-y-4 transition-all duration-300 hover:border-primary/30 hover:shadow-md">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -33,11 +41,25 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
           </div>
           <div>
             <span className="font-semibold">Achievements</span>
-            {legendaries > 0 && (
-              <span className="ml-2 text-[10px] bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-500 px-1.5 py-0.5 rounded-full font-medium">
-                {legendaries} legend{legendaries > 1 ? 'aries' : 'ary'}
-              </span>
-            )}
+            <div className="flex items-center gap-1 mt-0.5">
+              {legendaries.length > 0 && (
+                <span className="text-[10px] bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-500 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                  <Crown className="w-2.5 h-2.5" />
+                  {legendaries.length}
+                </span>
+              )}
+              {epics.length > 0 && (
+                <span className="text-[10px] bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-400 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                  <Swords className="w-2.5 h-2.5" />
+                  {epics.length}
+                </span>
+              )}
+              {rares.length > 0 && (
+                <span className="text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-full font-medium">
+                  {rares.length} rare
+                </span>
+              )}
+            </div>
           </div>
         </div>
         <div className="text-right">
@@ -46,15 +68,15 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
         </div>
       </div>
 
-      {/* Progress bar with glow */}
+      {/* Progress bar */}
       <div className="relative w-full h-3 bg-secondary rounded-full overflow-hidden">
-        <div 
+        <div
           className="h-full bg-gradient-to-r from-primary via-primary to-accent rounded-full transition-all duration-700 ease-out"
           style={{ width: `${pct}%` }}
         />
         {pct > 0 && pct < 100 && (
-          <div className="absolute top-0 right-0 h-full w-8 bg-gradient-to-r from-transparent to-white/20 rounded-full blur-sm" 
-            style={{ right: `${100 - pct}%`, transform: 'translateX(50%)' }} 
+          <div className="absolute top-0 h-full w-8 bg-gradient-to-r from-transparent to-white/20 rounded-full blur-sm"
+            style={{ left: `${pct}%`, transform: 'translateX(-50%)' }}
           />
         )}
       </div>
@@ -74,7 +96,6 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
           {unlockedAchievements.length > 5 && !showLocked && (
             <p className="text-xs text-muted-foreground text-center pt-1">
               +{unlockedAchievements.length - 5} more unlocked
-              {epics > 0 && ` (${epics} epic${epics > 1 ? 's' : ''})`}
             </p>
           )}
         </div>
@@ -109,7 +130,6 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
         </Button>
       )}
 
-      {/* Locked achievements */}
       {showLocked && lockedAchievements.length > 0 && (
         <div className="space-y-2 pt-3 border-t border-border">
           {lockedAchievements.map((achievement, i) => (
@@ -123,6 +143,14 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
           ))}
         </div>
       )}
+
+      <Link
+        to="/achievements"
+        className="flex items-center justify-center gap-1.5 py-2 text-xs font-medium text-primary hover:text-primary/80 transition-colors group border-t border-border pt-3"
+      >
+        View All Achievements
+        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+      </Link>
     </div>
   );
 };

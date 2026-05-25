@@ -9,6 +9,7 @@ export interface WeeklyLeaderboardRow {
   display_name: string | null;
   avatar_url: string | null;
   rank: number;
+  achievements: string[];
 }
 
 export interface LeaderboardWeek {
@@ -64,16 +65,17 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
     const userIds = sorted.map(([id]) => id);
 
     // Fetch profiles
-    const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+    const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; achievements: string[] }>();
     if (userIds.length > 0) {
       const { data: profs } = await supabase
         .from("profiles")
-        .select("user_id, display_name, avatar_url")
+        .select("user_id, display_name, avatar_url, achievements")
         .in("user_id", userIds);
       for (const p of profs ?? []) {
         profileMap.set(p.user_id, {
           display_name: p.display_name,
           avatar_url: p.avatar_url,
+          achievements: Array.isArray(p.achievements) ? p.achievements : [],
         });
       }
     }
@@ -86,6 +88,7 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
         event_count: countMap.get(user_id) ?? 0,
         display_name: prof?.display_name ?? null,
         avatar_url: prof?.avatar_url ?? null,
+        achievements: prof?.achievements ?? [],
         rank: i + 1,
       };
     });

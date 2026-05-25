@@ -257,6 +257,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          achievements: Json
           avatar_url: string | null
           bio: string | null
           created_at: string
@@ -270,6 +271,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          achievements?: Json
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
@@ -283,6 +285,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          achievements?: Json
           avatar_url?: string | null
           bio?: string | null
           created_at?: string

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useUserStorage } from './useUserStorage';
 
 export interface Achievement {
@@ -7,7 +7,7 @@ export interface Achievement {
   description: string;
   icon: string;
   condition: (stats: AchievementStats) => boolean;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 }
 
 export interface AchievementStats {
@@ -21,10 +21,12 @@ export interface AchievementStats {
   documentsUploaded?: number;
   syllabusProgress?: number;
   syllabusCompleted?: boolean;
+  studiedAfterMidnight?: boolean;
+  studiedBefore6am?: boolean;
+  consecutiveCorrect?: number;
 }
 
-const ACHIEVEMENTS: Achievement[] = [
-  // Streak achievements
+export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'first_day',
     name: 'First Step',
@@ -47,7 +49,7 @@ const ACHIEVEMENTS: Achievement[] = [
     description: 'Maintain a 7-day study streak',
     icon: '💪',
     condition: (s) => s.longestStreak >= 7,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
   {
     id: 'streak_14',
@@ -65,8 +67,7 @@ const ACHIEVEMENTS: Achievement[] = [
     condition: (s) => s.longestStreak >= 30,
     rarity: 'legendary',
   },
-  
-  // Question achievements
+
   {
     id: 'first_10',
     name: 'Getting Started',
@@ -81,7 +82,7 @@ const ACHIEVEMENTS: Achievement[] = [
     description: 'Answer 50 questions',
     icon: '📖',
     condition: (s) => s.totalQuestionsAnswered >= 50,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
   {
     id: 'first_100',
@@ -89,7 +90,7 @@ const ACHIEVEMENTS: Achievement[] = [
     description: 'Answer 100 questions',
     icon: '💯',
     condition: (s) => s.totalQuestionsAnswered >= 100,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
   {
     id: 'first_500',
@@ -107,8 +108,7 @@ const ACHIEVEMENTS: Achievement[] = [
     condition: (s) => s.totalQuestionsAnswered >= 1000,
     rarity: 'legendary',
   },
-  
-  // Mastery achievements
+
   {
     id: 'master_10',
     name: 'First Mastery',
@@ -123,7 +123,7 @@ const ACHIEVEMENTS: Achievement[] = [
     description: 'Master 50 questions',
     icon: '🌟',
     condition: (s) => s.questionsLearned >= 50,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
   {
     id: 'master_100',
@@ -141,15 +141,14 @@ const ACHIEVEMENTS: Achievement[] = [
     condition: (s) => s.questionsLearned >= 200,
     rarity: 'legendary',
   },
-  
-  // Accuracy achievements
+
   {
     id: 'accuracy_high',
     name: 'Sharp Mind',
     description: 'Get 80% accuracy over 50+ questions',
     icon: '🎯',
     condition: (s) => s.totalQuestionsAnswered >= 50 && (s.totalCorrect / s.totalQuestionsAnswered) >= 0.8,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
   {
     id: 'accuracy_perfect',
@@ -164,11 +163,10 @@ const ACHIEVEMENTS: Achievement[] = [
     name: 'Perfect Ten',
     description: 'Get 10 correct answers in a row',
     icon: '🔟',
-    condition: (s) => s.totalCorrect >= 10,
-    rarity: 'rare',
+    condition: (s) => (s.consecutiveCorrect ?? 0) >= 10,
+    rarity: 'uncommon',
   },
-  
-  // Subject achievements
+
   {
     id: 'all_subjects',
     name: 'Well Rounded',
@@ -183,10 +181,9 @@ const ACHIEVEMENTS: Achievement[] = [
     description: 'Study all four subjects',
     icon: '🎨',
     condition: (s) => s.subjectsStudied >= 4,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
-  
-  // Document upload achievements
+
   {
     id: 'first_upload',
     name: 'Content Creator',
@@ -201,7 +198,7 @@ const ACHIEVEMENTS: Achievement[] = [
     description: 'Upload 5 documents',
     icon: '📂',
     condition: (s) => (s.documentsUploaded ?? 0) >= 5,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
   {
     id: 'upload_10',
@@ -211,8 +208,7 @@ const ACHIEVEMENTS: Achievement[] = [
     condition: (s) => (s.documentsUploaded ?? 0) >= 10,
     rarity: 'epic',
   },
-  
-  // Syllabus achievements
+
   {
     id: 'syllabus_start',
     name: 'Journey Begins',
@@ -235,7 +231,7 @@ const ACHIEVEMENTS: Achievement[] = [
     description: 'Complete 15 days of the syllabus',
     icon: '⏳',
     condition: (s) => (s.syllabusProgress ?? 0) >= 15,
-    rarity: 'rare',
+    rarity: 'uncommon',
   },
   {
     id: 'syllabus_25',
@@ -253,38 +249,35 @@ const ACHIEVEMENTS: Achievement[] = [
     condition: (s) => s.syllabusCompleted === true,
     rarity: 'legendary',
   },
-  
-  // Special achievements
+
   {
     id: 'night_owl',
     name: 'Night Owl',
     description: 'Study after midnight',
     icon: '🦉',
-    condition: () => {
-      const hour = new Date().getHours();
-      return hour >= 0 && hour < 5;
-    },
-    rarity: 'rare',
+    condition: (s) => s.studiedAfterMidnight === true,
+    rarity: 'uncommon',
   },
   {
     id: 'early_bird',
     name: 'Early Bird',
     description: 'Study before 6 AM',
     icon: '🐦',
-    condition: () => {
-      const hour = new Date().getHours();
-      return hour >= 5 && hour < 6;
-    },
-    rarity: 'rare',
+    condition: (s) => s.studiedBefore6am === true,
+    rarity: 'uncommon',
   },
 ];
 
 const UNLOCKED_KEY = 'achievements-unlocked';
 
-export function useAchievements(stats: AchievementStats) {
+export function useAchievements(
+  stats: AchievementStats,
+  onNewUnlock?: (achievement: Achievement) => void,
+) {
   const [unlockedArr, setUnlockedArr] = useUserStorage<string[]>(UNLOCKED_KEY, []);
   const unlockedIds = useMemo(() => new Set(unlockedArr), [unlockedArr]);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement[]>([]);
+  const prevUnlockCount = useRef(unlockedIds.size);
 
   const statsKey = useMemo(() => JSON.stringify(stats), [stats]);
 
@@ -301,21 +294,31 @@ export function useAchievements(stats: AchievementStats) {
       newUnlocks.forEach(a => next.add(a.id));
       setUnlockedArr([...next]);
       setNewlyUnlocked(prev => [...prev, ...newUnlocks]);
+
+      newUnlocks.forEach(a => onNewUnlock?.(a));
     }
-  }, [statsKey, unlockedIds, setUnlockedArr]);
+  }, [statsKey]);
 
-  const clearNewlyUnlocked = () => {
+  const clearNewlyUnlocked = useCallback(() => {
     setNewlyUnlocked([]);
-  };
+  }, []);
 
-  const unlockedAchievements = useMemo(() => 
-    ACHIEVEMENTS.filter(a => unlockedIds.has(a.id)),
-    [unlockedIds]
+  // Sync new unlocks to onNewUnlock callback even when they come from
+  // newlyUnlocked state (e.g., from previous renders before callback was set up)
+  useEffect(() => {
+    if (newlyUnlocked.length > 0) {
+      newlyUnlocked.forEach(a => onNewUnlock?.(a));
+    }
+  }, [newlyUnlocked.length]);
+
+  const unlockedAchievements = useMemo(
+    () => ACHIEVEMENTS.filter(a => unlockedIds.has(a.id)),
+    [unlockedIds],
   );
 
-  const lockedAchievements = useMemo(() => 
-    ACHIEVEMENTS.filter(a => !unlockedIds.has(a.id)),
-    [unlockedIds]
+  const lockedAchievements = useMemo(
+    () => ACHIEVEMENTS.filter(a => !unlockedIds.has(a.id)),
+    [unlockedIds],
   );
 
   return {

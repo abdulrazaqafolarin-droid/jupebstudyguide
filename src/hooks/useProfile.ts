@@ -10,6 +10,7 @@ export interface Profile {
   bio: string | null;
   privacy_avatar: string;
   privacy_profile: string;
+  achievements: string[];
 }
 
 export function useProfile() {
@@ -65,6 +66,21 @@ export function useProfile() {
     [user],
   );
 
+  const syncAchievements = useCallback(
+    async (achievementIds: string[]) => {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ achievements: achievementIds })
+        .eq('user_id', user.id)
+        .select()
+        .single();
+      if (!error && data) setProfile(data as Profile);
+      return { error };
+    },
+    [user],
+  );
+
   const uploadAvatar = useCallback(
     async (file: File) => {
       if (!user) return { error: new Error('Not authenticated'), url: null };
@@ -84,5 +100,5 @@ export function useProfile() {
     [user, updateProfile],
   );
 
-  return { profile, loading, refetch: fetchProfile, updateProfile, uploadAvatar };
+  return { profile, loading, refetch: fetchProfile, updateProfile, uploadAvatar, syncAchievements };
 }

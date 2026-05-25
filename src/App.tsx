@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound";
 import InstallPrompt from "./components/InstallPrompt";
 import { FloatingAITutor } from "./components/FloatingAITutor";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
+import AchievementsPage from "./pages/AchievementsPage";
 import StudyPastQuestions from "./pages/StudyPastQuestions";
 import DownloadApp from "./pages/DownloadApp";
 import ActivationCodes from "./pages/admin/ActivationCodes";
@@ -118,6 +119,16 @@ function AnimatedRoutes() {
             <ProtectedRoute>
               <ProtectedLayout>
                 <LeaderboardPage />
+              </ProtectedLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/achievements" 
+          element={
+            <ProtectedRoute>
+              <ProtectedLayout>
+                <AchievementsPage />
               </ProtectedLayout>
             </ProtectedRoute>
           } 

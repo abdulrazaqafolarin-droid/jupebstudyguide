@@ -15,12 +15,13 @@ import SyllabusTracker from '@/components/SyllabusTracker';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useCustomQuestions } from '@/hooks/useCustomQuestions';
 import { useStreak } from '@/hooks/useStreak';
-import { useAchievements } from '@/hooks/useAchievements';
+import { useAchievements, Achievement } from '@/hooks/useAchievements';
 import { useSyllabusProgress } from '@/hooks/useSyllabusProgress';
 import { useStatsSync } from '@/hooks/useStatsSync';
 import { useScoreAwarder } from '@/hooks/useScoreAwarder';
 import LeaderboardPanel from '@/components/LeaderboardPanel';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserStorage } from '@/hooks/useUserStorage';
 import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, FileText, Library, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import rutexLogo from '@/assets/rutex-logo.jpg';
@@ -41,7 +42,8 @@ const Index = () => {
   const { getStats, updateProgress, progress } = useStudyProgress();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
-  const { profile } = useProfile();
+  const { profile, syncAchievements } = useProfile();
+  const { push: pushNotification } = useNotificationsContext();
   const { 
     currentStreak, 
     longestStreak, 
@@ -63,10 +65,8 @@ const Index = () => {
   // Track previous streak to detect new streak days
   const prevStreakRef = useRef(currentStreak);
 
-  // Calculate subjects studied for achievements
   const subjectsStudied = useMemo(() => {
     const studiedSubjects = new Set<Subject>();
-    // This is a simplified check - in production you'd track this properly
     if (getStats(getQuestionsBySubject('physics')).studied > 0) studiedSubjects.add('physics');
     if (getStats(getQuestionsBySubject('chemistry')).studied > 0) studiedSubjects.add('chemistry');
     if (getStats(getQuestionsBySubject('biology')).studied > 0) studiedSubjects.add('biology');
@@ -78,6 +78,46 @@ const Index = () => {
   const totalCorrect = useMemo(() => {
     return Object.values(progress).filter(p => p.repetitions > 0).length;
   }, [progress]);
+
+  // Track consecutive correct answers for Perfect Ten achievement
+  const [consecutiveCorrect, setConsecutiveCorrect] = useUserStorage<number>('consecutive-correct', 0);
+
+  // Track actual document upload count (not question count)
+  const [documentUploadCount, setDocumentUploadCount] = useUserStorage<number>('document-upload-count', 0);
+  const seededRef = useRef(false);
+  useEffect(() => {
+    if (!seededRef.current && customQuestions.length > 0) {
+      const distinctNames = new Set(customQuestions.filter(q => q.document_name && q.document_name !== 'Manual Entry').map(q => q.document_name));
+      if (distinctNames.size > documentUploadCount) {
+        setDocumentUploadCount(distinctNames.size);
+      }
+      seededRef.current = true;
+    }
+  }, [customQuestions, documentUploadCount, setDocumentUploadCount]);
+
+  // Track study session hours for Night Owl & Early Bird achievements
+  const [sessionHours, setSessionHours] = useUserStorage<number[]>('session-hours', []);
+  const studiedAfterMidnight = useMemo(() =>
+    sessionHours.some(h => h >= 0 && h < 5),
+    [sessionHours],
+  );
+  const studiedBefore6am = useMemo(() =>
+    sessionHours.some(h => h >= 5 && h < 6),
+    [sessionHours],
+  );
+
+  // Syllabus completed progress
+  const syllabusCompletedDayCount = useMemo(() => {
+    if (!syllabusProgress?.dailyTasks) return 0;
+    return syllabusProgress.dailyTasks.filter(t => t.isCompleted).length;
+  }, [syllabusProgress]);
+
+  const documentsUploaded = documentUploadCount;
+
+  // Sync newly unlocked achievements to Supabase and award points
+  const handleNewAchievement = useCallback((achievement: Achievement) => {
+    awardAchievement(achievement.id);
+  }, [awardAchievement]);
 
   const {
     unlockedAchievements,
@@ -93,7 +133,23 @@ const Index = () => {
     totalDaysStudied,
     questionsLearned: getStats(questions).learned,
     subjectsStudied,
-  });
+    documentsUploaded,
+    syllabusProgress: syllabusCompletedDayCount,
+    syllabusCompleted: syllabusCompletedDayCount >= 30,
+    studiedAfterMidnight,
+    studiedBefore6am,
+    consecutiveCorrect,
+  }, handleNewAchievement);
+
+  // Sync unlocked achievements to profiles table
+  const prevUnlockedRef = useRef(0);
+  useEffect(() => {
+    const ids = unlockedAchievements.map(a => a.id);
+    if (ids.length > prevUnlockedRef.current && ids.length > 0) {
+      syncAchievements(ids);
+    }
+    prevUnlockedRef.current = ids.length;
+  }, [unlockedAchievements, syncAchievements]);
 
   // Syllabus progress
   const {
@@ -225,19 +281,33 @@ const Index = () => {
     const sessionId = `session_${Date.now()}`;
     awardQuizComplete(sessionId);
 
-    // Update progress and award points for answered questions
+    // Track consecutive correct streak (for Perfect Ten achievement)
+    let streak = consecutiveCorrect;
     result.answeredQuestions.forEach(({ questionId, isCorrect }) => {
       updateProgress(questionId, isCorrect ? 4 : 1);
       awardAnswer(questionId);
       if (isCorrect) {
+        streak++;
         awardCorrect(questionId);
+      } else {
+        streak = 0;
       }
     });
+    setConsecutiveCorrect(streak);
+
     // Record study session for streak
     recordStudySession(result.answeredQuestions.length);
+    // Track study hour for Night Owl / Early Bird achievements
+    const hour = new Date().getHours();
+    setSessionHours(prev => {
+      if (prev.includes(hour)) return prev;
+      return [...prev, hour].slice(-20);
+    });
   };
 
+
   const handleUploadComplete = () => {
+    setDocumentUploadCount(prev => prev + 1);
     refetchCustomQuestions();
   };
 
@@ -254,6 +324,10 @@ const Index = () => {
         questions={getAllQuestionsBySubject(selectedSubject)}
         subject={selectedSubject}
         onBack={handleBack}
+        consecutiveCorrect={consecutiveCorrect}
+        onConsecutiveAnswer={(isCorrect) => {
+          setConsecutiveCorrect(prev => isCorrect ? prev + 1 : 0);
+        }}
       />
     );
   }

@@ -9,6 +9,7 @@ export interface LeaderboardRow {
   display_name: string | null;
   avatar_url: string | null;
   rank: number;
+  achievements: string[];
 }
 
 /**
@@ -51,14 +52,18 @@ export function useLeaderboard(limit = 5) {
       const ids = sorted.map(([id]) => id);
 
       // Fetch profiles
-      const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+      const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; achievements: string[] }>();
       if (ids.length > 0) {
         const { data: profs } = await supabase
           .from('profiles')
-          .select('user_id, display_name, avatar_url')
+          .select('user_id, display_name, avatar_url, achievements')
           .in('user_id', ids);
         for (const p of profs ?? []) {
-          profileMap.set(p.user_id, { display_name: p.display_name, avatar_url: p.avatar_url });
+          profileMap.set(p.user_id, {
+            display_name: p.display_name,
+            avatar_url: p.avatar_url,
+            achievements: Array.isArray(p.achievements) ? p.achievements : [],
+          });
         }
       }
 
@@ -70,6 +75,7 @@ export function useLeaderboard(limit = 5) {
           event_count: countMap.get(user_id) ?? 0,
           display_name: profileMap.get(user_id)?.display_name ?? null,
           avatar_url: profileMap.get(user_id)?.avatar_url ?? null,
+          achievements: profileMap.get(user_id)?.achievements ?? [],
           rank: i + 1,
         }))
       );

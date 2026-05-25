@@ -11,11 +11,13 @@ interface StudyViewProps {
   questions: Question[];
   subject: Subject;
   onBack: () => void;
+  consecutiveCorrect?: number;
+  onConsecutiveAnswer?: (isCorrect: boolean) => void;
 }
 
 type StudyMode = 'learn' | 'review';
 
-export const StudyView = ({ questions, subject, onBack }: StudyViewProps) => {
+export const StudyView = ({ questions, subject, onBack, consecutiveCorrect, onConsecutiveAnswer }: StudyViewProps) => {
   const [mode, setMode] = useState<StudyMode>('learn');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [shuffleKey, setShuffleKey] = useState(0);
@@ -38,6 +40,7 @@ export const StudyView = ({ questions, subject, onBack }: StudyViewProps) => {
   const handleAnswer = (quality: number) => {
     if (currentQuestion) {
       updateProgress(currentQuestion.id, quality);
+      onConsecutiveAnswer?.(quality >= 3);
       recordStudySession(1);
     }
     

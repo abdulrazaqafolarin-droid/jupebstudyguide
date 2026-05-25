@@ -7,12 +7,11 @@ export interface Profile {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
+  bio: string | null;
+  privacy_avatar: string;
+  privacy_profile: string;
 }
 
-/**
- * Per-user profile loader. Always scoped to the currently authenticated user.
- * Returns the profile row, an updater, and an avatar uploader.
- */
 export function useProfile() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -32,9 +31,8 @@ export function useProfile() {
       .maybeSingle();
 
     if (data) {
-      setProfile(data);
+      setProfile(data as Profile);
     } else {
-      // Defensive: trigger should create the row, but ensure existence.
       const { data: created } = await supabase
         .from('profiles')
         .insert({
@@ -53,7 +51,7 @@ export function useProfile() {
   }, [fetchProfile]);
 
   const updateProfile = useCallback(
-    async (patch: Partial<Pick<Profile, 'display_name' | 'avatar_url'>>) => {
+    async (patch: Partial<Pick<Profile, 'display_name' | 'avatar_url' | 'bio'>>) => {
       if (!user) return { error: new Error('Not authenticated') };
       const { data, error } = await supabase
         .from('profiles')
@@ -61,7 +59,7 @@ export function useProfile() {
         .eq('user_id', user.id)
         .select()
         .single();
-      if (!error && data) setProfile(data);
+      if (!error && data) setProfile(data as Profile);
       return { error };
     },
     [user],

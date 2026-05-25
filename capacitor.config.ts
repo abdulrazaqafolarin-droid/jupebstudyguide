@@ -5,7 +5,9 @@ const config: CapacitorConfig = {
   appName: 'JUPEB Master',
   webDir: 'dist',
   server: {
+    url: 'https://jupebstudyguide-main.vercel.app',
     androidScheme: 'https',
+    cleartext: false,
   },
   plugins: {
     PushNotifications: {

@@ -179,13 +179,20 @@ export type Database = {
           content: string
           conversation_id: string
           created_at: string
+          delivered_at: string | null
+          file_name: string | null
+          file_size: number | null
+          file_type: string | null
+          file_url: string | null
           id: string
-          is_read: boolean
-          sender_id: string
-          message_type: string
-          reply_to_id: string | null
+          is_deleted: boolean
           is_edited: boolean
+          is_read: boolean
+          message_type: string
           reactions: Record<string, string[]>
+          read_at: string | null
+          reply_to_id: string | null
+          sender_id: string
           image_url: string | null
           group_name: string | null
         }
@@ -193,13 +200,20 @@ export type Database = {
           content: string
           conversation_id: string
           created_at?: string
+          delivered_at?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
           id?: string
-          is_read?: boolean
-          sender_id: string
-          message_type?: string
-          reply_to_id?: string | null
+          is_deleted?: boolean
           is_edited?: boolean
+          is_read?: boolean
+          message_type?: string
           reactions?: Record<string, string[]>
+          read_at?: string | null
+          reply_to_id?: string | null
+          sender_id: string
           image_url?: string | null
           group_name?: string | null
         }
@@ -207,13 +221,20 @@ export type Database = {
           content?: string
           conversation_id?: string
           created_at?: string
+          delivered_at?: string | null
+          file_name?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string | null
           id?: string
-          is_read?: boolean
-          sender_id?: string
-          message_type?: string
-          reply_to_id?: string | null
+          is_deleted?: boolean
           is_edited?: boolean
+          is_read?: boolean
+          message_type?: string
           reactions?: Record<string, string[]>
+          read_at?: string | null
+          reply_to_id?: string | null
+          sender_id?: string
           image_url?: string | null
           group_name?: string | null
         }
@@ -237,31 +258,40 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
           display_name: string | null
           id: string
           is_activated: boolean
           is_admin: boolean
+          privacy_avatar: string
+          privacy_profile: string
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
           is_activated?: boolean
           is_admin?: boolean
+          privacy_avatar?: string
+          privacy_profile?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
           is_activated?: boolean
           is_admin?: boolean
+          privacy_avatar?: string
+          privacy_profile?: string
           updated_at?: string
           user_id?: string
         }

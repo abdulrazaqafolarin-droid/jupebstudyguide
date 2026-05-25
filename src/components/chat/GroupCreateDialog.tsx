@@ -65,48 +65,56 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
     const allMembers = [user.id, ...selected.map(p => p.user_id)];
     const name = groupName.trim() || `${selected.map(p => p.display_name || 'User').join(', ')}`;
 
-    const { data: conv, error } = await supabase
+    const groupConvId = crypto.randomUUID();
+    const { error } = await supabase
       .from('conversations')
-      .insert({})
-      .select()
-      .single();
+      .insert({ id: groupConvId });
 
-    if (error || !conv) {
+    if (error) {
       console.error('Group create error:', error);
       toast.error('Failed to create group');
       setCreating(false);
       return;
     }
 
-    const members = allMembers.map(memberId => ({
-      conversation_id: conv.id,
-      user_id: memberId,
-    }));
-
-    const { error: memberError } = await supabase
+    // Insert self first, then others (RLS requires self to already be a participant)
+    const { error: selfError } = await supabase
       .from('conversation_participants')
-      .insert(members);
+      .insert({ conversation_id: groupConvId, user_id: user.id });
 
-    if (memberError) {
-      console.error('Member insert error:', memberError);
-      toast.error('Failed to add members');
+    if (selfError) {
+      console.error('Self insert error:', selfError);
+      toast.error('Failed to create group');
       setCreating(false);
       return;
+    }
+
+    const otherMembers = allMembers.filter(mid => mid !== user.id);
+    for (const memberId of otherMembers) {
+      const { error: memError } = await supabase
+        .from('conversation_participants')
+        .insert({ conversation_id: groupConvId, user_id: memberId });
+
+      if (memError) {
+        console.error('Member insert error:', memError);
+        toast.error(`Failed to add ${memberId.substring(0, 8)}`);
+        setCreating(false);
+        return;
+      }
     }
 
     // Update group name in last message or metadata
     await supabase
       .from('messages')
       .insert({
-        conversation_id: conv.id,
+        conversation_id: groupConvId,
         sender_id: user.id,
-        content: `${name}`,
-        message_type: 'text',
+        content: name,
         group_name: name,
       });
 
     setCreating(false);
-    onCreated(conv.id);
+    onCreated(groupConvId);
     onClose();
   };
 

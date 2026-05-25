@@ -11,6 +11,7 @@ interface NotificationsContextValue {
   unreadCount: number;
   push: (n: Omit<AppNotification, "id" | "createdAt" | "read">) => void;
   markAllRead: () => void;
+  markReadExcept: (kinds: Set<string>) => void;
   clear: () => void;
   permission: NotificationPermission;
   requestPermission: () => Promise<NotificationPermission>;
@@ -28,7 +29,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   const value = useNotifications(streakData);
 
   return (
-    <NotificationsContext.Provider value={{ ...value, updateStreakData: setStreakData }}>
+    <NotificationsContext.Provider value={{ ...value, updateStreakData: setStreakData, markReadExcept: value.markReadExcept }}>
       {children}
     </NotificationsContext.Provider>
   );

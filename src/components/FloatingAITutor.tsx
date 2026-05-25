@@ -52,6 +52,14 @@ export const FloatingAITutor = () => {
   const fabRef = useRef<HTMLButtonElement>(null);
   const dragRef = useRef({ isDragging: false, startX: 0, startY: 0, originX: 0, originY: 0 });
   const clickPrevented = useRef(false);
+  const physicsRef = useRef({ vx: 0, vy: 0, animFrame: 0, lastTime: 0 });
+  const dragHistoryRef = useRef<Array<{ x: number; y: number; time: number }>>([]);
+
+  const BTN_SIZE = 56;
+  const BOUNCE_DAMPING = 0.6;
+  const FRICTION = 0.97;
+  const VELOCITY_THRESHOLD = 0.4;
+  const DRAG_HISTORY_LEN = 5;
 
   const [fabPos, setFabPosRaw] = useState(() => {
     try {
@@ -115,8 +123,46 @@ export const FloatingAITutor = () => {
 
   useEffect(() => { renderPos.current = fabPos; }, [fabPos]);
 
+  const bouncePhysics = useCallback(() => {
+    if (!fabRef.current) return;
+    const now = performance.now();
+    const dt = Math.min((now - physicsRef.current.lastTime) / 16.67, 3);
+    physicsRef.current.lastTime = now;
+    let vx = physicsRef.current.vx;
+    let vy = physicsRef.current.vy;
+    vx *= FRICTION;
+    vy *= FRICTION;
+    let nx = renderPos.current.x + vx * dt;
+    let ny = renderPos.current.y + vy * dt;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (nx < 0) { nx = 0; vx = -vx * BOUNCE_DAMPING; }
+    else if (nx + BTN_SIZE > vw) { nx = vw - BTN_SIZE; vx = -vx * BOUNCE_DAMPING; }
+    if (ny < 0) { ny = 0; vy = -vy * BOUNCE_DAMPING; }
+    else if (ny + BTN_SIZE > vh) { ny = vh - BTN_SIZE; vy = -vy * BOUNCE_DAMPING; }
+    renderPos.current = { x: nx, y: ny };
+    const el = fabRef.current;
+    el.style.left = `${nx}px`;
+    el.style.top = `${ny}px`;
+    physicsRef.current.vx = vx;
+    physicsRef.current.vy = vy;
+    if (Math.abs(vx) < VELOCITY_THRESHOLD && Math.abs(vy) < VELOCITY_THRESHOLD) {
+      physicsRef.current.animFrame = 0;
+      setFabPos({ x: nx, y: ny });
+      return;
+    }
+    physicsRef.current.animFrame = requestAnimationFrame(bouncePhysics);
+  }, [setFabPos]);
+
   const handleFabPointerDown = useCallback((e: React.PointerEvent) => {
     clickPrevented.current = false;
+    if (physicsRef.current.animFrame) {
+      cancelAnimationFrame(physicsRef.current.animFrame);
+      physicsRef.current.animFrame = 0;
+    }
+    physicsRef.current.vx = 0;
+    physicsRef.current.vy = 0;
+    dragHistoryRef.current = [{ x: e.clientX, y: e.clientY, time: performance.now() }];
     dragRef.current = {
       isDragging: false,
       startX: e.clientX,
@@ -139,39 +185,47 @@ export const FloatingAITutor = () => {
       setIsDragging(true);
     }
     if (dragRef.current.isDragging) {
-      const nx = dragRef.current.originX + dx;
-      const ny = dragRef.current.originY + dy;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const nx = Math.min(Math.max(dragRef.current.originX + dx, 0), vw - BTN_SIZE);
+      const ny = Math.min(Math.max(dragRef.current.originY + dy, 0), vh - BTN_SIZE);
       renderPos.current = { x: nx, y: ny };
       el.style.left = `${nx}px`;
       el.style.top = `${ny}px`;
+      const h = dragHistoryRef.current;
+      h.push({ x: e.clientX, y: e.clientY, time: performance.now() });
+      if (h.length > DRAG_HISTORY_LEN) h.shift();
     }
   }, []);
 
   const handleFabPointerUp = useCallback((e: React.PointerEvent) => {
-    const el = fabRef.current;
     if (dragRef.current.isDragging) {
-      const btnSize = 56;
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const thresh = 40;
-      const pad = 12;
-      let fx = clamp(renderPos.current.x, 0, vw - btnSize);
-      let fy = clamp(renderPos.current.y, 0, vh - btnSize);
-      if (fx < thresh) fx = pad;
-      else if (fx + btnSize > vw - thresh) fx = vw - btnSize - pad;
-      if (fy < thresh) fy = pad;
-      else if (fy + btnSize > vh - thresh) fy = vh - btnSize - pad;
-      if (el) {
-        el.style.transition = 'left 0.25s cubic-bezier(0.23,1,0.32,1), top 0.25s cubic-bezier(0.23,1,0.32,1)';
-        el.style.left = `${fx}px`;
-        el.style.top = `${fy}px`;
+      const el = fabRef.current;
+      const h = dragHistoryRef.current;
+      if (h.length >= 2) {
+        const first = h[0];
+        const last = h[h.length - 1];
+        const dt = last.time - first.time;
+        if (dt > 0) {
+          const fps = 16.67;
+          let throwVx = (last.x - first.x) / dt * fps;
+          let throwVy = (last.y - first.y) / dt * fps;
+          const maxV = 25;
+          const mag = Math.sqrt(throwVx * throwVx + throwVy * throwVy);
+          if (mag > maxV) { throwVx = throwVx / mag * maxV; throwVy = throwVy / mag * maxV; }
+          physicsRef.current.vx = throwVx;
+          physicsRef.current.vy = throwVy;
+        }
       }
-      setFabPos({ x: fx, y: fy });
-      setTimeout(() => { if (el) el.style.transition = ''; }, 300);
+      physicsRef.current.lastTime = performance.now();
+      setFabPos({ x: renderPos.current.x, y: renderPos.current.y });
       setIsDragging(false);
+      if (Math.abs(physicsRef.current.vx) > VELOCITY_THRESHOLD || Math.abs(physicsRef.current.vy) > VELOCITY_THRESHOLD) {
+        physicsRef.current.animFrame = requestAnimationFrame(bouncePhysics);
+      }
     }
     dragRef.current.isDragging = false;
-  }, [setFabPos]);
+  }, [setFabPos, bouncePhysics]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -185,6 +239,45 @@ export const FloatingAITutor = () => {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen, isMinimized, showChatList]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      let { x, y } = renderPos.current;
+      x = Math.min(Math.max(x, 0), vw - BTN_SIZE);
+      y = Math.min(Math.max(y, 0), vh - BTN_SIZE);
+      if (x !== renderPos.current.x || y !== renderPos.current.y) {
+        renderPos.current = { x, y };
+        setFabPos({ x, y });
+        if (fabRef.current) {
+          fabRef.current.style.left = `${x}px`;
+          fabRef.current.style.top = `${y}px`;
+        }
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    if (fabRef.current) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      let { x, y } = renderPos.current;
+      x = Math.min(Math.max(x, 0), vw - BTN_SIZE);
+      y = Math.min(Math.max(y, 0), vh - BTN_SIZE);
+      if (x !== renderPos.current.x || y !== renderPos.current.y) {
+        renderPos.current = { x, y };
+        setFabPos({ x, y });
+        fabRef.current.style.left = `${x}px`;
+        fabRef.current.style.top = `${y}px`;
+      }
+    }
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (physicsRef.current.animFrame) {
+        cancelAnimationFrame(physicsRef.current.animFrame);
+        physicsRef.current.animFrame = 0;
+      }
+    };
+  }, []);
 
   const handleStreamChat = useCallback(async (userMessage: string) => {
     if (!activeChatId) return;

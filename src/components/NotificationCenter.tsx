@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, BellRing, Check, Trash2, Trophy, Flame, CalendarDays, Crown, Sparkles, Info } from 'lucide-react';
+import { Bell, BellRing, Check, Trash2, Trophy, Flame, CalendarDays, Crown, Sparkles, Info, MessageCircle, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,6 +17,8 @@ const ICONS: Record<NotificationKind, React.ComponentType<{ className?: string }
   rank: Crown,
   reminder: Sparkles,
   info: Info,
+  chat_message: MessageCircle,
+  friend_request: UserPlus,
 };
 
 const ACCENT: Record<NotificationKind, string> = {
@@ -26,6 +28,8 @@ const ACCENT: Record<NotificationKind, string> = {
   rank: 'text-primary',
   reminder: 'text-primary',
   info: 'text-muted-foreground',
+  chat_message: 'text-blue-500',
+  friend_request: 'text-accent',
 };
 
 function formatRelative(ts: number) {
@@ -43,15 +47,19 @@ interface Props {
   notifications: AppNotification[];
   unreadCount: number;
   onMarkAllRead: () => void;
+  onMarkReadExcept: (kinds: Set<string>) => void;
   onClear: () => void;
   permission: NotificationPermission;
   onRequestPermission: () => void;
 }
 
+const PERSIST_KINDS = new Set<NotificationKind>(['chat_message', 'friend_request']);
+
 export function NotificationCenter({
   notifications,
   unreadCount,
   onMarkAllRead,
+  onMarkReadExcept,
   onClear,
   permission,
   onRequestPermission,
@@ -64,8 +72,7 @@ export function NotificationCenter({
       onOpenChange={(v) => {
         setOpen(v);
         if (v && unreadCount > 0) {
-          // Mark read shortly after opening so the badge clears on next render.
-          setTimeout(onMarkAllRead, 800);
+          setTimeout(() => onMarkReadExcept(PERSIST_KINDS), 800);
         }
       }}
     >

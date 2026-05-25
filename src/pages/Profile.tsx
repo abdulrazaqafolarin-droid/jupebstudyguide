@@ -11,7 +11,7 @@ import {
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Camera, DollarSign, Loader2, LogOut, Mail, MessageCircle, Trash2, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Camera, DollarSign, Loader2, LogOut, Mail, MessageCircle, Settings, Trash2, ShieldAlert } from 'lucide-react';
 import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 
@@ -87,9 +87,14 @@ export default function ProfilePage() {
             <span>Back</span>
           </button>
           <h1 className="font-semibold text-foreground">Profile</h1>
-          <Button variant="ghost" size="sm" onClick={async () => { await signOut(); }} className="text-muted-foreground hover:text-foreground">
-            <LogOut className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')} className="text-muted-foreground hover:text-foreground">
+              <Settings className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={async () => { await signOut(); }} className="text-muted-foreground hover:text-foreground">
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </header>
 

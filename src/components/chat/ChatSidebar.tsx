@@ -19,6 +19,8 @@ interface ChatSidebarProps {
   isOnline: (userId: string) => boolean;
   friendRequestCount?: number;
   onGroupCreated?: (conversationId: string) => void;
+  onFriendRequestsClick?: () => void;
+  onProfileClick?: (userId: string) => void;
 }
 
 export function ChatSidebar({
@@ -31,6 +33,8 @@ export function ChatSidebar({
   isOnline,
   friendRequestCount,
   onGroupCreated,
+  onFriendRequestsClick,
+  onProfileClick,
 }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -111,29 +115,41 @@ export function ChatSidebar({
                 <p className="text-xs text-muted-foreground text-center py-3">No users found</p>
               )}
               {userResults.map((profile) => (
-                <button
+                <div
                   key={profile.id}
-                  onClick={() => {
-                    onStartConversation(profile.user_id);
-                    setUserSearchQuery('');
-                    setUserResults([]);
-                  }}
-                  className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/50 transition-all text-left group"
+                  className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/50 transition-all group"
                 >
-                  <div className="relative shrink-0">
+                  <button
+                    onClick={() => onProfileClick?.(profile.user_id)}
+                    className="relative shrink-0"
+                  >
                     <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-8 h-8 ring-0" />
                     {isOnline(profile.user_id) && (
                       <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-accent rounded-full border-2 border-background" />
                     )}
-                  </div>
-                  <div className="flex-1 min-w-0">
+                  </button>
+                  <button
+                    onClick={() => onProfileClick?.(profile.user_id)}
+                    className="flex-1 min-w-0 text-left"
+                  >
                     <span className="text-sm font-medium truncate block">{profile.display_name || 'User'}</span>
                     <span className="text-[10px] text-muted-foreground">{isOnline(profile.user_id) ? 'Online' : 'Offline'}</span>
+                  </button>
+                  <div className="flex gap-1 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => {
+                        onStartConversation(profile.user_id);
+                        setUserSearchQuery('');
+                        setUserResults([]);
+                      }}
+                    >
+                      Chat
+                    </Button>
                   </div>
-                  <span className="text-[10px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                    Start chat
-                  </span>
-                </button>
+                </div>
               ))}
             </div>
           </motion.div>
@@ -143,7 +159,10 @@ export function ChatSidebar({
       {/* Friend request badge */}
       {friendRequestCount !== undefined && friendRequestCount > 0 && (
         <div className="px-3 py-2 shrink-0">
-          <button className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20 text-sm font-medium text-primary hover:bg-primary/15 transition-colors">
+          <button
+            onClick={onFriendRequestsClick}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 border border-primary/20 text-sm font-medium text-primary hover:bg-primary/15 transition-colors"
+          >
             <UserPlus className="w-4 h-4" />
             <span>Friend Requests</span>
             <span className="ml-auto bg-primary text-primary-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">

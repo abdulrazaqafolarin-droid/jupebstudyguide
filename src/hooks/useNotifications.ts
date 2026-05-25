@@ -7,7 +7,9 @@ export type NotificationKind =
   | 'syllabus'
   | 'rank'
   | 'reminder'
-  | 'info';
+  | 'info'
+  | 'chat_message'
+  | 'friend_request';
 
 export interface AppNotification {
   id: string;
@@ -72,6 +74,12 @@ export function useNotifications(opts: { hasStudiedToday: boolean; currentStreak
 
   const markAllRead = useCallback(() => {
     setItems(prev => prev.map(i => (i.read ? i : { ...i, read: true })));
+  }, [setItems]);
+
+  const markReadExcept = useCallback((kinds: Set<string>) => {
+    setItems(prev => prev.map(i =>
+      (!i.read && !kinds.has(i.kind)) ? { ...i, read: true } : i
+    ));
   }, [setItems]);
 
   const clear = useCallback(() => setItems([]), [setItems]);

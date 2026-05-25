@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface Profile {
   id: string;
@@ -28,13 +29,22 @@ export interface Message {
   content: string;
   created_at: string;
   is_read: boolean;
-  message_type?: 'text' | 'image' | 'file';
+  delivered_at?: string | null;
+  read_at?: string | null;
+  message_type?: 'text' | 'image' | 'file' | 'video' | 'audio';
   reply_to_id?: string | null;
   is_edited?: boolean;
+  is_deleted?: boolean;
   reactions?: Record<string, string[]>;
   image_url?: string | null;
+  file_url?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  file_type?: string | null;
   group_name?: string;
 }
+
+const MESSAGES_PAGE_SIZE = 50;
 
 export function useChat() {
   const { user } = useAuth();
@@ -43,10 +53,16 @@ export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [messagesLoading, setMessagesLoading] = useState(false);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const convIdsRef = useRef<string[]>([]);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const fetchGenRef = useRef(0);
+  const messagesCursorRef = useRef<string | null>(null);
 
   const fetchConversations = useCallback(async () => {
     if (!user) return;
+    const gen = ++fetchGenRef.current;
     setLoading(true);
     try {
       const { data: participantData } = await supabase
@@ -61,6 +77,7 @@ export function useChat() {
       }
 
       const convIds = participantData.map(p => p.conversation_id);
+      convIdsRef.current = convIds;
 
       const { data: convData } = await supabase
         .from('conversations')
@@ -74,7 +91,6 @@ export function useChat() {
         return;
       }
 
-      // Batch: fetch all participants for all conversations at once
       const { data: allParticipants } = await supabase
         .from('conversation_participants')
         .select('conversation_id, user_id')
@@ -87,13 +103,11 @@ export function useChat() {
         participantsByConv.set(p.conversation_id, list);
       }
 
-      // Collect all unique user IDs
       const allUserIds = new Set<string>();
       for (const userIds of participantsByConv.values()) {
         for (const uid of userIds) allUserIds.add(uid);
       }
 
-      // Batch: fetch all profiles at once
       const { data: allProfiles } = await supabase
         .from('profiles')
         .select('*')
@@ -104,14 +118,12 @@ export function useChat() {
         profileMap.set(p.user_id, p);
       }
 
-      // Batch: fetch all last messages
-      // PostgreSQL: DISTINCT ON with conversation_id to get latest message per conv
       const { data: allLastMsgs } = await supabase
         .from('messages')
         .select('*')
         .in('conversation_id', convIds)
         .order('created_at', { ascending: false });
-      // Group by conversation, take first (latest)
+
       const lastMsgByConv = new Map<string, Message>();
       for (const msg of (allLastMsgs ?? []) as Message[]) {
         if (!lastMsgByConv.has(msg.conversation_id)) {
@@ -119,7 +131,6 @@ export function useChat() {
         }
       }
 
-      // Batch: fetch all unread counts
       const { data: unreadData } = await supabase
         .from('messages')
         .select('conversation_id')
@@ -132,7 +143,6 @@ export function useChat() {
         unreadCountMap.set(msg.conversation_id, (unreadCountMap.get(msg.conversation_id) ?? 0) + 1);
       }
 
-      // Batch: fetch group names (first message with group_name per conversation)
       const { data: groupNameData } = await supabase
         .from('messages')
         .select('conversation_id, group_name')
@@ -166,58 +176,126 @@ export function useChat() {
         };
       });
 
-      setConversations(enriched);
+      if (gen === fetchGenRef.current) {
+        setConversations(enriched);
+      }
     } catch (err) {
       console.error('Error fetching conversations:', err);
     }
-    setLoading(false);
+    if (gen === fetchGenRef.current) {
+      setLoading(false);
+    }
   }, [user]);
 
-  const fetchMessages = useCallback(async (conversationId: string) => {
+  const fetchMessages = useCallback(async (conversationId: string, loadMore = false) => {
     setMessagesLoading(true);
-    const { data } = await supabase
+    if (!loadMore) {
+      messagesCursorRef.current = null;
+      setHasMoreMessages(true);
+    }
+
+    let query = supabase
       .from('messages')
       .select('*')
       .eq('conversation_id', conversationId)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false })
+      .limit(MESSAGES_PAGE_SIZE);
 
-    setMessages(data || []);
+    if (loadMore && messagesCursorRef.current) {
+      query = query.lt('created_at', messagesCursorRef.current);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching messages:', error);
+      setMessagesLoading(false);
+      return;
+    }
+
+    const msgs = (data || []) as Message[];
+
+    if (msgs.length < MESSAGES_PAGE_SIZE) {
+      setHasMoreMessages(false);
+    }
+
+    if (msgs.length > 0) {
+      const lastMsg = msgs[msgs.length - 1];
+      messagesCursorRef.current = lastMsg.created_at;
+    }
+
+    setMessages(prev => {
+      if (loadMore) {
+        const existingIds = new Set(prev.map(m => m.id));
+        const newMsgs = msgs.filter(m => !existingIds.has(m.id));
+        return [...prev, ...newMsgs.reverse()].sort(
+          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      }
+      return msgs.reverse();
+    });
+
     setMessagesLoading(false);
 
-    if (user) {
+    // Mark as read
+    if (user && !loadMore) {
       await supabase
         .from('messages')
-        .update({ is_read: true })
+        .update({ is_read: true, read_at: new Date().toISOString() })
         .eq('conversation_id', conversationId)
         .neq('sender_id', user.id)
         .eq('is_read', false);
     }
   }, [user]);
 
-  useEffect(() => {
-    if (!activeConversation) return;
+  const loadMoreMessages = useCallback(() => {
+    if (!activeConversation || loadingMore || !hasMoreMessages) return;
+    setLoadingMore(true);
+    fetchMessages(activeConversation, true).finally(() => setLoadingMore(false));
+  }, [activeConversation, loadingMore, hasMoreMessages, fetchMessages]);
 
-    channelRef.current = supabase
-      .channel(`messages-${activeConversation}`)
+  // Global listener
+  useEffect(() => {
+    if (!user) return;
+
+    const globalChannel = supabase
+      .channel('chat-global')
       .on(
         'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${activeConversation}`,
-        },
+        { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
           const newMsg = payload.new as Message;
-          setMessages(prev => [...prev, newMsg]);
+          if (newMsg.sender_id === user.id) return;
+          if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
 
-          if (user && newMsg.sender_id !== user.id) {
-            supabase.from('messages').update({ is_read: true }).eq('id', newMsg.id).then().catch(() => {});
+          if (newMsg.conversation_id === activeConversation) {
+            setMessages(prev => [...prev, newMsg]);
+            supabase.from('messages').update({
+              is_read: true,
+              delivered_at: new Date().toISOString(),
+              read_at: new Date().toISOString(),
+            }).eq('id', newMsg.id).then().catch(() => {});
+          } else {
+            // Mark as delivered (but not read)
+            supabase.from('messages').update({
+              delivered_at: new Date().toISOString(),
+            }).eq('id', newMsg.id).then().catch(() => {});
           }
 
           fetchConversations();
         }
       )
+      .subscribe();
+
+    return () => { supabase.removeChannel(globalChannel); };
+  }, [user, activeConversation, fetchConversations]);
+
+  // Per-conversation UPDATE listener
+  useEffect(() => {
+    if (!activeConversation) return;
+
+    channelRef.current = supabase
+      .channel(`messages-updates-${activeConversation}`)
       .on(
         'postgres_changes',
         {
@@ -236,14 +314,18 @@ export function useChat() {
     return () => {
       channelRef.current?.unsubscribe();
     };
-  }, [activeConversation, user, fetchConversations]);
+  }, [activeConversation]);
 
   const openConversation = useCallback(async (conversationId: string) => {
     setActiveConversation(conversationId);
+    setMessages([]);
+    setHasMoreMessages(true);
+    messagesCursorRef.current = null;
     await fetchMessages(conversationId);
-  }, [fetchMessages]);
+    fetchConversations();
+  }, [fetchMessages, fetchConversations]);
 
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, replyToId?: string | null) => {
     if (!user || !activeConversation || !content.trim()) return;
 
     const optimisticMsg: Message = {
@@ -254,6 +336,7 @@ export function useChat() {
       created_at: new Date().toISOString(),
       is_read: false,
       message_type: 'text',
+      reply_to_id: replyToId || null,
     };
 
     setMessages(prev => [...prev, optimisticMsg]);
@@ -262,17 +345,49 @@ export function useChat() {
       conversation_id: activeConversation,
       sender_id: user.id,
       content: content.trim(),
-      message_type: 'text',
+      reply_to_id: replyToId || null,
     });
 
     if (error) {
       setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
-      console.error('Error sending message:', error);
+      toast.error(`Send error: ${error.message}`);
       return;
     }
 
     await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConversation).catch(() => {});
   }, [user, activeConversation]);
+
+  const editMessage = useCallback(async (messageId: string, newContent: string) => {
+    if (!user || !newContent.trim()) return;
+
+    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: newContent.trim(), is_edited: true } : m));
+
+    const { error } = await supabase
+      .from('messages')
+      .update({ content: newContent.trim(), is_edited: true })
+      .eq('id', messageId)
+      .eq('sender_id', user.id);
+
+    if (error) {
+      toast.error('Edit failed');
+    }
+  }, [user]);
+
+  const deleteMessage = useCallback(async (messageId: string) => {
+    if (!user) return;
+
+    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, is_deleted: true, content: '' } : m));
+
+    const { error } = await supabase
+      .from('messages')
+      .update({ is_deleted: true })
+      .eq('id', messageId)
+      .eq('sender_id', user.id);
+
+    if (error) {
+      toast.error('Delete failed');
+    }
+  }, [user]);
 
   const sendImage = useCallback(async (imageUrl: string) => {
     if (!user || !activeConversation || !imageUrl.trim()) return;
@@ -294,16 +409,52 @@ export function useChat() {
       conversation_id: activeConversation,
       sender_id: user.id,
       content: '',
-      message_type: 'image',
       image_url: imageUrl,
     });
 
     if (error) {
       setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
+      toast.error(`Send error: ${error.message}`);
       return;
     }
 
     await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeConversation).catch(() => {});
+  }, [user, activeConversation]);
+
+  const sendFile = useCallback(async (fileUrl: string, fileName: string, fileSize: number, fileType: string) => {
+    if (!user || !activeConversation) return;
+
+    const optimisticMsg: Message = {
+      id: crypto.randomUUID(),
+      conversation_id: activeConversation,
+      sender_id: user.id,
+      content: fileName,
+      created_at: new Date().toISOString(),
+      is_read: false,
+      message_type: fileType.startsWith('video/') ? 'video' : fileType.startsWith('audio/') ? 'audio' : 'file',
+      file_url: fileUrl,
+      file_name: fileName,
+      file_size: fileSize,
+      file_type: fileType,
+    };
+
+    setMessages(prev => [...prev, optimisticMsg]);
+
+    const { error } = await supabase.from('messages').insert({
+      conversation_id: activeConversation,
+      sender_id: user.id,
+      content: fileName,
+      message_type: fileType.startsWith('video/') ? 'video' : fileType.startsWith('audio/') ? 'audio' : 'file',
+      file_url: fileUrl,
+      file_name: fileName,
+      file_size: fileSize,
+      file_type: fileType,
+    });
+
+    if (error) {
+      setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
+      toast.error(`File send error: ${error.message}`);
+    }
   }, [user, activeConversation]);
 
   const sendReaction = useCallback(async (messageId: string, emoji: string) => {
@@ -330,7 +481,7 @@ export function useChat() {
   }, [user, messages]);
 
   const startConversation = useCallback(async (otherUserId: string): Promise<string | null> => {
-    if (!user) return null;
+    if (!user) throw new Error('Not authenticated');
 
     const { data: myParticipations } = await supabase
       .from('conversation_participants')
@@ -352,27 +503,23 @@ export function useChat() {
       }
     }
 
-    const { data: conv, error: convError } = await supabase
+    const convId = crypto.randomUUID();
+    const { error: convError } = await supabase
       .from('conversations')
-      .insert({})
-      .select()
-      .single();
+      .insert({ id: convId });
+    if (convError) throw new Error(convError.message);
 
-    if (convError || !conv) return null;
-
-    const { error: partError } = await supabase.from('conversation_participants').insert(
-      { conversation_id: conv.id, user_id: user.id }
+    await supabase.from('conversation_participants').insert(
+      { conversation_id: convId, user_id: user.id }
     );
-    if (partError) return null;
 
-    const { error: otherError } = await supabase.from('conversation_participants').insert(
-      { conversation_id: conv.id, user_id: otherUserId }
+    await supabase.from('conversation_participants').insert(
+      { conversation_id: convId, user_id: otherUserId }
     );
-    if (otherError) return null;
 
     await fetchConversations();
-    await openConversation(conv.id);
-    return conv.id;
+    await openConversation(convId);
+    return convId;
   }, [user, openConversation, fetchConversations]);
 
   const searchUsers = useCallback(async (query: string): Promise<Profile[]> => {
@@ -386,6 +533,27 @@ export function useChat() {
       .limit(10);
 
     return data || [];
+  }, [user]);
+
+  const uploadFile = useCallback(async (file: File): Promise<{ url: string | null; error: string | null }> => {
+    if (!user) return { url: null, error: 'Not authenticated' };
+
+    const ext = file.name.split('.').pop();
+    const fileName = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+    const { data, error } = await supabase.storage
+      .from('chat-files')
+      .upload(fileName, file, {
+        contentType: file.type,
+      });
+
+    if (error) return { url: null, error: error.message };
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('chat-files')
+      .getPublicUrl(data.path);
+
+    return { url: publicUrl, error: null };
   }, [user]);
 
   const uploadImage = useCallback(async (file: File): Promise<string | null> => {
@@ -419,13 +587,20 @@ export function useChat() {
     messages,
     loading,
     messagesLoading,
+    hasMoreMessages,
+    loadingMore,
+    loadMoreMessages,
     openConversation,
     sendMessage,
+    editMessage,
+    deleteMessage,
     sendImage,
+    sendFile,
     sendReaction,
     startConversation,
     searchUsers,
     uploadImage,
+    uploadFile,
     setActiveConversation,
     fetchConversations,
   };

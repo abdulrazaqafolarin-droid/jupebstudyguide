@@ -49,7 +49,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
   }));
 
   const {
-    notifications, unreadCount, markAllRead, clear: clearNotifications,
+    notifications, unreadCount, markAllRead, markReadExcept, clear: clearNotifications,
     permission, requestPermission,
   } = useNotificationsContext();
 
@@ -153,6 +153,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                       notifications={notifications}
                       unreadCount={unreadCount}
                       onMarkAllRead={markAllRead}
+                      onMarkReadExcept={markReadExcept}
                       onClear={clearNotifications}
                       permission={permission}
                       onRequestPermission={requestPermission}

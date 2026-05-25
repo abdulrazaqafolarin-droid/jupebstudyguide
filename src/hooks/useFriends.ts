@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -44,7 +44,11 @@ export function useFriends() {
         .order('created_at', { ascending: false }),
     ]);
 
-    setFriends(friendsData.data || []);
+    setFriends((friendsData.data || []).map((f: Record<string, unknown>) => ({
+      user_id: f.friend_id as string,
+      display_name: f.display_name as string | null,
+      avatar_url: f.avatar_url as string | null,
+    })));
     setIncomingRequests(incomingData.data || []);
     setOutgoingRequests(outgoingData.data || []);
     setLoading(false);
@@ -52,8 +56,52 @@ export function useFriends() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // Real-time subscription for friend_requests
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('friend-requests-live')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'friend_requests', filter: `receiver_id=eq.${user.id}` },
+        () => { fetchData(); }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'friend_requests', filter: `sender_id=eq.${user.id}` },
+        () => { fetchData(); }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, fetchData]);
+
   const sendRequest = useCallback(async (receiverId: string) => {
     if (!user) return { error: new Error('Not authenticated') };
+
+    const { data: existing } = await supabase
+      .from('friend_requests')
+      .select('id, status')
+      .eq('sender_id', user.id)
+      .eq('receiver_id', receiverId)
+      .maybeSingle();
+
+    if (existing) {
+      if (existing.status === 'accepted') {
+        return { error: new Error('Already friends') };
+      }
+      if (existing.status === 'pending') {
+        return { error: new Error('Request already sent') };
+      }
+      if (existing.status === 'rejected') {
+        const { error } = await supabase
+          .from('friend_requests')
+          .update({ status: 'pending', updated_at: new Date().toISOString() })
+          .eq('id', existing.id);
+        if (!error) await fetchData();
+        return { error };
+      }
+    }
+
     const { error } = await supabase.from('friend_requests').insert({
       sender_id: user.id,
       receiver_id: receiverId,

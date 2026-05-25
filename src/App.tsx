@@ -13,10 +13,12 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
+import SettingsProfile from "./pages/SettingsProfile";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import NotFound from "./pages/NotFound";
 import InstallPrompt from "./components/InstallPrompt";
 import { FloatingAITutor } from "./components/FloatingAITutor";
+import { useChatNotifications } from "@/hooks/useChatNotifications";
 import StudyPastQuestions from "./pages/StudyPastQuestions";
 import DownloadApp from "./pages/DownloadApp";
 import ActivationCodes from "./pages/admin/ActivationCodes";
@@ -24,10 +26,16 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
+function ChatNotificationListener() {
+  useChatNotifications();
+  return null;
+}
+
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <PageTransition>
       <NotificationsProvider>
+        <ChatNotificationListener />
         <BottomNav />
         <div className="pb-16">
           {children}
@@ -38,7 +46,12 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
 }
 
 function ProtectedChatLayout({ children }: { children: React.ReactNode }) {
-  return <NotificationsProvider>{children}</NotificationsProvider>;
+  return (
+    <NotificationsProvider>
+      <ChatNotificationListener />
+      {children}
+    </NotificationsProvider>
+  );
 }
 
 function AnimatedRoutes() {
@@ -76,6 +89,16 @@ function AnimatedRoutes() {
               <ProtectedLayout>
                 <Profile />
               </ProtectedLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/settings/profile" 
+          element={
+            <ProtectedRoute>
+              <ProtectedChatLayout>
+                <SettingsProfile />
+              </ProtectedChatLayout>
             </ProtectedRoute>
           } 
         />

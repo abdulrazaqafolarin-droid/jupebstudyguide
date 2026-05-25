@@ -173,7 +173,6 @@ const Index = () => {
   const {
     notifications,
     unreadCount,
-    push: pushNotification,
     markAllRead,
     clear: clearNotifications,
     permission: notifPermission,

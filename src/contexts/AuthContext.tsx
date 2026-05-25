@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
-import { purgeForeignUserData } from '@/hooks/useUserStorage';
+import { purgeForeignUserData } from '@/lib/storageCleanup';
 
 interface AuthContextType {
   user: User | null;

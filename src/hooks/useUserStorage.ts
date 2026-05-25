@@ -79,45 +79,4 @@ export function useUserStorage<T>(
   return [value, update, { isReady, reset }];
 }
 
-/**
- * Purge any user-scoped or legacy global keys that don't belong to `currentUserId`.
- * Call this on sign-in and sign-out to guarantee zero cross-account residue.
- *
- * - Removes every `u:<otherUserId>:*` entry.
- * - Removes the legacy un-namespaced keys we used to write globally.
- * - Preserves Supabase auth session keys and the user's own namespace.
- */
-const LEGACY_KEYS = [
-  'jupeb-study-progress',
-  'jupeb_streak_data',
-  'jupeb_achievements_unlocked',
-  'jupeb_syllabus_progress',
-  'jupeb-chat-hub',
-];
 
-export function purgeForeignUserData(currentUserId: string | null) {
-  try {
-    const toRemove: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (!k) continue;
-
-      // Always nuke legacy global keys — they leak across accounts.
-      if (LEGACY_KEYS.includes(k)) {
-        toRemove.push(k);
-        continue;
-      }
-
-      // Remove any other user's namespaced data.
-      if (k.startsWith('u:')) {
-        const ownerId = k.split(':')[1];
-        if (!currentUserId || ownerId !== currentUserId) {
-          toRemove.push(k);
-        }
-      }
-    }
-    toRemove.forEach(k => localStorage.removeItem(k));
-  } catch {
-    /* ignore */
-  }
-}

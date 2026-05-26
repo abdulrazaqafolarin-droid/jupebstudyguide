@@ -106,6 +106,17 @@ const Index = () => {
     [sessionHours],
   );
 
+  // Syllabus progress
+  const {
+    progress: syllabusProgress,
+    startSyllabus,
+    completeDay,
+    canAdvanceToDay,
+    resetProgress: resetSyllabusProgress,
+    reorderSubjects,
+    isStarted: isSyllabusStarted,
+  } = useSyllabusProgress();
+
   // Syllabus completed progress
   const syllabusCompletedDayCount = useMemo(() => {
     if (!syllabusProgress?.dailyTasks) return 0;
@@ -150,17 +161,6 @@ const Index = () => {
     }
     prevUnlockedRef.current = ids.length;
   }, [unlockedAchievements, syncAchievements]);
-
-  // Syllabus progress
-  const {
-    progress: syllabusProgress,
-    startSyllabus,
-    completeDay,
-    canAdvanceToDay,
-    resetProgress: resetSyllabusProgress,
-    reorderSubjects,
-    isStarted: isSyllabusStarted,
-  } = useSyllabusProgress();
 
   // Push current stats to public leaderboard (debounced upsert)
   useStatsSync({

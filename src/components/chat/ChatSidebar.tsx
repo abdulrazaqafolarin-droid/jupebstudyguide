@@ -21,6 +21,8 @@ interface ChatSidebarProps {
   onGroupCreated?: (conversationId: string) => void;
   onFriendRequestsClick?: () => void;
   onProfileClick?: (userId: string) => void;
+  markingRead?: Set<string>;
+  staleUnread?: boolean;
 }
 
 export function ChatSidebar({
@@ -35,6 +37,8 @@ export function ChatSidebar({
   onGroupCreated,
   onFriendRequestsClick,
   onProfileClick,
+  markingRead,
+  staleUnread,
 }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -245,8 +249,15 @@ export function ChatSidebar({
                           : 'No messages yet'}
                       </p>
                       {conv.unread_count > 0 && (
-                        <span className="ml-2 bg-primary text-primary-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                          {conv.unread_count}
+                        <span className={cn(
+                          'ml-2 text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shrink-0',
+                          markingRead?.has(conv.id)
+                            ? 'bg-muted text-muted-foreground/50'
+                            : staleUnread
+                              ? 'bg-muted text-muted-foreground border border-dashed border-muted-foreground/30'
+                              : 'bg-primary text-primary-foreground'
+                        )}>
+                          {staleUnread ? '?' : conv.unread_count > 99 ? '99+' : conv.unread_count}
                         </span>
                       )}
                     </div>

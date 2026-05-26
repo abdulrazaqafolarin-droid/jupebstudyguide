@@ -1,7 +1,24 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+
+const CROSS_TAB_CHANNEL = 'jupeb-unread-sync';
+const MAX_RETRIES = 3;
+const UNREAD_CACHE_KEY = 'jupeb-unread-cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function retryWithBackoff<T>(fn: () => Promise<T>, retries = MAX_RETRIES): Promise<T> {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (attempt === retries - 1) throw err;
+      await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+    }
+  }
+  throw new Error('unreachable');
+}
 
 export interface Profile {
   id: string;
@@ -59,6 +76,81 @@ export function useChat() {
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const fetchGenRef = useRef(0);
   const messagesCursorRef = useRef<string | null>(null);
+  const broadcastRef = useRef<BroadcastChannel | null>(null);
+  const [markingRead, setMarkingRead] = useState<Set<string>>(new Set());
+  const [staleUnread, setStaleUnread] = useState(false);
+  const markReadQueue = useRef<Array<{ conversationId: string; userId: string; resolve: () => void }>>([]);
+  const markReadProcessing = useRef(false);
+
+  // --- Broadcast helper (declared first — avoid TDZ) ---
+  const broadcastRead = useCallback((conversationId: string) => {
+    try {
+      broadcastRef.current?.postMessage({ type: 'read', conversationId });
+    } catch { /* silently fail */ }
+  }, []);
+
+  // --- Mark-read queue (EDGE-3) ---
+  const processMarkReadQueue = useCallback(async () => {
+    if (markReadProcessing.current) return;
+    markReadProcessing.current = true;
+    while (markReadQueue.current.length > 0) {
+      const item = markReadQueue.current.shift()!;
+      try {
+        await retryWithBackoff(() =>
+          supabase
+            .rpc('mark_conversation_read', {
+              p_conversation_id: item.conversationId,
+              p_user_id: item.userId,
+            })
+            .then(({ data, error }) => { if (error) throw error; return data; }),
+        );
+        setConversations(prev => prev.map(c =>
+          c.id === item.conversationId ? { ...c, unread_count: 0 } : c
+        ));
+        broadcastRead(item.conversationId);
+      } catch (err) {
+        console.error('Mark-read failed after retries, badge unchanged:', err);
+        toast.error('Failed to mark messages as read');
+      } finally {
+        setMarkingRead(prev => { const next = new Set(prev); next.delete(item.conversationId); return next; });
+      }
+      item.resolve();
+    }
+    markReadProcessing.current = false;
+  }, [broadcastRead]);
+
+  const enqueueMarkRead = useCallback((conversationId: string, userId: string) => {
+    setMarkingRead(prev => new Set(prev).add(conversationId));
+    return new Promise<void>((resolve) => {
+      markReadQueue.current.push({ conversationId, userId, resolve });
+      processMarkReadQueue();
+    });
+  }, [processMarkReadQueue]);
+
+  // --- Unread cache helpers (EDGE-1) ---
+  const saveUnreadCache = useCallback((counts: Record<string, number>) => {
+    try {
+      localStorage.setItem(UNREAD_CACHE_KEY, JSON.stringify({
+        timestamp: Date.now(),
+        counts,
+      }));
+    } catch { /* storage full or unavailable */ }
+  }, []);
+
+  const loadUnreadCache = useCallback((): Record<string, number> | null => {
+    try {
+      const raw = localStorage.getItem(UNREAD_CACHE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (Date.now() - parsed.timestamp > CACHE_TTL) return null;
+      return parsed.counts ?? null;
+    } catch { return null; }
+  }, []);
+
+  const totalUnreadCount = useMemo(
+    () => conversations.reduce((sum, c) => sum + c.unread_count, 0),
+    [conversations],
+  );
 
   const fetchConversations = useCallback(async () => {
     if (!user) return;
@@ -102,6 +194,10 @@ export function useChat() {
         list.push(p.user_id);
         participantsByConv.set(p.conversation_id, list);
       }
+      // Sort participants so a=LEAST, b=GREATEST matches DB trigger order
+      for (const [convId, ids] of participantsByConv) {
+        ids.sort();
+      }
 
       const allUserIds = new Set<string>();
       for (const userIds of participantsByConv.values()) {
@@ -131,16 +227,36 @@ export function useChat() {
         }
       }
 
-      const { data: unreadData } = await supabase
-        .from('messages')
-        .select('conversation_id')
-        .in('conversation_id', convIds)
-        .eq('is_read', false)
-        .neq('sender_id', user.id);
-
+      // Build unread count from stored unread_count_a/b on conversation row
+      // a = LEAST participant, b = GREATEST participant
       const unreadCountMap = new Map<string, number>();
-      for (const msg of (unreadData ?? []) as { conversation_id: string }[]) {
-        unreadCountMap.set(msg.conversation_id, (unreadCountMap.get(msg.conversation_id) ?? 0) + 1);
+      for (const conv of convData) {
+        const convParticipants = participantsByConv.get(conv.id) ?? [];
+        const isGroup = convParticipants.length > 2;
+        if (isGroup) {
+          // Groups: use RPC fallback
+          continue;
+        }
+        const partA = convParticipants.length >= 1 ? convParticipants[0] : null;
+        const partB = convParticipants.length >= 2 ? convParticipants[1] : null;
+        const typedConv = conv as Record<string, unknown>;
+        if (user.id === partA) {
+          unreadCountMap.set(conv.id, Number(typedConv.unread_count_a ?? 0));
+        } else if (user.id === partB) {
+          unreadCountMap.set(conv.id, Number(typedConv.unread_count_b ?? 0));
+        }
+      }
+
+      // For group conversations (3+ participants), fetch via RPC
+      const groupConvIds = convData
+        .filter(conv => (participantsByConv.get(conv.id) ?? []).length > 2)
+        .map(conv => conv.id);
+      if (groupConvIds.length > 0) {
+        const { data: groupUnreadData } = await supabase
+          .rpc('get_unread_counts', { p_user_id: user.id });
+        for (const row of (groupUnreadData ?? []) as { conversation_id: string; count: number }[]) {
+          unreadCountMap.set(row.conversation_id, Number(row.count));
+        }
       }
 
       const { data: groupNameData } = await supabase
@@ -178,9 +294,27 @@ export function useChat() {
 
       if (gen === fetchGenRef.current) {
         setConversations(enriched);
+        setStaleUnread(false);
+        // EDGE-1: persist unread counts to localStorage
+        const cacheCounts: Record<string, number> = {};
+        for (const c of enriched) {
+          cacheCounts[c.id] = c.unread_count;
+        }
+        saveUnreadCache(cacheCounts);
       }
     } catch (err) {
       console.error('Error fetching conversations:', err);
+      // EDGE-1: fall back to cached counts
+      if (gen === fetchGenRef.current) {
+        const cached = loadUnreadCache();
+        if (cached) {
+          setConversations(prev => prev.map(c => ({
+            ...c,
+            unread_count: cached[c.id] ?? c.unread_count,
+          })));
+          setStaleUnread(true);
+        }
+      }
     }
     if (gen === fetchGenRef.current) {
       setLoading(false);
@@ -237,16 +371,11 @@ export function useChat() {
 
     setMessagesLoading(false);
 
-    // Mark as read
+    // EDGE-3: Enqueue mark-read (non-blocking, processed in order)
     if (user && !loadMore) {
-      await supabase
-        .from('messages')
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq('conversation_id', conversationId)
-        .neq('sender_id', user.id)
-        .eq('is_read', false);
+      enqueueMarkRead(conversationId, user.id);
     }
-  }, [user]);
+  }, [user, enqueueMarkRead]);
 
   const loadMoreMessages = useCallback(() => {
     if (!activeConversation || loadingMore || !hasMoreMessages) return;
@@ -254,7 +383,7 @@ export function useChat() {
     fetchMessages(activeConversation, true).finally(() => setLoadingMore(false));
   }, [activeConversation, loadingMore, hasMoreMessages, fetchMessages]);
 
-  // Global listener
+  // Global listener — real-time unread count updates
   useEffect(() => {
     if (!user) return;
 
@@ -266,55 +395,95 @@ export function useChat() {
         (payload) => {
           const newMsg = payload.new as Message;
           if (newMsg.sender_id === user.id) return;
-          if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
+          if (newMsg.message_type === 'system') return;
+          // EDGE-7: first message in a new conversation — re-fetch to pick it up
+          if (!convIdsRef.current.includes(newMsg.conversation_id)) {
+            fetchConversations();
+            return;
+          }
 
           if (newMsg.conversation_id === activeConversation) {
             setMessages(prev => [...prev, newMsg]);
+            setConversations(prev => prev.map(c =>
+              c.id === newMsg.conversation_id ? { ...c, unread_count: 0 } : c
+            ));
             supabase.from('messages').update({
               is_read: true,
               delivered_at: new Date().toISOString(),
               read_at: new Date().toISOString(),
             }).eq('id', newMsg.id).then().catch(() => {});
           } else {
-            // Mark as delivered (but not read)
+            setConversations(prev => prev.map(c =>
+              c.id === newMsg.conversation_id
+                ? { ...c, unread_count: c.unread_count + 1 }
+                : c
+            ));
             supabase.from('messages').update({
               delivered_at: new Date().toISOString(),
             }).eq('id', newMsg.id).then().catch(() => {});
           }
-
-          fetchConversations();
         }
       )
-      .subscribe();
-
-    return () => { supabase.removeChannel(globalChannel); };
-  }, [user, activeConversation, fetchConversations]);
-
-  // Per-conversation UPDATE listener
-  useEffect(() => {
-    if (!activeConversation) return;
-
-    channelRef.current = supabase
-      .channel(`messages-updates-${activeConversation}`)
       .on(
         'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${activeConversation}`,
-        },
+        { event: 'DELETE', schema: 'public', table: 'messages' },
         (payload) => {
-          const updatedMsg = payload.new as Message;
-          setMessages(prev => prev.map(m => m.id === updatedMsg.id ? { ...m, ...updatedMsg } : m));
+          const oldMsg = payload.old as { conversation_id: string; sender_id: string; is_read: boolean };
+          if (oldMsg.sender_id === user.id) return;
+          if (!oldMsg.is_read) {
+            setConversations(prev => prev.map(c =>
+              c.id === oldMsg.conversation_id && c.unread_count > 0
+                ? { ...c, unread_count: c.unread_count - 1 }
+                : c
+            ));
+          }
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'messages' },
+        (payload) => {
+          const newMsg = payload.new as Message & { is_deleted: boolean };
+          const oldMsg = payload.old as Message & { is_deleted: boolean };
+          if (newMsg.sender_id === user.id) return;
+          if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
+          if (newMsg.is_deleted && !oldMsg.is_deleted && !newMsg.is_read) {
+            setConversations(prev => prev.map(c =>
+              c.id === newMsg.conversation_id && c.unread_count > 0
+                ? { ...c, unread_count: c.unread_count - 1 }
+                : c
+            ));
+          }
+          if (newMsg.conversation_id === activeConversation) {
+            setMessages(prev => prev.map(m => m.id === newMsg.id ? { ...m, ...newMsg } : m));
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          // Re-fetch on reconnect to prevent drift during offline periods
+          fetchConversations();
+        }
+      });
 
-    return () => {
-      channelRef.current?.unsubscribe();
-    };
-  }, [activeConversation]);
+    return () => { supabase.removeChannel(globalChannel); };
+  }, [user, activeConversation]);
+
+  // Cross-tab BroadcastChannel sync
+  useEffect(() => {
+    try {
+      const bc = new BroadcastChannel(CROSS_TAB_CHANNEL);
+      broadcastRef.current = bc;
+      bc.onmessage = (event) => {
+        if (event.data?.type === 'read') {
+          setConversations(prev => prev.map(c =>
+            c.id === event.data.conversationId ? { ...c, unread_count: 0 } : c
+          ));
+        }
+      };
+    } catch { /* BroadcastChannel not available */ }
+    return () => { broadcastRef.current?.close(); };
+  }, []);
 
   const openConversation = useCallback(async (conversationId: string) => {
     setActiveConversation(conversationId);
@@ -579,6 +748,10 @@ export function useChat() {
 
   useEffect(() => {
     fetchConversations();
+    // EDGE-1: also refetch when browser reports connectivity restored
+    const onOnline = () => { fetchConversations(); };
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
   }, [fetchConversations]);
 
   return {
@@ -603,5 +776,8 @@ export function useChat() {
     uploadFile,
     setActiveConversation,
     fetchConversations,
+    totalUnreadCount,
+    markingRead,
+    staleUnread,
   };
 }

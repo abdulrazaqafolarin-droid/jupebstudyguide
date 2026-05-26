@@ -17,6 +17,35 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { toast } from 'sonner';
 
+function updateFaviconBadge(count: number) {
+  const existing = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+  if (!existing) return;
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, 32, 32);
+    if (count > 0) {
+      const text = count > 99 ? '99+' : String(count);
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(26, 6, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 26, 7);
+    }
+    existing.href = canvas.toDataURL();
+  };
+  img.src = existing.href;
+}
+
 type Tab = 'chats' | 'friends';
 
 const Chat = () => {
@@ -46,6 +75,14 @@ const Chat = () => {
       markReadByKind('friend_request');
     }
   }, [tab, markReadByKind]);
+
+  // Update document title and favicon with total unread count
+  const totalUnread = chat.totalUnreadCount;
+  useEffect(() => {
+    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] JUPEB Study Guide` : 'JUPEB Study Guide';
+    document.title = title;
+    updateFaviconBadge(totalUnread);
+  }, [totalUnread]);
 
   useEffect(() => {
     if (addFriendQuery.trim().length < 2) { setAddFriendResults([]); return; }
@@ -151,6 +188,8 @@ const Chat = () => {
               onGroupCreated={(convId) => handleSelectConversation(convId)}
               onFriendRequestsClick={() => setTab('friends')}
               onProfileClick={openProfile}
+              markingRead={chat.markingRead}
+              staleUnread={chat.staleUnread}
             />
           ) : (
             <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin">

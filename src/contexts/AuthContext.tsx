@@ -67,6 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password,
         options: {
           emailRedirectTo: window.location.origin,
+          data: { display_name: email.split('@')[0] },
         },
       });
       return { error };

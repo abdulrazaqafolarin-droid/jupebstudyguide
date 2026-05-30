@@ -437,13 +437,13 @@ const Index = () => {
       {/* Hero Section */}
       <header className="relative overflow-hidden min-h-[60vh] flex items-center">
         {/* Animated mesh gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background to-accent/10 animate-mesh bg-[length:200%_200%]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background to-accent/10 animate-mesh bg-[length:200%_200%]" style={{ willChange: 'transform' }} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/20" />
-        <div className="absolute inset-0 chalk-texture opacity-30" />
+        <div className="absolute inset-0 chalk-texture opacity-30" style={{ willChange: 'transform' }} />
         
         {/* Floating decorative orbs */}
-        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary/5 blur-3xl animate-float" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
+        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary/5 blur-3xl animate-float" style={{ willChange: 'transform' }} />
+        <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl animate-float" style={{ willChange: 'transform', animationDelay: '-3s' }} />
         
         {/* Subtle grid */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />

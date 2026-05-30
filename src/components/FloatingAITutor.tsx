@@ -511,6 +511,7 @@ export const FloatingAITutor = () => {
               zIndex: 50,
               touchAction: 'none',
               pointerEvents: isSettling ? 'none' : 'auto',
+              willChange: 'transform',
             }}
             className={cn(
               "w-14 h-14 rounded-full",

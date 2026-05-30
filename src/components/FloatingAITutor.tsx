@@ -53,7 +53,7 @@ const staggerItem = {
 const BTN_SIZE = 56;
 const FRICTION = 0.96;
 const MOMENTUM_VEL_THRESHOLD = 0.8;
-const SNAP_SPRING = { type: "spring" as const, stiffness: 180, damping: 14, mass: 0.9 };
+const SNAP_SPRING = { type: "spring" as const, stiffness: 220, damping: 22, mass: 0.85 };
 
 function findNearestCorner(x: number, y: number, btnSize: number) {
   const vw = window.innerWidth;
@@ -288,7 +288,7 @@ export const FloatingAITutor = () => {
     const speed = Math.sqrt(vx * vx + vy * vy);
 
     if (speed > MOMENTUM_VEL_THRESHOLD) {
-      momentumVel.current = { vx, vy };
+      momentumVel.current = { vx: vx / 60, vy: vy / 60 };
       settlingRef.current = true;
       setIsSettling(true);
       momentumRAF.current = requestAnimationFrame(runMomentum);
@@ -303,8 +303,8 @@ export const FloatingAITutor = () => {
     const dx = Math.abs(posRef.current.x - target.x);
     const dy = Math.abs(posRef.current.y - target.y);
     if (dx > 1 || dy > 1) {
-      animate(x, target.x, { ...SNAP_SPRING, stiffness: 220, damping: 20 });
-      animate(y, target.y, { ...SNAP_SPRING, stiffness: 220, damping: 20 });
+      animate(x, target.x, { type: "spring", stiffness: 250, damping: 26, mass: 0.8 });
+      animate(y, target.y, { type: "spring", stiffness: 250, damping: 26, mass: 0.8 });
     }
     setFabPos({ x: target.x, y: target.y });
 
@@ -320,8 +320,8 @@ export const FloatingAITutor = () => {
       const clampedX = Math.min(Math.max(currentX, 0), vw - BTN_SIZE);
       const clampedY = Math.min(Math.max(currentY, 0), vh - BTN_SIZE);
       const resizeTarget = findNearestCorner(clampedX, clampedY, BTN_SIZE);
-      animate(x, resizeTarget.x, { type: "spring", stiffness: 220, damping: 20 });
-      animate(y, resizeTarget.y, { type: "spring", stiffness: 220, damping: 20 });
+      animate(x, resizeTarget.x, { type: "spring", stiffness: 250, damping: 26, mass: 0.8 });
+      animate(y, resizeTarget.y, { type: "spring", stiffness: 250, damping: 26, mass: 0.8 });
       setFabPos({ x: resizeTarget.x, y: resizeTarget.y });
     };
 

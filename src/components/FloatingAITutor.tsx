@@ -173,31 +173,18 @@ export const FloatingAITutor = () => {
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
   const computePanelOrigin = useCallback((): { top: number; left: number; width: number } => {
-    const gap = 10;
     const pw = 400;
     const ph = Math.min(540, window.innerHeight - 100);
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const pad = 16;
-    const docked = fabPos.x < vw / 2 ? 'left' : 'right';
-    let top: number;
-    const spaceAbove = fabPos.y - pad;
-    const spaceBelow = vh - (fabPos.y + BTN_SIZE) - pad;
-    if (spaceAbove >= ph) {
-      top = fabPos.y - ph - gap;
-    } else if (spaceBelow >= ph) {
-      top = fabPos.y + BTN_SIZE + gap;
-    } else {
-      top = clamp((vh - ph) / 2, pad, vh - ph - pad);
-    }
-    let left: number;
-    if (docked === 'left') {
-      left = fabPos.x + BTN_SIZE + gap;
-    } else {
-      left = fabPos.x - pw - gap;
-    }
-    left = clamp(left, pad, vw - pw - pad);
-    return { top: clamp(top, pad, vh - ph - pad), left: clamp(left, pad, vw - pw - pad), width: pw };
+    const fabCx = fabPos.x + BTN_SIZE / 2;
+    const fabCy = fabPos.y + BTN_SIZE / 2;
+    const nearLeft = fabCx < vw / 2;
+    const nearTop = fabCy < vh / 2;
+    let left = nearLeft ? vw - pw - pad : pad;
+    let top = nearTop ? vh - ph - pad : pad;
+    return { top, left, width: pw };
   }, [fabPos]);
 
   const computeOriginPct = useCallback((): { x: number; y: number } => {
@@ -214,24 +201,38 @@ export const FloatingAITutor = () => {
   }, [fabPos, computePanelOrigin]);
 
   const snapToCorner = useCallback(() => {
-    if (animating.current) return;
+    const unlock = () => {
+      settlingRef.current = false;
+      setIsSettling(false);
+      animating.current = false;
+    };
+
+    if (animating.current) { unlock(); return; }
+
     const currentPos = posRef.current;
     const target = findNearestCorner(currentPos.x, currentPos.y, BTN_SIZE);
     const dx = Math.abs(currentPos.x - target.x);
     const dy = Math.abs(currentPos.y - target.y);
-    if (dx < 1 && dy < 1) return;
+
+    if (dx < 1 && dy < 1) {
+      unlock();
+      setFabPos({ x: target.x, y: target.y });
+      setSettleWobble(k => k + 1);
+      return;
+    }
 
     settlingRef.current = true;
     setIsSettling(true);
     animating.current = true;
 
+    const safetyTimer = setTimeout(unlock, 3000);
+
     Promise.all([
       animate(x, target.x, SNAP_SPRING),
       animate(y, target.y, SNAP_SPRING),
     ]).then(() => {
-      settlingRef.current = false;
-      setIsSettling(false);
-      animating.current = false;
+      clearTimeout(safetyTimer);
+      unlock();
       setFabPos({ x: target.x, y: target.y });
       setSettleWobble(k => k + 1);
     });
@@ -275,8 +276,8 @@ export const FloatingAITutor = () => {
   }, [setFabPos]);
 
   const handleDragEnd = useCallback((_: any, info: PanInfo) => {
-    if (settlingRef.current) return;
-
+    settlingRef.current = false;
+    setIsSettling(false);
     animating.current = false;
     if (momentumRAF.current) {
       cancelAnimationFrame(momentumRAF.current);
@@ -510,7 +511,6 @@ export const FloatingAITutor = () => {
               y,
               zIndex: 50,
               touchAction: 'none',
-              pointerEvents: isSettling ? 'none' : 'auto',
               willChange: 'transform',
             }}
             className={cn(
@@ -518,8 +518,9 @@ export const FloatingAITutor = () => {
               "bg-gradient-to-br from-primary to-accent",
               "flex items-center justify-center",
               isSettling
-                ? "shadow-2xl shadow-primary/60 cursor-default"
-                : "shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 cursor-grab active:cursor-grabbing"
+                ? "shadow-2xl shadow-primary/60"
+                : "shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40",
+              "cursor-grab active:cursor-grabbing"
             )}
           >
             <motion.span

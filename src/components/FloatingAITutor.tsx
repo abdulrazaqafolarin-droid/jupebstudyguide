@@ -13,7 +13,7 @@ import {
   Copy, Pencil, Library, ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo } from 'framer-motion';
 import { toast } from 'sonner';
 import { streamChat as aiStreamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
@@ -49,6 +49,11 @@ const staggerItem = {
     transition: { type: "spring", stiffness: 200, damping: 24 }
   }
 };
+
+const BTN_SIZE = 56;
+const FRICTION = 0.96;
+const MOMENTUM_VEL_THRESHOLD = 0.8;
+const SNAP_SPRING = { type: "spring" as const, stiffness: 180, damping: 14, mass: 0.9 };
 
 function findNearestCorner(x: number, y: number, btnSize: number) {
   const vw = window.innerWidth;
@@ -89,6 +94,23 @@ const TypingDots = () => (
   </motion.div>
 );
 
+function getInitialPosition() {
+  try {
+    const raw = localStorage.getItem('jupeb-ai-fab-pos');
+    if (raw) {
+      const pos = JSON.parse(raw);
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      pos.x = Math.min(Math.max(pos.x, 0), vw - BTN_SIZE);
+      pos.y = Math.min(Math.max(pos.y, 0), vh - BTN_SIZE);
+      return pos;
+    }
+  } catch {}
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  return { x: vw - 80, y: vh - 80 };
+}
+
 export const FloatingAITutor = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -113,53 +135,29 @@ export const FloatingAITutor = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const assistantContentRef = useRef('');
   const fabRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ isDragging: false, startX: 0, startY: 0, originX: 0, originY: 0 });
-  const clickPrevented = useRef(false);
-  const physicsRef = useRef({ vx: 0, vy: 0, animFrame: 0, lastTime: 0 });
-  const dragHistoryRef = useRef<Array<{ x: number; y: number; time: number }>>([]);
-  const phaseRef = useRef<'idle' | 'drag' | 'fling'>('idle');
-  const settlingRef = useRef(false);
 
-  const BTN_SIZE = 56;
-  const BOUNCE_DAMPING = 0.6;
-  const FRICTION = 0.97;
-  const VELOCITY_THRESHOLD = 0.4;
-  const DRAG_HISTORY_LEN = 5;
-  const SPRING_STIFFNESS = 0.006;
-  const SETTLE_DIST = 5;
-  const SETTLE_VEL = 0.5;
+  const initialPos = getInitialPosition();
+  const x = useMotionValue(initialPos.x);
+  const y = useMotionValue(initialPos.y);
+  const posRef = useRef({ x: initialPos.x, y: initialPos.y });
 
-  const [fabPos, setFabPosRaw] = useState(() => {
-    try {
-      const raw = localStorage.getItem('jupeb-ai-fab-pos');
-      if (raw) return JSON.parse(raw);
-    } catch {}
-    const vw = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    return { x: vw - 80, y: vh - 80 };
-  });
+  useMotionValueEvent(x, "change", (latest) => { posRef.current.x = latest; });
+  useMotionValueEvent(y, "change", (latest) => { posRef.current.y = latest; });
+
+  const [fabPos, setFabPosRaw] = useState(() => ({ x: initialPos.x, y: initialPos.y }));
   const setFabPos = useCallback((pos: { x: number; y: number }) => {
     setFabPosRaw(pos);
     try { localStorage.setItem('jupeb-ai-fab-pos', JSON.stringify(pos)); } catch {}
   }, []);
-  const renderPos = useRef(fabPos);
-  const [isDragging, setIsDragging] = useState(false);
+
   const [isSettling, setIsSettling] = useState(false);
   const [settleWobble, setSettleWobble] = useState(0);
+  const settlingRef = useRef(false);
+  const momentumRAF = useRef(0);
+  const momentumVel = useRef({ vx: 0, vy: 0 });
+  const animating = useRef(false);
 
   const { attachment, isProcessing, addAttachment, clearAttachment } = useAttachment();
-
-  useEffect(() => {
-    const target = findNearestCorner(fabPos.x, fabPos.y, BTN_SIZE);
-    if (target.x !== fabPos.x || target.y !== fabPos.y) {
-      renderPos.current = target;
-      setFabPos(target);
-      if (fabRef.current) {
-        fabRef.current.style.left = `${target.x}px`;
-        fabRef.current.style.top = `${target.y}px`;
-      }
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const copyMessage = useCallback((content: string) => {
     navigator.clipboard.writeText(content);
@@ -215,148 +213,126 @@ export const FloatingAITutor = () => {
     };
   }, [fabPos, computePanelOrigin]);
 
-  useEffect(() => { renderPos.current = fabPos; }, [fabPos]);
+  const snapToCorner = useCallback(() => {
+    if (animating.current) return;
+    const currentPos = posRef.current;
+    const target = findNearestCorner(currentPos.x, currentPos.y, BTN_SIZE);
+    const dx = Math.abs(currentPos.x - target.x);
+    const dy = Math.abs(currentPos.y - target.y);
+    if (dx < 1 && dy < 1) return;
 
-  const bouncePhysics = useCallback(() => {
-    if (!fabRef.current || phaseRef.current !== 'fling') return;
+    settlingRef.current = true;
+    setIsSettling(true);
+    animating.current = true;
 
-    const el = fabRef.current;
-    const now = performance.now();
-    const dt = Math.min((now - physicsRef.current.lastTime) / 16.67, 3);
-    physicsRef.current.lastTime = now;
+    Promise.all([
+      animate(x, target.x, SNAP_SPRING),
+      animate(y, target.y, SNAP_SPRING),
+    ]).then(() => {
+      settlingRef.current = false;
+      setIsSettling(false);
+      animating.current = false;
+      setFabPos({ x: target.x, y: target.y });
+      setSettleWobble(k => k + 1);
+    });
+  }, [x, y, setFabPos]);
 
-    let vx = physicsRef.current.vx;
-    let vy = physicsRef.current.vy;
+  const runMomentum = useCallback(() => {
+    if (!momentumRAF.current) return;
 
-    vx *= FRICTION;
-    vy *= FRICTION;
-
-    const target = findNearestCorner(renderPos.current.x, renderPos.current.y, BTN_SIZE);
-    const dx = target.x - renderPos.current.x;
-    const dy = target.y - renderPos.current.y;
-    vx += dx * SPRING_STIFFNESS;
-    vy += dy * SPRING_STIFFNESS;
-
-    let nx = renderPos.current.x + vx * dt;
-    let ny = renderPos.current.y + vy * dt;
+    const currentX = x.get();
+    const currentY = y.get();
+    let vx = momentumVel.current.vx * FRICTION;
+    let vy = momentumVel.current.vy * FRICTION;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    if (nx < 0) { nx = 0; vx = -vx * BOUNCE_DAMPING; }
-    else if (nx + BTN_SIZE > vw) { nx = vw - BTN_SIZE; vx = -vx * BOUNCE_DAMPING; }
-    if (ny < 0) { ny = 0; vy = -vy * BOUNCE_DAMPING; }
-    else if (ny + BTN_SIZE > vh) { ny = vh - BTN_SIZE; vy = -vy * BOUNCE_DAMPING; }
+    let nx = currentX + vx;
+    let ny = currentY + vy;
 
-    renderPos.current = { x: nx, y: ny };
-    el.style.left = `${nx}px`;
-    el.style.top = `${ny}px`;
-    physicsRef.current.vx = vx;
-    physicsRef.current.vy = vy;
+    if (nx < 0) { nx = 0; vx = -vx * 0.5; }
+    else if (nx + BTN_SIZE > vw) { nx = vw - BTN_SIZE; vx = -vx * 0.5; }
+    if (ny < 0) { ny = 0; vy = -vy * 0.5; }
+    else if (ny + BTN_SIZE > vh) { ny = vh - BTN_SIZE; vy = -vy * 0.5; }
 
-    const distToTarget = Math.abs(target.x - nx) + Math.abs(target.y - ny);
-    const speed = Math.abs(vx) + Math.abs(vy);
+    x.set(nx);
+    y.set(ny);
+    momentumVel.current = { vx, vy };
 
-    if (distToTarget < SETTLE_DIST && speed < SETTLE_VEL) {
-      renderPos.current = { x: target.x, y: target.y };
-      el.style.left = `${target.x}px`;
-      el.style.top = `${target.y}px`;
-      physicsRef.current.vx = 0;
-      physicsRef.current.vy = 0;
-      physicsRef.current.animFrame = 0;
-      phaseRef.current = 'idle';
-      settlingRef.current = false;
-      setIsSettling(false);
-      setFabPos({ x: target.x, y: target.y });
-      setSettleWobble(k => k + 1);
-      return;
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    if (speed > MOMENTUM_VEL_THRESHOLD) {
+      momentumRAF.current = requestAnimationFrame(runMomentum);
+    } else {
+      momentumRAF.current = 0;
+      snapToCorner();
     }
+  }, [x, y, snapToCorner]);
 
-    physicsRef.current.animFrame = requestAnimationFrame(bouncePhysics);
+  const handleFabTap = useCallback(() => {
+    if (settlingRef.current) return;
+    setFabPos({ x: posRef.current.x, y: posRef.current.y });
+    setIsOpen(true);
   }, [setFabPos]);
 
-  const handleFabPointerDown = useCallback((e: React.PointerEvent) => {
-    if (settlingRef.current) {
-      clickPrevented.current = true;
-      return;
-    }
-    clickPrevented.current = false;
-    if (physicsRef.current.animFrame) {
-      cancelAnimationFrame(physicsRef.current.animFrame);
-      physicsRef.current.animFrame = 0;
-    }
-    phaseRef.current = 'drag';
-    physicsRef.current.vx = 0;
-    physicsRef.current.vy = 0;
-    dragHistoryRef.current = [{ x: e.clientX, y: e.clientY, time: performance.now() }];
-    const el = fabRef.current;
-    if (el) {
-      el.style.transition = 'none';
-      el.style.left = `${renderPos.current.x}px`;
-      el.style.top = `${renderPos.current.y}px`;
-    }
-    dragRef.current = {
-      isDragging: false,
-      startX: e.clientX,
-      startY: e.clientY,
-      originX: renderPos.current.x,
-      originY: renderPos.current.y,
-    };
-    fabRef.current?.setPointerCapture(e.pointerId);
-  }, []);
+  const handleDragEnd = useCallback((_: any, info: PanInfo) => {
+    if (settlingRef.current) return;
 
-  const handleFabPointerMove = useCallback((e: React.PointerEvent) => {
-    if (phaseRef.current !== 'drag') return;
-    const el = fabRef.current;
-    if (!el) return;
-    const dx = e.clientX - dragRef.current.startX;
-    const dy = e.clientY - dragRef.current.startY;
-    if (!dragRef.current.isDragging && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
-      dragRef.current.isDragging = true;
-      clickPrevented.current = true;
-      setIsDragging(true);
+    animating.current = false;
+    if (momentumRAF.current) {
+      cancelAnimationFrame(momentumRAF.current);
+      momentumRAF.current = 0;
     }
-    if (dragRef.current.isDragging) {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const nx = Math.min(Math.max(dragRef.current.originX + dx, 0), vw - BTN_SIZE);
-      const ny = Math.min(Math.max(dragRef.current.originY + dy, 0), vh - BTN_SIZE);
-      renderPos.current = { x: nx, y: ny };
-      el.style.left = `${nx}px`;
-      el.style.top = `${ny}px`;
-      const h = dragHistoryRef.current;
-      h.push({ x: e.clientX, y: e.clientY, time: performance.now() });
-      if (h.length > DRAG_HISTORY_LEN) h.shift();
-    }
-  }, []);
 
-  const handleFabPointerUp = useCallback((e: React.PointerEvent) => {
-    if (phaseRef.current === 'drag' && dragRef.current.isDragging) {
-      const h = dragHistoryRef.current;
-      if (h.length >= 2) {
-        const first = h[0];
-        const last = h[h.length - 1];
-        const dt = last.time - first.time;
-        if (dt > 0) {
-          const fps = 16.67;
-          let throwVx = (last.x - first.x) / dt * fps;
-          let throwVy = (last.y - first.y) / dt * fps;
-          const maxV = 25;
-          const mag = Math.sqrt(throwVx * throwVx + throwVy * throwVy);
-          if (mag > maxV) { throwVx = throwVx / mag * maxV; throwVy = throwVy / mag * maxV; }
-          physicsRef.current.vx = throwVx;
-          physicsRef.current.vy = throwVy;
-        }
-      }
-      physicsRef.current.lastTime = performance.now();
-      setIsDragging(false);
-      phaseRef.current = 'fling';
+    const vx = info.velocity.x;
+    const vy = info.velocity.y;
+    const speed = Math.sqrt(vx * vx + vy * vy);
+
+    if (speed > MOMENTUM_VEL_THRESHOLD) {
+      momentumVel.current = { vx, vy };
       settlingRef.current = true;
       setIsSettling(true);
-      physicsRef.current.animFrame = requestAnimationFrame(bouncePhysics);
+      momentumRAF.current = requestAnimationFrame(runMomentum);
+    } else {
+      snapToCorner();
     }
-    phaseRef.current = 'idle';
-    dragRef.current.isDragging = false;
-  }, [bouncePhysics]);
+  }, [runMomentum, snapToCorner]);
+
+  useEffect(() => {
+    setFabPos({ x: posRef.current.x, y: posRef.current.y });
+    const target = findNearestCorner(posRef.current.x, posRef.current.y, BTN_SIZE);
+    const dx = Math.abs(posRef.current.x - target.x);
+    const dy = Math.abs(posRef.current.y - target.y);
+    if (dx > 1 || dy > 1) {
+      animate(x, target.x, { ...SNAP_SPRING, stiffness: 220, damping: 20 });
+      animate(y, target.y, { ...SNAP_SPRING, stiffness: 220, damping: 20 });
+    }
+    setFabPos({ x: target.x, y: target.y });
+
+    const handleResize = () => {
+      if (momentumRAF.current) {
+        cancelAnimationFrame(momentumRAF.current);
+        momentumRAF.current = 0;
+      }
+      const currentX = x.get();
+      const currentY = y.get();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const clampedX = Math.min(Math.max(currentX, 0), vw - BTN_SIZE);
+      const clampedY = Math.min(Math.max(currentY, 0), vh - BTN_SIZE);
+      const resizeTarget = findNearestCorner(clampedX, clampedY, BTN_SIZE);
+      animate(x, resizeTarget.x, { type: "spring", stiffness: 220, damping: 20 });
+      animate(y, resizeTarget.y, { type: "spring", stiffness: 220, damping: 20 });
+      setFabPos({ x: resizeTarget.x, y: resizeTarget.y });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (momentumRAF.current) {
+        cancelAnimationFrame(momentumRAF.current);
+      }
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const scrollToBottom = useCallback((smooth = false) => {
     const vp = scrollRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement | null;
@@ -392,34 +368,6 @@ export const FloatingAITutor = () => {
     const id = setTimeout(() => inputRef.current?.focus(), 100);
     return () => clearTimeout(id);
   }, [isOpen, isMinimized, showChatList]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      let { x, y } = renderPos.current;
-      x = Math.min(Math.max(x, 0), vw - BTN_SIZE);
-      y = Math.min(Math.max(y, 0), vh - BTN_SIZE);
-      const target = findNearestCorner(x, y, BTN_SIZE);
-      if (target.x !== renderPos.current.x || target.y !== renderPos.current.y) {
-        renderPos.current = { x: target.x, y: target.y };
-        setFabPos({ x: target.x, y: target.y });
-        if (fabRef.current) {
-          fabRef.current.style.transition = 'none';
-          fabRef.current.style.left = `${target.x}px`;
-          fabRef.current.style.top = `${target.y}px`;
-        }
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (physicsRef.current.animFrame) {
-        cancelAnimationFrame(physicsRef.current.animFrame);
-        physicsRef.current.animFrame = 0;
-      }
-    };
-  }, [setFabPos]);
 
   const showTyping = isLoading && (
     messages.length === 0 ||
@@ -527,6 +475,18 @@ export const FloatingAITutor = () => {
         {!isOpen ? (
           <motion.div
             key="fab"
+            ref={fabRef}
+            drag
+            dragMomentum={false}
+            dragElastic={0}
+            dragConstraints={{
+              left: 0,
+              right: typeof window !== 'undefined' ? window.innerWidth - BTN_SIZE : 1000,
+              top: 0,
+              bottom: typeof window !== 'undefined' ? window.innerHeight - BTN_SIZE : 1000,
+            }}
+            onDragEnd={handleDragEnd}
+            onTap={handleFabTap}
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{
               scale: 1,
@@ -542,26 +502,23 @@ export const FloatingAITutor = () => {
             onAnimationComplete={() => {
               if (settleWobble > 0) setSettleWobble(0);
             }}
-            ref={fabRef}
-            onPointerDown={handleFabPointerDown}
-            onPointerMove={handleFabPointerMove}
-            onPointerUp={handleFabPointerUp}
-            onLostPointerCapture={handleFabPointerUp}
             style={{
               position: 'fixed',
-              left: renderPos.current.x,
-              top: renderPos.current.y,
+              left: 0,
+              top: 0,
+              x,
+              y,
+              zIndex: 50,
               touchAction: 'none',
               pointerEvents: isSettling ? 'none' : 'auto',
             }}
             className={cn(
-              "fixed z-50 w-14 h-14 rounded-full",
+              "w-14 h-14 rounded-full",
               "bg-gradient-to-br from-primary to-accent",
               "flex items-center justify-center",
-              isDragging
-                ? "cursor-grabbing shadow-2xl shadow-primary/50 ring-2 ring-primary/30 scale-110"
-                : "cursor-grab shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40",
-              isSettling && "shadow-2xl shadow-primary/60"
+              isSettling
+                ? "shadow-2xl shadow-primary/60 cursor-default"
+                : "shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 cursor-grab active:cursor-grabbing"
             )}
           >
             <motion.span

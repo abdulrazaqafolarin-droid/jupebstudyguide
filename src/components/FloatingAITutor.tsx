@@ -182,8 +182,12 @@ export const FloatingAITutor = () => {
     const fabCy = fabPos.y + BTN_SIZE / 2;
     const nearLeft = fabCx < vw / 2;
     const nearTop = fabCy < vh / 2;
-    let left = nearLeft ? vw - pw - pad : pad;
-    let top = nearTop ? vh - ph - pad : pad;
+    const minLeft = pad;
+    const maxLeft = Math.max(pad, vw - pw - pad);
+    const minTop = pad;
+    const maxTop = Math.max(pad, vh - ph - pad);
+    let left = clamp(nearLeft ? vw - pw - pad : pad, minLeft, maxLeft);
+    let top = clamp(nearTop ? vh - ph - pad : pad, minTop, maxTop);
     return { top, left, width: pw };
   }, [fabPos]);
 

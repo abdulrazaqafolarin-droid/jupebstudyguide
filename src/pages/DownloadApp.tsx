@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Download, Smartphone, Monitor, CheckCircle, Loader2, Shield, Zap } from "lucide-react";
 
@@ -112,13 +113,13 @@ export default function DownloadApp() {
                 </div>
               </div>
 
-              <button
-                onClick={() => window.location.href = "/"}
+              <Link
+                to="/"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium rounded-xl border border-border hover:bg-muted/50 transition-all"
               >
                 <Zap className="h-4 w-4 text-primary" />
                 Open Web App (Add to Home Screen)
-              </button>
+              </Link>
             </div>
           ) : platform === "ios" ? (
             <div className="text-center space-y-3 py-4">

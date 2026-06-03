@@ -10,7 +10,7 @@ import UserAchievementPreview from "@/components/UserAchievementPreview";
 import { Button } from "@/components/ui/button";
 import {
   Trophy, ArrowLeft, Crown, Loader2, TrendingUp,
-  Timer, Sparkles, Star
+  Timer, Sparkles, Star, Eye, Share2
 } from "lucide-react";
 import {
   Tooltip,
@@ -18,7 +18,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import AchievementBadge from "@/components/AchievementBadge";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const MEDAL = ["🥇", "🥈", "🥉"];
 
@@ -38,10 +40,11 @@ interface ChampionWithProfile extends LeaderboardWeek {
 }
 
 const achievementNameMap = new Map(ACHIEVEMENTS.map(a => [a.id, a.name]));
+const achievementMap = new Map(ACHIEVEMENTS.map(a => [a.id, a]));
 
 export default function LeaderboardPage() {
   const { user } = useAuth();
-  const { rows, loading, currentWeekStart, currentWeekEnd, pastChampions, myRank } =
+  const { rows, loading, error, currentWeekStart, currentWeekEnd, pastChampions, myRank } =
     useWeeklyLeaderboard(user?.id, 200);
 
   const [showPast, setShowPast] = useState(false);
@@ -73,7 +76,8 @@ export default function LeaderboardPage() {
           profile: profs?.find((p) => p.user_id === w.champion_user_id) ?? null,
         }))
       );
-    })().catch(() => {
+    })().catch((err) => {
+      console.warn('Failed to fetch champion details:', err);
       setChampionDetails(championEntries.map(w => ({ ...w, profile: null })));
     });
   }, [pastChampions]);
@@ -111,17 +115,54 @@ export default function LeaderboardPage() {
               Your Rank
             </div>
             {myRank ? (
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-primary">#{myRank.rank}</span>
-                <span className="text-sm text-muted-foreground">
-                  with {myRank.score.toLocaleString()} pts
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-bold text-primary">#{myRank.rank}</span>
+                  <span className="text-sm text-muted-foreground">
+                    with {myRank.score.toLocaleString()} pts
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    const text = `🏆 I'm ranked #${myRank.rank} on the JUPEB Study Guide leaderboard with ${myRank.score.toLocaleString()} points!`;
+                    if (navigator.share) {
+                      navigator.share({ title: 'JUPEB Leaderboard', text }).catch(() => {});
+                    } else {
+                      navigator.clipboard.writeText(text).then(() => toast('Leaderboard rank copied!')).catch(() => {});
+                    }
+                  }}
+                  className="flex items-center gap-1.5 text-[10px] text-muted-foreground hover:text-primary transition-colors"
+                  title="Share your rank"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  Share
+                </button>
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
                 Answer questions to earn points!
               </p>
             )}
+            {user && (() => {
+              const myRow = rows.find(r => r.user_id === user.id);
+              if (!myRow || myRow.achievements.length === 0) return null;
+              return (
+                <button
+                  onClick={() => setPreviewUser({
+                    user_id: user.id,
+                    display_name: myRow.display_name,
+                    avatar_url: myRow.avatar_url,
+                    achievements: myRow.achievements,
+                    week_score: myRow.week_score,
+                    rank: myRow.rank,
+                  })}
+                  className="mt-2 flex items-center gap-1.5 text-[10px] text-primary hover:text-primary/80 transition-colors font-medium"
+                >
+                  <Eye className="w-3 h-3" />
+                  View My Achievements ({myRow.achievements.length})
+                </button>
+              );
+            })()}
           </div>
         </div>
 
@@ -182,13 +223,22 @@ export default function LeaderboardPage() {
             <div className="flex justify-center py-12">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <Trophy className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
+              <p className="text-muted-foreground">Unable to load leaderboard</p>
+              <p className="text-xs text-muted-foreground/70 mt-1">{error}</p>
+            </div>
           ) : rows.length === 0 ? (
             <div className="text-center py-12">
               <Trophy className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
               <p className="text-muted-foreground">No scores yet this week</p>
-              <p className="text-xs text-muted-foreground/70 mt-1">
+              <p className="text-xs text-muted-foreground/70 mt-1 mb-4">
                 Start studying to earn points and climb the ranks!
               </p>
+              <Button asChild>
+                <Link to="/past-questions">Go Study Now</Link>
+              </Button>
             </div>
           ) : (
             <div className="space-y-1">
@@ -198,22 +248,20 @@ export default function LeaderboardPage() {
                   <div
                     key={r.user_id}
                     onClick={() => {
-                      if (!isMe) {
-                        setPreviewUser({
-                          user_id: r.user_id,
-                          display_name: r.display_name,
-                          avatar_url: r.avatar_url,
-                          achievements: r.achievements,
-                          week_score: r.week_score,
-                          rank: r.rank,
-                        });
-                      }
+                      setPreviewUser({
+                        user_id: r.user_id,
+                        display_name: r.display_name,
+                        avatar_url: r.avatar_url,
+                        achievements: r.achievements,
+                        week_score: r.week_score,
+                        rank: r.rank,
+                      });
                     }}
                     className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
+                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.99]",
                       isMe
                         ? "bg-primary/10 border border-primary/30 -mx-1 px-4"
-                        : "hover:bg-secondary/40 cursor-pointer active:scale-[0.99]"
+                        : "hover:bg-secondary/40"
                     )}
                   >
                     <RankIcon rank={r.rank} className="shrink-0 w-8 text-center" />
@@ -239,9 +287,20 @@ export default function LeaderboardPage() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-0.5 text-[10px] text-primary/80 cursor-default">
-                                  <Trophy className="w-2.5 h-2.5" />
-                                  {r.achievements.length}
+                                <span className="inline-flex items-center gap-1 cursor-default">
+                                  {r.achievements.slice(0, 3).map(id => {
+                                    const a = achievementMap.get(id);
+                                    return a ? (
+                                      <span key={id} className="text-xs leading-none" title={a.name}>
+                                        {a.icon}
+                                      </span>
+                                    ) : null;
+                                  })}
+                                  {r.achievements.length > 3 && (
+                                    <span className="text-[9px] text-muted-foreground font-medium">
+                                      +{r.achievements.length - 3}
+                                    </span>
+                                  )}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent side="top" className="space-y-1 max-w-[200px]">

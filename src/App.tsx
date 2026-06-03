@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
@@ -126,9 +126,9 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <ErrorBoundary>
-                <ProtectedChatLayout>
+                <ProtectedLayout>
                   <SettingsProfile />
-                </ProtectedChatLayout>
+                </ProtectedLayout>
               </ErrorBoundary>
             </ProtectedRoute>
           } 
@@ -227,8 +227,12 @@ function PageTransition({ children }: { children: React.ReactNode }) {
   );
 }
 
-function WrappedPage({ children }: { children: React.ReactNode }) {
-  return <PageTransition>{children}</PageTransition>;
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  );
 }
 
 function PageLoader() {

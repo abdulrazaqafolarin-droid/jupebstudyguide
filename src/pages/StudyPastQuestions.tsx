@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -26,6 +26,7 @@ import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionViewer } from "@/components/study-past-questions/QuestionViewer";
 import { StudyTimer } from "@/components/study-past-questions/StudyTimer";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type View = "subjects" | "years" | "questions" | "bookmarks";
 
@@ -599,21 +600,28 @@ export default function StudyPastQuestions() {
                     })}
                   </div>
 
-                  <div className="flex gap-3 justify-center pt-2">
-                    <button
+                  <div className="flex gap-3 justify-center pt-2 flex-wrap">
+                    <Button
                       onClick={handleRestartQuiz}
-                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-accent text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/20"
+                      className="flex items-center gap-2"
                     >
                       <RotateCcw className="h-4 w-4" />
                       Try Another Year
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
                       onClick={() => setView("subjects")}
-                      className="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-border/60 bg-card text-sm font-medium hover:bg-accent/50 transition-all active:scale-95"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Back to Subjects
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setView("subjects")}
                     >
                       <BookOpen className="h-4 w-4" />
                       All Subjects
-                    </button>
+                    </Button>
                   </div>
                 </motion.div>
               )}
@@ -765,9 +773,12 @@ export default function StudyPastQuestions() {
                       <p className="text-muted-foreground font-medium">
                         No bookmarked questions yet
                       </p>
-                      <p className="text-xs text-muted-foreground/60 mt-1">
+                      <p className="text-xs text-muted-foreground/60 mt-1 mb-4">
                         Bookmark questions while studying to review them later
                       </p>
+                      <Button asChild variant="outline" size="sm">
+                        <Link to="/past-questions">Go Study & Bookmark Questions</Link>
+                      </Button>
                     </div>
                   ) : (
                     bookmarkedQuestions.map((q) => {

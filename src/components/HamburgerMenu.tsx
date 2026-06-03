@@ -3,10 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
-  Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library
+  Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library, Lock, Award
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
+import { usePushNotificationsContext } from "@/contexts/PushNotificationsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
@@ -21,7 +22,7 @@ const navLinks = [
   { path: "/past-questions", label: "Past Questions", icon: BookOpen },
   { path: "/chat", label: "Study Chat", icon: MessageSquare },
   { path: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { path: "/achievements", label: "Achievements", icon: Trophy },
+  { path: "/achievements", label: "Achievements", icon: Award },
   { path: "/profile", label: "Profile", icon: User },
   { path: "/download", label: "Get App", icon: Download },
 ];
@@ -54,6 +55,13 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     permission, requestPermission,
   } = useNotificationsContext();
 
+  const {
+    supported: pushSupported,
+    isSubscribed: isPushSubscribed,
+    subscribe: subscribePush,
+    unsubscribe: unsubscribePush,
+  } = usePushNotificationsContext();
+
   useEffect(() => {
     if (!user) { setIsAdmin(false); setProfileName(null); setProfileAvatar(null); return; }
     const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
@@ -65,9 +73,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
       } else {
         setIsAdmin(emailAdmin);
       }
-      if (emailAdmin && data && !data.is_admin) {
-        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch(() => {});
-      }
+      // Admin role assignment is server-side only; client escalation removed
     });
   }, [user]);
 
@@ -158,6 +164,9 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                       onClear={clearNotifications}
                       permission={permission}
                       onRequestPermission={requestPermission}
+                      pushSupported={pushSupported}
+                      isPushSubscribed={isPushSubscribed}
+                      onTogglePush={isPushSubscribed ? unsubscribePush : subscribePush}
                     />
                     <button
                       onClick={close}

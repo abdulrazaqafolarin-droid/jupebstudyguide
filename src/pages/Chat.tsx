@@ -10,11 +10,12 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, MessageCircle, Search, UserCheck, UserPlus, Users, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
+import { useChatUnreadCount } from '@/contexts/ChatUnreadContext';
 import { toast } from 'sonner';
 
 function updateFaviconBadge(count: number) {
@@ -63,6 +64,31 @@ const Chat = () => {
   const [showProfile, setShowProfile] = useState(false);
   const { markReadByKind } = useNotificationsContext();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const [searchParams] = useSearchParams();
+
+  // Handle URL params from notification bar navigation
+  useEffect(() => {
+    const convParam = searchParams.get('conversation');
+    const tabParam = searchParams.get('tab');
+    if (convParam) {
+      chat.openConversation(convParam);
+      if (isMobile) setShowSidebar(false);
+    }
+    if (tabParam === 'friends') {
+      setTab('friends');
+    }
+  }, []);
+
+  const { setTotalUnread, setStaleUnread } = useChatUnreadCount();
+
+  // Sync unread count to global context for BottomNav badge
+  useEffect(() => {
+    setTotalUnread(chat.totalUnreadCount);
+  }, [chat.totalUnreadCount, setTotalUnread]);
+
+  useEffect(() => {
+    setStaleUnread(chat.staleUnread);
+  }, [chat.staleUnread, setStaleUnread]);
 
   // Mark chat notifications as read when viewing page or switching conversation
   useEffect(() => {
@@ -448,6 +474,7 @@ const Chat = () => {
             hasMoreMessages={chat.hasMoreMessages}
             loadingMore={chat.loadingMore}
             onLoadMore={chat.loadMoreMessages}
+            onProfileClick={openProfile}
           />
         </div>
       )}

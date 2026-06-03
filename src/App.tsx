@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,24 +7,30 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
+import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
+import { PushNotificationsProvider } from "@/contexts/PushNotificationsContext";
 import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Chat from "./pages/Chat";
-import Profile from "./pages/Profile";
-import SettingsProfile from "./pages/SettingsProfile";
-import LeaderboardPage from "./pages/LeaderboardPage";
-import NotFound from "./pages/NotFound";
 import InstallPrompt from "./components/InstallPrompt";
 import { FloatingAITutor } from "./components/FloatingAITutor";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
-import AchievementsPage from "./pages/AchievementsPage";
-import StudyPastQuestions from "./pages/StudyPastQuestions";
-import DownloadApp from "./pages/DownloadApp";
-import ActivationCodes from "./pages/admin/ActivationCodes";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
+import { InAppNotificationBar } from "@/components/InAppNotificationBar";
+
+const Index = lazy(() => import("./pages/Index"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Profile = lazy(() => import("./pages/Profile"));
+const SettingsProfile = lazy(() => import("./pages/SettingsProfile"));
+const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const AchievementsPage = lazy(() => import("./pages/AchievementsPage"));
+const StudyPastQuestions = lazy(() => import("./pages/StudyPastQuestions"));
+const DownloadApp = lazy(() => import("./pages/DownloadApp"));
+const ActivationCodes = lazy(() => import("./pages/admin/ActivationCodes"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+
 
 const queryClient = new QueryClient();
 
@@ -37,6 +44,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
     <PageTransition>
       <NotificationsProvider>
         <ChatNotificationListener />
+        <AppNotificationBar />
         <BottomNav />
         <div className="pb-16">
           {children}
@@ -50,8 +58,21 @@ function ProtectedChatLayout({ children }: { children: React.ReactNode }) {
   return (
     <NotificationsProvider>
       <ChatNotificationListener />
+      <AppNotificationBar />
       {children}
     </NotificationsProvider>
+  );
+}
+
+function AppNotificationBar() {
+  const navigate = useNavigate();
+  return (
+    <InAppNotificationBar
+      onOpenConversation={(convId) => {
+        navigate(`/chat?conversation=${convId}`);
+      }}
+      onOpenFriendsTab={() => navigate('/chat?tab=friends')}
+    />
   );
 }
 
@@ -60,16 +81,19 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <ErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/download" element={<DownloadApp />} />
+        <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
+        <Route path="/download" element={<ErrorBoundary><DownloadApp /></ErrorBoundary>} />
         <Route 
           path="/" 
           element={
             <ProtectedRoute>
-              <ProtectedLayout>
-                <Index />
-              </ProtectedLayout>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <Index />
+                </ProtectedLayout>
+              </ErrorBoundary>
             </ProtectedRoute>
           } 
         />
@@ -77,9 +101,11 @@ function AnimatedRoutes() {
           path="/chat" 
           element={
             <ProtectedRoute>
-              <ProtectedChatLayout>
-                <Chat />
-              </ProtectedChatLayout>
+              <ErrorBoundary>
+                <ProtectedChatLayout>
+                  <Chat />
+                </ProtectedChatLayout>
+              </ErrorBoundary>
             </ProtectedRoute>
           } 
         />
@@ -87,9 +113,11 @@ function AnimatedRoutes() {
           path="/profile" 
           element={
             <ProtectedRoute>
-              <ProtectedLayout>
-                <Profile />
-              </ProtectedLayout>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <Profile />
+                </ProtectedLayout>
+              </ErrorBoundary>
             </ProtectedRoute>
           } 
         />
@@ -97,9 +125,11 @@ function AnimatedRoutes() {
           path="/settings/profile" 
           element={
             <ProtectedRoute>
-              <ProtectedChatLayout>
-                <SettingsProfile />
-              </ProtectedChatLayout>
+              <ErrorBoundary>
+                <ProtectedChatLayout>
+                  <SettingsProfile />
+                </ProtectedChatLayout>
+              </ErrorBoundary>
             </ProtectedRoute>
           } 
         />
@@ -107,9 +137,11 @@ function AnimatedRoutes() {
           path="/past-questions" 
           element={
             <ProtectedRoute>
-              <ProtectedLayout>
-                <StudyPastQuestions />
-              </ProtectedLayout>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <StudyPastQuestions />
+                </ProtectedLayout>
+              </ErrorBoundary>
             </ProtectedRoute>
           } 
         />
@@ -117,9 +149,11 @@ function AnimatedRoutes() {
           path="/leaderboard" 
           element={
             <ProtectedRoute>
-              <ProtectedLayout>
-                <LeaderboardPage />
-              </ProtectedLayout>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <LeaderboardPage />
+                </ProtectedLayout>
+              </ErrorBoundary>
             </ProtectedRoute>
           } 
         />
@@ -127,9 +161,11 @@ function AnimatedRoutes() {
           path="/achievements" 
           element={
             <ProtectedRoute>
-              <ProtectedLayout>
-                <AchievementsPage />
-              </ProtectedLayout>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <AchievementsPage />
+                </ProtectedLayout>
+              </ErrorBoundary>
             </ProtectedRoute>
           } 
         />
@@ -137,9 +173,11 @@ function AnimatedRoutes() {
           path="/admin/codes" 
           element={
             <AdminRoute>
-              <ProtectedLayout>
-                <ActivationCodes />
-              </ProtectedLayout>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <ActivationCodes />
+                </ProtectedLayout>
+              </ErrorBoundary>
             </AdminRoute>
           } 
         />
@@ -147,16 +185,32 @@ function AnimatedRoutes() {
           path="/admin" 
           element={
             <AdminRoute>
-              <ProtectedLayout>
-                <AdminDashboard />
-              </ProtectedLayout>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <AdminDashboard />
+                </ProtectedLayout>
+              </ErrorBoundary>
             </AdminRoute>
           } 
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
       </ErrorBoundary>
     </AnimatePresence>
+  );
+}
+
+function AppNotificationBar() {
+  const navigate = useNavigate();
+  return (
+    <InAppNotificationBar
+      onOpenConversation={(convId) => {
+        navigate(`/chat?conversation=${convId}`);
+        window.location.href = `/chat?conversation=${convId}`;
+      }}
+      onOpenFriendsTab={() => navigate('/chat?tab=friends')}
+    />
   );
 }
 
@@ -177,17 +231,33 @@ function WrappedPage({ children }: { children: React.ReactNode }) {
   return <PageTransition>{children}</PageTransition>;
 }
 
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <InstallPrompt />
-        <BrowserRouter>
-          <AnimatedRoutes />
-          <FloatingAITutor />
-        </BrowserRouter>
+      <PushNotificationsProvider>
+      <ChatUnreadProvider>
+        <ProfilePhotoViewerProvider>
+          <Toaster />
+          <Sonner />
+          <InstallPrompt />
+          <BrowserRouter>
+            <AnimatedRoutes />
+            <ErrorBoundary>
+            <FloatingAITutor />
+            </ErrorBoundary>
+          </BrowserRouter>
+        </ProfilePhotoViewerProvider>
+      </ChatUnreadProvider>
+      </PushNotificationsProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

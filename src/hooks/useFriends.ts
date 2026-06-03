@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface FriendRequest {
   id: string;
@@ -30,27 +31,35 @@ export function useFriends() {
     if (!user) return;
     setLoading(true);
 
-    const [friendsData, incomingData, outgoingData] = await Promise.all([
-      supabase.rpc('get_friends', { user_id: user.id }),
-      supabase.from('friend_requests')
-        .select('*, sender:profiles!sender_id(display_name, avatar_url)')
-        .eq('receiver_id', user.id)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false }),
-      supabase.from('friend_requests')
-        .select('*, receiver:profiles!receiver_id(display_name, avatar_url)')
-        .eq('sender_id', user.id)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false }),
-    ]);
+    try {
+      const [friendsData, incomingData, outgoingData] = await Promise.all([
+        supabase.rpc('get_friends', { user_id: user.id }),
+        supabase.from('friend_requests')
+          .select('*, sender:profiles!sender_id(display_name, avatar_url)')
+          .eq('receiver_id', user.id)
+          .eq('status', 'pending')
+          .order('created_at', { ascending: false }),
+        supabase.from('friend_requests')
+          .select('*, receiver:profiles!receiver_id(display_name, avatar_url)')
+          .eq('sender_id', user.id)
+          .eq('status', 'pending')
+          .order('created_at', { ascending: false }),
+      ]);
 
-    setFriends((friendsData.data || []).map((f: Record<string, unknown>) => ({
-      user_id: f.friend_id as string,
-      display_name: f.display_name as string | null,
-      avatar_url: f.avatar_url as string | null,
-    })));
-    setIncomingRequests(incomingData.data || []);
-    setOutgoingRequests(outgoingData.data || []);
+      setFriends((friendsData.data || []).map((f: Record<string, unknown>) => ({
+        user_id: f.friend_id as string,
+        display_name: f.display_name as string | null,
+        avatar_url: f.avatar_url as string | null,
+      })));
+      setIncomingRequests(incomingData.data || []);
+      setOutgoingRequests(outgoingData.data || []);
+    } catch (err) {
+      console.error('Failed to fetch friends data:', err);
+      toast.error('Failed to load friends');
+      setFriends([]);
+      setIncomingRequests([]);
+      setOutgoingRequests([]);
+    }
     setLoading(false);
   }, [user]);
 
@@ -78,46 +87,27 @@ export function useFriends() {
   const sendRequest = useCallback(async (receiverId: string) => {
     if (!user) return { error: new Error('Not authenticated') };
 
-    const { data: existing } = await supabase
-      .from('friend_requests')
-      .select('id, status')
-      .eq('sender_id', user.id)
-      .eq('receiver_id', receiverId)
-      .maybeSingle();
-
-    if (existing) {
-      if (existing.status === 'accepted') {
-        return { error: new Error('Already friends') };
-      }
-      if (existing.status === 'pending') {
-        return { error: new Error('Request already sent') };
-      }
-      if (existing.status === 'rejected') {
-        const { error } = await supabase
-          .from('friend_requests')
-          .update({ status: 'pending', updated_at: new Date().toISOString() })
-          .eq('id', existing.id);
-        if (!error) await fetchData();
-        return { error };
-      }
-    }
-
-    const { error } = await supabase.from('friend_requests').insert({
-      sender_id: user.id,
+    const { data, error } = await supabase.rpc('send_friend_request', {
       receiver_id: receiverId,
     });
-    if (!error) await fetchData();
-    return { error };
+
+    if (error) return { error };
+    const result = data as unknown as { success?: boolean; error?: string };
+    if (result?.error) return { error: new Error(result.error) };
+
+    await fetchData();
+    return { error: null };
   }, [user, fetchData]);
 
   const respondToRequest = useCallback(async (requestId: string, accept: boolean) => {
     if (!user) return { error: new Error('Not authenticated') };
-    const { error } = await supabase
-      .from('friend_requests')
-      .update({ status: accept ? 'accepted' : 'rejected' })
-      .eq('id', requestId);
+    const { data, error } = await supabase
+      .rpc('handle_friend_request', { request_id: requestId, accept });
+    if (error) return { error };
+    const result = data as unknown as { error?: string };
+    if (result?.error) return { error: new Error(result.error) };
     if (!error) await fetchData();
-    return { error };
+    return { error: null };
   }, [user, fetchData]);
 
   const removeFriend = useCallback(async (friendUserId: string) => {
@@ -125,8 +115,7 @@ export function useFriends() {
     const { error } = await supabase
       .from('friend_requests')
       .delete()
-      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friendUserId}),and(sender_id.eq.${friendUserId},receiver_id.eq.${user.id})`)
-      .eq('status', 'accepted');
+      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${friendUserId}),and(sender_id.eq.${friendUserId},receiver_id.eq.${user.id})`);
     if (!error) await fetchData();
     return { error };
   }, [user, fetchData]);

@@ -258,19 +258,6 @@ function AnimatedRoutes() {
   );
 }
 
-function AppNotificationBar() {
-  const navigate = useNavigate();
-  return (
-    <InAppNotificationBar
-      onOpenConversation={(convId) => {
-        navigate(`/chat?conversation=${convId}`);
-        window.location.href = `/chat?conversation=${convId}`;
-      }}
-      onOpenFriendsTab={() => navigate('/chat?tab=friends')}
-    />
-  );
-}
-
 function PageTransition({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
@@ -290,15 +277,7 @@ function PageLoader() {
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
     </div>
   );
-}
-
-function PageLoader() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-    </div>
-  );
-}
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

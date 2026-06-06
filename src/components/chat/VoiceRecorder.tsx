@@ -16,6 +16,7 @@ interface VoiceRecorderProps {
   onSend: () => void;
   onStop: () => void;
   onDiscard: () => void;
+  onPointerDown?: (e: React.PointerEvent) => void;
   onPointerMove?: (e: React.PointerEvent) => void;
   onPointerUp?: (e: React.PointerEvent) => void;
   barRef?: React.RefObject<HTMLDivElement | null>;
@@ -64,6 +65,7 @@ export function VoiceRecorder({
   onSend,
   onStop,
   onDiscard,
+  onPointerDown,
   onPointerMove,
   onPointerUp,
   barRef,
@@ -122,6 +124,7 @@ export function VoiceRecorder({
         {mode === 'recording' && (
           <div
             className="px-3 py-2.5 flex items-center gap-3"
+            onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             style={{ touchAction: 'none' }}

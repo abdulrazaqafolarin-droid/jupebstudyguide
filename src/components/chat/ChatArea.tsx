@@ -653,13 +653,8 @@ export function ChatArea({
     }
   }, [vnStartRecording]);
 
-  const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
+  const handleVnStart = useCallback(async () => {
     if (uploadingFile || vnMode !== 'idle') return;
-    e.preventDefault();
-    const target = e.currentTarget;
-    target.setPointerCapture(e.pointerId);
-    vnStartXRef.current = e.clientX;
-    vnStartYRef.current = e.clientY;
     setVnShowCancel(false);
     setVnShowLock(false);
     vnSendTriggeredRef.current = false;
@@ -683,14 +678,10 @@ export function ChatArea({
 
   const handleVnPointerUp = useCallback((e: React.PointerEvent) => {
     if (vnMode !== 'recording') return;
-    const target = e.currentTarget;
-    try { target.releasePointerCapture(e.pointerId); } catch { /* pointer not captured */ }
-
     const dx = e.clientX - vnStartXRef.current;
     const dy = e.clientY - vnStartYRef.current;
     setVnShowCancel(false);
     setVnShowLock(false);
-
     if (dx < -VN_CANCEL_THRESHOLD) {
       vnCancelRecording();
       vnReset();
@@ -705,14 +696,12 @@ export function ChatArea({
     }
   }, [vnMode, vnCancelRecording, vnReset, vnStopRecording, onRecordingVn]);
 
-  const handleVnPointerCancel = useCallback((e: React.PointerEvent) => {
-    if (vnMode === 'recording' || vnMode === 'locked') {
-      vnCancelRecording();
-      vnReset();
-      setVnMode('idle');
-      onRecordingVn?.(false);
-    }
-  }, [vnMode, vnCancelRecording, vnReset, onRecordingVn]);
+  const handleVnBarPointerDown = useCallback((e: React.PointerEvent) => {
+    vnStartXRef.current = e.clientX;
+    vnStartYRef.current = e.clientY;
+    setVnShowCancel(false);
+    setVnShowLock(false);
+  }, []);
 
   const handleVnSendBlob = useCallback(async (blob: Blob) => {
     const ext = blob.type === 'audio/mp4' ? 'mp4' : 'webm';
@@ -1761,6 +1750,7 @@ export function ChatArea({
                 setVnMode('preview');
               }}
               onDiscard={handleVnDiscard}
+              onPointerDown={handleVnBarPointerDown}
               onPointerMove={handleVnPointerMove}
               onPointerUp={handleVnPointerUp}
               barRef={vnBarRef}
@@ -1916,14 +1906,10 @@ export function ChatArea({
             {!input.trim() && !editingMessage ? (
               <button
                 ref={vnTriggerRef}
-                onPointerDown={handleVnPointerDown}
-                onPointerMove={handleVnPointerMove}
-                onPointerUp={handleVnPointerUp}
-                onPointerCancel={handleVnPointerCancel}
+                onClick={handleVnStart}
                 className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ touchAction: 'none' }}
                 disabled={uploadingFile}
-                title="Press and hold to record voice note"
+                title="Record voice note"
                 aria-label="Voice note"
               >
                 <Mic className="w-4 h-4" />

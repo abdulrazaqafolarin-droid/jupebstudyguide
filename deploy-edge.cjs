@@ -1,3 +1,6 @@
+// DEPRECATED — Use `node deploy-all.cjs` instead.
+// This script does NOT inline _shared/* imports and will fail for functions
+// that depend on shared modules.
 const https = require('https');
 const fs = require('fs');
 
@@ -6,14 +9,12 @@ if (!PAT) { console.error('ERROR: Set SUPABASE_TOKEN env var'); process.exit(1);
 const REF = 'gzyczowqqywesqhqqpdi';
 
 const FUNCTIONS = [
-  { name: 'validate-activation', path: 'C:\\Users\\HP\\Downloads\\jupebstudyguide-main\\jupebstudyguide-main\\supabase\\functions\\validate-activation\\index.ts' },
-  { name: 'weekly-reset', path: 'C:\\Users\\HP\\Downloads\\jupebstudyguide-main\\jupebstudyguide-main\\supabase\\functions\\weekly-reset\\index.ts' },
+  { name: 'validate-activation', path: 'supabase/functions/validate-activation/index.ts' },
+  { name: 'weekly-reset', path: 'supabase/functions/weekly-reset/index.ts' },
 ];
 
 async function deploy(name, filePath, method) {
   let code = fs.readFileSync(filePath, 'utf8');
-
-  // Strip non-ASCII
   code = code
     .replace(/\u2018/g, "'").replace(/\u2019/g, "'")
     .replace(/\u201c/g, '"').replace(/\u201d/g, '"')
@@ -23,12 +24,8 @@ async function deploy(name, filePath, method) {
 
   return new Promise((resolve) => {
     const body = JSON.stringify({
-      slug: name,
-      name: name,
-      body: code,
-      verify_jwt: false,
+      slug: name, name: name, body: code, verify_jwt: false,
     });
-
     const path = '/v1/projects/' + REF + (method === 'PATCH' ? '/functions/' + name : '/functions');
     const req = https.request({
       hostname: 'api.supabase.com',
@@ -70,5 +67,4 @@ async function main() {
   console.log('\nDone: ' + ok + ' OK, ' + fail + ' FAIL');
   process.exit(fail > 0 ? 1 : 0);
 }
-
 main().catch(e => { console.error('FATAL:', e.message); process.exit(1); });

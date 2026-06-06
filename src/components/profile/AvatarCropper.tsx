@@ -48,6 +48,9 @@ export function AvatarCropper({ currentUrl, currentName, uploading, onFileSelect
             url={preview || currentUrl}
             name={currentName}
             className="w-28 h-28 ring-2 ring-primary/20"
+            viewable
+            isOwn
+            onOwnPhotoAction={() => fileRef.current?.click()}
           />
         </div>
         <button

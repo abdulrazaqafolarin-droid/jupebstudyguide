@@ -86,7 +86,7 @@ function generateDailyTasks(
   return tasks;
 }
 
-type StoredSyllabus = Omit<SyllabusProgress, 'startedAt' | 'lastStudiedAt'> & {
+export type StoredSyllabus = Omit<SyllabusProgress, 'startedAt' | 'lastStudiedAt'> & {
   startedAt: string;
   lastStudiedAt?: string;
 };
@@ -120,8 +120,8 @@ export function useSyllabusProgress() {
         if (!next) return null;
         return {
           ...next,
-          startedAt: next.startedAt.toISOString(),
-          lastStudiedAt: next.lastStudiedAt ? next.lastStudiedAt.toISOString() : undefined,
+          startedAt: typeof next.startedAt === 'string' ? next.startedAt : next.startedAt.toISOString(),
+          lastStudiedAt: next.lastStudiedAt ? (typeof next.lastStudiedAt === 'string' ? next.lastStudiedAt : next.lastStudiedAt.toISOString()) : undefined,
         };
       });
     },
@@ -290,5 +290,7 @@ export function useSyllabusProgress() {
     resetProgress,
     reorderSubjects,
     isStarted: progress !== null,
+    stored,
+    setProgress,
   };
 }

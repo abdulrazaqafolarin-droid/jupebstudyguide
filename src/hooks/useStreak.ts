@@ -17,17 +17,25 @@ const INITIAL: StreakData = {
   totalQuestionsAnswered: 0,
 };
 
+function toLocalDateStr(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function parseLocalDateStr(str: string): Date {
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function useStreak() {
   const [streakData, setStreakData] = useUserStorage<StreakData>('streak', INITIAL);
 
   // If the streak is stale (missed > 1 day), reset on load.
   useEffect(() => {
     if (!streakData.lastStudyDate || streakData.currentStreak === 0) return;
-    const lastDate = new Date(streakData.lastStudyDate);
+    const lastDate = parseLocalDateStr(streakData.lastStudyDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    lastDate.setHours(0, 0, 0, 0);
-    const daysDiff = Math.floor((today.getTime() - lastDate.getTime()) / 86_400_000);
+    const todayStart = parseLocalDateStr(toLocalDateStr(today));
+    const daysDiff = Math.floor((todayStart.getTime() - lastDate.getTime()) / 86_400_000);
     if (daysDiff > 1) {
       setStreakData(prev => ({ ...prev, currentStreak: 0 }));
     }
@@ -35,20 +43,18 @@ export function useStreak() {
 
   const recordStudySession = useCallback((questionsAnswered: number = 1) => {
     setStreakData(prev => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayStr = today.toISOString().split('T')[0];
+      const todayStr = toLocalDateStr(new Date());
+      const todayStart = parseLocalDateStr(todayStr);
 
-      const lastDate = prev.lastStudyDate ? new Date(prev.lastStudyDate) : null;
+      const lastDate = prev.lastStudyDate ? parseLocalDateStr(prev.lastStudyDate) : null;
       let newStreak = prev.currentStreak;
       let newTotalDays = prev.totalDaysStudied;
 
       if (lastDate) {
-        lastDate.setHours(0, 0, 0, 0);
-        const lastDateStr = lastDate.toISOString().split('T')[0];
+        const lastDateStr = toLocalDateStr(lastDate);
 
         if (lastDateStr !== todayStr) {
-          const daysDiff = Math.floor((today.getTime() - lastDate.getTime()) / 86_400_000);
+          const daysDiff = Math.floor((todayStart.getTime() - lastDate.getTime()) / 86_400_000);
           if (daysDiff === 1) newStreak = prev.currentStreak + 1;
           else if (daysDiff > 1) newStreak = 1;
           newTotalDays = prev.totalDaysStudied + 1;
@@ -70,9 +76,7 @@ export function useStreak() {
 
   const hasStudiedToday = useCallback(() => {
     if (!streakData.lastStudyDate) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return streakData.lastStudyDate === today.toISOString().split('T')[0];
+    return streakData.lastStudyDate === toLocalDateStr(new Date());
   }, [streakData.lastStudyDate]);
 
   return {

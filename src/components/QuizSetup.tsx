@@ -38,7 +38,7 @@ export const QuizSetup = ({ available, onStart, onBack }: QuizSetupProps) => {
     if (available[s] === 0) return;
     setSelected(prev => {
       const next = new Set(prev);
-      next.has(s) ? next.delete(s) : next.add(s);
+      if (next.has(s)) next.delete(s); else next.add(s);
       return next;
     });
   };

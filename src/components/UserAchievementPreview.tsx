@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trophy, Crown, Swords, Medal, Sparkles, Star, Loader2 } from 'lucide-react';
-import { ACHIEVEMENTS } from '@/hooks/useAchievements';
+import { X, Trophy, Crown, Swords, Medal, Sparkles, Star, Loader2, Lock, MessageCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ACHIEVEMENTS, AchievementStats } from '@/hooks/useAchievements';
 import EliteBadge from './EliteBadge';
 import AchievementBadge from './AchievementBadge';
 import { UserAvatar } from './UserAvatar';
@@ -20,18 +21,28 @@ interface UserAchievementPreviewProps {
   user: UserData | null;
   open: boolean;
   onClose: () => void;
+  onChat?: (userId: string) => void;
+  stats?: AchievementStats;
 }
 
 const rarityOrder = ['legendary', 'epic', 'rare', 'uncommon', 'common'] as const;
 
-export default function UserAchievementPreview({ user, open, onClose }: UserAchievementPreviewProps) {
-  if (!user) return null;
-
+export default function UserAchievementPreview({ user, open, onClose, onChat, stats }: UserAchievementPreviewProps) {
   const unlockedAchievements = useMemo(() => {
+    if (!user) return [];
     const ids = new Set(user.achievements);
     return ACHIEVEMENTS.filter(a => ids.has(a.id))
       .sort((a, b) => rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity));
-  }, [user.achievements]);
+  }, [user?.achievements]);
+
+  const lockedAchievements = useMemo(() => {
+    if (!user || !stats) return [];
+    const ids = new Set(user.achievements);
+    return ACHIEVEMENTS.filter(a => !ids.has(a.id))
+      .sort((a, b) => rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity));
+  }, [user?.achievements, stats]);
+
+  if (!user) return null;
 
   const legendary = unlockedAchievements.filter(a => a.rarity === 'legendary').length;
   const epic = unlockedAchievements.filter(a => a.rarity === 'epic').length;
@@ -68,18 +79,30 @@ export default function UserAchievementPreview({ user, open, onClose }: UserAchi
               </button>
 
               <div className="flex items-center gap-3">
-                <UserAvatar
-                  name={user.display_name || 'User'}
-                  url={user.avatar_url}
-                  className="w-14 h-14 ring-2 ring-primary/30"
-                />
-                <div className="min-w-0">
+              <UserAvatar
+                name={user.display_name || 'User'}
+                url={user.avatar_url}
+                className="w-14 h-14 ring-2 ring-primary/30"
+                targetUserId={user.user_id}
+              />
+                <div className="min-w-0 flex-1">
                   <p className="font-bold text-base truncate">{user.display_name || 'Anonymous'}</p>
                   <p className="text-xs text-muted-foreground">
                     {unlockedAchievements.length} achievement{unlockedAchievements.length !== 1 ? 's' : ''}
                     {user.rank && ` · #${user.rank} on leaderboard`}
                   </p>
                 </div>
+                {onChat && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-8 gap-1.5 shrink-0 self-start"
+                    onClick={() => onChat(user.user_id)}
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    Message
+                  </Button>
+                )}
               </div>
 
               {unlockedAchievements.length > 0 && (
@@ -159,6 +182,39 @@ export default function UserAchievementPreview({ user, open, onClose }: UserAchi
                               unlocked
                               size="sm"
                               showDetails={false}
+                            />
+                            <p className="text-[9px] text-muted-foreground text-center leading-tight line-clamp-1">
+                              {achievement.name}
+                            </p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Locked achievements — only when stats provided (self-view) */}
+                  {lockedAchievements.length > 0 && (
+                    <div className="border-t border-border/40 pt-4">
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-semibold text-muted-foreground">Locked</span>
+                        <span className="text-[10px] text-muted-foreground">({lockedAchievements.length})</span>
+                      </div>
+                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                        {lockedAchievements.map((achievement, i) => (
+                          <motion.div
+                            key={achievement.id}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.03, duration: 0.3 }}
+                            className="flex flex-col items-center gap-1 p-1.5 rounded-lg hover:bg-secondary/30 transition-colors cursor-default"
+                          >
+                            <AchievementBadge
+                              achievement={achievement}
+                              unlocked={false}
+                              size="sm"
+                              showDetails={false}
+                              stats={stats}
                             />
                             <p className="text-[9px] text-muted-foreground text-center leading-tight line-clamp-1">
                               {achievement.name}

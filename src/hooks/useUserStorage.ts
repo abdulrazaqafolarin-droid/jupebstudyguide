@@ -45,7 +45,8 @@ export function useUserStorage<T>(
     try {
       const raw = localStorage.getItem(storageKey);
       setValue(raw ? (JSON.parse(raw) as T) : defaultValue);
-    } catch {
+    } catch (err) {
+      console.warn('Failed to read user storage:', err);
       setValue(defaultValue);
     }
     setIsReady(true);
@@ -61,8 +62,8 @@ export function useUserStorage<T>(
         if (storageKey) {
           try {
             localStorage.setItem(storageKey, JSON.stringify(resolved));
-          } catch {
-            /* quota / serialization */
+          } catch (err) {
+            console.warn('Failed to write user storage:', err);
           }
         }
         return resolved;

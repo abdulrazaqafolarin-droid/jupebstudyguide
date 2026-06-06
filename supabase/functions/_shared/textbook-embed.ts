@@ -1,4 +1,4 @@
-const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
+const EMBED_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
 export async function generateEmbedding(text: string): Promise<number[] | null> {
   const key = Deno.env.get("GEMINI_API_KEY");
@@ -16,12 +16,12 @@ export async function generateEmbeddings(texts: string[]): Promise<(number[] | n
 async function geminiEmbed(text: string, key: string): Promise<number[] | null> {
   try {
     const res = await fetch(
-      `${GEMINI_BASE}/models/text-embedding-004:embedContent?key=${key}`,
+      `${EMBED_BASE}/models/gemini-embedding-001:embedContent?key=${key}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "models/text-embedding-004",
+          model: "models/gemini-embedding-001",
           content: { parts: [{ text }] },
         }),
       }

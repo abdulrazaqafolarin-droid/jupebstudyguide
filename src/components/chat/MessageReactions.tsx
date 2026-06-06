@@ -50,13 +50,17 @@ export function MessageReactions({
 
   useEffect(() => {
     if (!showPicker) return;
-    const handleClick = (e: MouseEvent) => {
+    const handleClick = (e: MouseEvent | TouchEvent) => {
       if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
         setShowPicker(false);
       }
     };
     document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('touchstart', handleClick, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('touchstart', handleClick);
+    };
   }, [showPicker]);
 
   useEffect(() => {
@@ -98,10 +102,11 @@ export function MessageReactions({
   }, [onReact, messageId]);
 
   const showQuickBar = compact && !hasReactions;
+  const showCompactPills = compact && hasReactions;
 
   return (
     <div className="relative" ref={pickerRef}>
-      {/* Existing reaction pills */}
+      {/* Existing reaction pills (non-compact) */}
       {!compact && hasReactions && (
         <div className="flex flex-wrap gap-1">
           {reactionEntries.map(([emoji, users]) => {
@@ -139,7 +144,40 @@ export function MessageReactions({
         </div>
       )}
 
-      {/* Quick reaction bar (compact hover mode) */}
+      {/* Compact pills when reactions exist */}
+      {showCompactPills && (
+        <div className="flex flex-wrap gap-0.5 items-center">
+          {reactionEntries.slice(0, 3).map(([emoji, users]) => {
+            const isMine = myReactions.includes(emoji);
+            return (
+              <button
+                key={emoji}
+                onClick={() => onReact(messageId, emoji)}
+                className={cn(
+                  'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] border transition-all active:scale-90',
+                  isMine
+                    ? 'bg-primary/15 border-primary/30 text-primary'
+                    : 'bg-secondary/50 border-border/50 text-muted-foreground'
+                )}
+              >
+                <span className="text-xs leading-none">{emoji}</span>
+                <span className="text-[9px] font-semibold tabular-nums leading-none">{users.length}</span>
+              </button>
+            );
+          })}
+          {reactionEntries.length > 3 && (
+            <span className="text-[9px] text-muted-foreground px-0.5">+{reactionEntries.length - 3}</span>
+          )}
+          <button
+            onClick={() => setShowPicker(p => !p)}
+            className="inline-flex items-center rounded-full px-1 text-muted-foreground/60 hover:text-muted-foreground active:scale-90"
+          >
+            <SmilePlus className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
+      {/* Quick reaction bar (compact hover mode, no reactions yet) */}
       {showQuickBar && (
         <div className="flex items-center gap-0.5">
           {QUICK_EMOJIS.map(emoji => {

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageCircle, UserPlus, UserCheck, UserX, Ban, Loader2, ShieldAlert, Clock, Send } from 'lucide-react';
+import { X, MessageCircle, UserPlus, UserCheck, UserX, Ban, Loader2, ShieldAlert, Clock, Send, Trophy, Star, Eye, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,6 +8,10 @@ import { useMutualFriends } from '@/hooks/useMutualFriends';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { ACHIEVEMENTS } from '@/hooks/useAchievements';
+import AchievementBadge from '@/components/AchievementBadge';
+import UserAchievementPreview from '@/components/UserAchievementPreview';
+import { ReportUserDialog } from '@/components/profile/ReportUserDialog';
 
 export interface UserProfileData {
   user_id: string;
@@ -18,7 +22,7 @@ export interface UserProfileData {
   privacy_profile: string;
 }
 
-type RelationshipStatus = 'stranger' | 'pending_sent' | 'pending_receipt' | 'friends' | 'blocked';
+type RelationshipStatus = 'stranger' | 'pending_sent' | 'pending_receipt' | 'accepted' | 'blocked';
 
 interface UserProfileDialogProps {
   userId: string | null;
@@ -34,15 +38,20 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
   const [relationship, setRelationship] = useState<RelationshipStatus>('stranger');
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [otherAchievements, setOtherAchievements] = useState<string[]>([]);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const fetchGenRef = useRef(0);
 
   const fetchProfile = useCallback(async () => {
     if (!userId || !user) return;
+    const gen = ++fetchGenRef.current;
     setLoading(true);
 
     const [profileRes, relationRes] = await Promise.all([
       supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile')
+        .select('user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, achievements')
         .eq('user_id', userId)
         .maybeSingle(),
       supabase.rpc('get_relationship_status', {
@@ -53,6 +62,8 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
 
     if (profileRes.data) {
       setProfile(profileRes.data as UserProfileData);
+      const rawAchievements = (profileRes.data as Record<string, unknown>).achievements;
+      setOtherAchievements(Array.isArray(rawAchievements) ? rawAchievements : []);
     }
 
     // Check blocked
@@ -73,6 +84,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
       await getMutualFriends(userId);
     }
 
+    if (gen !== fetchGenRef.current) return;
     setLoading(false);
   }, [userId, user, getMutualFriends]);
 
@@ -93,25 +105,30 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
   const handleSendRequest = async () => {
     if (!userId) return;
     setActionLoading(true);
-    const { error } = await supabase.from('friend_requests').insert({
-      sender_id: user!.id,
+    const { data, error } = await supabase.rpc('send_friend_request', {
       receiver_id: userId,
     });
-    if (error) toast.error(error.message);
-    else {
-      toast.success('Friend request sent!');
-      setRelationship('pending_sent');
+    if (error) {
+      toast.error(error.message);
+    } else {
+      const result = data as unknown as { success?: boolean; error?: string };
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success('Friend request sent!');
+        setRelationship('pending_sent');
+      }
     }
     setActionLoading(false);
   };
 
   const handleCancelRequest = async () => {
-    if (!userId) return;
+    if (!userId || !user) return;
     setActionLoading(true);
     const { error } = await supabase
       .from('friend_requests')
       .delete()
-      .eq('sender_id', user!.id)
+      .eq('sender_id', user.id)
       .eq('receiver_id', userId)
       .eq('status', 'pending');
     if (!error) {
@@ -122,29 +139,29 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
   };
 
   const handleAcceptRequest = async () => {
-    if (!userId) return;
+    if (!userId || !user) return;
     setActionLoading(true);
     const { error } = await supabase
       .from('friend_requests')
       .update({ status: 'accepted' })
       .eq('sender_id', userId)
-      .eq('receiver_id', user!.id)
+      .eq('receiver_id', user.id)
       .eq('status', 'pending');
     if (!error) {
-      setRelationship('friends');
+      setRelationship('accepted');
       toast.success('Friend request accepted!');
     }
     setActionLoading(false);
   };
 
   const handleDeclineRequest = async () => {
-    if (!userId) return;
+    if (!userId || !user) return;
     setActionLoading(true);
     const { error } = await supabase
       .from('friend_requests')
       .update({ status: 'rejected' })
       .eq('sender_id', userId)
-      .eq('receiver_id', user!.id)
+      .eq('receiver_id', user.id)
       .eq('status', 'pending');
     if (!error) {
       setRelationship('stranger');
@@ -154,12 +171,12 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
   };
 
   const handleUnfriend = async () => {
-    if (!userId) return;
+    if (!userId || !user) return;
     setActionLoading(true);
     const { error } = await supabase
       .from('friend_requests')
       .delete()
-      .or(`and(sender_id.eq.${user!.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user!.id})`)
+      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id})`)
       .eq('status', 'accepted');
     if (!error) {
       setRelationship('stranger');
@@ -186,6 +203,11 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
     setActionLoading(false);
   };
 
+  const unlockedAchievementList = useMemo(() => {
+    const ids = new Set(otherAchievements);
+    return ACHIEVEMENTS.filter(a => ids.has(a.id));
+  }, [otherAchievements]);
+
   const isOwnProfile = userId === user?.id;
 
   const renderActions = () => {
@@ -205,11 +227,26 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
       </Button>
     );
 
+    const reportBtn = (
+      <Button
+        key="report"
+        size="sm"
+        variant="ghost"
+        onClick={() => setShowReport(true)}
+        className="h-9 w-9 rounded-lg"
+        title="Report user"
+      >
+        <Flag className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+      </Button>
+    );
+
     const buttons: React.ReactNode[] = [];
 
     switch (relationship) {
       case 'stranger':
+        buttons.push(actionButton('Send Message', MessageCircle, () => onStartChat?.(userId!)));
         buttons.push(actionButton('Add Friend', UserPlus, handleSendRequest));
+        buttons.push(reportBtn);
         buttons.push(
           <Button
             key="block"
@@ -225,7 +262,9 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
         );
         break;
       case 'pending_sent':
+        buttons.push(actionButton('Send Message', MessageCircle, () => onStartChat?.(userId!)));
         buttons.push(actionButton('Cancel Request', Clock, handleCancelRequest, 'outline'));
+        buttons.push(reportBtn);
         buttons.push(
           <Button
             key="block"
@@ -241,8 +280,10 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
         );
         break;
       case 'pending_receipt':
+        buttons.push(actionButton('Send Message', MessageCircle, () => onStartChat?.(userId!)));
         buttons.push(actionButton('Accept', UserCheck, handleAcceptRequest));
         buttons.push(actionButton('Decline', UserX, handleDeclineRequest, 'destructive'));
+        buttons.push(reportBtn);
         buttons.push(
           <Button
             key="block"
@@ -257,9 +298,10 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
           </Button>
         );
         break;
-      case 'friends':
+      case 'accepted':
         buttons.push(actionButton('Send Message', Send, () => onStartChat?.(userId!)));
         buttons.push(actionButton('Unfriend', UserX, handleUnfriend, 'destructive'));
+        buttons.push(reportBtn);
         buttons.push(
           <Button
             key="block"
@@ -316,6 +358,8 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
                 url={profile?.avatar_url}
                 name={profile?.display_name}
                 className="w-24 h-24 ring-4 ring-background relative"
+                viewable
+                targetUserId={profile?.user_id}
               />
             </div>
 
@@ -351,6 +395,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
                               url={f.avatar_url}
                               name={f.display_name}
                               className="w-6 h-6 ring-2 ring-card"
+                              targetUserId={f.friend_id}
                             />
                           ))}
                         </div>
@@ -372,7 +417,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
                       Blocked
                     </div>
                   )}
-                  {relationship === 'friends' && (
+                  {relationship === 'accepted' && (
                     <div className="flex items-center justify-center gap-1.5 text-xs text-accent bg-accent/10 rounded-lg px-3 py-2">
                       <UserCheck className="w-3.5 h-3.5" />
                       Friends
@@ -381,12 +426,67 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
 
                   {/* Action buttons */}
                   {renderActions()}
+
+                  {/* Achievements */}
+                  {unlockedAchievementList.length > 0 && (
+                    <div className="border-t border-border/40 pt-3">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Trophy className="w-3.5 h-3.5 text-primary" />
+                        <span className="text-xs font-medium">Achievements</span>
+                        <span className="text-[10px] text-muted-foreground">({unlockedAchievementList.length})</span>
+                        <button
+                          onClick={() => setShowAchievements(true)}
+                          className="ml-auto flex items-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors font-medium"
+                        >
+                          <Eye className="w-3 h-3" />
+                          View All
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {unlockedAchievementList.slice(0, 8).map(a => (
+                          <div key={a.id} className="flex flex-col items-center gap-0.5">
+                            <AchievementBadge
+                              achievement={a}
+                              unlocked
+                              size="sm"
+                              showDetails={false}
+                            />
+                            <span className="text-[8px] text-muted-foreground truncate max-w-[40px] text-center leading-tight">
+                              {a.name}
+                            </span>
+                          </div>
+                        ))}
+                        {unlockedAchievementList.length > 8 && (
+                          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-secondary/40 text-[10px] text-muted-foreground font-medium">
+                            +{unlockedAchievementList.length - 8}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <UserAchievementPreview
+                    user={profile ? {
+                      user_id: profile.user_id,
+                      display_name: profile.display_name,
+                      avatar_url: profile.avatar_url,
+                      achievements: otherAchievements,
+                    } : null}
+                    open={showAchievements}
+                    onClose={() => setShowAchievements(false)}
+                  />
                 </>
               ) : (
                 <div className="text-center py-6 text-sm text-muted-foreground">
                   User not found
                 </div>
               )}
+
+              <ReportUserDialog
+                isOpen={showReport}
+                onClose={() => setShowReport(false)}
+                reportedUserId={userId}
+              />
             </div>
           </motion.div>
         </motion.div>

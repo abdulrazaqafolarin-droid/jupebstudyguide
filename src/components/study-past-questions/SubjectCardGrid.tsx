@@ -24,7 +24,7 @@ const SUBJECT_COLORS: Record<Subject, { gradient: string; light: string; accent:
   physics: { gradient: "from-blue-600/40 to-cyan-400/40", light: "bg-blue-500/10", accent: "border-blue-500/30" },
   chemistry: { gradient: "from-emerald-600/40 to-teal-400/40", light: "bg-emerald-500/10", accent: "border-emerald-500/30" },
   biology: { gradient: "from-green-600/40 to-lime-400/40", light: "bg-green-500/10", accent: "border-green-500/30" },
-  mathematics: { gradient: "from-purple-600/40 to-pink-400/40", light: "bg-purple-500/10", accent: "border-purple-500/30" },
+  math: { gradient: "from-purple-600/40 to-pink-400/40", light: "bg-purple-500/10", accent: "border-purple-500/30" },
 };
 
 export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
@@ -40,7 +40,7 @@ export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
       {subjects.map((subject) => {
         const info = STUDY_SUBJECT_INFO[subject];
         const count = counts?.[subject];
-        const colors = SUBJECT_COLORS[subject];
+        const colors = SUBJECT_COLORS[subject] ?? { gradient: "", light: "", accent: "" };
 
         return (
           <motion.button

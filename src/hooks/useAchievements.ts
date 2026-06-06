@@ -8,6 +8,7 @@ export interface Achievement {
   icon: string;
   condition: (stats: AchievementStats) => boolean;
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  getProgress?: (stats: AchievementStats) => { current: number; max: number } | null;
 }
 
 export interface AchievementStats {
@@ -34,6 +35,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🌱',
     condition: (s) => s.totalDaysStudied >= 1,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.totalDaysStudied, 1), max: 1 }),
   },
   {
     id: 'streak_3',
@@ -42,6 +44,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🔥',
     condition: (s) => s.longestStreak >= 3,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.longestStreak, 3), max: 3 }),
   },
   {
     id: 'streak_7',
@@ -50,6 +53,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💪',
     condition: (s) => s.longestStreak >= 7,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.longestStreak, 7), max: 7 }),
   },
   {
     id: 'streak_14',
@@ -58,6 +62,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '⚔️',
     condition: (s) => s.longestStreak >= 14,
     rarity: 'epic',
+    getProgress: (s) => ({ current: Math.min(s.longestStreak, 14), max: 14 }),
   },
   {
     id: 'streak_30',
@@ -66,6 +71,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '👑',
     condition: (s) => s.longestStreak >= 30,
     rarity: 'legendary',
+    getProgress: (s) => ({ current: Math.min(s.longestStreak, 30), max: 30 }),
   },
 
   {
@@ -75,6 +81,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📚',
     condition: (s) => s.totalQuestionsAnswered >= 10,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.totalQuestionsAnswered, 10), max: 10 }),
   },
   {
     id: 'first_50',
@@ -83,6 +90,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📖',
     condition: (s) => s.totalQuestionsAnswered >= 50,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.totalQuestionsAnswered, 50), max: 50 }),
   },
   {
     id: 'first_100',
@@ -91,6 +99,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💯',
     condition: (s) => s.totalQuestionsAnswered >= 100,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.totalQuestionsAnswered, 100), max: 100 }),
   },
   {
     id: 'first_500',
@@ -99,6 +108,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎓',
     condition: (s) => s.totalQuestionsAnswered >= 500,
     rarity: 'epic',
+    getProgress: (s) => ({ current: Math.min(s.totalQuestionsAnswered, 500), max: 500 }),
   },
   {
     id: 'first_1000',
@@ -107,6 +117,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🏅',
     condition: (s) => s.totalQuestionsAnswered >= 1000,
     rarity: 'legendary',
+    getProgress: (s) => ({ current: Math.min(s.totalQuestionsAnswered, 1000), max: 1000 }),
   },
 
   {
@@ -116,6 +127,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '✨',
     condition: (s) => s.questionsLearned >= 10,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.questionsLearned, 10), max: 10 }),
   },
   {
     id: 'master_50',
@@ -124,6 +136,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🌟',
     condition: (s) => s.questionsLearned >= 50,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.questionsLearned, 50), max: 50 }),
   },
   {
     id: 'master_100',
@@ -132,6 +145,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🏆',
     condition: (s) => s.questionsLearned >= 100,
     rarity: 'epic',
+    getProgress: (s) => ({ current: Math.min(s.questionsLearned, 100), max: 100 }),
   },
   {
     id: 'master_200',
@@ -140,6 +154,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💎',
     condition: (s) => s.questionsLearned >= 200,
     rarity: 'legendary',
+    getProgress: (s) => ({ current: Math.min(s.questionsLearned, 200), max: 200 }),
   },
 
   {
@@ -149,6 +164,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎯',
     condition: (s) => s.totalQuestionsAnswered >= 50 && (s.totalCorrect / s.totalQuestionsAnswered) >= 0.8,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.totalQuestionsAnswered, 50), max: 50 }),
   },
   {
     id: 'accuracy_perfect',
@@ -157,6 +173,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💫',
     condition: (s) => s.totalQuestionsAnswered >= 100 && (s.totalCorrect / s.totalQuestionsAnswered) >= 0.9,
     rarity: 'epic',
+    getProgress: (s) => ({ current: Math.min(s.totalQuestionsAnswered, 100), max: 100 }),
   },
   {
     id: 'perfect_10',
@@ -165,6 +182,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🔟',
     condition: (s) => (s.consecutiveCorrect ?? 0) >= 10,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.consecutiveCorrect ?? 0, 10), max: 10 }),
   },
 
   {
@@ -174,6 +192,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🌈',
     condition: (s) => s.subjectsStudied >= 3,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.subjectsStudied, 3), max: 3 }),
   },
   {
     id: 'four_subjects',
@@ -182,6 +201,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎨',
     condition: (s) => s.subjectsStudied >= 4,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.subjectsStudied, 4), max: 4 }),
   },
 
   {
@@ -191,6 +211,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📤',
     condition: (s) => (s.documentsUploaded ?? 0) >= 1,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.documentsUploaded ?? 0, 1), max: 1 }),
   },
   {
     id: 'upload_5',
@@ -199,6 +220,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📂',
     condition: (s) => (s.documentsUploaded ?? 0) >= 5,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.documentsUploaded ?? 0, 5), max: 5 }),
   },
   {
     id: 'upload_10',
@@ -207,6 +229,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🗃️',
     condition: (s) => (s.documentsUploaded ?? 0) >= 10,
     rarity: 'epic',
+    getProgress: (s) => ({ current: Math.min(s.documentsUploaded ?? 0, 10), max: 10 }),
   },
 
   {
@@ -216,6 +239,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🚀',
     condition: (s) => (s.syllabusProgress ?? 0) > 0,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.syllabusProgress ?? 0, 1), max: 1 }),
   },
   {
     id: 'syllabus_week1',
@@ -224,6 +248,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📆',
     condition: (s) => (s.syllabusProgress ?? 0) >= 7,
     rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.syllabusProgress ?? 0, 7), max: 7 }),
   },
   {
     id: 'syllabus_half',
@@ -232,6 +257,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '⏳',
     condition: (s) => (s.syllabusProgress ?? 0) >= 15,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.syllabusProgress ?? 0, 15), max: 15 }),
   },
   {
     id: 'syllabus_25',
@@ -240,6 +266,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎢',
     condition: (s) => (s.syllabusProgress ?? 0) >= 25,
     rarity: 'epic',
+    getProgress: (s) => ({ current: Math.min(s.syllabusProgress ?? 0, 25), max: 25 }),
   },
   {
     id: 'syllabus_complete',
@@ -248,6 +275,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🏆',
     condition: (s) => s.syllabusCompleted === true,
     rarity: 'legendary',
+    getProgress: (s) => ({ current: Math.min(s.syllabusProgress ?? 0, 30), max: 30 }),
   },
 
   {
@@ -257,6 +285,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🦉',
     condition: (s) => s.studiedAfterMidnight === true,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: s.studiedAfterMidnight ? 1 : 0, max: 1 }),
   },
   {
     id: 'early_bird',
@@ -265,6 +294,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🐦',
     condition: (s) => s.studiedBefore6am === true,
     rarity: 'uncommon',
+    getProgress: (s) => ({ current: s.studiedBefore6am ? 1 : 0, max: 1 }),
   },
 ];
 
@@ -273,11 +303,28 @@ const UNLOCKED_KEY = 'achievements-unlocked';
 export function useAchievements(
   stats: AchievementStats,
   onNewUnlock?: (achievement: Achievement) => void,
+  initialUnlockedIds?: string[],
 ) {
   const [unlockedArr, setUnlockedArr] = useUserStorage<string[]>(UNLOCKED_KEY, []);
   const unlockedIds = useMemo(() => new Set(unlockedArr), [unlockedArr]);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement[]>([]);
   const prevUnlockCount = useRef(unlockedIds.size);
+
+  // Merge DB achievements into localStorage on mount (cross-device sync fix)
+  useEffect(() => {
+    if (!initialUnlockedIds || initialUnlockedIds.length === 0) return;
+    const current = new Set(unlockedArr);
+    let changed = false;
+    for (const id of initialUnlockedIds) {
+      if (!current.has(id)) {
+        current.add(id);
+        changed = true;
+      }
+    }
+    if (changed) {
+      setUnlockedArr([...current]);
+    }
+  }, [initialUnlockedIds]);
 
   const statsKey = useMemo(() => JSON.stringify(stats), [stats]);
 
@@ -329,5 +376,6 @@ export function useAchievements(
     clearNewlyUnlocked,
     unlockedCount: unlockedIds.size,
     totalCount: ACHIEVEMENTS.length,
+    stats,
   };
 }

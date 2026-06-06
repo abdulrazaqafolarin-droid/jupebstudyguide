@@ -31,7 +31,7 @@ BEGIN
       RETURN NEW;
     END IF;
     -- Get ordered participants
-    SELECT MIN(cp.user_id), MAX(cp.user_id)
+    SELECT (array_agg(cp.user_id ORDER BY cp.user_id))[1], (array_agg(cp.user_id ORDER BY cp.user_id DESC))[1]
       INTO v_part_a, v_part_b
       FROM public.conversation_participants cp
       WHERE cp.conversation_id = v_conv_id;
@@ -55,7 +55,7 @@ BEGIN
     v_conv_id := NEW.conversation_id;
     v_sender_id := NEW.sender_id;
 
-    SELECT MIN(cp.user_id), MAX(cp.user_id)
+    SELECT (array_agg(cp.user_id ORDER BY cp.user_id))[1], (array_agg(cp.user_id ORDER BY cp.user_id DESC))[1]
       INTO v_part_a, v_part_b
       FROM public.conversation_participants cp
       WHERE cp.conversation_id = v_conv_id;
@@ -112,8 +112,8 @@ CREATE TRIGGER trg_maintain_unread_counts
 WITH participant_order AS (
   SELECT
     cp.conversation_id,
-    MIN(cp.user_id) AS part_a,
-    MAX(cp.user_id) AS part_b
+    (array_agg(cp.user_id ORDER BY cp.user_id))[1] AS part_a,
+    (array_agg(cp.user_id ORDER BY cp.user_id DESC))[1] AS part_b
   FROM public.conversation_participants cp
   GROUP BY cp.conversation_id
 ),
@@ -147,6 +147,7 @@ LEFT JOIN unread_b ub ON ub.conversation_id = po.conversation_id
 WHERE c.id = po.conversation_id;
 
 -- 5. Update mark_conversation_read RPC to also zero out the stored count
+DROP FUNCTION IF EXISTS public.mark_conversation_read(UUID, UUID);
 CREATE OR REPLACE FUNCTION public.mark_conversation_read(
   p_conversation_id UUID,
   p_user_id UUID
@@ -163,7 +164,7 @@ DECLARE
   v_unread_count INTEGER;
 BEGIN
   -- Get ordered participants
-  SELECT MIN(cp.user_id), MAX(cp.user_id)
+  SELECT (array_agg(cp.user_id ORDER BY cp.user_id))[1], (array_agg(cp.user_id ORDER BY cp.user_id DESC))[1]
     INTO v_part_a, v_part_b
     FROM public.conversation_participants cp
     WHERE cp.conversation_id = p_conversation_id;

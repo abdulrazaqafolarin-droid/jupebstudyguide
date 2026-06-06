@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useActivation, useAdminCodes } from "@/hooks/useActivation";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useActivation, useAdminCodes, type ActivationCodeResult } from "@/hooks/useActivation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Key, Copy, CheckCircle, Loader2, Shield, Users, TrendingUp } from "lucide-react";
+import { ArrowLeft, Key, Copy, CheckCircle, Loader2, Shield, Users, TrendingUp, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -16,13 +16,28 @@ export default function AdminActivationCodes() {
   const { codes, loading, generateCodes, listCodes } = useAdminCodes();
   const navigate = useNavigate();
 
+  const handleSignOut = useCallback(async () => {
+    await signOut();
+    navigate("/auth", { replace: true });
+  }, [signOut, navigate]);
+
   const [count, setCount] = useState(5);
   const [planType, setPlanType] = useState("basic");
   const [generating, setGenerating] = useState(false);
-  const [generatedCodes, setGeneratedCodes] = useState<any[]>([]);
+  const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeResult[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    await listCodes();
+    setRefreshing(false);
+  }, [listCodes]);
 
   useEffect(() => {
     listCodes();
+    intervalRef.current = setInterval(() => { listCodes(); }, 30000);
+    return () => clearInterval(intervalRef.current);
   }, [listCodes]);
 
   const handleGenerate = async () => {
@@ -40,15 +55,15 @@ export default function AdminActivationCodes() {
   };
 
   const copyAll = () => {
-    const text = generatedCodes.map((c: any) => `${c.code}\t${c.plan_type}`).join("\n");
+    const text = generatedCodes.map((c) => `${c.code}\t${c.plan_type}`).join("\n");
     navigator.clipboard.writeText(text);
     toast.success("Copied all codes");
   };
 
   const stats = {
     total: codes.length,
-    used: codes.filter((c: any) => c.is_used).length,
-    available: codes.filter((c: any) => !c.is_used).length,
+    used: codes.filter((c) => c.is_used).length,
+    available: codes.filter((c) => !c.is_used).length,
   };
 
   if (status.checking) {
@@ -82,9 +97,15 @@ export default function AdminActivationCodes() {
             <ArrowLeft className="w-5 h-5" /> Dashboard
           </button>
           <h1 className="font-semibold">Activation Code Manager</h1>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={refresh} disabled={refreshing} className="gap-1.5">
+              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
+              <span className="hidden sm:inline">Refresh</span>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -178,7 +199,7 @@ export default function AdminActivationCodes() {
                   </Button>
                 </div>
                 <div className="bg-secondary/30 rounded-lg p-3 max-h-48 overflow-y-auto">
-                  {generatedCodes.map((c: any, i: number) => (
+                  {generatedCodes.map((c, i: number) => (
                     <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                       <code className="font-mono text-sm tracking-wider text-primary">{c.code}</code>
                       <span className="text-xs text-muted-foreground capitalize">{c.plan_type}</span>
@@ -222,7 +243,7 @@ export default function AdminActivationCodes() {
                     </tr>
                   </thead>
                   <tbody>
-                    {codes.map((c: any) => (
+                    {codes.map((c) => (
                       <tr key={c.id} className="border-b border-border/50 hover:bg-secondary/20">
                         <td className="py-2 px-2">
                           <code className="font-mono text-xs bg-secondary/50 px-1.5 py-0.5 rounded">{c.code}</code>

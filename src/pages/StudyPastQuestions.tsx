@@ -83,6 +83,11 @@ export default function StudyPastQuestions() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<StudyQuestion[]>([]);
   const [showSearch, setShowSearch] = useState(false);
+  const [searchSubjectFilter, setSearchSubjectFilter] = useState<Subject[]>(SUBJECTS);
+  const subjectFilteredResults = useMemo(() =>
+    searchResults.filter(q => searchSubjectFilter.includes(q.subject)),
+    [searchResults, searchSubjectFilter]
+  );
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const tabCounts = useMemo(() => {
@@ -143,6 +148,7 @@ export default function StudyPastQuestions() {
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
+    setSearchSubjectFilter(SUBJECTS);
     if (query.trim().length < 2) {
       setSearchResults([]);
       return;
@@ -313,10 +319,45 @@ export default function StudyPastQuestions() {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-2"
                 >
+                  <div className="flex items-center gap-1.5 flex-wrap mb-2">
+                    {SUBJECTS.map(s => {
+                      const info = STUDY_SUBJECT_INFO[s];
+                      const isActive = searchSubjectFilter.includes(s);
+                      const count = searchResults.filter(q => q.subject === s).length;
+                      return (
+                        <button
+                          key={s}
+                          onClick={() => setSearchSubjectFilter(prev =>
+                            isActive ? prev.filter(x => x !== s) : [...prev, s]
+                          )}
+                          className={cn(
+                            'flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all',
+                            isActive
+                              ? 'bg-primary/10 text-primary ring-1 ring-primary/20'
+                              : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'
+                          )}
+                        >
+                          {info.icon}
+                          <span className="capitalize">{s}</span>
+                          <span className={cn('text-[10px]', isActive ? 'opacity-70' : 'opacity-40')}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                    {searchSubjectFilter.length < SUBJECTS.length && (
+                      <button
+                        onClick={() => setSearchSubjectFilter(SUBJECTS)}
+                        className="text-[10px] text-muted-foreground hover:text-foreground underline underline-offset-2"
+                      >
+                        Clear filter
+                      </button>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground mb-2">
-                    {searchResults.length === 0 ? "No questions found" : `${searchResults.length} question(s) found`}
+                    {subjectFilteredResults.length === 0 ? "No questions found" : `${subjectFilteredResults.length} question(s) found`}
                   </p>
-                  {searchResults.map((q) => {
+                  {subjectFilteredResults.map((q) => {
                     const info = STUDY_SUBJECT_INFO[q.subject];
                     return (
                       <button

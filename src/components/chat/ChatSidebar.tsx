@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { GroupCreateDialog } from './GroupCreateDialog';
+import { useProfilePhotoViewer } from '@/components/ProfilePhotoViewer';
 
 interface ChatSidebarProps {
   conversations: Conversation[];
@@ -17,6 +18,8 @@ interface ChatSidebarProps {
   onStartConversation: (userId: string) => void;
   searchUsers: (query: string) => Promise<Profile[]>;
   isOnline: (userId: string) => boolean;
+  isTyping?: (userId: string) => boolean;
+  getLastSeen?: (userId: string) => string | null;
   friendRequestCount?: number;
   onGroupCreated?: (conversationId: string) => void;
   onFriendRequestsClick?: () => void;
@@ -33,6 +36,8 @@ export function ChatSidebar({
   onStartConversation,
   searchUsers,
   isOnline,
+  isTyping,
+  getLastSeen,
   friendRequestCount,
   onGroupCreated,
   onFriendRequestsClick,
@@ -45,6 +50,7 @@ export function ChatSidebar({
   const [userResults, setUserResults] = useState<Profile[]>([]);
   const [searchingUsers, setSearchingUsers] = useState(false);
   const [showGroupCreate, setShowGroupCreate] = useState(false);
+  const { openViewer } = useProfilePhotoViewer();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
@@ -120,14 +126,21 @@ export function ChatSidebar({
               )}
               {userResults.map((profile) => (
                 <div
-                  key={profile.id}
+                  key={profile.user_id}
                   className="w-full flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/50 transition-all group"
                 >
                   <button
-                    onClick={() => onProfileClick?.(profile.user_id)}
+                    onClick={(e) => {
+                      if (profile.avatar_url) {
+                        e.stopPropagation();
+                        openViewer({ url: profile.avatar_url, name: profile.display_name, originRect: e.currentTarget.getBoundingClientRect() });
+                      } else {
+                        onProfileClick?.(profile.user_id);
+                      }
+                    }}
                     className="relative shrink-0"
                   >
-                    <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-8 h-8 ring-0" />
+                    <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-8 h-8 ring-0" targetUserId={profile.user_id} />
                     {isOnline(profile.user_id) && (
                       <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-accent rounded-full border-2 border-background" />
                     )}
@@ -137,7 +150,13 @@ export function ChatSidebar({
                     className="flex-1 min-w-0 text-left"
                   >
                     <span className="text-sm font-medium truncate block">{profile.display_name || 'User'}</span>
-                    <span className="text-[10px] text-muted-foreground">{isOnline(profile.user_id) ? 'Online' : 'Offline'}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {isOnline(profile.user_id)
+                        ? 'Online'
+                        : getLastSeen?.(profile.user_id)
+                          ? `Last seen ${formatDistanceToNow(new Date(getLastSeen(profile.user_id)!), { addSuffix: true })}`
+                          : 'Offline'}
+                    </span>
                   </button>
                   <div className="flex gap-1 shrink-0">
                     <Button
@@ -216,11 +235,21 @@ export function ChatSidebar({
                 >
                   <div className="relative shrink-0">
                     {isGroup ? (
-                      <div className="w-11 h-11 rounded-full bg-primary/20 flex items-center justify-center">
-                        <Users className="w-5 h-5 text-primary" />
-                      </div>
+                      <UserAvatar
+                        url={conv.group_avatar}
+                        name={conv.group_name || 'Group'}
+                        className="w-11 h-11 ring-0"
+                        fallback={<Users className="w-5 h-5 text-primary" />}
+                      />
                     ) : (
-                      <UserAvatar url={conv.other_user?.avatar_url} name={conv.other_user?.display_name} className="w-11 h-11 ring-0" />
+                      <div onClick={(e) => {
+                        if (conv.other_user?.avatar_url) {
+                          e.stopPropagation();
+                          openViewer({ url: conv.other_user.avatar_url, name: conv.other_user.display_name, originRect: e.currentTarget.getBoundingClientRect() });
+                        }
+                      }}>
+                        <UserAvatar url={conv.other_user?.avatar_url} name={conv.other_user?.display_name} className="w-11 h-11 ring-0" targetUserId={conv.other_user?.user_id} />
+                      </div>
                     )}
                     {!isGroup && online && (
                       <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-accent rounded-full border-[2.5px] border-background" />
@@ -236,17 +265,32 @@ export function ChatSidebar({
                           </span>
                         )}
                       </span>
-                      {conv.last_message && (
+                      {conv.last_message?.created_at && (
                         <span className="text-[10px] text-muted-foreground shrink-0 ml-2">
-                          {formatDistanceToNow(new Date(conv.last_message.created_at), { addSuffix: false })}
+                          {(() => {
+                            const d = new Date(conv.last_message.created_at);
+                            if (isNaN(d.getTime())) return '';
+                            return formatDistanceToNow(d, { addSuffix: false });
+                          })()}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center justify-between mt-0.5">
-                      <p className="text-xs text-muted-foreground truncate max-w-[160px]">
-                        {conv.last_message?.content
-                          ? (conv.last_message.message_type === 'image' ? 'Photo' : conv.last_message.content)
-                          : 'No messages yet'}
+                      <p className="text-xs truncate max-w-[160px]">
+                        {!isGroup && otherUserId && isTyping?.(otherUserId) ? (
+                          <span className="text-accent flex items-center gap-1">
+                            <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            <span className="text-accent font-medium ml-1">Typing...</span>
+                          </span>
+                        ) : conv.last_message ? (
+                          conv.last_message.message_type === 'image' ? '📷 Photo'
+                            : conv.last_message.message_type === 'video' ? '🎥 Video'
+                            : conv.last_message.message_type === 'audio' ? '🎵 Audio'
+                            : conv.last_message.message_type === 'file' ? '📎 ' + (conv.last_message.file_name || 'File')
+                            : conv.last_message.content || ''
+                        ) : 'No messages yet'}
                       </p>
                       {conv.unread_count > 0 && (
                         <span className={cn(

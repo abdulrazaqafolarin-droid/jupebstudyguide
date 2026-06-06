@@ -48,6 +48,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content, className =
     // Pattern for block math ($$...$$) - needs to handle multiline
     const blockMathRegex = /\$\$([\s\S]*?)\$\$/g;
     // Pattern for inline math ($...$) - avoid matching $$ or empty
+    // eslint-disable-next-line no-useless-escape
     const inlineMathRegex = /(?<!\$)\$([^\$\n]+?)\$(?!\$)/g;
     
     // Collect all math matches
@@ -101,7 +102,7 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content, className =
       // Add the math expression with error handling
       try {
         // Pre-process LaTeX for common issues
-        let latex = mathMatch.math
+        const latex = mathMatch.math
           // Fix double backslashes that might cause issues
           .replace(/\\\\/g, '\\')
           // Ensure proper spacing around operators

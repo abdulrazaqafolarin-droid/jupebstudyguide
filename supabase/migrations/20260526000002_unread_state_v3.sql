@@ -15,6 +15,7 @@ ALTER TABLE public.conversation_participants
   ALTER COLUMN last_read_at SET NOT NULL;
 
 -- 2. RPC: get_unread_counts — single-query server-side count per conversation
+DROP FUNCTION IF EXISTS public.get_unread_counts(p_user_id UUID);
 CREATE OR REPLACE FUNCTION public.get_unread_counts(p_user_id UUID)
 RETURNS TABLE(conversation_id UUID, count BIGINT)
 LANGUAGE sql
@@ -35,6 +36,7 @@ AS $$
 $$;
 
 -- 3. RPC: mark_conversation_read — sets last_read_at = now()
+DROP FUNCTION IF EXISTS public.mark_conversation_read(UUID, UUID);
 CREATE OR REPLACE FUNCTION public.mark_conversation_read(
   p_conversation_id UUID,
   p_user_id UUID

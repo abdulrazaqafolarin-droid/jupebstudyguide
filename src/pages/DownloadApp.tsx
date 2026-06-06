@@ -150,6 +150,7 @@ export default function DownloadApp() {
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(APP_URL + "/download")}`}
                   alt="QR Code to download page"
                   className="w-40 h-40 rounded-xl"
+                  loading="lazy"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}

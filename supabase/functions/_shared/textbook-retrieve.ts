@@ -29,7 +29,8 @@ export interface RetrieveOptions {
 }
 
 export async function retrieveRelevantChunks(
-  supabase: any,
+  supabaseUrl: string,
+  supabaseKey: string,
   query: string,
   options: RetrieveOptions = {}
 ): Promise<RetrievedChunk[]> {
@@ -41,22 +42,32 @@ export async function retrieveRelevantChunks(
 
   const vectorStr = `[${embedding.join(",")}]`;
 
-  let dbQuery = supabase.rpc("match_textbook_chunks", {
-    query_embedding: vectorStr,
-    match_threshold: threshold,
-    match_count: maxChunks,
-  });
-
+  let url = `${supabaseUrl}/rest/v1/rpc/match_textbook_chunks`;
   if (options.subject) {
-    dbQuery = dbQuery.eq("subject", options.subject);
+    url += `?subject=eq.${encodeURIComponent(options.subject)}`;
   }
 
-  const { data, error } = await dbQuery;
-  if (error) {
-    console.error("[Retrieve] pgvector search failed:", error.message);
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+    },
+    body: JSON.stringify({
+      query_embedding: vectorStr,
+      match_threshold: threshold,
+      match_count: maxChunks,
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "unknown");
+    console.error(`[Retrieve] pgvector search failed (${res.status}): ${errText.slice(0, 200)}`);
     return [];
   }
 
+  const data = await res.json();
   return (data || []).map((r: any) => ({
     id: r.id,
     textbook_id: r.textbook_id,

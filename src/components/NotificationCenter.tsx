@@ -51,6 +51,9 @@ interface Props {
   onClear: () => void;
   permission: NotificationPermission;
   onRequestPermission: () => void;
+  pushSupported?: boolean;
+  isPushSubscribed?: boolean;
+  onTogglePush?: () => void;
 }
 
 const PERSIST_KINDS = new Set<NotificationKind>(['chat_message', 'friend_request']);
@@ -63,6 +66,9 @@ export function NotificationCenter({
   onClear,
   permission,
   onRequestPermission,
+  pushSupported,
+  isPushSubscribed,
+  onTogglePush,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -148,6 +154,33 @@ export function NotificationCenter({
             >
               Enable browser notifications
             </Button>
+          </div>
+        )}
+        {pushSupported && permission === 'granted' && (
+          <div className="px-4 py-3 border-b border-border bg-secondary/30">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-foreground">Push notifications</p>
+              <button
+                onClick={onTogglePush}
+                className={cn(
+                  'relative w-10 h-5 rounded-full transition-colors',
+                  isPushSubscribed ? 'bg-primary' : 'bg-muted-foreground/30'
+                )}
+                aria-label={isPushSubscribed ? 'Disable push' : 'Enable push'}
+              >
+                <span
+                  className={cn(
+                    'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm',
+                    isPushSubscribed && 'translate-x-5'
+                  )}
+                />
+              </button>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              {isPushSubscribed
+                ? 'Notifications will arrive even when the tab is closed.'
+                : 'Get notified when you receive messages.'}
+            </p>
           </div>
         )}
 

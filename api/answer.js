@@ -1,7 +1,25 @@
-// Fallback chain: Groq → Gemini → OpenRouter
-const GROQ_BASE = "https://api.groq.com/openai/v1";
+// Fallback chain: Gemini (Gemma 4) → Groq → OpenRouter
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
+const GROQ_BASE = "https://api.groq.com/openai/v1";
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
+
+async function tryGemini(questions) {
+  if (!process.env.GEMINI_API_KEY) return null;
+  const prompt = `You are a JUPEB exam expert. For each MCQ below, determine the SINGLE correct answer.\n\nReply with ONLY a JSON array:\n[{ "idx": 1, "correctAnswer": "A", "explanation": "..." }]\n\nQuestions:\n${questions}`;
+  const res = await fetch(
+    `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.1, maxOutputTokens: 4096, responseMimeType: "application/json" }
+      }),
+    }
+  );
+  if (res.status === 429) return null;
+  return res;
+}
 
 async function tryGroq(questions) {
   if (!process.env.GROQ_API_KEY) return null;
@@ -19,24 +37,6 @@ async function tryGroq(questions) {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
     body: JSON.stringify(body),
   });
-  if (res.status === 429) return null;
-  return res;
-}
-
-async function tryGemini(questions) {
-  if (!process.env.GEMINI_API_KEY) return null;
-  const prompt = `You are a JUPEB exam expert. For each MCQ below, determine the SINGLE correct answer.\n\nReply with ONLY a JSON array:\n[{ "idx": 1, "correctAnswer": "A", "explanation": "..." }]\n\nQuestions:\n${questions}`;
-  const res = await fetch(
-    `${GEMINI_BASE}/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 4096, responseMimeType: "application/json" }
-      }),
-    }
-  );
   if (res.status === 429) return null;
   return res;
 }
@@ -65,8 +65,8 @@ async function tryOpenRouter(questions) {
 }
 
 const PROVIDERS = [
-  { name: "Groq", fn: tryGroq },
   { name: "Gemini", fn: tryGemini },
+  { name: "Groq", fn: tryGroq },
   { name: "OpenRouter", fn: tryOpenRouter },
 ];
 
@@ -103,5 +103,5 @@ export default async function handler(req, res) {
     }
   }
 
-  res.status(500).json({ error: "All AI providers unavailable. Set GROQ_API_KEY in Vercel env vars." });
+  res.status(500).json({ error: "All AI providers unavailable. Set GEMINI_API_KEY in Vercel env vars." });
 }

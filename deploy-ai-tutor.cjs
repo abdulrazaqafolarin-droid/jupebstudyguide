@@ -1,6 +1,6 @@
-// USAGE: set SUPABASE_TOKEN env var first!
-// Windows: $env:SUPABASE_TOKEN="your-token"
-// Mac/Linux: export SUPABASE_TOKEN=your-token
+// DEPRECATED — Use `node deploy-all.cjs --function=ai-tutor` instead.
+// This script does NOT inline _shared/* imports and will fail at runtime.
+// Keeping only for backward compatibility with old workflows.
 const fs = require('fs');
 const code = fs.readFileSync('supabase/functions/ai-tutor/index.ts', 'utf8');
 const cleaned = code.replace(/[^\x20-\x7E\n\r\t]/g, '');

@@ -22,7 +22,8 @@ export function useCustomQuestions() {
 
       const { data, error: fetchError } = await supabase
         .from('custom_questions')
-        .select('*')
+        .select('id, subject, year, question_type, topic, question, options, correct_answer, explanation, difficulty, document_name')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (fetchError) {

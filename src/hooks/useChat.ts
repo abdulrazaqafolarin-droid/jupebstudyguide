@@ -35,6 +35,7 @@ export interface Conversation {
   unread_count: number;
   is_group?: boolean;
   group_name?: string;
+  group_avatar?: string | null;
   participants?: Profile[];
 }
 
@@ -58,6 +59,13 @@ export interface Message {
   file_size?: number | null;
   file_type?: string | null;
   group_name?: string;
+  forwarded_from?: {
+    message_id: string;
+    sender_id: string;
+    sender_name: string | null;
+    conversation_id: string;
+    forwarded_at: string;
+  } | null;
 }
 
 const MESSAGES_PAGE_SIZE = 50;
@@ -72,7 +80,7 @@ export function useChat() {
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const convIdsRef = useRef<string[]>([]);
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const msgBroadcastRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const fetchGenRef = useRef(0);
   const messagesFetchGenRef = useRef(0);
   const messagesCursorRef = useRef<{ created_at: string; id: string } | null>(null);
@@ -182,7 +190,7 @@ export function useChat() {
 
       const { data: convData } = await supabase
         .from('conversations')
-        .select('id, created_at, updated_at, unread_count_a, unread_count_b, group_name')
+        .select('id, created_at, updated_at, unread_count_a, unread_count_b, group_name, group_avatar')
         .in('id', convIds)
         .order('updated_at', { ascending: false });
 
@@ -226,7 +234,7 @@ export function useChat() {
       await Promise.all(convIds.map(async (cid) => {
         const { data } = await supabase
           .from('messages')
-          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited')
+          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
           .eq('conversation_id', cid)
           .order('created_at', { ascending: false })
           .limit(1);
@@ -262,7 +270,7 @@ export function useChat() {
         }
       }
 
-      const enriched: Conversation[] = convData.map((conv) => {
+      let enriched: Conversation[] = convData.map((conv) => {
         const convParticipantIds = participantsByConv.get(conv.id) ?? [];
         const isGroup = convParticipantIds.length > 2;
         const otherParticipantIds = convParticipantIds.filter(pid => pid !== user.id);
@@ -270,6 +278,10 @@ export function useChat() {
         const lastMsg = lastMsgByConv.get(conv.id) ?? null;
         const unreadCount = unreadCountMap.get(conv.id) ?? 0;
         const groupName = isGroup ? conv.group_name : undefined;
+        const groupAvatar = isGroup ? conv.group_avatar : undefined;
+        const participants = convParticipantIds
+          .map(pid => profileMap.get(pid))
+          .filter(Boolean) as Profile[];
 
         return {
           ...conv,
@@ -278,7 +290,17 @@ export function useChat() {
           unread_count: unreadCount,
           is_group: isGroup,
           group_name: groupName,
+          group_avatar: groupAvatar,
+          participants,
         };
+      });
+      enriched.sort((a, b) => {
+        const aTime = a.last_message?.created_at;
+        const bTime = b.last_message?.created_at;
+        if (!aTime && !bTime) return 0;
+        if (!aTime) return 1;
+        if (!bTime) return -1;
+        return bTime.localeCompare(aTime);
       });
 
       if (gen === fetchGenRef.current) {
@@ -322,7 +344,7 @@ export function useChat() {
 
     let query = supabase
       .from('messages')
-      .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions')
+      .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
@@ -395,27 +417,18 @@ export function useChat() {
         (payload) => {
           const newMsg = payload.new as Message;
           if (newMsg.sender_id === user.id) return;
-          if (newMsg.message_type === 'system') {
-            if (!convIdsRef.current.includes(newMsg.conversation_id)) {
-              fetchConversations();
-            }
-            return;
-          }
-          if (!convIdsRef.current.includes(newMsg.conversation_id)) {
-            fetchConversations();
-            return;
-          }
+          if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
 
           const currentConv = activeConvRef.current;
           if (newMsg.conversation_id === currentConv) {
-            setMessages(prev => [...prev, newMsg]);
+            setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
             setConversations(prev => prev.map(c =>
-              c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg as Message } : c
+              c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg } : c
             ));
           } else {
             setConversations(prev => prev.map(c =>
               c.id === newMsg.conversation_id
-                ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg as Message }
+                ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg }
                 : c
             ));
           }
@@ -456,14 +469,81 @@ export function useChat() {
           }
         }
       )
-      .subscribe((status) => {
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'conversation_participants', filter: `user_id=eq.${user.id}` },
+        () => {
+          fetchConversations();
+        }
+      )
+      .subscribe((status, err) => {
         if (status === 'SUBSCRIBED') {
           fetchConversations();
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('[realtime] chat-global channel error:', err);
+        } else if (status === 'CLOSED') {
+          console.warn('[realtime] chat-global channel closed');
+        } else {
+          console.warn('[realtime] chat-global status:', status, err);
         }
       });
 
-    return () => { supabase.removeChannel(globalChannel); };
-  }, [user]);
+    const msgBroadcast = supabase
+      .channel('msg-broadcast', { selfBroadcast: false })
+      .on('broadcast', { event: 'msg' }, (payload) => {
+        const newMsg = payload.payload.message as Message;
+        if (newMsg.sender_id === user.id) return;
+        if (!convIdsRef.current.includes(newMsg.conversation_id)) {
+          void fetchConversations().then(() => {
+            if (convIdsRef.current.includes(newMsg.conversation_id)) {
+              const currentConv = activeConvRef.current;
+              if (newMsg.conversation_id === currentConv) {
+                setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
+                setConversations(prev => prev.map(c =>
+                  c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg as Message } : c
+                ));
+              } else {
+                setConversations(prev => prev.map(c =>
+                  c.id === newMsg.conversation_id
+                    ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg as Message }
+                    : c
+                ));
+              }
+            }
+          });
+          return;
+        }
+        const currentConv = activeConvRef.current;
+        if (newMsg.conversation_id === currentConv) {
+          setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
+          setConversations(prev => prev.map(c =>
+            c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg as Message } : c
+          ));
+        } else {
+          setConversations(prev => prev.map(c =>
+            c.id === newMsg.conversation_id
+              ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg as Message }
+              : c
+          ));
+        }
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          msgBroadcastRef.current = msgBroadcast;
+        } else if (status === 'CHANNEL_ERROR') {
+          console.warn('[realtime] msg-broadcast error');
+        } else if (status === 'CLOSED') {
+          console.warn('[realtime] msg-broadcast closed');
+        }
+      });
+    msgBroadcastRef.current = msgBroadcast;
+
+    return () => {
+      supabase.removeChannel(globalChannel);
+      supabase.removeChannel(msgBroadcast);
+      msgBroadcastRef.current = null;
+    };
+  }, [user, fetchConversations]);
 
   useEffect(() => {
     try {
@@ -479,6 +559,57 @@ export function useChat() {
     } catch { /* BroadcastChannel not available */ }
     return () => { broadcastRef.current?.close(); };
   }, []);
+
+  // Silent background polling for new messages (fallback for real-time)
+  useEffect(() => {
+    if (!user || !activeConversation) return;
+    let pollTimer: ReturnType<typeof setTimeout>;
+    let stopped = false;
+
+    const poll = async () => {
+      if (stopped) return;
+      try {
+        const lastMsg = messagesRef.current[messagesRef.current.length - 1];
+        let query = supabase
+          .from('messages')
+          .select('id, conversation_id, sender_id, content, created_at, message_type, is_read, image_url, file_url, file_name, forwarded_from')
+          .eq('conversation_id', activeConversation)
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .limit(5);
+
+        if (lastMsg) {
+          query = query.or(`created_at.gt.${lastMsg.created_at},and(created_at.eq.${lastMsg.created_at},id.gt.${lastMsg.id})`);
+        }
+
+        const { data } = await query;
+        if (stopped) return;
+        if (!data || data.length === 0) return;
+
+        const existingIds = new Set(messagesRef.current.map(m => m.id));
+        const newMsgs = (data as Message[])
+          .filter(m => !existingIds.has(m.id) && m.sender_id !== user.id)
+          .reverse();
+
+        if (newMsgs.length === 0) return;
+
+        setMessages(prev => {
+          const ids = new Set(prev.map(m => m.id));
+          const unique = newMsgs.filter(m => !ids.has(m.id));
+          return unique.length > 0 ? [...prev, ...unique] : prev;
+        });
+        setConversations(prev => prev.map(c =>
+          c.id === activeConversation ? { ...c, unread_count: 0, last_message: newMsgs[newMsgs.length - 1] } : c
+        ));
+      } catch {
+        // Silent fail — polling is a best-effort fallback
+      }
+      if (!stopped) pollTimer = setTimeout(poll, 1500);
+    };
+
+    pollTimer = setTimeout(poll, 1500);
+    return () => { stopped = true; clearTimeout(pollTimer); };
+  }, [user, activeConversation]);
 
   const openConversation = useCallback(async (conversationId: string) => {
     setActiveConversation(conversationId);
@@ -523,6 +654,11 @@ export function useChat() {
       setMessages(prev => prev.map(m =>
         m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
       ));
+      msgBroadcastRef.current?.send({
+        type: 'broadcast',
+        event: 'msg',
+        payload: { message: data[0] },
+      });
     }
   }, [user, activeConversation]);
 
@@ -596,6 +732,11 @@ export function useChat() {
       setMessages(prev => prev.map(m =>
         m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
       ));
+      msgBroadcastRef.current?.send({
+        type: 'broadcast',
+        event: 'msg',
+        payload: { message: data[0] },
+      });
     }
   }, [user, activeConversation]);
 
@@ -631,7 +772,7 @@ export function useChat() {
 
     if (error) {
       setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
-      toast.error(`File send error: ${error.message}`);
+      toast.error(`Send error: ${error.message}`);
       return;
     }
 
@@ -639,6 +780,11 @@ export function useChat() {
       setMessages(prev => prev.map(m =>
         m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
       ));
+      msgBroadcastRef.current?.send({
+        type: 'broadcast',
+        event: 'msg',
+        payload: { message: data[0] },
+      });
     }
   }, [user, activeConversation]);
 
@@ -670,6 +816,64 @@ export function useChat() {
     }
   }, [user]);
 
+  const forwardMessage = useCallback(async (messageId: string, targetConversationId: string) => {
+    if (!user || !activeConversation) return;
+    const msg = messagesRef.current.find(m => m.id === messageId);
+    if (!msg) return;
+
+    const forwardedFrom = {
+      message_id: msg.id,
+      sender_id: msg.sender_id,
+      sender_name: null,
+      conversation_id: activeConversation,
+      forwarded_at: new Date().toISOString(),
+    };
+
+    const optimisticMsg: Message = {
+      id: crypto.randomUUID(),
+      conversation_id: targetConversationId,
+      sender_id: user.id,
+      content: msg.content || '',
+      created_at: new Date().toISOString(),
+      is_read: false,
+      message_type: msg.message_type === 'image' ? 'image' : msg.message_type === 'video' ? 'video' : msg.message_type === 'audio' ? 'audio' : 'text',
+      image_url: msg.image_url,
+      file_url: msg.file_url,
+      file_name: msg.file_name,
+      file_size: msg.file_size,
+      file_type: msg.file_type,
+      forwarded_from: forwardedFrom,
+    };
+
+    const { data, error } = await supabase.from('messages').insert({
+      conversation_id: targetConversationId,
+      sender_id: user.id,
+      content: msg.content || '',
+      message_type: msg.message_type === 'image' ? 'image' : msg.message_type === 'video' ? 'video' : msg.message_type === 'audio' ? 'audio' : 'text',
+      image_url: msg.image_url,
+      file_url: msg.file_url,
+      file_name: msg.file_name,
+      file_size: msg.file_size,
+      file_type: msg.file_type,
+      forwarded_from: forwardedFrom,
+    }).select();
+
+    if (error) {
+      toast.error('Forward failed');
+      return;
+    }
+
+    if (data?.[0]) {
+      msgBroadcastRef.current?.send({
+        type: 'broadcast',
+        event: 'msg',
+        payload: { message: data[0] },
+      });
+    }
+
+    void fetchConversations();
+  }, [user, activeConversation]);
+
   const startConversation = useCallback(async (otherUserId: string): Promise<string | null> => {
     if (!user) throw new Error('Not authenticated');
 
@@ -690,14 +894,19 @@ export function useChat() {
   const searchUsers = useCallback(async (query: string): Promise<Profile[]> => {
     if (!user || !query.trim()) return [];
 
-    const { data } = await supabase
-      .from('profiles')
-      .select('user_id, display_name, avatar_url')
-      .neq('user_id', user.id)
-      .ilike('display_name', `%${query}%`)
-      .limit(10);
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url')
+        .neq('user_id', user.id)
+        .ilike('display_name', `%${query}%`)
+        .limit(10);
 
-    return data || [];
+      return data || [];
+    } catch (err) {
+      console.error('User search failed:', err);
+      return [];
+    }
   }, [user]);
 
   const uploadFile = useCallback(async (file: File): Promise<{ url: string | null; error: string | null }> => {
@@ -714,9 +923,9 @@ export function useChat() {
 
     if (error) return { url: null, error: error.message };
 
-    const { data: { publicUrl } } = supabase.storage
+    const publicUrl = supabase.storage
       .from('chat-files')
-      .getPublicUrl(data.path);
+      .getPublicUrl(data.path).data?.publicUrl ?? null;
 
     return { url: publicUrl, error: null };
   }, [user]);
@@ -735,9 +944,9 @@ export function useChat() {
 
     if (error) { console.error('Upload error:', error); toast.error('Image upload failed: ' + error.message); return null; }
 
-    const { data: { publicUrl } } = supabase.storage
+    const publicUrl = supabase.storage
       .from('chat-images')
-      .getPublicUrl(data.path);
+      .getPublicUrl(data.path).data?.publicUrl ?? null;
 
     return publicUrl;
   }, [user]);
@@ -760,6 +969,7 @@ export function useChat() {
     loadMoreMessages,
     openConversation,
     sendMessage,
+    forwardMessage,
     editMessage,
     deleteMessage,
     sendImage,

@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, Save, Check } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Check, Sun, Moon, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,6 +13,7 @@ import { useImageCompression } from '@/hooks/useImageCompression';
 import { AvatarCropper } from '@/components/profile/AvatarCropper';
 import { PrivacySettings } from '@/components/profile/PrivacySettings';
 import { supabase } from '@/integrations/supabase/client';
+import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
 
 export default function SettingsProfile() {
@@ -24,15 +26,26 @@ export default function SettingsProfile() {
   const [bio, setBio] = useState('');
   const [avatarPrivacy, setAvatarPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
   const [profilePrivacy, setProfilePrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
+  const [lastSeenPrivacy, setLastSeenPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
+  const [readReceiptsPrivacy, setReadReceiptsPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
+  const [activityStatusPrivacy, setActivityStatusPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
+  const [onlineStatusPrivacy, setOnlineStatusPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
+  const [groupsPrivacy, setGroupsPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
+  const { theme, setTheme } = useTheme();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
     setDisplayName(profile.display_name ?? '');
-    setBio((profile as any).bio ?? '');
-    setAvatarPrivacy((profile as any).privacy_avatar ?? 'everyone');
-    setProfilePrivacy((profile as any).privacy_profile ?? 'everyone');
+    setBio(profile.bio ?? '');
+    setAvatarPrivacy(profile.privacy_avatar ?? 'everyone');
+    setProfilePrivacy(profile.privacy_profile ?? 'everyone');
+    setLastSeenPrivacy(profile.privacy_last_seen ?? 'everyone');
+    setReadReceiptsPrivacy(profile.privacy_read_receipts ?? 'everyone');
+    setActivityStatusPrivacy(profile.privacy_activity_status ?? 'everyone');
+    setOnlineStatusPrivacy(profile.privacy_online_status ?? 'everyone');
+    setGroupsPrivacy(profile.privacy_groups ?? 'everyone');
   }, [profile]);
 
   const handleAvatarUpload = useCallback(async (file: File) => {
@@ -71,6 +84,7 @@ export default function SettingsProfile() {
   }, [user, updateProfile, compressImage]);
 
   const handleSave = async () => {
+    if (!user) return;
     setSaving(true);
     const { error: nameErr } = await updateProfile({ display_name: displayName.trim() });
     if (nameErr) { toast.error('Save failed'); setSaving(false); return; }
@@ -81,8 +95,13 @@ export default function SettingsProfile() {
         bio: bio.trim() || null,
         privacy_avatar: avatarPrivacy,
         privacy_profile: profilePrivacy,
+        privacy_last_seen: lastSeenPrivacy,
+        privacy_read_receipts: readReceiptsPrivacy,
+        privacy_activity_status: activityStatusPrivacy,
+        privacy_online_status: onlineStatusPrivacy,
+        privacy_groups: groupsPrivacy,
       })
-      .eq('user_id', user!.id);
+      .eq('user_id', user.id);
 
     if (metaErr) toast.error('Privacy settings failed: ' + metaErr.message);
     else toast.success('Profile saved!');
@@ -174,6 +193,61 @@ export default function SettingsProfile() {
           <p className="text-[10px] text-muted-foreground text-right">{bio.length}/160</p>
         </motion.section>
 
+        {/* Appearance */}
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.13 }}
+          className="bg-card rounded-2xl border border-border p-6"
+        >
+          <h3 className="text-sm font-semibold mb-4">Appearance</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Theme</p>
+              <p className="text-xs text-muted-foreground">Switch between dark and light mode</p>
+            </div>
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+              <button
+                onClick={() => setTheme('dark')}
+                className={`p-2 rounded-md transition-all ${theme === 'dark' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                title="Dark mode"
+              >
+                <Moon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setTheme('light')}
+                className={`p-2 rounded-md transition-all ${theme === 'light' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                title="Light mode"
+              >
+                <Sun className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Security */}
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+        >
+          <Link
+            to="/settings/security"
+            className="flex items-center justify-between bg-card rounded-2xl border border-border p-5 hover:bg-accent/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Security</p>
+                <p className="text-xs text-muted-foreground">Two-factor authentication</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </Link>
+        </motion.section>
+
         {/* Privacy */}
         <motion.section
           initial={{ opacity: 0, y: 8 }}
@@ -185,8 +259,18 @@ export default function SettingsProfile() {
           <PrivacySettings
             avatarPrivacy={avatarPrivacy}
             profilePrivacy={profilePrivacy}
+            lastSeenPrivacy={lastSeenPrivacy}
+            readReceiptsPrivacy={readReceiptsPrivacy}
+            activityStatusPrivacy={activityStatusPrivacy}
+            onlineStatusPrivacy={onlineStatusPrivacy}
+            groupsPrivacy={groupsPrivacy}
             onAvatarChange={setAvatarPrivacy}
             onProfileChange={setProfilePrivacy}
+            onLastSeenChange={setLastSeenPrivacy}
+            onReadReceiptsChange={setReadReceiptsPrivacy}
+            onActivityStatusChange={setActivityStatusPrivacy}
+            onOnlineStatusChange={setOnlineStatusPrivacy}
+            onGroupsChange={setGroupsPrivacy}
           />
         </motion.section>
       </main>

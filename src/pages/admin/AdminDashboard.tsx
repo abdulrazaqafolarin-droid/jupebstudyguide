@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useActivation, useAdminCodes } from "@/hooks/useActivation";
+import { useActivation, useAdminCodes, type ActivationCodeResult } from "@/hooks/useActivation";
+import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   ArrowLeft, Key, Copy, CheckCircle, Loader2, Shield,
   Users, TrendingUp, DollarSign, Activity,
-  UserCheck, BarChart3, Download
+  UserCheck, BarChart3, Download, RefreshCw
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -32,7 +33,7 @@ interface DashboardStats {
 const PIE_COLORS = ["#8b5cf6", "#f59e0b", "#10b981", "#ef4444"];
 
 function StatCard({ icon: Icon, label, value, sub, color, delay }: {
-  icon: any; label: string; value: string | number; sub?: string; color: string; delay: number;
+  icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; sub?: string; color: string; delay: number;
 }) {
   return (
     <motion.div
@@ -64,66 +65,63 @@ export default function AdminDashboard() {
   const { codes, loading, generateCodes, listCodes } = useAdminCodes();
   const navigate = useNavigate();
 
+  const handleSignOut = useCallback(async () => {
+    await signOut();
+    navigate("/auth", { replace: true });
+  }, [signOut, navigate]);
+
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0, activatedUsers: 0, totalCodes: 0, usedCodes: 0,
     recentSignups: [], planDistribution: [],
   });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [count, setCount] = useState(5);
   const [planType, setPlanType] = useState("basic");
   const [generating, setGenerating] = useState(false);
-  const [generatedCodes, setGeneratedCodes] = useState<any[]>([]);
+  const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeResult[]>([]);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  const loadStats = useCallback(async (showLoader = true) => {
+    if (showLoader) setStatsLoading(true);
+    const { data, error } = await supabase.rpc("get_admin_dashboard_stats", {
+      p_admin_email: SUPER_ADMIN_EMAIL || null,
+    });
+
+    if (error) {
+      console.error("Failed to load dashboard stats:", error);
+      if (showLoader) toast.error("Dashboard load failed: " + error.message);
+      if (showLoader) setStatsLoading(false);
+      return;
+    }
+
+    setStats({
+      totalUsers: data.total_users,
+      activatedUsers: data.activated_users,
+      totalCodes: data.total_codes,
+      usedCodes: data.used_codes,
+      recentSignups: (data.recent_signups || []).map((s: { date: string; count: number }) => ({
+        date: format(new Date(s.date + "T00:00:00"), "MMM d"),
+        count: s.count,
+      })),
+      planDistribution: data.plan_distribution || [],
+    });
+    if (showLoader) setStatsLoading(false);
+  }, []);
+
+  const refreshAll = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([loadStats(false), listCodes()]);
+    setRefreshing(false);
+    toast.success("Dashboard refreshed");
+  }, [loadStats, listCodes]);
 
   useEffect(() => {
     listCodes();
-  }, [listCodes]);
-
-  useEffect(() => {
-    async function loadStats() {
-      setStatsLoading(true);
-      const [profilesRes, codesRes] = await Promise.all([
-        supabase.from("profiles").select("is_activated, created_at").limit(5000),
-        supabase.from("activation_codes").select("is_used, plan_type", { count: "exact", head: false }).limit(5000),
-      ]);
-
-      const profiles = profilesRes.data || [];
-      const allCodes = codesRes.data || [];
-
-      const now = new Date();
-      const last30Days = Array.from({ length: 30 }, (_, i) => {
-        const d = new Date(now);
-        d.setDate(d.getDate() - (29 - i));
-        return d.toISOString().split("T")[0];
-      });
-
-      const signupCounts: Record<string, number> = {};
-      for (const p of profiles) {
-        const date = p.created_at?.split("T")[0];
-        if (date && last30Days.includes(date)) {
-          signupCounts[date] = (signupCounts[date] || 0) + 1;
-        }
-      }
-
-      const planCounts: Record<string, number> = {};
-      for (const c of allCodes) {
-        if (c.plan_type) planCounts[c.plan_type] = (planCounts[c.plan_type] || 0) + 1;
-      }
-
-      setStats({
-        totalUsers: profiles.length,
-        activatedUsers: profiles.filter((p: any) => p.is_activated).length,
-        totalCodes: allCodes.length,
-        usedCodes: allCodes.filter((c: any) => c.is_used).length,
-        recentSignups: last30Days.map(date => ({
-          date: format(new Date(date), "MMM d"),
-          count: signupCounts[date] || 0,
-        })),
-        planDistribution: Object.entries(planCounts).map(([name, value]) => ({ name, value })),
-      });
-      setStatsLoading(false);
-    }
     loadStats();
-  }, []);
+    intervalRef.current = setInterval(() => { loadStats(false); listCodes(); }, 30000);
+    return () => clearInterval(intervalRef.current);
+  }, [listCodes, loadStats]);
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -133,6 +131,7 @@ export default function AdminDashboard() {
     if (result.success && result.codes) {
       setGeneratedCodes(result.codes);
       toast.success(`Generated ${result.codes.length} codes`);
+      console.warn("Generated codes:", result.codes);
       listCodes();
       setStats(s => ({
         ...s,
@@ -148,16 +147,16 @@ export default function AdminDashboard() {
   };
 
   const copyAll = () => {
-    const text = generatedCodes.map((c: any) => `${c.code}\t${c.plan_type}`).join("\n");
+    const text = generatedCodes.map((c) => `${c.code}\t${c.plan_type}`).join("\n");
     navigator.clipboard.writeText(text);
     toast.success("Copied all codes");
   };
 
   const codeStats = {
     total: codes.length,
-    used: codes.filter((c: any) => c.is_used).length,
-    available: codes.filter((c: any) => !c.is_used).length,
-    conversionRate: codes.length > 0 ? Math.round((codes.filter((c: any) => c.is_used).length / codes.length) * 100) : 0,
+    used: codes.filter((c) => c.is_used).length,
+    available: codes.filter((c) => !c.is_used).length,
+    conversionRate: codes.length > 0 ? Math.round((codes.filter((c) => c.is_used).length / codes.length) * 100) : 0,
   };
 
   const container = {
@@ -205,11 +204,15 @@ export default function AdminDashboard() {
             <h1 className="font-semibold">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={refreshAll} disabled={refreshing} className="gap-1.5">
+              <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
+              <span className="hidden sm:inline">Refresh</span>
+            </Button>
             <Button variant="outline" size="sm" onClick={() => navigate("/admin/codes")} className="hidden sm:flex gap-1.5">
               <Key className="w-3.5 h-3.5" /> Codes
             </Button>
             <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
-            <Button variant="ghost" size="sm" onClick={signOut}>
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
               Sign Out
             </Button>
           </div>
@@ -501,7 +504,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="bg-secondary/30 rounded-lg p-3 max-h-48 overflow-y-auto border border-border/30">
-                    {generatedCodes.map((c: any, i: number) => (
+                    {generatedCodes.map((c, i: number) => (
                       <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                         <code className="font-mono text-sm tracking-wider text-primary">{c.code}</code>
                         <span className="text-xs text-muted-foreground capitalize">{c.plan_type}</span>
@@ -540,7 +543,7 @@ export default function AdminDashboard() {
                   variant="ghost" size="sm"
                   onClick={() => {
                     const csv = [["Code", "Plan", "Status", "Used By", "Created"].join(",")].concat(
-                      codes.map((c: any) =>
+                      codes.map((c) =>
                         [c.code, c.plan_type, c.is_used ? "Used" : "Available", c.used_by_profile?.display_name || "", c.created_at].join(",")
                       )
                     ).join("\n");
@@ -571,7 +574,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {codes.map((c: any) => (
+                      {codes.map((c) => (
                         <tr key={c.id} className="border-b border-border/50 hover:bg-secondary/20 transition-colors">
                           <td className="py-2 px-2">
                             <code className="font-mono text-xs bg-secondary/50 px-1.5 py-0.5 rounded">{c.code}</code>

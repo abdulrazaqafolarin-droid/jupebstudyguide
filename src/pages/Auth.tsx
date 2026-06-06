@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { GraduationCap, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, ShieldAlert } from 'lucide-react';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { GraduationCap, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, ShieldAlert, Smartphone } from 'lucide-react';
 import rutexLogo from '@/assets/rutex-logo.jpg';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
@@ -15,7 +16,7 @@ const authSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters" }).max(100),
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot' | 'forgot-sent';
+type AuthMode = 'login' | 'signup' | 'forgot' | 'forgot-sent' | 'mfa';
 
 const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -24,8 +25,10 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [mfaCode, setMfaCode] = useState('');
+  const [mfaVerifying, setMfaVerifying] = useState(false);
 
-  const { signIn, signUp, resetPassword } = useAuth();
+  const { signIn, verifyMfa, signUp, resetPassword } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -70,13 +73,15 @@ const Auth = () => {
 
     try {
       if (mode === 'login') {
-        const { error } = await signIn(email, password);
+        const { error, needsMfa } = await signIn(email, password);
         if (error) {
           toast({
             title: "Login failed",
             description: error.message,
             variant: "destructive",
           });
+        } else if (needsMfa) {
+          setMode('mfa');
         } else {
           toast({
             title: "Welcome back!",
@@ -110,10 +115,31 @@ const Auth = () => {
     setErrors({});
   };
 
+  const handleMfaVerify = async () => {
+    if (mfaCode.length !== 6) return;
+    setMfaVerifying(true);
+    const { error } = await verifyMfa(mfaCode);
+    if (error) {
+      toast({
+        title: "Verification failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setMfaVerifying(false);
+      return;
+    }
+    toast({
+      title: "Welcome back!",
+      description: "Two-factor verification successful.",
+    });
+    navigate('/');
+  };
+
   const isLogin = mode === 'login';
   const isSignup = mode === 'signup';
   const isForgot = mode === 'forgot';
   const isForgotSent = mode === 'forgot-sent';
+  const isMfa = mode === 'mfa';
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -127,7 +153,14 @@ const Auth = () => {
             <span className="text-sm font-medium text-primary">JUPEB Study Guide</span>
           </div>
           <AnimatePresence mode="wait">
-            {isForgotSent ? (
+            {isMfa ? (
+              <motion.div key="mfa" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                <CardTitle className="text-2xl font-bold">Two-Factor Authentication</CardTitle>
+                <CardDescription className="mt-2">
+                  Enter the 6-digit code from your authenticator app
+                </CardDescription>
+              </motion.div>
+            ) : isForgotSent ? (
               <motion.div key="sent" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                 <CardTitle className="text-2xl font-bold">Check Your Email</CardTitle>
                 <CardDescription className="mt-2">
@@ -173,6 +206,54 @@ const Auth = () => {
                   </Button>
                   <Button className="flex-1" onClick={() => switchMode('login')}>
                     Back to login
+                  </Button>
+                </div>
+              </motion.div>
+            ) : isMfa ? (
+              <motion.div
+                key="mfa"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="space-y-6"
+              >
+                <div className="flex flex-col items-center py-4 space-y-6">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Smartphone className="w-8 h-8 text-primary" />
+                  </div>
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={mfaCode}
+                      onChange={setMfaCode}
+                      onComplete={handleMfaVerify}
+                    >
+                      <InputOTPGroup>
+                        {[0, 1, 2, 3, 4, 5].map((i) => (
+                          <InputOTPSlot key={i} index={i} />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => { setMode('login'); setMfaCode(''); }}
+                    disabled={mfaVerifying}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={handleMfaVerify}
+                    disabled={mfaCode.length !== 6 || mfaVerifying}
+                  >
+                    {mfaVerifying ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : null}
+                    Verify
                   </Button>
                 </div>
               </motion.div>
@@ -273,7 +354,7 @@ const Auth = () => {
             )}
           </AnimatePresence>
 
-          {!isForgot && !isForgotSent && (
+          {!isForgot && !isForgotSent && !isMfa && (
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
                 {isLogin ? "Don't have an account?" : 'Already have an account?'}

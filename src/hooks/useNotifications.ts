@@ -138,6 +138,7 @@ export function useNotifications(opts: { hasStudiedToday: boolean; currentStreak
     unreadCount,
     push,
     markAllRead,
+    markReadExcept,
     markReadByKind,
     clear,
     permission,

@@ -139,7 +139,18 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
       setStatus('saving');
       setProgress(80);
 
-      let parsed: { questions: any[] };
+      interface ParsedQuestion {
+        year?: number;
+        type?: string;
+        topic?: string;
+        question: string;
+        options?: Array<Record<string, string>>;
+        correctAnswer: string;
+        explanation?: string;
+        difficulty?: string;
+      }
+
+      let parsed: { questions: ParsedQuestion[] };
       try {
         const jsonMatch = response.match(/```(?:json)?\s*([\s\S]*?)```/);
         const jsonStr = jsonMatch ? jsonMatch[1].trim() : response.trim();
@@ -165,7 +176,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
         return;
       }
 
-      const questionsToInsert = parsed.questions.map((q: any) => ({
+      const questionsToInsert = parsed.questions.map((q: ParsedQuestion) => ({
         document_name: selectedFile.name,
         subject,
         year: q.year || null,

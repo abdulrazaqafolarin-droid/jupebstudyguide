@@ -5,7 +5,7 @@ import { Capacitor } from "@capacitor/core";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 const MAX_SIZE = 10 * 1024 * 1024;
-const VALID_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+const VALID_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "application/pdf"];
 
 function base64ToFile(base64: string, filename: string, mime: string): File {
   const byteChars = atob(base64);
@@ -103,7 +103,7 @@ export function useImageUpload(userId: string | undefined) {
 
   const handleFileSelect = useCallback((file: File) => {
     if (!VALID_TYPES.some((t) => file.type === t)) {
-      toast.error("Only PNG, JPG, WebP images supported");
+      toast.error("Only PNG, JPG, WebP images and PDF files supported");
       return;
     }
     if (file.size > MAX_SIZE) {

@@ -167,7 +167,7 @@ export const SyllabusTracker: React.FC<SyllabusTrackerProps> = ({
                 if (!info) return null;
                 
                 const allSubjects = [...progress.combination.core, ...progress.combination.elective];
-                if (!allSubjects.includes(subject as any)) return null;
+                if (!allSubjects.includes(subject as Subject)) return null;
                 
                 return (
                   <div key={subject} className="space-y-2 p-3 rounded-xl bg-secondary/30">

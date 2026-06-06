@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { ScrollArea } from './ui/scroll-area';
+
 import MathRenderer from './MathRenderer';
 import { useAttachment } from '@/hooks/useAttachment';
 import { useAITutorChats, AIMessage } from '@/hooks/useAITutorChats';
@@ -17,8 +17,8 @@ import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, 
 import { toast } from 'sonner';
 import { streamChat as aiStreamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
-import { searchRelevantChunks, getTextbookCount } from '@/lib/rag';
-import { TextbookUploader } from './TextbookUploader';
+import { searchRelevantChunks } from '@/lib/rag';
+
 
 const QUICK_PROMPTS = [
   { icon: HelpCircle, text: "Explain a concept", prompt: "I need help understanding a concept. Let me describe it..." },
@@ -105,7 +105,7 @@ function getInitialPosition() {
       pos.y = Math.min(Math.max(pos.y, 0), vh - BTN_SIZE);
       return pos;
     }
-  } catch {}
+  } catch { /* JSON parse may fail for first-time users */ }
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   return { x: vw - 80, y: vh - 80 };
@@ -127,8 +127,7 @@ export const FloatingAITutor = () => {
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showTextbooks, setShowTextbooks] = useState(false);
-  const [textbookCount, setTextbookCount] = useState(0);
+
   const [isAtBottom, setIsAtBottom] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -147,7 +146,7 @@ export const FloatingAITutor = () => {
   const [fabPos, setFabPosRaw] = useState(() => ({ x: initialPos.x, y: initialPos.y }));
   const setFabPos = useCallback((pos: { x: number; y: number }) => {
     setFabPosRaw(pos);
-    try { localStorage.setItem('jupeb-ai-fab-pos', JSON.stringify(pos)); } catch {}
+    try { localStorage.setItem('jupeb-ai-fab-pos', JSON.stringify(pos)); } catch { /* localStorage may be full */ }
   }, []);
 
   const [isSettling, setIsSettling] = useState(false);
@@ -186,8 +185,8 @@ export const FloatingAITutor = () => {
     const maxLeft = Math.max(pad, vw - pw - pad);
     const minTop = pad;
     const maxTop = Math.max(pad, vh - ph - pad);
-    let left = clamp(nearLeft ? vw - pw - pad : pad, minLeft, maxLeft);
-    let top = clamp(nearTop ? vh - ph - pad : pad, minTop, maxTop);
+    const left = clamp(nearLeft ? vw - pw - pad : pad, minLeft, maxLeft);
+    const top = clamp(nearTop ? vh - ph - pad : pad, minTop, maxTop);
     return { top, left, width: pw };
   }, [fabPos]);
 
@@ -279,7 +278,7 @@ export const FloatingAITutor = () => {
     setIsOpen(true);
   }, [setFabPos]);
 
-  const handleDragEnd = useCallback((_: any, info: PanInfo) => {
+  const handleDragEnd = useCallback((_: unknown, info: PanInfo) => {
     settlingRef.current = false;
     setIsSettling(false);
     animating.current = false;
@@ -340,17 +339,13 @@ export const FloatingAITutor = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const scrollToBottom = useCallback((smooth = false) => {
-    const vp = scrollRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement | null;
-    if (vp) {
-      if (smooth) vp.scrollTo({ top: vp.scrollHeight, behavior: 'smooth' });
-      else vp.scrollTop = vp.scrollHeight;
-    } else if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (!scrollRef.current) return;
+    if (smooth) scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    else scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, []);
 
   useEffect(() => {
-    const el = scrollRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement | null;
+    const el = scrollRef.current;
     if (!el) return;
     const onScroll = () => {
       setIsAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 80);
@@ -360,13 +355,9 @@ export const FloatingAITutor = () => {
   }, []);
 
   useEffect(() => {
-    const vp = scrollRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement | null;
-    const target = vp || scrollRef.current;
-    if (!target) return;
-    if (isAtBottom || !vp) {
-      target.scrollTop = target.scrollHeight;
-    }
-  }, [messages, isAtBottom]);
+    if (!isOpen || !isAtBottom || !scrollRef.current) return;
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, isOpen, isAtBottom]);
 
   useEffect(() => {
     if (!isOpen || isMinimized || showChatList || !inputRef.current) return;
@@ -465,9 +456,7 @@ export const FloatingAITutor = () => {
     e.target.value = '';
   };
 
-  useEffect(() => {
-    getTextbookCount().then(setTextbookCount).catch((e) => console.warn('Failed to get textbook count:', e));
-  }, [showTextbooks]);
+
 
   if (!user) return null;
 
@@ -618,13 +607,8 @@ export const FloatingAITutor = () => {
                       <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/5" onClick={() => newChat()} title="New chat">
                         <Plus className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/5 relative" onClick={() => setShowTextbooks(true)} title="Textbooks">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/5 relative" onClick={() => toast("Textbook upload coming soon!")} title="Textbooks">
                         <Library className="w-4 h-4" />
-                        {textbookCount > 0 && (
-                          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full flex items-center justify-center text-[7px] text-primary-foreground font-bold">
-                            {textbookCount}
-                          </span>
-                        )}
                       </Button>
                     </>
                   )}
@@ -641,43 +625,41 @@ export const FloatingAITutor = () => {
             {!isMinimized && (
               <>
                 {showChatList ? (
-                  <StaggerContent delay={0.18}>
-                    <ScrollArea className="flex-1 p-2">
-                      <motion.div className="space-y-1" variants={staggerContainer} initial="initial" animate="animate">
-                        {chats.map(chat => (
-                          <motion.div
-                            key={chat.id}
-                            variants={staggerItem}
-                            className={cn(
-                              "flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-colors group",
-                              chat.id === activeChatId ? "bg-primary/10 border border-primary/20" : "hover:bg-white/5"
-                            )}
-                            onClick={() => { switchChat(chat.id); setShowChatList(false); }}
-                          >
-                            <MessageCircle className="w-4 h-4 text-muted-foreground shrink-0" />
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs font-medium truncate">{chat.title}</p>
-                            </div>
-                            {chats.length > 1 && (
-                              <Button
-                                variant="ghost" size="icon"
-                                className="h-6 w-6 opacity-0 group-hover:opacity-100 shrink-0"
-                                onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
-                              >
-                                <Trash2 className="w-3 h-3 text-destructive" />
-                              </Button>
-                            )}
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    </ScrollArea>
-                  </StaggerContent>
+                  <div className="flex-1 min-h-0 overflow-y-auto p-2">
+                    <motion.div className="space-y-1" variants={staggerContainer} initial="initial" animate="animate">
+                      {chats.map(chat => (
+                        <motion.div
+                          key={chat.id}
+                          variants={staggerItem}
+                          className={cn(
+                            "flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-colors group",
+                            chat.id === activeChatId ? "bg-primary/10 border border-primary/20" : "hover:bg-white/5"
+                          )}
+                          onClick={() => { switchChat(chat.id); setShowChatList(false); }}
+                        >
+                          <MessageCircle className="w-4 h-4 text-muted-foreground shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-medium truncate">{chat.title}</p>
+                          </div>
+                          {chats.length > 1 && (
+                            <Button
+                              variant="ghost" size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 shrink-0"
+                              onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
+                            >
+                              <Trash2 className="w-3 h-3 text-destructive" />
+                            </Button>
+                          )}
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </div>
                 ) : (
                   <>
-                    <StaggerContent delay={0.18}>
-                      <ScrollArea
+                    <div className="flex-1 min-h-0 flex flex-col">
+                      <div
                         ref={scrollRef}
-                        className="flex-1 p-3 w-full overflow-x-hidden [&_[data-radix-scroll-area-viewport]]:overflow-x-hidden"
+                        className="flex-1 min-h-0 overflow-y-auto p-3 w-full"
                       >
                         {messages.length === 0 ? (
                           <motion.div
@@ -838,30 +820,30 @@ export const FloatingAITutor = () => {
                             </motion.button>
                           )}
                         </AnimatePresence>
-                      </ScrollArea>
-                    </StaggerContent>
+                      </div>
 
-                    {attachment && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="px-3 py-1.5 border-t border-white/5 bg-white/[0.02] flex items-center gap-2"
-                      >
-                        {attachment.preview ? (
-                          <img src={attachment.preview} alt="" className="w-8 h-8 rounded object-cover" />
-                        ) : (
-                          <FileText className="w-4 h-4 text-primary shrink-0" />
-                        )}
-                        <span className="text-xs truncate flex-1">{attachment.name}</span>
-                        <Button variant="ghost" size="icon" className="h-5 w-5 shrink-0 hover:bg-white/10" onClick={clearAttachment}>
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </motion.div>
-                    )}
+                      {attachment && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="border-t border-white/5 bg-white/[0.02] flex items-center gap-2 px-3 py-1.5 shrink-0"
+                        >
+                          {attachment.preview ? (
+                            <img src={attachment.preview} alt="" className="w-8 h-8 rounded object-cover" loading="lazy" />
+                          ) : (
+                            <FileText className="w-4 h-4 text-primary shrink-0" />
+                          )}
+                          <span className="text-xs truncate flex-1">{attachment.name}</span>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 shrink-0 hover:bg-white/10" onClick={clearAttachment}>
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </motion.div>
+                      )}
 
-                    <StaggerContent delay={0.25}>
-                      <form onSubmit={handleSubmit} className="p-3 border-t border-white/5 bg-background/30 shrink-0">
+                      <div className="shrink-0 border-t border-white/5 bg-background/30">
+                        <StaggerContent delay={0.25}>
+                          <form onSubmit={handleSubmit} className="p-3">
                         <div className="flex gap-2 items-end">
                           <input
                             ref={fileInputRef}
@@ -917,6 +899,8 @@ export const FloatingAITutor = () => {
                         </div>
                       </form>
                     </StaggerContent>
+                    </div>
+                    </div>
                   </>
                 )}
               </>
@@ -925,29 +909,17 @@ export const FloatingAITutor = () => {
         )}
       </AnimatePresence>
 
-      {showTextbooks && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowTextbooks(false)}>
-          <motion.div
-            initial={{ scale: 0.92, opacity: 0, y: 10 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="w-full max-w-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <TextbookUploader onClose={() => setShowTextbooks(false)} />
-          </motion.div>
-        </div>
-      )}
     </>
   );
 };
 
-function StaggerContent({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function StaggerContent({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, filter: 'blur(4px)' }}
       animate={{ opacity: 1, filter: 'blur(0px)' }}
       transition={{ duration: 0.35, delay, ease: [0.23, 1, 0.32, 1] }}
+      className={className}
     >
       {children}
     </motion.div>

@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
-  Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library, Lock, Award
+  Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library, Lock, Award,
+  Users, TrendingUp, Compass
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
@@ -21,8 +22,11 @@ const navLinks = [
   { path: "/", label: "Home", icon: Home },
   { path: "/past-questions", label: "Past Questions", icon: BookOpen },
   { path: "/chat", label: "Study Chat", icon: MessageSquare },
+  { path: "/friends", label: "Friends", icon: Users },
   { path: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { path: "/achievements", label: "Achievements", icon: Award },
+  { path: "/stats", label: "Study Stats", icon: TrendingUp },
+  { path: "/discover", label: "Discover", icon: Compass },
   { path: "/profile", label: "Profile", icon: User },
   { path: "/download", label: "Get App", icon: Download },
 ];
@@ -62,7 +66,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     unsubscribe: unsubscribePush,
   } = usePushNotificationsContext();
 
-  useEffect(() => {
+  const fetchProfile = useCallback(() => {
     if (!user) { setIsAdmin(false); setProfileName(null); setProfileAvatar(null); return; }
     const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
     supabase.from("profiles").select("is_admin, display_name, avatar_url").eq("user_id", user.id).single().then(({ data }) => {
@@ -73,9 +77,16 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
       } else {
         setIsAdmin(emailAdmin);
       }
-      // Admin role assignment is server-side only; client escalation removed
     });
   }, [user]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  useEffect(() => {
+    if (open) fetchProfile();
+  }, [open, fetchProfile]);
 
   const allLinks = isAdmin
     ? [...navLinks, { path: "/admin", label: "Admin", icon: Shield }]

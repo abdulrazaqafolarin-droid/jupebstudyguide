@@ -8,7 +8,8 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null; needsMfa?: boolean }>;
+  verifyMfa: (code: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   deleteAccount: () => Promise<{ error: Error | null }>;
@@ -42,22 +43,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         purgeForeignUserData(newUserId);
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false);
         prevUserIdRef.current = newUserId;
+        // INITIAL_SESSION resolves via getSession() below to avoid a race
+        // where the event fires null before getSession() restores the session.
+        if (event !== 'INITIAL_SESSION') {
+          setLoading(false);
+        }
       }
     );
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Get initial session with timeout
+    const sessionPromise = supabase.auth.getSession().then(({ data: { session } }) => {
       const newUserId = session?.user?.id ?? null;
       purgeForeignUserData(newUserId);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
       prevUserIdRef.current = newUserId;
+    }).catch((err) => {
+      console.error('Failed to restore auth session:', err);
+      purgeForeignUserData(null);
+      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    const timeoutId = setTimeout(() => {
+      purgeForeignUserData(null);
+      setLoading(false);
+    }, 10000);
+
+    sessionPromise.finally(() => clearTimeout(timeoutId));
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const signUp = async (email: string, password: string) => {
@@ -82,14 +101,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         email,
         password,
       });
-      return { error };
+      if (error) return { error, needsMfa: false };
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal && aal.nextLevel === 'aal2' && aal.currentLevel === 'aal1') {
+        return { error: null, needsMfa: true };
+      }
+      return { error: null, needsMfa: false };
+    } catch (error) {
+      return { error: error as Error, needsMfa: false };
+    }
+  };
+
+  const verifyMfa = async (code: string) => {
+    try {
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      const totpFactor = factors?.all.find(f => f.factor_type === 'totp' && f.status === 'verified');
+      if (!totpFactor) return { error: new Error('No verified TOTP factor found') };
+      const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: totpFactor.id,
+      });
+      if (challengeError) return { error: challengeError };
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: totpFactor.id,
+        challengeId: challenge.id,
+        code,
+      });
+      if (verifyError) return { error: verifyError };
+      return { error: null };
     } catch (error) {
       return { error: error as Error };
     }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Sign out error:", error);
+      setUser(null);
+      setSession(null);
+    }
   };
 
   const resetPassword = async (email: string) => {
@@ -120,6 +171,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
     signUp,
     signIn,
+    verifyMfa,
     signOut,
     resetPassword,
     deleteAccount,

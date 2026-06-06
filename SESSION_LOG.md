@@ -311,3 +311,108 @@ Auth: Bearer token (user session)
 - [x] Edge function APIs documented
 - [x] Achievement system mapped
 - [x] Database tables identified
+
+---
+
+## BATCH 4 — Chat Attachments Complete + Storage Infrastructure (2026-05-28)
+
+### Frontend
+- **Camera/Gallery**: Separate input refs — camera has `capture="environment"`, gallery opens native picker
+- **Document**: Office MIME types (`.docx`, `.xlsx`, `.pptx`, `.csv`, `.zip`, `.rar`) added to validation + accept attribute
+- **Contact**: Form dialog (name, phone, email) replaces "coming soon" toast
+- **Location**: `LocationCard` renders map preview + tap-to-open for incoming `📍` messages
+- **Stickers**: 7 categories with 300+ emojis, category tab navigation, scrollable grid
+- **Swipe-to-reply**: `dragDirectionLock` + Y-axis threshold prevents scroll interference
+- **Search**: Yellow highlight on matching text; "No results" state; `useMemo`-based computation
+
+### Supabase Backend
+- **answer-images bucket**: Created with INSERT/SELECT/UPDATE/DELETE policies (all owner-scoped)
+- **chat-files DELETE**: Added owner-scoped policy
+- **chat-images DELETE**: Replaced permissive policy with owner-scoped
+- **chat-files INSERT**: Tightened to owner-scoped folder check
+- **chat-images INSERT**: Tightened to owner-scoped folder check
+
+### Verification
+- TypeScript zero errors
+- Vite production build succeeds
+- All 5 storage buckets verified
+- All 17 storage policies verified (INSERT/DELETE/UPDATE = owner-scoped, SELECT = public)
+
+---
+
+## BATCH 5 — Admin Dashboard Performance Fix (2026-05-28)
+
+### Problem
+`AdminDashboard.tsx:86` used `limit(5000)` to fetch ALL profiles and activation_codes rows just to compute aggregate stats (total count, activated count, signup trends, plan distribution). This would fail silently if user base ever exceeded 5000, and was wasteful for small user bases.
+
+### Fix
+Created `get_admin_dashboard_stats()` RPC in `supabase/migrations/20260529000001_admin_dashboard_rpc.sql`:
+- `COUNT(*)` + `COUNT(*) FILTER (WHERE ...)` for profile/code totals
+- `generate_series` for 30-day signup chart
+- `GROUP BY plan_type` for plan distribution
+- SECURITY DEFINER with admin-only gate
+
+### Frontend
+- Replaced two `supabase.from(...).select(...).limit(5000)` calls with one `supabase.rpc('get_admin_dashboard_stats')` call
+
+### Verification
+- TypeScript zero errors
+- Vite production build succeeds (3406 modules)
+- All pending items resolved — 0 pending
+
+---
+
+## BATCH 6 — Fix All 8 Known Issues (2026-06-03)
+
+### Issues Resolved
+
+**1. Cross-account localStorage leak on initial load** ✅
+- Added `purgeForeignUserData(null)` calls in two missing paths in `AuthContext.tsx`:
+  - `.catch()` branch when `getSession()` rejects
+  - 10-second timeout fallback when session never resolves
+
+**2. AI Gateway Lovable dependency** ✅ (Already fixed — stale doc entry)
+- Confirmed all edge functions already use direct API calls via `_shared/ai-router.ts` (Gemini → Groq → Kimi).
+- Updated SESSION_LOG.md entry.
+
+**3. Supabase project ID mismatch** ✅
+- Fixed `supabase/config.toml`: `lsjlehxmfnjpyyjgqdas` → `gzyczowqqywesqhqqpdi`
+- Updated stale deploy scripts that referenced old project
+
+**4. Deno edge function imports (--no-remote)** ✅
+- Fixed `send-push/index.ts`: replaced `serve` from deno.land with `Deno.serve`, replaced esm.sh supabase import with `npm:@supabase/supabase-js@2`
+- Rewrote `deploy-all.cjs` with automatic `_shared/*` import inlining, correct project ref, and all 7 functions
+- Updated legacy deploy scripts (`deploy-ai-tutor.cjs`, `deploy-edge.cjs`, `deploy-validate.cjs`) with correct project ref and deprecation notices
+
+**5. Hardcoded questions migration** ⏳ (Deferred — see below)
+
+**6. Syllabus progress cross-device sync** ✅
+- Created `supabase/migrations/20260603000001_syllabus_progress_sync.sql` — new `syllabus_progress` table with RLS policies
+- Created `src/hooks/useSyllabusSync.ts` — debounced upsert to Supabase + hydration from Supabase on new devices
+- Wired into `Index.tsx` near existing `useStatsSync` call
+- Exported `StoredSyllabus` type and `setProgress` from `useSyllabusProgress` for sync consumption
+
+**7. QuizMode time enforcement** ✅
+- Fixed `forceComplete` in `QuizMode.tsx`:
+  - Captures current question's answer (if selected but not yet confirmed by "Next")
+  - Uses `questions.length` instead of `answers.length` for `totalQuestions`
+  - Added proper dependency array (`questions`, `selectedOption`, `currentIndex`, etc.)
+
+**8. PWA cache TTL** ✅
+- Added `runtimeCaching` with `NetworkOnly` handler for `*.supabase.co`, `*.googleapis.com`, and `*.groq.com` URLs in `vite.config.ts`
+
+### Real-Time Chat Fix (2026-06-03)
+
+**Root cause**: `useChat.ts` had `postgres_changes` subscriptions for DELETE and UPDATE events but **not for INSERT**. New messages relied entirely on the ephemeral `msg-broadcast` broadcast channel. If the recipient's WebSocket disconnected even briefly, the broadcast was lost with no recovery path — the message never appeared.
+
+Ironically, `InAppNotificationBar.tsx` *did* subscribe to `postgres_changes INSERT` (showing the popup), but `useChat.ts` had no such handler, so the message list never updated.
+
+**Fix**:
+- Added `postgres_changes INSERT` handler to the `chat-global` channel in `useChat.ts` — this is the reliable DB-backed delivery path (RLS was already fixed)
+- Fixed channel name collision: renamed `msg-broadcast` → `chat-notifications` in `useChatNotifications.ts` (both hooks used the same channel name with different `selfBroadcast` settings)
+- The broadcast channel (`msg-broadcast`) is kept as a fast-path; `postgres_changes INSERT` is the guaranteed delivery mechanism
+
+### Verification
+- TypeScript zero errors
+- Vite production build succeeds
+- 7 of 7 actionable issues fixed; 1 deferred (hardcoded questions migration)

@@ -1,16 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { ScrollArea } from './ui/scroll-area';
 import MathRenderer from './MathRenderer';
 import { useAttachment } from '@/hooks/useAttachment';
 import { DailyTask, SyllabusTopic } from '@/types/syllabus';
 import { SUBJECT_INFO } from '@/types/question';
 import { 
   Bot, Send, ArrowLeft, Loader2, BookOpen,
-  GraduationCap, CheckCircle, Plus, Image, FileText, X
+  GraduationCap, CheckCircle, Plus, Image, FileText, X,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { streamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, SYLLABUS_TEACHING_PROMPT } from '@/lib/prompts';
@@ -29,11 +29,29 @@ interface AITeachingPageProps {
   onComplete: () => void;
 }
 
+function TypingDots() {
+  return (
+    <span className="flex items-center gap-1">
+      <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "0ms" }} />
+      <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "150ms" }} />
+      <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+    </span>
+  );
+}
+
+const messageVariants = {
+  initial: { opacity: 0, y: 12, scale: 0.97 },
+  animate: { opacity: 1, y: 0, scale: 1 },
+};
+
+const springMessage = { type: "spring" as const, stiffness: 400, damping: 28, mass: 0.5 };
+
 export const AITeachingPage = ({ task, topic, onBack, onComplete }: AITeachingPageProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,15 +60,19 @@ export const AITeachingPage = ({ task, topic, onBack, onComplete }: AITeachingPa
 
   const subjectInfo = SUBJECT_INFO[task.subject];
 
-  // Auto-scroll to bottom on new messages
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const threshold = 100;
+    setIsAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < threshold);
+  }, []);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      const scrollContainer = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
+    if (scrollRef.current && isAtBottom) {
+      const el = scrollRef.current;
+      requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
     }
-  }, [messages]);
+  }, [messages, isAtBottom]);
 
   // Start teaching automatically when component mounts
   useEffect(() => {
@@ -125,7 +147,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
   }, [topic, task, attachment, clearAttachment]);
 
   const startTeaching = () => {
-    const initialPrompt = `I want to learn about \"${topic.name}\" step by step. This is Day ${task.day} of my JUPEB syllabus study plan.
+    const initialPrompt = `I want to learn about "${topic.name}" step by step. This is Day ${task.day} of my JUPEB syllabus study plan.
 
 The topic covers: ${topic.description}
 
@@ -155,129 +177,171 @@ Please teach me this topic thoroughly, step by step. Start from the fundamentals
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 py-3">
+      <header className="sticky top-0 z-10 bg-black/40 backdrop-blur-xl border-b border-white/5">
+        <div className="max-w-4xl mx-auto px-4 py-2.5">
           <div className="flex items-center justify-between">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={onBack}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground/80 hover:text-foreground transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
-            </button>
+            </motion.button>
             
             <div className="flex items-center gap-2">
-              <span className={cn('px-3 py-1.5 rounded-full text-sm font-medium', `subject-${task.subject}`)}>
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/5 text-muted-foreground border border-white/10">
                 {subjectInfo.icon} Day {task.day}
               </span>
             </div>
 
-            <Button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={onComplete}
-              size="sm"
-              variant="outline"
-              className="gap-2 text-accent border-accent/50 hover:bg-accent/10"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-colors"
             >
-              <CheckCircle className="w-4 h-4" />
+              <CheckCircle className="w-3.5 h-3.5" />
               Done
-            </Button>
+            </motion.button>
           </div>
         </div>
       </header>
 
       {/* Topic Info Banner */}
-      <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-primary" />
+      <div className="bg-gradient-to-r from-primary/[0.08] via-accent/[0.06] to-transparent border-b border-white/5">
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <GraduationCap className="w-4 h-4 text-primary" />
             </div>
-            <div>
-              <h1 className="font-bold text-lg">{topic.name}</h1>
-              <p className="text-sm text-muted-foreground">{topic.description}</p>
+            <div className="min-w-0">
+              <h1 className="text-sm font-semibold text-foreground truncate">{topic.name}</h1>
+              <p className="text-[11px] text-muted-foreground/70 truncate">{topic.description}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Chat Messages */}
-      <ScrollArea ref={scrollRef} className="flex-1 px-3 sm:px-4 w-full overflow-x-hidden [&_[data-radix-scroll-area-viewport]]:overflow-x-hidden">
-        <div className="max-w-4xl mx-auto py-6 space-y-6 w-full min-w-0">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={cn(
-                "flex gap-2 sm:gap-4 w-full min-w-0",
-                msg.role === 'user' && "flex-row-reverse"
-              )}
-            >
-              <div className={cn(
-                "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0",
-                msg.role === 'assistant' ? "bg-primary/20" : "bg-secondary"
-              )}>
-                {msg.role === 'assistant' ? (
-                  <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                ) : (
-                  <span className="text-xs sm:text-sm font-medium">You</span>
-                )}
-              </div>
-              <div
-                className={cn(
-                  "rounded-2xl px-4 py-3 sm:px-5 sm:py-4 min-w-0 flex-1 max-w-[85%]",
-                  msg.role === 'assistant'
-                    ? "bg-card border border-border shadow-sm"
-                    : "bg-primary text-primary-foreground"
-                )}
-                style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-              >
-                {msg.role === 'assistant' ? (
-                  <div className="prose prose-sm dark:prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere]">
-                    <MathRenderer content={msg.content} className="leading-relaxed" />
+      <div className="flex-1 min-h-0 relative flex flex-col">
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+        >
+          <div className="max-w-4xl mx-auto py-4 space-y-3 w-full min-w-0">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={`msg-${i}`}
+                  layout
+                  variants={messageVariants}
+                  initial="initial"
+                  animate="animate"
+                  transition={springMessage}
+                  className={cn(
+                    "flex gap-2 w-full",
+                    msg.role === 'user' ? "justify-end" : "justify-start"
+                  )}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 bg-primary/20 mt-1">
+                      <Bot className="w-3 h-3 text-primary" />
+                    </div>
+                  )}
+                  <div
+                    className={cn(
+                      "rounded-xl px-3 py-2 min-w-0",
+                      "max-w-[85%]",
+                      msg.role === 'assistant'
+                        ? "bg-white/[0.06] border border-white/5 text-foreground"
+                        : "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-sm shadow-primary/20"
+                    )}
+                    style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+                  >
+                    {msg.attachment && (
+                      <div className="flex items-center gap-1 mb-1 text-[10px] opacity-75">
+                        {msg.attachment.mimeType.startsWith('image/') ? <Image className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
+                        <span className="truncate">{msg.attachment.name}</span>
+                      </div>
+                    )}
+                    {msg.role === 'assistant' ? (
+                      <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere]">
+                        <MathRenderer content={msg.content} className="text-xs leading-relaxed" />
+                      </div>
+                    ) : (
+                      <p className="text-xs whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.content}</p>
+                    )}
                   </div>
-                ) : (
-                  <p className="text-sm whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.content}</p>
-                )}
-              </div>
-            </div>
-          ))}
-          
-          {isLoading && messages.length > 0 && messages[messages.length - 1]?.role !== 'assistant' && (
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <Bot className="w-5 h-5 text-primary" />
-              </div>
-              <div className="bg-card border border-border rounded-2xl px-5 py-4">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                  <span className="text-sm text-muted-foreground">Thinking...</span>
+                  {msg.role === 'user' && (
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 bg-primary/20 mt-1">
+                      <span className="text-[10px] font-medium text-primary">You</span>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {isLoading && (
+              <div className="flex gap-2 justify-start">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 bg-primary/20">
+                  <Bot className="w-3 h-3 text-primary" />
+                </div>
+                <div className="bg-white/[0.06] border border-white/5 rounded-xl px-3 py-2.5">
+                  <TypingDots />
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </ScrollArea>
+
+        {/* Scroll to bottom */}
+        <AnimatePresence>
+          {!isAtBottom && messages.length > 3 && (
+            <motion.button
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              onClick={() => {
+                const el = scrollRef.current;
+                if (el) el.scrollTop = el.scrollHeight;
+              }}
+              className="absolute bottom-4 right-8 w-7 h-7 rounded-full bg-white/10 border border-white/10 flex items-center justify-center backdrop-blur-md hover:bg-white/20 transition-colors z-10"
+            >
+              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Attachment preview */}
       {attachment && (
-        <div className="bg-background border-t border-border">
-          <div className="max-w-4xl mx-auto px-4 py-2 flex items-center gap-2">
-            {attachment.preview ? (
-              <img src={attachment.preview} alt="" className="w-10 h-10 rounded object-cover" />
-            ) : (
-              <FileText className="w-5 h-5 text-primary shrink-0" />
-            )}
-            <span className="text-sm truncate flex-1">{attachment.name}</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={clearAttachment}>
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
+        <div className="shrink-0 border-t border-white/5 bg-white/[0.02] px-3 py-1.5 flex items-center gap-2">
+          {attachment.preview ? (
+            <img src={attachment.preview} alt="" className="w-8 h-8 rounded object-cover" loading="lazy" />
+          ) : (
+            <div className="w-8 h-8 rounded bg-white/5 flex items-center justify-center">
+              <FileText className="w-4 h-4 text-primary/70" />
+            </div>
+          )}
+          <span className="text-xs truncate flex-1 text-muted-foreground">{attachment.name}</span>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={clearAttachment}
+            className="w-5 h-5 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 transition-colors"
+          >
+            <X className="w-3 h-3 text-muted-foreground" />
+          </motion.button>
         </div>
       )}
 
       {/* Input Area */}
-      <div className="sticky bottom-0 bg-background border-t border-border">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex gap-3 items-end">
+      <div className="shrink-0 border-t border-white/5 bg-background/30 backdrop-blur-xl">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto px-3 py-2.5">
+          <div className="flex gap-2 items-end">
             <input
               ref={fileInputRef}
               type="file"
@@ -285,19 +349,21 @@ Please teach me this topic thoroughly, step by step. Start from the fundamentals
               onChange={handleFileChange}
               className="hidden"
             />
-            <button
+            <motion.button
               type="button"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading || isProcessing}
               className={cn(
-                "w-11 h-11 rounded-full flex items-center justify-center shrink-0",
-                "bg-primary/10 hover:bg-primary/20 text-primary transition-colors",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
+                "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                "bg-white/5 hover:bg-white/10 text-muted-foreground transition-colors",
+                "disabled:opacity-40 disabled:cursor-not-allowed"
               )}
               title="Attach file"
             >
-              {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
-            </button>
+              {isProcessing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+            </motion.button>
             <Textarea
               ref={inputRef}
               value={input}
@@ -309,24 +375,25 @@ Please teach me this topic thoroughly, step by step. Start from the fundamentals
                 }
               }}
               placeholder={attachment ? "Describe what you need help with..." : "Ask a question, request clarification, or say 'I understand, continue'..."}
-              className="min-h-[52px] max-h-[150px] resize-none text-base flex-1"
+              className="min-h-[40px] max-h-[80px] resize-none text-sm flex-1 bg-white/5 border-white/10 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 rounded-xl placeholder:text-muted-foreground/50"
               rows={1}
               disabled={isLoading}
             />
-            <Button 
-              type="submit" 
-              size="lg"
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               disabled={(!input.trim() && !attachment) || isLoading}
-              className="shrink-0 px-6"
-            >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Send className="w-5 h-5" />
+              className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
+                "disabled:opacity-40 disabled:cursor-not-allowed"
               )}
-            </Button>
+            >
+              {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+            </motion.button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
+          <p className="text-[11px] text-muted-foreground/60 mt-1.5 text-center">
             Attach images or documents for AI analysis • The tutor will teach step-by-step
           </p>
         </form>

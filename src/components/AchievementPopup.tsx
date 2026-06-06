@@ -217,7 +217,7 @@ const AchievementPopup: React.FC<AchievementPopupProps> = ({ achievements, onClo
                       className={cn(
                         'w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl',
                         'bg-gradient-to-br shadow-lg flex-shrink-0 border border-white/10',
-                        rarityConfig[achievement.rarity].gradient,
+                        (rarityConfig[achievement.rarity] ?? rarityConfig.common).gradient,
                       )}
                     >
                       {achievement.icon}

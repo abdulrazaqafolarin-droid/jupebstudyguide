@@ -1,5 +1,5 @@
 import React from 'react';
-import { Achievement } from '@/hooks/useAchievements';
+import { Achievement, AchievementStats } from '@/hooks/useAchievements';
 import { cn } from '@/lib/utils';
 import { Lock, Star } from 'lucide-react';
 
@@ -9,6 +9,7 @@ interface AchievementBadgeProps {
   size?: 'sm' | 'md' | 'lg';
   showDetails?: boolean;
   shimmer?: boolean;
+  stats?: AchievementStats;
 }
 
 const rarityConfig = {
@@ -97,7 +98,11 @@ const AchievementBadge: React.FC<AchievementBadgeProps> = ({
   size = 'md',
   showDetails = true,
   shimmer = false,
+  stats,
 }) => {
+  const progress = stats && achievement.getProgress
+    ? achievement.getProgress(stats)
+    : null;
   const cfg = rarityConfig[achievement.rarity];
 
   const sizeClasses = {
@@ -162,6 +167,20 @@ const AchievementBadge: React.FC<AchievementBadgeProps> = ({
             <RarityStars rarity={achievement.rarity} unlocked={unlocked} />
           </div>
           <p className="text-xs text-muted-foreground truncate">{achievement.description}</p>
+          {progress && (
+            <div className="mt-1.5 w-full">
+              <div className="flex items-center justify-between text-[9px] text-muted-foreground/70 mb-0.5">
+                <span>{progress.current}/{progress.max}</span>
+                <span>{Math.round((progress.current / progress.max) * 100)}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-secondary/60 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary/60 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min((progress.current / progress.max) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

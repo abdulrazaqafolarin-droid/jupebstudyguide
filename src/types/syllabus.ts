@@ -21,8 +21,8 @@ export interface DailyTask {
 }
 
 export interface UserSubjectCombination {
-  core: ['physics', 'chemistry'];
-  elective: ('biology' | 'math')[];
+  core: Subject[];
+  elective: Subject[];
 }
 
 export interface SyllabusProgress {
@@ -33,6 +33,133 @@ export interface SyllabusProgress {
   lastStudiedAt?: Date;
   overallProgress: number;
   subjectProgress: Record<Subject, number>;
+}
+
+export type SessionStatus = 'active' | 'paused' | 'completed';
+
+export interface StudySessionData {
+  id: string;
+  name: string;
+  subjects: Subject[];
+  status: SessionStatus;
+  progress: SyllabusProgress;
+  startDate: string;
+  dailyGoalMinutes: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StoredStudySession {
+  id: string;
+  name: string;
+  subjects: Subject[];
+  status: SessionStatus;
+  progress: StoredSyllabus;
+  startDate: string;
+  dailyGoalMinutes: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type StoredSyllabus = Omit<SyllabusProgress, 'startedAt' | 'lastStudiedAt'> & {
+  startedAt: string;
+  lastStudiedAt?: string;
+};
+
+export function serializeProgress(p: SyllabusProgress): StoredSyllabus {
+  return {
+    combination: p.combination,
+    currentDay: p.currentDay,
+    dailyTasks: p.dailyTasks.map(t => ({
+      ...t,
+      completedAt: t.completedAt ? (typeof t.completedAt === 'string' ? t.completedAt : t.completedAt.toISOString()) : undefined,
+    })),
+    startedAt: typeof p.startedAt === 'string' ? p.startedAt : p.startedAt.toISOString(),
+    lastStudiedAt: p.lastStudiedAt ? (typeof p.lastStudiedAt === 'string' ? p.lastStudiedAt : p.lastStudiedAt.toISOString()) : undefined,
+    overallProgress: p.overallProgress,
+    subjectProgress: { ...p.subjectProgress },
+  };
+}
+
+export function deserializeProgress(s: StoredSyllabus): SyllabusProgress {
+  return {
+    ...s,
+    startedAt: new Date(s.startedAt),
+    lastStudiedAt: s.lastStudiedAt ? new Date(s.lastStudiedAt) : undefined,
+    dailyTasks: s.dailyTasks.map(t => ({
+      ...t,
+      completedAt: t.completedAt ? new Date(t.completedAt) : undefined,
+    })),
+    subjectProgress: s.subjectProgress as Record<Subject, number>,
+  };
+}
+
+export function combinationFromSubjects(subjects: Subject[]): UserSubjectCombination {
+  const core: Subject[] = [];
+  const elective: Subject[] = [];
+  for (const s of subjects) {
+    if (s === 'physics' || s === 'chemistry') {
+      core.push(s);
+    } else {
+      elective.push(s);
+    }
+  }
+  return { core, elective };
+}
+
+export function generateSessionTasks(subjects: Subject[], totalDays: number = 30): DailyTask[] {
+  const tasks: DailyTask[] = [];
+  const allTopics: { topic: SyllabusTopic; subject: Subject }[] = [];
+  for (const subject of subjects) {
+    const syllabus = SYLLABUSES[subject];
+    if (!syllabus) continue;
+    for (const topic of syllabus) {
+      allTopics.push({ topic, subject });
+    }
+  }
+  const topicsPerDay = Math.ceil(allTopics.length / totalDays);
+  let topicIndex = 0;
+  for (let day = 1; day <= totalDays; day++) {
+    const dayTopics: SyllabusTopic[] = [];
+    let daySubject: Subject = subjects[0] || 'physics';
+    const objectives: string[] = [];
+    const checkpoints: string[] = [];
+    for (let i = 0; i < topicsPerDay && topicIndex < allTopics.length; i++) {
+      const { topic, subject } = allTopics[topicIndex];
+      dayTopics.push(topic);
+      daySubject = subject;
+      objectives.push(`Understand the key concepts of ${topic.name}`);
+      topic.subtopics.slice(0, 2).forEach(sub => {
+        objectives.push(`Master ${sub}`);
+      });
+      checkpoints.push(`Can you explain ${topic.name} in your own words?`);
+      checkpoints.push(`What are the key formulas/concepts in ${topic.subtopics[0] || 'this topic'}?`);
+      topicIndex++;
+    }
+    if (dayTopics.length > 0) {
+      tasks.push({
+        day,
+        topics: dayTopics,
+        subject: daySubject,
+        learningObjectives: objectives,
+        checkpointQuestions: checkpoints,
+        isCompleted: false,
+      });
+    }
+  }
+  while (tasks.length < totalDays) {
+    const reviewDay = tasks.length + 1;
+    const reviewSubject = subjects[reviewDay % subjects.length];
+    tasks.push({
+      day: reviewDay,
+      subject: reviewSubject,
+      topics: [],
+      learningObjectives: ['Review previous topics', 'Practice past questions', 'Strengthen weak areas'],
+      checkpointQuestions: ['Can you solve problems from the topics covered this week?'],
+      isCompleted: false,
+    });
+  }
+  return tasks;
 }
 
 // Comprehensive JUPEB Syllabuses based on official curriculum

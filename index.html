@@ -15,6 +15,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="JUPEB Master" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://api.microlink.io https://api.github.com https://*.googleapis.com https://fcm.googleapis.com; font-src 'self'; media-src 'self' blob: https:; worker-src 'self' blob: https://cdnjs.cloudflare.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'" />
 
     <meta property="og:title" content="JUPEB Master - Ace Your Exams" />
     <meta property="og:description" content="Master JUPEB past questions with spaced repetition learning. Physics, Chemistry & Biology." />
@@ -29,23 +30,42 @@
   <body>
     <div id="root"></div>
     <script>
-      (async function() {
-        try {
-          if ('serviceWorker' in navigator) {
-            var regs = await navigator.serviceWorker.getRegistrations();
-            for (var i = 0; i < regs.length; i++) {
-              await regs[i].unregister();
-            }
-          }
+      (function() {
+        if (!('serviceWorker' in navigator)) return;
+        var isReset = location.search.includes('swreset=1');
+        if (!isReset) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) regs[i].unregister();
+          }).catch(function(){});
           if ('caches' in window) {
-            var keys = await caches.keys();
-            for (var j = 0; j < keys.length; j++) {
-              await caches.delete(keys[j]);
-            }
+            caches.keys().then(function(keys) {
+              return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+            }).catch(function(){});
           }
-        } catch(e) {
-          console.warn('SW cleanup:', e);
+          location.replace(location.pathname + '?swreset=1');
+          return;
         }
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(function(reg) {
+            if (reg.active && !navigator.serviceWorker.controller) {
+              return;
+            }
+            if (reg.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+              location.reload();
+              return;
+            }
+            reg.addEventListener('updatefound', function() {
+              var sw = reg.installing;
+              sw.addEventListener('statechange', function() {
+                if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+                  sw.postMessage({ type: 'SKIP_WAITING' });
+                  location.reload();
+                }
+              });
+            });
+          }).catch(function(){});
+        });
       })();
     </script>
     <script type="module" src="/src/main.tsx"></script>

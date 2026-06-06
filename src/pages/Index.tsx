@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { toast } from 'sonner';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { questions, getQuestionsBySubject } from '@/data/questions';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
@@ -11,24 +12,25 @@ import StreakDisplay from '@/components/StreakDisplay';
 import AchievementsPanel from '@/components/AchievementsPanel';
 import AchievementPopup from '@/components/AchievementPopup';
 import SyllabusSetup from '@/components/SyllabusSetup';
-import SyllabusTracker from '@/components/SyllabusTracker';
+import SessionListView from '@/components/SessionListView';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useCustomQuestions } from '@/hooks/useCustomQuestions';
 import { useStreak } from '@/hooks/useStreak';
 import { useAchievements, Achievement } from '@/hooks/useAchievements';
-import { useSyllabusProgress } from '@/hooks/useSyllabusProgress';
+import { useStudySessions } from '@/hooks/useStudySessions';
 import { useStatsSync } from '@/hooks/useStatsSync';
+import { useStudySessionSync } from '@/hooks/useStudySessionSync';
 import { useScoreAwarder } from '@/hooks/useScoreAwarder';
 import LeaderboardPanel from '@/components/LeaderboardPanel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserStorage } from '@/hooks/useUserStorage';
-import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, FileText, Library, X } from 'lucide-react';
+import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, FileText, Library } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import rutexLogo from '@/assets/rutex-logo.jpg';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { cn } from '@/lib/utils';
-import { TextbookUploader } from '@/components/TextbookUploader';
+
 
 type View = 'home' | 'study' | 'quiz-setup' | 'quiz' | 'syllabus-setup' | 'syllabus';
 
@@ -38,7 +40,7 @@ const Index = () => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [quizPlan, setQuizPlan] = useState<QuizPlan | null>(null);
   const [currentQuizQuestions, setCurrentQuizQuestions] = useState<Question[]>([]);
-  const [showTextbookUpload, setShowTextbookUpload] = useState(false);
+
   const { getStats, updateProgress, progress } = useStudyProgress();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
@@ -106,22 +108,31 @@ const Index = () => {
     [sessionHours],
   );
 
-  // Syllabus progress
+  // Study sessions (multi-session support)
   const {
-    progress: syllabusProgress,
-    startSyllabus,
-    completeDay,
-    canAdvanceToDay,
-    resetProgress: resetSyllabusProgress,
-    reorderSubjects,
-    isStarted: isSyllabusStarted,
-  } = useSyllabusProgress();
+    sessions,
+    activeSessions,
+    createSession,
+    completeDay: completeSessionDay,
+    canAdvanceToDay: canAdvanceSessionDay,
+    renameSession,
+    pauseSession,
+    resumeSession,
+    deleteSession,
+    updateSession,
+    setSessions,
+  } = useStudySessions();
 
-  // Syllabus completed progress
+  // Syllabus completed progress (across all sessions)
   const syllabusCompletedDayCount = useMemo(() => {
-    if (!syllabusProgress?.dailyTasks) return 0;
-    return syllabusProgress.dailyTasks.filter(t => t.isCompleted).length;
-  }, [syllabusProgress]);
+    let total = 0;
+    for (const s of sessions) {
+      total += s.progress.dailyTasks.filter(t => t.isCompleted).length;
+    }
+    return total;
+  }, [sessions]);
+
+  const isSyllabusStarted = sessions.length > 0;
 
   const documentsUploaded = documentUploadCount;
 
@@ -136,6 +147,7 @@ const Index = () => {
     newlyUnlocked,
     clearNewlyUnlocked,
     totalCount: achievementTotalCount,
+    stats: achievementStats,
   } = useAchievements({
     totalQuestionsAnswered,
     totalCorrect,
@@ -150,7 +162,7 @@ const Index = () => {
     studiedAfterMidnight,
     studiedBefore6am,
     consecutiveCorrect,
-  }, handleNewAchievement);
+  }, handleNewAchievement, profile?.achievements ?? []);
 
   // Sync unlocked achievements to profiles table
   const prevUnlockedRef = useRef(0);
@@ -166,8 +178,11 @@ const Index = () => {
   useStatsSync({
     currentStreak,
     achievementsCount: unlockedAchievements.length,
-    syllabus: syllabusProgress,
+    syllabus: sessions.length > 0 ? sessions[0].progress : null,
   });
+
+  // Sync study sessions to Supabase for cross-device persistence
+  useStudySessionSync(sessions, setSessions, sessions.length > 0);
 
   // Shared notification center (single instance via NotificationsProvider)
   const {
@@ -200,23 +215,27 @@ const Index = () => {
   // Emit when syllabus day count goes up.
   const lastSyllabusDays = useRef<number | null>(null);
   useEffect(() => {
-    const completed = syllabusProgress?.dailyTasks?.filter(t => t.isCompleted).length ?? 0;
+    let completed = 0;
+    for (const s of sessions) {
+      completed += s.progress.dailyTasks.filter(t => t.isCompleted).length;
+    }
     const prev = lastSyllabusDays.current;
     if (prev !== null && completed > prev) {
       pushNotification({
         kind: 'syllabus',
         title: `✅ Day ${completed} complete`,
-        body: `You're ${Math.round((completed / 30) * 100)}% through your 30-day plan. Keep going!`,
+        body: `You're making progress through your 30-day plans. Keep going!`,
         dedupe: `syll:day:${completed}`,
       });
     }
     lastSyllabusDays.current = completed;
-  }, [syllabusProgress, pushNotification]);
+  }, [sessions, pushNotification]);
 
   // Award streak_day when streak increases
   useEffect(() => {
     if (currentStreak > prevStreakRef.current && currentStreak > 0) {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const d = new Date();
+      const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       awardStreakDay(todayStr);
     }
     prevStreakRef.current = currentStreak;
@@ -396,7 +415,14 @@ const Index = () => {
       <div className="min-h-screen bg-background p-4 md:p-8 flex items-center justify-center">
         <SyllabusSetup
           onStart={(combination) => {
-            startSyllabus(combination);
+            const allSubjects = [...combination.core, ...combination.elective];
+            const today = new Date().toISOString().split('T')[0];
+            const session = createSession(
+              `${allSubjects.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' + ')} Plan`,
+              allSubjects,
+              today,
+              30,
+            );
             setCurrentView('syllabus');
           }}
           onCancel={handleBack}
@@ -405,21 +431,23 @@ const Index = () => {
     );
   }
 
-  // Syllabus tracker view
-  if (currentView === 'syllabus' && syllabusProgress) {
+  // Syllabus multi-session list view
+  if (currentView === 'syllabus') {
     return (
-      <SyllabusTracker
-        progress={syllabusProgress}
-        onCompleteDay={(day, mastery) => {
-          completeDay(day, mastery);
+      <SessionListView
+        sessions={sessions}
+        onCreateSession={(name, subjects, startDate, dailyGoal) => {
+          createSession(name, subjects, startDate, dailyGoal);
+        }}
+        onCompleteDay={(sessionId, day, mastery) => {
+          completeSessionDay(sessionId, day, mastery);
           awardSyllabusDay(day);
         }}
-        canAdvanceToDay={canAdvanceToDay}
-        onReorderSubjects={reorderSubjects}
-        onReset={() => {
-          resetSyllabusProgress();
-          setCurrentView('home');
-        }}
+        canAdvanceToDay={canAdvanceSessionDay}
+        onRenameSession={renameSession}
+        onPauseSession={pauseSession}
+        onResumeSession={resumeSession}
+        onDeleteSession={deleteSession}
         onBack={handleBack}
       />
     );
@@ -570,12 +598,13 @@ const Index = () => {
             unlockedAchievements={unlockedAchievements}
             lockedAchievements={lockedAchievements}
             totalCount={achievementTotalCount}
+            stats={achievementStats}
           />
         </section>
 
         {/* Live Leaderboard */}
         <section className="mb-12 animate-in-up stagger-3">
-          <LeaderboardPanel />
+          <LeaderboardPanel stats={achievementStats} />
         </section>
 
         {/* Subject Cards */}
@@ -635,7 +664,7 @@ const Index = () => {
               );
             })}
             <button
-              onClick={() => setShowTextbookUpload(true)}
+              onClick={() => toast("Textbook upload coming soon!")}
               className="p-4 rounded-xl border border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"
             >
               <Library className="w-7 h-7 mx-auto text-primary" />
@@ -644,21 +673,6 @@ const Index = () => {
             </button>
           </div>
         </section>
-
-        {/* Textbook Uploader Modal */}
-        {showTextbookUpload && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowTextbookUpload(false)}>
-            <div className="w-full max-w-lg relative" onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={() => setShowTextbookUpload(false)}
-                className="absolute -top-2 -right-2 z-10 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-secondary transition-colors shadow-md"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <TextbookUploader onClose={() => setShowTextbookUpload(false)} />
-            </div>
-          </div>
-        )}
 
         {/* Tips */}
         <section className="mt-12 bg-card rounded-2xl border border-border p-6 chalk-texture">

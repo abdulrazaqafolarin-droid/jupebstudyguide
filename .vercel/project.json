@@ -1,1 +1,13 @@
-{"projectId":"prj_SXNXHHzDPaHiAU6yGZr5Bx0CJXJP","orgId":"team_6ex5R4HbbOoHvNMMPQbRKbUA","projectName":"jupebstudyguide-main"}
+{
+  "settings": {
+    "createdAt": 1778863669183,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

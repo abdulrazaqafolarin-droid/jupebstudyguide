@@ -506,7 +506,7 @@ const chemistryData: Record<number, { objective: StudyQuestion[]; theory: StudyQ
       },
       {
         id: "che-2021-import-3", subject: "chemistry", year: 2021, category: "objective",
-        question: `According to Brønsted-Lowry, an acid is a\an`,
+        question: `According to Brønsted-Lowry, an acid is a/an`,
         options: [{"label":"A","text":"proton acceptor."},{"label":"B","text":"proton donor."},{"label":"C","text":"electron acceptor."},{"label":"D","text":"electron donor."}],
         correctAnswer: "B",
         explanation: "According to the Brønsted-Lowry theory, an acid is defined as a proton (H+) donor.",

@@ -2,10 +2,11 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, Send, RotateCcw,
-  Grid3X3, X, Check, Minus,
+  Grid3X3, X, Check, Minus, Bot, Sparkles,
 } from "lucide-react";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
-import type { Subject } from "@/types/question";
+import type { Subject, Question } from "@/types/question";
+import { AITutor } from "@/components/AITutor";
 import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 
@@ -50,6 +51,7 @@ export function QuestionViewer({
   const [submitted, setSubmitted] = useState(false);
   const [results, setResults] = useState<AnswerEntry[]>([]);
   const [showJumpGrid, setShowJumpGrid] = useState(false);
+  const [showAITutor, setShowAITutor] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const question = questions[current];
@@ -112,6 +114,9 @@ export function QuestionViewer({
   }, []);
 
   const bookmark = isBookmarked?.(question?.id ?? "");
+  const userAnswer = answers[question?.id ?? ""];
+  const hasRealAnswer = !!question?.correctAnswer && question.correctAnswer !== "TBD" && question.correctAnswer !== "tbd";
+  const isAnswerCorrect = hasRealAnswer && userAnswer?.toUpperCase() === question?.correctAnswer?.toUpperCase();
 
   if (!questions.length) {
     return (
@@ -295,6 +300,13 @@ export function QuestionViewer({
               )}
             </button>
           )}
+          <button
+            onClick={() => setShowAITutor(true)}
+            className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
+            aria-label="Ask AI Tutor"
+          >
+            <Bot className="h-5 w-5 text-muted-foreground" />
+          </button>
         </div>
 
         <AnimatePresence mode="wait" custom={direction}>
@@ -397,15 +409,69 @@ export function QuestionViewer({
                         </button>
                       );
                     })}
+                    </div>
+                    {answers[question.id] && (
+                      <div className="space-y-3 pt-2">
+                        <div className={cn(
+                          "p-3 rounded-xl border",
+                          isAnswerCorrect
+                            ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
+                            : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
+                        )}>
+                          <p className={cn(
+                            "text-sm font-medium",
+                            isAnswerCorrect ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"
+                          )}>
+                            {isAnswerCorrect ? "Correct!" : "Incorrect"}
+                          </p>
+                          {!isAnswerCorrect && hasRealAnswer && question.correctAnswer && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              The correct answer is <span className="font-mono font-medium text-green-600 dark:text-green-400">
+                                {question.correctAnswer}
+                              </span>
+                            </p>
+                          )}
+                        </div>
+                        {question.explanation && (
+                          <div className="p-3 rounded-xl bg-card border">
+                            <p className="text-xs font-medium text-muted-foreground mb-1">Explanation</p>
+                            <p className="text-sm leading-relaxed">{question.explanation}</p>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => setShowAITutor(true)}
+                          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg"
+                        >
+                          <Bot className="w-4 h-4" />
+                          <span>Need a deeper explanation?</span>
+                          <Sparkles className="w-3 h-3 text-accent" />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ) : (
+                ) : (
                 <div className="space-y-3">
                   <p className="text-base font-medium leading-relaxed">{question.question}</p>
                   {submittedTheory.has(question.id) ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
-                      <Check className="h-3 w-3" /> Submitted
-                    </span>
+                    <div className="space-y-3">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
+                        <Check className="h-3 w-3" /> Submitted
+                      </span>
+                      {question.answerGuide && (
+                        <div className="p-3 rounded-xl bg-card border">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Answer Guide</p>
+                          <p className="text-sm leading-relaxed whitespace-pre-line">{question.answerGuide}</p>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => setShowAITutor(true)}
+                        className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg"
+                      >
+                        <Bot className="w-4 h-4" />
+                        <span>Need a deeper explanation?</span>
+                        <Sparkles className="w-3 h-3 text-accent" />
+                      </button>
+                    </div>
                   ) : (
                     <ImageAnswerInput
                       question={question}
@@ -462,6 +528,11 @@ export function QuestionViewer({
           </div>
         </div>
       </div>
+      <AITutor
+        question={question as Question}
+        isOpen={showAITutor}
+        onClose={() => setShowAITutor(false)}
+      />
     </>
   );
 }

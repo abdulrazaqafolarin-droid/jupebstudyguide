@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getWeekBoundaries } from "@/lib/weekBoundary";
 
@@ -23,6 +23,7 @@ export interface LeaderboardWeek {
 export interface WeeklyLeaderboardState {
   rows: WeeklyLeaderboardRow[];
   loading: boolean;
+  error: string | null;
   currentWeekStart: string;
   currentWeekEnd: string;
   pastChampions: LeaderboardWeek[];
@@ -33,23 +34,29 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
   const [state, setState] = useState<WeeklyLeaderboardState>({
     rows: [],
     loading: true,
+    error: null,
     currentWeekStart: getWeekBoundaries().start,
     currentWeekEnd: getWeekBoundaries().end,
     pastChampions: [],
     myRank: null,
   });
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
   const fetchData = useCallback(async () => {
     const { start, end } = getWeekBoundaries();
+    let anyError: string | null = null;
 
-    // Fetch current week scores
-    const { data: scores } = await supabase
+    const { data: scores, error: scoresErr } = await supabase
       .from("score_events")
       .select("user_id, amount")
       .gte("created_at", start)
       .lt("created_at", end);
 
-    // Aggregate by user
+    if (scoresErr) {
+      console.error("Failed to fetch score_events:", scoresErr);
+      anyError = "Failed to load scores";
+    }
+
     const scoreMap = new Map<string, number>();
     const countMap = new Map<string, number>();
     for (const s of scores ?? []) {
@@ -57,20 +64,22 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
       countMap.set(s.user_id, (countMap.get(s.user_id) ?? 0) + 1);
     }
 
-    // Sort by score descending
     const sorted = [...scoreMap.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit);
 
     const userIds = sorted.map(([id]) => id);
 
-    // Fetch profiles
     const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; achievements: string[] }>();
     if (userIds.length > 0) {
-      const { data: profs } = await supabase
+      const { data: profs, error: profsErr } = await supabase
         .from("profiles")
         .select("user_id, display_name, avatar_url, achievements")
         .in("user_id", userIds);
+      if (profsErr) {
+        console.error("Failed to fetch profiles for leaderboard:", profsErr);
+        anyError = anyError || "Failed to load user profiles";
+      }
       for (const p of profs ?? []) {
         profileMap.set(p.user_id, {
           display_name: p.display_name,
@@ -86,35 +95,38 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
         user_id,
         week_score,
         event_count: countMap.get(user_id) ?? 0,
-        display_name: prof?.display_name ?? null,
+        display_name: prof?.display_name || user_id.slice(0, 8),
         avatar_url: prof?.avatar_url ?? null,
         achievements: prof?.achievements ?? [],
         rank: i + 1,
       };
     });
 
-    // Find my rank
     let myRank: { rank: number; score: number } | null = null;
     if (userId) {
       const found = rows.find((r) => r.user_id === userId);
       if (found) {
         myRank = { rank: found.rank, score: found.week_score };
       } else {
-        // User has no score this week
         myRank = { rank: rows.length + 1, score: 0 };
       }
     }
 
-    // Fetch past champions
-    const { data: weeks } = await supabase
+    const { data: weeks, error: weeksErr } = await supabase
       .from("leaderboard_weeks")
-      .select("*")
+      .select("id, week_start, week_end, champion_user_id, champion_badge_awarded")
       .order("week_start", { ascending: false })
       .limit(10);
+
+    if (weeksErr) {
+      console.error("Failed to fetch leaderboard_weeks:", weeksErr);
+      anyError = anyError || "Failed to load past champions";
+    }
 
     setState({
       rows,
       loading: false,
+      error: anyError,
       currentWeekStart: start,
       currentWeekEnd: end,
       pastChampions: (weeks ?? []) as LeaderboardWeek[],
@@ -124,8 +136,11 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
 
   useEffect(() => {
     fetchData();
+    intervalRef.current = setInterval(fetchData, 30000);
+    return () => clearInterval(intervalRef.current);
+  }, [fetchData]);
 
-    // Realtime subscription for live updates
+  useEffect(() => {
     const channel = supabase
       .channel("score_events_live")
       .on(

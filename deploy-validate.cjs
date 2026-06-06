@@ -1,10 +1,11 @@
+// DEPRECATED — Use `node deploy-all.cjs --function=validate-activation` instead.
 const fs = require('fs');
 const https = require('https');
 const PAT = process.env.SUPABASE_TOKEN;
 const REF = 'gzyczowqqywesqhqqpdi';
 const name = 'validate-activation';
 
-let code = fs.readFileSync('C:\\Users\\HP\\Downloads\\jupebstudyguide-main\\jupebstudyguide-main\\supabase\\functions\\validate-activation\\index.ts', 'utf8');
+let code = fs.readFileSync('supabase/functions/validate-activation/index.ts', 'utf8');
 code = code.replace(/\u2018/g, "'").replace(/\u2019/g, "'")
   .replace(/\u201c/g, '"').replace(/\u201d/g, '"')
   .replace(/\u2013/g, '-').replace(/\u2014/g, '--')

@@ -11,6 +11,8 @@ interface State {
   error: Error | null;
 }
 
+let reloading = false;
+
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -23,6 +25,14 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught:', error, errorInfo);
+    // Auto-reload on stale chunk load failures (PWA redeploy)
+    if (
+      !reloading &&
+      error.message?.includes('dynamically imported')
+    ) {
+      reloading = true;
+      setTimeout(() => window.location.reload(), 100);
+    }
   }
 
   render() {

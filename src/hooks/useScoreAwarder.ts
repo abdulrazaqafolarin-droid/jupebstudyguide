@@ -21,7 +21,7 @@ const SCORE_VALUES: Record<ScoreReason, number> = {
 
 export function useScoreAwarder() {
   const { user } = useAuth();
-  const pendingRef = useRef<Map<string, Promise<any>>>(new Map());
+  const pendingRef = useRef<Map<string, Promise<unknown>>>(new Map());
 
   const award = useCallback(
     async (

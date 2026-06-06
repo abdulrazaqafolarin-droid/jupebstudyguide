@@ -11,29 +11,30 @@ Deno.serve(async (req) => {
     const { fileBase64, mimeType, documentName, subject, documentText } = await req.json();
 
     const authHeader = req.headers.get("authorization");
-    let userId: string | null = null;
-
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-      const authSupabase = createClient(supabaseUrl, supabaseKey, {
-        global: { headers: { Authorization: authHeader } }
-      });
-      const { data: { user } } = await authSupabase.auth.getUser();
-      userId = user?.id || null;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
     }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication" }),
+        { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+    const userId = user.id;
 
     if (!documentName || !subject) {
       return new Response(
         JSON.stringify({ error: "Missing required fields: documentName, subject" }),
         { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
-      );
-    }
-
-    if (!userId) {
-      return new Response(
-        JSON.stringify({ error: "Authentication required" }),
-        { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
 
@@ -105,10 +106,6 @@ Return a JSON object with this exact format:
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
     const questionsToInsert = result.questions.map((q: any) => ({
       document_name: documentName,
       subject: subject,
@@ -123,18 +120,27 @@ Return a JSON object with this exact format:
       user_id: userId,
     }));
 
-    const { data: insertData, error } = await supabase
-      .from('custom_questions')
-      .insert(questionsToInsert)
-      .select();
+    const insertRes = await fetch(`${supabaseUrl}/rest/v1/custom_questions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        Prefer: "return=representation",
+      },
+      body: JSON.stringify(questionsToInsert),
+    });
 
-    if (error) {
-      console.error("Supabase insert error:", error);
+    if (!insertRes.ok) {
+      const errText = await insertRes.text().catch(() => "unknown");
+      console.error("Insert error:", errText.slice(0, 200));
       return new Response(
         JSON.stringify({ error: "Failed to save questions to database" }),
         { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
+
+    const insertData = await insertRes.json();
 
     return new Response(
       JSON.stringify({

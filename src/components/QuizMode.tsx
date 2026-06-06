@@ -57,16 +57,27 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
   const forceComplete = useCallback(() => {
     const totalTime = (Date.now() - startTime) / 1000;
+    const finalAnswers = [...answers];
+    if (selectedOption && currentIndex < questions.length) {
+      const hasCorrectAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
+      const isCorrect = hasCorrectAnswer ? selectedOption === currentQuestion.correctAnswer : true;
+      const qTimeSpent = (Date.now() - questionStartTime) / 1000;
+      finalAnswers.push({
+        questionId: currentQuestion.id,
+        isCorrect,
+        timeSpent: qTimeSpent,
+      });
+    }
     const result: QuizResult = {
-      totalQuestions: answers.length,
-      correctAnswers: answers.filter(a => a.isCorrect).length,
-      wrongAnswers: answers.filter(a => !a.isCorrect).length,
+      totalQuestions: questions.length,
+      correctAnswers: finalAnswers.filter(a => a.isCorrect).length,
+      wrongAnswers: finalAnswers.filter(a => !a.isCorrect).length,
       timeSpent: totalTime,
-      answeredQuestions: answers,
+      answeredQuestions: finalAnswers,
     };
     setQuizComplete(true);
     onComplete(result);
-  }, [answers, startTime, onComplete]);
+  }, [answers, startTime, onComplete, selectedOption, currentIndex, questions, currentQuestion, questionStartTime]);
 
   useEffect(() => {
     setQuestionStartTime(Date.now());

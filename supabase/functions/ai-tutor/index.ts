@@ -60,6 +60,26 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: CORS_HEADERS });
   }
 
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return new Response(
+      JSON.stringify({ error: "Authentication required" }),
+      { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const token = authHeader.replace("Bearer ", "");
+  const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+  if (userError || !user) {
+    return new Response(
+      JSON.stringify({ error: "Invalid authentication" }),
+      { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     const encoder = new TextEncoder();
     const { messages, question, generalChat, syllabusTeaching, topic, subject, day, learningObjectives, attachment } = await req.json();
@@ -89,11 +109,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
 
     const lastUserMsg = [...(messages || [])].reverse().find((m: any) => m.role === "user");
     if (lastUserMsg?.content) {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
-      const chunks = await retrieveRelevantChunks(supabase, lastUserMsg.content, {
+      const chunks = await retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
         subject: subject || undefined,
         maxChunks: 3,
       });
@@ -109,6 +125,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       content: m.attachment?.mimeType?.startsWith('image/')
         ? `[User attached an image: ${m.attachment.name}]\n${m.content || ''}`
         : m.content,
+      ...(m.attachment?.base64 ? { attachment: { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name } } : {}),
     }));
 
     const aiStream = await aiChatStream(

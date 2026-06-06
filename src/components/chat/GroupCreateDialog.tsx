@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Search, Check, Users } from 'lucide-react';
+import { X, Search, Check, Users, Camera, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useImageCompression } from '@/hooks/useImageCompression';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -18,12 +19,17 @@ interface GroupCreateDialogProps {
 
 export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDialogProps) {
   const { user } = useAuth();
+  const { compressImage } = useImageCompression();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Profile[]>([]);
   const [selected, setSelected] = useState<Profile[]>([]);
   const [groupName, setGroupName] = useState('');
+  const [groupAvatar, setGroupAvatar] = useState<string | null>(null);
+  const [groupAvatarFile, setGroupAvatarFile] = useState<File | null>(null);
   const [creating, setCreating] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [nameError, setNameError] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
@@ -31,6 +37,9 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
       setResults([]);
       setSelected([]);
       setGroupName('');
+      setGroupAvatar(null);
+      setGroupAvatarFile(null);
+      setNameError('');
     }
   }, [isOpen]);
 
@@ -40,7 +49,7 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
     const timer = setTimeout(async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('*')
+        .select('user_id, display_name, avatar_url')
         .neq('user_id', user.id)
         .ilike('display_name', `%${searchQuery}%`)
         .limit(10);
@@ -58,64 +67,109 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
     );
   };
 
+  function generateId(): string {
+    try {
+      return crypto.randomUUID();
+    } catch {
+      const arr = new Uint8Array(16);
+      crypto.getRandomValues(arr);
+      arr[6] = (arr[6] & 0x0f) | 0x40;
+      arr[8] = (arr[8] & 0x3f) | 0x80;
+      return Array.from(arr, (b, i) =>
+        [4, 6, 8, 10].includes(i) ? '-' + b.toString(16).padStart(2, '0')
+          : i === 0 ? b.toString(16).padStart(2, '0')
+          : b.toString(16).padStart(2, '0')
+      ).join('');
+    }
+  }
+
+  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image too large (max 5MB)'); return; }
+    const compressed = await compressImage(file, 512, 0.8);
+    setGroupAvatar(URL.createObjectURL(compressed));
+    const compressedFile = new File([compressed], file.name, { type: file.type || 'image/jpeg' });
+    setGroupAvatarFile(compressedFile);
+  };
+
   const handleCreate = async () => {
-    if (!user || selected.length < 1) return;
+    const trimmed = groupName.trim();
+    if (!trimmed) { setNameError('Group name is required'); return; }
+    if (trimmed.length > 50) { setNameError('Max 50 characters'); return; }
+    if (!user || selected.length < 2) { toast.error('Select at least 2 members'); return; }
     setCreating(true);
 
-    const allMembers = [user.id, ...selected.map(p => p.user_id)];
-    const name = groupName.trim() || `${selected.map(p => p.display_name || 'User').join(', ')}`;
+    const memberIds = [user.id, ...new Set(selected.map(p => p.user_id))];
+    const groupConvId = generateId();
 
-    const groupConvId = crypto.randomUUID();
-    const { error } = await supabase
-      .from('conversations')
-      .insert({ id: groupConvId });
+    const cleanup = async () => {
+      try {
+        await supabase.from('conversation_participants').delete().eq('conversation_id', groupConvId);
+        await supabase.from('conversations').delete().eq('id', groupConvId);
+      } catch { /* best effort */ }
+    };
 
-    if (error) {
-      console.error('Group create error:', error);
-      toast.error('Failed to create group');
-      setCreating(false);
-      return;
-    }
-
-    // Insert self first, then others (RLS requires self to already be a participant)
-    const { error: selfError } = await supabase
-      .from('conversation_participants')
-      .insert({ conversation_id: groupConvId, user_id: user.id });
-
-    if (selfError) {
-      console.error('Self insert error:', selfError);
-      toast.error('Failed to create group');
-      setCreating(false);
-      return;
-    }
-
-    const otherMembers = allMembers.filter(mid => mid !== user.id);
-    for (const memberId of otherMembers) {
-      const { error: memError } = await supabase
-        .from('conversation_participants')
-        .insert({ conversation_id: groupConvId, user_id: memberId });
-
-      if (memError) {
-        console.error('Member insert error:', memError);
-        toast.error(`Failed to add ${memberId.substring(0, 8)}`);
-        setCreating(false);
-        return;
+    try {
+      let avatarUrl: string | null = null;
+      if (groupAvatarFile) {
+        const ext = groupAvatarFile.name.split('.').pop() || 'jpg';
+        const path = `${user.id}/group-avatars/${groupConvId}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from('chat-images')
+          .upload(path, groupAvatarFile, { cacheControl: '3600', upsert: true });
+        if (!uploadError) {
+          avatarUrl = supabase.storage.from('chat-images').getPublicUrl(path).data?.publicUrl ?? null;
+        }
       }
+
+      const { error: convError } = await supabase
+        .from('conversations')
+        .insert({ id: groupConvId, group_name: trimmed, created_by: user.id, group_avatar: avatarUrl });
+      if (convError) throw new Error('Failed to create group');
+
+      const now = new Date().toISOString();
+      // Insert creator first so RLS policy (user_id = auth.uid()) passes
+      const { error: selfError } = await supabase
+        .from('conversation_participants')
+        .insert({ conversation_id: groupConvId, user_id: user.id, last_read_at: now });
+      if (selfError) {
+        await cleanup();
+        throw new Error('Failed to add members');
+      }
+      // Now insert remaining members — creator is already a participant,
+      // so is_conversation_participant(conversation_id, auth.uid()) returns true
+      const otherIds = memberIds.filter(id => id !== user.id);
+      if (otherIds.length > 0) {
+        const { error: memberError } = await supabase
+          .from('conversation_participants')
+          .insert(otherIds.map(memberId => ({
+            conversation_id: groupConvId,
+            user_id: memberId,
+            last_read_at: now,
+          })));
+        if (memberError) {
+          await cleanup();
+          throw new Error('Failed to add members');
+        }
+      }
+
+      try {
+        await supabase.rpc('insert_group_system_message', {
+          p_conversation_id: groupConvId,
+          p_message_type: 'group_created',
+          p_content: `${user.email || 'Someone'} created this group`,
+        });
+      } catch { /* best effort */ }
+
+      setCreating(false);
+      onCreated(groupConvId);
+      onClose();
+    } catch (err) {
+      console.error('Group create error:', err);
+      toast.error(err instanceof Error ? err.message : 'Failed to create group');
+      setCreating(false);
     }
-
-    // Update group name in last message or metadata
-    await supabase
-      .from('messages')
-      .insert({
-        conversation_id: groupConvId,
-        sender_id: user.id,
-        content: name,
-        group_name: name,
-      });
-
-    setCreating(false);
-    onCreated(groupConvId);
-    onClose();
   };
 
   return (
@@ -146,12 +200,34 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
             </div>
 
             <div className="p-4 space-y-3 border-b border-border shrink-0">
-              <Input
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-                placeholder="Group name (optional)"
-                className="bg-secondary/50 text-sm"
-              />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="relative w-14 h-14 rounded-full overflow-hidden bg-secondary shrink-0 hover:opacity-80 transition-opacity"
+                >
+                  {groupAvatar ? (
+                    <img src={groupAvatar} alt="Group" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Camera className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <Camera className="w-5 h-5 text-white" />
+                  </div>
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarSelect} />
+                <div className="flex-1">
+                  <Input
+                    value={groupName}
+                    onChange={(e) => { setGroupName(e.target.value); if (nameError) setNameError(''); }}
+                    placeholder="Group name *"
+                    maxLength={50}
+                    className={cn("bg-secondary/50 text-sm", nameError && "border-destructive")}
+                  />
+                  {nameError && <p className="text-xs text-destructive mt-1">{nameError}</p>}
+                </div>
+              </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -195,7 +271,7 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
                       isSelected ? 'bg-primary/10 border border-primary/20' : 'hover:bg-accent/50'
                     )}
                   >
-                    <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-9 h-9" />
+                    <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-9 h-9" targetUserId={profile.user_id} />
                     <span className="flex-1 text-sm font-medium truncate">{profile.display_name || 'User'}</span>
                     {isSelected && <Check className="w-4 h-4 text-primary shrink-0" />}
                   </button>
@@ -206,10 +282,10 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
             <div className="p-4 border-t border-border shrink-0">
               <Button
                 onClick={handleCreate}
-                disabled={selected.length < 1 || creating}
+                disabled={selected.length < 2 || creating}
                 className="w-full"
               >
-                {creating ? 'Creating...' : `Create Group (${selected.length + 1} members)`}
+                {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : `Create Group (${selected.length + 1} members)`}
               </Button>
             </div>
           </motion.div>

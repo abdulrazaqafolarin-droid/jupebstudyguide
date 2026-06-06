@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useChat, Profile } from '@/hooks/useChat';
 import { useFriends } from '@/hooks/useFriends';
-import { usePresence } from '@/hooks/usePresence';
+import { usePresenceContext } from '@/contexts/PresenceContext';
 import { ChatSidebar } from '@/components/chat/ChatSidebar';
 import { ChatArea } from '@/components/chat/ChatArea';
 import { UserProfileDialog } from '@/components/profile/UserProfileDialog';
@@ -53,7 +53,7 @@ const Chat = () => {
   const { user } = useAuth();
   const chat = useChat();
   const friends = useFriends();
-  const presence = usePresence(chat.activeConversation);
+  const presence = usePresenceContext();
   const isMobile = useIsMobile();
   const [showSidebar, setShowSidebar] = useState(true);
   const [tab, setTab] = useState<Tab>('chats');
@@ -90,7 +90,10 @@ const Chat = () => {
     setStaleUnread(chat.staleUnread);
   }, [chat.staleUnread, setStaleUnread]);
 
-  // Mark chat notifications as read when viewing page or switching conversation
+  // Sync active conversation to presence context for typing indicators
+  useEffect(() => {
+    presence.setActiveConversation(chat.activeConversation);
+  }, [chat.activeConversation, presence]);
   useEffect(() => {
     markReadByKind('chat_message');
   }, [chat.activeConversation, markReadByKind]);
@@ -120,7 +123,7 @@ const Chat = () => {
       setSearchingUsers(false);
     }, 300);
     return () => clearTimeout(debounceRef.current);
-  }, [addFriendQuery, chat]);
+  }, [addFriendQuery, chat.searchUsers]);
 
   const groupCount = chat.conversations.filter(c => c.is_group).length;
 
@@ -252,9 +255,9 @@ const Chat = () => {
                       const hasPendingOutgoing = friends.outgoingRequests.some(r => r.receiver_id === profile.user_id);
                       const hasIncomingRequest = friends.incomingRequests.some(r => r.sender_id === profile.user_id);
                       return (
-                        <div key={profile.id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/30 transition-all">
+                        <div key={profile.user_id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/30 transition-all">
                           <button onClick={() => openProfile(profile.user_id)}>
-                            <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-8 h-8 ring-0" />
+                            <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-8 h-8 ring-0" targetUserId={profile.user_id} />
                           </button>
                           <button
                             onClick={() => openProfile(profile.user_id)}
@@ -306,6 +309,7 @@ const Chat = () => {
                           url={req.sender?.avatar_url}
                           name={req.sender?.display_name}
                           className="w-10 h-10 ring-2 ring-primary/20"
+                          targetUserId={req.sender_id}
                         />
                       </button>
                       <div className="flex-1 min-w-0">
@@ -379,6 +383,7 @@ const Chat = () => {
                             url={f.avatar_url}
                             name={f.display_name}
                             className="w-10 h-10 ring-2 ring-border/40 group-hover:ring-primary/30 transition-all"
+                            targetUserId={f.user_id}
                           />
                           {presence.isOnline(f.user_id) && (
                             <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-[2.5px] border-background" />
@@ -463,6 +468,7 @@ const Chat = () => {
             onSendImage={chat.sendImage}
             onSendFile={chat.sendFile}
             onReact={chat.sendReaction}
+            onForward={chat.forwardMessage}
             onEditMessage={chat.editMessage}
             onDeleteMessage={chat.deleteMessage}
             onUploadImage={chat.uploadImage}
@@ -470,7 +476,10 @@ const Chat = () => {
             onBack={isMobile ? handleBackToSidebar : undefined}
             isOnline={presence.isOnline}
             isTyping={presence.isTyping}
+            isRecordingVn={presence.isRecordingVn}
+            getLastSeen={presence.getLastSeen}
             onTyping={presence.setTyping}
+            onRecordingVn={presence.setRecordingVn}
             hasMoreMessages={chat.hasMoreMessages}
             loadingMore={chat.loadingMore}
             onLoadMore={chat.loadMoreMessages}

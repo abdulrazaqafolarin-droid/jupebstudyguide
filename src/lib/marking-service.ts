@@ -34,7 +34,7 @@ Provide constructive feedback as if you were a tutor.`,
 export async function markAnswer(
   question: StudyQuestion,
   studentAnswer: string,
-  imageContext?: string,
+  imageAttachment?: { base64: string; mimeType: string; name: string },
 ): Promise<MarkingResult> {
   const subject = typeof question.subject === "string" ? question.subject : "general";
   const systemPrompt = SUBJECT_MARKING_PROMPTS[subject] ?? "You are a JAMB/WAEC examiner. Mark fairly and constructively.";
@@ -45,10 +45,9 @@ export async function markAnswer(
     || question.answerGuide
     || "See marking scheme";
 
-  let imageNote = "";
-  if (imageContext) {
-    imageNote = `\n\nThe student also submitted an image of their work. Context: ${imageContext}`;
-  }
+  const attachmentNote = imageAttachment
+    ? `\n\n[The student submitted a ${imageAttachment.mimeType.startsWith("image/") ? "photo" : "PDF document"} as their answer — see attached]`
+    : "";
 
   const prompt = `QUESTION:
 ${questionText}
@@ -58,7 +57,7 @@ EXPECTED ANSWER / MARKING SCHEME:
 ${expectedAnswer}
 
 STUDENT'S ANSWER:
-${studentAnswer}${imageNote}
+${studentAnswer}${attachmentNote}
 
 Mark this answer out of 100. Return your assessment in this exact JSON format:
 {
@@ -71,7 +70,9 @@ Mark this answer out of 100. Return your assessment in this exact JSON format:
 
 IMPORTANT: Return ONLY valid JSON. No markdown, no backticks, no extra text.`;
 
-  const raw = await chatCompletion(systemPrompt, [{ role: "user", content: prompt }]);
+  const raw = await chatCompletion(systemPrompt, [
+    { role: "user", content: prompt, attachment: imageAttachment },
+  ]);
 
   try {
     const cleaned = raw.replace(/```(?:json)?\s*/gi, "").trim();

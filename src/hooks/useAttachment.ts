@@ -39,6 +39,9 @@ export function useAttachment() {
   };
 
   const addAttachment = useCallback(async (file: File) => {
+    if (attachment?.preview) {
+      URL.revokeObjectURL(attachment.preview);
+    }
     const isValid = VALID_TYPES.some(type => file.type === type || file.type.startsWith(type.split('/')[0] + '/'));
     if (!isValid) {
       toast.error('Supported: PDF, text, images (PNG, JPG, WebP)');
@@ -46,6 +49,10 @@ export function useAttachment() {
     }
     if (file.size > MAX_SIZE) {
       toast.error('File must be less than 10MB');
+      return;
+    }
+    if (file.size === 0) {
+      toast.error('File is empty');
       return;
     }
 

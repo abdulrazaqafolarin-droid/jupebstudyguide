@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface Profile {
   id: string;
@@ -25,33 +26,38 @@ export function useProfile() {
       return;
     }
     setLoading(true);
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (data) {
-      if (!data.display_name && user.email) {
-        const fallback = user.email.split('@')[0];
-        await supabase
-          .from('profiles')
-          .update({ display_name: fallback })
-          .eq('user_id', user.id);
-        data.display_name = fallback;
-      }
-      setProfile(data as Profile);
-    } else {
-      const fallback = user.email?.split('@')[0] || 'Student';
-      const { data: created } = await supabase
+    try {
+      const { data } = await supabase
         .from('profiles')
-        .insert({
-          user_id: user.id,
-          display_name: fallback,
-        })
-        .select()
-        .single();
-      setProfile(created ?? null);
+        .select('id, user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, achievements')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (data) {
+        if (!data.display_name && user.email) {
+          const fallback = user.email.split('@')[0];
+          await supabase
+            .from('profiles')
+            .update({ display_name: fallback })
+            .eq('user_id', user.id);
+          data.display_name = fallback;
+        }
+        setProfile(data as Profile);
+      } else {
+        const fallback = user.email?.split('@')[0] || 'Student';
+        const { data: created } = await supabase
+          .from('profiles')
+          .upsert({
+            user_id: user.id,
+            display_name: fallback,
+          }, { onConflict: 'user_id' })
+          .select()
+          .single();
+        setProfile(created ?? null);
+      }
+    } catch (err) {
+      console.error('Failed to fetch profile:', err);
+      toast.error('Failed to load profile');
     }
     setLoading(false);
   }, [user]);

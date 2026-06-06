@@ -7,30 +7,63 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: CORS_HEADERS });
   }
 
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return new Response(
+      JSON.stringify({ error: "Authentication required" }),
+      { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const token = authHeader.replace("Bearer ", "");
+  const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+  if (userError || !user) {
+    return new Response(
+      JSON.stringify({ error: "Invalid authentication" }),
+      { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     const encoder = new TextEncoder();
     const { action, systemPrompt, messages, text, subject } = await req.json();
 
     if (action === "embed") {
-      const ollamaRes = await fetch("http://localhost:11434/api/embeddings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "nomic-embed-text", prompt: text || "" }),
-      });
-      if (!ollamaRes.ok) {
-        const errText = await ollamaRes.text();
+      const geminiKey = Deno.env.get("GEMINI_API_KEY");
+      if (!geminiKey) {
+        return new Response(
+          JSON.stringify({ embedding: [], error: "GEMINI_API_KEY not configured" }),
+          { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
+      }
+      const embedRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-exp-03-07:embedContent?key=${geminiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "models/gemini-embedding-exp-03-07",
+            content: { parts: [{ text: text || "" }] },
+          }),
+        }
+      );
+      if (!embedRes.ok) {
+        const errText = await embedRes.text();
         return new Response(
           JSON.stringify({
             embedding: [],
-            error: `Ollama embedding failed (${ollamaRes.status}): ${errText}`,
-            note: "Ensure Ollama is running locally with: ollama pull nomic-embed-text",
+            error: `Gemini embedding failed (${embedRes.status}): ${errText}`,
           }),
           { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
         );
       }
-      const ollamaData = await ollamaRes.json();
+      const embedData = await embedRes.json();
+      const embedding = embedData.embedding?.values || [];
       return new Response(
-        JSON.stringify({ embedding: ollamaData.embedding || [] }),
+        JSON.stringify({ embedding }),
         { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
@@ -44,11 +77,7 @@ Deno.serve(async (req) => {
 
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
     if (lastUserMsg?.content) {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
-      const chunks = await retrieveRelevantChunks(supabase, lastUserMsg.content, {
+      const chunks = await retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
         subject: subject || undefined,
         maxChunks: 3,
       });
@@ -62,6 +91,7 @@ Deno.serve(async (req) => {
     const chatMessages = (messages || []).filter((m: any) => m.role !== "system").map((m: any) => ({
       role: m.role === "assistant" ? "assistant" : "user",
       content: m.content,
+      ...(m.attachment?.base64 ? { attachment: { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name } } : {}),
     }));
 
     const aiStream = await aiChatStream(

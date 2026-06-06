@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS public.direct_conversations (
   disappear_timer INTERVAL,
   locked          BOOLEAN NOT NULL DEFAULT false,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-  CONSTRAINT unique_participants UNIQUE (LEAST(participant_a, participant_b), GREATEST(participant_a, participant_b))
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_dc_unique_participants ON public.direct_conversations (LEAST(participant_a, participant_b), GREATEST(participant_a, participant_b));
 
 CREATE INDEX IF NOT EXISTS idx_dc_participant_a ON public.direct_conversations(participant_a);
 CREATE INDEX IF NOT EXISTS idx_dc_participant_b ON public.direct_conversations(participant_b);

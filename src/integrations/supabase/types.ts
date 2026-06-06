@@ -81,18 +81,21 @@ export type Database = {
           conversation_id: string
           id: string
           joined_at: string
+          last_read_at: string
           user_id: string
         }
         Insert: {
           conversation_id: string
           id?: string
           joined_at?: string
+          last_read_at?: string
           user_id: string
         }
         Update: {
           conversation_id?: string
           id?: string
           joined_at?: string
+          last_read_at?: string
           user_id?: string
         }
         Relationships: [
@@ -108,17 +111,29 @@ export type Database = {
       conversations: {
         Row: {
           created_at: string
+          group_avatar: string | null
+          group_name: string | null
           id: string
+          unread_count_a: number
+          unread_count_b: number
           updated_at: string
         }
         Insert: {
           created_at?: string
+          group_avatar?: string | null
+          group_name?: string | null
           id?: string
+          unread_count_a?: number
+          unread_count_b?: number
           updated_at?: string
         }
         Update: {
           created_at?: string
+          group_avatar?: string | null
+          group_name?: string | null
           id?: string
+          unread_count_a?: number
+          unread_count_b?: number
           updated_at?: string
         }
         Relationships: []

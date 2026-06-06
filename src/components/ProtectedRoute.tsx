@@ -4,6 +4,7 @@ import { ActivationGate } from './ActivationGate';
 import { Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -30,8 +31,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <ActivationGate>{children}</ActivationGate>;
 };
 
-import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
-
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const [checking, setChecking] = useState(true);
@@ -39,19 +38,22 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!user) { setChecking(false); return; }
-
-    supabase.from("profiles").select("is_admin").eq("user_id", user.id).single().then(({ data, error }) => {
-      if (error) console.error("Admin check failed:", error.message);
-      const dbAdmin = data?.is_admin ?? false;
-      const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
-
-      if (emailAdmin && !dbAdmin) {
-        supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id).catch((e) => console.warn("Admin profile update failed:", e));
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.from("profiles").select("is_admin").eq("user_id", user.id).single();
+        if (cancelled) return;
+        if (error) console.error("Admin check failed:", error.message);
+        const dbAdmin = data?.is_admin ?? false;
+        const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+        setIsAdmin(dbAdmin || emailAdmin);
+      } catch (err) {
+        if (!cancelled) { console.error("Admin check error:", err); }
+      } finally {
+        if (!cancelled) setChecking(false);
       }
-
-      setIsAdmin(dbAdmin || emailAdmin);
-      setChecking(false);
-    }).catch((err) => { console.error("Admin check error:", err); setChecking(false); });
+    })();
+    return () => { cancelled = true; };
   }, [user]);
 
   if (loading || checking) {

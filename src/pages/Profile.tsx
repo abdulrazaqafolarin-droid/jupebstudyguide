@@ -131,6 +131,9 @@ export default function ProfilePage() {
                   url={profile?.avatar_url}
                   name={profile?.display_name ?? user?.email}
                   className="w-28 h-28 ring-2 ring-primary/20 relative"
+                  viewable
+                  isOwn
+                  onOwnPhotoAction={() => fileRef.current?.click()}
                 />
                 <button
                   onClick={() => fileRef.current?.click()}

@@ -3,10 +3,12 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
-let devTaggerPlugin: () => any = () => null;
+let devTaggerPlugin: () => () => void = () => () => {};
 try {
   devTaggerPlugin = (await import("lovable-tagger")).componentTagger;
-} catch {}
+} catch {
+  /* lovable-tagger not installed */
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -22,6 +24,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && devTaggerPlugin(),
     VitePWA({
       registerType: "autoUpdate",
+      strategies: "generateSW",
       includeAssets: ["favicon.ico", "favicon.svg", "robots.txt"],
       manifest: {
         name: "JUPEB Master - Past Questions Study App",
@@ -53,17 +56,58 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MiB
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         skipWaiting: true,
         clientsClaim: true,
-        runtimeCaching: [],
+        runtimeCaching: [
+          {
+            urlPattern: /^https?:\/\/.*\.supabase\.co\/.*/i,
+            handler: 'NetworkOnly',
+          },
+          {
+            urlPattern: /^https?:\/\/.*\.googleapis\.com\/.*/i,
+            handler: 'NetworkOnly',
+          },
+          {
+            urlPattern: /^https?:\/\/.*\.groq\.com\/.*/i,
+            handler: 'NetworkOnly',
+          },
+        ],
       },
     }),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/") || id.includes("node_modules/scheduler")) {
+            return "vendor-react";
+          }
+          if (id.includes("node_modules/katex")) {
+            return "vendor-katex";
+          }
+          if (id.includes("node_modules/pdfjs-dist") || id.includes("node_modules/pdf-lib") || id.includes("node_modules/canvas")) {
+            return "vendor-pdf";
+          }
+          if (id.includes("node_modules/framer-motion")) {
+            return "vendor-framer";
+          }
+          if (id.includes("node_modules/@supabase")) {
+            return "vendor-supabase";
+          }
+          if (id.includes("node_modules/@tanstack")) {
+            return "vendor-query";
+          }
+          if (id.includes("node_modules")) {
+            return "vendor-other";
+          }
+        },
+      },
     },
   },
 }));

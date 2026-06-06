@@ -1,10 +1,11 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat-proxy`;
+import { supabase } from '@/integrations/supabase/client';
 
 export interface AIChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
+  attachment?: { base64: string; mimeType: string; name: string } | null;
 }
 
 export interface StreamCallbacks {
@@ -13,8 +14,20 @@ export interface StreamCallbacks {
   onError: (err: string) => void;
 }
 
-function buildMessages(system: string, history: AIChatMessage[], ragContext?: string): { role: string; content: string }[] {
-  const msgs: { role: string; content: string }[] = [];
+interface OutboundMessage {
+  role: string;
+  content: string;
+  attachment?: { base64: string; mimeType: string; name: string };
+}
+
+async function getAuthToken(): Promise<string> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) return session.access_token;
+  throw new Error("No authenticated session");
+}
+
+function buildMessages(system: string, history: AIChatMessage[], ragContext?: string): OutboundMessage[] {
+  const msgs: OutboundMessage[] = [];
   let systemContent = system;
   if (ragContext) {
     systemContent += `\n\n--- REFERENCE MATERIAL FROM TEXTBOOKS ---\n${ragContext}\n\nUse the above reference material to answer questions when relevant. If the material doesn't contain the answer, use your own knowledge.`;
@@ -22,7 +35,15 @@ function buildMessages(system: string, history: AIChatMessage[], ragContext?: st
   msgs.push({ role: "system", content: systemContent });
   for (const m of history) {
     if (m.role === "system") continue;
-    msgs.push({ role: m.role, content: m.content });
+    if (m.attachment?.base64) {
+      msgs.push({
+        role: m.role,
+        content: m.content,
+        attachment: { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name },
+      });
+    } else {
+      msgs.push({ role: m.role, content: m.content });
+    }
   }
   return msgs;
 }
@@ -33,18 +54,14 @@ export async function streamChat(
   callbacks: StreamCallbacks,
   ragContext?: string
 ): Promise<void> {
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    callbacks.onError("Supabase not configured. Check VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env");
-    return;
-  }
-
   try {
+    const token = await getAuthToken();
     const msgs = buildMessages(systemPrompt, messages, ragContext);
 
     const res = await fetch(FUNCTION_URL, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ systemPrompt, messages: msgs }),
@@ -102,29 +119,12 @@ export async function chatCompletion(systemPrompt: string, messages: AIChatMessa
 }
 
 export async function generateEmbedding(text: string): Promise<number[]> {
-  // Try local Ollama directly first (available during dev, fastest)
-  try {
-    const ollamaRes = await fetch("http://localhost:11434/api/embeddings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "nomic-embed-text", prompt: text }),
-      signal: AbortSignal.timeout(5000),
-    });
-    if (ollamaRes.ok) {
-      const data = await ollamaRes.json();
-      if (data.embedding?.length) return data.embedding;
-    }
-  } catch { console.warn('Ollama unavailable, falling back to edge function'); }
-
-  // Fallback: route through edge function (works in production)
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    throw new Error("Supabase not configured and Ollama unavailable");
-  }
+  const token = await getAuthToken();
 
   const res = await fetch(FUNCTION_URL, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ action: "embed", text }),
@@ -137,7 +137,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 
   const data = await res.json();
   if (!data.embedding?.length) {
-    throw new Error("Empty embedding returned. Ensure Ollama is running (ollama serve) and nomic-embed-text is pulled.");
+    throw new Error("Empty embedding returned");
   }
   return data.embedding as number[];
 }

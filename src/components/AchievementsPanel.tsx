@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trophy, ChevronDown, ChevronUp, Sparkles, Star, Crown, Swords, ArrowRight } from 'lucide-react';
-import { Achievement } from '@/hooks/useAchievements';
+import { Achievement, AchievementStats } from '@/hooks/useAchievements';
 import AchievementBadge from './AchievementBadge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ interface AchievementsPanelProps {
   unlockedAchievements: Achievement[];
   lockedAchievements: Achievement[];
   totalCount: number;
+  stats?: AchievementStats;
 }
 
 const rarityIcons = {
@@ -24,6 +25,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
   unlockedAchievements,
   lockedAchievements,
   totalCount,
+  stats,
 }) => {
   const [showLocked, setShowLocked] = useState(false);
   const pct = totalCount > 0 ? (unlockedAchievements.length / totalCount) * 100 : 0;
@@ -138,6 +140,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
                 achievement={achievement}
                 unlocked={false}
                 size="sm"
+                stats={stats}
               />
             </div>
           ))}

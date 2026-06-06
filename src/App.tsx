@@ -17,16 +17,21 @@ import { FloatingAITutor } from "./components/FloatingAITutor";
 import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
+import { PresenceProvider } from "@/contexts/PresenceContext";
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Profile = lazy(() => import("./pages/Profile"));
 const SettingsProfile = lazy(() => import("./pages/SettingsProfile"));
+const SecuritySettings = lazy(() => import("./pages/SecuritySettings"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AchievementsPage = lazy(() => import("./pages/AchievementsPage"));
+const StudyStatsDashboard = lazy(() => import("./pages/StudyStatsDashboard"));
+const DiscoverPage = lazy(() => import("./pages/DiscoverPage"));
 const StudyPastQuestions = lazy(() => import("./pages/StudyPastQuestions"));
+const FriendsPage = lazy(() => import("./pages/FriendsPage"));
 const DownloadApp = lazy(() => import("./pages/DownloadApp"));
 const ActivationCodes = lazy(() => import("./pages/admin/ActivationCodes"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -42,6 +47,7 @@ function ChatNotificationListener() {
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <PageTransition>
+      <PresenceProvider>
       <NotificationsProvider>
         <ChatNotificationListener />
         <AppNotificationBar />
@@ -50,17 +56,20 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </NotificationsProvider>
+      </PresenceProvider>
     </PageTransition>
   );
 }
 
 function ProtectedChatLayout({ children }: { children: React.ReactNode }) {
   return (
+    <PresenceProvider>
     <NotificationsProvider>
       <ChatNotificationListener />
       <AppNotificationBar />
       {children}
     </NotificationsProvider>
+    </PresenceProvider>
   );
 }
 
@@ -71,7 +80,7 @@ function AppNotificationBar() {
       onOpenConversation={(convId) => {
         navigate(`/chat?conversation=${convId}`);
       }}
-      onOpenFriendsTab={() => navigate('/chat?tab=friends')}
+      onOpenFriendsTab={() => navigate('/friends')}
     />
   );
 }
@@ -134,6 +143,30 @@ function AnimatedRoutes() {
           } 
         />
         <Route 
+          path="/settings/security" 
+          element={
+            <ProtectedRoute>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <SecuritySettings />
+                </ProtectedLayout>
+              </ErrorBoundary>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/friends" 
+          element={
+            <ProtectedRoute>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <FriendsPage />
+                </ProtectedLayout>
+              </ErrorBoundary>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
           path="/past-questions" 
           element={
             <ProtectedRoute>
@@ -164,6 +197,30 @@ function AnimatedRoutes() {
               <ErrorBoundary>
                 <ProtectedLayout>
                   <AchievementsPage />
+                </ProtectedLayout>
+              </ErrorBoundary>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/stats" 
+          element={
+            <ProtectedRoute>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <StudyStatsDashboard />
+                </ProtectedLayout>
+              </ErrorBoundary>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/discover" 
+          element={
+            <ProtectedRoute>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <DiscoverPage />
                 </ProtectedLayout>
               </ErrorBoundary>
             </ProtectedRoute>

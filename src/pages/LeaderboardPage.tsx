@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeeklyLeaderboard, LeaderboardWeek } from "@/hooks/useWeeklyLeaderboard";
@@ -10,7 +10,7 @@ import UserAchievementPreview from "@/components/UserAchievementPreview";
 import { Button } from "@/components/ui/button";
 import {
   Trophy, ArrowLeft, Crown, Loader2, TrendingUp,
-  Timer, Sparkles, Star, Eye, Share2
+  Timer, Sparkles, Star, Eye, Share2, MessageCircle
 } from "lucide-react";
 import {
   Tooltip,
@@ -44,6 +44,7 @@ const achievementMap = new Map(ACHIEVEMENTS.map(a => [a.id, a]));
 
 export default function LeaderboardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { rows, loading, error, currentWeekStart, currentWeekEnd, pastChampions, myRank } =
     useWeeklyLeaderboard(user?.id, 200);
 
@@ -81,6 +82,21 @@ export default function LeaderboardPage() {
       setChampionDetails(championEntries.map(w => ({ ...w, profile: null })));
     });
   }, [pastChampions]);
+
+  const startChat = useCallback(async (otherUserId: string) => {
+    try {
+      const { data, error } = await supabase
+        .rpc('find_or_create_dm', { other_user_id: otherUserId });
+      if (error) throw new Error(error.message);
+      const result = data as { conversation_id?: string; error?: string };
+      if (result?.error) throw new Error(result.error);
+      if (result?.conversation_id) {
+        navigate(`/chat?conversation=${result.conversation_id}`);
+      }
+    } catch (err) {
+      toast.error(String(err));
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -192,6 +208,7 @@ export default function LeaderboardPage() {
                         name={week.profile?.display_name || "Champion"}
                         url={week.profile?.avatar_url}
                         className="w-9 h-9 ring-1 ring-accent"
+                        targetUserId={week.champion_user_id}
                       />
                       <Crown className="absolute -top-1 -right-1 w-4 h-4 text-accent" />
                     </div>
@@ -247,80 +264,120 @@ export default function LeaderboardPage() {
                 return (
                   <div
                     key={r.user_id}
-                    onClick={() => {
-                      setPreviewUser({
-                        user_id: r.user_id,
-                        display_name: r.display_name,
-                        avatar_url: r.avatar_url,
-                        achievements: r.achievements,
-                        week_score: r.week_score,
-                        rank: r.rank,
-                      });
-                    }}
                     className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-200 cursor-pointer active:scale-[0.99]",
+                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-200",
                       isMe
                         ? "bg-primary/10 border border-primary/30 -mx-1 px-4"
-                        : "hover:bg-secondary/40"
+                        : "hover:bg-secondary/40 group"
                     )}
                   >
-                    <RankIcon rank={r.rank} className="shrink-0 w-8 text-center" />
-                    <UserAvatar
-                      name={r.display_name || "Anon"}
-                      url={r.avatar_url}
-                      className="h-9 w-9 shrink-0 text-xs"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {r.display_name || "Anonymous"}
-                        {isMe && (
-                          <span className="text-[10px] text-primary ml-1.5">
-                            (You)
-                          </span>
-                        )}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-[10px] text-muted-foreground">
-                          {r.event_count} action{r.event_count !== 1 ? "s" : ""}
+                    <div
+                      className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer active:scale-[0.99]"
+                      onClick={() => {
+                        setPreviewUser({
+                          user_id: r.user_id,
+                          display_name: r.display_name,
+                          avatar_url: r.avatar_url,
+                          achievements: r.achievements,
+                          week_score: r.week_score,
+                          rank: r.rank,
+                        });
+                      }}
+                    >
+                      <RankIcon rank={r.rank} className="shrink-0 w-8 text-center" />
+                      <UserAvatar
+                        name={r.display_name || "Anon"}
+                        url={r.avatar_url}
+                        className="h-9 w-9 shrink-0 text-xs"
+                        targetUserId={r.user_id}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {r.display_name || "Anonymous"}
+                          {isMe && (
+                            <span className="text-[10px] text-primary ml-1.5">
+                              (You)
+                            </span>
+                          )}
                         </p>
-                        {r.achievements.length > 0 && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-1 cursor-default">
-                                  {r.achievements.slice(0, 3).map(id => {
-                                    const a = achievementMap.get(id);
-                                    return a ? (
-                                      <span key={id} className="text-xs leading-none" title={a.name}>
-                                        {a.icon}
+                        <div className="flex items-center gap-2">
+                          <p className="text-[10px] text-muted-foreground">
+                            {r.event_count} action{r.event_count !== 1 ? "s" : ""}
+                          </p>
+                          {r.achievements.length > 0 && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-flex items-center gap-1 cursor-default">
+                                    {r.achievements.slice(0, 3).map(id => {
+                                      const a = achievementMap.get(id);
+                                      return a ? (
+                                        <span key={id} className="text-xs leading-none" title={a.name}>
+                                          {a.icon}
+                                        </span>
+                                      ) : null;
+                                    })}
+                                    {r.achievements.length > 3 && (
+                                      <span className="text-[9px] text-muted-foreground font-medium">
+                                        +{r.achievements.length - 3}
                                       </span>
-                                    ) : null;
-                                  })}
-                                  {r.achievements.length > 3 && (
-                                    <span className="text-[9px] text-muted-foreground font-medium">
-                                      +{r.achievements.length - 3}
-                                    </span>
-                                  )}
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="space-y-1 max-w-[200px]">
-                                <p className="text-[10px] font-medium text-muted-foreground mb-1">Achievements</p>
-                                {r.achievements.map(id => (
-                                  <p key={id} className="text-xs truncate">
-                                    {achievementNameMap.get(id) || id}
-                                  </p>
-                                ))}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
+                                    )}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="space-y-1 max-w-[200px]">
+                                  <p className="text-[10px] font-medium text-muted-foreground mb-1">Achievements</p>
+                                  {r.achievements.map(id => (
+                                    <p key={id} className="text-xs truncate">
+                                      {achievementNameMap.get(id) || id}
+                                    </p>
+                                  ))}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-bold text-primary">
+                          {r.week_score.toLocaleString()}
+                        </p>
+                        <p className="text-[9px] text-muted-foreground">pts</p>
                       </div>
                     </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-sm font-bold text-primary">
-                        {r.week_score.toLocaleString()}
-                      </p>
-                      <p className="text-[9px] text-muted-foreground">pts</p>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {isMe ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 text-[10px] px-2 gap-1 text-primary hover:text-primary/80 hover:bg-primary/10"
+                          onClick={() => {
+                            setPreviewUser({
+                              user_id: r.user_id,
+                              display_name: r.display_name,
+                              avatar_url: r.avatar_url,
+                              achievements: r.achievements,
+                              week_score: r.week_score,
+                              rank: r.rank,
+                            });
+                          }}
+                        >
+                          <Eye className="w-3 h-3" />
+                          My Achievements
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startChat(r.user_id);
+                          }}
+                          title="Chat with this user"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 );

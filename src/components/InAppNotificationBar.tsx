@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 
 interface PopupNotification {
   id: string;
-  kind: 'chat_message' | 'friend_request';
+  kind: 'chat_message' | 'friend_request' | 'group_add';
   title: string;
   body: string;
   senderId?: string;
@@ -138,9 +138,34 @@ export function InAppNotificationBar({
       )
       .subscribe();
 
+    const groupAddChannel = supabase
+      .channel('inapp-group-add')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'conversation_participants', filter: `user_id=eq.${user.id}` },
+        async (payload) => {
+          const row = payload.new as { conversation_id: string };
+          const { data: conv } = await supabase
+            .from('conversations')
+            .select('group_name')
+            .eq('id', row.conversation_id)
+            .single();
+          const groupTitle = (conv as { group_name: string | null } | null)?.group_name || 'a group';
+          show({
+            id: `group-add-${row.conversation_id}`,
+            kind: 'group_add',
+            title: 'Added to Group',
+            body: `You were added to ${groupTitle}`,
+            conversationId: row.conversation_id,
+          });
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(msgChannel);
       supabase.removeChannel(frChannel);
+      supabase.removeChannel(groupAddChannel);
     };
   }, [user, show]);
 
@@ -160,14 +185,17 @@ export function InAppNotificationBar({
                 url={current.avatarUrl}
                 name={current.title}
                 className="w-10 h-10 ring-2 ring-primary/20 shrink-0"
+                targetUserId={current.senderId}
               />
               <div className="flex-1 min-w-0 cursor-pointer" onClick={() => {
                 dismiss();
-                if (current.kind === 'chat_message' && current.conversationId) {
-                  onOpenConversation?.(current.conversationId);
-                } else if (current.kind === 'friend_request') {
-                  onOpenFriendsTab?.();
-                }
+                  if (current.kind === 'chat_message' && current.conversationId) {
+                    onOpenConversation?.(current.conversationId);
+                  } else if (current.kind === 'group_add' && current.conversationId) {
+                    onOpenConversation?.(current.conversationId);
+                  } else if (current.kind === 'friend_request') {
+                    onOpenFriendsTab?.();
+                  }
               }}>
                 <p className="text-xs font-semibold text-foreground truncate">{current.title}</p>
                 <p className="text-xs text-muted-foreground truncate">{current.body}</p>

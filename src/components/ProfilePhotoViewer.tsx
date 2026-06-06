@@ -134,11 +134,9 @@ export function ProfilePhotoViewerProvider({ children }: { children: ReactNode }
       window.addEventListener('popstate', onPop);
       unsubRef.current = () => window.removeEventListener('popstate', onPop);
     }
-    // Add cache-buster to avoid stale/broken cached images
-    const cacheBuster = params.url?.includes('supabase') ? `?t=${Date.now()}` : '';
     setVs({
       ...params,
-      url: params.url + cacheBuster,
+      url: params.url,
       thumbLoaded: false,
       fullLoaded: false,
       loadError: false,
@@ -434,78 +432,76 @@ export function ProfilePhotoViewerProvider({ children }: { children: ReactNode }
                     {vs.name ? vs.name.trim().slice(0, 2).toUpperCase() : '?'}
                   </span>
                 </div>
-              ) : (
-                <motion.div
-                  key={vs.url}
-                  className="relative flex items-center justify-center"
-                  initial={origin ? {
-                    x: origin.left + origin.width / 2 - centerX,
-                    y: origin.top + origin.height / 2 - centerY,
-                    width: origin.width,
-                    height: origin.height,
-                  } : { scale: 0.85, opacity: 0 }}
-                  animate={vs.dragY > 0 ? {
-                    x: 0,
-                    y: vs.dragY,
-                    width: finalW * Math.max(0.65, 1 - vs.dragY / (window.innerHeight * 0.8)),
-                    height: finalH * Math.max(0.65, 1 - vs.dragY / (window.innerHeight * 0.8)),
-                    borderRadius: '0%',
-                  } : {
-                    x: 0,
-                    y: 0,
-                    width: finalW,
-                    height: 'auto',
-                    borderRadius: '0%',
-                  }}
-                  exit={origin ? {
-                    x: origin.left + origin.width / 2 - centerX,
-                    y: origin.top + origin.height / 2 - centerY,
-                    width: origin.width,
-                    height: origin.height,
-                    borderRadius: '50%',
-                    opacity: 0,
-                    transition: { duration: reduced ? 0.1 : ANIM_DURATION, ease: ANIM_EASING },
-                  } : { scale: 0.85, opacity: 0, transition: { duration: reduced ? 0.1 : ANIM_DURATION } }}
-                  transition={origin ? {
-                    duration: reduced ? 0.15 : ANIM_DURATION,
-                    ease: ANIM_EASING,
-                  } : { duration: reduced ? 0.1 : 0.2 }}
-                  style={{
-                    maxWidth: finalW,
-                    maxHeight: finalH,
-                    transform: vs.scale > MIN_SCALE ? `scale(${vs.scale}) translate(${vs.position.x}px, ${vs.position.y}px)` : undefined,
-                    borderRadius: origin ? '50%' : '0%',
-                    willChange: 'transform, width, height',
-                  }}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                >
-                  {/* blurred thumbnail layer */}
-                  {!vs.fullLoaded && (
-                    <img
-                      src={vs.url}
-                      alt=""
-                      className="block w-full h-full object-contain"
-                      style={{ filter: 'blur(24px)', opacity: vs.thumbLoaded ? 1 : 0 }}
-                      onLoad={handleThumbLoad}
-                      onError={() => {}}
-                      crossOrigin="anonymous"
-                    />
-                  )}
-                  {/* full-res layer */}
-                  <img
-                    ref={imgRef}
-                    src={vs.url}
-                    alt={vs.name ?? 'Profile photo'}
-                    className="absolute inset-0 w-full h-full object-contain"
-                    loading="lazy"
-                    crossOrigin="anonymous"
-                    style={{ opacity: vs.fullLoaded ? 1 : 0, transition: 'opacity 0.2s ease' }}
-                    onLoad={handleFullLoad}
-                    onError={handleLoadError}
-                    draggable={false}
-                  />
+                  ) : (
+                    <motion.div
+                      key={vs.url}
+                      className="relative flex items-center justify-center"
+                      initial={origin ? {
+                        x: origin.left + origin.width / 2 - centerX,
+                        y: origin.top + origin.height / 2 - centerY,
+                        width: origin.width,
+                        height: origin.height,
+                      } : { scale: 0.85, opacity: 0 }}
+                      animate={vs.dragY > 0 ? {
+                        x: 0,
+                        y: vs.dragY,
+                        width: finalW * Math.max(0.65, 1 - vs.dragY / (window.innerHeight * 0.8)),
+                        height: finalH * Math.max(0.65, 1 - vs.dragY / (window.innerHeight * 0.8)),
+                        borderRadius: '0%',
+                      } : {
+                        x: 0,
+                        y: 0,
+                        width: finalW,
+                        height: finalH,
+                        borderRadius: '0%',
+                      }}
+                      exit={origin ? {
+                        x: origin.left + origin.width / 2 - centerX,
+                        y: origin.top + origin.height / 2 - centerY,
+                        width: origin.width,
+                        height: origin.height,
+                        borderRadius: '50%',
+                        opacity: 0,
+                        transition: { duration: reduced ? 0.1 : ANIM_DURATION, ease: ANIM_EASING },
+                      } : { scale: 0.85, opacity: 0, transition: { duration: reduced ? 0.1 : ANIM_DURATION } }}
+                      transition={origin ? {
+                        duration: reduced ? 0.15 : ANIM_DURATION,
+                        ease: ANIM_EASING,
+                      } : { duration: reduced ? 0.1 : 0.2 }}
+                      style={{
+                        maxWidth: finalW,
+                        maxHeight: finalH,
+                        transform: vs.scale > MIN_SCALE ? `scale(${vs.scale}) translate(${vs.position.x}px, ${vs.position.y}px)` : undefined,
+                        borderRadius: origin ? '50%' : '0%',
+                        willChange: 'transform, width, height',
+                      }}
+                      onTouchStart={handleTouchStart}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                    >
+                      {/* blurred thumbnail layer */}
+                      {!vs.fullLoaded && (
+                        <img
+                          src={vs.url}
+                          alt=""
+                          className="block w-full h-full object-contain"
+                          style={{ filter: 'blur(24px)', opacity: vs.thumbLoaded ? 1 : 0 }}
+                          onLoad={handleThumbLoad}
+                          onError={() => {}}
+                        />
+                      )}
+                      {/* full-res layer */}
+                      <img
+                        ref={imgRef}
+                        src={vs.url}
+                        alt={vs.name ?? 'Profile photo'}
+                        className="absolute inset-0 w-full h-full object-contain"
+                        loading="lazy"
+                        style={{ opacity: vs.fullLoaded ? 1 : 0, transition: 'opacity 0.2s ease' }}
+                        onLoad={handleFullLoad}
+                        onError={handleLoadError}
+                        draggable={false}
+                      />
                 </motion.div>
               )}
             </div>

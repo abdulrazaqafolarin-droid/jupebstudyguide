@@ -24,7 +24,7 @@ export function purgeForeignUserData(currentUserId: string | null) {
       }
     }
     toRemove.forEach(k => localStorage.removeItem(k));
-  } catch {
-    /* ignore */
+  } catch (err) {
+    console.warn('LocalStorage cleanup failed:', err);
   }
 }

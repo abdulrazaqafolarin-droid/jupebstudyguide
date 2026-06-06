@@ -114,14 +114,24 @@ export function useChat() {
     while (markReadQueue.current.length > 0) {
       const item = markReadQueue.current.shift()!;
       try {
-        await retryWithBackoff(() =>
-          supabase
+        await retryWithBackoff(async () => {
+          const { error: msgErr } = await supabase
+            .from('messages')
+            .update({
+              is_read: true,
+              read_at: new Date().toISOString(),
+            })
+            .eq('conversation_id', item.conversationId)
+            .neq('sender_id', item.userId)
+            .eq('is_read', false);
+          if (msgErr) throw msgErr;
+          const { error: rpcErr } = await supabase
             .rpc('mark_conversation_read', {
               p_conversation_id: item.conversationId,
               p_user_id: item.userId,
-            })
-            .then(({ data, error }) => { if (error) throw error; return data; }),
-        );
+            });
+          if (rpcErr) throw rpcErr;
+        });
         setConversations(prev => prev.map(c =>
           c.id === item.conversationId ? { ...c, unread_count: 0 } : c
         ));
@@ -416,22 +426,29 @@ export function useChat() {
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
           const newMsg = payload.new as Message;
+          console.log('[Realtime] chat-global INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'sender:', newMsg.sender_id);
           if (newMsg.sender_id === user.id) return;
           if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
 
           const currentConv = activeConvRef.current;
           if (newMsg.conversation_id === currentConv) {
             setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
-            setConversations(prev => prev.map(c =>
-              c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg } : c
-            ));
-          } else {
-            setConversations(prev => prev.map(c =>
-              c.id === newMsg.conversation_id
-                ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg }
-                : c
-            ));
           }
+          setConversations(prev => {
+            const updated = prev.map(c =>
+              c.id === newMsg.conversation_id
+                ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg }
+                : c
+            );
+            return updated.sort((a, b) => {
+              const aTime = a.last_message?.created_at;
+              const bTime = b.last_message?.created_at;
+              if (!aTime && !bTime) return 0;
+              if (!aTime) return 1;
+              if (!bTime) return -1;
+              return bTime.localeCompare(aTime);
+            });
+          });
         }
       )
       .on(
@@ -455,7 +472,6 @@ export function useChat() {
         (payload) => {
           const newMsg = payload.new as Message & { is_deleted: boolean };
           const oldMsg = payload.old as Message & { is_deleted: boolean };
-          if (newMsg.sender_id === user.id) return;
           if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
           if (newMsg.is_deleted && !oldMsg.is_deleted && !newMsg.is_read) {
             setConversations(prev => prev.map(c =>
@@ -465,7 +481,11 @@ export function useChat() {
             ));
           }
           if (newMsg.conversation_id === activeConvRef.current) {
-            setMessages(prev => prev.map(m => m.id === newMsg.id ? { ...m, ...newMsg } : m));
+            setMessages(prev => prev.map(m =>
+              m.id === newMsg.id
+                ? { ...m, is_read: newMsg.is_read, read_at: newMsg.read_at, delivered_at: newMsg.delivered_at, is_deleted: newMsg.is_deleted, content: newMsg.is_deleted ? '' : newMsg.content }
+                : m
+            ));
           }
         }
       )
@@ -477,6 +497,7 @@ export function useChat() {
         }
       )
       .subscribe((status, err) => {
+        console.log('[Realtime] chat-global status:', status);
         if (status === 'SUBSCRIBED') {
           fetchConversations();
         } else if (status === 'CHANNEL_ERROR') {
@@ -559,57 +580,6 @@ export function useChat() {
     } catch { /* BroadcastChannel not available */ }
     return () => { broadcastRef.current?.close(); };
   }, []);
-
-  // Silent background polling for new messages (fallback for real-time)
-  useEffect(() => {
-    if (!user || !activeConversation) return;
-    let pollTimer: ReturnType<typeof setTimeout>;
-    let stopped = false;
-
-    const poll = async () => {
-      if (stopped) return;
-      try {
-        const lastMsg = messagesRef.current[messagesRef.current.length - 1];
-        let query = supabase
-          .from('messages')
-          .select('id, conversation_id, sender_id, content, created_at, message_type, is_read, image_url, file_url, file_name, forwarded_from')
-          .eq('conversation_id', activeConversation)
-          .order('created_at', { ascending: false })
-          .order('id', { ascending: false })
-          .limit(5);
-
-        if (lastMsg) {
-          query = query.or(`created_at.gt.${lastMsg.created_at},and(created_at.eq.${lastMsg.created_at},id.gt.${lastMsg.id})`);
-        }
-
-        const { data } = await query;
-        if (stopped) return;
-        if (!data || data.length === 0) return;
-
-        const existingIds = new Set(messagesRef.current.map(m => m.id));
-        const newMsgs = (data as Message[])
-          .filter(m => !existingIds.has(m.id) && m.sender_id !== user.id)
-          .reverse();
-
-        if (newMsgs.length === 0) return;
-
-        setMessages(prev => {
-          const ids = new Set(prev.map(m => m.id));
-          const unique = newMsgs.filter(m => !ids.has(m.id));
-          return unique.length > 0 ? [...prev, ...unique] : prev;
-        });
-        setConversations(prev => prev.map(c =>
-          c.id === activeConversation ? { ...c, unread_count: 0, last_message: newMsgs[newMsgs.length - 1] } : c
-        ));
-      } catch {
-        // Silent fail — polling is a best-effort fallback
-      }
-      if (!stopped) pollTimer = setTimeout(poll, 1500);
-    };
-
-    pollTimer = setTimeout(poll, 1500);
-    return () => { stopped = true; clearTimeout(pollTimer); };
-  }, [user, activeConversation]);
 
   const openConversation = useCallback(async (conversationId: string) => {
     setActiveConversation(conversationId);
@@ -958,6 +928,10 @@ export function useChat() {
     return () => window.removeEventListener('online', onOnline);
   }, [fetchConversations]);
 
+  const pushMessage = useCallback((message: Message) => {
+    setMessages(prev => prev.some(m => m.id === message.id) ? prev : [...prev, message]);
+  }, []);
+
   return {
     conversations,
     activeConversation,
@@ -984,5 +958,6 @@ export function useChat() {
     totalUnreadCount,
     markingRead,
     staleUnread,
+    pushMessage,
   };
 }

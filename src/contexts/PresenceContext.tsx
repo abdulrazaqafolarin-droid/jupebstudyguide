@@ -64,13 +64,12 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
     } catch { /* silent */ }
   }, [user]);
 
-  useEffect(() => {
-    if (!user) return;
-
+  const reconnectPresence = useCallback(() => {
+    if (!user || channelRef.current) return;
+    console.log('[presence] connecting...');
     const channel = supabase.channel('chat-presence', {
       config: { presence: { key: user.id } },
     });
-
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
         channel.track({ user_id: user.id, online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null } as PresenceState);
@@ -79,27 +78,24 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
         channel.track({ user_id: user.id, online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null } as PresenceState);
       }
     };
-
     const handleBeforeUnload = () => {
       updateLastSeen();
     };
-
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState<PresenceState>();
+        const userIds = Object.keys(state);
+        console.log('[presence] sync — tracked users:', userIds);
         const online = new Set<string>();
         const typing = new Set<string>();
         const recording = new Set<string>();
         const toCheck: string[] = [];
-
         Object.values(state).forEach((presences) => {
           presences.forEach((p) => {
             if (p.user_id === user.id) return;
             toCheck.push(p.user_id);
           });
         });
-
-        // Batch check privacy for all online peers
         if (toCheck.length > 0) {
           Promise.all(toCheck.map(async (peerId) => {
             const allowed = await canViewOnlineStatus(user.id, peerId);
@@ -132,41 +128,54 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .subscribe(async (status) => {
+        console.log('[presence] subscribe status:', status);
         if (status === 'SUBSCRIBED') {
+          channelRef.current = channel;
           await channel.track({
             user_id: user.id,
             online_at: new Date().toISOString(),
             typing_in: null,
             recording_vn_in: null,
           } as PresenceState);
+          console.log('[presence] tracked self as online');
+          document.addEventListener('visibilitychange', handleVisibilityChange);
+          window.addEventListener('beforeunload', handleBeforeUnload);
+          visibilityHandlersRef.current = () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+          };
+        } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
+          console.warn('[presence] channel', status, '— reconnecting in 3s');
+          channelRef.current = null;
+          setTimeout(() => reconnectPresence(), 3000);
         }
       });
+  }, [user, updateLastSeen]);
 
-    channelRef.current = channel;
-
-    // Page Visibility API for presence + last_seen
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    visibilityHandlersRef.current = () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-
+  useEffect(() => {
+    if (!user) return;
+    reconnectPresence();
     return () => {
-      channel.unsubscribe();
-      channelRef.current = null;
+      if (channelRef.current) {
+        channelRef.current.unsubscribe();
+        channelRef.current = null;
+      }
       visibilityHandlersRef.current?.();
       visibilityHandlersRef.current = null;
     };
-  }, [user, updateLastSeen]);
+  }, [user, reconnectPresence]);
 
   const setTyping = useCallback((isTyping: boolean) => {
-    if (!user || !channelRef.current) return;
+    if (!user || !channelRef.current) {
+      console.warn('[presence] setTyping skipped — no channel');
+      return;
+    }
 
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
 
+    console.log('[presence] setTyping:', isTyping, 'conv:', activeConvRef.current);
     channelRef.current.track({
       user_id: user.id,
       typing_in: isTyping ? activeConvRef.current : null,

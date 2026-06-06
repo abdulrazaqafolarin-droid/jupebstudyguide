@@ -9,7 +9,6 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { MessageReactions } from './MessageReactions';
-import { VoiceRecorder } from './VoiceRecorder';
 import { VoiceNotePlayer } from './VoiceNotePlayer';
 import { GroupInfoPanel } from './GroupInfoPanel';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
@@ -79,10 +78,14 @@ const MessageStatus = memo(function MessageStatus({ message, isOwn, isPending }:
   if (isPending) {
     return <Loader2 className="w-3 h-3 text-muted-foreground/40 animate-spin inline" />;
   }
-  if (message.read_at) {
+
+  const isRead = message.is_read || message.status === 'read' || !!message.read_at;
+  const isDelivered = message.status === 'delivered' || !!message.delivered_at;
+
+  if (isRead) {
     return <CheckCheck className="w-3.5 h-3.5 text-blue-400 inline" />;
   }
-  if (message.delivered_at) {
+  if (isDelivered) {
     return <CheckCheck className="w-3.5 h-3.5 text-muted-foreground/60 inline" />;
   }
   return <Check className="w-3.5 h-3.5 text-muted-foreground/60 inline" />;
@@ -289,22 +292,18 @@ export function ChatArea({
 
   // Voice note recording state
   const {
-    isRecording: vnIsRecording,
+    recordingState,
     duration: vnDuration,
-    audioLevel: vnAudioLevel,
-    recordedBlob: vnBlob,
-    startRecording: vnStartRecording,
-    stopRecording: vnStopRecording,
-    cancelRecording: vnCancelRecording,
-    reset: vnReset,
     error: vnError,
+    startRecording: vnStartRecording,
+    stopAndGetBlob: vnStopAndGetBlob,
+    cancelRecording: vnCancelRecording,
+    uploadAndSend: vnUploadAndSend,
   } = useVoiceRecorder();
-  const [vnMode, setVnMode] = useState<'idle' | 'recording' | 'locked' | 'preview'>('idle');
-  const [vnShowCancel, setVnShowCancel] = useState(false);
-  const [vnShowLock, setVnShowLock] = useState(false);
+  const isRecording = recordingState === 'recording';
+  const isSending = recordingState === 'sending';
+  const slideRef = useRef(false);
   const vnStartXRef = useRef(0);
-  const vnStartYRef = useRef(0);
-  const vnSendTriggeredRef = useRef(false);
 
   // Camera / gallery preview
   const [cameraPreview, setCameraPreview] = useState<string | null>(null);
@@ -317,7 +316,6 @@ export function ChatArea({
   const mediaInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const vnBarRef = useRef<HTMLDivElement>(null);
-  const vnTriggerRef = useRef<HTMLButtonElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevMessageCountRef = useRef(messages.length);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -507,10 +505,6 @@ export function ChatArea({
     setIsNearBottom(true);
     // Clear VN recording
     vnCancelRecording();
-    vnReset();
-    setVnMode('idle');
-    setVnShowCancel(false);
-    setVnShowLock(false);
     onRecordingVn?.(false);
     if (cameraPreview) { revokeBlobUrl(cameraPreview); setCameraPreview(null); }
     galleryPreviews.forEach(u => revokeBlobUrl(u));
@@ -633,14 +627,6 @@ export function ChatArea({
         fileInputRef.current?.setAttribute('accept', '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar');
         fileInputRef.current?.click();
         break;
-      case 'vn':
-        setVnMode('idle');
-        const started = await vnStartRecording();
-        if (started) {
-          setVnMode('recording');
-          onRecordingVn?.(true);
-        }
-        break;
       case 'location':
         getLocation();
         break;
@@ -651,77 +637,52 @@ export function ChatArea({
         setShowStickers(true);
         break;
     }
-  }, [vnStartRecording]);
+  }, []);
 
-  const handleVnStart = useCallback(async () => {
-    if (uploadingFile || vnMode !== 'idle') return;
-    setVnShowCancel(false);
-    setVnShowLock(false);
-    vnSendTriggeredRef.current = false;
-    setVnMode('recording');
+  const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
+    if (uploadingFile || recordingState !== 'idle') return;
+    slideRef.current = false;
+    vnStartXRef.current = e.clientX;
+    e.preventDefault();
     const started = await vnStartRecording();
     if (started) {
       onRecordingVn?.(true);
-    } else {
-      setVnMode('idle');
-      onRecordingVn?.(false);
     }
-  }, [uploadingFile, vnMode, vnStartRecording, onRecordingVn]);
+  }, [uploadingFile, recordingState, vnStartRecording, onRecordingVn]);
 
   const handleVnPointerMove = useCallback((e: React.PointerEvent) => {
-    if (vnMode !== 'recording') return;
-    const dx = e.clientX - vnStartXRef.current;
-    const dy = e.clientY - vnStartYRef.current;
-    setVnShowCancel(dx < -VN_CANCEL_THRESHOLD);
-    setVnShowLock(dy < VN_LOCK_THRESHOLD);
-  }, [vnMode]);
-
-  const handleVnPointerUp = useCallback((e: React.PointerEvent) => {
-    if (vnMode !== 'recording') return;
-    const dx = e.clientX - vnStartXRef.current;
-    const dy = e.clientY - vnStartYRef.current;
-    setVnShowCancel(false);
-    setVnShowLock(false);
-    if (dx < -VN_CANCEL_THRESHOLD) {
-      vnCancelRecording();
-      vnReset();
-      setVnMode('idle');
-      onRecordingVn?.(false);
-    } else if (dy < VN_LOCK_THRESHOLD) {
-      setVnMode('locked');
-    } else {
-      vnSendTriggeredRef.current = true;
-      vnStopRecording();
-      setVnMode('preview');
+    if (!isRecording) return;
+    const diff = vnStartXRef.current - e.clientX;
+    if (diff > 80) {
+      slideRef.current = true;
     }
-  }, [vnMode, vnCancelRecording, vnReset, vnStopRecording, onRecordingVn]);
+  }, [isRecording]);
 
-  const handleVnBarPointerDown = useCallback((e: React.PointerEvent) => {
-    vnStartXRef.current = e.clientX;
-    vnStartYRef.current = e.clientY;
-    setVnShowCancel(false);
-    setVnShowLock(false);
-  }, []);
-
-  const handleVnSendBlob = useCallback(async (blob: Blob) => {
-    const ext = blob.type === 'audio/mp4' ? 'mp4' : 'webm';
-    const file = new File([blob], `Voice note.${ext}`, { type: blob.type });
-    const result = await onUploadFile?.(file);
-    if (result?.url) {
-      onSendFile?.(result.url, 'Voice note', blob.size, blob.type);
-    }
-    vnReset();
-    setVnMode('idle');
+  const handleVnPointerUp = useCallback(async () => {
+    if (!isRecording) return;
     onRecordingVn?.(false);
-  }, [onUploadFile, onSendFile, vnReset, onRecordingVn]);
-
-  // Auto-send when vnBlob becomes available in preview mode
-  useEffect(() => {
-    if (vnMode === 'preview' && vnBlob && vnSendTriggeredRef.current) {
-      vnSendTriggeredRef.current = false;
-      handleVnSendBlob(vnBlob);
+    if (slideRef.current) {
+      vnCancelRecording();
+      return;
     }
-  }, [vnMode, vnBlob, handleVnSendBlob]);
+    const blob = await vnStopAndGetBlob();
+    if (blob && activeConversation && user) {
+      await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
+        setMessages(prev => {
+          if (prev.some(m => m.id === message.id)) return prev;
+          return [...prev, message];
+        });
+      });
+    }
+  }, [isRecording, onRecordingVn, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration]);
+
+  // Reset VN on error and notify user
+  useEffect(() => {
+    if (vnError && recordingState !== 'idle') {
+      onRecordingVn?.(false);
+      toast.error(vnError);
+    }
+  }, [vnError, recordingState, onRecordingVn]);
 
   const sendGalleryImages = useCallback(async () => {
     if (galleryFiles.length === 0) return;
@@ -784,21 +745,6 @@ export function ChatArea({
     setCameraPreview(null);
     setGalleryFiles([]);
   }, [cameraPreview, revokeBlobUrl]);
-
-  const handleVnDiscard = useCallback(() => {
-    vnCancelRecording();
-    vnReset();
-    setVnMode('idle');
-    onRecordingVn?.(false);
-  }, [vnCancelRecording, vnReset, onRecordingVn]);
-
-  // Reset VN on error and notify user
-  useEffect(() => {
-    if (vnError && vnMode !== 'idle') {
-      setVnMode('idle');
-      toast.error(vnError);
-    }
-  }, [vnError, vnMode]);
 
   const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -1045,7 +991,7 @@ export function ChatArea({
                 {isGroup ? (groupName || 'Group') : (activeConv?.other_user?.display_name || 'User')}
               </span>
               <span className="text-[10px] leading-tight text-muted-foreground">
-                {vnMode === 'recording' || vnMode === 'locked' ? (
+                {isRecording ? (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
                     Recording…
@@ -1731,33 +1677,6 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
-        {/* Voice recorder bar */}
-        <AnimatePresence>
-          {vnMode !== 'idle' && (
-            <VoiceRecorder
-              mode={vnMode}
-              audioLevel={vnAudioLevel}
-              duration={vnDuration}
-              recordedBlob={vnBlob}
-              uploading={uploadingFile}
-              showCancelHint={vnShowCancel}
-              showLockHint={vnShowLock}
-              onCancel={() => { vnCancelRecording(); vnReset(); setVnMode('idle'); }}
-              onSend={() => vnBlob && handleVnSendBlob(vnBlob)}
-              onStop={() => {
-                vnSendTriggeredRef.current = true;
-                vnStopRecording();
-                setVnMode('preview');
-              }}
-              onDiscard={handleVnDiscard}
-              onPointerDown={handleVnBarPointerDown}
-              onPointerMove={handleVnPointerMove}
-              onPointerUp={handleVnPointerUp}
-              barRef={vnBarRef}
-            />
-          )}
-        </AnimatePresence>
-
         {/* Camera preview bar */}
         <AnimatePresence>
           {cameraPreview && (
@@ -1854,6 +1773,40 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
+        {isRecording ? (
+          <div className="px-3 py-2.5">
+            <div className="flex items-center gap-3 h-10">
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <ChevronDown className="w-4 h-4 rotate-90" />
+                <span className="text-xs">Slide to cancel</span>
+              </div>
+              <div className="flex-1" />
+              <span className="text-sm font-mono text-red-500 font-medium tabular-nums">
+                {Math.floor(vnDuration / 60)}:{String(vnDuration % 60).padStart(2, '0')}
+              </span>
+              <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+              <button
+                onPointerDown={handleVnPointerDown}
+                onPointerMove={handleVnPointerMove}
+                onPointerUp={handleVnPointerUp}
+                onPointerLeave={handleVnPointerUp}
+                className="p-2 rounded-full bg-red-500 text-white scale-125 select-none touch-none"
+                style={{ userSelect: 'none', touchAction: 'none' }}
+                title="Release to send"
+                aria-label="Recording"
+              >
+                <Mic className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        ) : isSending ? (
+          <div className="px-3 py-2.5">
+            <div className="flex items-center gap-3 h-10">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Sending voice note...</span>
+            </div>
+          </div>
+        ) : (
         <div className="px-3 py-2.5">
           <div className="flex items-end gap-2">
             <input
@@ -1905,11 +1858,14 @@ export function ChatArea({
             </div>
             {!input.trim() && !editingMessage ? (
               <button
-                ref={vnTriggerRef}
-                onClick={handleVnStart}
-                className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                onPointerDown={handleVnPointerDown}
+                onPointerMove={handleVnPointerMove}
+                onPointerUp={handleVnPointerUp}
+                onPointerLeave={handleVnPointerUp}
+                className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent select-none touch-none"
+                style={{ touchAction: 'none', userSelect: 'none' }}
                 disabled={uploadingFile}
-                title="Record voice note"
+                title="Hold to record voice note"
                 aria-label="Voice note"
               >
                 <Mic className="w-4 h-4" />
@@ -1927,6 +1883,7 @@ export function ChatArea({
             )}
           </div>
         </div>
+        )}
       </div>
 
       {/* Contact sharing form */}

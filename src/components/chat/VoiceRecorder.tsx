@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, X, Send, Trash2, Lock, ChevronLeft } from 'lucide-react';
+import { Mic, X, Send, Trash2, Lock, ChevronLeft, Circle, Pause, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRef, useLayoutEffect, useState } from 'react';
@@ -12,10 +12,13 @@ interface VoiceRecorderProps {
   uploading: boolean;
   showCancelHint: boolean;
   showLockHint: boolean;
+  isPaused?: boolean;
   onCancel: () => void;
   onSend: () => void;
   onStop: () => void;
   onDiscard: () => void;
+  onPause?: () => void;
+  onResume?: () => void;
   onPointerDown?: (e: React.PointerEvent) => void;
   onPointerMove?: (e: React.PointerEvent) => void;
   onPointerUp?: (e: React.PointerEvent) => void;
@@ -61,10 +64,13 @@ export function VoiceRecorder({
   uploading,
   showCancelHint,
   showLockHint,
+  isPaused,
   onCancel,
   onSend,
   onStop,
   onDiscard,
+  onPause,
+  onResume,
   onPointerDown,
   onPointerMove,
   onPointerUp,
@@ -154,7 +160,25 @@ export function VoiceRecorder({
                 {formatTime(duration)}
               </span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <motion.div
+                  animate={{ opacity: [1, 0.3, 1] }}
+                  transition={{ duration: 1.2, repeat: Infinity }}
+                >
+                  <Circle className="w-2 h-2 fill-destructive text-destructive" />
+                </motion.div>
+                <span className="hidden sm:inline">{isPaused ? 'PAUSED' : 'REC'}</span>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="shrink-0 rounded-full text-muted-foreground hover:text-foreground h-8 px-2"
+                onClick={(e) => { e.stopPropagation(); isPaused ? onResume?.() : onPause?.(); }}
+                title={isPaused ? 'Resume recording' : 'Pause recording'}
+              >
+                {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+              </Button>
               <Button
                 size="sm"
                 variant="ghost"
@@ -193,8 +217,17 @@ export function VoiceRecorder({
                 className="flex items-center gap-1 text-[10px] text-muted-foreground mr-1"
               >
                 <Lock className="w-3 h-3 text-accent" />
-                <span className="text-accent font-medium">Locked</span>
+                <span className="text-accent font-medium">{isPaused ? 'Paused' : 'Locked'}</span>
               </motion.div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="shrink-0 rounded-full h-8 px-2 text-muted-foreground hover:text-foreground"
+                onClick={(e) => { e.stopPropagation(); isPaused ? onResume?.() : onPause?.(); }}
+                title={isPaused ? 'Resume recording' : 'Pause recording'}
+              >
+                {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+              </Button>
               <Button
                 size="sm"
                 variant="default"

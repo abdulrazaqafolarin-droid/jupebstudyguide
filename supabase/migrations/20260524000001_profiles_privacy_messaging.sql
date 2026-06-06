@@ -271,7 +271,9 @@ CREATE TRIGGER on_message_read
 -- UPDATED FRIENDS LIST FUNCTION (adds is_blocked awareness)
 -- ============================================================
 
-CREATE OR REPLACE FUNCTION public.get_friends(user_id uuid)
+DROP FUNCTION IF EXISTS public.get_friends(uuid);
+
+CREATE FUNCTION public.get_friends(user_id uuid)
 RETURNS TABLE(friend_id uuid, display_name text, avatar_url text)
 LANGUAGE plpgsql
 SECURITY DEFINER

@@ -57,32 +57,34 @@ export function useChatNotifications() {
 
     const msgChannel = supabase
       .channel('chat-notifications')
-      .on('broadcast', { event: 'msg' }, async (payload) => {
-        const msg = payload.payload.message as MessagePayload;
-        if (msg.sender_id === user.id) return;
-        if (!userConvIds.current.has(msg.conversation_id)) {
-          const { data } = await supabase
-            .from('conversation_participants')
-            .select('conversation_id')
-            .eq('user_id', user.id);
-          if (data) {
-            data.forEach(p => userConvIds.current.add(p.conversation_id));
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        async (payload) => {
+          const msg = payload.new as MessagePayload;
+          console.log('[ChatNotifications] postgres_changes INSERT:', msg.id, 'sender:', msg.sender_id);
+          if (msg.sender_id === user.id) return;
+          if (!userConvIds.current.has(msg.conversation_id)) {
+            const { data } = await supabase
+              .from('conversation_participants')
+              .select('conversation_id')
+              .eq('user_id', user.id);
+            if (data) {
+              data.forEach(p => userConvIds.current.add(p.conversation_id));
+            }
+            if (!userConvIds.current.has(msg.conversation_id)) return;
           }
-          if (!userConvIds.current.has(msg.conversation_id)) return;
-        }
 
-        const senderName = await getSenderName(msg.sender_id);
-        const preview = msg.content?.slice(0, 80) || (msg.group_name ? 'Group created' : 'Sent an image');
-        const title = msg.group_name
-          ? `${senderName} in ${msg.group_name}`
-          : senderName;
-        push({
-          kind: 'chat_message',
-          title,
-          body: preview,
-          dedupe: `msg:${msg.id}`,
-        });
-      })
+          const senderName = await getSenderName(msg.sender_id);
+          const preview = msg.content?.slice(0, 80) || 'Sent an image';
+          push({
+            kind: 'chat_message',
+            title: senderName,
+            body: preview,
+            dedupe: `msg:${msg.id}`,
+          });
+        }
+      )
       .subscribe();
 
     const frChannel = supabase

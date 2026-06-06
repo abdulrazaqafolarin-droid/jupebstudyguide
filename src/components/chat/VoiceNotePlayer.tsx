@@ -52,7 +52,9 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    (audio as HTMLAudioElement).setSinkId?.(useSpeaker ? 'default' : 'earpiece').catch(() => {});
+    if (typeof (audio as HTMLAudioElement).setSinkId === 'function') {
+      (audio as HTMLAudioElement).setSinkId(useSpeaker ? 'default' : 'earpiece').catch(() => {});
+    }
   }, [useSpeaker]);
 
   const togglePlay = useCallback(() => {
@@ -144,18 +146,20 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
             {fileName && (
               <span className="text-[9px] opacity-40 truncate max-w-[60px]">{fileName}</span>
             )}
-            <button
-              onClick={() => setUseSpeaker(v => !v)}
-              className="opacity-40 hover:opacity-100 transition-opacity"
-              title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
-              aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
-            >
-              {useSpeaker ? (
-                <Volume2 className="w-3 h-3" />
-              ) : (
-                <VolumeX className="w-3 h-3" />
-              )}
-            </button>
+            {typeof HTMLAudioElement.prototype.setSinkId === 'function' && (
+              <button
+                onClick={() => setUseSpeaker(v => !v)}
+                className="opacity-40 hover:opacity-100 transition-opacity"
+                title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
+                aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
+              >
+                {useSpeaker ? (
+                  <Volume2 className="w-3 h-3" />
+                ) : (
+                  <VolumeX className="w-3 h-3" />
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>

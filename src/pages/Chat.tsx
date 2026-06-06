@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useChat, Profile } from '@/hooks/useChat';
+import { useRealtimeChat } from '@/hooks/useRealtimeChat';
+import { supabase } from '@/integrations/supabase/client';
 import { useFriends } from '@/hooks/useFriends';
 import { usePresenceContext } from '@/contexts/PresenceContext';
 import { ChatSidebar } from '@/components/chat/ChatSidebar';
@@ -89,6 +91,28 @@ const Chat = () => {
   useEffect(() => {
     setStaleUnread(chat.staleUnread);
   }, [chat.staleUnread, setStaleUnread]);
+
+  // Per-conversation realtime message subscription
+  const handleRealtimeMessage = useCallback(async (message: Message) => {
+    console.log('[Chat] Realtime message, fetching full data for:', message.id);
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .eq('id', message.id)
+      .single();
+    if (data && !error) {
+      chat.pushMessage(data as Message);
+    } else {
+      console.warn('[Chat] Could not fetch full message, using raw payload:', error);
+      chat.pushMessage(message);
+    }
+  }, [chat]);
+
+  useRealtimeChat({
+    conversationId: chat.activeConversation,
+    currentUserId: user?.id ?? null,
+    onNewMessage: handleRealtimeMessage,
+  });
 
   // Sync active conversation to presence context for typing indicators
   useEffect(() => {

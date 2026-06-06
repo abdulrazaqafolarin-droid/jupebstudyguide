@@ -1,51 +1,44 @@
 # Session Summary
 
 ## Goal
-- Fix multiple production bugs
-- Move leaderboard chat button into achievement preview dialog
-- Audit & fix frontend runtime issues
+- Fix all broken features in the chat system: realtime messages, conversation list updates, notifications, presence/typing, voice recording, read receipt race condition, then rebuild voice note UX to match WhatsApp hold-to-record behavior.
 
 ## Done
-- **Chat button moved**: Removed `MessageCircle` icon from leaderboard rows. Added "Message" button in `UserAchievementPreview` dialog header, only visible when clicked from leaderboard (via `onChat` prop).
-- **Fixed TDZ bug**: `useVoiceRecorder.ts` had `startRecording` deps referencing `stopRecording` before its `const`. Reordered hooks.
-- **Fixed `.rpc().catch()` pattern**: Changed to `async/await` + `try/catch` everywhere (4 files).
-- **Fixed group creation RLS issue**: Split member insert into creator-first then others.
-- **Fixed group avatar `Blob` vs `File`**: Wrapped `compressImage` result in `new File([blob], originalName)`.
+### Chat System Fixes
+- **Polling removed**: Deleted the 800ms `setTimeout` polling `useEffect` from `useChat.ts`.
+- **Console logs added** for diagnostics in `useRealtimeChat.ts`, `useChat.ts`, `PresenceContext.tsx`, `useChatNotifications.ts`, `useVoiceRecorder.ts`.
+- **onNewMessage callback fixed**: `Chat.tsx` fetches full message from DB before calling `chat.pushMessage(data)`.
+- **Conversation list re-sort**: `chat-global` INSERT handler re-sorts conversations by `last_message.created_at` descending.
+- **Notifications**: `useChatNotifications.ts` switched from `broadcast` to `postgres_changes` on `messages` table.
+- **PresenceContext.tsx fixed**: Added missing `handleBeforeUnload` definition (silent crash killed presence/typing channel).
+- **Voice recording error handling**: Added specific error messages + `navigator.mediaDevices` check.
+- **Vercel config**: `Permissions-Policy` updated to `microphone=(self)`.
+- **Read receipt race condition fixed**:
+  - Root cause: Realtime UPDATE handler used `{ ...m, ...newMsg }` — full object overwrite could replace fields not in the Realtime payload. `sender_id === user.id` guard blocked sender from receiving `is_read=true` updates. Migration `20260605000001` removed `UPDATE messages SET is_read=true` from `mark_conversation_read` RPC.
+  - Fixes: Removed sender guard, replaced full spread with targeted field update, added direct `supabase.from('messages').update({ is_read: true, read_at: ... })` before RPC call in `processMarkReadQueue`.
+- **Tick display fixed**: MessageStatus component checks `is_read || status === 'read' || read_at` for blue tick.
+- **Voice recording Bug 1 fixed**: Added 15px dead zone in `handleVnPointerUp` so taps on recording bar don't stop recording.
+- **Voice recording Bug 2 fixed**: Added `isPaused` state, `pauseRecording()`/`resumeRecording()` to `useVoiceRecorder.ts`, pause/resume buttons in `VoiceRecorder.tsx`.
+- **Voice recording Bug 3 fixed**: Replaced mutable ref `vnSendTriggeredRef` with state counter `vnAutoSendTick` for reliable effect-based auto-send.
 
-### This Session — Frontend Audit Fixes
+### Voice Note Rebuild (Hold-to-Record)
+- **`useVoiceRecorder.ts` replaced** with new hold-to-record hook: `recordingState`, `startRecording()`, `stopAndGetBlob()`, `cancelRecording()`, `uploadAndSend()`. Upload path: `chat-files/voice-notes/{conversationId}/` bucket. Inserts message with `message_type: 'audio'`, `file_url`, `file_name`, `file_type`, `file_size`.
+- **`ChatArea.tsx` cleaned up**: Removed all old voice state references (`vnMode`, `vnTriggerRef`, `handleVnStart`, `handleVnDiscard`, `setVnShowCancel`, `setVnShowLock`, `vnAutoSendTick`, `VoiceRecorder` import/render). Replaced mic button + input bar with recording-replaces-input approach.
+- **Recording UX**: Hold mic button → record → release sends, slide left >80px cancels. Entire input bar replaced with recording bar showing timer + cancel hint + pulsing dot. `isSending` state shows spinner during upload.
+- **`VOICE_NOTE_REBUILD.md` saved**: Full spec document.
+- **TypeScript clean**: `tsc --noEmit` passes with zero errors.
 
-**CRITICAL — Infinite reconnect loop in useChat.ts:**
-- Removed manual reconnection logic (`scheduleReconnect`, `channelRetryRef`, `CHANNEL_MAX_RETRIES`, `RECONNECT_BASE_DELAY`) that was fighting Supabase's built-in reconnection.
-- The old code used `channelReconnectKey` state in the effect deps → cleanup reset retry counters → effect re-run → subscribe → channel error → `setChannelReconnectKey` → re-render → cleanup → repeat. This created an infinite loop on channel errors.
-- Now just logs errors/warnings and lets Supabase Realtime handle reconnection automatically.
-- Removed `scheduleReconnect` setTimeout leak (timer was never cleared on cleanup).
-
-**HIGH — searchUsers silent error swallowing:**
-- Wrapped `supabase.from('profiles').select()` in `try/catch` with `console.error` logging.
-
-**HIGH — Unsafe nested getPublicUrl destructuring:**
-- Changed from `const { data: { publicUrl } } = supabase.storage.getPublicUrl(...)` (crashes if data is null) to `...getPublicUrl(...).data?.publicUrl ?? null`.
-
-**HIGH — Unhandled promise rejections:**
-- Added `void` prefix to `fetchConversations()` calls that were fire-and-forget.
-- Added `void` to the broadcast handler's `fetchConversations().then(...)` chain.
-
-**MEDIUM — handleReportMessage missing try/catch:**
-- Wrapped `supabase.rpc('report_user')` in `try/catch` with `toast.error` fallback.
-
-**MEDIUM — Blob URL leak:**
-- Added `blobUrlsRef` (Set<string>) to track all created blob URLs.
-- Cleaned up all blob URLs in component unmount effect.
-- Updated `handleFileInput` (camera + gallery), `discardGalleryPreviews`, `discardCameraPreview`, `sendGalleryImages`, `sendCameraPreview`, and activeConversation cleanup to use `revokeBlobUrl()`.
-- Fixed camera preview: now revokes old URL before creating new one on re-selection.
-
-**MEDIUM — msg.reactions crash on malformed data:**
-- Added `Array.isArray(msg.reactions![k])` guard before accessing `.length` in `hasReactions` check.
-
-## Blocked
-- Leaked Supabase service_role key and JWT not yet rotated (requires manual dashboard action).
-
-## Deployed
+### Deployed
 - Live at `https://jupebstudyguide-main.vercel.app`
 - Build: 3427 modules, 0 errors
-- Requires hard refresh (Ctrl+Shift+R) to clear PWA service worker cache.
+
+## Next Steps
+1. Test hold-and-release flow end-to-end.
+2. Manually confirm `chat-files` bucket exists in Supabase Storage.
+3. Remove `VoiceRecorder.tsx` if no longer referenced anywhere.
+
+## Critical Context
+- **Read receipt root cause**: RPC `mark_conversation_read` migration `20260605000001` removed `UPDATE messages SET is_read=true` that was added in `20260604000001`. Direct update added as fix.
+- **PresenceContext crash**: `handleBeforeUnload` was referenced in `addEventListener` but never declared — threw ReferenceError on presence channel subscribe.
+- **Voice note rebuild**: Old implementation used multi-mode state machine. New implementation: hold mic → record → release → send/upload via direct Supabase insert. No `VoiceRecorder.tsx` needed.
+- `onRecordingVn` from `PresenceContext` handles cross-user recording indicator via Realtime Presence.

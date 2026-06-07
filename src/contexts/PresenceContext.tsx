@@ -56,6 +56,27 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   const visibilityHandlersRef = useRef<(() => void) | null>(null);
   const privacyFilterRef = useRef<Set<string>>(new Set());
 
+  // Sync to user_presence table for postgres_changes subscribers
+  const syncPresenceToDb = useCallback(async (data: {
+    is_online?: boolean;
+    last_seen_at?: string;
+    online_at?: string;
+    typing_in?: string | null;
+    recording_vn_in?: string | null;
+  }) => {
+    if (!user) return;
+    try {
+      await supabase.from('user_presence').upsert({
+        user_id: user.id,
+        is_online: data.is_online ?? true,
+        last_seen_at: data.last_seen_at ?? new Date().toISOString(),
+        online_at: data.online_at ?? null,
+        typing_in: data.typing_in ?? null,
+        recording_vn_in: data.recording_vn_in ?? null,
+      });
+    } catch { /* silent */ }
+  }, [user]);
+
   // Update last_seen_at in DB when user goes offline
   const updateLastSeen = useCallback(async () => {
     if (!user) return;
@@ -74,12 +95,15 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       if (document.visibilityState === 'hidden') {
         channel.track({ user_id: user.id, online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null } as PresenceState);
         updateLastSeen();
+        syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
       } else {
         channel.track({ user_id: user.id, online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null } as PresenceState);
+        syncPresenceToDb({ is_online: true, online_at: new Date().toISOString() });
       }
     };
     const handleBeforeUnload = () => {
       updateLastSeen();
+      syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
     };
     channel
       .on('presence', { event: 'sync' }, () => {
@@ -137,6 +161,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
             typing_in: null,
             recording_vn_in: null,
           } as PresenceState);
+          syncPresenceToDb({ is_online: true, online_at: new Date().toISOString() });
           console.log('[presence] tracked self as online');
           document.addEventListener('visibilitychange', handleVisibilityChange);
           window.addEventListener('beforeunload', handleBeforeUnload);
@@ -180,6 +205,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       user_id: user.id,
       typing_in: isTyping ? activeConvRef.current : null,
     } as PresenceState);
+    syncPresenceToDb({ typing_in: isTyping ? activeConvRef.current : null });
 
     if (isTyping) {
       typingTimeoutRef.current = setTimeout(() => {
@@ -187,9 +213,10 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
           user_id: user.id,
           typing_in: null,
         } as PresenceState);
+        syncPresenceToDb({ typing_in: null });
       }, 3000);
     }
-  }, [user]);
+  }, [user, syncPresenceToDb]);
 
   const setRecordingVn = useCallback((isRecording: boolean) => {
     if (!user || !channelRef.current) return;
@@ -197,7 +224,8 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       user_id: user.id,
       recording_vn_in: isRecording ? activeConvRef.current : null,
     } as PresenceState);
-  }, [user]);
+    syncPresenceToDb({ recording_vn_in: isRecording ? activeConvRef.current : null });
+  }, [user, syncPresenceToDb]);
 
   const setActiveConversation = useCallback((convId: string | null) => {
     activeConvRef.current = convId;

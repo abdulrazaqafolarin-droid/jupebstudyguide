@@ -6,8 +6,8 @@ interface UseRealtimeChatProps {
   conversationId: string | null;
   currentUserId: string | null;
   onNewMessage: (message: Message) => void;
-  onPresenceUpdate?: (presenceState: Record<string, any>) => void;
-  onTypingUpdate?: (isTyping: boolean, userId: string) => void;
+  onPresenceUpdate: (presenceState: Record<string, any>) => void;
+  onTypingUpdate: (isTyping: boolean, userId: string) => void;
 }
 
 const RECONNECT_DELAY = 3000;
@@ -17,11 +17,13 @@ export function useRealtimeChat({
   conversationId,
   currentUserId,
   onNewMessage,
+  onPresenceUpdate,
+  onTypingUpdate,
 }: UseRealtimeChatProps) {
-  const reconnectAttemptsRef = useRef(0);
-  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const channelRef = useRef<ReturnType<typeof supabase.channel>>();
-  const disposedRef = useRef(false);
+  const msgReconnectAttemptsRef = useRef(0);
+  const msgReconnectTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const msgChannelRef = useRef<ReturnType<typeof supabase.channel>>();
+  const msgDisposedRef = useRef(false);
   const onNewMessageRef = useRef(onNewMessage);
   onNewMessageRef.current = onNewMessage;
   const conversationIdRef = useRef(conversationId);
@@ -29,15 +31,22 @@ export function useRealtimeChat({
   const currentUserIdRef = useRef(currentUserId);
   currentUserIdRef.current = currentUserId;
 
-  const subscribe = useCallback(() => {
+  const presenceStateRef = useRef<Record<string, any>>({});
+  const presenceChannelRef = useRef<ReturnType<typeof supabase.channel>>();
+  const onPresenceUpdateRef = useRef(onPresenceUpdate);
+  onPresenceUpdateRef.current = onPresenceUpdate;
+  const onTypingUpdateRef = useRef(onTypingUpdate);
+  onTypingUpdateRef.current = onTypingUpdate;
+
+  const msgSubscribe = useCallback(() => {
     const cid = conversationIdRef.current;
     const uid = currentUserIdRef.current;
     if (!cid || !uid) return;
 
-    disposedRef.current = false;
+    msgDisposedRef.current = false;
 
     const channel = supabase.channel(`chat-conv-${cid}`);
-    channelRef.current = channel;
+    msgChannelRef.current = channel;
 
     channel
       .on(
@@ -49,69 +58,120 @@ export function useRealtimeChat({
           filter: `conversation_id=eq.${cid}`,
         },
         (payload) => {
-          const newMsg = payload.new as Message;
-          console.log('[Realtime] New message received:', newMsg);
+          const newMsg = payload.new as any;
           if (newMsg.sender_id === uid) return;
-          onNewMessageRef.current(newMsg);
+
+          supabase
+            .from('messages')
+            .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
+            .eq('id', newMsg.id)
+            .single()
+            .then(({ data }) => {
+              if (data) onNewMessageRef.current(data as Message);
+            });
         }
       )
       .subscribe((status, err) => {
-        if (disposedRef.current) return;
-
-        console.log('[Realtime] Subscription status:', status, 'conv:', cid);
+        if (msgDisposedRef.current) return;
 
         if (status === 'SUBSCRIBED') {
-          reconnectAttemptsRef.current = 0;
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('[useRealtimeChat] channel error:', err);
-          scheduleReconnect();
-        } else if (status === 'CLOSED') {
-          console.warn('[useRealtimeChat] channel closed');
-          scheduleReconnect();
-        } else if (status === 'TIMED_OUT') {
-          console.warn('[useRealtimeChat] channel timed out');
-          scheduleReconnect();
+          msgReconnectAttemptsRef.current = 0;
+        } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
+          console.warn('[useRealtimeChat] messages channel', status, err);
+          scheduleMsgReconnect();
         }
       });
   }, []);
 
-  const scheduleReconnect = useCallback(() => {
-    if (disposedRef.current) return;
-    if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
-      console.error('[useRealtimeChat] max reconnect attempts reached');
+  const scheduleMsgReconnect = useCallback(() => {
+    if (msgDisposedRef.current) return;
+    if (msgReconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
+      console.error('[useRealtimeChat] max messages reconnect attempts reached');
       return;
     }
 
-    clearTimeout(reconnectTimerRef.current);
-    reconnectTimerRef.current = setTimeout(() => {
-      if (disposedRef.current) return;
-      reconnectAttemptsRef.current++;
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
+    clearTimeout(msgReconnectTimerRef.current);
+    msgReconnectTimerRef.current = setTimeout(() => {
+      if (msgDisposedRef.current) return;
+      msgReconnectAttemptsRef.current++;
+      if (msgChannelRef.current) {
+        supabase.removeChannel(msgChannelRef.current);
       }
-      subscribe();
-    }, RECONNECT_DELAY * Math.pow(1.5, reconnectAttemptsRef.current));
-  }, [subscribe]);
+      msgSubscribe();
+    }, RECONNECT_DELAY * Math.pow(1.5, msgReconnectAttemptsRef.current));
+  }, [msgSubscribe]);
 
   useEffect(() => {
     if (!conversationId || !currentUserId) return;
 
-    disposedRef.current = false;
-    reconnectAttemptsRef.current = 0;
+    msgDisposedRef.current = false;
+    msgReconnectAttemptsRef.current = 0;
 
-    // Small delay to avoid rapid subscribe/unsubscribe on conversation switch
     const timer = setTimeout(() => {
-      subscribe();
+      msgSubscribe();
     }, 100);
 
     return () => {
-      disposedRef.current = true;
+      msgDisposedRef.current = true;
       clearTimeout(timer);
-      clearTimeout(reconnectTimerRef.current);
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-        channelRef.current = undefined;
+      clearTimeout(msgReconnectTimerRef.current);
+      if (msgChannelRef.current) {
+        supabase.removeChannel(msgChannelRef.current);
+        msgChannelRef.current = undefined;
       }
     };
-  }, [conversationId, currentUserId, subscribe]);
+  }, [conversationId, currentUserId, msgSubscribe]);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const channel = supabase.channel('user-presence-global');
+    presenceChannelRef.current = channel;
+
+    channel
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_presence',
+        },
+        (payload) => {
+          const row = payload.new as Record<string, any>;
+          if (!row || row.user_id === currentUserId) return;
+
+          const prevState = presenceStateRef.current[row.user_id];
+
+          presenceStateRef.current = {
+            ...presenceStateRef.current,
+            [row.user_id]: {
+              is_online: row.is_online ?? false,
+              last_seen_at: row.last_seen_at ?? null,
+              typing_in: row.typing_in ?? null,
+              online_at: row.online_at ?? null,
+            },
+          };
+
+          if (onPresenceUpdateRef.current) {
+            onPresenceUpdateRef.current({ ...presenceStateRef.current });
+          }
+
+          const typingConv = row.typing_in;
+          const wasTyping = prevState?.typing_in != null;
+          const isNowTyping = typingConv != null && typingConv === conversationIdRef.current;
+
+          if (wasTyping !== isNowTyping) {
+            onTypingUpdateRef.current(isNowTyping, row.user_id);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('[useRealtimeChat] user_presence status:', status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+      presenceChannelRef.current = undefined;
+    };
+  }, [currentUserId]);
 }

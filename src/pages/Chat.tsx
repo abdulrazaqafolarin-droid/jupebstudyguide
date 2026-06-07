@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useChat, Profile } from '@/hooks/useChat';
 import { useRealtimeChat } from '@/hooks/useRealtimeChat';
-import { supabase } from '@/integrations/supabase/client';
 import { useFriends } from '@/hooks/useFriends';
 import { usePresenceContext } from '@/contexts/PresenceContext';
 import { ChatSidebar } from '@/components/chat/ChatSidebar';
@@ -92,27 +91,52 @@ const Chat = () => {
     setStaleUnread(chat.staleUnread);
   }, [chat.staleUnread, setStaleUnread]);
 
-  // Per-conversation realtime message subscription
-  const handleRealtimeMessage = useCallback(async (message: Message) => {
-    console.log('[Chat] Realtime message, fetching full data for:', message.id);
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('id', message.id)
-      .single();
-    if (data && !error) {
-      chat.pushMessage(data as Message);
-    } else {
-      console.warn('[Chat] Could not fetch full message, using raw payload:', error);
-      chat.pushMessage(message);
-    }
+  // Presence state merged from user_presence table + presence channel
+  const [tablePresence, setTablePresence] = useState<Record<string, any>>({});
+  const [tableTyping, setTableTyping] = useState<Set<string>>(new Set());
+
+  const handleRealtimeMessage = useCallback((message: Message) => {
+    chat.pushMessage(message);
   }, [chat]);
+
+  const handlePresenceUpdate = useCallback((presenceState: Record<string, any>) => {
+    setTablePresence(presenceState);
+  }, []);
+
+  const handleTypingUpdate = useCallback((isTyping: boolean, userId: string) => {
+    setTableTyping(prev => {
+      const next = new Set(prev);
+      if (isTyping) next.add(userId);
+      else next.delete(userId);
+      return next;
+    });
+  }, []);
 
   useRealtimeChat({
     conversationId: chat.activeConversation,
     currentUserId: user?.id ?? null,
     onNewMessage: handleRealtimeMessage,
+    onPresenceUpdate: handlePresenceUpdate,
+    onTypingUpdate: handleTypingUpdate,
   });
+
+  // Merge user_presence table data with presence channel data
+  const mergedIsOnline = useCallback((userId: string) => {
+    const tbl = tablePresence[userId];
+    if (tbl) return tbl.is_online ?? false;
+    return presence.isOnline(userId);
+  }, [tablePresence, presence]);
+
+  const mergedIsTyping = useCallback((userId: string) => {
+    if (tableTyping.has(userId)) return true;
+    return presence.isTyping(userId);
+  }, [tableTyping, presence]);
+
+  const mergedIsRecordingVn = useCallback((userId: string) => {
+    const tbl = tablePresence[userId];
+    if (tbl) return tbl.recording_vn_in != null;
+    return presence.isRecordingVn(userId);
+  }, [tablePresence, presence]);
 
   // Sync active conversation to presence context for typing indicators
   useEffect(() => {
@@ -498,9 +522,9 @@ const Chat = () => {
             onUploadImage={chat.uploadImage}
             onUploadFile={chat.uploadFile}
             onBack={isMobile ? handleBackToSidebar : undefined}
-            isOnline={presence.isOnline}
-            isTyping={presence.isTyping}
-            isRecordingVn={presence.isRecordingVn}
+            isOnline={mergedIsOnline}
+            isTyping={mergedIsTyping}
+            isRecordingVn={mergedIsRecordingVn}
             getLastSeen={presence.getLastSeen}
             onTyping={presence.setTyping}
             onRecordingVn={presence.setRecordingVn}

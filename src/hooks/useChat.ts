@@ -566,34 +566,6 @@ export function useChat() {
     };
   }, [user, fetchConversations]);
 
-  // Per-conversation realtime subscription for live message delivery
-  useEffect(() => {
-    if (!activeConversation || !user) return;
-    const channel = supabase
-      .channel(`messages:${activeConversation}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${activeConversation}`,
-        },
-        (payload) => {
-          const newMessage = payload.new as Message;
-          if (newMessage.sender_id === user.id) return;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === newMessage.id)) return prev;
-            return [...prev, newMessage];
-          });
-        }
-      )
-      .subscribe((status) => {
-        console.log('[Realtime] Messages status:', status);
-      });
-    return () => { supabase.removeChannel(channel); };
-  }, [activeConversation, user]);
-
   useEffect(() => {
     try {
       const bc = new BroadcastChannel(CROSS_TAB_CHANNEL);

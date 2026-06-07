@@ -20,6 +20,8 @@ export function useRealtimeChat({
   onPresenceUpdate,
   onTypingUpdate,
 }: UseRealtimeChatProps) {
+  console.log('[Realtime] Hook mounted, conversationId:', conversationId, 'userId:', currentUserId);
+
   const msgReconnectAttemptsRef = useRef(0);
   const msgReconnectTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const msgChannelRef = useRef<ReturnType<typeof supabase.channel>>();
@@ -41,7 +43,11 @@ export function useRealtimeChat({
   const msgSubscribe = useCallback(() => {
     const cid = conversationIdRef.current;
     const uid = currentUserIdRef.current;
-    if (!cid || !uid) return;
+    if (!cid || !uid) {
+      console.log('[Realtime] msgSubscribe skipped: no cid or uid', { cid, uid });
+      return;
+    }
+    console.log('[Realtime] Creating channel for conversation:', cid, 'user:', uid);
 
     msgDisposedRef.current = false;
 
@@ -59,6 +65,7 @@ export function useRealtimeChat({
         },
         (payload) => {
           const newMsg = payload.new as any;
+          console.log('[Realtime] New message received:', newMsg?.id, 'from:', newMsg?.sender_id, 'conv:', newMsg?.conversation_id);
           if (newMsg.sender_id === uid) return;
 
           supabase
@@ -124,7 +131,11 @@ export function useRealtimeChat({
   }, [conversationId, currentUserId, msgSubscribe]);
 
   useEffect(() => {
-    if (!currentUserId) return;
+    if (!currentUserId) {
+      console.log('[Realtime] user_presence effect skipped: no currentUserId');
+      return;
+    }
+    console.log('[Realtime] user_presence effect running for user:', currentUserId);
 
     const channel = supabase.channel('user-presence-global');
     presenceChannelRef.current = channel;
@@ -141,6 +152,7 @@ export function useRealtimeChat({
           const row = payload.new as Record<string, any>;
           if (!row || row.user_id === currentUserId) return;
 
+          console.log('[Realtime] presence update:', row.user_id, 'online:', row.is_online, 'typing_in:', row.typing_in);
           const prevState = presenceStateRef.current[row.user_id];
 
           presenceStateRef.current = {

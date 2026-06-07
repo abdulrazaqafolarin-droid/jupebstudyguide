@@ -112,6 +112,8 @@ const Chat = () => {
     });
   }, []);
 
+  console.log('[Chat] conversationId passed to hook:', chat.activeConversation);
+  console.log('[Chat] currentUserId passed to hook:', user?.id ?? null);
   useRealtimeChat({
     conversationId: chat.activeConversation,
     currentUserId: user?.id ?? null,

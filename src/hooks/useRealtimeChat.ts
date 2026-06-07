@@ -64,6 +64,7 @@ export function useRealtimeChat({
           filter: `conversation_id=eq.${cid}`,
         },
         (payload) => {
+          console.log('[Realtime] INSERT fired for message:', payload.new?.id, 'conv:', payload.new?.conversation_id);
           const newMsg = payload.new as any;
           console.log('[Realtime] New message received:', newMsg?.id, 'from:', newMsg?.sender_id, 'conv:', newMsg?.conversation_id);
           if (newMsg.sender_id === uid) return;
@@ -79,7 +80,7 @@ export function useRealtimeChat({
         }
       )
       .subscribe((status, err) => {
-        console.log('[Realtime] status:', status, err ?? '');
+        console.log('[Realtime] subscribe status:', status, 'convId:', conversationIdRef.current, 'userId:', currentUserIdRef.current);
         if (msgDisposedRef.current) return;
 
         if (status === 'SUBSCRIBED') {

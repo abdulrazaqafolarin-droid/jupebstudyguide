@@ -91,6 +91,8 @@ export function useChat() {
   const markReadProcessing = useRef(false);
   const activeConvRef = useRef<string | null>(null);
   const messagesRef = useRef<Message[]>([]);
+  const [globalChannelStatus, setGlobalChannelStatus] = useState<string>('idle');
+  const [globalInsertCount, setGlobalInsertCount] = useState(0);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -426,6 +428,7 @@ export function useChat() {
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
           const newMsg = payload.new as Message;
+          setGlobalInsertCount(prev => prev + 1);
           console.log('[Realtime] chat-global INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'sender:', newMsg.sender_id);
           if (newMsg.sender_id === user.id) return;
           if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
@@ -497,6 +500,7 @@ export function useChat() {
         }
       )
       .subscribe((status, err) => {
+        setGlobalChannelStatus(status);
         console.log('[Realtime] chat-global status:', status);
         if (status === 'SUBSCRIBED') {
           fetchConversations();
@@ -959,5 +963,7 @@ export function useChat() {
     markingRead,
     staleUnread,
     pushMessage,
+    globalChannelStatus,
+    globalInsertCount,
   };
 }

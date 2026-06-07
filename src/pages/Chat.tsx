@@ -208,8 +208,9 @@ const Chat = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
-      {debugLogs.length > 0 && (
+      {(debugLogs.length > 0 || chat.globalChannelStatus !== 'idle') && (
         <div className="shrink-0 z-50 bg-black/90 text-green-400 text-xs p-2 max-h-32 overflow-y-auto font-mono">
+          <div>global: {chat.globalChannelStatus} | inserts: {chat.globalInsertCount}</div>
           {debugLogs.map((log, i) => <div key={i}>{log}</div>)}
         </div>
       )}

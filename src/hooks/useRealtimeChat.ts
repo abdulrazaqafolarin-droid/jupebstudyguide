@@ -69,20 +69,11 @@ export function useRealtimeChat({
           filter: `conversation_id=eq.${cid}`,
         },
         (payload) => {
-          onDebugLogRef.current?.('INSERT:' + payload.new?.id);
-          console.log('[Realtime] INSERT fired for message:', payload.new?.id, 'conv:', payload.new?.conversation_id);
-          const newMsg = payload.new as any;
-          console.log('[Realtime] New message received:', newMsg?.id, 'from:', newMsg?.sender_id, 'conv:', newMsg?.conversation_id);
+          const newMsg = payload.new as Message;
+          console.log('[Realtime] INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'from:', newMsg.sender_id);
+          onDebugLogRef.current?.('INSERT:' + newMsg.id);
           if (newMsg.sender_id === uid) return;
-
-          supabase
-            .from('messages')
-            .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
-            .eq('id', newMsg.id)
-            .single()
-            .then(({ data }) => {
-              if (data) onNewMessageRef.current(data as Message);
-            });
+          onNewMessageRef.current(newMsg);
         }
       )
       .subscribe((status, err) => {

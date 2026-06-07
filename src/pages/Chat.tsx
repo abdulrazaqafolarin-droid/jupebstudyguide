@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 import { useChat, Profile } from '@/hooks/useChat';
 import { useRealtimeChat } from '@/hooks/useRealtimeChat';
 import { useFriends } from '@/hooks/useFriends';
@@ -70,6 +71,17 @@ const Chat = () => {
   const addDebugLog = (msg: string) => {
     setDebugLogs(prev => [...prev.slice(-10), new Date().toLocaleTimeString() + ' ' + msg]);
   };
+
+  // Connection test — runs once on mount
+  useEffect(() => {
+    const testChannel = supabase.channel('connection-test');
+    testChannel.subscribe((status, err) => {
+      const msg = `conn-test: ${status}${err ? ' ' + err.message : ''}`;
+      console.log('[Supabase] test channel status:', status, err?.message ?? '');
+      addDebugLog(msg);
+      setTimeout(() => supabase.removeChannel(testChannel), 1000);
+    });
+  }, []);
 
   // Handle URL params from notification bar navigation
   useEffect(() => {
@@ -209,9 +221,12 @@ const Chat = () => {
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
       {(debugLogs.length > 0 || chat.globalChannelStatus !== 'idle') && (
-        <div className="shrink-0 z-50 bg-black/90 text-green-400 text-xs p-2 max-h-32 overflow-y-auto font-mono">
-          <div>global: {chat.globalChannelStatus} | inserts: {chat.globalInsertCount}</div>
-          {debugLogs.map((log, i) => <div key={i}>{log}</div>)}
+        <div className="shrink-0 z-50 bg-black/90 text-green-400 text-xs p-2 max-h-40 overflow-y-auto font-mono">
+          <div className="text-yellow-400">global: {chat.globalChannelStatus} | inserts: {chat.globalInsertCount}</div>
+          {debugLogs.map((log, i) => {
+            const isConn = log.includes('conn-test');
+            return <div key={i} className={isConn ? 'text-cyan-300 font-bold' : ''}>{log}</div>;
+          })}
         </div>
       )}
       <div className="flex flex-1 overflow-hidden">

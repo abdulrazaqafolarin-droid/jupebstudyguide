@@ -508,7 +508,6 @@ const Chat = () => {
             loadingMore={chat.loadingMore}
             onLoadMore={chat.loadMoreMessages}
             onProfileClick={openProfile}
-            onBroadcast={chat.broadcastMessage}
           />
         </div>
       )}

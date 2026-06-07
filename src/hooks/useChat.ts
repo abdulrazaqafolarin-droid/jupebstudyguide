@@ -421,97 +421,117 @@ export function useChat() {
   useEffect(() => {
     if (!user) return;
 
-    const globalChannel = supabase
-      .channel('chat-global')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
-          const newMsg = payload.new as Message;
-          setGlobalInsertCount(prev => prev + 1);
-          console.log('[Realtime] chat-global INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'sender:', newMsg.sender_id);
-          if (newMsg.sender_id === user.id) return;
-          if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
+    let retryCount = 0;
+    let retryTimer: ReturnType<typeof setTimeout>;
+    let disposed = false;
 
-          const currentConv = activeConvRef.current;
-          if (newMsg.conversation_id === currentConv) {
-            setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
-          }
-          setConversations(prev => {
-            const updated = prev.map(c =>
-              c.id === newMsg.conversation_id
-                ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg }
-                : c
-            );
-            return updated.sort((a, b) => {
-              const aTime = a.last_message?.created_at;
-              const bTime = b.last_message?.created_at;
-              if (!aTime && !bTime) return 0;
-              if (!aTime) return 1;
-              if (!bTime) return -1;
-              return bTime.localeCompare(aTime);
+    const createGlobalChannel = () => {
+      if (disposed) return;
+
+      const channel = supabase
+        .channel(`chat-global-${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'messages' },
+          (payload) => {
+            const newMsg = payload.new as Message;
+            setGlobalInsertCount(prev => prev + 1);
+            console.log('[Realtime] chat-global INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'sender:', newMsg.sender_id);
+            if (newMsg.sender_id === user.id) return;
+            if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
+
+            const currentConv = activeConvRef.current;
+            if (newMsg.conversation_id === currentConv) {
+              setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
+            }
+            setConversations(prev => {
+              const updated = prev.map(c =>
+                c.id === newMsg.conversation_id
+                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg }
+                  : c
+              );
+              return updated.sort((a, b) => {
+                const aTime = a.last_message?.created_at;
+                const bTime = b.last_message?.created_at;
+                if (!aTime && !bTime) return 0;
+                if (!aTime) return 1;
+                if (!bTime) return -1;
+                return bTime.localeCompare(aTime);
+              });
             });
-          });
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'messages' },
-        (payload) => {
-          const oldMsg = payload.old as { conversation_id: string; sender_id: string; is_read: boolean };
-          if (oldMsg.sender_id === user.id) return;
-          if (!oldMsg.is_read) {
-            setConversations(prev => prev.map(c =>
-              c.id === oldMsg.conversation_id && c.unread_count > 0
-                ? { ...c, unread_count: c.unread_count - 1 }
-                : c
-            ));
           }
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'messages' },
-        (payload) => {
-          const newMsg = payload.new as Message & { is_deleted: boolean };
-          const oldMsg = payload.old as Message & { is_deleted: boolean };
-          if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
-          if (newMsg.is_deleted && !oldMsg.is_deleted && !newMsg.is_read) {
-            setConversations(prev => prev.map(c =>
-              c.id === newMsg.conversation_id && c.unread_count > 0
-                ? { ...c, unread_count: c.unread_count - 1 }
-                : c
-            ));
+        )
+        .on(
+          'postgres_changes',
+          { event: 'DELETE', schema: 'public', table: 'messages' },
+          (payload) => {
+            const oldMsg = payload.old as { conversation_id: string; sender_id: string; is_read: boolean };
+            if (oldMsg.sender_id === user.id) return;
+            if (!oldMsg.is_read) {
+              setConversations(prev => prev.map(c =>
+                c.id === oldMsg.conversation_id && c.unread_count > 0
+                  ? { ...c, unread_count: c.unread_count - 1 }
+                  : c
+              ));
+            }
           }
-          if (newMsg.conversation_id === activeConvRef.current) {
-            setMessages(prev => prev.map(m =>
-              m.id === newMsg.id
-                ? { ...m, is_read: newMsg.is_read, read_at: newMsg.read_at, delivered_at: newMsg.delivered_at, is_deleted: newMsg.is_deleted, content: newMsg.is_deleted ? '' : newMsg.content }
-                : m
-            ));
+        )
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'messages' },
+          (payload) => {
+            const newMsg = payload.new as Message & { is_deleted: boolean };
+            const oldMsg = payload.old as Message & { is_deleted: boolean };
+            if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
+            if (newMsg.is_deleted && !oldMsg.is_deleted && !newMsg.is_read) {
+              setConversations(prev => prev.map(c =>
+                c.id === newMsg.conversation_id && c.unread_count > 0
+                  ? { ...c, unread_count: c.unread_count - 1 }
+                  : c
+              ));
+            }
+            if (newMsg.conversation_id === activeConvRef.current) {
+              setMessages(prev => prev.map(m =>
+                m.id === newMsg.id
+                  ? { ...m, is_read: newMsg.is_read, read_at: newMsg.read_at, delivered_at: newMsg.delivered_at, is_deleted: newMsg.is_deleted, content: newMsg.is_deleted ? '' : newMsg.content }
+                  : m
+              ));
+            }
           }
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'conversation_participants', filter: `user_id=eq.${user.id}` },
-        () => {
-          fetchConversations();
-        }
-      )
-      .subscribe((status, err) => {
-        setGlobalChannelStatus(status);
-        console.log('[Realtime] chat-global status:', status);
-        if (status === 'SUBSCRIBED') {
-          fetchConversations();
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('[realtime] chat-global channel error:', err);
-        } else if (status === 'CLOSED') {
-          console.warn('[realtime] chat-global channel closed');
-        } else {
-          console.warn('[realtime] chat-global status:', status, err);
-        }
-      });
+        )
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'conversation_participants', filter: `user_id=eq.${user.id}` },
+          () => {
+            fetchConversations();
+          }
+        )
+        .subscribe((status, err) => {
+          setGlobalChannelStatus(status);
+          console.log('[Realtime] chat-global status:', status);
+          if (status === 'SUBSCRIBED') {
+            retryCount = 0;
+            fetchConversations();
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('[useChat] global channel error:', err);
+            const delay = Math.min(3000 * Math.pow(2, retryCount), 30000);
+            retryCount++;
+            clearTimeout(retryTimer);
+            retryTimer = setTimeout(() => {
+              supabase.removeChannel(channel);
+              createGlobalChannel();
+            }, delay);
+          } else if (status === 'CLOSED') {
+            console.warn('[realtime] chat-global channel closed');
+          } else {
+            console.warn('[realtime] chat-global status:', status, err);
+          }
+        });
+
+      return channel;
+    };
+
+    const globalChannel = createGlobalChannel();
 
     const msgBroadcast = supabase
       .channel('msg-broadcast', { selfBroadcast: false })
@@ -564,6 +584,8 @@ export function useChat() {
     msgBroadcastRef.current = msgBroadcast;
 
     return () => {
+      disposed = true;
+      clearTimeout(retryTimer);
       supabase.removeChannel(globalChannel);
       supabase.removeChannel(msgBroadcast);
       msgBroadcastRef.current = null;

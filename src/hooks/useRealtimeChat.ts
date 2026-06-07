@@ -72,6 +72,7 @@ export function useRealtimeChat({
         }
       )
       .subscribe((status, err) => {
+        console.log('[Realtime] status:', status, err ?? '');
         if (msgDisposedRef.current) return;
 
         if (status === 'SUBSCRIBED') {

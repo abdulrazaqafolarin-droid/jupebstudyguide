@@ -8,6 +8,7 @@ interface UseRealtimeChatProps {
   onNewMessage: (message: Message) => void;
   onPresenceUpdate: (presenceState: Record<string, any>) => void;
   onTypingUpdate: (isTyping: boolean, userId: string) => void;
+  onDebugLog?: (msg: string) => void;
 }
 
 const RECONNECT_DELAY = 3000;
@@ -19,6 +20,7 @@ export function useRealtimeChat({
   onNewMessage,
   onPresenceUpdate,
   onTypingUpdate,
+  onDebugLog,
 }: UseRealtimeChatProps) {
   console.log('[Realtime] Hook mounted, conversationId:', conversationId, 'userId:', currentUserId);
 
@@ -39,12 +41,15 @@ export function useRealtimeChat({
   onPresenceUpdateRef.current = onPresenceUpdate;
   const onTypingUpdateRef = useRef(onTypingUpdate);
   onTypingUpdateRef.current = onTypingUpdate;
+  const onDebugLogRef = useRef(onDebugLog);
+  onDebugLogRef.current = onDebugLog;
 
   const msgSubscribe = useCallback(() => {
     const cid = conversationIdRef.current;
     const uid = currentUserIdRef.current;
     if (!cid || !uid) {
       console.log('[Realtime] msgSubscribe skipped: no cid or uid', { cid, uid });
+      onDebugLogRef.current?.('SKIP: no convId or userId');
       return;
     }
     console.log('[Realtime] Creating channel for conversation:', cid, 'user:', uid);
@@ -64,6 +69,7 @@ export function useRealtimeChat({
           filter: `conversation_id=eq.${cid}`,
         },
         (payload) => {
+          onDebugLogRef.current?.('INSERT:' + payload.new?.id);
           console.log('[Realtime] INSERT fired for message:', payload.new?.id, 'conv:', payload.new?.conversation_id);
           const newMsg = payload.new as any;
           console.log('[Realtime] New message received:', newMsg?.id, 'from:', newMsg?.sender_id, 'conv:', newMsg?.conversation_id);
@@ -80,6 +86,7 @@ export function useRealtimeChat({
         }
       )
       .subscribe((status, err) => {
+        onDebugLogRef.current?.('status:' + status);
         console.log('[Realtime] subscribe status:', status, 'convId:', conversationIdRef.current, 'userId:', currentUserIdRef.current);
         if (msgDisposedRef.current) return;
 

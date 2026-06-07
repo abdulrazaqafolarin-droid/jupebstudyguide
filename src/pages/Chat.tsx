@@ -66,6 +66,10 @@ const Chat = () => {
   const { markReadByKind } = useNotificationsContext();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [searchParams] = useSearchParams();
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const addDebugLog = (msg: string) => {
+    setDebugLogs(prev => [...prev.slice(-10), new Date().toLocaleTimeString() + ' ' + msg]);
+  };
 
   // Handle URL params from notification bar navigation
   useEffect(() => {
@@ -120,6 +124,7 @@ const Chat = () => {
     onNewMessage: handleRealtimeMessage,
     onPresenceUpdate: handlePresenceUpdate,
     onTypingUpdate: handleTypingUpdate,
+    onDebugLog: addDebugLog,
   });
 
   // Merge user_presence table data with presence channel data
@@ -202,7 +207,13 @@ const Chat = () => {
   };
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-background via-background to-secondary/20">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
+      {debugLogs.length > 0 && (
+        <div className="shrink-0 z-50 bg-black/90 text-green-400 text-xs p-2 max-h-32 overflow-y-auto font-mono">
+          {debugLogs.map((log, i) => <div key={i}>{log}</div>)}
+        </div>
+      )}
+      <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
       {(!isMobile || showSidebar) && (
         <div className={`${isMobile ? 'w-full' : 'w-80 border-r border-border/40'} flex flex-col bg-gradient-to-b from-background via-background to-secondary/10`}>
@@ -537,6 +548,8 @@ const Chat = () => {
           />
         </div>
       )}
+
+      </div>
 
       {/* Profile dialog */}
       <UserProfileDialog

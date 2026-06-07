@@ -56,3 +56,40 @@ Skills auto-discover from `~/.config/opencode/skills/`. Load with:
 
 Use the **Skill tool** (`<skill>` block in tool calls) to load and invoke skills.
 When a task matches a skill's purpose, INVOKE the skill via the Skill tool.
+
+---
+
+## Project Configuration
+
+### Supabase (Owned — not Lovable's)
+```
+Project Ref:      gzyczowqqywesqhqqpdi
+Project URL:      https://gzyczowqqywesqhqqpdi.supabase.co
+Publishable Key:  sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX
+Service Role Key: (set in Supabase dashboard / Vercel env)
+Region:           auto
+```
+
+### Storage Buckets
+```
+chat-files   — Public, 50MB limit, audio MIME types. Used for voice notes.
+```
+
+### Vercel
+```
+Production URL:   https://jupebstudyguide-main.vercel.app
+Project Name:     jupebstudyguide-main
+Framework:        Vite
+GitHub Repo:      github.com/abdulrazaqafolarin-droid/jupebstudyguide
+```
+
+### Local `.env` (source of truth)
+| Variable | Value |
+|---|---|
+| `VITE_SUPABASE_PROJECT_ID` | `gzyczowqqywesqhqqpdi` |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX` |
+| `VITE_SUPABASE_URL` | `https://gzyczowqqywesqhqqpdi.supabase.co` |
+| `VITE_VAPID_PUBLIC_KEY` | `BCzx03Ds_U9JPP4VDWOzcYpw5ETez0tH2s6XFdDCBMzowsye2YCwwMu2XdKW4d35pVLF1ThFGGbuDdW4QCGypaw` |
+| `VITE_ADMIN_EMAIL` | `abdulrazaqafolarin@gmail.com` |
+
+**Note:** Vercel dashboard env vars override local `.env`. Keep them in sync.

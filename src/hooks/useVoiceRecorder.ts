@@ -1,12 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export type RecordingState = 'idle' | 'recording' | 'sending';
+export type RecordingState = 'idle' | 'recording' | 'paused';
 
 export function useVoiceRecorder() {
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -93,16 +94,54 @@ export function useVoiceRecorder() {
     chunksRef.current = [];
   }, []);
 
+  const pauseRecording = useCallback(() => {
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state === 'recording') {
+      recorder.pause();
+      if (timerRef.current) clearInterval(timerRef.current);
+      setRecordingState('paused');
+    }
+  }, []);
+
+  const resumeRecording = useCallback(() => {
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state === 'paused') {
+      recorder.resume();
+      timerRef.current = setInterval(() => {
+        setDuration((d) => d + 1);
+      }, 1000);
+      setRecordingState('recording');
+    }
+  }, []);
+
   const uploadAndSend = useCallback(async (
     blob: Blob,
     conversationId: string,
     senderId: string,
     currentDuration: number,
-    onSent: (message: any) => void
+    onSent: (message: any) => void,
+    onBroadcast?: (message: any) => void
   ) => {
-    setRecordingState('sending');
+    setIsUploading(true);
 
     try {
+      // Step 1: Insert placeholder text message immediately
+      const { data: placeholder, error: insertError } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: conversationId,
+          sender_id: senderId,
+          content: 'Voice note...',
+          message_type: 'text',
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+      onSent(placeholder);
+      onBroadcast?.(placeholder);
+
+      // Step 2: Upload the audio blob
       const ext = blob.type.includes('mp4') ? 'mp4'
         : blob.type.includes('ogg') ? 'ogg' : 'webm';
 
@@ -122,11 +161,10 @@ export function useVoiceRecorder() {
       const mins = Math.floor(currentDuration / 60);
       const secs = currentDuration % 60;
 
-      const { data: message, error: msgError } = await supabase
+      // Step 3: Update placeholder to audio message
+      const { data: updated, error: updateError } = await supabase
         .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          sender_id: senderId,
+        .update({
           content: `Voice note ${mins}:${secs.toString().padStart(2, '0')}`,
           message_type: 'audio',
           file_url: publicUrl,
@@ -134,17 +172,18 @@ export function useVoiceRecorder() {
           file_type: blob.type,
           file_size: blob.size,
         })
+        .eq('id', placeholder.id)
         .select()
         .single();
 
-      if (msgError) throw msgError;
-
-      onSent(message);
+      if (updateError) throw updateError;
+      onSent(updated);
+      onBroadcast?.(updated);
     } catch (err: any) {
       setError('Failed to send voice note: ' + err.message);
       console.error('[voice] upload failed:', err);
     } finally {
-      setRecordingState('idle');
+      setIsUploading(false);
       setDuration(0);
     }
   }, []);
@@ -153,9 +192,12 @@ export function useVoiceRecorder() {
     recordingState,
     duration,
     error,
+    isUploading,
     startRecording,
     stopAndGetBlob,
     cancelRecording,
+    pauseRecording,
+    resumeRecording,
     uploadAndSend,
   };
 }

@@ -39,6 +39,7 @@ interface ChatAreaProps {
   getLastSeen?: (userId: string) => string | null;
   onTyping: (isTyping: boolean) => void;
   onRecordingVn?: (isRecording: boolean) => void;
+  onBroadcast?: (message: any) => void;
   hasMoreMessages?: boolean;
   loadingMore?: boolean;
   onLoadMore?: () => void;
@@ -242,6 +243,7 @@ export function ChatArea({
   loadingMore,
   onLoadMore,
   onProfileClick,
+  onBroadcast,
 }: ChatAreaProps) {
   const { user } = useAuth();
   const { compressImage } = useImageCompression();
@@ -295,13 +297,16 @@ export function ChatArea({
     recordingState,
     duration: vnDuration,
     error: vnError,
+    isUploading,
     startRecording: vnStartRecording,
     stopAndGetBlob: vnStopAndGetBlob,
     cancelRecording: vnCancelRecording,
+    pauseRecording: vnPauseRecording,
+    resumeRecording: vnResumeRecording,
     uploadAndSend: vnUploadAndSend,
   } = useVoiceRecorder();
-  const isRecording = recordingState === 'recording';
-  const isSending = recordingState === 'sending';
+  const isRecording = recordingState === 'recording' || recordingState === 'paused';
+  const isPaused = recordingState === 'paused';
   const slideRef = useRef(false);
   const vnStartXRef = useRef(0);
 
@@ -640,7 +645,7 @@ export function ChatArea({
   }, []);
 
   const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
-    if (uploadingFile || recordingState !== 'idle') return;
+    if (uploadingFile || recordingState !== 'idle' || isUploading) return;
     slideRef.current = false;
     vnStartXRef.current = e.clientX;
     e.preventDefault();
@@ -660,21 +665,30 @@ export function ChatArea({
 
   const handleVnPointerUp = useCallback(async () => {
     if (!isRecording) return;
+    if (isPaused) return;
     onRecordingVn?.(false);
     if (slideRef.current) {
       vnCancelRecording();
       return;
     }
     const blob = await vnStopAndGetBlob();
+    vnCancelRecording();
+
     if (blob && activeConversation && user) {
-      await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
+      vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
         setMessages(prev => {
+          const idx = prev.findIndex(m => m.id === message.id);
+          if (idx >= 0) {
+            const next = [...prev];
+            next[idx] = message;
+            return next;
+          }
           if (prev.some(m => m.id === message.id)) return prev;
           return [...prev, message];
         });
-      });
+      }, onBroadcast);
     }
-  }, [isRecording, onRecordingVn, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration]);
+  }, [isRecording, isPaused, onRecordingVn, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration, onBroadcast]);
 
   // Reset VN on error and notify user
   useEffect(() => {
@@ -1773,40 +1787,67 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
-        {isRecording ? (
-          <div className="px-3 py-2.5">
-            <div className="flex items-center gap-3 h-10">
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <ChevronDown className="w-4 h-4 rotate-90" />
-                <span className="text-xs">Slide to cancel</span>
+        {isRecording && (
+          <div className="px-3 py-1.5 bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5 border-t border-accent/10">
+            <div className="flex items-center gap-2 h-10">
+              <motion.div
+                className="flex items-center gap-1"
+                initial={{ x: 0 }}
+                animate={{ x: [0, -4, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <ChevronDown className="w-3 h-3 rotate-90 text-muted-foreground" />
+                <span className="text-[10px] font-medium text-muted-foreground/70">Slide to cancel</span>
+              </motion.div>
+              <div className="flex items-center gap-0.5 flex-1 justify-center">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="w-[2px] rounded-full bg-gradient-to-t from-primary to-accent"
+                    animate={{ height: [6, 14, 8, 18][i], opacity: [0.6, 1, 0.6] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }}
+                  />
+                ))}
               </div>
-              <div className="flex-1" />
-              <span className="text-sm font-mono text-red-500 font-medium tabular-nums">
+              <span className="text-xs font-mono text-primary font-semibold tabular-nums">
                 {Math.floor(vnDuration / 60)}:{String(vnDuration % 60).padStart(2, '0')}
               </span>
-              <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-              <button
+              <motion.button
+                onClick={isPaused ? vnResumeRecording : vnPauseRecording}
+                className="p-1 rounded-full bg-secondary/40 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                title={isPaused ? "Resume" : "Pause"}
+                aria-label={isPaused ? "Resume recording" : "Pause recording"}
+                whileTap={{ scale: 0.9 }}
+              >
+                {isPaused ? (
+                  <Mic className="w-3.5 h-3.5" />
+                ) : (
+                  <span className="w-3 h-3 flex items-center justify-center gap-0.5">
+                    <span className="w-[2px] h-2.5 bg-current rounded-full" />
+                    <span className="w-[2px] h-2.5 bg-current rounded-full" />
+                  </span>
+                )}
+              </motion.button>
+              <motion.button
                 onPointerDown={handleVnPointerDown}
                 onPointerMove={handleVnPointerMove}
                 onPointerUp={handleVnPointerUp}
-                onPointerLeave={handleVnPointerUp}
-                className="p-2 rounded-full bg-red-500 text-white scale-125 select-none touch-none"
+                className="relative p-2 rounded-full bg-gradient-to-br from-primary to-accent text-white select-none touch-none shadow-md shadow-primary/20"
                 style={{ userSelect: 'none', touchAction: 'none' }}
                 title="Release to send"
                 aria-label="Recording"
+                whileTap={{ scale: 0.9 }}
               >
-                <Mic className="w-5 h-5" />
-              </button>
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-primary/30"
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0, 0.4] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+                />
+                <Mic className="w-4 h-4 relative z-10" />
+              </motion.button>
             </div>
           </div>
-        ) : isSending ? (
-          <div className="px-3 py-2.5">
-            <div className="flex items-center gap-3 h-10">
-              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Sending voice note...</span>
-            </div>
-          </div>
-        ) : (
+        )}
         <div className="px-3 py-2.5">
           <div className="flex items-end gap-2">
             <input
@@ -1857,19 +1898,23 @@ export function ChatArea({
               />
             </div>
             {!input.trim() && !editingMessage ? (
-              <button
+              <motion.button
                 onPointerDown={handleVnPointerDown}
                 onPointerMove={handleVnPointerMove}
                 onPointerUp={handleVnPointerUp}
                 onPointerLeave={handleVnPointerUp}
-                className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent select-none touch-none"
+                className="shrink-0 rounded-full flex items-center justify-center w-10 h-10 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-br from-secondary to-secondary/80 hover:from-primary/15 hover:to-accent/15 text-muted-foreground hover:text-accent select-none touch-none"
                 style={{ touchAction: 'none', userSelect: 'none' }}
-                disabled={uploadingFile}
+                disabled={uploadingFile || isRecording || isUploading}
                 title="Hold to record voice note"
                 aria-label="Voice note"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                animate={{ scale: [1, 1.04, 1] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <Mic className="w-4 h-4" />
-              </button>
+                <Mic className="w-4.5 h-4.5" />
+              </motion.button>
             ) : (
               <Button
                 type="button"
@@ -1883,7 +1928,6 @@ export function ChatArea({
             )}
           </div>
         </div>
-        )}
       </div>
 
       {/* Contact sharing form */}

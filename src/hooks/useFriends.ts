@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -64,25 +64,6 @@ export function useFriends() {
   }, [user]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
-
-  // Real-time subscription for friend_requests
-  useEffect(() => {
-    if (!user) return;
-    const channel = supabase
-      .channel('friend-requests-live')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'friend_requests', filter: `receiver_id=eq.${user.id}` },
-        () => { fetchData(); }
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'friend_requests', filter: `sender_id=eq.${user.id}` },
-        () => { fetchData(); }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user, fetchData]);
 
   const sendRequest = useCallback(async (receiverId: string) => {
     if (!user) return { error: new Error('Not authenticated') };

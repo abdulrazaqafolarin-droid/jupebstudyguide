@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { GlobalRealtimeProvider } from "@/contexts/GlobalRealtimeProvider";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
 import { PushNotificationsProvider } from "@/contexts/PushNotificationsContext";
@@ -283,6 +284,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
+      <GlobalRealtimeProvider>
       <PushNotificationsProvider>
       <ChatUnreadProvider>
         <ProfilePhotoViewerProvider>
@@ -298,6 +300,7 @@ const App = () => (
         </ProfilePhotoViewerProvider>
       </ChatUnreadProvider>
       </PushNotificationsProvider>
+      </GlobalRealtimeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

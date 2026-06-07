@@ -72,15 +72,18 @@ const Chat = () => {
     setDebugLogs(prev => [...prev.slice(-10), new Date().toLocaleTimeString() + ' ' + msg]);
   };
 
-  // Connection test — runs once on mount
+  // Connection test — runs once on mount, stays open
+  const testStatusRef = useRef<string>('not started');
   useEffect(() => {
     const testChannel = supabase.channel('connection-test');
     testChannel.subscribe((status, err) => {
-      const msg = `conn-test: ${status}${err ? ' ' + err.message : ''}`;
-      console.log('[Supabase] test channel status:', status, err?.message ?? '');
+      const detail = err ? ` ${err.code || ''} ${err.message || ''}`.slice(0, 80) : '';
+      testStatusRef.current = status + detail;
+      const msg = `conn-test: ${status}${detail}`;
+      console.log('[Supabase] test channel status:', status, err?.message ?? '', err?.code ?? '');
       addDebugLog(msg);
-      setTimeout(() => supabase.removeChannel(testChannel), 1000);
     });
+    return () => { supabase.removeChannel(testChannel); };
   }, []);
 
   // Handle URL params from notification bar navigation

@@ -127,10 +127,15 @@ export function useChat() {
       } finally {
         setMarkingRead(prev => { const next = new Set(prev); next.delete(item.conversationId); return next; });
       }
+      try {
+        const bc = new BroadcastChannel('jupeb-unread-sync');
+        bc.postMessage({ type: 'read', conversationId: item.conversationId });
+        bc.close();
+      } catch { /* BroadcastChannel not available */ }
       item.resolve();
     }
     markReadProcessing.current = false;
-  }, [broadcastRead]);
+  }, []);
 
   const enqueueMarkRead = useCallback((conversationId: string, userId: string) => {
     setMarkingRead(prev => new Set(prev).add(conversationId));

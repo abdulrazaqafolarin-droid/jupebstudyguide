@@ -173,6 +173,19 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const handleLeave = async () => {
     if (!user) return;
     setLeaving(true);
+    // If admin, transfer admin to another member first so the DB trigger skips
+    if (isAdmin) {
+      const nextAdmin = members
+        .filter(m => m.user_id !== user.id)
+        .sort((a, b) => a.user_id.localeCompare(b.user_id))[0];
+      if (nextAdmin) {
+        const { error: transferErr } = await supabase
+          .from('conversations')
+          .update({ created_by: nextAdmin.user_id })
+          .eq('id', conversationId);
+        if (!transferErr) setAdminId(nextAdmin.user_id);
+      }
+    }
     const { error } = await supabase.from('conversation_participants').delete().eq('conversation_id', conversationId).eq('user_id', user.id);
     if (error) { toast.error('Failed to leave group'); setLeaving(false); return; }
     await insertSystemMsg('group_member_left', `${user.email || 'A member'} left the group`);
@@ -184,6 +197,8 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const handleDelete = async () => {
     if (!user || !isAdmin) return;
     setDeleting(true);
+    // Clear admin first so the auto-promote trigger skips, preventing RLS failure
+    await supabase.from('conversations').update({ created_by: null }).eq('id', conversationId);
     await supabase.from('conversation_participants').delete().eq('conversation_id', conversationId);
     await supabase.from('messages').delete().eq('conversation_id', conversationId);
     await supabase.from('conversations').delete().eq('id', conversationId);

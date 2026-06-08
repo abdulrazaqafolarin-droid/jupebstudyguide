@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, MessageSquare, Users, UserPlus, Trash2 } from 'lucide-react';
+import { Search, MessageSquare, Users, UserPlus, Trash2, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Conversation, Profile } from '@/hooks/useChat';
@@ -63,16 +63,17 @@ export function ChatSidebar({
   const [userResults, setUserResults] = useState<Profile[]>([]);
   const [searchingUsers, setSearchingUsers] = useState(false);
   const [showGroupCreate, setShowGroupCreate] = useState(false);
+  const [contextMenuConv, setContextMenuConv] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const deleteTargetRef = useRef<string | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout>>();
+  const contextMenuRef = useRef<HTMLDivElement>(null);
   const { openViewer } = useProfilePhotoViewer();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   const triggerLongPress = (convId: string) => {
     longPressTimer.current = setTimeout(() => {
-      setDeleteTarget(convId);
-      deleteTargetRef.current = convId;
+      setContextMenuConv(convId);
     }, 500);
   };
 
@@ -96,6 +97,22 @@ export function ChatSidebar({
       });
     }
   };
+
+  // Close context menu on outside click
+  useEffect(() => {
+    if (!contextMenuConv) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setContextMenuConv(null);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', handler), 0);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('click', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [contextMenuConv]);
 
   useEffect(() => {
     return () => clearTimeout(longPressTimer.current);
@@ -271,18 +288,19 @@ export function ChatSidebar({
               const isGroup = conv.is_group;
 
               return (
-                <button
+                <div
                   key={conv.id}
+                  className="relative"
+                >
+                <button
                   onClick={() => onSelect(conv.id)}
                   onContextMenu={(e) => {
                     e.preventDefault();
-                    setDeleteTarget(conv.id);
-                    deleteTargetRef.current = conv.id;
+                    setContextMenuConv(conv.id);
                   }}
                   onTouchStart={() => triggerLongPress(conv.id)}
                   onTouchEnd={cancelLongPress}
                   onTouchMove={cancelLongPress}
-                  onMouseDown={() => {}}
                   className={cn(
                     'w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left active:bg-accent/30',
                     activeConversation === conv.id
@@ -363,7 +381,28 @@ export function ChatSidebar({
                       )}
                     </div>
                   </div>
-                </button>
+                  </button>
+                  {contextMenuConv === conv.id && (
+                    <div
+                      ref={contextMenuRef}
+                      className="absolute right-2 top-12 z-50 min-w-[180px] rounded-xl border border-border/40 bg-popover shadow-xl backdrop-blur-lg overflow-hidden"
+                    >
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setDeleteTarget(conv.id);
+                            deleteTargetRef.current = conv.id;
+                            setContextMenuConv(null);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Delete conversation
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

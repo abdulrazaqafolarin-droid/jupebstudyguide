@@ -113,7 +113,6 @@ export function useChat() {
   const channelReadyRef = useRef(false);
   const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
   const pollCursorRef = useRef<string>('');
-  const pollActiveRef = useRef(false);
 
   const conversationsRef = useRef<Conversation[]>([]);
   // Keep refs in sync with state
@@ -653,27 +652,28 @@ export function useChat() {
     const shouldStop = globalChannelStatus === 'SUBSCRIBED' || globalChannelStatus === 'idle';
 
     if (shouldStop) {
-      pollActiveRef.current = false;
       clearInterval(pollTimerRef.current);
       pollTimerRef.current = undefined;
+      pollCursorRef.current = '';
       return;
     }
 
     if (!shouldPoll) return;
 
-    // Initialize cursor from latest known message across all conversations
-    if (!pollActiveRef.current) {
-      pollActiveRef.current = true;
-      const convs = conversationsRef.current;
-      const latestTs = convs.reduce((latest, c) => {
-        if (!c.last_message?.created_at) return latest;
-        return c.last_message.created_at > latest ? c.last_message.created_at : latest;
-      }, '');
-      pollCursorRef.current = latestTs || new Date(0).toISOString();
-    }
-
     clearInterval(pollTimerRef.current);
     pollTimerRef.current = setInterval(async () => {
+      // Initialize cursor only when conversations are loaded
+      if (!pollCursorRef.current) {
+        const convs = conversationsRef.current;
+        if (convs.length === 0) return;
+        const latestTs = convs.reduce((latest, c) => {
+          if (!c.last_message?.created_at) return latest;
+          return c.last_message.created_at > latest ? c.last_message.created_at : latest;
+        }, '');
+        pollCursorRef.current = latestTs || new Date().toISOString();
+        return;
+      }
+
       const convIds = convIdsRef.current;
       if (convIds.length === 0) return;
 

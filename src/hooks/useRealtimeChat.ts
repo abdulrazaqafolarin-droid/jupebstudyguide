@@ -6,9 +6,6 @@ interface UseRealtimeChatProps {
   conversationId: string | null;
   currentUserId: string | null;
   onNewMessage: (message: Message) => void;
-  onPresenceUpdate: (presenceState: Record<string, any>) => void;
-  onTypingUpdate: (isTyping: boolean, userId: string) => void;
-  onDebugLog?: (msg: string) => void;
 }
 
 const RECONNECT_DELAY = 3000;
@@ -18,9 +15,6 @@ export function useRealtimeChat({
   conversationId,
   currentUserId,
   onNewMessage,
-  onPresenceUpdate,
-  onTypingUpdate,
-  onDebugLog,
 }: UseRealtimeChatProps) {
   console.log('[Realtime] Hook mounted, conversationId:', conversationId, 'userId:', currentUserId);
 
@@ -35,21 +29,11 @@ export function useRealtimeChat({
   const currentUserIdRef = useRef(currentUserId);
   currentUserIdRef.current = currentUserId;
 
-  const presenceStateRef = useRef<Record<string, any>>({});
-  const presenceChannelRef = useRef<ReturnType<typeof supabase.channel>>();
-  const onPresenceUpdateRef = useRef(onPresenceUpdate);
-  onPresenceUpdateRef.current = onPresenceUpdate;
-  const onTypingUpdateRef = useRef(onTypingUpdate);
-  onTypingUpdateRef.current = onTypingUpdate;
-  const onDebugLogRef = useRef(onDebugLog);
-  onDebugLogRef.current = onDebugLog;
-
   const msgSubscribe = useCallback(() => {
     const cid = conversationIdRef.current;
     const uid = currentUserIdRef.current;
     if (!cid || !uid) {
       console.log('[Realtime] msgSubscribe skipped: no cid or uid', { cid, uid });
-      onDebugLogRef.current?.('SKIP: no convId or userId');
       return;
     }
     console.log('[Realtime] Creating channel for conversation:', cid, 'user:', uid);
@@ -71,13 +55,11 @@ export function useRealtimeChat({
         (payload) => {
           const newMsg = payload.new as Message;
           console.log('[Realtime] INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'from:', newMsg.sender_id);
-          onDebugLogRef.current?.('INSERT:' + newMsg.id);
           if (newMsg.sender_id === uid) return;
           onNewMessageRef.current(newMsg);
         }
       )
       .subscribe((status, err) => {
-        onDebugLogRef.current?.('status:' + status);
         console.log('[Realtime] subscribe status:', status, 'convId:', conversationIdRef.current, 'userId:', currentUserIdRef.current);
         if (msgDisposedRef.current) return;
 
@@ -129,61 +111,5 @@ export function useRealtimeChat({
     };
   }, [conversationId, currentUserId, msgSubscribe]);
 
-  useEffect(() => {
-    if (!currentUserId) {
-      console.log('[Realtime] user_presence effect skipped: no currentUserId');
-      return;
-    }
-    console.log('[Realtime] user_presence effect running for user:', currentUserId);
 
-    const channel = supabase.channel('user-presence-global');
-    presenceChannelRef.current = channel;
-
-    channel
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_presence',
-        },
-        (payload) => {
-          const row = payload.new as Record<string, any>;
-          if (!row || row.user_id === currentUserId) return;
-
-          console.log('[Realtime] presence update:', row.user_id, 'online:', row.is_online, 'typing_in:', row.typing_in);
-          const prevState = presenceStateRef.current[row.user_id];
-
-          presenceStateRef.current = {
-            ...presenceStateRef.current,
-            [row.user_id]: {
-              is_online: row.is_online ?? false,
-              last_seen_at: row.last_seen_at ?? null,
-              typing_in: row.typing_in ?? null,
-              online_at: row.online_at ?? null,
-            },
-          };
-
-          if (onPresenceUpdateRef.current) {
-            onPresenceUpdateRef.current({ ...presenceStateRef.current });
-          }
-
-          const typingConv = row.typing_in;
-          const wasTyping = prevState?.typing_in != null;
-          const isNowTyping = typingConv != null && typingConv === conversationIdRef.current;
-
-          if (wasTyping !== isNowTyping) {
-            onTypingUpdateRef.current(isNowTyping, row.user_id);
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log('[useRealtimeChat] user_presence status:', status);
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-      presenceChannelRef.current = undefined;
-    };
-  }, [currentUserId]);
 }

@@ -45,51 +45,44 @@ export function InAppNotificationBar({
   useEffect(() => {
     if (!user) return;
 
-    const msgChannel = supabase
-      .channel('inapp-notifications')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        async (payload) => {
-          const msg = payload.new as {
-            id: string; conversation_id: string; sender_id: string;
-            content?: string; message_type?: string; group_name?: string;
-          };
-          if (msg.sender_id === user.id) return;
+    const handleNewMessage = async (e: Event) => {
+      const { message } = (e as CustomEvent).detail as {
+        message: { id: string; conversation_id: string; sender_id: string; content?: string; message_type?: string };
+      };
+      if (message.sender_id === user.id) return;
 
-          // Check if user is participant
-          const { data: part } = await supabase
-            .from('conversation_participants')
-            .select('conversation_id')
-            .eq('user_id', user.id)
-            .eq('conversation_id', msg.conversation_id)
-            .single();
-          if (!part) return;
+      const { data: part } = await supabase
+        .from('conversation_participants')
+        .select('conversation_id')
+        .eq('user_id', user.id)
+        .eq('conversation_id', message.conversation_id)
+        .single();
+      if (!part) return;
 
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('display_name, avatar_url')
-            .eq('user_id', msg.sender_id)
-            .single();
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name, avatar_url')
+        .eq('user_id', message.sender_id)
+        .single();
 
-          const preview = msg.message_type === 'image' ? '📷 Photo'
-            : msg.message_type === 'video' ? '🎥 Video'
-            : msg.message_type === 'audio' ? '🎵 Audio'
-            : msg.message_type === 'file' ? '📎 File'
-            : msg.content?.slice(0, 80) || 'Message';
+      const preview = message.message_type === 'image' ? 'Photo'
+        : message.message_type === 'video' ? 'Video'
+        : message.message_type === 'audio' ? 'Audio'
+        : message.message_type === 'file' ? 'File'
+        : message.content?.slice(0, 80) || 'Message';
 
-          show({
-            id: `msg-${msg.id}`,
-            kind: 'chat_message',
-            title: (profile as { display_name: string | null })?.display_name || 'Someone',
-            body: preview,
-            senderId: msg.sender_id,
-            conversationId: msg.conversation_id,
-            avatarUrl: (profile as { avatar_url: string | null })?.avatar_url,
-          });
-        }
-      )
-          .subscribe();
+      show({
+        id: `msg-${message.id}`,
+        kind: 'chat_message',
+        title: (profile as { display_name: string | null })?.display_name || 'Someone',
+        body: preview,
+        senderId: message.sender_id,
+        conversationId: message.conversation_id,
+        avatarUrl: (profile as { avatar_url: string | null })?.avatar_url,
+      });
+    };
+
+    window.addEventListener('chat-new-message', handleNewMessage);
 
     const frChannel = supabase
       .channel('inapp-fr-notifications')
@@ -119,6 +112,7 @@ export function InAppNotificationBar({
         { event: 'UPDATE', schema: 'public', table: 'friend_requests', filter: `status=eq.accepted` },
         async (payload) => {
           const fr = payload.new as { id: string; sender_id: string; receiver_id: string };
+          if (fr.sender_id !== user.id && fr.receiver_id !== user.id) return;
           const otherId = fr.sender_id === user.id ? fr.receiver_id : fr.receiver_id === user.id ? fr.sender_id : null;
           if (!otherId) return;
           const { data: profile } = await supabase
@@ -163,7 +157,7 @@ export function InAppNotificationBar({
       .subscribe();
 
     return () => {
-      supabase.removeChannel(msgChannel);
+      window.removeEventListener('chat-new-message', handleNewMessage);
       supabase.removeChannel(frChannel);
       supabase.removeChannel(groupAddChannel);
     };

@@ -14,7 +14,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
 import InstallPrompt from "./components/InstallPrompt";
 import { FloatingAITutor } from "./components/FloatingAITutor";
-import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
@@ -39,17 +38,11 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 
 const queryClient = new QueryClient();
 
-function ChatNotificationListener() {
-  useChatNotifications();
-  return null;
-}
-
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <PageTransition>
       <PresenceProvider>
       <NotificationsProvider>
-        <ChatNotificationListener />
         <AppNotificationBar />
         <BottomNav />
         <div className="pb-16">
@@ -65,7 +58,6 @@ function ProtectedChatLayout({ children }: { children: React.ReactNode }) {
   return (
     <PresenceProvider>
     <NotificationsProvider>
-      <ChatNotificationListener />
       <AppNotificationBar />
       {children}
     </NotificationsProvider>

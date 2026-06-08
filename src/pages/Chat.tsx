@@ -67,24 +67,6 @@ const Chat = () => {
   const { markReadByKind } = useNotificationsContext();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [searchParams] = useSearchParams();
-  const [debugLogs, setDebugLogs] = useState<string[]>([]);
-  const addDebugLog = (msg: string) => {
-    setDebugLogs(prev => [...prev.slice(-10), new Date().toLocaleTimeString() + ' ' + msg]);
-  };
-
-  // Connection test — runs once on mount, stays open
-  const testStatusRef = useRef<string>('not started');
-  useEffect(() => {
-    const testChannel = supabase.channel('connection-test');
-    testChannel.subscribe((status, err) => {
-      const detail = err ? ` ${err.code || ''} ${err.message || ''}`.slice(0, 80) : '';
-      testStatusRef.current = status + detail;
-      const msg = `conn-test: ${status}${detail}`;
-      console.log('[Supabase] test channel status:', status, err?.message ?? '', err?.code ?? '');
-      addDebugLog(msg);
-    });
-    return () => { supabase.removeChannel(testChannel); };
-  }, []);
 
   // Handle URL params from notification bar navigation
   useEffect(() => {
@@ -110,26 +92,9 @@ const Chat = () => {
     setStaleUnread(chat.staleUnread);
   }, [chat.staleUnread, setStaleUnread]);
 
-  // Presence state merged from user_presence table + presence channel
-  const [tablePresence, setTablePresence] = useState<Record<string, any>>({});
-  const [tableTyping, setTableTyping] = useState<Set<string>>(new Set());
-
   const handleRealtimeMessage = useCallback((message: Message) => {
     chat.pushMessage(message);
   }, [chat]);
-
-  const handlePresenceUpdate = useCallback((presenceState: Record<string, any>) => {
-    setTablePresence(presenceState);
-  }, []);
-
-  const handleTypingUpdate = useCallback((isTyping: boolean, userId: string) => {
-    setTableTyping(prev => {
-      const next = new Set(prev);
-      if (isTyping) next.add(userId);
-      else next.delete(userId);
-      return next;
-    });
-  }, []);
 
   console.log('[Chat] conversationId passed to hook:', chat.activeConversation);
   console.log('[Chat] currentUserId passed to hook:', user?.id ?? null);
@@ -137,28 +102,7 @@ const Chat = () => {
     conversationId: chat.activeConversation,
     currentUserId: user?.id ?? null,
     onNewMessage: handleRealtimeMessage,
-    onPresenceUpdate: handlePresenceUpdate,
-    onTypingUpdate: handleTypingUpdate,
-    onDebugLog: addDebugLog,
   });
-
-  // Merge user_presence table data with presence channel data
-  const mergedIsOnline = useCallback((userId: string) => {
-    const tbl = tablePresence[userId];
-    if (tbl) return tbl.is_online ?? false;
-    return presence.isOnline(userId);
-  }, [tablePresence, presence]);
-
-  const mergedIsTyping = useCallback((userId: string) => {
-    if (tableTyping.has(userId)) return true;
-    return presence.isTyping(userId);
-  }, [tableTyping, presence]);
-
-  const mergedIsRecordingVn = useCallback((userId: string) => {
-    const tbl = tablePresence[userId];
-    if (tbl) return tbl.recording_vn_in != null;
-    return presence.isRecordingVn(userId);
-  }, [tablePresence, presence]);
 
   // Sync active conversation to presence context for typing indicators
   useEffect(() => {
@@ -223,15 +167,6 @@ const Chat = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
-      {(debugLogs.length > 0 || chat.globalChannelStatus !== 'idle') && (
-        <div className="shrink-0 z-50 bg-black/90 text-green-400 text-xs p-2 max-h-40 overflow-y-auto font-mono">
-          <div className="text-yellow-400">global: {chat.globalChannelStatus} | inserts: {chat.globalInsertCount}</div>
-          {debugLogs.map((log, i) => {
-            const isConn = log.includes('conn-test');
-            return <div key={i} className={isConn ? 'text-cyan-300 font-bold' : ''}>{log}</div>;
-          })}
-        </div>
-      )}
       <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
       {(!isMobile || showSidebar) && (
@@ -551,12 +486,13 @@ const Chat = () => {
             onForward={chat.forwardMessage}
             onEditMessage={chat.editMessage}
             onDeleteMessage={chat.deleteMessage}
+            onPushMessage={chat.pushMessage}
             onUploadImage={chat.uploadImage}
             onUploadFile={chat.uploadFile}
             onBack={isMobile ? handleBackToSidebar : undefined}
-            isOnline={mergedIsOnline}
-            isTyping={mergedIsTyping}
-            isRecordingVn={mergedIsRecordingVn}
+            isOnline={presence.isOnline}
+            isTyping={presence.isTyping}
+            isRecordingVn={presence.isRecordingVn}
             getLastSeen={presence.getLastSeen}
             onTyping={presence.setTyping}
             onRecordingVn={presence.setRecordingVn}

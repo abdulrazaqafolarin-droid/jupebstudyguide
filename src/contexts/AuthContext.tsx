@@ -44,6 +44,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setSession(session);
         setUser(session?.user ?? null);
         prevUserIdRef.current = newUserId;
+        // Set Realtime auth token so channels can connect
+        if (session?.access_token) {
+          supabase.realtime.setAuth(session.access_token);
+        } else {
+          supabase.realtime.setAuth(null);
+        }
         // INITIAL_SESSION resolves via getSession() below to avoid a race
         // where the event fires null before getSession() restores the session.
         if (event !== 'INITIAL_SESSION') {
@@ -58,6 +64,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       purgeForeignUserData(newUserId);
       setSession(session);
       setUser(session?.user ?? null);
+      // Set Realtime auth token for channels to connect
+      if (session?.access_token) {
+        supabase.realtime.setAuth(session.access_token);
+      }
       setLoading(false);
       prevUserIdRef.current = newUserId;
     }).catch((err) => {
@@ -97,11 +107,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       if (error) return { error, needsMfa: false };
+      if (data.session?.access_token) {
+        supabase.realtime.setAuth(data.session.access_token);
+      }
       const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (aal && aal.nextLevel === 'aal2' && aal.currentLevel === 'aal1') {
         return { error: null, needsMfa: true };

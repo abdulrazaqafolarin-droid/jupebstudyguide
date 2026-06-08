@@ -15,6 +15,27 @@ webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
 Deno.serve(async (req) => {
   try {
+    // Verify the caller is authenticated and owns the target user_id
+    const authHeader = req.headers.get('Authorization') || '';
+    const jwt = authHeader.replace('Bearer ', '');
+    if (!jwt) {
+      return new Response(JSON.stringify({ error: 'Authorization required' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Verify JWT and extract caller identity
+    const { data: { user: caller }, error: authError } = await supabase.auth.getUser(jwt);
+    if (authError || !caller) {
+      return new Response(JSON.stringify({ error: 'Invalid or expired token' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const { user_id, title, body, data } = await req.json();
 
     if (!user_id || !title) {
@@ -24,7 +45,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    // Caller can only send push notifications to themselves
+    if (caller.id !== user_id) {
+      return new Response(JSON.stringify({ error: 'Can only send notifications for yourself' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const { data: subscriptions, error } = await supabase
       .from('notification_subscriptions')

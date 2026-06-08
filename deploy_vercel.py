@@ -1,7 +1,7 @@
 import json, os, hashlib, urllib.request, urllib.error
 
 WORK = r"C:\Users\HP\Downloads\jupebstudyguide-main\jupebstudyguide-main"
-TOKEN = "vcp_0TwtTQHRL6OHD6UGBnbpz4eZH1lwCXMNgnuV9hRW4yBUWmn9Yf2GhPWQ"
+TOKEN = "vcp_360xFS0anzKP3RaTA6pD1IwivOlq3ONfkdBp7XkIXCz7vbxbSD3HpRqG"
 TEAM_ID = "team_6ex5R4HbbOoHvNMMPQbRKbUA"
 
 ignore_dirs = {"node_modules", ".git", "dist", ".vercel", ".next", "cache", "__pycache__"}

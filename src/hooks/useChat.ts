@@ -3,6 +3,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+const DEBUG = import.meta.env.DEV;
+
+function debug(...args: unknown[]) {
+  if (DEBUG) console.log(...args);
+}
+
+function debugWarn(...args: unknown[]) {
+  if (DEBUG) console.warn(...args);
+}
+
 const CROSS_TAB_CHANNEL = 'jupeb-unread-sync';
 const MAX_RETRIES = 3;
 const UNREAD_CACHE_KEY = 'jupeb-unread-cache';
@@ -93,6 +103,14 @@ export function useChat() {
   const messagesRef = useRef<Message[]>([]);
   const [globalChannelStatus, setGlobalChannelStatus] = useState<string>('idle');
   const [globalInsertCount, setGlobalInsertCount] = useState(0);
+  type OfflineItem = { conversationId: string } & (
+    | { kind: 'text'; content: string; replyToId?: string | null }
+    | { kind: 'image'; imageUrl: string }
+    | { kind: 'file'; fileUrl: string; fileName: string; fileSize: number; fileType: string }
+  );
+  const offlineQueueRef = useRef<OfflineItem[]>([]);
+  const [pendingCount, setPendingCount] = useState(0);
+  const channelReadyRef = useRef(false);
 
   // Keep refs in sync with state
   useEffect(() => {
@@ -151,7 +169,12 @@ export function useChat() {
   const enqueueMarkRead = useCallback((conversationId: string, userId: string) => {
     setMarkingRead(prev => new Set(prev).add(conversationId));
     return new Promise<void>((resolve) => {
-      markReadQueue.current.push({ conversationId, userId, resolve });
+      const alreadyQueued = markReadQueue.current.some(item => item.conversationId === conversationId);
+      if (!alreadyQueued) {
+        markReadQueue.current.push({ conversationId, userId, resolve });
+      } else {
+        resolve();
+      }
       processMarkReadQueue();
     });
   }, [processMarkReadQueue]);
@@ -436,13 +459,24 @@ export function useChat() {
           (payload) => {
             const newMsg = payload.new as Message;
             setGlobalInsertCount(prev => prev + 1);
-            console.log('[Realtime] chat-global INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'sender:', newMsg.sender_id);
+            debug('[Realtime] chat-global INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'sender:', newMsg.sender_id);
             if (newMsg.sender_id === user.id) return;
+
+            window.dispatchEvent(new CustomEvent('chat-new-message', {
+              detail: { message: newMsg },
+            }));
+
             if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
 
             const currentConv = activeConvRef.current;
             if (newMsg.conversation_id === currentConv) {
-              setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
+              setMessages(prev =>
+                prev.some(m => m.id === newMsg.id)
+                  ? prev
+                  : [...prev, newMsg].sort(
+                      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    )
+              );
             }
             setConversations(prev => {
               const updated = prev.map(c =>
@@ -508,7 +542,7 @@ export function useChat() {
         )
         .subscribe((status, err) => {
           setGlobalChannelStatus(status);
-          console.log('[Realtime] chat-global status:', status);
+          debug('[Realtime] chat-global status:', status);
           if (status === 'SUBSCRIBED') {
             retryCount = 0;
             fetchConversations();
@@ -522,9 +556,9 @@ export function useChat() {
               createGlobalChannel();
             }, delay);
           } else if (status === 'CLOSED') {
-            console.warn('[realtime] chat-global channel closed');
+            debugWarn('[realtime] chat-global channel closed');
           } else {
-            console.warn('[realtime] chat-global status:', status, err);
+            debugWarn('[realtime] chat-global status:', status, err);
           }
         });
 
@@ -543,7 +577,13 @@ export function useChat() {
             if (convIdsRef.current.includes(newMsg.conversation_id)) {
               const currentConv = activeConvRef.current;
               if (newMsg.conversation_id === currentConv) {
-                setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
+                setMessages(prev =>
+                  prev.some(m => m.id === newMsg.id)
+                    ? prev
+                    : [...prev, newMsg].sort(
+                        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                      )
+                );
                 setConversations(prev => prev.map(c =>
                   c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg as Message } : c
                 ));
@@ -560,7 +600,13 @@ export function useChat() {
         }
         const currentConv = activeConvRef.current;
         if (newMsg.conversation_id === currentConv) {
-          setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
+          setMessages(prev =>
+            prev.some(m => m.id === newMsg.id)
+              ? prev
+              : [...prev, newMsg].sort(
+                  (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                )
+          );
           setConversations(prev => prev.map(c =>
             c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg as Message } : c
           ));
@@ -576,9 +622,9 @@ export function useChat() {
         if (status === 'SUBSCRIBED') {
           msgBroadcastRef.current = msgBroadcast;
         } else if (status === 'CHANNEL_ERROR') {
-          console.warn('[realtime] msg-broadcast error');
+          debugWarn('[realtime] msg-broadcast error');
         } else if (status === 'CLOSED') {
-          console.warn('[realtime] msg-broadcast closed');
+          debugWarn('[realtime] msg-broadcast closed');
         }
       });
     msgBroadcastRef.current = msgBroadcast;
@@ -616,6 +662,81 @@ export function useChat() {
     fetchConversations();
   }, [fetchMessages, fetchConversations]);
 
+  const trySendItem = useCallback(async (item: OfflineItem): Promise<boolean> => {
+    if (!user) return false;
+    if (item.kind === 'text') {
+      const { data, error } = await supabase.from('messages').insert({
+        conversation_id: item.conversationId,
+        content: item.content.trim(),
+        message_type: 'text',
+        reply_to_id: item.replyToId || null,
+        client_msg_id: crypto.randomUUID(),
+      }).select();
+      if (error) return false;
+      if (data?.[0]) {
+        msgBroadcastRef.current?.send({
+          type: 'broadcast', event: 'msg', payload: { message: data[0] },
+        });
+      }
+      return true;
+    }
+    if (item.kind === 'image') {
+      const { data, error } = await supabase.from('messages').insert({
+        conversation_id: item.conversationId,
+        content: '',
+        message_type: 'image',
+        image_url: item.imageUrl,
+        client_msg_id: crypto.randomUUID(),
+      }).select();
+      if (error) return false;
+      if (data?.[0]) {
+        msgBroadcastRef.current?.send({
+          type: 'broadcast', event: 'msg', payload: { message: data[0] },
+        });
+      }
+      return true;
+    }
+    if (item.kind === 'file') {
+      const mt = item.fileType.startsWith('video/') ? 'video' : item.fileType.startsWith('audio/') ? 'audio' : 'file';
+      const { data, error } = await supabase.from('messages').insert({
+        conversation_id: item.conversationId,
+        content: item.fileName,
+        message_type: mt,
+        file_url: item.fileUrl,
+        file_name: item.fileName,
+        file_size: item.fileSize,
+        file_type: item.fileType,
+        client_msg_id: crypto.randomUUID(),
+      }).select();
+      if (error) return false;
+      if (data?.[0]) {
+        msgBroadcastRef.current?.send({
+          type: 'broadcast', event: 'msg', payload: { message: data[0] },
+        });
+      }
+      return true;
+    }
+    return false;
+  }, [user]);
+
+  const flushOfflineQueue = useCallback(async () => {
+    if (!user || offlineQueueRef.current.length === 0) return;
+    const queue = [...offlineQueueRef.current];
+    offlineQueueRef.current = [];
+    setPendingCount(0);
+    const results = await Promise.allSettled(
+      queue.map(item => trySendItem(item))
+    );
+    const failed = queue.filter((_, i) => results[i].status === 'rejected' || results[i].value === false);
+    if (failed.length > 0) {
+      offlineQueueRef.current = failed;
+      setPendingCount(failed.length);
+      toast.error(`${failed.length} messages pending — still offline`);
+    } else {
+      toast.success('Messages sent!');
+    }
+  }, [user, trySendItem]);
+
   const sendMessage = useCallback(async (content: string, replyToId?: string | null) => {
     if (!user || !activeConversation || !content.trim()) return;
 
@@ -632,6 +753,12 @@ export function useChat() {
 
     setMessages(prev => [...prev, optimisticMsg]);
 
+    if (!navigator.onLine) {
+      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
+      setPendingCount(offlineQueueRef.current.length);
+      return;
+    }
+
     const { data, error } = await supabase.from('messages').insert({
       conversation_id: activeConversation,
       sender_id: user.id,
@@ -641,8 +768,9 @@ export function useChat() {
     }).select();
 
     if (error) {
-      setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
-      toast.error(`Send error: ${error.message}`);
+      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
+      setPendingCount(offlineQueueRef.current.length);
+      toast.info('Message queued — will send when back online');
       return;
     }
 
@@ -661,7 +789,7 @@ export function useChat() {
   const editMessage = useCallback(async (messageId: string, newContent: string) => {
     if (!user || !newContent.trim()) return;
 
-    const prevMessages = messages;
+    const prevMessages = messagesRef.current;
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: newContent.trim(), is_edited: true } : m));
 
     const { error } = await supabase
@@ -679,7 +807,7 @@ export function useChat() {
   const deleteMessage = useCallback(async (messageId: string) => {
     if (!user) return;
 
-    const prevMessages = messages;
+    const prevMessages = messagesRef.current;
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, is_deleted: true, content: '' } : m));
 
     const { error } = await supabase
@@ -710,6 +838,12 @@ export function useChat() {
 
     setMessages(prev => [...prev, optimisticMsg]);
 
+    if (!navigator.onLine) {
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      setPendingCount(offlineQueueRef.current.length);
+      return;
+    }
+
     const { data, error } = await supabase.from('messages').insert({
       conversation_id: activeConversation,
       sender_id: user.id,
@@ -719,7 +853,6 @@ export function useChat() {
     }).select();
 
     if (error) {
-      setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
       toast.error(`Send error: ${error.message}`);
       return;
     }
@@ -755,6 +888,12 @@ export function useChat() {
 
     setMessages(prev => [...prev, optimisticMsg]);
 
+    if (!navigator.onLine) {
+      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
+      setPendingCount(offlineQueueRef.current.length);
+      return;
+    }
+
     const { data, error } = await supabase.from('messages').insert({
       conversation_id: activeConversation,
       sender_id: user.id,
@@ -767,8 +906,9 @@ export function useChat() {
     }).select();
 
     if (error) {
-      setMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
-      toast.error(`Send error: ${error.message}`);
+      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
+      setPendingCount(offlineQueueRef.current.length);
+      toast.info('File queued — will send when back online');
       return;
     }
 
@@ -817,10 +957,23 @@ export function useChat() {
     const msg = messagesRef.current.find(m => m.id === messageId);
     if (!msg) return;
 
+    const senderProfile = messagesRef.current
+      .filter(m => m.sender_id === msg.sender_id)
+      .find(() => true);
+    let senderName: string | null = null;
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('user_id', msg.sender_id)
+        .single();
+      senderName = (data as { display_name: string | null } | null)?.display_name ?? null;
+    } catch { /* profile lookup failed */ }
+
     const forwardedFrom = {
       message_id: msg.id,
       sender_id: msg.sender_id,
-      sender_name: null,
+      sender_name: senderName,
       conversation_id: activeConversation,
       forwarded_at: new Date().toISOString(),
     };
@@ -841,6 +994,10 @@ export function useChat() {
       forwarded_from: forwardedFrom,
     };
 
+    if (targetConversationId === activeConversation) {
+      setMessages(prev => [...prev, optimisticMsg]);
+    }
+
     const { data, error } = await supabase.from('messages').insert({
       conversation_id: targetConversationId,
       sender_id: user.id,
@@ -855,11 +1012,18 @@ export function useChat() {
     }).select();
 
     if (error) {
-      toast.error('Forward failed');
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      setPendingCount(offlineQueueRef.current.length);
+      toast.info('Image queued — will send when back online');
       return;
     }
 
     if (data?.[0]) {
+      if (targetConversationId === activeConversation) {
+        setMessages(prev => prev.map(m =>
+          m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
+        ));
+      }
       msgBroadcastRef.current?.send({
         type: 'broadcast',
         event: 'msg',
@@ -949,13 +1113,23 @@ export function useChat() {
 
   useEffect(() => {
     fetchConversations();
-    const onOnline = () => { fetchConversations(); };
+    const onOnline = () => {
+      fetchConversations();
+      if (offlineQueueRef.current.length > 0) {
+        flushOfflineQueue();
+      }
+    };
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
-  }, [fetchConversations]);
+  }, [fetchConversations, flushOfflineQueue]);
 
   const pushMessage = useCallback((message: Message) => {
-    setMessages(prev => prev.some(m => m.id === message.id) ? prev : [...prev, message]);
+    setMessages(prev => {
+      if (prev.some(m => m.id === message.id)) return prev;
+      return [...prev, message].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+    });
   }, []);
 
   return {
@@ -987,5 +1161,7 @@ export function useChat() {
     pushMessage,
     globalChannelStatus,
     globalInsertCount,
+    pendingCount,
+    flushOfflineQueue,
   };
 }

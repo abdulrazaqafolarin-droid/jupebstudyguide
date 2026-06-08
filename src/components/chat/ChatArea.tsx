@@ -43,6 +43,7 @@ interface ChatAreaProps {
   loadingMore?: boolean;
   onLoadMore?: () => void;
   onProfileClick?: (userId: string) => void;
+  onPushMessage?: (message: Message) => void;
 }
 
 const DELETE_EVERYONE_WINDOW_MS = 48 * 60 * 60 * 1000;
@@ -242,6 +243,7 @@ export function ChatArea({
   loadingMore,
   onLoadMore,
   onProfileClick,
+  onPushMessage,
 }: ChatAreaProps) {
   const { user } = useAuth();
   const { compressImage } = useImageCompression();
@@ -381,8 +383,8 @@ export function ChatArea({
           else setLastSeenText(format(d, 'MMM d, HH:mm'));
           clearInterval(timer);
         }
-      }, 1000);
-      setTimeout(() => clearInterval(timer), 10000);
+      }, 2000);
+      setTimeout(() => clearInterval(timer), 6000);
       return () => clearInterval(timer);
     }
   }, [otherUserId, otherOnline, getLastSeen]);
@@ -668,13 +670,10 @@ export function ChatArea({
     const blob = await vnStopAndGetBlob();
     if (blob && activeConversation && user) {
       await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
-        setMessages(prev => {
-          if (prev.some(m => m.id === message.id)) return prev;
-          return [...prev, message];
-        });
+        onPushMessage?.(message);
       });
     }
-  }, [isRecording, onRecordingVn, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration]);
+  }, [isRecording, onRecordingVn, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration, onPushMessage]);
 
   // Reset VN on error and notify user
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
-import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File, Music, Trash2, Edit3, Download, Loader2, Camera, Image, Mic, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
+import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File, Music, Trash2, Edit3, Download, Loader2, Camera, Image, Mic, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Message, Conversation } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +17,22 @@ import { linkify, getDocTypeIcon, formatFileSize } from '@/lib/linkify';
 import { safeMediaUrl, isValidUrl } from '@/lib/url';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface ChatAreaProps {
   messages: Message[];
@@ -44,6 +60,7 @@ interface ChatAreaProps {
   onLoadMore?: () => void;
   onProfileClick?: (userId: string) => void;
   onPushMessage?: (message: Message) => void;
+  onDeleteConversation?: (conversationId: string) => Promise<(() => Promise<void>) | undefined>;
 }
 
 const DELETE_EVERYONE_WINDOW_MS = 48 * 60 * 60 * 1000;
@@ -244,6 +261,7 @@ export function ChatArea({
   onLoadMore,
   onProfileClick,
   onPushMessage,
+  onDeleteConversation,
 }: ChatAreaProps) {
   const { user } = useAuth();
   const { compressImage } = useImageCompression();
@@ -277,6 +295,7 @@ export function ChatArea({
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState(0);
   const [pendingMsgIds, setPendingMsgIds] = useState<Set<string>>(new Set());
   const [showGroupInfo, setShowGroupInfo] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const pendingTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const blobUrlsRef = useRef<Set<string>>(new Set());
 
@@ -1041,6 +1060,24 @@ export function ChatArea({
             <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-full" onClick={() => setShowSearch(true)} title="Search">
               <Search className="w-4 h-4" />
             </Button>
+            {activeConversation && onDeleteConversation && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-full" title="More">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[180px]">
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive gap-2"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete conversation
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </>
         )}
       </div>
@@ -2072,6 +2109,40 @@ export function ChatArea({
         onLeft={() => { onBack?.(); }}
         onDeleted={() => { onBack?.(); }}
       />
+
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="w-4 h-4 text-destructive" />
+              Delete conversation
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the conversation from your chat list. Other participants won't be affected.
+              You can undo this within 5 seconds.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                if (!activeConversation || !onDeleteConversation) return;
+                setShowDeleteConfirm(false);
+                const undo = await onDeleteConversation(activeConversation);
+                if (undo) {
+                  toast("Conversation deleted", {
+                    action: { label: "Undo", onClick: () => { void undo(); } },
+                    duration: 5000,
+                  });
+                }
+              }}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, MessageSquare, Users, UserPlus } from 'lucide-react';
+import { Search, MessageSquare, Users, UserPlus, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Conversation, Profile } from '@/hooks/useChat';
@@ -9,6 +9,17 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { GroupCreateDialog } from './GroupCreateDialog';
 import { useProfilePhotoViewer } from '@/components/ProfilePhotoViewer';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 interface ChatSidebarProps {
   conversations: Conversation[];
@@ -24,6 +35,7 @@ interface ChatSidebarProps {
   onGroupCreated?: (conversationId: string) => void;
   onFriendRequestsClick?: () => void;
   onProfileClick?: (userId: string) => void;
+  onDelete?: (conversationId: string) => Promise<(() => Promise<void>) | undefined>;
   markingRead?: Set<string>;
   staleUnread?: boolean;
 }
@@ -42,6 +54,7 @@ export function ChatSidebar({
   onGroupCreated,
   onFriendRequestsClick,
   onProfileClick,
+  onDelete,
   markingRead,
   staleUnread,
 }: ChatSidebarProps) {
@@ -50,8 +63,43 @@ export function ChatSidebar({
   const [userResults, setUserResults] = useState<Profile[]>([]);
   const [searchingUsers, setSearchingUsers] = useState(false);
   const [showGroupCreate, setShowGroupCreate] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const deleteTargetRef = useRef<string | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout>>();
   const { openViewer } = useProfilePhotoViewer();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const triggerLongPress = (convId: string) => {
+    longPressTimer.current = setTimeout(() => {
+      setDeleteTarget(convId);
+      deleteTargetRef.current = convId;
+    }, 500);
+  };
+
+  const cancelLongPress = () => {
+    clearTimeout(longPressTimer.current);
+  };
+
+  const handleConfirmDelete = async () => {
+    const convId = deleteTargetRef.current;
+    if (!convId || !onDelete) return;
+    setDeleteTarget(null);
+    deleteTargetRef.current = null;
+    const undo = await onDelete(convId);
+    if (undo) {
+      toast("Conversation deleted", {
+        action: {
+          label: "Undo",
+          onClick: () => { void undo(); },
+        },
+        duration: 5000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    return () => clearTimeout(longPressTimer.current);
+  }, []);
 
   useEffect(() => {
     if (userSearchQuery.trim().length < 2) { setUserResults([]); return; }
@@ -226,8 +274,17 @@ export function ChatSidebar({
                 <button
                   key={conv.id}
                   onClick={() => onSelect(conv.id)}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setDeleteTarget(conv.id);
+                    deleteTargetRef.current = conv.id;
+                  }}
+                  onTouchStart={() => triggerLongPress(conv.id)}
+                  onTouchEnd={cancelLongPress}
+                  onTouchMove={cancelLongPress}
+                  onMouseDown={() => {}}
                   className={cn(
-                    'w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left',
+                    'w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left active:bg-accent/30',
                     activeConversation === conv.id
                       ? 'bg-primary/10 shadow-sm'
                       : 'hover:bg-accent/50'
@@ -312,6 +369,27 @@ export function ChatSidebar({
           </div>
         )}
       </div>
+
+      <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => { if (!open) { setDeleteTarget(null); deleteTargetRef.current = null; } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="w-4 h-4 text-destructive" />
+              Delete conversation
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the conversation from your chat list. Other participants won't be affected.
+              You can undo this within 5 seconds.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <GroupCreateDialog
         isOpen={showGroupCreate}

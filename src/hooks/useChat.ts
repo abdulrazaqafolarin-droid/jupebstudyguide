@@ -115,6 +115,7 @@ export function useChat() {
   const channelReadyRef = useRef(false);
   const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
   const pollCursorRef = useRef<string>('');
+  const readReceiptPollRef = useRef<ReturnType<typeof setInterval>>();
 
   const conversationsRef = useRef<Conversation[]>([]);
   // Keep refs in sync with state
@@ -758,6 +759,44 @@ export function useChat() {
     return () => { broadcastRef.current?.close(); };
   }, []);
 
+  // Read receipts polling — polls own messages in active conversation for is_read updates
+  // Realtime UPDATE handler (line ~542) is the primary path, but it can be unreliable.
+  // This ensures the blue checkmark always updates within 5s.
+  useEffect(() => {
+    if (!user) return;
+
+    readReceiptPollRef.current = setInterval(async () => {
+      const convId = activeConvRef.current;
+      if (!convId) return;
+
+      try {
+        const { data } = await supabase
+          .from('messages')
+          .select('id, is_read, read_at, delivered_at')
+          .eq('conversation_id', convId)
+          .eq('sender_id', user.id)
+          .neq('is_read', true)
+          .limit(30);
+
+        if (data && data.length > 0) {
+          setMessages(prev => prev.map(m => {
+            const update = data.find(d => d.id === m.id);
+            if (update && (update.is_read !== m.is_read || update.read_at !== m.read_at || update.delivered_at !== m.delivered_at)) {
+              return { ...m, is_read: update.is_read, read_at: update.read_at, delivered_at: update.delivered_at };
+            }
+            return m;
+          }));
+        }
+      } catch {
+        // silent — don't spam console
+      }
+    }, 5000);
+
+    return () => {
+      clearInterval(readReceiptPollRef.current);
+    };
+  }, [user]);
+
   const openConversation = useCallback(async (conversationId: string) => {
     setActiveConversation(conversationId);
     setMessages([]);
@@ -1156,6 +1195,45 @@ export function useChat() {
     return convId;
   }, [user, openConversation, fetchConversations]);
 
+  const deleteConversation = useCallback(async (conversationId: string): Promise<(() => Promise<void>) | undefined> => {
+    if (!user) return;
+
+    const conv = conversationsRef.current.find(c => c.id === conversationId);
+
+    setConversations(prev => prev.filter(c => c.id !== conversationId));
+    if (activeConvRef.current === conversationId) {
+      setActiveConversation(null);
+      setMessages([]);
+    }
+
+    const { error } = await supabase
+      .from('conversation_participants')
+      .delete()
+      .eq('conversation_id', conversationId)
+      .eq('user_id', user.id);
+
+    if (error) {
+      if (conv) setConversations(prev => [...prev, conv]);
+      toast.error('Failed to delete conversation');
+      return;
+    }
+
+    return async () => {
+      const { error: rejoinErr } = await supabase
+        .from('conversation_participants')
+        .insert({
+          conversation_id: conversationId,
+          user_id: user.id,
+          last_read_at: new Date().toISOString(),
+        });
+      if (rejoinErr) {
+        toast.error('Undo failed');
+        return;
+      }
+      void fetchConversations();
+    };
+  }, [user, fetchConversations]);
+
   const searchUsers = useCallback(async (query: string): Promise<Profile[]> => {
     if (!user || !query.trim()) return [];
 
@@ -1255,6 +1333,7 @@ export function useChat() {
     sendFile,
     sendReaction,
     startConversation,
+    deleteConversation,
     searchUsers,
     uploadImage,
     uploadFile,

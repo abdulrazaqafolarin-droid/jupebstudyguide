@@ -227,6 +227,7 @@ const Chat = () => {
               onGroupCreated={(convId) => handleSelectConversation(convId)}
               onFriendRequestsClick={() => setTab('friends')}
               onProfileClick={openProfile}
+              onDelete={chat.deleteConversation}
               markingRead={chat.markingRead}
               staleUnread={chat.staleUnread}
             />

@@ -206,7 +206,7 @@ export function useChat() {
   }, []);
 
   const totalUnreadCount = useMemo(
-    () => conversations.reduce((sum, c) => sum + c.unread_count, 0),
+    () => conversations.filter(c => c.unread_count > 0).length,
     [conversations],
   );
 

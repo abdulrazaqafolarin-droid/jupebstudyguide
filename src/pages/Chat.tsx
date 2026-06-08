@@ -81,12 +81,7 @@ const Chat = () => {
     }
   }, []);
 
-  const { setTotalUnread, setStaleUnread } = useChatUnreadCount();
-
-  // Sync unread count to global context for BottomNav badge
-  useEffect(() => {
-    setTotalUnread(chat.totalUnreadCount);
-  }, [chat.totalUnreadCount, setTotalUnread]);
+  const { setStaleUnread } = useChatUnreadCount();
 
   useEffect(() => {
     setStaleUnread(chat.staleUnread);

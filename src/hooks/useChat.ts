@@ -232,9 +232,13 @@ export function useChat() {
       const convIds = participantData.map(p => p.conversation_id);
       convIdsRef.current = convIds;
 
+      // NOTE: messages_policy and is_admin columns exist in migration
+      // 20260608000001_multi_admin_messaging.sql but may not be applied yet.
+      // Only select columns that exist in the current schema to avoid
+      // breaking conversation loading.
       const { data: convData } = await supabase
         .from('conversations')
-        .select('id, created_at, updated_at, unread_count_a, unread_count_b, group_name, group_avatar, messages_policy')
+        .select('id, created_at, updated_at, unread_count_a, unread_count_b, group_name, group_avatar')
         .in('id', convIds)
         .order('updated_at', { ascending: false });
 
@@ -246,7 +250,7 @@ export function useChat() {
 
       const { data: allParticipants } = await supabase
         .from('conversation_participants')
-        .select('conversation_id, user_id, is_admin')
+        .select('conversation_id, user_id')
         .in('conversation_id', convIds);
 
       const participantsByConv = new Map<string, string[]>();
@@ -257,11 +261,6 @@ export function useChat() {
       }
       for (const [convId, ids] of participantsByConv) {
         ids.sort();
-      }
-
-      const adminMap = new Map<string, boolean>();
-      for (const p of allParticipants ?? []) {
-        if (p.is_admin) adminMap.set(p.conversation_id + ':' + p.user_id, true);
       }
 
       const allUserIds = new Set<string>();
@@ -341,8 +340,8 @@ export function useChat() {
           group_name: groupName,
           group_avatar: groupAvatar,
           participants,
-          messages_policy: (conv as any).messages_policy,
-          is_admin: adminMap.has(conv.id + ':' + user.id) || undefined,
+          messages_policy: undefined,
+          is_admin: undefined,
         };
       });
       enriched.sort((a, b) => {

@@ -111,7 +111,11 @@ export function useChat() {
   const offlineQueueRef = useRef<OfflineItem[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const channelReadyRef = useRef(false);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
+  const pollCursorRef = useRef<string>('');
+  const pollActiveRef = useRef(false);
 
+  const conversationsRef = useRef<Conversation[]>([]);
   // Keep refs in sync with state
   useEffect(() => {
     activeConvRef.current = activeConversation;
@@ -119,6 +123,9 @@ export function useChat() {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+  useEffect(() => {
+    conversationsRef.current = conversations;
+  }, [conversations]);
 
   const broadcastRead = useCallback((conversationId: string) => {
     try {
@@ -637,6 +644,95 @@ export function useChat() {
       msgBroadcastRef.current = null;
     };
   }, [user, fetchConversations]);
+
+  // Polling fallback for when Realtime/WebSocket is unavailable
+  useEffect(() => {
+    if (!user) return;
+
+    const shouldPoll = globalChannelStatus === 'CHANNEL_ERROR' || globalChannelStatus === 'CLOSED' || globalChannelStatus === 'TIMED_OUT';
+    const shouldStop = globalChannelStatus === 'SUBSCRIBED' || globalChannelStatus === 'idle';
+
+    if (shouldStop) {
+      pollActiveRef.current = false;
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = undefined;
+      return;
+    }
+
+    if (!shouldPoll) return;
+
+    // Initialize cursor from latest known message across all conversations
+    if (!pollActiveRef.current) {
+      pollActiveRef.current = true;
+      const convs = conversationsRef.current;
+      const latestTs = convs.reduce((latest, c) => {
+        if (!c.last_message?.created_at) return latest;
+        return c.last_message.created_at > latest ? c.last_message.created_at : latest;
+      }, '');
+      pollCursorRef.current = latestTs || new Date(0).toISOString();
+    }
+
+    clearInterval(pollTimerRef.current);
+    pollTimerRef.current = setInterval(async () => {
+      const convIds = convIdsRef.current;
+      if (convIds.length === 0) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
+          .in('conversation_id', convIds)
+          .gt('created_at', pollCursorRef.current)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        if (!data || data.length === 0) return;
+
+        pollCursorRef.current = data[data.length - 1].created_at;
+
+        for (const newMsg of data) {
+          if (newMsg.sender_id === user.id) continue;
+
+          const currentConv = activeConvRef.current;
+          if (newMsg.conversation_id === currentConv) {
+            setMessages(prev =>
+              prev.some(m => m.id === newMsg.id)
+                ? prev
+                : [...prev, newMsg as Message].sort(
+                    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                  )
+            );
+          }
+          setConversations(prev => {
+            const updated = prev.map(c =>
+              c.id === newMsg.conversation_id
+                ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg as Message }
+                : c
+            );
+            return updated.sort((a, b) => {
+              const aTime = a.last_message?.created_at;
+              const bTime = b.last_message?.created_at;
+              if (!aTime && !bTime) return 0;
+              if (!aTime) return 1;
+              if (!bTime) return -1;
+              return bTime.localeCompare(aTime);
+            });
+          });
+
+          window.dispatchEvent(new CustomEvent('chat-new-message', {
+            detail: { message: newMsg },
+          }));
+        }
+      } catch (err) {
+        debugWarn('[useChat] poll fallback error:', err);
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = undefined;
+    };
+  }, [user, globalChannelStatus]);
 
   useEffect(() => {
     try {

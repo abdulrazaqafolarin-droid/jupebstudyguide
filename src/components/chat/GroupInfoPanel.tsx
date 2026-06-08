@@ -69,16 +69,16 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     setConfirmMemberId(null);
 
     Promise.all([
-      supabase.from('conversations').select('group_avatar, messages_policy').eq('id', conversationId).single(),
-      supabase.from('conversation_participants').select('user_id, is_admin').eq('conversation_id', conversationId),
+      supabase.from('conversations').select('group_avatar, created_by').eq('id', conversationId).single(),
+      supabase.from('conversation_participants').select('user_id').eq('conversation_id', conversationId),
       supabase.rpc('is_muted', { p_conversation_id: conversationId }),
     ]).then(async ([convRes, partsRes, muteRes]) => {
       if (convRes.data?.group_avatar) setAvatarUrl(convRes.data.group_avatar);
-      setMessagesPolicy(convRes.data?.messages_policy ?? 'all');
-      setMuted(muteRes.data ?? false);
+      const createdBy = (convRes.data as { created_by?: string } | null)?.created_by;
       if (!partsRes.error && partsRes.data && partsRes.data.length > 0) {
         const userIds = partsRes.data.map(p => p.user_id);
-        const adminSet = new Set(partsRes.data.filter(p => p.is_admin).map(p => p.user_id));
+        // Use created_by as admin fallback until is_admin migration is applied
+        const adminSet = createdBy ? new Set([createdBy]) : new Set(userIds);
         const { data: profiles } = await supabase
           .from('profiles')
           .select('user_id, display_name, avatar_url')

@@ -496,7 +496,6 @@ const Chat = () => {
             loadingMore={chat.loadingMore}
             onLoadMore={chat.loadMoreMessages}
             onProfileClick={openProfile}
-            onDeleteConversation={chat.deleteConversation}
           />
         </div>
       )}

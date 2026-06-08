@@ -57,7 +57,6 @@ const Chat = () => {
   const friends = useFriends();
   const presence = usePresenceContext();
   const isMobile = useIsMobile();
-  const [debugLogs, setDebugLogs] = useState<string[]>([]);
   const [showSidebar, setShowSidebar] = useState(true);
   const [tab, setTab] = useState<Tab>('chats');
   const [addFriendQuery, setAddFriendQuery] = useState('');
@@ -127,24 +126,6 @@ const Chat = () => {
     document.title = title;
     updateFaviconBadge(totalUnread);
   }, [totalUnread]);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      const token = data.session?.access_token;
-      setDebugLogs(prev => [...prev,
-        'session: ' + (token ? 'EXISTS len=' + token.length : 'NULL')
-      ]);
-      if (token) {
-        supabase.realtime.setAuth(token);
-        setDebugLogs(prev => [...prev, 'setAuth: called']);
-      }
-    });
-    const testChannel = supabase.channel('test-' + Date.now());
-    testChannel.subscribe((status) => {
-      setDebugLogs(prev => [...prev, 'test: ' + status]);
-    });
-    return () => { supabase.removeChannel(testChannel); };
-  }, []);
 
   useEffect(() => {
     if (addFriendQuery.trim().length < 2) { setAddFriendResults([]); return; }
@@ -533,11 +514,6 @@ const Chat = () => {
         onStartChat={handleStartConversation}
       />
 
-      {debugLogs.length > 0 && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-black/90 text-green-400 text-xs p-2 font-mono">
-          {debugLogs.map((log, i) => <div key={i}>{log}</div>)}
-        </div>
-      )}
     </div>
   );
 };

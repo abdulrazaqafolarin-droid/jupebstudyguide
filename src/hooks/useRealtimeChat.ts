@@ -10,6 +10,7 @@ interface UseRealtimeChatProps {
 
 const RECONNECT_DELAY = 3000;
 const MAX_RECONNECT_ATTEMPTS = 5;
+const POLL_INTERVAL = 3000;
 
 export function useRealtimeChat({
   conversationId,
@@ -28,6 +29,42 @@ export function useRealtimeChat({
   conversationIdRef.current = conversationId;
   const currentUserIdRef = useRef(currentUserId);
   currentUserIdRef.current = currentUserId;
+  const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
+  const lastPollCursorRef = useRef<string>(new Date(0).toISOString());
+  const pollFailedRef = useRef(false);
+
+  const startPolling = useCallback(() => {
+    const cid = conversationIdRef.current;
+    const uid = currentUserIdRef.current;
+    if (!cid || !uid) return;
+
+    clearInterval(pollTimerRef.current);
+    pollTimerRef.current = setInterval(async () => {
+      if (msgDisposedRef.current || !cid || !uid) return;
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('conversation_id', cid)
+          .gt('created_at', lastPollCursorRef.current)
+          .order('created_at', { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          lastPollCursorRef.current = data[data.length - 1].created_at;
+          for (const msg of data) {
+            if (msg.sender_id === uid) continue;
+            onNewMessageRef.current(msg as Message);
+          }
+        }
+        pollFailedRef.current = false;
+      } catch (err) {
+        if (!pollFailedRef.current) {
+          console.warn('[Realtime] poll error:', err);
+          pollFailedRef.current = true;
+        }
+      }
+    }, POLL_INTERVAL);
+  }, []);
 
   const msgSubscribe = useCallback(() => {
     const cid = conversationIdRef.current;
@@ -56,6 +93,7 @@ export function useRealtimeChat({
           const newMsg = payload.new as Message;
           console.log('[Realtime] INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'from:', newMsg.sender_id);
           if (newMsg.sender_id === uid) return;
+          lastPollCursorRef.current = newMsg.created_at;
           onNewMessageRef.current(newMsg);
         }
       )
@@ -65,12 +103,14 @@ export function useRealtimeChat({
 
         if (status === 'SUBSCRIBED') {
           msgReconnectAttemptsRef.current = 0;
+          clearInterval(pollTimerRef.current);
         } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
           console.warn('[useRealtimeChat] messages channel', status, err);
+          startPolling();
           scheduleMsgReconnect();
         }
       });
-  }, []);
+  }, [startPolling]);
 
   const scheduleMsgReconnect = useCallback(() => {
     if (msgDisposedRef.current) return;
@@ -104,6 +144,7 @@ export function useRealtimeChat({
       msgDisposedRef.current = true;
       clearTimeout(timer);
       clearTimeout(msgReconnectTimerRef.current);
+      clearInterval(pollTimerRef.current);
       if (msgChannelRef.current) {
         supabase.removeChannel(msgChannelRef.current);
         msgChannelRef.current = undefined;

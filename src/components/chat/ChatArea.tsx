@@ -340,6 +340,7 @@ export function ChatArea({
   const isGroup = activeConv?.is_group;
   const groupName = activeConv?.group_name;
   const groupAvatar = activeConv?.group_avatar;
+  const canSend = !isGroup || activeConv?.messages_policy !== 'admins' || activeConv?.is_admin === true;
 
   const otherUserId = isGroup ? null : activeConv?.other_user?.user_id;
   const otherOnline = otherUserId ? isOnline(otherUserId) : false;
@@ -1807,6 +1808,11 @@ export function ChatArea({
           </div>
         ) : (
         <div className="px-3 py-2.5">
+          {!canSend && (
+            <div className="text-[11px] text-muted-foreground text-center pb-2">
+              Only admins can send messages in this group
+            </div>
+          )}
           <div className="flex items-end gap-2">
             <input
               ref={fileInputRef}
@@ -1837,7 +1843,7 @@ export function ChatArea({
               size="icon"
               className="shrink-0 rounded-full"
               onClick={() => { setShowAttachments(v => !v); setShowStickers(false); }}
-              disabled={uploadingFile}
+              disabled={uploadingFile || !canSend}
               title="Attach"
             >
               <Paperclip className="w-4 h-4" />
@@ -1849,9 +1855,10 @@ export function ChatArea({
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 onBlur={() => onTyping(false)}
-                placeholder={editingMessage ? 'Edit message...' : 'Type a message...'}
+                placeholder={!canSend ? '' : editingMessage ? 'Edit message...' : 'Type a message...'}
                 rows={1}
-                className="w-full resize-none bg-secondary/40 border border-border/40 rounded-2xl px-4 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40 max-h-32 scrollbar-thin transition-all"
+                disabled={!canSend}
+                className="w-full resize-none bg-secondary/40 border border-border/40 rounded-2xl px-4 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/40 max-h-32 scrollbar-thin transition-all disabled:opacity-50"
                 style={{ minHeight: '40px' }}
               />
             </div>
@@ -1863,8 +1870,8 @@ export function ChatArea({
                 onPointerLeave={handleVnPointerUp}
                 className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent select-none touch-none"
                 style={{ touchAction: 'none', userSelect: 'none' }}
-                disabled={uploadingFile}
-                title="Hold to record voice note"
+                disabled={uploadingFile || !canSend}
+                title={canSend ? "Hold to record voice note" : "Only admins can send messages"}
                 aria-label="Voice note"
               >
                 <Mic className="w-4 h-4" />
@@ -1875,7 +1882,7 @@ export function ChatArea({
                 size="icon"
                 className="shrink-0 rounded-full"
                 onClick={handleSend}
-                disabled={!input.trim() || uploadingFile}
+                disabled={!input.trim() || uploadingFile || !canSend}
               >
                 {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
               </Button>

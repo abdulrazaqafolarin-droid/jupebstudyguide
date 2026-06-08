@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Edit3, LogOut, Trash2, Check, Loader2, Camera, UserMinus, Plus, Search, Shield, ShieldOff, AlertTriangle, Crown, ArrowRight } from 'lucide-react';
+import { X, Users, Edit3, LogOut, Trash2, Check, Loader2, Camera, UserMinus, Plus, Search, Shield, ShieldOff, AlertTriangle, Crown, ArrowRight, MessageSquareOff, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -15,6 +15,7 @@ interface GroupMember {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
+  is_admin: boolean;
 }
 
 interface GroupInfoPanelProps {
@@ -27,14 +28,7 @@ interface GroupInfoPanelProps {
   onLeft?: () => void;
 }
 
-type ConfirmAction = 'kick' | 'leave' | 'delete' | null;
-
-interface TransferState {
-  open: boolean;
-  targetId: string;
-  targetName: string;
-  type: 'promote' | 'demote';
-}
+type ConfirmAction = 'kick' | 'leave' | 'delete' | 'promote' | 'demote' | null;
 
 export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, groupAvatar, onDeleted, onLeft }: GroupInfoPanelProps) {
   const { user } = useAuth();
@@ -45,12 +39,13 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const [saving, setSaving] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [adminId, setAdminId] = useState<string | null>(null);
+  const [messagesPolicy, setMessagesPolicy] = useState('all');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(groupAvatar ?? null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [confirmMemberId, setConfirmMemberId] = useState<string | null>(null);
   const [confirmMemberName, setConfirmMemberName] = useState('');
+  const [confirmTargetName, setConfirmTargetName] = useState('');
 
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,12 +53,10 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const [searching, setSearching] = useState(false);
   const [addingMember, setAddingMember] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [transferDialog, setTransferDialog] = useState<TransferState>({ open: false, targetId: '', targetName: '', type: 'promote' });
-  const [transferConfirmChecked, setTransferConfirmChecked] = useState(false);
-  const [transferring, setTransferring] = useState(false);
   const [profileTarget, setProfileTarget] = useState<string | null>(null);
 
-  const isAdmin = user && adminId === user.id;
+  const isAdmin = members.find(m => m.user_id === user?.id)?.is_admin ?? false;
+  const adminCount = members.filter(m => m.is_admin).length;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -74,19 +67,18 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     setSearchResults([]);
     setConfirmAction(null);
     setConfirmMemberId(null);
-    setTransferDialog({ open: false, targetId: '', targetName: '', type: 'promote' });
-    setTransferConfirmChecked(false);
 
     Promise.all([
-      supabase.from('conversations').select('created_by, group_avatar').eq('id', conversationId).single(),
-      supabase.from('conversation_participants').select('user_id').eq('conversation_id', conversationId),
+      supabase.from('conversations').select('group_avatar, messages_policy').eq('id', conversationId).single(),
+      supabase.from('conversation_participants').select('user_id, is_admin').eq('conversation_id', conversationId),
       supabase.rpc('is_muted', { p_conversation_id: conversationId }),
     ]).then(async ([convRes, partsRes, muteRes]) => {
-      if (convRes.data?.created_by) setAdminId(convRes.data.created_by);
       if (convRes.data?.group_avatar) setAvatarUrl(convRes.data.group_avatar);
+      setMessagesPolicy(convRes.data?.messages_policy ?? 'all');
       setMuted(muteRes.data ?? false);
       if (!partsRes.error && partsRes.data && partsRes.data.length > 0) {
         const userIds = partsRes.data.map(p => p.user_id);
+        const adminSet = new Set(partsRes.data.filter(p => p.is_admin).map(p => p.user_id));
         const { data: profiles } = await supabase
           .from('profiles')
           .select('user_id, display_name, avatar_url')
@@ -96,6 +88,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
           user_id: p.user_id,
           display_name: profileMap.get(p.user_id)?.display_name ?? null,
           avatar_url: profileMap.get(p.user_id)?.avatar_url ?? null,
+          is_admin: adminSet.has(p.user_id),
         })));
       } else if (!partsRes.error) {
         setMembers([]);
@@ -170,20 +163,61 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     setUploadingAvatar(false);
   };
 
+  const handleToggleAdmin = async (memberId: string, makeAdmin: boolean) => {
+    if (!isAdmin) return;
+    if (!makeAdmin && adminCount <= 1 && members.find(m => m.user_id === memberId)?.is_admin) {
+      toast.error('Group must have at least one admin');
+      return;
+    }
+    const { error } = await supabase
+      .from('conversation_participants')
+      .update({ is_admin: makeAdmin })
+      .eq('conversation_id', conversationId)
+      .eq('user_id', memberId);
+    if (error) { toast.error('Failed to update admin'); return; }
+    setMembers(prev => prev.map(m => m.user_id === memberId ? { ...m, is_admin: makeAdmin } : m));
+    const targetName = members.find(m => m.user_id === memberId)?.display_name || 'User';
+    await insertSystemMsg(
+      makeAdmin ? 'group_admin_promoted' : 'group_admin_demoted',
+      makeAdmin ? `${targetName} was promoted to admin` : `${targetName} was demoted from admin`
+    );
+    toast.success(makeAdmin ? `${targetName} promoted to admin` : `${targetName} demoted from admin`);
+  };
+
+  const handleToggleMessagesPolicy = async () => {
+    if (!isAdmin) return;
+    const newPolicy = messagesPolicy === 'all' ? 'admins' : 'all';
+    const { error } = await supabase
+      .from('conversations')
+      .update({ messages_policy: newPolicy })
+      .eq('id', conversationId);
+    if (error) { toast.error('Failed to update message policy'); return; }
+    setMessagesPolicy(newPolicy);
+    toast.success(newPolicy === 'admins' ? 'Only admins can send messages' : 'All members can send messages');
+  };
+
+  const handleToggleMute = async () => {
+    const { data } = await supabase.rpc('toggle_mute_conversation', { p_conversation_id: conversationId });
+    if (typeof data === 'boolean') setMuted(data);
+  };
+
   const handleLeave = async () => {
     if (!user) return;
     setLeaving(true);
-    // If admin, transfer admin to another member first so the DB trigger skips
-    if (isAdmin) {
-      const nextAdmin = members
-        .filter(m => m.user_id !== user.id)
-        .sort((a, b) => a.user_id.localeCompare(b.user_id))[0];
-      if (nextAdmin) {
-        const { error: transferErr } = await supabase
-          .from('conversations')
-          .update({ created_by: nextAdmin.user_id })
-          .eq('id', conversationId);
-        if (!transferErr) setAdminId(nextAdmin.user_id);
+    if (isAdmin && adminCount <= 1) {
+      const isOnlyAdmin = adminCount === 1;
+      if (isOnlyAdmin && members.length > 1) {
+        const nextAdmin = members
+          .filter(m => m.user_id !== user.id)
+          .sort((a, b) => a.user_id.localeCompare(b.user_id))[0];
+        if (nextAdmin) {
+          await supabase
+            .from('conversation_participants')
+            .update({ is_admin: true })
+            .eq('conversation_id', conversationId)
+            .eq('user_id', nextAdmin.user_id);
+          setMembers(prev => prev.map(m => m.user_id === nextAdmin.user_id ? { ...m, is_admin: true } : m));
+        }
       }
     }
     const { error } = await supabase.from('conversation_participants').delete().eq('conversation_id', conversationId).eq('user_id', user.id);
@@ -197,10 +231,6 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const handleDelete = async () => {
     if (!user || !isAdmin) return;
     setDeleting(true);
-    // Clear admin first so the auto-promote trigger skips, preventing RLS failure
-    await supabase.from('conversations').update({ created_by: null }).eq('id', conversationId);
-    await supabase.from('conversation_participants').delete().eq('conversation_id', conversationId);
-    await supabase.from('messages').delete().eq('conversation_id', conversationId);
     await supabase.from('conversations').delete().eq('id', conversationId);
     toast.success('Group deleted');
     setDeleting(false);
@@ -223,7 +253,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     try {
       const { data: canAdd } = await supabase.rpc('can_add_to_group', { p_target_user_id: profile.user_id });
       if (canAdd === false) { toast.error('This user restricts being added to groups'); return; }
-    } catch { /* RPC or column may not exist — assume allowed */ }
+    } catch { /* assume allowed */ }
     setAddingMember(true);
     const now = new Date().toISOString();
     const { error } = await supabase.from('conversation_participants').insert({
@@ -232,7 +262,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
       last_read_at: now,
     });
     if (error) { toast.error('Failed to add member'); setAddingMember(false); return; }
-    setMembers(prev => [...prev, profile]);
+    setMembers(prev => [...prev, { ...profile, is_admin: false }]);
     setSearchResults(prev => prev.filter(p => p.user_id !== profile.user_id));
     setSearchQuery('');
     await insertSystemMsg('group_member_added', `${profile.display_name || 'User'} was added`);
@@ -240,53 +270,21 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     setAddingMember(false);
   };
 
-  const openTransferDialog = (memberId: string, memberName: string) => {
-    setTransferConfirmChecked(false);
-    setTransferDialog({ open: true, targetId: memberId, targetName: memberName, type: 'promote' });
-  };
-
-  const openDemoteDialog = () => {
-    if (!user) return;
-    const oldest = members.filter(m => m.user_id !== user.id).sort((a, b) => a.user_id.localeCompare(b.user_id))[0];
-    if (!oldest) return;
-    setTransferConfirmChecked(false);
-    setTransferDialog({ open: true, targetId: oldest.user_id, targetName: oldest.display_name || 'User', type: 'demote' });
-  };
-
-  const executeTransfer = async () => {
-    const { targetId, type } = transferDialog;
-    if (!isAdmin || adminId !== user?.id || !targetId) return;
-    setTransferring(true);
-    const { error } = await supabase.from('conversations').update({ created_by: targetId }).eq('id', conversationId);
-    if (error) { toast.error('Failed to transfer admin'); setTransferring(false); return; }
-    setAdminId(targetId);
-    const targetName = members.find(m => m.user_id === targetId)?.display_name || 'A member';
-    if (type === 'promote') {
-      await insertSystemMsg('group_admin_promoted', `${targetName} was promoted to admin`);
-    } else {
-      await insertSystemMsg('group_admin_promoted', `${targetName} was promoted to admin`);
-    }
-    toast.success(type === 'promote' ? `Admin transferred to ${targetName}` : 'Admin role transferred');
-    setTransferring(false);
-    setTransferDialog({ open: false, targetId: '', targetName: '', type: 'promote' });
-    setTransferConfirmChecked(false);
-  };
-
-  const handleToggleMute = async () => {
-    const { data } = await supabase.rpc('toggle_mute_conversation', { p_conversation_id: conversationId });
-    if (typeof data === 'boolean') setMuted(data);
-  };
-
   const requestConfirm = (action: ConfirmAction, memberId?: string, memberName?: string) => {
     setConfirmAction(action);
     setConfirmMemberId(memberId ?? null);
     setConfirmMemberName(memberName ?? '');
+    if (action === 'promote' || action === 'demote') {
+      setConfirmTargetName(memberName ?? '');
+    }
   };
 
   const executeConfirmed = () => {
     if (confirmAction === 'kick' && confirmMemberId) handleKick(confirmMemberId);
     else if (confirmAction === 'leave') handleLeave();
     else if (confirmAction === 'delete') handleDelete();
+    else if (confirmAction === 'promote' && confirmMemberId) handleToggleAdmin(confirmMemberId, true);
+    else if (confirmAction === 'demote' && confirmMemberId) handleToggleAdmin(confirmMemberId, false);
     setConfirmAction(null);
     setConfirmMemberId(null);
   };
@@ -427,7 +425,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                     </button>
                   )}
                   {members.map((member) => {
-                    const isMemberAdmin = member.user_id === adminId;
+                    const isMemberAdmin = member.is_admin;
                     const isSelf = member.user_id === user?.id;
                     return (
                       <div key={member.user_id} className="group">
@@ -454,9 +452,9 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                           {isAdmin && !isSelf && (
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                               {isMemberAdmin ? (
-                                members.length > 1 && (
+                                adminCount > 1 && (
                                   <button
-                                    onClick={openDemoteDialog}
+                                    onClick={() => requestConfirm('demote', member.user_id, member.display_name || 'User')}
                                     className="p-1.5 rounded-lg hover:bg-accent transition-colors"
                                     title="Demote from admin"
                                   >
@@ -466,7 +464,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                               ) : (
                                 <>
                                   <button
-                                    onClick={() => openTransferDialog(member.user_id, member.display_name || 'User')}
+                                    onClick={() => requestConfirm('promote', member.user_id, member.display_name || 'User')}
                                     className="p-1.5 rounded-lg hover:bg-accent transition-colors"
                                     title="Promote to admin"
                                   >
@@ -501,6 +499,17 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                   {muted ? 'Muted' : 'Unmuted'}
                 </span>
               </button>
+              {isAdmin && (
+                <button
+                  onClick={handleToggleMessagesPolicy}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-accent/50 transition-colors text-sm"
+                >
+                  <span>Message permissions</span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {messagesPolicy === 'all' ? 'All members' : 'Admins only'}
+                  </span>
+                </button>
+              )}
               {isAdmin && members.length > 1 && (
                 <Button
                   variant="outline"
@@ -519,7 +528,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                 disabled={leaving}
               >
                 {leaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
-                {isAdmin ? 'Leave & Transfer Group' : 'Leave Group'}
+                Leave Group
               </Button>
             </div>
           </motion.div>
@@ -531,92 +540,6 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
             onClose={() => setProfileTarget(null)}
             onStartChat={(uid) => { setProfileTarget(null); onClose(); }}
           />
-
-          {/* Transfer Admin Dialog */}
-          <AnimatePresence>
-            {transferDialog.open && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-                onClick={() => { if (!transferring) setTransferDialog({ ...transferDialog, open: false }); }}
-              >
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-card rounded-2xl border shadow-xl p-5 max-w-xs w-full space-y-4"
-                >
-                  <div className="text-center space-y-2">
-                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto">
-                      <Crown className="w-5 h-5 text-amber-500" />
-                    </div>
-                    <p className="text-sm font-semibold">
-                      {transferDialog.type === 'promote'
-                        ? `Transfer admin to ${transferDialog.targetName}?`
-                        : `Demote yourself & transfer admin?`}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {transferDialog.type === 'promote'
-                        ? `${transferDialog.targetName} will become the new group admin with full control.`
-                        : `Admin will be transferred to ${transferDialog.targetName}, the oldest active member.`}
-                    </p>
-                  </div>
-
-                  <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3 space-y-1.5">
-                    <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3" />
-                      What this means:
-                    </p>
-                    <ul className="text-[11px] text-muted-foreground space-y-1 list-disc list-inside">
-                      <li>You will lose all admin privileges</li>
-                      <li>You won't be able to remove members or edit group settings</li>
-                      <li>The new admin can remove you from the group</li>
-                      <li>This action cannot be undone by you</li>
-                    </ul>
-                  </div>
-
-                  <div className="flex items-start gap-2">
-                    <Checkbox
-                      id="transfer-confirm"
-                      checked={transferConfirmChecked}
-                      onCheckedChange={(checked) => setTransferConfirmChecked(checked === true)}
-                      disabled={transferring}
-                    />
-                    <label htmlFor="transfer-confirm" className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none">
-                      I understand the consequences and want to transfer admin
-                    </label>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => { if (!transferring) setTransferDialog({ ...transferDialog, open: false }); }}
-                      disabled={transferring}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="default"
-                      className="flex-1 gap-1.5 bg-amber-500 hover:bg-amber-600 text-white"
-                      disabled={!transferConfirmChecked || transferring}
-                      onClick={executeTransfer}
-                    >
-                      {transferring ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      )}
-                      {transferring ? 'Transferring...' : transferDialog.type === 'promote' ? 'Transfer Admin' : 'Demote & Transfer'}
-                    </Button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Confirmation dialog overlay */}
           <AnimatePresence>
@@ -635,30 +558,43 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                   onClick={(e) => e.stopPropagation()}
                   className="bg-card rounded-2xl border shadow-xl p-5 max-w-xs w-full text-center space-y-4"
                 >
-                  <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
-                    <AlertTriangle className="w-5 h-5 text-destructive" />
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center mx-auto",
+                    confirmAction === 'promote' || confirmAction === 'demote'
+                      ? "bg-amber-500/10" : "bg-destructive/10"
+                  )}>
+                    {confirmAction === 'promote' ? (
+                      <Shield className="w-5 h-5 text-amber-500" />
+                    ) : confirmAction === 'demote' ? (
+                      <ShieldOff className="w-5 h-5 text-amber-500" />
+                    ) : (
+                      <AlertTriangle className="w-5 h-5 text-destructive" />
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-semibold">
                       {confirmAction === 'kick' && `Remove ${confirmMemberName}?`}
                       {confirmAction === 'leave' && 'Leave this group?'}
                       {confirmAction === 'delete' && 'Delete this group?'}
+                      {confirmAction === 'promote' && `Promote ${confirmTargetName} to admin?`}
+                      {confirmAction === 'demote' && `Demote ${confirmTargetName} from admin?`}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {confirmAction === 'kick' && 'They will not be able to rejoin without an invite.'}
-                      {confirmAction === 'leave' && isAdmin && 'Admin will be transferred to the oldest member.'}
-                      {confirmAction === 'leave' && !isAdmin && 'You can be re-added by an admin later.'}
+                      {confirmAction === 'leave' && 'You can be re-added by an admin later.'}
                       {confirmAction === 'delete' && 'All messages and media will be permanently deleted.'}
+                      {confirmAction === 'promote' && 'They will have full admin control over the group.'}
+                      {confirmAction === 'demote' && 'They will lose all admin privileges.'}
                     </p>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" className="flex-1" onClick={() => setConfirmAction(null)}>Cancel</Button>
                     <Button
-                      variant="destructive"
-                      className="flex-1"
+                      variant={confirmAction === 'promote' ? 'default' : 'destructive'}
+                      className={cn("flex-1", confirmAction === 'promote' && "bg-amber-500 hover:bg-amber-600 text-white")}
                       onClick={executeConfirmed}
                     >
-                      {confirmAction === 'delete' ? 'Delete' : confirmAction === 'leave' ? 'Leave' : 'Remove'}
+                      {confirmAction === 'delete' ? 'Delete' : confirmAction === 'leave' ? 'Leave' : confirmAction === 'kick' ? 'Remove' : confirmAction === 'promote' ? 'Promote' : 'Demote'}
                     </Button>
                   </div>
                 </motion.div>

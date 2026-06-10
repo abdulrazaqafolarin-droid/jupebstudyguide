@@ -26,6 +26,7 @@ const navLinks = [
   { path: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { path: "/achievements", label: "Achievements", icon: Award },
   { path: "/stats", label: "Study Stats", icon: TrendingUp },
+  { path: "/syllabus", label: "Syllabus", icon: Library },
   { path: "/discover", label: "Discover", icon: Compass },
   { path: "/profile", label: "Profile", icon: User },
   { path: "/download", label: "Get App", icon: Download },

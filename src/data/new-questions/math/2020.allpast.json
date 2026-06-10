@@ -1,0 +1,1402 @@
+[
+  {
+    "id": "mat-2020-mq-0001",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "How many terms in expansion of (1+5x)¹⁰?",
+    "options": [
+      {
+        "label": "A",
+        "text": "18"
+      },
+      {
+        "label": "B",
+        "text": "19"
+      },
+      {
+        "label": "C",
+        "text": "17"
+      },
+      {
+        "label": "D",
+        "text": "20"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0002",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Evaluate log₁/₈ 1:",
+    "options": [
+      {
+        "label": "A",
+        "text": "3/2"
+      },
+      {
+        "label": "B",
+        "text": "−3/2"
+      },
+      {
+        "label": "C",
+        "text": "−1/2"
+      },
+      {
+        "label": "D",
+        "text": "1/2"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0003",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Z₁=2(cos35°+isin35°), Z₂=5(cos25°+isin25°). Find Re(Z₁Z₂):",
+    "options": [
+      {
+        "label": "A",
+        "text": "10"
+      },
+      {
+        "label": "B",
+        "text": "5"
+      },
+      {
+        "label": "C",
+        "text": "60"
+      },
+      {
+        "label": "D",
+        "text": "20"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0004",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "10th and 21st terms of HP are 21 and 10. What is 210th term?",
+    "options": [
+      {
+        "label": "A",
+        "text": "1"
+      },
+      {
+        "label": "B",
+        "text": "10"
+      },
+      {
+        "label": "C",
+        "text": "21"
+      },
+      {
+        "label": "D",
+        "text": "210"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0005",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Quadratic equation with sum=3/4 and product=−1/2:",
+    "options": [
+      {
+        "label": "A",
+        "text": "4x²+3x−2=0"
+      },
+      {
+        "label": "B",
+        "text": "4x²−3x−2=0"
+      },
+      {
+        "label": "C",
+        "text": "4x²−3x−8=0"
+      },
+      {
+        "label": "D",
+        "text": "4x²+3x−8=0"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0006",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Sum of non-zero x and y intercepts of line 3x+4y+12=0:",
+    "options": [
+      {
+        "label": "A",
+        "text": "0"
+      },
+      {
+        "label": "B",
+        "text": "−3"
+      },
+      {
+        "label": "C",
+        "text": "−4"
+      },
+      {
+        "label": "D",
+        "text": "−7"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0007",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "10x+21 = k+3. Find k:",
+    "options": [
+      {
+        "label": "A",
+        "text": "(x−2)(x+5), x−2, x+5"
+      },
+      {
+        "label": "B",
+        "text": "−3"
+      },
+      {
+        "label": "C",
+        "text": "3"
+      },
+      {
+        "label": "D",
+        "text": "7"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0008",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Range of x satisfying x(x−5)>−6:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2<x<−3"
+      },
+      {
+        "label": "B",
+        "text": "−2>x<3"
+      },
+      {
+        "label": "C",
+        "text": "x<2, x<3"
+      },
+      {
+        "label": "D",
+        "text": "x<2, x<3"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0009",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "y=5−2x³+3x² has maximum value of y as:",
+    "options": [
+      {
+        "label": "A",
+        "text": "6"
+      },
+      {
+        "label": "B",
+        "text": "5"
+      },
+      {
+        "label": "C",
+        "text": "1"
+      },
+      {
+        "label": "D",
+        "text": "9"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0010",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Evaluate ∫(x⁵−3x²·1/x²)dx:",
+    "options": [
+      {
+        "label": "A",
+        "text": "5x⁴−6x²+1/x+c -"
+      },
+      {
+        "label": "B",
+        "text": "x⁶/6−x⁴/4−ln|x|+c -"
+      },
+      {
+        "label": "C",
+        "text": "x⁶/6−3x⁴/4−ln|x|+c -"
+      },
+      {
+        "label": "D",
+        "text": "x⁶/6−3x⁴/4−1/x²+c"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0011",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "f(x)=√(2sin³x+8). Obtain d/dx(∫f(x)dx):",
+    "options": [
+      {
+        "label": "A",
+        "text": "√(2cosx+8)"
+      },
+      {
+        "label": "B",
+        "text": "√(2sin²x+8) -"
+      },
+      {
+        "label": "C",
+        "text": "2√2cos³x+8"
+      },
+      {
+        "label": "D",
+        "text": "2√(ncos³x+8)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0012",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "x=3t²+5, y=t²−1. Find dy/dx:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2t/6t+1"
+      },
+      {
+        "label": "B",
+        "text": "3"
+      },
+      {
+        "label": "C",
+        "text": "1"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0013",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "u=x²+3x²y+y², find u_y:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x+6xy"
+      },
+      {
+        "label": "B",
+        "text": "3x²+2y"
+      },
+      {
+        "label": "C",
+        "text": "6x"
+      },
+      {
+        "label": "D",
+        "text": "d/dx·x+3x²+2y"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0014",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "y=eˣcosx, evaluate:",
+    "options": [
+      {
+        "label": "A",
+        "text": "eˣ(cosx−sinx)"
+      },
+      {
+        "label": "B",
+        "text": "−eˣ(cosx+sinx) -"
+      },
+      {
+        "label": "C",
+        "text": "eˣ(cosx+sinx)"
+      },
+      {
+        "label": "D",
+        "text": "−eˣsinx"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0015",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "One solution of y''+3y'+2y=0 is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "eˣ"
+      },
+      {
+        "label": "B",
+        "text": "e³ˣ"
+      },
+      {
+        "label": "C",
+        "text": "eˣ"
+      },
+      {
+        "label": "D",
+        "text": "eˣ"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0016",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "f(x)=kx²+3x−2. If lim(x→2)f(x)=8, find k:",
+    "options": [
+      {
+        "label": "A",
+        "text": "8"
+      },
+      {
+        "label": "B",
+        "text": "1"
+      },
+      {
+        "label": "C",
+        "text": "4"
+      },
+      {
+        "label": "D",
+        "text": "6"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0017",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Solve differential equation y'=e^(2x−y):",
+    "options": [
+      {
+        "label": "A",
+        "text": "−e^y=e^(2x)/2+C"
+      },
+      {
+        "label": "B",
+        "text": "e^y=e^(2x)/2+C -"
+      },
+      {
+        "label": "C",
+        "text": "y=e^(2y)+C"
+      },
+      {
+        "label": "D",
+        "text": "y+e^(−2y)·t/C=0"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0018",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Gradient of y=√(2x−) at x=1:",
+    "options": [
+      {
+        "label": "A",
+        "text": "4+√2/2"
+      },
+      {
+        "label": "B",
+        "text": "√2/2"
+      },
+      {
+        "label": "C",
+        "text": "√2/2"
+      },
+      {
+        "label": "D",
+        "text": "1+√2/2"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0019",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Exam scores normally distributed, mean=80, SD=5. P(X≤82):",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.15542"
+      },
+      {
+        "label": "B",
+        "text": "0.65542"
+      },
+      {
+        "label": "C",
+        "text": "0.02275"
+      },
+      {
+        "label": "D",
+        "text": "0.11507"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0020",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Bag: 9 plates numbered 1−9. If even→coin tossed; if odd→die thrown. Outcomes possible:",
+    "options": [
+      {
+        "label": "A",
+        "text": "38"
+      },
+      {
+        "label": "B",
+        "text": "30"
+      },
+      {
+        "label": "C",
+        "text": "240"
+      },
+      {
+        "label": "D",
+        "text": "8"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0021",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Solve for n if ⁿC₁₃=ⁿC₂:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "3"
+      },
+      {
+        "label": "C",
+        "text": "5"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0022",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "At least one child in family of 2 is a boy. P(both children are boys)?",
+    "options": [
+      {
+        "label": "A",
+        "text": "3/5"
+      },
+      {
+        "label": "B",
+        "text": "1/5"
+      },
+      {
+        "label": "C",
+        "text": "2/5"
+      },
+      {
+        "label": "D",
+        "text": "1/4"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0023",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "X is random variable with density function f(x)=αx², 0<x<3. Variance of X is 9/4:",
+    "options": [
+      {
+        "label": "A",
+        "text": "100"
+      },
+      {
+        "label": "B",
+        "text": "1.13"
+      },
+      {
+        "label": "C",
+        "text": "1.03"
+      },
+      {
+        "label": "D",
+        "text": "3.13"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0024",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Students t-distribution with 9 degrees of freedom. From figure, find value of freedom. Critical value at α=0.05:",
+    "options": [
+      {
+        "label": "A",
+        "text": "100"
+      },
+      {
+        "label": "B",
+        "text": "1.13"
+      },
+      {
+        "label": "C",
+        "text": "3.13"
+      },
+      {
+        "label": "D",
+        "text": "1.13"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0025",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Find validity of diffusible given density function F(x)=αx², 0<x<3 is probability function:",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.95"
+      },
+      {
+        "label": "B",
+        "text": "1.83"
+      },
+      {
+        "label": "C",
+        "text": "−1.83"
+      },
+      {
+        "label": "D",
+        "text": "0.95"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0026",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Two regression coefficients are 0.8 and 0.2. What would be value of coefficient of correlation?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.6"
+      },
+      {
+        "label": "B",
+        "text": "7/2"
+      },
+      {
+        "label": "C",
+        "text": "0.4"
+      },
+      {
+        "label": "D",
+        "text": "1/6"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0027",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Parabola y²=4ax has focus (1,2) and directrix x=4. Obtain equation of parabola:",
+    "options": [
+      {
+        "label": "A",
+        "text": "y²+4y−10x−11=0"
+      },
+      {
+        "label": "B",
+        "text": "y²−4y−10x−11=0 -"
+      },
+      {
+        "label": "C",
+        "text": "y²+4y−10x+11=0"
+      },
+      {
+        "label": "D",
+        "text": "y²−4y+10x+11=0"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0028",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "A=[2 5; 1 3; −2 1]. Evaluate (A^T)^?",
+    "options": [
+      {
+        "label": "A",
+        "text": "12/(3x²−4)"
+      },
+      {
+        "label": "B",
+        "text": "12x/(3x²−4)"
+      },
+      {
+        "label": "C",
+        "text": "3x²−4"
+      },
+      {
+        "label": "D",
+        "text": "12x"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0029",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Derivative of y=loge(3x²−4)?",
+    "options": [
+      {
+        "label": "A",
+        "text": "12/(3x²−4)"
+      },
+      {
+        "label": "B",
+        "text": "12x/(3x²−4)"
+      },
+      {
+        "label": "C",
+        "text": "3x²−4"
+      },
+      {
+        "label": "D",
+        "text": "12x"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0030",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which differential equation is non-linear?",
+    "options": [
+      {
+        "label": "A",
+        "text": "d²y/dx²+3y+4y=secx -"
+      },
+      {
+        "label": "B",
+        "text": "dy/dx+3y+4y=secx -"
+      },
+      {
+        "label": "C",
+        "text": "12x(3x−4)"
+      },
+      {
+        "label": "D",
+        "text": "12x"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0031",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Ant derivative of power series 1+t+t²+t³+p:",
+    "options": [
+      {
+        "label": "A",
+        "text": "eˣ⁺¹"
+      },
+      {
+        "label": "B",
+        "text": "e·t+1"
+      },
+      {
+        "label": "C",
+        "text": "t+1"
+      },
+      {
+        "label": "D",
+        "text": "et−1"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0032",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Name given to formula t₁/f(x)dx=(x) is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Trapezoidal rule"
+      },
+      {
+        "label": "B",
+        "text": "Simpson rule -"
+      },
+      {
+        "label": "C",
+        "text": "Lagrange rule"
+      },
+      {
+        "label": "D",
+        "text": "Newton's rule"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0033",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "A criterion of judgment upon which a decision is made regarding the null hypothesis is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Level of significance"
+      },
+      {
+        "label": "B",
+        "text": "P value -"
+      },
+      {
+        "label": "C",
+        "text": "Critical value"
+      },
+      {
+        "label": "D",
+        "text": "Z test"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0034",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "A, B, C, D, E and F are 6 students. How many ways can A and B must sit beside each other?",
+    "options": [
+      {
+        "label": "A",
+        "text": "240"
+      },
+      {
+        "label": "B",
+        "text": "480"
+      },
+      {
+        "label": "C",
+        "text": "120"
+      },
+      {
+        "label": "D",
+        "text": "720"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0035",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "P(X=5) when X~Bi(9, 0.3):",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.975"
+      },
+      {
+        "label": "B",
+        "text": "0.901"
+      },
+      {
+        "label": "C",
+        "text": "0.74"
+      },
+      {
+        "label": "D",
+        "text": "0.074"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0036",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Mean and SD for yield 50kg, mean and SD for plant height 55cm and 5cm. Coefficient of variation for yield greater/less than plant height?",
+    "options": [
+      {
+        "label": "A",
+        "text": "The yield is subject to more variation than plant height -"
+      },
+      {
+        "label": "B",
+        "text": "Plant height is subject to more variation -"
+      },
+      {
+        "label": "C",
+        "text": "Neither yield nor plant height and yield are subject to same amount variation -"
+      },
+      {
+        "label": "D",
+        "text": "Both plant height and yield are subjected to the same amount variation"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0037",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "For any given data set, value of (x−x̄)?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0"
+      },
+      {
+        "label": "B",
+        "text": "1"
+      },
+      {
+        "label": "C",
+        "text": "−1"
+      },
+      {
+        "label": "D",
+        "text": "2"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0038",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "When is distribution symmetric?",
+    "options": [
+      {
+        "label": "A",
+        "text": "I only"
+      },
+      {
+        "label": "B",
+        "text": "I and II"
+      },
+      {
+        "label": "C",
+        "text": "II only"
+      },
+      {
+        "label": "D",
+        "text": "I or II"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0039",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "If sinθ=4 and θ is acute angle, obtain value of (sin2θ+cos2θ):",
+    "options": [
+      {
+        "label": "B",
+        "text": "62"
+      },
+      {
+        "label": "C",
+        "text": "8·5·D. 24 -"
+      },
+      {
+        "label": "B",
+        "text": "8"
+      },
+      {
+        "label": "C",
+        "text": "5"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0040",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following statements is FALSE?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Zero is a rational number -"
+      },
+      {
+        "label": "B",
+        "text": "Every real number is a complex number -"
+      },
+      {
+        "label": "C",
+        "text": "A natural number is a rational number -"
+      },
+      {
+        "label": "D",
+        "text": "Every integer is a natural number"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0041",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Perfect competition: demand x=15−5p−p², supply x=2p−1. Equilibrium quantity:",
+    "options": [
+      {
+        "label": "A",
+        "text": "77"
+      },
+      {
+        "label": "B",
+        "text": "21"
+      },
+      {
+        "label": "C",
+        "text": "28"
+      },
+      {
+        "label": "D",
+        "text": "49"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0042",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Marketer's MR=6x²−7. Production increases 15 to 25 units. Total revenue of marketer?",
+    "options": [
+      {
+        "label": "A",
+        "text": "22930"
+      },
+      {
+        "label": "B",
+        "text": "22390"
+      },
+      {
+        "label": "C",
+        "text": "32920"
+      },
+      {
+        "label": "D",
+        "text": "29230"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0043",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Inventory system describing \"first in, first out\":",
+    "options": [
+      {
+        "label": "A",
+        "text": "FIFO"
+      },
+      {
+        "label": "B",
+        "text": "LIFO"
+      },
+      {
+        "label": "C",
+        "text": "Ending Inventory"
+      },
+      {
+        "label": "D",
+        "text": "Average Cost"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0044",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Fixed cost of manufacturing a carton of toothpick is ₦3500 and marginal cost at q unit is (100+2q). Total cost of 120 units:",
+    "options": [
+      {
+        "label": "A",
+        "text": "₦29,900"
+      },
+      {
+        "label": "B",
+        "text": "₦45,700"
+      },
+      {
+        "label": "C",
+        "text": "₦32,460"
+      },
+      {
+        "label": "D",
+        "text": "₦91,600"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0045",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Cost of asset ₦10,750. Asset to last 5 years, residual value ₦2. Annual depreciation:",
+    "options": [
+      {
+        "label": "A",
+        "text": "₦N1,700"
+      },
+      {
+        "label": "B",
+        "text": "₦8,500"
+      },
+      {
+        "label": "C",
+        "text": "₦13,000"
+      },
+      {
+        "label": "D",
+        "text": "₦2,600"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0046",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Amount to grow to ₦8000 in 4 years at 5% compound interest. Find marginal cost:",
+    "options": [
+      {
+        "label": "A",
+        "text": "−1"
+      },
+      {
+        "label": "B",
+        "text": "1/2"
+      },
+      {
+        "label": "C",
+        "text": "1"
+      },
+      {
+        "label": "D",
+        "text": "−1/2"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0047",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "Particle moves in direction of 4i−3k:",
+    "options": [
+      {
+        "label": "A",
+        "text": "3 2"
+      },
+      {
+        "label": "B",
+        "text": "2 1"
+      },
+      {
+        "label": "C",
+        "text": "a parabola"
+      },
+      {
+        "label": "D",
+        "text": "a straight line"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0048",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "LP problem: Maximize P=5x+6y, subject to x+2y≤15, x≥0, y≥0. Inequalities in equation (2) called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "objective functions"
+      },
+      {
+        "label": "B",
+        "text": "constraints -"
+      },
+      {
+        "label": "C",
+        "text": "feasible solutions"
+      },
+      {
+        "label": "D",
+        "text": "optimal values"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0049",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "S(x)=20x²+10x. Supply of soft drink at price x=6. Instantaneous rate of change:",
+    "options": [
+      {
+        "label": "A",
+        "text": "product of selling price and units bought -"
+      },
+      {
+        "label": "B",
+        "text": "product of units sold and quantity bought -"
+      },
+      {
+        "label": "C",
+        "text": "product of selling price and units sold -"
+      },
+      {
+        "label": "D",
+        "text": "product of buying price and units sold"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2020-mq-0050",
+    "subject": "math",
+    "year": 2020,
+    "category": "objective",
+    "question": "200+0.25I where I=consumption. Marginal Propensity to Save:",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.25"
+      },
+      {
+        "label": "B",
+        "text": "0.45"
+      },
+      {
+        "label": "C",
+        "text": "0.55"
+      },
+      {
+        "label": "D",
+        "text": "0.75"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

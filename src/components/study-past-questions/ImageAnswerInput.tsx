@@ -123,6 +123,32 @@ export function ImageAnswerInput({
           <p className="text-sm text-muted-foreground leading-relaxed">{marking.feedback}</p>
         )}
 
+        {marking.breakdown && marking.breakdown.length > 0 && (
+          <div className="space-y-2 py-1">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Mark Breakdown</p>
+            {marking.breakdown.map((b, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground w-36 shrink-0">{b.criterion}</span>
+                <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden ring-1 ring-border/10">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(b.awarded / b.maxMarks) * 100}%` }}
+                    className={cn(
+                      "h-full rounded-full",
+                      b.awarded / b.maxMarks >= 0.7 ? "bg-green-500" :
+                      b.awarded / b.maxMarks >= 0.4 ? "bg-amber-500" : "bg-red-500",
+                    )}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: i * 0.1 }}
+                  />
+                </div>
+                <span className="text-xs font-medium tabular-nums w-16 text-right shrink-0">
+                  {b.awarded}/{b.maxMarks}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="space-y-3">
           <div className="p-3 rounded-lg bg-green-50/50 dark:bg-green-950/10 border border-green-500/20">
             <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1.5 flex items-center gap-1.5">

@@ -1,0 +1,1374 @@
+[
+  {
+    "id": "che-2019-mq-0001",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Precision in measurement is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "agreement between replicate measurements -"
+      },
+      {
+        "label": "B",
+        "text": "closeness of measurement to the true value -"
+      },
+      {
+        "label": "C",
+        "text": "difference between measured value and true value -"
+      },
+      {
+        "label": "D",
+        "text": "estimated in terms of absolute error"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0002",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following is NOT an assumption of Bohr's model of atom?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Emission spectra of atoms are continuous -"
+      },
+      {
+        "label": "B",
+        "text": "Electrons move in allowed orbits around the nucleus -"
+      },
+      {
+        "label": "C",
+        "text": "The electron does not emit energy when in the orbits -"
+      },
+      {
+        "label": "D",
+        "text": "Transition between orbits are accompanied by emission or absorption of radiation"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0003",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The following factors influence ionization energies except:",
+    "options": [
+      {
+        "label": "A",
+        "text": "shielding effect of inner electrons -"
+      },
+      {
+        "label": "B",
+        "text": "magnitude of the nuclear charge -"
+      },
+      {
+        "label": "C",
+        "text": "shape of the orbital containing the valence electron -"
+      },
+      {
+        "label": "D",
+        "text": "distance of outer electrons from the nucleus"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0004",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The energy associated with the process below is called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "electron affinity -"
+      },
+      {
+        "label": "B",
+        "text": "ionization energy -"
+      },
+      {
+        "label": "C",
+        "text": "lattice energy -"
+      },
+      {
+        "label": "D",
+        "text": "binding energy"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0005",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The condensed electronic configuration of Zn2+ [Z = 30] is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "[Ar] 4s² 3d¹⁰ -"
+      },
+      {
+        "label": "B",
+        "text": "[Ar] 4s² 3d⁸ -"
+      },
+      {
+        "label": "C",
+        "text": "[Ar] 4s¹ 3d¹⁰ -"
+      },
+      {
+        "label": "D",
+        "text": "[Ar] 4s⁰ 3d¹⁰"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0006",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "All the following are attributes of light except:",
+    "options": [
+      {
+        "label": "A",
+        "text": "its frequency is directly proportional to its wavelength -"
+      },
+      {
+        "label": "B",
+        "text": "it consists of perpendicular electric and magnetic fields -"
+      },
+      {
+        "label": "C",
+        "text": "it is both a photon and light -"
+      },
+      {
+        "label": "D",
+        "text": "its speed in a vacuum is the fastest"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0007",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following is not true of the electromagnetic spectrum?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Visible light makes up a small proportion of the spectrum -"
+      },
+      {
+        "label": "B",
+        "text": "The wavelength of ultraviolet radiation is greater than that of the infrared radiation -"
+      },
+      {
+        "label": "C",
+        "text": "Gamma rays have shorter wavelengths -"
+      },
+      {
+        "label": "D",
+        "text": "Microwaves are not visible"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0008",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "A base is a proton acceptor, according to:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Arrhenius concept -"
+      },
+      {
+        "label": "B",
+        "text": "Bronsted-Lowry concept -"
+      },
+      {
+        "label": "C",
+        "text": "Lewis concept -"
+      },
+      {
+        "label": "D",
+        "text": "Dalton's concept"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0009",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "A bottle of concentrated hydrochloric acid solution has a label reading \"37.8% HCl by mass\". Calculate the molarity of this solution if it has a density of 1.1917 g cm⁻³. [H = 1.0; Cl = 35.5]",
+    "options": [
+      {
+        "label": "A",
+        "text": "11.5 M -"
+      },
+      {
+        "label": "B",
+        "text": "14.5 M -"
+      },
+      {
+        "label": "C",
+        "text": "12.0 M -"
+      },
+      {
+        "label": "D",
+        "text": "12.3 M"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0010",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "State the change in oxidation number of sulphur in the redox reaction below: 12 S₂O₃²⁻ → 2I⁻ + S₄O₆²⁻",
+    "options": [
+      {
+        "label": "A",
+        "text": "−2 to 4 -"
+      },
+      {
+        "label": "B",
+        "text": "+2 to +3 -"
+      },
+      {
+        "label": "C",
+        "text": "4 to −2 -"
+      },
+      {
+        "label": "D",
+        "text": "+3 to +2"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0011",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "What is the percent carbon in the glutamic acid, C₅H₈NO₄?",
+    "options": [
+      {
+        "label": "A",
+        "text": "8.22 -"
+      },
+      {
+        "label": "B",
+        "text": "24.3 -"
+      },
+      {
+        "label": "C",
+        "text": "41.1 -"
+      },
+      {
+        "label": "D",
+        "text": "48.2"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0012",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following elements exhibits diagonal relationship with aluminium?",
+    "options": [
+      {
+        "label": "A",
+        "text": "−2 to 4 -"
+      },
+      {
+        "label": "B",
+        "text": "8.22 -"
+      },
+      {
+        "label": "A",
+        "text": "Beryllium -"
+      },
+      {
+        "label": "D",
+        "text": "Silicon"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0013",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Nitrogen dioxide decomposes on heating according to the following equation:",
+    "options": [
+      {
+        "label": "A",
+        "text": "4²/(0.8² × 0.8) -"
+      },
+      {
+        "label": "B",
+        "text": "(1.6² × 0.8)/(4²) -"
+      },
+      {
+        "label": "C",
+        "text": "(1.6² × 0.8)/(4²) -"
+      },
+      {
+        "label": "D",
+        "text": "1.6²/(4²)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0014",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "In which of the following reactions is the change in entropy positive?",
+    "options": [
+      {
+        "label": "A",
+        "text": "2Ag⁺(aq) + Zn(s) → 2SO₃(aq) + 2Ag(s) -"
+      },
+      {
+        "label": "B",
+        "text": "2SO₂(g) + O₂(g) → 2SO₃(g) -"
+      },
+      {
+        "label": "C",
+        "text": "2HF(g) → H₂O(l) + F₂(g) -"
+      },
+      {
+        "label": "D",
+        "text": "H₂O(g) → H₂O(l)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0015",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "A system in which only energy is transferred between it and the surrounding is called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "open system -"
+      },
+      {
+        "label": "B",
+        "text": "closed system -"
+      },
+      {
+        "label": "C",
+        "text": "isolated system -"
+      },
+      {
+        "label": "D",
+        "text": "adiabatic system"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0016",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of these orbitals is the most stable?",
+    "options": [
+      {
+        "label": "A",
+        "text": "3d -"
+      },
+      {
+        "label": "B",
+        "text": "4p -"
+      },
+      {
+        "label": "C",
+        "text": "5p -"
+      },
+      {
+        "label": "D",
+        "text": "5d"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0017",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Identify the species A in the radioactive reaction represented by the equation below:",
+    "options": [
+      {
+        "label": "A",
+        "text": "⁴He (alpha) -"
+      },
+      {
+        "label": "B",
+        "text": "¹e (beta) -"
+      },
+      {
+        "label": "C",
+        "text": "¹γ -"
+      },
+      {
+        "label": "D",
+        "text": "⁴He"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0018",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Arrange the following elements in order of decreasing reducing power: Na, Rb, Cs",
+    "options": [
+      {
+        "label": "A",
+        "text": "0n -"
+      },
+      {
+        "label": "B",
+        "text": "0e -"
+      },
+      {
+        "label": "C",
+        "text": "1γ -"
+      },
+      {
+        "label": "D",
+        "text": "⁴He"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0019",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Hydrides of the halogens with the highest stability to heat is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "HCl -"
+      },
+      {
+        "label": "B",
+        "text": "HBr -"
+      },
+      {
+        "label": "C",
+        "text": "HF -"
+      },
+      {
+        "label": "D",
+        "text": "HI"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0020",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Hydrocarbons which react with ammoniacal copper (I) chloride solution conform to the general molecular formula:",
+    "options": [
+      {
+        "label": "A",
+        "text": "CₙHₙ -"
+      },
+      {
+        "label": "B",
+        "text": "CₙH₂ₙ -"
+      },
+      {
+        "label": "C",
+        "text": "CₙH₂ₙ₋₂ -"
+      },
+      {
+        "label": "D",
+        "text": "CₙH₂ₙ₋₂"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0021",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "In the coordination compound [Co(NH₃)₅][FeCl₄]ₓ, if the primary valences of Co and Fe are +3, what is x?",
+    "options": [
+      {
+        "label": "A",
+        "text": "2 -"
+      },
+      {
+        "label": "B",
+        "text": "1 -"
+      },
+      {
+        "label": "C",
+        "text": "3 -"
+      },
+      {
+        "label": "D",
+        "text": "5"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0022",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following is TRUE about sodium chloride in the solid state?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Its ions are linked by metallic bonds -"
+      },
+      {
+        "label": "B",
+        "text": "It exist as aggregate of ions -"
+      },
+      {
+        "label": "C",
+        "text": "It conducts electricity -"
+      },
+      {
+        "label": "D",
+        "text": "It exists as discrete molecules"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0023",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "A method of preventing corrosion that involves coating steel with zinc metal is called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "painting -"
+      },
+      {
+        "label": "B",
+        "text": "enamelling -"
+      },
+      {
+        "label": "C",
+        "text": "electroplating -"
+      },
+      {
+        "label": "D",
+        "text": "galvanizing"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0024",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which type of radioactive decay produces a daughter nucleus with a higher atomic number?",
+    "options": [
+      {
+        "label": "A",
+        "text": "α -"
+      },
+      {
+        "label": "B",
+        "text": "β− -"
+      },
+      {
+        "label": "C",
+        "text": "γ -"
+      },
+      {
+        "label": "D",
+        "text": "β+"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0025",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "For a reaction that is second order with respect to a reactant, A, how many times does the rate increase as [A] increases by a factor of 2?",
+    "options": [
+      {
+        "label": "A",
+        "text": "1 time -"
+      },
+      {
+        "label": "B",
+        "text": "2 times -"
+      },
+      {
+        "label": "C",
+        "text": "3 times -"
+      },
+      {
+        "label": "D",
+        "text": "4 times"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0026",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "What is the number of atoms represent in 21.6 g of Ag? [Ag = 108]",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.2 × 10²⁴ -"
+      },
+      {
+        "label": "B",
+        "text": "1.204 × 10²³ -"
+      },
+      {
+        "label": "C",
+        "text": "6.02 × 10²² -"
+      },
+      {
+        "label": "D",
+        "text": "1.08 × 10²³"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0027",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Transition metal atoms without unpaired electrons are said to be:",
+    "options": [
+      {
+        "label": "A",
+        "text": "diamagnetic -"
+      },
+      {
+        "label": "B",
+        "text": "paramagnetic -"
+      },
+      {
+        "label": "C",
+        "text": "ferromagnetic -"
+      },
+      {
+        "label": "D",
+        "text": "anti-ferromagnetic"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0028",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Strontium is an element in Group 2 of the periodic table. Which of the following statements about strontium is NOT correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.2 × 10²⁴ -"
+      },
+      {
+        "label": "B",
+        "text": "1.6² × 0.8 -"
+      },
+      {
+        "label": "C",
+        "text": "1.6² × 0.8 -"
+      },
+      {
+        "label": "D",
+        "text": "4²"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0029",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Why is the melting point of diamond much higher than that of graphite?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Diamond consists of covalent bonds extending in all directions -"
+      },
+      {
+        "label": "B",
+        "text": "The structural layers of graphite are too far apart -"
+      },
+      {
+        "label": "C",
+        "text": "Diamond has a higher density than graphite -"
+      },
+      {
+        "label": "D",
+        "text": "It forms a chloride with the formula SrCl₂"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0030",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The oxidation state of Au in K[Au(OH)₄] is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "+1 -"
+      },
+      {
+        "label": "B",
+        "text": "+2 -"
+      },
+      {
+        "label": "C",
+        "text": "+3 -"
+      },
+      {
+        "label": "D",
+        "text": "+4"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0031",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following is NOT true of a catalyst?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Catalysts will decrease the activation energy of the reaction -"
+      },
+      {
+        "label": "B",
+        "text": "Catalysts will be influenced by the pH of the substance -"
+      },
+      {
+        "label": "C",
+        "text": "Catalysts do not change the thermodynamics of the reaction -"
+      },
+      {
+        "label": "D",
+        "text": "Catalysts cause a change in the equilibrium constant of the reaction"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0032",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following will always produce a spontaneous reaction?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Positive ΔH and a positive ΔS -"
+      },
+      {
+        "label": "B",
+        "text": "Negative ΔH and a positive ΔS -"
+      },
+      {
+        "label": "C",
+        "text": "Negative ΔH and a negative ΔS -"
+      },
+      {
+        "label": "D",
+        "text": "Positive ΔH and a negative ΔS"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0033",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "In the electrolysis of brine (concentrated NaCl) using mercury as the cathode, the components produced and resulting solution are:",
+    "options": [
+      {
+        "label": "A",
+        "text": "H₂, O₂ and neutral -"
+      },
+      {
+        "label": "B",
+        "text": "Na, O₂ and neutral -"
+      },
+      {
+        "label": "C",
+        "text": "H₂, O₂ and basic -"
+      },
+      {
+        "label": "D",
+        "text": "Na, Cl₂ and neutral"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0034",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The IUPAC name of K₂[PtCl₆] is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Potassium hexachloroplatinate (IV) -"
+      },
+      {
+        "label": "B",
+        "text": "Na, O₂ and neutral -"
+      },
+      {
+        "label": "C",
+        "text": "Platinum hexachloroplatinate (I) -"
+      },
+      {
+        "label": "D",
+        "text": "Potassium hexachloroplatasiate (I)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0035",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Given that the standard enthalpy changes of formation of TiO₂(s) and CO(g) are 940 kJmol⁻¹ and −110 kJmol⁻¹ respectively. What is the standard enthalpy change for:",
+    "options": [
+      {
+        "label": "A",
+        "text": "−830 -"
+      },
+      {
+        "label": "B",
+        "text": "−720 -"
+      },
+      {
+        "label": "C",
+        "text": "+720 -"
+      },
+      {
+        "label": "D",
+        "text": "+830"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0036",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The reaction C₁₂H₂₂O₁₁ + 2H₂O → 2C₆H₁₂O₆ represents:",
+    "options": [
+      {
+        "label": "A",
+        "text": "polymerization of glucose -"
+      },
+      {
+        "label": "B",
+        "text": "hydrolysis of carbohydrate -"
+      },
+      {
+        "label": "C",
+        "text": "fermentation of sugar -"
+      },
+      {
+        "label": "D",
+        "text": "dehydration of starch"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0037",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The shape and bond angle of the sp³ hybridized orbitals are:",
+    "options": [
+      {
+        "label": "A",
+        "text": "tetrahedral and 109.5° -"
+      },
+      {
+        "label": "B",
+        "text": "trigonal and 120° -"
+      },
+      {
+        "label": "C",
+        "text": "trigonal and 180° -"
+      },
+      {
+        "label": "D",
+        "text": "linear and 180°"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0038",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Calculate the volume of oxygen evolved (cm³) at 285 K and 0.91 × 10⁵ Nm² when a current of 2.5 A is passed through acidified water for 1.5 minutes; [Molar volume of gas is 22.4 dm³; standard pressure = 1.01 × 10⁵ Nm⁻²; 1 Faraday = 96500]",
+    "options": [
+      {
+        "label": "A",
+        "text": "12.34 cm -"
+      },
+      {
+        "label": "B",
+        "text": "23.12 cm -"
+      },
+      {
+        "label": "C",
+        "text": "15.13 cm -"
+      },
+      {
+        "label": "D",
+        "text": "9.13 cm"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0039",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following groups of compounds forms a layer of silver when reacted with silver trioxonitrate (V) in the presence of excess ammonia?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CH₂=COHCH₂OH -"
+      },
+      {
+        "label": "B",
+        "text": "HOCH₂CH₂OH -"
+      },
+      {
+        "label": "C",
+        "text": "CH₃COOH + C₂H₅OH ⇌ CH₃COOC₂H₅ + H₂O -"
+      },
+      {
+        "label": "D",
+        "text": "Alkanols"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0040",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following compounds is NOT a functional group isomer of HOCH₂CH₂CHO?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Alkanols -"
+      },
+      {
+        "label": "B",
+        "text": "Alkanals -"
+      },
+      {
+        "label": "C",
+        "text": "Alkanones -"
+      },
+      {
+        "label": "D",
+        "text": "Alkanoic acids"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0041",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which of the following is the final product from the reaction of ethyne with hydrogen bromide?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CH₃−CHBr₂ -"
+      },
+      {
+        "label": "B",
+        "text": "CH₂Br−CH₂Br·C -"
+      },
+      {
+        "label": "C",
+        "text": "CH₃−CH₃ -"
+      },
+      {
+        "label": "D",
+        "text": "CH₂=CHBr"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0042",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "The IUPAC name for CH₃CH₂CH₃ClCH₃ is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2-chloropentane -"
+      },
+      {
+        "label": "B",
+        "text": "2-chloropentane -"
+      },
+      {
+        "label": "C",
+        "text": "4-chlorohexane -"
+      },
+      {
+        "label": "D",
+        "text": "4-chloropentane"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0043",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "In Benedict test, a positive test is indicated by a colour change from:",
+    "options": [
+      {
+        "label": "A",
+        "text": "brick red to blue -"
+      },
+      {
+        "label": "B",
+        "text": "brown to purple -"
+      },
+      {
+        "label": "C",
+        "text": "blue to red -"
+      },
+      {
+        "label": "D",
+        "text": "purple colour change"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0045",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "5,5,9,9-tetramethylundecane:",
+    "options": [
+      {
+        "label": "C",
+        "text": "2,6,6-trimethyl-2-n-butyloctane -"
+      },
+      {
+        "label": "B",
+        "text": "3,3,7,7-tetramethylundecane -"
+      },
+      {
+        "label": "C",
+        "text": "2,6,6-trimethyl-2-n-butyloctane -"
+      },
+      {
+        "label": "D",
+        "text": "3,3,7-trimethyl-7-n-butyloctane"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0046",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Given below are sets of homologous series, identify the set that contains a carbonyl group:",
+    "options": [
+      {
+        "label": "A",
+        "text": "alkanes, alkenes and alkynes -"
+      },
+      {
+        "label": "B",
+        "text": "alcohols, carboxylic acids and ethers -"
+      },
+      {
+        "label": "C",
+        "text": "aldehydes, ketones and amines -"
+      },
+      {
+        "label": "D",
+        "text": "carboxylic acids, aldehydes and ketones"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0047",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "H₃C-Br → CH₃⁺ + Br⁻. The above equation shows:",
+    "options": [
+      {
+        "label": "A",
+        "text": "the carbon in ethane are smaller than those in ethene -"
+      },
+      {
+        "label": "B",
+        "text": "the carbon in ethane are round B, there are only four hydrogen atoms due to the fact that -"
+      },
+      {
+        "label": "C",
+        "text": "the carbon in ethene are linked by double bond -"
+      },
+      {
+        "label": "D",
+        "text": "The above equation shows heterolytic fission"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0048",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Which group of compounds produce yellow crystals of CHI₃ in the presence of I₂/NaOH?",
+    "options": [
+      {
+        "label": "A",
+        "text": "substitution reaction -"
+      },
+      {
+        "label": "B",
+        "text": "homolytic fission -"
+      },
+      {
+        "label": "C",
+        "text": "heterolytic fission -"
+      },
+      {
+        "label": "D",
+        "text": "electrophilic reaction"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0049",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "Identify P in the reaction:",
+    "options": [
+      {
+        "label": "A",
+        "text": "C₃H₇CHO -"
+      },
+      {
+        "label": "B",
+        "text": "C₃H₅MgBr -"
+      },
+      {
+        "label": "C",
+        "text": "C₃H₇COCH₃ -"
+      },
+      {
+        "label": "D",
+        "text": "C₃H₇COC₂H₅"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2019-mq-0050",
+    "subject": "chemistry",
+    "year": 2019,
+    "category": "objective",
+    "question": "What is the major product of the following reaction?",
+    "options": [
+      {
+        "label": "A",
+        "text": "(structure A — 2-methylbut-1-ene type) -"
+      },
+      {
+        "label": "B",
+        "text": "(structure B — 2-methylbut-2-ene type) -"
+      },
+      {
+        "label": "C",
+        "text": "(structure C — methylenbutane type) -"
+      },
+      {
+        "label": "D",
+        "text": "(structure D)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
-import { questions, getQuestionsBySubject } from '@/data/questions';
+import { getAllStudyQuestions, getAllStudyQuestionsForSubject } from '@/data/study-questions';
+import { toQuestions } from '@/lib/question-adapter';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
 import { SubjectCard } from '@/components/SubjectCard';
 import { StudyView } from '@/components/StudyView';
@@ -64,17 +65,28 @@ const Index = () => {
     quizComplete: awardQuizComplete,
   } = useScoreAwarder();
 
+  // Combine study pipeline questions with custom questions (must be before subjectsStudied)
+  const allStudyQuestions = useMemo(() => toQuestions(getAllStudyQuestions()), []);
+  const allQuestions = useMemo(() => {
+    return [...allStudyQuestions, ...customQuestions];
+  }, [allStudyQuestions, customQuestions]);
+
+  const getAllQuestionsBySubject = useCallback((subject: Subject): Question[] => {
+    const builtIn = toQuestions(getAllStudyQuestionsForSubject(subject));
+    const custom = customQuestions.filter(q => q.subject === subject);
+    return [...builtIn, ...custom];
+  }, [customQuestions]);
+
   // Track previous streak to detect new streak days
   const prevStreakRef = useRef(currentStreak);
 
   const subjectsStudied = useMemo(() => {
     const studiedSubjects = new Set<Subject>();
-    if (getStats(getQuestionsBySubject('physics')).studied > 0) studiedSubjects.add('physics');
-    if (getStats(getQuestionsBySubject('chemistry')).studied > 0) studiedSubjects.add('chemistry');
-    if (getStats(getQuestionsBySubject('biology')).studied > 0) studiedSubjects.add('biology');
-    if (getStats(getQuestionsBySubject('math')).studied > 0) studiedSubjects.add('math');
+    for (const subject of ['physics', 'chemistry', 'biology', 'math'] as Subject[]) {
+      if (getStats(getAllQuestionsBySubject(subject)).studied > 0) studiedSubjects.add(subject);
+    }
     return studiedSubjects.size;
-  }, [getStats]);
+  }, [getStats, getAllQuestionsBySubject]);
   
   // Count questions answered correctly at least once (repetitions > 0 in SM-2)
   const totalCorrect = useMemo(() => {
@@ -154,7 +166,7 @@ const Index = () => {
     currentStreak,
     longestStreak,
     totalDaysStudied,
-    questionsLearned: getStats(questions).learned,
+    questionsLearned: getStats(allStudyQuestions).learned,
     subjectsStudied,
     documentsUploaded,
     syllabusProgress: syllabusCompletedDayCount,
@@ -245,18 +257,6 @@ const Index = () => {
   useEffect(() => {
     newlyUnlocked.forEach(a => awardAchievement(a.id));
   }, [newlyUnlocked, awardAchievement]);
-
-
-  // Combine built-in questions with custom questions
-  const allQuestions = useMemo(() => {
-    return [...questions, ...customQuestions];
-  }, [customQuestions]);
-
-  const getAllQuestionsBySubject = useCallback((subject: Subject): Question[] => {
-    const builtIn = getQuestionsBySubject(subject);
-    const custom = customQuestions.filter(q => q.subject === subject);
-    return [...builtIn, ...custom];
-  }, [customQuestions]);
 
   const getRandomFromAll = (count: number, subject?: Subject): Question[] => {
     const source = subject ? getAllQuestionsBySubject(subject) : allQuestions;
@@ -706,7 +706,7 @@ const Index = () => {
         <div className="flex flex-col items-center gap-3">
           <img src={rutexLogo} alt="Rutex Logo" className="w-10 h-10 rounded-lg object-cover" />
           <p className="text-xs text-muted-foreground">Built by <span className="font-semibold text-foreground">Rutex</span></p>
-          <p className="text-xs text-muted-foreground">JUPEB Past Questions • 2015–2020</p>
+              <p className="text-xs text-muted-foreground">JUPEB Past Questions • 2014–2025</p>
         </div>
       </footer>
     </div>

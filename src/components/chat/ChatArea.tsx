@@ -72,7 +72,7 @@ function TypingIndicator() {
   );
 }
 
-const MessageStatus = memo(function MessageStatus({ message, isOwn, isPending }: { message: Message; isOwn: boolean; isPending?: boolean }) {
+const MessageStatus = memo(function MessageStatus({ message, isOwn, isPending, canSeeReadReceipts }: { message: Message; isOwn: boolean; isPending?: boolean; canSeeReadReceipts?: boolean }) {
   if (!isOwn) return null;
   if (message.is_deleted) return null;
 
@@ -83,8 +83,11 @@ const MessageStatus = memo(function MessageStatus({ message, isOwn, isPending }:
   const isRead = message.is_read || message.status === 'read' || !!message.read_at;
   const isDelivered = message.status === 'delivered' || !!message.delivered_at;
 
-  if (isRead) {
+  if (isRead && canSeeReadReceipts !== false) {
     return <CheckCheck className="w-3.5 h-3.5 text-blue-400 inline" />;
+  }
+  if (isRead && canSeeReadReceipts === false) {
+    return <CheckCheck className="w-3.5 h-3.5 text-muted-foreground/60 inline" />;
   }
   if (isDelivered) {
     return <CheckCheck className="w-3.5 h-3.5 text-muted-foreground/60 inline" />;
@@ -352,6 +355,15 @@ export function ChatArea({
         .map(p => p.display_name || 'Someone')
     : [];
   const [lastSeenText, setLastSeenText] = useState<string | null>(null);
+  const [canSeeReadReceipts, setCanSeeReadReceipts] = useState(true);
+  useEffect(() => {
+    if (!otherUserId || isGroup) { setCanSeeReadReceipts(true); return; }
+    let cancelled = false;
+    supabase.rpc('can_view_read_receipts', { p_target_user_id: otherUserId }).then(({ data }) => {
+      if (!cancelled) setCanSeeReadReceipts(data !== false);
+    }).catch(() => { if (!cancelled) setCanSeeReadReceipts(true); });
+    return () => { cancelled = true; };
+  }, [otherUserId, isGroup]);
 
   useEffect(() => {
     if (!otherUserId || otherOnline) { setLastSeenText(null); return; }
@@ -406,8 +418,8 @@ export function ChatArea({
     }
   }, []);
 
-  // Filter messages by search — computed during render, no ref needed
-  const searchQueryLower = searchQuery.toLowerCase().trim();
+  // Filter messages by search
+  const searchQueryLower = useMemo(() => searchQuery.toLowerCase().trim(), [searchQuery]);
   const searchMatchIdsSet = useMemo(() => {
     if (!searchQueryLower) return new Set<string>();
     const ids = new Set<string>();
@@ -1348,7 +1360,7 @@ export function ChatArea({
                                   )}>
                                     {format(new Date(msg.created_at), 'h:mm a')}
                                     {msg.is_edited && <span className="text-[9px]">(edited)</span>}
-                                    <MessageStatus message={msg} isOwn={isOwn} isPending={pendingMsgIds.has(msg.id)} />
+                                    <MessageStatus message={msg} isOwn={isOwn} isPending={pendingMsgIds.has(msg.id)} canSeeReadReceipts={canSeeReadReceipts} />
                                   </p>
                                 )}
                               </div>

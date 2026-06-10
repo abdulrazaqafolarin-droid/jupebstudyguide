@@ -390,6 +390,7 @@ export default function LeaderboardPage() {
           user={previewUser}
           open={previewUser !== null}
           onClose={() => setPreviewUser(null)}
+          onChat={startChat}
         />
       </main>
     </div>

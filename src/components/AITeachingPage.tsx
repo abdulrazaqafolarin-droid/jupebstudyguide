@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { streamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, SYLLABUS_TEACHING_PROMPT } from '@/lib/prompts';
+import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
 
 interface Message {
@@ -116,7 +117,7 @@ ${task.learningObjectives?.map((obj: string, i: number) => `${i + 1}. ${obj}`).j
 
 Begin teaching this topic step by step. Start with fundamentals and build up to A-level depth. Check understanding frequently.`;
 
-    const systemPrompt = TUTOR_SYSTEM_PROMPT + "\n\n" + SYLLABUS_TEACHING_PROMPT + syllabusContext;
+    const systemPrompt = TUTOR_SYSTEM_PROMPT + "\n\n" + SYLLABUS_TEACHING_PROMPT + syllabusContext + getSyllabusContext();
 
     let acc = '';
 

@@ -1,0 +1,1374 @@
+[
+  {
+    "id": "che-2017-mq-0001",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which theory postulated that the electrons in an atom revolve about the nucleus from one circular orbit to another?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Rutherford's theory -"
+      },
+      {
+        "label": "B",
+        "text": "Dalton's theory -"
+      },
+      {
+        "label": "C",
+        "text": "Bohr's theory -"
+      },
+      {
+        "label": "D",
+        "text": "Thomson's theory"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0002",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The principal, angular momentum, magnetic and spin quantum numbers of the third electron of boron atom have the respective values:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2, 0, 0, ½ -"
+      },
+      {
+        "label": "B",
+        "text": "2, 0, 0, −½ -"
+      },
+      {
+        "label": "C",
+        "text": "2, 1, −1, −½ -"
+      },
+      {
+        "label": "D",
+        "text": "2, 1, −1, +½"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0003",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "What is the mass of a carbon dioxide molecule? [O = 16, C = 12, Nₐ = 6.02 × 10²³]",
+    "options": [
+      {
+        "label": "A",
+        "text": "44 g -"
+      },
+      {
+        "label": "B",
+        "text": "7.31 × 10⁻²³ g -"
+      },
+      {
+        "label": "C",
+        "text": "73.1 × 10⁻²³ g -"
+      },
+      {
+        "label": "D",
+        "text": "4.4 g"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0004",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "A certain elementary gas is triatomic and has a vapour density of 48. The atomic mass of the gas is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "48 -"
+      },
+      {
+        "label": "B",
+        "text": "96 -"
+      },
+      {
+        "label": "C",
+        "text": "32 -"
+      },
+      {
+        "label": "D",
+        "text": "16"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0005",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The process of preparing hydrogen from red-hot coke and steam is generally called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Lane's process -"
+      },
+      {
+        "label": "B",
+        "text": "Reforming of coke -"
+      },
+      {
+        "label": "C",
+        "text": "Linde's process -"
+      },
+      {
+        "label": "D",
+        "text": "Bosch's process"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0006",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Ethanoic acid is a weak electrolyte because:",
+    "options": [
+      {
+        "label": "A",
+        "text": "It exists in dimer form -"
+      },
+      {
+        "label": "B",
+        "text": "It has low degree of ionization -"
+      },
+      {
+        "label": "C",
+        "text": "It has high molecular mass -"
+      },
+      {
+        "label": "D",
+        "text": "It is an organic compound"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0007",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Phenolphthalein is an acidic indicator which has the following equilibrium solution: HIn (undissociated) → H⁺ + In⁻. The undissociated form, HIn, is colourless while the ion, In⁻, is pink. What will be the colour of the indicator in acid medium?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pink -"
+      },
+      {
+        "label": "B",
+        "text": "Colourless -"
+      },
+      {
+        "label": "C",
+        "text": "Yellow -"
+      },
+      {
+        "label": "D",
+        "text": "Blue"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0008",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The conjugate acids of the Bronsted bases, HCO₃⁻ and CO₃²⁻ are:",
+    "options": [
+      {
+        "label": "A",
+        "text": "HCO₃⁻ and HCO₃²⁻ -"
+      },
+      {
+        "label": "B",
+        "text": "CO₃²⁻ and HCO₃⁻ -"
+      },
+      {
+        "label": "C",
+        "text": "H₂CO₃ and HCO₃⁻ -"
+      },
+      {
+        "label": "D",
+        "text": "CO₃²⁻ and HCO₃⁻"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0009",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "A normal body temperature is 37°C, Kw = 2.4 × 10⁻¹⁴, calculate [H₃O⁺] and [OH⁻] for a neutral solution at this temperature:",
+    "options": [
+      {
+        "label": "A",
+        "text": "[H₃O⁺] = [OH⁻] = 2.5 × 10⁻⁷ -"
+      },
+      {
+        "label": "B",
+        "text": "[H₃O⁺] = [OH⁻] = 1.5 × 10⁻⁸ -"
+      },
+      {
+        "label": "C",
+        "text": "[H₃O⁺] = [OH⁻] = 1.5 × 10⁻⁶ -"
+      },
+      {
+        "label": "D",
+        "text": "[H₃O⁺] = [OH⁻] = 1.5 × 10⁻⁷"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0010",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "One of the following is a correct quantum number combination:",
+    "options": [
+      {
+        "label": "A",
+        "text": "n = 3, l = 0, m = +2 -"
+      },
+      {
+        "label": "B",
+        "text": "n = 3, l = 0, m = +1 -"
+      },
+      {
+        "label": "C",
+        "text": "n = 2, l = 2, m = +1 -"
+      },
+      {
+        "label": "D",
+        "text": "n = 2, l = 1, m = −1"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0011",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The bromine content of average ocean water is 65 parts per weight per million. Assuming 100% recovery, how many cubic meters of ocean water must be processed to produce 0.61 kg of bromine assuming the density of seawater is 1.023 × 10³ kg/m³?",
+    "options": [
+      {
+        "label": "A",
+        "text": "9.4m³ -"
+      },
+      {
+        "label": "B",
+        "text": "12.6 m³ -"
+      },
+      {
+        "label": "C",
+        "text": "9.17 m³ -"
+      },
+      {
+        "label": "D",
+        "text": "18 m³"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0012",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "If the wavelength of a microwave oven used to cook a meal is 1.20 cm, what is the energy of one photon of this microwave radiation? [h = 6.63 × 10⁻³⁴Js; c = 3 × 10¹⁰ cm]",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.66 × 10⁻²³J -"
+      },
+      {
+        "label": "B",
+        "text": "1.66 × 10⁻²¹J -"
+      },
+      {
+        "label": "C",
+        "text": "3.32 × 10⁻²¹J -"
+      },
+      {
+        "label": "D",
+        "text": "16.6 × 10⁻²¹J"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0013",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of the following ions has the smallest size?",
+    "options": [
+      {
+        "label": "A",
+        "text": "O²⁻ -"
+      },
+      {
+        "label": "B",
+        "text": "Na⁺ -"
+      },
+      {
+        "label": "C",
+        "text": "Mg²⁺ -"
+      },
+      {
+        "label": "D",
+        "text": "F⁻"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0014",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "A sodium pellet is dropped into warm water and 500 cm³ of hydrogen gas is liberated. What mass of sodium is involved in the reaction?",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.03 g -"
+      },
+      {
+        "label": "B",
+        "text": "0.51 g -"
+      },
+      {
+        "label": "C",
+        "text": "2.30 g -"
+      },
+      {
+        "label": "D",
+        "text": "0.98 g"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0015",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Calculate the percentage by mass of water of crystallization in MgSO₄·7H₂O:",
+    "options": [
+      {
+        "label": "A",
+        "text": "51.2% -"
+      },
+      {
+        "label": "B",
+        "text": "56.7% -"
+      },
+      {
+        "label": "C",
+        "text": "50.12% -"
+      },
+      {
+        "label": "D",
+        "text": "52.55%"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0016",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "What volume of 5 moldm⁻³ tetraoxosulphate (VI) acid is required to prepare 300 cm³ of 0.5 moldm⁻³ solution?",
+    "options": [
+      {
+        "label": "A",
+        "text": "51.2% -"
+      },
+      {
+        "label": "B",
+        "text": "56.7% -"
+      },
+      {
+        "label": "C",
+        "text": "3 cm³ -"
+      },
+      {
+        "label": "D",
+        "text": "50 cm³"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0017",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "An ion complex with molecular formula C₃H₂FeN₄O₄, constitutes 6% of haemoglobin by mass. If a blood sample contains 0.75 g of haemoglobin, what percentage of Fe is contributed by the complex?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.0041g -"
+      },
+      {
+        "label": "B",
+        "text": "0.0450g -"
+      },
+      {
+        "label": "C",
+        "text": "0.0600g -"
+      },
+      {
+        "label": "D",
+        "text": "0.00556g"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0018",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The temperature above which the liquid state of a substance no longer exists is called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Supercritical temperature -"
+      },
+      {
+        "label": "B",
+        "text": "Critical pressure -"
+      },
+      {
+        "label": "C",
+        "text": "Critical temperature -"
+      },
+      {
+        "label": "D",
+        "text": "Critical point"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0019",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "According to the collision theory and kinetic theory, increase in temperature does the following except:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Supercritical temperature -"
+      },
+      {
+        "label": "B",
+        "text": "Critical pressure -"
+      },
+      {
+        "label": "C",
+        "text": "Increases the frequency of collision -"
+      },
+      {
+        "label": "D",
+        "text": "Increases the number of particles with energy greater than the activation energy"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0020",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The part of the universe that is of immediate interest in a reaction is termed:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Universe -"
+      },
+      {
+        "label": "B",
+        "text": "Surrounding -"
+      },
+      {
+        "label": "C",
+        "text": "System -"
+      },
+      {
+        "label": "D",
+        "text": "Environment"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0021",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "A substance has the following composition by mass: 60.80% Na; 28.60% B; 10.60% H. What is the empirical formula of the substance?",
+    "options": [
+      {
+        "label": "A",
+        "text": "NaBH₄ -"
+      },
+      {
+        "label": "B",
+        "text": "NaBH -"
+      },
+      {
+        "label": "C",
+        "text": "NaB₂H₄ -"
+      },
+      {
+        "label": "D",
+        "text": "Na₂BH"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0022",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Find the volume occupied by 3.55 g of chlorine gas at room temperature and pressure. [Cl = 35.5; Vm at stp = 22.4 dm³ mol⁻¹]",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.1 dm³ -"
+      },
+      {
+        "label": "B",
+        "text": "2.4 dm³ -"
+      },
+      {
+        "label": "C",
+        "text": "0.6 dm³ -"
+      },
+      {
+        "label": "D",
+        "text": "12 dm³"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0023",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of these bonds does not exist within a molecule of ammonium chloride?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ionic -"
+      },
+      {
+        "label": "B",
+        "text": "Covalent -"
+      },
+      {
+        "label": "C",
+        "text": "Dative covalent -"
+      },
+      {
+        "label": "D",
+        "text": "Van der Waals"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0024",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The dissolution of a non-volatile solute in a volatile solvent:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Increases its boiling point -"
+      },
+      {
+        "label": "B",
+        "text": "Has no effect -"
+      },
+      {
+        "label": "C",
+        "text": "Has no effect -"
+      },
+      {
+        "label": "D",
+        "text": "Van der Waals"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0025",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of the following molecules is square planar in shape?",
+    "options": [
+      {
+        "label": "A",
+        "text": "XeO₄ -"
+      },
+      {
+        "label": "B",
+        "text": "XeF₄ -"
+      },
+      {
+        "label": "C",
+        "text": "SF₄ -"
+      },
+      {
+        "label": "D",
+        "text": "SiF₄"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0026",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "What happens when lithium and oxygen react together?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Each lithium atom gains one electron; each oxygen atom loses one electron -"
+      },
+      {
+        "label": "B",
+        "text": "Each lithium atom gains one electron; each oxygen atom loses one electron -"
+      },
+      {
+        "label": "C",
+        "text": "Each lithium atom loses one electron; each oxygen atom loses one electron -"
+      },
+      {
+        "label": "D",
+        "text": "Each oxygen atom gains one electron; each oxygen atom loses one electron"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0027",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which statement about covalent bond is correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Breaking covalent bond is exothermic and releases energy -"
+      },
+      {
+        "label": "B",
+        "text": "Breaking covalent bond is endothermic and absorbs energy -"
+      },
+      {
+        "label": "C",
+        "text": "Making covalent bond is endothermic and absorbs energy -"
+      },
+      {
+        "label": "D",
+        "text": "Making covalent bond is endothermic and releases energy"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0028",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "A gas that is confined in a rigid container is heated. Which of the following statements is TRUE?",
+    "options": [
+      {
+        "label": "A",
+        "text": "The kinetic energy of the gas particle will decrease -"
+      },
+      {
+        "label": "B",
+        "text": "The pressure will increase -"
+      },
+      {
+        "label": "C",
+        "text": "The density will decrease -"
+      },
+      {
+        "label": "D",
+        "text": "The number of moles of gas will increase"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0029",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Equal masses of hydrogen and oxygen are placed in a rigid closed container. Which statement is TRUE about the system?",
+    "options": [
+      {
+        "label": "A",
+        "text": "There are more hydrogen molecule than oxygen molecule -"
+      },
+      {
+        "label": "B",
+        "text": "All the molecules have the same velocity -"
+      },
+      {
+        "label": "C",
+        "text": "Both gases exact the same pressure on the walls of the container -"
+      },
+      {
+        "label": "D",
+        "text": "All the molecules strike the walls with the same force"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0030",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of the following atoms is never found with more than an octet of valence electrons around it?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Si -"
+      },
+      {
+        "label": "B",
+        "text": "C -"
+      },
+      {
+        "label": "C",
+        "text": "P -"
+      },
+      {
+        "label": "D",
+        "text": "Br"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0031",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "A rigid metal tank contains helium gas. Which applies to the gas in the tank when some helium is removed at constant temperature?",
+    "options": [
+      {
+        "label": "A",
+        "text": "The volume of the gas decreases -"
+      },
+      {
+        "label": "B",
+        "text": "The pressure of the gas decreases -"
+      },
+      {
+        "label": "C",
+        "text": "The average speed of the gas molecules decreases -"
+      },
+      {
+        "label": "D",
+        "text": "The total number of gas molecules remains the same"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0032",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The IUPAC name of the compound shown below is: (1,3,5-trimethyl cyclopentane with CH₃ groups)",
+    "options": [
+      {
+        "label": "A",
+        "text": "1,2,4-trimethyl cyclopentane -"
+      },
+      {
+        "label": "B",
+        "text": "1,3,4-trimethyl cyclopentane -"
+      },
+      {
+        "label": "C",
+        "text": "1,3,5-trimethyl cyclopentane -"
+      },
+      {
+        "label": "D",
+        "text": "trimethyl cyclopentane"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0033",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The following compounds exhibit covalent bonding EXCEPT:",
+    "options": [
+      {
+        "label": "A",
+        "text": "AlCl₃.NH₃ -"
+      },
+      {
+        "label": "B",
+        "text": "Al₂Cl₆ -"
+      },
+      {
+        "label": "C",
+        "text": "NH₄⁺ -"
+      },
+      {
+        "label": "D",
+        "text": "NH₃"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0034",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "If the rate of reaction becomes double for every 10°C rise in temperature, by what factor will the rate of reaction increase when temperature is increase from 25°C to 65°C?",
+    "options": [
+      {
+        "label": "A",
+        "text": "8 -"
+      },
+      {
+        "label": "B",
+        "text": "16 -"
+      },
+      {
+        "label": "C",
+        "text": "32 -"
+      },
+      {
+        "label": "D",
+        "text": "64"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0035",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The t₀.₅ for a second order reaction is: k/[A]⁰·⁶⁹⁸ = 1/k[A]; formula is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "k/[A] -"
+      },
+      {
+        "label": "B",
+        "text": "1/k[a] -"
+      },
+      {
+        "label": "C",
+        "text": "2k[A]³ -"
+      },
+      {
+        "label": "D",
+        "text": "7/3k[A]³"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0036",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The formula for the compound dichlorodiammine platinum (II) is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "[Pt(NH₄)₂Cl₂] -"
+      },
+      {
+        "label": "B",
+        "text": "[Pt(NH₃)₂Cl₂] -"
+      },
+      {
+        "label": "C",
+        "text": "[Pl(NH₄)₂Cl₂] -"
+      },
+      {
+        "label": "D",
+        "text": "[Pl(NH₃)₂Cl₂]"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0037",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of the following pollutants is dangerous to the ozone layer?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CFC -"
+      },
+      {
+        "label": "B",
+        "text": "CO₂ -"
+      },
+      {
+        "label": "C",
+        "text": "CO -"
+      },
+      {
+        "label": "D",
+        "text": "Oxides of nitrogen"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0038",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The order of increasing ionic character of LiH, NaH, KH, RbH, CsH is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "LiH, NaH, CsH, KH, RbH -"
+      },
+      {
+        "label": "B",
+        "text": "LiH, NaH, KH, RbH, CsH -"
+      },
+      {
+        "label": "C",
+        "text": "RbH, CsH, NaH, KH, LiH -"
+      },
+      {
+        "label": "D",
+        "text": "NaH, CsH, RbH, KH, LiH"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0039",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which alcohol will most easily react with HCl in presence of ZnCl₂ to form an alkyl halide?",
+    "options": [
+      {
+        "label": "A",
+        "text": "primary alcohol -"
+      },
+      {
+        "label": "B",
+        "text": "secondary alcohol -"
+      },
+      {
+        "label": "C",
+        "text": "tertiary alcohol -"
+      },
+      {
+        "label": "D",
+        "text": "all alcohols react equally"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0041",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The correct name of (C₂H₅)₂C=C(CH₃)CH₂CO₂H is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "4,4-diethyl-3-methyl-3-butenoic acid -"
+      },
+      {
+        "label": "B",
+        "text": "3-ethyl-4-methyl-3-hexenoic acid -"
+      },
+      {
+        "label": "C",
+        "text": "3-ethyl-4-methyl-3-hexenoic acid -"
+      },
+      {
+        "label": "D",
+        "text": "3-ethyl-4-methyl-3-hexen-6-oic acid"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0042",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of the following pairs of compounds are not isomers of each other?",
+    "options": [
+      {
+        "label": "A",
+        "text": "n-pentane and 2-methylbutane -"
+      },
+      {
+        "label": "B",
+        "text": "CH₃CHOH and CH₃CHO -"
+      },
+      {
+        "label": "C",
+        "text": "CH₃COCH₃ and CH₃CH₂CHO -"
+      },
+      {
+        "label": "D",
+        "text": "CH₃COOCH₃ and CH₃CH₂COOH"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0043",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The name of the compound below is: (structure showing N-dimethylbutanamide)",
+    "options": [
+      {
+        "label": "A",
+        "text": "dimethyl-2,3,3-trimethylbutanamide -"
+      },
+      {
+        "label": "B",
+        "text": "N,N-dimethyl-2,3,3-trimethylbutanamide -"
+      },
+      {
+        "label": "C",
+        "text": "N,N-dimethyl-2,3,3-trimethylbutanamide -"
+      },
+      {
+        "label": "D",
+        "text": "N-dimethyl-2,3-dimethylbutanamide"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0044",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Succinic acid is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "HOOC–(CH₂)₁–COOH -"
+      },
+      {
+        "label": "B",
+        "text": "HOOC–(CH₂)₂–COOH -"
+      },
+      {
+        "label": "C",
+        "text": "HOOC–(CH₂)₃–COOH -"
+      },
+      {
+        "label": "D",
+        "text": "HOOC–(CH₂)₄–COOH"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0045",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of the following will not give an alcohol on reduction?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CH₃COCl -"
+      },
+      {
+        "label": "B",
+        "text": "CH₃COOCH₃ -"
+      },
+      {
+        "label": "C",
+        "text": "CH₃CONH₂ -"
+      },
+      {
+        "label": "D",
+        "text": "CH₃COOH"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0046",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Vinegar contains mainly:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ethyl ethanoate -"
+      },
+      {
+        "label": "B",
+        "text": "Ethanoic acid -"
+      },
+      {
+        "label": "C",
+        "text": "Ethanamide -"
+      },
+      {
+        "label": "D",
+        "text": "Ethanol"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0047",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The name of this compound is (structure showing HC≡C–CH₂–CH₃ with CH₃ group):",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ethyl ethanoate -"
+      },
+      {
+        "label": "B",
+        "text": "Ethanoic acid -"
+      },
+      {
+        "label": "C",
+        "text": "Ethanamide -"
+      },
+      {
+        "label": "D",
+        "text": "Ethanol"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0048",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "Which of these pairs are homologues?",
+    "options": [
+      {
+        "label": "A",
+        "text": "1-butene -"
+      },
+      {
+        "label": "B",
+        "text": "Propyne -"
+      },
+      {
+        "label": "C",
+        "text": "Acetylene -"
+      },
+      {
+        "label": "D",
+        "text": "1-butyne"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0049",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The odd one out among the compounds below is/are:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Acetylene and naphthalene -"
+      },
+      {
+        "label": "B",
+        "text": "Heptanol and ethanoic acid -"
+      },
+      {
+        "label": "C",
+        "text": "Nonyne and methyl butyne -"
+      },
+      {
+        "label": "D",
+        "text": "Heptanol and ethanoic acid"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2017-mq-0050",
+    "subject": "chemistry",
+    "year": 2017,
+    "category": "objective",
+    "question": "The product of catalytic cracking of C₁₂H₂₆ are:",
+    "options": [
+      {
+        "label": "A",
+        "text": "C₃H₁₀ and C₄H₁₆ -"
+      },
+      {
+        "label": "B",
+        "text": "C₃H₁₀ and C₄H₁₆ -"
+      },
+      {
+        "label": "C",
+        "text": "C₅H₁₄ and C₇H₁₂ -"
+      },
+      {
+        "label": "D",
+        "text": "C₃H₁₂ and C₇H₁₄"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

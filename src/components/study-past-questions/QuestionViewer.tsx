@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { AITutor } from "@/components/AITutor";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, Send, RotateCcw,
@@ -6,7 +7,7 @@ import {
 } from "lucide-react";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import type { Subject, Question } from "@/types/question";
-import { AITutor } from "@/components/AITutor";
+
 import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 
@@ -57,18 +58,36 @@ export function QuestionViewer({
   const question = questions[current];
   const category = question?.category ?? "objective";
   const total = questions.length;
-  const answeredCount = Object.keys(answers).length + submittedTheory.size;
+  const answeredCount = useMemo(() => {
+    let count = Object.keys(answers).length;
+    for (const q of questions) {
+      if (submittedTheory.has(q.id)) { count++; continue; }
+      if (q.subQuestions && q.subQuestions.every(sq => submittedTheory.has(sq.id))) { count++; }
+    }
+    return count;
+  }, [questions, answers, submittedTheory]);
   const allAnswered = answeredCount >= total;
+
+  const goTo = useCallback((idx: number, dir: number) => {
+    const clamped = Math.max(0, Math.min(idx, Math.max(0, total - 1)));
+    setDirection(dir);
+    setCurrent(clamped);
+    setShowJumpGrid(false);
+  }, [total]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [current]);
 
-  const goTo = useCallback((idx: number, dir: number) => {
-    setDirection(dir);
-    setCurrent(idx);
-    setShowJumpGrid(false);
-  }, []);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (showJumpGrid) return;
+      if (e.key === "ArrowLeft" && current > 0) goTo(current - 1, -1);
+      if (e.key === "ArrowRight" && current < total - 1) goTo(current + 1, 1);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [current, total, showJumpGrid, goTo]);
 
   const handleMCQSelect = useCallback((optionLabel: string) => {
     const q = questions[current];
@@ -179,11 +198,23 @@ export function QuestionViewer({
     );
   }
 
+  const allSubmittedSubQuestions = useMemo(() => {
+    const ids = new Set<string>();
+    for (const q of questions) {
+      if (q.subQuestions) {
+        const allSubs = q.subQuestions.every(sq => submittedTheory.has(sq.id));
+        if (allSubs) ids.add(q.id);
+      }
+    }
+    return ids;
+  }, [questions, submittedTheory]);
+
   const getQuestionStatus = (idx: number) => {
     const q = questions[idx];
     if (!q) return "unanswered";
     if (answers[q.id]) return "answered";
     if (submittedTheory.has(q.id)) return "answered";
+    if (allSubmittedSubQuestions.has(q.id)) return "answered";
     return "unanswered";
   };
 
@@ -276,7 +307,7 @@ export function QuestionViewer({
               <motion.div
                 className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
                 initial={false}
-                animate={{ width: `${((current + 1) / total) * 100}%` }}
+                animate={{ width: `${total > 0 ? (answeredCount / total) * 100 : 0}%` }}
                 transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
               />
             </div>
@@ -494,7 +525,7 @@ export function QuestionViewer({
           <button
             onClick={() => goTo(current - 1, -1)}
             disabled={current === 0}
-            className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-xl border border-border bg-card hover:bg-accent disabled:opacity-30 transition-colors active:scale-[0.97]"
+            className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-xl border border-border bg-card hover:bg-accent disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-[0.97]"
           >
             <ChevronLeft className="h-4 w-4" />
             Previous
@@ -519,7 +550,7 @@ export function QuestionViewer({
               <button
                 onClick={() => goTo(current + 1, 1)}
                 disabled={current >= total - 1}
-                className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-30 transition-colors active:scale-[0.97]"
+                className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-[0.97]"
               >
                 Next
                 <ChevronRight className="h-4 w-4" />

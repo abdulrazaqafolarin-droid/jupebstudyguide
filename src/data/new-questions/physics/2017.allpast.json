@@ -1,0 +1,310 @@
+[
+  {
+    "id": "phy-2017-mq-0001",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Ideal spring constant k cut into two halves. Spring constant of either half:",
+    "options": [
+      {
+        "label": "A",
+        "text": "k/2"
+      },
+      {
+        "label": "B",
+        "text": "√k"
+      },
+      {
+        "label": "C",
+        "text": "k²"
+      },
+      {
+        "label": "D",
+        "text": "2k"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0002",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Asteroid moves in elliptic orbit with sun at one focus. As it moves from P to Q, which quantity increases?",
+    "options": [
+      {
+        "label": "A",
+        "text": "potential energy"
+      },
+      {
+        "label": "B",
+        "text": "angular momentum"
+      },
+      {
+        "label": "C",
+        "text": "total energy"
+      },
+      {
+        "label": "D",
+        "text": "kinetic energy"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0003",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Find mass in kg of 7.50×10²⁴ atoms of arsenic (molar mass 74.9g/mol):",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.734kg"
+      },
+      {
+        "label": "B",
+        "text": "0.933kg"
+      },
+      {
+        "label": "C",
+        "text": "1.872kg"
+      },
+      {
+        "label": "D",
+        "text": "0.714kg"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0004",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Open organ pipe length 0.75cm. Length of pipe closed at one end whose third harmonic equals fundamental frequency:",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.1m"
+      },
+      {
+        "label": "B",
+        "text": "1.2m"
+      },
+      {
+        "label": "C",
+        "text": "1.3m"
+      },
+      {
+        "label": "D",
+        "text": "1.4m"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0005",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Light enters water from air. Angle of refraction:",
+    "options": [
+      {
+        "label": "A",
+        "text": "greater than or equal to angle of incidence"
+      },
+      {
+        "label": "B",
+        "text": "greater than angle of incidence -"
+      },
+      {
+        "label": "C",
+        "text": "less than angle of incidence"
+      },
+      {
+        "label": "D",
+        "text": "equal to angle of incidence"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0006",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Book at rest on table. Which is correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "no force acting on book"
+      },
+      {
+        "label": "B",
+        "text": "book has no inertia -"
+      },
+      {
+        "label": "C",
+        "text": "no force acting on table"
+      },
+      {
+        "label": "D",
+        "text": "book is in equilibrium"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0008",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Object moves in circular path radius 0.5m with speed 0.5m/s. Angular velocity:",
+    "options": [
+      {
+        "label": "A",
+        "text": "−16m/s"
+      },
+      {
+        "label": "B",
+        "text": "4m/s"
+      },
+      {
+        "label": "C",
+        "text": "12m/s"
+      },
+      {
+        "label": "D",
+        "text": "−8m/s"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0009",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Object at circular path 0.5m radius moves at speed 0.5m/s in circle, find angular velocity:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2.0rad/s"
+      },
+      {
+        "label": "B",
+        "text": "0.5rad/s"
+      },
+      {
+        "label": "C",
+        "text": "1.0rad/s"
+      },
+      {
+        "label": "D",
+        "text": "1.5rad/s"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0011",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "A machine requires 1000J of work to raise load. Calculate the efficiency of the machine:",
+    "options": [
+      {
+        "label": "A",
+        "text": "80%"
+      },
+      {
+        "label": "B",
+        "text": "75%"
+      },
+      {
+        "label": "C",
+        "text": "50%"
+      },
+      {
+        "label": "D",
+        "text": "33%"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0012",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "Stone and feather dropped from same height above earth surface. Ignoring air resistance, which is correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "feather will reach ground first"
+      },
+      {
+        "label": "B",
+        "text": "same stone and feather reach ground first -"
+      },
+      {
+        "label": "C",
+        "text": "stone and feather will reach ground at same time"
+      },
+      {
+        "label": "D",
+        "text": "the stone will reach ground first"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2017-mq-0013",
+    "subject": "physics",
+    "year": 2017,
+    "category": "objective",
+    "question": "A gun of mass 2.0kg fires bullet of mass 1.6×10⁻²kg at velocity 150m/s while stone will be blown away by wind at velocity of 150m/s. What is recoil velocity of gun?",
+    "options": [
+      {
+        "label": "A",
+        "text": "150ms⁻¹ due west"
+      },
+      {
+        "label": "B",
+        "text": "1.2ms⁻¹ due west -"
+      },
+      {
+        "label": "C",
+        "text": "1.2×10⁻²ms⁻¹ due east"
+      },
+      {
+        "label": "D",
+        "text": "150ms⁻¹ due east"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

@@ -34,6 +34,7 @@ const FriendsPage = lazy(() => import("./pages/FriendsPage"));
 const DownloadApp = lazy(() => import("./pages/DownloadApp"));
 const ActivationCodes = lazy(() => import("./pages/admin/ActivationCodes"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const SyllabusPage = lazy(() => import("./pages/SyllabusPage"));
 
 
 const queryClient = new QueryClient();
@@ -213,6 +214,18 @@ function AnimatedRoutes() {
               <ErrorBoundary>
                 <ProtectedLayout>
                   <DiscoverPage />
+                </ProtectedLayout>
+              </ErrorBoundary>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/syllabus" 
+          element={
+            <ProtectedRoute>
+              <ErrorBoundary>
+                <ProtectedLayout>
+                  <SyllabusPage />
                 </ProtectedLayout>
               </ErrorBoundary>
             </ProtectedRoute>

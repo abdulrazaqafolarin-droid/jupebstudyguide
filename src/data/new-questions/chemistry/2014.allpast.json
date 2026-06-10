@@ -1,0 +1,58 @@
+[
+  {
+    "id": "che-2014-mq-0001",
+    "subject": "chemistry",
+    "year": 2014,
+    "category": "objective",
+    "question": "The equilibrium constant Keq = 0.040 for:",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.40"
+      },
+      {
+        "label": "B",
+        "text": "0.64 **"
+      },
+      {
+        "label": "C",
+        "text": "2.4**"
+      },
+      {
+        "label": "D",
+        "text": "0.052"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2014-mq-0002",
+    "subject": "chemistry",
+    "year": 2014,
+    "category": "objective",
+    "question": "Conjugate acid of OH⁻?",
+    "options": [
+      {
+        "label": "A",
+        "text": "No conjugate acid **"
+      },
+      {
+        "label": "B",
+        "text": "H₂O**"
+      },
+      {
+        "label": "C",
+        "text": "H₃O⁺"
+      },
+      {
+        "label": "D",
+        "text": "O²⁻"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

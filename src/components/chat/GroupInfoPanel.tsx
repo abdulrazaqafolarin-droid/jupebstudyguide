@@ -46,6 +46,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const [confirmMemberId, setConfirmMemberId] = useState<string | null>(null);
   const [confirmMemberName, setConfirmMemberName] = useState('');
   const [confirmTargetName, setConfirmTargetName] = useState('');
+  const [createdBy, setCreatedBy] = useState<string | null>(null);
 
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,13 +73,29 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
       supabase.from('conversations').select('group_avatar, created_by').eq('id', conversationId).single(),
       supabase.from('conversation_participants').select('user_id').eq('conversation_id', conversationId),
       supabase.rpc('is_muted', { p_conversation_id: conversationId }),
-    ]).then(async ([convRes, partsRes, muteRes]) => {
+      // Try is_admin column (may fail until migration is applied - error is handled in then())
+      supabase.from('conversation_participants').select('user_id, is_admin').eq('conversation_id', conversationId),
+      // Try messages_policy column (may fail until migration is applied - error is handled in then())
+      supabase.from('conversations').select('messages_policy').eq('id', conversationId).single(),
+    ]).then(async ([convRes, partsRes, muteRes, adminRes, policyRes]) => {
+      if (convRes.error) { setLoading(false); return; }
       if (convRes.data?.group_avatar) setAvatarUrl(convRes.data.group_avatar);
-      const createdBy = (convRes.data as { created_by?: string } | null)?.created_by;
+      const cby = (convRes.data as { created_by?: string } | null)?.created_by ?? null;
+      setCreatedBy(cby);
+      if (!muteRes?.error && muteRes.data !== null && typeof muteRes.data === 'boolean') setMuted(muteRes.data);
+      // messages_policy with graceful fallback if column doesn't exist yet
+      if (!policyRes?.error && policyRes?.data?.messages_policy) setMessagesPolicy(policyRes.data.messages_policy);
       if (!partsRes.error && partsRes.data && partsRes.data.length > 0) {
         const userIds = partsRes.data.map(p => p.user_id);
-        // Use created_by as admin fallback until is_admin migration is applied
-        const adminSet = createdBy ? new Set([createdBy]) : new Set(userIds);
+        // is_admin with graceful fallback to created_by (or all members as fallback)
+        let adminSet: Set<string>;
+        if (!adminRes?.error && adminRes?.data && Array.isArray(adminRes.data) && adminRes.data.length > 0) {
+          adminSet = new Set(adminRes.data.filter(p => p.is_admin).map(p => p.user_id));
+        } else if (cby) {
+          adminSet = new Set([cby]);
+        } else {
+          adminSet = new Set(userIds);
+        }
         const { data: profiles } = await supabase
           .from('profiles')
           .select('user_id, display_name, avatar_url')
@@ -165,7 +182,16 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
 
   const handleToggleAdmin = async (memberId: string, makeAdmin: boolean) => {
     if (!isAdmin) return;
-    if (!makeAdmin && adminCount <= 1 && members.find(m => m.user_id === memberId)?.is_admin) {
+    const targetIsAdmin = members.find(m => m.user_id === memberId)?.is_admin;
+    if (!makeAdmin && memberId === createdBy) {
+      toast.error('The group creator cannot be demoted');
+      return;
+    }
+    if (!makeAdmin && user?.id !== createdBy && targetIsAdmin) {
+      toast.error('Only the group creator can demote admins');
+      return;
+    }
+    if (!makeAdmin && adminCount <= 1 && targetIsAdmin) {
       toast.error('Group must have at least one admin');
       return;
     }
@@ -197,7 +223,11 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   };
 
   const handleToggleMute = async () => {
-    const { data } = await supabase.rpc('toggle_mute_conversation', { p_conversation_id: conversationId });
+    const { data, error } = await supabase.rpc('toggle_mute_conversation', { p_conversation_id: conversationId });
+    if (error) {
+      toast.error('Mute is not available yet. Apply the pending DB migration.');
+      return;
+    }
     if (typeof data === 'boolean') setMuted(data);
   };
 
@@ -440,7 +470,11 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                                 <span className="text-sm font-medium truncate">
                                   {member.display_name || 'User'}
                                 </span>
-                                {isMemberAdmin && (
+                                {member.user_id === createdBy ? (
+                                  <span className="text-[9px] text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-full shrink-0 font-medium">
+                                    creator
+                                  </span>
+                                ) : isMemberAdmin && (
                                   <span className="text-[9px] text-primary bg-primary/10 px-1.5 py-0.5 rounded-full shrink-0 font-medium">
                                     admin
                                   </span>
@@ -452,7 +486,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                           {isAdmin && !isSelf && (
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                               {isMemberAdmin ? (
-                                adminCount > 1 && (
+                                adminCount > 1 && member.user_id !== createdBy && user?.id === createdBy && (
                                   <button
                                     onClick={() => requestConfirm('demote', member.user_id, member.display_name || 'User')}
                                     className="p-1.5 rounded-lg hover:bg-accent transition-colors"

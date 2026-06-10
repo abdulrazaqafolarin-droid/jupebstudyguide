@@ -12,6 +12,7 @@ import {
   UserCheck, BarChart3, Download, RefreshCw
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AIKeyVault from "@/components/admin/AIKeyVault";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -603,6 +604,14 @@ export default function AdminDashboard() {
               )}
             </CardContent>
           </Card>
+        </motion.div>
+        {/* AI Key Vault */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.4 }}
+        >
+          <AIKeyVault />
         </motion.div>
       </main>
     </div>

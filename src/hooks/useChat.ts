@@ -232,13 +232,9 @@ export function useChat() {
       const convIds = participantData.map(p => p.conversation_id);
       convIdsRef.current = convIds;
 
-      // NOTE: messages_policy and is_admin columns exist in migration
-      // 20260608000001_multi_admin_messaging.sql but may not be applied yet.
-      // Only select columns that exist in the current schema to avoid
-      // breaking conversation loading.
       const { data: convData } = await supabase
         .from('conversations')
-        .select('id, created_at, updated_at, unread_count_a, unread_count_b, group_name, group_avatar')
+        .select('id, created_at, updated_at, unread_count_a, unread_count_b, group_name, group_avatar, messages_policy')
         .in('id', convIds)
         .order('updated_at', { ascending: false });
 
@@ -250,14 +246,18 @@ export function useChat() {
 
       const { data: allParticipants } = await supabase
         .from('conversation_participants')
-        .select('conversation_id, user_id')
+        .select('conversation_id, user_id, is_admin')
         .in('conversation_id', convIds);
 
       const participantsByConv = new Map<string, string[]>();
+      const adminMap = new Map<string, boolean>();
       for (const p of allParticipants ?? []) {
         const list = participantsByConv.get(p.conversation_id) ?? [];
         list.push(p.user_id);
         participantsByConv.set(p.conversation_id, list);
+        if (p.user_id === user.id && p.is_admin) {
+          adminMap.set(p.conversation_id, true);
+        }
       }
       for (const [convId, ids] of participantsByConv) {
         ids.sort();
@@ -340,8 +340,8 @@ export function useChat() {
           group_name: groupName,
           group_avatar: groupAvatar,
           participants,
-          messages_policy: undefined,
-          is_admin: undefined,
+          messages_policy: (conv as Record<string, unknown>).messages_policy as string | undefined,
+          is_admin: adminMap.get(conv.id) ?? false,
         };
       });
       enriched.sort((a, b) => {
@@ -1239,10 +1239,10 @@ export function useChat() {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url')
+        .select('user_id, display_name, avatar_url, bio, email')
         .neq('user_id', user.id)
-        .ilike('display_name', `%${query}%`)
-        .limit(10);
+        .or(`display_name.ilike.%${query}%,email.ilike.%${query}%,bio.ilike.%${query}%`)
+        .limit(20);
 
       return data || [];
     } catch (err) {

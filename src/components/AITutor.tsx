@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { streamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
+import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
 
 interface Message {
@@ -108,7 +109,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     const questionContext = `\n\n--- Current Question Being Studied ---\nSubject: ${question.subject}\nTopic: ${question.topic}\nQuestion: ${question.question}\n${question.options ? `Options: ${JSON.stringify(question.options)}` : ''}\nCorrect Answer: ${question.correctAnswer}\nExplanation: ${question.explanation}`;
-    const systemPrompt = TUTOR_SYSTEM_PROMPT + questionContext;
+    const systemPrompt = TUTOR_SYSTEM_PROMPT + questionContext + getSyllabusContext();
 
     let ragContext = "";
     try {

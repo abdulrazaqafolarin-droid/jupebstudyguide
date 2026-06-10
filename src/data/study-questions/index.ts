@@ -4,8 +4,6 @@ import { getPhysicsQuestions } from "./physics";
 import { getChemistryQuestions } from "./chemistry";
 import { getBiologyQuestions } from "./biology";
 import { getMathQuestions } from "./math";
-import { getImportedQuestions } from "@/data/imported-questions";
-import { getExtractedQuestions } from "@/data/extracted-questions";
 
 const getters: Record<Subject, (year: number) => { objective: StudyQuestion[]; theory: StudyQuestion[]; practical: StudyQuestion[] }> = {
   physics: getPhysicsQuestions,
@@ -16,12 +14,10 @@ const getters: Record<Subject, (year: number) => { objective: StudyQuestion[]; t
 
 function getMergedAll(subject: Subject, year: number, category?: StudyCategory): StudyQuestion[] {
   const base = getters[subject](year);
-  const imported = getImportedQuestions(subject, year);
-  const extracted = getExtractedQuestions(subject, year);
-  if (category === "objective") return [...base.objective, ...imported.filter(q => q.category === "objective"), ...extracted.filter(q => q.category === "objective")];
-  if (category === "theory") return [...base.theory, ...imported.filter(q => q.category === "theory"), ...extracted.filter(q => q.category === "theory")];
-  if (category === "practical") return [...base.practical, ...imported.filter(q => q.category === "practical"), ...extracted.filter(q => q.category === "practical")];
-  return [...base.objective, ...base.theory, ...base.practical, ...imported, ...extracted];
+  if (category === "objective") return base.objective;
+  if (category === "theory") return base.theory;
+  if (category === "practical") return base.practical;
+  return [...base.objective, ...base.theory, ...base.practical];
 }
 
 export function getStudyQuestionsByYear(year: number): StudyQuestion[] {
@@ -53,18 +49,32 @@ export function countStudyQuestionsBySubject(subject: Subject): Record<number, n
   const counts: Record<number, number> = {};
   for (const year of getAllStudyYears()) {
     const data = getters[subject](year);
-    const imported = getImportedQuestions(subject, year);
-    const extracted = getExtractedQuestions(subject, year);
-    counts[year] = data.objective.length + data.theory.length + data.practical.length + imported.length + extracted.length;
+    counts[year] = data.objective.length + data.theory.length + data.practical.length;
   }
   return counts;
+}
+
+export function getAllStudyQuestionsForSubject(subject: Subject): StudyQuestion[] {
+  const years = getAllStudyYears();
+  const all: StudyQuestion[] = [];
+  for (const year of years) {
+    all.push(...getStudyQuestionsBySubject(subject, year));
+  }
+  return all;
+}
+
+export function getAllStudyQuestions(): StudyQuestion[] {
+  const subjects = ["physics", "chemistry", "biology", "math"] as Subject[];
+  const all: StudyQuestion[] = [];
+  for (const subject of subjects) {
+    all.push(...getAllStudyQuestionsForSubject(subject));
+  }
+  return all;
 }
 
 export function getAvailableSubjectsForYear(year: number): Subject[] {
   return (Object.keys(getters) as Subject[]).filter((s) => {
     const data = getters[s](year);
-    const imported = getImportedQuestions(s, year);
-    const extracted = getExtractedQuestions(s, year);
-    return data.objective.length > 0 || data.theory.length > 0 || data.practical.length > 0 || imported.length > 0 || extracted.length > 0;
+    return data.objective.length > 0 || data.theory.length > 0 || data.practical.length > 0;
   });
 }

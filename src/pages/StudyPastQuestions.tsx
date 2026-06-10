@@ -148,7 +148,6 @@ export default function StudyPastQuestions() {
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-    setSearchSubjectFilter(SUBJECTS);
     if (query.trim().length < 2) {
       setSearchResults([]);
       return;
@@ -177,6 +176,16 @@ export default function StudyPastQuestions() {
     }
     setSearchResults(results);
   }, []);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const handleSearchInput = useCallback((value: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (value.trim().length < 2) {
+      handleSearch(value);
+      return;
+    }
+    debounceRef.current = setTimeout(() => handleSearch(value), 250);
+  }, [handleSearch]);
 
   const handleSubjectSelect = (subject: Subject) => {
     selectSubject(subject);
@@ -264,7 +273,7 @@ export default function StudyPastQuestions() {
                     ref={searchInputRef}
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
+                    onChange={(e) => handleSearchInput(e.target.value)}
                     placeholder="Search questions..."
                     className="flex-1 bg-secondary/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 border border-border/40"
                     autoFocus

@@ -17,6 +17,7 @@ import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, 
 import { toast } from 'sonner';
 import { streamChat as aiStreamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
+import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
 
 
@@ -389,7 +390,7 @@ export const FloatingAITutor = () => {
 
     saveUserMessage(chatId, userMsg).catch(console.error);
 
-    const systemPrompt = TUTOR_SYSTEM_PROMPT + "\n\n" + GENERAL_CHAT_PROMPT;
+    const systemPrompt = TUTOR_SYSTEM_PROMPT + "\n\n" + GENERAL_CHAT_PROMPT + getSyllabusContext();
 
     let ragContext = "";
     try {

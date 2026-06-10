@@ -93,15 +93,23 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
     });
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
-        channel.track({ user_id: user.id, online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null } as PresenceState);
+        channel.untrack();
         updateLastSeen();
         syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
+        console.log('[presence] tab hidden — untracked');
       } else {
-        channel.track({ user_id: user.id, online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null } as PresenceState);
+        channel.track({
+          user_id: user.id,
+          online_at: new Date().toISOString(),
+          typing_in: null,
+          recording_vn_in: null,
+        } as PresenceState);
         syncPresenceToDb({ is_online: true, online_at: new Date().toISOString() });
+        console.log('[presence] tab visible — tracked');
       }
     };
     const handleBeforeUnload = () => {
+      channel.untrack();
       updateLastSeen();
       syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
     };

@@ -1,0 +1,1346 @@
+[
+  {
+    "id": "che-2020-mq-0001",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following statements is incorrect?",
+    "options": [
+      {
+        "label": "A",
+        "text": "An atom is electrically neutral -"
+      },
+      {
+        "label": "B",
+        "text": "The size of a cation is bigger than that of the corresponding atom -"
+      },
+      {
+        "label": "C",
+        "text": "An atom and its ion can have an equal unequal number of protons. -"
+      },
+      {
+        "label": "D",
+        "text": "Bronsted-Lowry base is a proton acceptor"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0002",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "An electron pair acceptor",
+    "options": [
+      {
+        "label": "A",
+        "text": "A proton acceptor -"
+      },
+      {
+        "label": "B",
+        "text": "An electron pair acceptor -"
+      },
+      {
+        "label": "C",
+        "text": "an electron par donor -"
+      },
+      {
+        "label": "D",
+        "text": "a proton donor"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0003",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which rule states that no two electrons in an atom can have the same set of four quantum numbers?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Hund's rule -"
+      },
+      {
+        "label": "B",
+        "text": "Aufbau's principle -"
+      },
+      {
+        "label": "C",
+        "text": "C₂H₄ -"
+      },
+      {
+        "label": "D",
+        "text": "Pauli's exclusion principle"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0004",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Calculate the relative molecular mass of a gaseous compound if 13.15 g of the compound occupies 4.80 dm³ at STP.",
+    "options": [
+      {
+        "label": "A",
+        "text": "61 -"
+      },
+      {
+        "label": "B",
+        "text": "34 -"
+      },
+      {
+        "label": "C",
+        "text": "24 -"
+      },
+      {
+        "label": "D",
+        "text": "29"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0005",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which one of the following species has the same electronic configuration as methane?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Al³⁺ -"
+      },
+      {
+        "label": "B",
+        "text": "F⁻ -"
+      },
+      {
+        "label": "C",
+        "text": "Cl⁻ -"
+      },
+      {
+        "label": "D",
+        "text": "O²⁻"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0006",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "What is the volume of oxygen required to burn completely 45 cm³ of methane?",
+    "options": [
+      {
+        "label": "A",
+        "text": "400 cm³ -"
+      },
+      {
+        "label": "B",
+        "text": "180 cm³ -"
+      },
+      {
+        "label": "C",
+        "text": "90 cm³ -"
+      },
+      {
+        "label": "D",
+        "text": "22.5 cm³"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0007",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "If the enthalpy of a given reaction is 15.2 Jmol⁻¹K⁻¹ and the entropy change of the reaction is -215 kJmol⁻¹, the reaction will:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Not be spontaneous -"
+      },
+      {
+        "label": "B",
+        "text": "Be spontaneous -"
+      },
+      {
+        "label": "C",
+        "text": "be irreversible -"
+      },
+      {
+        "label": "D",
+        "text": "be at equilibrium"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0008",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Arrange the following in the order of increasing boiling point: CH₄, HCN, CaO",
+    "options": [
+      {
+        "label": "A",
+        "text": "CH₄ < HCN < CaO -"
+      },
+      {
+        "label": "B",
+        "text": "HCN < CH₄ < CaO -"
+      },
+      {
+        "label": "C",
+        "text": "CH₄ < CaO < HCN -"
+      },
+      {
+        "label": "D",
+        "text": "CaO < CH₄ < HCN"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0009",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The electronegativity values of Si and H are 1.8 and 2.1 respectively. What type of bond exist within SiH₄?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ionic -"
+      },
+      {
+        "label": "B",
+        "text": "Polar covalent -"
+      },
+      {
+        "label": "C",
+        "text": "Coordinate covalent -"
+      },
+      {
+        "label": "D",
+        "text": "Non-polar bond"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0010",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "When an atom is oxidized, its oxidation number:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Decreases, as electrons are lost -"
+      },
+      {
+        "label": "B",
+        "text": "Decreases, as electrons are gained -"
+      },
+      {
+        "label": "C",
+        "text": "increases, as electrons are gained -"
+      },
+      {
+        "label": "D",
+        "text": "increases, as electrons are lost"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0011",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "What mass of carbon dioxide is formed when 60.0 g of carbon is burned in 750.0 g of oxygen? [C = 12, O = 16]",
+    "options": [
+      {
+        "label": "A",
+        "text": "60.0 g -"
+      },
+      {
+        "label": "B",
+        "text": "160.0 g -"
+      },
+      {
+        "label": "C",
+        "text": "220.0 g -"
+      },
+      {
+        "label": "D",
+        "text": "1031 g"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0012",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "A solution capable of resisting change in pH upon addition of small amount of acid or base is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "an aqueous solution -"
+      },
+      {
+        "label": "B",
+        "text": "a colloidal solution -"
+      },
+      {
+        "label": "C",
+        "text": "a buffer solution -"
+      },
+      {
+        "label": "D",
+        "text": "super saturated solution"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0013",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "What is the percentage by mass of carbon present in 6.0 g of a hydrocarbon which burns completely in air to produce 11.0 g of carbon dioxide?",
+    "options": [
+      {
+        "label": "A",
+        "text": "25% -"
+      },
+      {
+        "label": "B",
+        "text": "33% -"
+      },
+      {
+        "label": "C",
+        "text": "50% -"
+      },
+      {
+        "label": "D",
+        "text": "75%"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0014",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "In which of the following species is sp² hybrid orbitals NOT involved?",
+    "options": [
+      {
+        "label": "A",
+        "text": "BF₃ -"
+      },
+      {
+        "label": "B",
+        "text": "C₂H₄ -"
+      },
+      {
+        "label": "C",
+        "text": "C₂H₄ -"
+      },
+      {
+        "label": "D",
+        "text": "CO₂"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0016",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "What is the oxidation number of oxygen in Na₂O₂?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.18 -"
+      },
+      {
+        "label": "B",
+        "text": "0.69 -"
+      },
+      {
+        "label": "C",
+        "text": "0.11 -"
+      },
+      {
+        "label": "D",
+        "text": "0.19"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0017",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "If the enthalpy of a given reaction is 15.2 Jmol⁻¹K⁻¹ and the entropy change of the reaction is -215 kJmol⁻¹, the reaction will:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Not be spontaneous -"
+      },
+      {
+        "label": "B",
+        "text": "Be spontaneous -"
+      },
+      {
+        "label": "C",
+        "text": "be irreversible -"
+      },
+      {
+        "label": "D",
+        "text": "be at equilibrium"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0018",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The temperature and pressure at which the three phases of pure water coexist respectively are:",
+    "options": [
+      {
+        "label": "A",
+        "text": "273 K and 760 mmHg -"
+      },
+      {
+        "label": "B",
+        "text": "298 K and 760 mmHg -"
+      },
+      {
+        "label": "C",
+        "text": "0.01°C and 4.5 mmHg -"
+      },
+      {
+        "label": "D",
+        "text": "0.273°C and 0.1 mmHg"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0019",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The pH of a buffer solution depends upon concentration of conjugate acid B, conjugate base C, salt D, conjugate acid and base",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.143 -"
+      },
+      {
+        "label": "B",
+        "text": "0.286 -"
+      },
+      {
+        "label": "C",
+        "text": "0.333 -"
+      },
+      {
+        "label": "D",
+        "text": "0.572"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0020",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "What is the mole fraction of hydrogen gas in a mixture containing 32.0 g of oxygen gas and 32.0 g of sulphur (IV) oxide?",
+    "options": [
+      {
+        "label": "A",
+        "text": "21 cm³ -"
+      },
+      {
+        "label": "B",
+        "text": "97 cm³ -"
+      },
+      {
+        "label": "C",
+        "text": "161 cm³ -"
+      },
+      {
+        "label": "D",
+        "text": "735 cm³"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0022",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Why is the first ionization energy of phosphorus greater than that of silicon?",
+    "options": [
+      {
+        "label": "A",
+        "text": "The outer electron in phosphorus is paired -"
+      },
+      {
+        "label": "B",
+        "text": "The atomic radius of a phosphorus atom is greater -"
+      },
+      {
+        "label": "C",
+        "text": "A phosphorus atom has one more proton in its nucleus -"
+      },
+      {
+        "label": "D",
+        "text": "The outer electron in a phosphorus atom has one more proton in its nucleus [Answer: C]"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0023",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following pairs exhibit the most similar chemical properties?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Li and Mg -"
+      },
+      {
+        "label": "B",
+        "text": "Ca and Zn -"
+      },
+      {
+        "label": "C",
+        "text": "B and C -"
+      },
+      {
+        "label": "D",
+        "text": "N and O"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0024",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following metals is not a first-row transition element?",
+    "options": [
+      {
+        "label": "A",
+        "text": "V -"
+      },
+      {
+        "label": "B",
+        "text": "Cd -"
+      },
+      {
+        "label": "C",
+        "text": "Cr -"
+      },
+      {
+        "label": "D",
+        "text": "Mn"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0025",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The following ions have noble gas electronic configuration EXCEPT:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Sr²⁺ -"
+      },
+      {
+        "label": "B",
+        "text": "Rb⁺ -"
+      },
+      {
+        "label": "C",
+        "text": "I⁻ -"
+      },
+      {
+        "label": "D",
+        "text": "Sn²⁺"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0026",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "In which of the following ions is the anion most polarized?",
+    "options": [
+      {
+        "label": "A",
+        "text": "LiF -"
+      },
+      {
+        "label": "B",
+        "text": "LiI -"
+      },
+      {
+        "label": "C",
+        "text": "LiCl -"
+      },
+      {
+        "label": "D",
+        "text": "LiBr"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0027",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The colligative properties of a solution are affected by the:",
+    "options": [
+      {
+        "label": "A",
+        "text": "nature of the solute -"
+      },
+      {
+        "label": "B",
+        "text": "concentration of solute molecules -"
+      },
+      {
+        "label": "C",
+        "text": "amount of liquid -"
+      },
+      {
+        "label": "D",
+        "text": "surface area of central atom in"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0028",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "What is the coordination number and oxidation state of the central atom in [NiCl₂(en)₂]?",
+    "options": [
+      {
+        "label": "A",
+        "text": "6, 2"
+      },
+      {
+        "label": "B",
+        "text": "6, 0"
+      },
+      {
+        "label": "C",
+        "text": "4, 2"
+      },
+      {
+        "label": "D",
+        "text": "4, 4"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0029",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Excess soil acidity caused by acid rain can be neutralized by:",
+    "options": [
+      {
+        "label": "A",
+        "text": "adding molten cryolite -"
+      },
+      {
+        "label": "B",
+        "text": "adding more fertilizers -"
+      },
+      {
+        "label": "C",
+        "text": "adding quick lime -"
+      },
+      {
+        "label": "D",
+        "text": "adding brine"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0030",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following is an s-block element?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cs -"
+      },
+      {
+        "label": "B",
+        "text": "Ar -"
+      },
+      {
+        "label": "C",
+        "text": "Cl -"
+      },
+      {
+        "label": "D",
+        "text": "He"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0031",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Use the following data to determine the standard enthalpy of formation of solid ICl₃:",
+    "options": [
+      {
+        "label": "A",
+        "text": "-60 kJ/mol -"
+      },
+      {
+        "label": "B",
+        "text": "-74 kJ/mol -"
+      },
+      {
+        "label": "C",
+        "text": "-81 kJ/mol -"
+      },
+      {
+        "label": "D",
+        "text": "-162 kJ/mol"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0032",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The oxide of nitrogen used as a mild anesthetic for surgery is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "nitrogen (IV) oxide -"
+      },
+      {
+        "label": "B",
+        "text": "dinitrogen (I) oxide -"
+      },
+      {
+        "label": "C",
+        "text": "dinitrogen tetroxide -"
+      },
+      {
+        "label": "D",
+        "text": "nitrogen (II) oxide"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0033",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of these reactions in equilibrium is unaffected by a change in pressure?",
+    "options": [
+      {
+        "label": "A",
+        "text": "2O₃(g) ↔ 3O₂(g) -"
+      },
+      {
+        "label": "C",
+        "text": "N₂O₄ ↔ 2NO₂ -"
+      },
+      {
+        "label": "C",
+        "text": "PCl₅(g) ↔ PCl₃(g) + Cl₂(g) -"
+      },
+      {
+        "label": "D",
+        "text": "2HI(g) ↔ H₂(g) + I₂(g)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0034",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The trihalides of phosphorus reacts with water to form one of the following acids.",
+    "options": [
+      {
+        "label": "A",
+        "text": "H₃PO₄ -"
+      },
+      {
+        "label": "B",
+        "text": "H₅P₃O₁₀ -"
+      },
+      {
+        "label": "C",
+        "text": "H₃PO₃ -"
+      },
+      {
+        "label": "D",
+        "text": "H₄P₂O₆"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0035",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following hydrogen halides is the most acidic?",
+    "options": [
+      {
+        "label": "A",
+        "text": "HF -"
+      },
+      {
+        "label": "B",
+        "text": "HI -"
+      },
+      {
+        "label": "C",
+        "text": "HBr -"
+      },
+      {
+        "label": "D",
+        "text": "HCl"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0036",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The IUPAC name for [FeF₄(H₂O)₂]⁻ is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Diaquatetrafluoroiron (III) ion -"
+      },
+      {
+        "label": "B",
+        "text": "Diaquatetrafluoroferrate (III) ion -"
+      },
+      {
+        "label": "C",
+        "text": "Diaquatetrafluoroiron (III) -"
+      },
+      {
+        "label": "D",
+        "text": "Diaquatetrafluoroferrate (III)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0037",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Reaction between a hydrazine and a carbonyl compound yields a:",
+    "options": [
+      {
+        "label": "A",
+        "text": "hydrazine -"
+      },
+      {
+        "label": "B",
+        "text": "diazonium salt -"
+      },
+      {
+        "label": "C",
+        "text": "benzaldehyde -"
+      },
+      {
+        "label": "D",
+        "text": "phenylhydrazone"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0038",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following is a tertiary amine?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CH₃CH₂NH₂ -"
+      },
+      {
+        "label": "B",
+        "text": "CH₃CH₂NHCH₃ -"
+      },
+      {
+        "label": "C",
+        "text": "(CH₃CH₂)₂NCH₃ -"
+      },
+      {
+        "label": "D",
+        "text": "CH(NH₂)₃"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0039",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Name the following compound:",
+    "options": [
+      {
+        "label": "A",
+        "text": "3-ethylbutanamine -"
+      },
+      {
+        "label": "B",
+        "text": "3-methylamine pentane -"
+      },
+      {
+        "label": "C",
+        "text": "2-ethylbutanamine -"
+      },
+      {
+        "label": "D",
+        "text": "3-ethyl-4-butanamine"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0040",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Heterolytic bond fission results in the formation of positively charged carbon species known as:",
+    "options": [
+      {
+        "label": "A",
+        "text": "free radicals -"
+      },
+      {
+        "label": "B",
+        "text": "carbanions -"
+      },
+      {
+        "label": "C",
+        "text": "carbonium ions -"
+      },
+      {
+        "label": "D",
+        "text": "carbenes"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0041",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following statements is NOT true of an electrolytic cell?",
+    "options": [
+      {
+        "label": "A",
+        "text": "It converts electric energy to chemical energy -"
+      },
+      {
+        "label": "B",
+        "text": "A porous partition is not needed -"
+      },
+      {
+        "label": "C",
+        "text": "Cathode is negative electrode while anode is positive electrode -"
+      },
+      {
+        "label": "D",
+        "text": "Electrodes are in separate compartment"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0042",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The oxidation of CH₃CH₂CHOHCH₃ with potassium permanganate (VII) is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "CH₃CH₂CH₂COOH -"
+      },
+      {
+        "label": "B",
+        "text": "CH₃CH₂COOH -"
+      },
+      {
+        "label": "C",
+        "text": "CH₃CH₂COCH₃ -"
+      },
+      {
+        "label": "D",
+        "text": "CH₃CH₂CH₂CHOH"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0043",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Hydrogenation of vegetable oils to produce margarine is an example of:",
+    "options": [
+      {
+        "label": "A",
+        "text": "addition reaction -"
+      },
+      {
+        "label": "B",
+        "text": "substitution reaction -"
+      },
+      {
+        "label": "C",
+        "text": "elimination reaction -"
+      },
+      {
+        "label": "D",
+        "text": "redox reaction"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0044",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The enzyme suitable for the conversion of starch to maltose is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "maltase -"
+      },
+      {
+        "label": "B",
+        "text": "zymase -"
+      },
+      {
+        "label": "C",
+        "text": "lipase -"
+      },
+      {
+        "label": "D",
+        "text": "diastase"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0045",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "CH₃CH₂CHCHCH₂CH₃ does not undergo:",
+    "options": [
+      {
+        "label": "A",
+        "text": "addition reaction -"
+      },
+      {
+        "label": "C",
+        "text": "combustion reaction -"
+      },
+      {
+        "label": "B",
+        "text": "substitution reaction -"
+      },
+      {
+        "label": "D",
+        "text": "polymerization reaction"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0046",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The compound with molecular formula C₅H₁₂ has:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2 isomers -"
+      },
+      {
+        "label": "B",
+        "text": "3 isomers -"
+      },
+      {
+        "label": "C",
+        "text": "4 isomers -"
+      },
+      {
+        "label": "D",
+        "text": "5 isomers"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0047",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Consider the structure (diphenylmethane with C₉H₁₉ group). What electronic effect is likely to be observed?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Inductive effect -"
+      },
+      {
+        "label": "B",
+        "text": "Electromeric effect -"
+      },
+      {
+        "label": "C",
+        "text": "Steric effect -"
+      },
+      {
+        "label": "D",
+        "text": "Tautomeric effect"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0048",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "The following compounds C₆H₁₃NH₂, C₃H₇NH₂, CH₃CH₂NH₂ and CH₃NHCH₃ are all related as:",
+    "options": [
+      {
+        "label": "A",
+        "text": "chain isomers -"
+      },
+      {
+        "label": "B",
+        "text": "homologues -"
+      },
+      {
+        "label": "C",
+        "text": "functional group isomers -"
+      },
+      {
+        "label": "D",
+        "text": "primary amines"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0049",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Which of the following reactions is suitable for the synthesis of alkenes?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Dehydration of primary alcohols -"
+      },
+      {
+        "label": "B",
+        "text": "Hydrolysis of primary alcohols -"
+      },
+      {
+        "label": "C",
+        "text": "Reduction of primary alcohols -"
+      },
+      {
+        "label": "D",
+        "text": "Oxidation of primary alcohols"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2020-mq-0050",
+    "subject": "chemistry",
+    "year": 2020,
+    "category": "objective",
+    "question": "Branched chain isomers have the following properties when compared to their linear isomers:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Low boiling point, low melting point and high density -"
+      },
+      {
+        "label": "B",
+        "text": "Lower boiling point, high melting point and lower density -"
+      },
+      {
+        "label": "C",
+        "text": "Higher boiling point, high melting point and low density -"
+      },
+      {
+        "label": "D",
+        "text": "Lower boiling point, low melting point and low density"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

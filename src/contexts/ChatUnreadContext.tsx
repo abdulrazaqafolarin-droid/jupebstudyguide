@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -16,96 +16,86 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
   const [staleUnread, setStaleUnread] = useState(false);
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (!user) return;
+  const poll = useCallback(async (cancelled: { current: boolean }) => {
+    if (!user || cancelled.current) return;
+    try {
+      const { data: participantData } = await supabase
+        .from('conversation_participants')
+        .select('conversation_id, last_read_at')
+        .eq('user_id', user.id);
 
-    let cancelled = false;
+      if (!participantData || participantData.length === 0) {
+        if (!cancelled.current) setTotalUnread(0);
+        return;
+      }
 
-    const poll = async () => {
-      try {
-        const { data: participantData } = await supabase
+      let uniqueUnread = 0;
+      const groupCheck: { conversationId: string; lastReadAt: string | null }[] = [];
+
+      for (const p of participantData) {
+        const { data: partCount } = await supabase
           .from('conversation_participants')
-          .select('conversation_id')
-          .eq('user_id', user.id);
+          .select('id', { count: 'exact', head: true })
+          .eq('conversation_id', p.conversation_id);
 
-        if (!participantData || participantData.length === 0) {
-          if (!cancelled) setTotalUnread(0);
-          return;
+        const isGroup = (partCount ?? 0) > 2;
+
+        if (isGroup) {
+          groupCheck.push({ conversationId: p.conversation_id, lastReadAt: p.last_read_at });
+          continue;
         }
 
-        const convIds = participantData.map(p => p.conversation_id);
+        // DM: count unread messages directly
+        const lastRead = p.last_read_at || new Date(0).toISOString();
+        const { count } = await supabase
+          .from('messages')
+          .select('id', { count: 'exact', head: true })
+          .eq('conversation_id', p.conversation_id)
+          .neq('sender_id', user.id)
+          .gt('created_at', lastRead)
+          .neq('is_deleted', true)
+          .neq('message_type', 'system');
 
-        const { data: convData } = await supabase
-          .from('conversations')
-          .select('id, unread_count_a, unread_count_b')
-          .in('id', convIds);
+        if ((count ?? 0) > 0) uniqueUnread++;
+      }
 
-        if (!convData) return;
+      // Groups: use RPC
+      if (groupCheck.length > 0) {
+        const { data: groupUnreadData } = await supabase
+          .rpc('get_unread_counts', { p_user_id: user.id });
 
-        const { data: allParticipants } = await supabase
-          .from('conversation_participants')
-          .select('conversation_id, user_id')
-          .in('conversation_id', convIds);
-
-        if (!allParticipants) return;
-
-        const participantsByConv = new Map<string, string[]>();
-        for (const p of allParticipants) {
-          const list = participantsByConv.get(p.conversation_id) ?? [];
-          list.push(p.user_id);
-          participantsByConv.set(p.conversation_id, list);
-        }
-
-        let uniqueUnread = 0;
-        const groupConvIds: string[] = [];
-
-        for (const conv of convData) {
-          const convParticipants = participantsByConv.get(conv.id) ?? [];
-          if (convParticipants.length > 2) {
-            groupConvIds.push(conv.id);
-            continue;
-          }
-          const partA = convParticipants[0];
-          const partB = convParticipants[1];
-          let convUnread = 0;
-          if (user.id === partA) {
-            convUnread = conv.unread_count_a ?? 0;
-          } else if (user.id === partB) {
-            convUnread = conv.unread_count_b ?? 0;
-          }
-          if (convUnread > 0) uniqueUnread++;
-        }
-
-        if (groupConvIds.length > 0) {
-          const { data: groupUnreadData } = await supabase
-            .rpc('get_unread_counts', { p_user_id: user.id });
-
-          if (groupUnreadData) {
-            const seen = new Set(groupConvIds);
-            for (const row of groupUnreadData as { conversation_id: string; count: number }[]) {
-              if (seen.has(row.conversation_id) && Number(row.count) > 0) {
-                uniqueUnread++;
-              }
+        if (groupUnreadData) {
+          const convIds = new Set(groupCheck.map(g => g.conversationId));
+          for (const row of groupUnreadData as { conversation_id: string; count: number }[]) {
+            if (convIds.has(row.conversation_id) && Number(row.count) > 0) {
+              uniqueUnread++;
             }
           }
         }
-
-        if (!cancelled) {
-          setTotalUnread(uniqueUnread);
-        }
-      } catch {
-        // silent — polling is best-effort
       }
-    };
 
-    poll();
-    const interval = setInterval(poll, 5000);
+      if (!cancelled.current) {
+        setTotalUnread(uniqueUnread);
+        setStaleUnread(false);
+      }
+    } catch {
+      if (!cancelled.current) setStaleUnread(true);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const cancelled = { current: false };
+
+    poll(cancelled);
+    const interval = setInterval(() => poll(cancelled), 5000);
 
     return () => {
-      cancelled = true;
+      cancelled.current = true;
       clearInterval(interval);
     };
-  }, [user]);
+  }, [user, poll]);
 
   return (
     <ChatUnreadContext.Provider value={{ totalUnread, staleUnread, setTotalUnread, setStaleUnread }}>

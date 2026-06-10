@@ -1,0 +1,1038 @@
+[
+  {
+    "id": "che-2018-mq-0001",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The electronic configuration for Cu is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹ 3d¹⁰ -"
+      },
+      {
+        "label": "B",
+        "text": "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁹ -"
+      },
+      {
+        "label": "C",
+        "text": "1s² 2s² 2p⁶ 3s² 2p⁶ 4s² 2p⁶ -"
+      },
+      {
+        "label": "D",
+        "text": "1s² 2s² 2p⁶ 3s² 2p⁶ 3s² 2p⁶ 4s² 3d¹⁰"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0002",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "What is the value of angular momentum quantum number of a 3d-orbital?",
+    "options": [
+      {
+        "label": "A",
+        "text": "3 -"
+      },
+      {
+        "label": "B",
+        "text": "0 -"
+      },
+      {
+        "label": "C",
+        "text": "1 -"
+      },
+      {
+        "label": "D",
+        "text": "2"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0003",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The energy needed to remove an electron in the outermost shell of a gaseous atom is called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ionization energy -"
+      },
+      {
+        "label": "B",
+        "text": "Electron affinity -"
+      },
+      {
+        "label": "C",
+        "text": "electrode potential -"
+      },
+      {
+        "label": "D",
+        "text": "photoelectric energy"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0004",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following atomic properties generally increases down a group in the periodic table of elements?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Electronegativity -"
+      },
+      {
+        "label": "B",
+        "text": "Atomic radius -"
+      },
+      {
+        "label": "C",
+        "text": "Electron affinity -"
+      },
+      {
+        "label": "D",
+        "text": "Ionization energy"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0005",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Substances that are electron pair acceptors are called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Arrhenius bases -"
+      },
+      {
+        "label": "B",
+        "text": "Lewis bases -"
+      },
+      {
+        "label": "C",
+        "text": "Bronsted-Lowry acids -"
+      },
+      {
+        "label": "D",
+        "text": "Lewis acids"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0006",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "A shampoo solution at 25°C has a hydroxide ion concentration of 1.5 × 10⁻⁹ moldm⁻³. The solution is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "acidic -"
+      },
+      {
+        "label": "B",
+        "text": "neutral -"
+      },
+      {
+        "label": "C",
+        "text": "basic -"
+      },
+      {
+        "label": "D",
+        "text": "amphoteric"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0007",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "In a measurement, significant figures include:",
+    "options": [
+      {
+        "label": "A",
+        "text": "All digits except zero that are not measured -"
+      },
+      {
+        "label": "B",
+        "text": "All digits except zero that are not measured -"
+      },
+      {
+        "label": "C",
+        "text": "All zero at the beginning of a number -"
+      },
+      {
+        "label": "D",
+        "text": "All digits in a number"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0008",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The degeneracy of orbitals with angular momentum quantum number l = 2 is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2 -"
+      },
+      {
+        "label": "B",
+        "text": "3 -"
+      },
+      {
+        "label": "C",
+        "text": "5 -"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0009",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "What is the principle that allows the use of mass spectrometry in determination of the molecular weight of a compound?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Higher molecular weight compounds are less volatile -"
+      },
+      {
+        "label": "B",
+        "text": "Higher molecular weight compounds are denser -"
+      },
+      {
+        "label": "C",
+        "text": "A beam of higher molecular weight cations is deflected less by a magnetic field -"
+      },
+      {
+        "label": "D",
+        "text": "Ions with higher molecular weight absorb higher frequencies of light"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0010",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following is not true about ionization energy?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ionization energy increases across a period -"
+      },
+      {
+        "label": "B",
+        "text": "Reversal in trend of ionization energy occurs in passing from beryllium to boron -"
+      },
+      {
+        "label": "C",
+        "text": "Half-filled subshell makes ionization energy of oxygen lower than that of nitrogen -"
+      },
+      {
+        "label": "D",
+        "text": "Ionization energy does not depend on nuclear charge"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0011",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "In terms of Lewis concept, an acid and a base is a/an:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Proton donor and proton acceptor respectively -"
+      },
+      {
+        "label": "B",
+        "text": "Electron donor and electron acceptor respectively -"
+      },
+      {
+        "label": "C",
+        "text": "Proton acceptor and proton donor respectively -"
+      },
+      {
+        "label": "D",
+        "text": "Electron acceptor and electron donor respectively"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0012",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following will affect the equilibrium position of the reaction?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Addition of a catalyst -"
+      },
+      {
+        "label": "B",
+        "text": "Increase in pressure -"
+      },
+      {
+        "label": "C",
+        "text": "Decrease in pressure -"
+      },
+      {
+        "label": "D",
+        "text": "Addition of HI"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0025",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Gases deviate from Charles' law at:",
+    "options": [
+      {
+        "label": "A",
+        "text": "high temperature -"
+      },
+      {
+        "label": "B",
+        "text": "low pressure -"
+      },
+      {
+        "label": "C",
+        "text": "low temperature -"
+      },
+      {
+        "label": "D",
+        "text": "moderate pressure"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0026",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The average distance of the orbital from the nucleus of an atomic orbital is determined by the:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Spin quantum number -"
+      },
+      {
+        "label": "B",
+        "text": "Principal quantum number -"
+      },
+      {
+        "label": "C",
+        "text": "Magnetic quantum number -"
+      },
+      {
+        "label": "D",
+        "text": "Orbital subshell"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0027",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "What is the standard cell potential for the overall reaction of the cell below?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.2297V -"
+      },
+      {
+        "label": "B",
+        "text": "1.2590V -"
+      },
+      {
+        "label": "C",
+        "text": "0.4594V -"
+      },
+      {
+        "label": "D",
+        "text": "1.1398V"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0028",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The element that gives no colour in flame is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Be -"
+      },
+      {
+        "label": "B",
+        "text": "Ca -"
+      },
+      {
+        "label": "C",
+        "text": "Na -"
+      },
+      {
+        "label": "D",
+        "text": "Li"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0029",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "All Group I metals react with water to form:",
+    "options": [
+      {
+        "label": "A",
+        "text": "hydrogen gas only -"
+      },
+      {
+        "label": "B",
+        "text": "neutral solutions -"
+      },
+      {
+        "label": "C",
+        "text": "acidic solution with liberation of hydrogen -"
+      },
+      {
+        "label": "D",
+        "text": "strong caustic solution with liberation of hydrogen"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0030",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "If the molecule A – B breaks homolytically, then:",
+    "options": [
+      {
+        "label": "A",
+        "text": "A becomes negatively charged -"
+      },
+      {
+        "label": "B",
+        "text": "A becomes positively charged, B becomes negatively charged -"
+      },
+      {
+        "label": "C",
+        "text": "both electrons move to B because B is more electronegative -"
+      },
+      {
+        "label": "D",
+        "text": "electrons are shared evenly"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0031",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The effect of acid rain include the following except…:",
+    "options": [
+      {
+        "label": "A",
+        "text": "death of aquatic animals -"
+      },
+      {
+        "label": "B",
+        "text": "damage of buildings and statues -"
+      },
+      {
+        "label": "C",
+        "text": "depletion of ozone layer -"
+      },
+      {
+        "label": "D",
+        "text": "corrosion of iron"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0032",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following is not a greenhouse gas?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CFCs -"
+      },
+      {
+        "label": "B",
+        "text": "SO₂ -"
+      },
+      {
+        "label": "C",
+        "text": "H₂O -"
+      },
+      {
+        "label": "D",
+        "text": "CH₄"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0033",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following is the correct increasing order of conductivity in aqueous solution?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Li⁺, Na⁺, K⁺, Cs⁺, Rb⁺ -"
+      },
+      {
+        "label": "B",
+        "text": "Rb⁺, Na⁺, K⁺, Cs⁺, Li⁺ -"
+      },
+      {
+        "label": "C",
+        "text": "Li⁺, Na⁺, K⁺, Rb⁺, Cs⁺ -"
+      },
+      {
+        "label": "D",
+        "text": "Na⁺, K⁺, Cs⁺, Li⁺, Rb⁺"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0034",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The alkaline earth metals becomes more reactive as we:",
+    "options": [
+      {
+        "label": "A",
+        "text": "ascend the group -"
+      },
+      {
+        "label": "B",
+        "text": "descend the group -"
+      },
+      {
+        "label": "C",
+        "text": "introduce an external force -"
+      },
+      {
+        "label": "D",
+        "text": "introduce other group elements"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0036",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "What is the name given to the complex ion [Co(SO₄)(NH₃)₅]⁺?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pentaammine sulphatocobalt(I) ion -"
+      },
+      {
+        "label": "B",
+        "text": "Pentaammine sulphato cobaltate (I) ion -"
+      },
+      {
+        "label": "C",
+        "text": "Pentaammine sulphato cobalt (III) ion -"
+      },
+      {
+        "label": "D",
+        "text": "Pentaammine sulphato cobalate (III) ion"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0037",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following will form pale yellow precipitate, slightly soluble in aqueous ammonia upon treatment with trioxonitrate (V) acid followed by silver nitrate?",
+    "options": [
+      {
+        "label": "A",
+        "text": "NaHCO₃ -"
+      },
+      {
+        "label": "B",
+        "text": "NaCl -"
+      },
+      {
+        "label": "C",
+        "text": "NaBr -"
+      },
+      {
+        "label": "D",
+        "text": "NaI"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0038",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the statements below is not a property of halogen?",
+    "options": [
+      {
+        "label": "A",
+        "text": "They all exhibit valency of +1 -"
+      },
+      {
+        "label": "B",
+        "text": "They belong to the p-block of the periodic table -"
+      },
+      {
+        "label": "C",
+        "text": "They are all non-metals -"
+      },
+      {
+        "label": "D",
+        "text": "They are all oxidizing agents"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0039",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "An element which can be detected using Lassaigne's test is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "sodium -"
+      },
+      {
+        "label": "B",
+        "text": "sulphur -"
+      },
+      {
+        "label": "C",
+        "text": "potassium -"
+      },
+      {
+        "label": "D",
+        "text": "magnesium"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0040",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "If the molecule A – B breaks homolytically, then:",
+    "options": [
+      {
+        "label": "A",
+        "text": "A becomes negatively charged -"
+      },
+      {
+        "label": "B",
+        "text": "A becomes positively charged, B becomes negatively charged -"
+      },
+      {
+        "label": "C",
+        "text": "both electrons move to B because B is more electronegative -"
+      },
+      {
+        "label": "D",
+        "text": "electrons are shared evenly"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0041",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Lucas reagent is used to distinguish between:",
+    "options": [
+      {
+        "label": "A",
+        "text": "saturated and unsaturated hydrocarbons -"
+      },
+      {
+        "label": "B",
+        "text": "primary and secondary amines -"
+      },
+      {
+        "label": "C",
+        "text": "the three classes of alkanols -"
+      },
+      {
+        "label": "D",
+        "text": "alkanols and alkanones"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0042",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The IUPAC name of the compound CH₂=C–CH₂–CH₂–COOH is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "1-pentyne-4-oic acid -"
+      },
+      {
+        "label": "B",
+        "text": "pent-4-yne-1-oic acid -"
+      },
+      {
+        "label": "C",
+        "text": "5-pentyn-1-oic acid -"
+      },
+      {
+        "label": "D",
+        "text": "pent-4-yne-1-oic acid"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0043",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following compounds will show geometrical isomerism?",
+    "options": [
+      {
+        "label": "A",
+        "text": "1-butane -"
+      },
+      {
+        "label": "B",
+        "text": "2-butene -"
+      },
+      {
+        "label": "C",
+        "text": "2-pentyne -"
+      },
+      {
+        "label": "D",
+        "text": "1,2-dichloropropane"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0044",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The number of π electrons in butyne is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "6 -"
+      },
+      {
+        "label": "B",
+        "text": "2 -"
+      },
+      {
+        "label": "C",
+        "text": "4 -"
+      },
+      {
+        "label": "D",
+        "text": "8"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0045",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The change in hybridization of carbon when two moles of hydrogen gas is passed over ethyne in the presence of platinum is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "sp³ to sp³ -"
+      },
+      {
+        "label": "B",
+        "text": "sp² to sp³ -"
+      },
+      {
+        "label": "C",
+        "text": "sp³ to sp -"
+      },
+      {
+        "label": "D",
+        "text": "sp to sp²"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0046",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "2.40 g of ethanol was reacted with an excess of aqueous acidified potassium dichromate (VI). The yield of the desired organic product was 70.0%. What mass of the desired product collected?",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.60 g -"
+      },
+      {
+        "label": "B",
+        "text": "4.10 g -"
+      },
+      {
+        "label": "C",
+        "text": "2.29 g -"
+      },
+      {
+        "label": "D",
+        "text": "3.29 g"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0047",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "In the reaction between propene and hydrogen chloride, the electrophile that initiates the reaction is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "the π electrons of the C=C bond in propene -"
+      },
+      {
+        "label": "B",
+        "text": "the partially positive hydrogen atom from HCl -"
+      },
+      {
+        "label": "C",
+        "text": "the partially negative chlorine atom from HCl -"
+      },
+      {
+        "label": "D",
+        "text": "the fully positive hydrogen from HCl"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0048",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Iodohexane and 2-iodooctane are related as:",
+    "options": [
+      {
+        "label": "A",
+        "text": "functional isomers -"
+      },
+      {
+        "label": "B",
+        "text": "positional isomers -"
+      },
+      {
+        "label": "C",
+        "text": "chain isomers -"
+      },
+      {
+        "label": "D",
+        "text": "homologues"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0049",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "Which of the following has the shortest carbon-carbon bond length?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Propene -"
+      },
+      {
+        "label": "B",
+        "text": "Propane -"
+      },
+      {
+        "label": "C",
+        "text": "Propyne -"
+      },
+      {
+        "label": "D",
+        "text": "Ethane"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2018-mq-0050",
+    "subject": "chemistry",
+    "year": 2018,
+    "category": "objective",
+    "question": "The properties of organic molecules are related to carbon to carbon bond properties such as: (i) bond length (ii) bond dissociation energy & (iii) bond rotation. Which of these properties revealed the fact that a π-bond is weaker than a σ-bond?",
+    "options": [
+      {
+        "label": "A",
+        "text": "(ii) only -"
+      },
+      {
+        "label": "B",
+        "text": "(iii) only -"
+      },
+      {
+        "label": "C",
+        "text": "(i) only -"
+      },
+      {
+        "label": "D",
+        "text": "(i) and (iii)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

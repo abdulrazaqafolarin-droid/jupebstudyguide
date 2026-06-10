@@ -1,4 +1,5 @@
 import { recordSuccess, recordError, shouldTryProvider } from "./provider-health.ts";
+import { getActiveGeminiKey, logKeyUsage, markKeyExhausted, type GeminiUsageMeta } from "./keyVault.ts";
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const NVIDIA_BASE = "https://integrate.api.nvidia.com/v1";
@@ -54,50 +55,156 @@ function buildGeminiParts(m: RouterMessage): any[] {
   return parts;
 }
 
-// --- Provider 1: Gemini (cheapest, primary) ---
+function buildGeminiBody(systemPrompt: string, messages: RouterMessage[], opts: Opts): any {
+  const chatMessages = messages.filter(m => m.role !== "system");
+  const mappedMessages = chatMessages.map(m => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: buildGeminiParts(m),
+  }));
+  const body: any = {};
+  if (systemPrompt) {
+    body.systemInstruction = { parts: [{ text: systemPrompt }] };
+  }
+  body.contents = mappedMessages;
+  body.generationConfig = {
+    temperature: opts.temperature ?? 0.7,
+    maxOutputTokens: opts.maxTokens ?? 2048,
+  };
+  if (opts.json) body.generationConfig.responseMimeType = "application/json";
+  return body;
+}
+
+// ============================================================
+// Gemini Key Vault — replaces static GEMINI_API_KEY env var
+// ============================================================
+
+interface GeminiCallResult {
+  text: string | null;
+  usageMeta?: GeminiUsageMeta;
+  is429: boolean;
+  error?: string;
+}
+
+async function geminiFetch(
+  body: any, apiKey: string, stream: boolean
+): Promise<Response> {
+  const endpoint = stream
+    ? `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${apiKey}`
+    : `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:generateContent?key=${apiKey}`;
+  return fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+async function geminiCall(
+  systemPrompt: string, messages: RouterMessage[], opts: Opts, apiKey: string
+): Promise<GeminiCallResult> {
+  const body = buildGeminiBody(systemPrompt, messages, opts);
+  try {
+    const res = await geminiFetch(body, apiKey, false);
+    if (!res.ok) {
+      const err = await res.text().catch(() => "unknown");
+      const is429 = res.status === 429 || err.toLowerCase().includes("quota") || err.toLowerCase().includes("rate limit");
+      return { text: null, is429, error: `${res.status}: ${err.slice(0, 200)}` };
+    }
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    const usageMeta: GeminiUsageMeta | undefined = data.usageMetadata ? {
+      promptTokenCount: data.usageMetadata.promptTokenCount,
+      candidatesTokenCount: data.usageMetadata.candidatesTokenCount,
+      totalTokenCount: data.usageMetadata.totalTokenCount,
+    } : undefined;
+    return { text, usageMeta, is429: false };
+  } catch (err) {
+    return { text: null, is429: false, error: String(err) };
+  }
+}
+
+// --- Provider 1: Gemini with Key Vault + automatic failover on 429 ---
 async function tryGemini(
   systemPrompt: string, messages: RouterMessage[], opts: Opts
 ): Promise<{ text: string | null; latency: number }> {
   const t0 = performance.now();
-  const key = getKey("GEMINI_API_KEY");
-  if (!key || !shouldTryProvider("Gemini")) return { text: null, latency: 0 };
-  try {
-    const chatMessages = messages.filter(m => m.role !== "system");
-    const mappedMessages = chatMessages.map(m => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: buildGeminiParts(m),
-    }));
 
-    const body: any = {};
-    if (systemPrompt) {
-      body.systemInstruction = { parts: [{ text: systemPrompt }] };
-    }
-    body.contents = mappedMessages;
-    body.generationConfig = {
-      temperature: opts.temperature ?? 0.7,
-      maxOutputTokens: opts.maxTokens ?? 2048,
-    };
-    if (opts.json) body.generationConfig.responseMimeType = "application/json";
+  if (!shouldTryProvider("Gemini")) return { text: null, latency: 0 };
 
-    const res = await fetch(
-      `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:generateContent?key=${key}`,
-      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
-    );
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
+
+  // Fallback to static env var if key vault is not configured
+  const fallbackKey = !supabaseUrl || !supabaseKey || !encryptionSecret ? getKey("GEMINI_API_KEY") : null;
+  if (fallbackKey) {
+    const result = await geminiCall(systemPrompt, messages, opts, fallbackKey);
     const ms = Math.round(performance.now() - t0);
-    if (!res.ok) {
-      const err = await res.text().catch(() => "unknown");
-      recordError("Gemini", `${res.status}: ${err.slice(0, 200)}`, ms);
-      return { text: null, latency: ms };
-    }
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
-    if (text) recordSuccess("Gemini", ms);
-    return { text, latency: ms };
-  } catch (err) {
-    const ms = Math.round(performance.now() - t0);
-    recordError("Gemini", String(err), ms);
-    return { text: null, latency: ms };
+    if (result.text) recordSuccess("Gemini", ms);
+    else recordError("Gemini", result.error || "unknown", ms);
+    return { text: result.text, latency: ms };
   }
+
+  // No static key either — can't do Gemini
+  if (!supabaseUrl || !supabaseKey || !encryptionSecret) {
+    return { text: null, latency: 0 };
+  }
+
+  return tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, encryptionSecret, t0, 0);
+}
+
+async function tryGeminiWithFailover(
+  systemPrompt: string, messages: RouterMessage[], opts: Opts,
+  supabaseUrl: string, supabaseKey: string, encryptionSecret: string,
+  t0: number, depth: number
+): Promise<{ text: string | null; latency: number }> {
+  // Safety: max 3 retries to avoid infinite loops
+  if (depth >= 3) {
+    console.error("[Router] Gemini failover exhausted all retries");
+    return { text: null, latency: Math.round(performance.now() - t0) };
+  }
+
+  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey, encryptionSecret);
+  if (!activeKey) {
+    if (depth === 0) console.warn("[Router] No active Gemini keys available");
+    return { text: null, latency: Math.round(performance.now() - t0) };
+  }
+
+  const result = await geminiCall(systemPrompt, messages, opts, activeKey.apiKey);
+  const ms = Math.round(performance.now() - t0);
+
+  if (result.text) {
+    recordSuccess("Gemini", ms);
+    // Log success usage asynchronously — don't block response
+    logKeyUsage(supabaseUrl, supabaseKey, {
+      keyId: activeKey.keyId, feature: "ai-router",
+      usageMeta: result.usageMeta,
+      status: "success",
+    }).catch(e => console.error("[Router] Failed to log usage:", e));
+    return { text: result.text, latency: ms };
+  }
+
+  if (result.is429) {
+    console.warn(`[Router] Gemini key ${activeKey.label} exhausted (429), failing over`);
+    recordError("Gemini", result.error || "429", ms);
+    // Mark exhausted + log error asynchronously
+    Promise.all([
+      markKeyExhausted(supabaseUrl, supabaseKey, activeKey.keyId),
+      logKeyUsage(supabaseUrl, supabaseKey, {
+        keyId: activeKey.keyId, feature: "ai-router",
+        status: "quota_error", errorMessage: result.error,
+      }),
+    ]).catch(e => console.error("[Router] Failed to mark key exhausted:", e));
+    // Retry with next key
+    return tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, encryptionSecret, t0, depth + 1);
+  }
+
+  // Non-429 error
+  recordError("Gemini", result.error || "unknown", ms);
+  logKeyUsage(supabaseUrl, supabaseKey, {
+    keyId: activeKey.keyId, feature: "ai-router",
+    status: "error", errorMessage: result.error,
+  }).catch(e => console.error("[Router] Failed to log error:", e));
+  return { text: null, latency: ms };
 }
 
 // --- Provider 2: Kimi K2.6 via NVIDIA NIM (free, 40 RPM) ---
@@ -234,8 +341,6 @@ export async function routerText(
   opts: Opts = {}
 ): Promise<{ text: string; provider: string; latency: number }> {
   const hasMedia = hasAttachment(messages);
-  // When images/files are present, only Gemini can process them.
-  // Try Gemini first; fall back to Groq/Kimi with text-only messages if Gemini fails.
   if (hasMedia) {
     const geminiResult = await tryGemini(systemPrompt, messages, opts).catch(() => ({ text: null as string | null, latency: 0 }));
     if (geminiResult.text) {
@@ -276,31 +381,68 @@ export async function routerJSON(
 
 const encoder = new TextEncoder();
 
+// --- Gemini Stream with Key Vault + failover ---
 async function tryGeminiStream(
   systemPrompt: string, messages: RouterMessage[], opts: Opts, signal: AbortSignal
-): Promise<ReadableStream | null> {
-  const key = getKey("GEMINI_API_KEY");
-  if (!key || !shouldTryProvider("Gemini")) return null;
-  try {
-    const chatMessages = messages.filter(m => m.role !== "system");
-    const mappedMessages = chatMessages.map(m => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: buildGeminiParts(m),
-    }));
-    const body: any = {};
-    if (systemPrompt) {
-      body.systemInstruction = { parts: [{ text: systemPrompt }] };
+): Promise<{ stream: ReadableStream | null; keyId?: string; label?: string }> {
+  if (!shouldTryProvider("Gemini")) return { stream: null };
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
+
+  const fallbackKey = !supabaseUrl || !supabaseKey || !encryptionSecret ? getKey("GEMINI_API_KEY") : null;
+  if (fallbackKey) {
+    try {
+      const body = buildGeminiBody(systemPrompt, messages, opts);
+      const res = await fetch(
+        `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${fallbackKey}`,
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal }
+      );
+      return { stream: res.ok ? res.body : null };
+    } catch {
+      return { stream: null };
     }
-    body.contents = mappedMessages;
-    body.generationConfig = { temperature: opts.temperature ?? 0.7, maxOutputTokens: opts.maxTokens ?? 2048 };
+  }
+
+  if (!supabaseUrl || !supabaseKey || !encryptionSecret) return { stream: null };
+
+  return tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, encryptionSecret, 0);
+}
+
+async function tryGeminiStreamWithFailover(
+  systemPrompt: string, messages: RouterMessage[], opts: Opts, signal: AbortSignal,
+  supabaseUrl: string, supabaseKey: string, encryptionSecret: string,
+  depth: number
+): Promise<{ stream: ReadableStream | null; keyId?: string; label?: string }> {
+  if (depth >= 3) return { stream: null };
+
+  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey, encryptionSecret);
+  if (!activeKey) return { stream: null };
+
+  try {
+    const body = buildGeminiBody(systemPrompt, messages, opts);
     const res = await fetch(
-      `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${key}`,
+      `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${activeKey.apiKey}`,
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal }
     );
-    if (!res.ok) return null;
-    return res.body;
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      const is429 = res.status === 429 || errText.toLowerCase().includes("quota") || errText.toLowerCase().includes("rate limit");
+      if (is429) {
+        await markKeyExhausted(supabaseUrl, supabaseKey, activeKey.keyId);
+        return tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, encryptionSecret, depth + 1);
+      }
+      return { stream: null };
+    }
+    // Log stream start asynchronously — best-effort
+    logKeyUsage(supabaseUrl, supabaseKey, {
+      keyId: activeKey.keyId, feature: "ai-router-stream",
+      status: "success",
+    }).catch(() => {});
+    return { stream: res.body, keyId: activeKey.keyId, label: activeKey.label };
   } catch {
-    return null;
+    return { stream: null };
   }
 }
 
@@ -388,14 +530,13 @@ export async function routerStream(
   const hasMedia = hasAttachment(messages);
 
   if (hasMedia) {
-    // Only Gemini can process images/files. Try it solo; fall back to text-only providers.
     const ac1 = new AbortController(); abortControllers.push(ac1);
     const geminiResult = await tryGeminiStream(systemPrompt, messages, opts, ac1.signal);
-    if (geminiResult) {
+    if (geminiResult.stream) {
       return new ReadableStream({
         async start(controller) {
           try {
-            const reader = geminiResult.getReader();
+            const reader = geminiResult.stream!.getReader();
             const decoder = new TextDecoder();
             let buffer = "";
             while (true) {
@@ -485,7 +626,7 @@ export async function routerStream(
   const ac3 = new AbortController(); abortControllers.push(ac3);
 
   const attempts: Promise<StreamEntry | null>[] = [
-    tryGeminiStream(systemPrompt, messages, opts, ac1.signal).then(s => s ? { provider: "Gemini", stream: s, controller: ac1 } : null),
+    tryGeminiStream(systemPrompt, messages, opts, ac1.signal).then(s => s.stream ? { provider: "Gemini", stream: s.stream!, controller: ac1 } : null),
     tryGroqStream(systemPrompt, messages, opts, ac2.signal).then(s => s ? { provider: "Groq", stream: s, controller: ac2 } : null),
     tryKimiStream(systemPrompt, messages, opts, ac3.signal).then(s => s ? { provider: "Kimi", stream: s, controller: ac3 } : null),
   ];
@@ -553,4 +694,3 @@ export async function routerStream(
     },
   });
 }
-

@@ -23,13 +23,18 @@ const options: { value: PrivacyOption; label: string; icon: typeof Globe }[] = [
   { value: 'nobody', label: 'Nobody', icon: EyeOff },
 ];
 
-export function PrivacyToggle({ label, description, value, onChange }: PrivacySetting) {
+export function PrivacyToggle({ label, description, value, onChange, comingSoon }: PrivacySetting & { comingSoon?: boolean }) {
   return (
     <div className="space-y-3">
       <div>
         <h4 className="text-sm font-medium flex items-center gap-2">
           <Shield className="w-3.5 h-3.5 text-primary" />
           {label}
+          {comingSoon && (
+            <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-semibold tracking-wide">
+              COMING SOON
+            </span>
+          )}
         </h4>
         <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
       </div>
@@ -164,6 +169,7 @@ export function PrivacySettings({
         description="Who can see when you were last online?"
         value={lastSeenPrivacy}
         onChange={onLastSeenChange}
+        comingSoon
       />
       <div className="h-px bg-border/50" />
       <PrivacyToggle
@@ -172,6 +178,7 @@ export function PrivacySettings({
         description="Who can see your online indicator?"
         value={onlineStatusPrivacy}
         onChange={onOnlineStatusChange}
+        comingSoon
       />
       <div className="h-px bg-border/50" />
       <PrivacyToggle

@@ -14,6 +14,7 @@ interface DiscoverUser {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
+  email: string | null;
   last_seen_at: string | null;
   total_score: number;
   is_online: boolean;
@@ -32,7 +33,7 @@ export default function DiscoverPage() {
     setLoading(true);
 
     Promise.all([
-      supabase.from('profiles').select('user_id, display_name, avatar_url, last_seen_at').neq('user_id', user.id),
+      supabase.from('profiles').select('user_id, display_name, avatar_url, email, last_seen_at').neq('user_id', user.id),
       supabase.rpc('get_weekly_leaderboard', { p_week_start: new Date().toISOString().slice(0, 10) }),
     ]).then(([profilesRes, leaderboardRes]) => {
       const profileData = (profilesRes.data ?? []) as DiscoverUser[];
@@ -81,7 +82,10 @@ export default function DiscoverPage() {
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return users;
     const q = searchQuery.toLowerCase();
-    return users.filter(u => u.display_name?.toLowerCase().includes(q));
+    return users.filter(u =>
+      u.display_name?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q)
+    );
   }, [users, searchQuery]);
 
   const onlineUsers = useMemo(() => filtered.filter(u => u.is_online), [filtered]);

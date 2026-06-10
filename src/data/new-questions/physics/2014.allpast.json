@@ -1,0 +1,1122 @@
+[
+  {
+    "id": "phy-2014-mq-0001",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "A concave spherical mirror has radius of curvature 20cm. Nature of image of object placed 10cm in front is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "−10cm real"
+      },
+      {
+        "label": "B",
+        "text": "no image, possibly at infinity -"
+      },
+      {
+        "label": "C",
+        "text": "20cm virtual, upright, magnified"
+      },
+      {
+        "label": "D",
+        "text": "−10cm real, diminished"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0002",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Person walks into room with two flat mirrors on opposite walls. When she is 5m from right wall, first three images from her in mirror on left are at distances:",
+    "options": [
+      {
+        "label": "A",
+        "text": "10.0m, 20.0m, 40.0m"
+      },
+      {
+        "label": "B",
+        "text": "5.0m, 25.0m, 35.0m -"
+      },
+      {
+        "label": "C",
+        "text": "10.0m, 30.0m, 40.0m"
+      },
+      {
+        "label": "D",
+        "text": "20.0m, 30.0m, 40.0m and 50.0m"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0003",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Critical angle for air and water (refractive indices 1.00 and 1.33 respectively) boundary is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "42.0°"
+      },
+      {
+        "label": "B",
+        "text": "30.0°"
+      },
+      {
+        "label": "C",
+        "text": "48.8°"
+      },
+      {
+        "label": "D",
+        "text": "50.0°"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0004",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "For a medium transmitting a longitudinal wave, areas of the medium where the wave transmits are called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "rarefaction"
+      },
+      {
+        "label": "B",
+        "text": "compressions"
+      },
+      {
+        "label": "C",
+        "text": "density holes"
+      },
+      {
+        "label": "D",
+        "text": "pressure holes"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0005",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "A grating ruled with 300 lines/mm. What is angular deviation of second order bright fringe?",
+    "options": [
+      {
+        "label": "A",
+        "text": "211 degrees"
+      },
+      {
+        "label": "B",
+        "text": "211.1 degrees"
+      },
+      {
+        "label": "C",
+        "text": "210 degrees"
+      },
+      {
+        "label": "D",
+        "text": "211 degrees"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0006",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "When you move away from fixed source of sound, frequency you hear:",
+    "options": [
+      {
+        "label": "A",
+        "text": "is greater than what source emits"
+      },
+      {
+        "label": "B",
+        "text": "is less than what source emits -"
+      },
+      {
+        "label": "C",
+        "text": "is the same as what source emits"
+      },
+      {
+        "label": "D",
+        "text": "is equal to what source gives"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0008",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Far-sighted person cannot see clearly objects closer than 75cm. What local length of contact lens that will enable this person see object at distance 25cm?",
+    "options": [
+      {
+        "label": "A",
+        "text": "37.5cm"
+      },
+      {
+        "label": "B",
+        "text": "−37.5cm"
+      },
+      {
+        "label": "C",
+        "text": "27.5cm"
+      },
+      {
+        "label": "D",
+        "text": "−27.5cm"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0009",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Part of eye that contains specialized cells that convert light signal into electrical signal is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "iris"
+      },
+      {
+        "label": "B",
+        "text": "lens"
+      },
+      {
+        "label": "C",
+        "text": "retina"
+      },
+      {
+        "label": "D",
+        "text": "optic nerve"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0012",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Sinusoidal water waves generated in large container. Adjacent crests 5.0cm apart, travel at 20cm/s. Time required for each new whole cycle:",
+    "options": [
+      {
+        "label": "A",
+        "text": "100 sin(50t)"
+      },
+      {
+        "label": "B",
+        "text": "100 cos(50t)"
+      },
+      {
+        "label": "C",
+        "text": "100"
+      },
+      {
+        "label": "D",
+        "text": "200"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0013",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Projectile launched at top of 20m high cliff with initial velocity 50m/s at 15.30hrs. If projectile were to be launched atop cliff so it hits same spot on sea as one launched atop cliff, calculate time it should have been launched:",
+    "options": [
+      {
+        "label": "A",
+        "text": "15.20hrs"
+      },
+      {
+        "label": "B",
+        "text": "14.23hrs"
+      },
+      {
+        "label": "C",
+        "text": "15.23hrs"
+      },
+      {
+        "label": "D",
+        "text": "15.25hrs"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0014",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Which of following is NOT true of Newton's law of motion?",
+    "options": [
+      {
+        "label": "A",
+        "text": "IV only"
+      },
+      {
+        "label": "B",
+        "text": "I and III only"
+      },
+      {
+        "label": "C",
+        "text": "II and IV only"
+      },
+      {
+        "label": "D",
+        "text": "I only"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0015",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Flywheel rolls from rest with constant angular acceleration of 2 rad/s². Angular speed and angular displacement at t=1.5s:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2 rad/s, 2.35 rads"
+      },
+      {
+        "label": "B",
+        "text": "2.35 rad/s, 2.25 rads -"
+      },
+      {
+        "label": "C",
+        "text": "2.25 rad/s, 3 rads"
+      },
+      {
+        "label": "D",
+        "text": "2.35 rad/s, 5, 3 rads"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0016",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Force applied to rocket gives upward acceleration equal to 2× weight of gravity. Magnitude of force is equal to:",
+    "options": [
+      {
+        "label": "A",
+        "text": "weight of rocket"
+      },
+      {
+        "label": "B",
+        "text": "twice weight of rocket -"
+      },
+      {
+        "label": "C",
+        "text": "three times weight of rocket"
+      },
+      {
+        "label": "D",
+        "text": "four times weight of rocket"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0017",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "In projectile motion:",
+    "options": [
+      {
+        "label": "A",
+        "text": "acceleration is parallel to velocity"
+      },
+      {
+        "label": "B",
+        "text": "acceleration is perpendicular to velocity -"
+      },
+      {
+        "label": "C",
+        "text": "acceleration is vertical while velocity can be in any direction -"
+      },
+      {
+        "label": "D",
+        "text": "acceleration reaches minimum value at top of trajectory"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0018",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Catapult stretched 0.2cm. Stiffness constant is 250N/m. Stone of mass 20g when released:",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.807m/s"
+      },
+      {
+        "label": "B",
+        "text": "0.707m/s"
+      },
+      {
+        "label": "C",
+        "text": "0.605m/s"
+      },
+      {
+        "label": "D",
+        "text": "0.752m/s"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0019",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Volume of gas held constant, temperature raised. Pressure increases because:",
+    "options": [
+      {
+        "label": "A",
+        "text": "molecules have higher average speeds and strike wall more often -"
+      },
+      {
+        "label": "B",
+        "text": "each molecule loses more kinetic energy when it strikes wall -"
+      },
+      {
+        "label": "C",
+        "text": "molecules are in contact with wall for short time -"
+      },
+      {
+        "label": "D",
+        "text": "molecules have higher average speeds and strike wall less often"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0020",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Coefficient of linear expansion of aluminum is 23×10⁻⁶/°C. Circular hole in aluminum plate is 2.725cm diameter at 0°C. What is temperature when plate raised to 100°C?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.0063cm"
+      },
+      {
+        "label": "B",
+        "text": "2.728cm"
+      },
+      {
+        "label": "C",
+        "text": "2.757cm"
+      },
+      {
+        "label": "D",
+        "text": "2.731cm"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0021",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "550g water at 75°C poured into 855g aluminum container with initial temperature 11°C. Specific heat of aluminum is 900J/kg·K. How much heat flows from water to aluminum (assuming no heat to surroundings)?",
+    "options": [
+      {
+        "label": "A",
+        "text": "36kJ"
+      },
+      {
+        "label": "B",
+        "text": "55kJ"
+      },
+      {
+        "label": "C",
+        "text": "37kJ"
+      },
+      {
+        "label": "D",
+        "text": "46kJ"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0022",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Two different objects in thermal contact with different temperatures. Temperature of two objects determine:",
+    "options": [
+      {
+        "label": "A",
+        "text": "heat capacity of each object"
+      },
+      {
+        "label": "B",
+        "text": "direction of transfer of thermal energy between object -"
+      },
+      {
+        "label": "C",
+        "text": "amount of internal energy in each object"
+      },
+      {
+        "label": "D",
+        "text": "process by which thermal energy is transferred"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0023",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "10kg ice at 0°C added to 2kg steam at 100°C. Temperature of resulting mixture (latent heat of fusion of ice 335kJ/kg, vaporization of water 2260kJ/kg):",
+    "options": [
+      {
+        "label": "A",
+        "text": "0°C"
+      },
+      {
+        "label": "B",
+        "text": "23°C"
+      },
+      {
+        "label": "C",
+        "text": "28°C"
+      },
+      {
+        "label": "D",
+        "text": "40°C"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0024",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Buoyancy experienced by body in fluid is equivalent to all EXCEPT:",
+    "options": [
+      {
+        "label": "A",
+        "text": "weight of fluid displaced by body"
+      },
+      {
+        "label": "B",
+        "text": "up thrust on body -"
+      },
+      {
+        "label": "C",
+        "text": "loss in weight of body"
+      },
+      {
+        "label": "D",
+        "text": "weight of body in fluid"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0026",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Water flows along horizontal pipe of cross-sectional area 40cm² with constriction of cross-sectional area 10cm² at one point. Speed at constriction is 4m/s and pressure is 9.0×10⁴Pa. Pressure in wider section (density of water = 1000kg/m³):",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.0×10⁵Pa"
+      },
+      {
+        "label": "B",
+        "text": "9.2×10⁴Pa"
+      },
+      {
+        "label": "C",
+        "text": "1.1×10⁵Pa"
+      },
+      {
+        "label": "D",
+        "text": "1.1×10⁴Pa"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0027",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Terminal velocity of brass ball 1mm diameter falling in glycerine tank (density of brass = 8g/cm³, glycerine = 1.32g/cm³, viscosity of glycerine = 8.3 poise, g=10m/s²):",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.77cm/s"
+      },
+      {
+        "label": "B",
+        "text": "1.89cm/s"
+      },
+      {
+        "label": "C",
+        "text": "1.79cm/s"
+      },
+      {
+        "label": "D",
+        "text": "7.7cm/s"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0028",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Rubber cord catapult: cross-sectional area 1cm², initial length 0.2m, stretched to 0.24m. Object of mass 10g. Initial velocity when leaving catapult (Young's modulus for rubber = 6.0×10⁸Pa, elastic limit not exceeded):",
+    "options": [
+      {
+        "label": "A",
+        "text": "15.5m/s"
+      },
+      {
+        "label": "B",
+        "text": "31m/s"
+      },
+      {
+        "label": "C",
+        "text": "62m/s"
+      },
+      {
+        "label": "D",
+        "text": "310m/s"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0029",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Steel ball radius r, density p, falling in glycerine density p¹. Velocity when acceleration is half that of freely falling:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2r²g(p−p¹)/9n"
+      },
+      {
+        "label": "B",
+        "text": "r²g(p−p¹)/9n -"
+      },
+      {
+        "label": "C",
+        "text": "r²g(p−2p¹)/9n"
+      },
+      {
+        "label": "D",
+        "text": "r²g(2p−p¹)/9n"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0030",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Electric field strength at a point may be defined as:",
+    "options": [
+      {
+        "label": "A",
+        "text": "force exerted on unit positive charge placed at that point -"
+      },
+      {
+        "label": "B",
+        "text": "force per unit positive charge on small test charge placed at that point -"
+      },
+      {
+        "label": "C",
+        "text": "work done on unit positive charge to move charge to that point from infinity -"
+      },
+      {
+        "label": "D",
+        "text": "work done per unit positive charge to move small test charge to that point from infinity"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0031",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Which correctly identifies mass and momentum of a photon?",
+    "options": [
+      {
+        "label": "A",
+        "text": "zero/zero"
+      },
+      {
+        "label": "B",
+        "text": "zero/non-zero"
+      },
+      {
+        "label": "C",
+        "text": "non-zero/zero"
+      },
+      {
+        "label": "D",
+        "text": "non-zero/non-zero"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0032",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Energy spectra of alpha, beta and gamma radiation respectively:",
+    "options": [
+      {
+        "label": "A",
+        "text": "discrete/continuous/discrete"
+      },
+      {
+        "label": "B",
+        "text": "continuous/discrete/discrete -"
+      },
+      {
+        "label": "C",
+        "text": "discrete/discrete/continuous"
+      },
+      {
+        "label": "D",
+        "text": "continuous/continuous/discrete"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0033",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Newton's second law F=Δp/Δt. Condition for F=ma:",
+    "options": [
+      {
+        "label": "A",
+        "text": "mass m is constant"
+      },
+      {
+        "label": "B",
+        "text": "acceleration is constant -"
+      },
+      {
+        "label": "C",
+        "text": "force F is constant"
+      },
+      {
+        "label": "D",
+        "text": "direction of force F is constant"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0034",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "In Newton's universal law of gravitation, masses are assumed to be:",
+    "options": [
+      {
+        "label": "A",
+        "text": "extended masses"
+      },
+      {
+        "label": "B",
+        "text": "masses of planets"
+      },
+      {
+        "label": "C",
+        "text": "point masses"
+      },
+      {
+        "label": "D",
+        "text": "spherical masses"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0035",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Neutron exists in light atomic nucleus. Which also exists?",
+    "options": [
+      {
+        "label": "A",
+        "text": "electron"
+      },
+      {
+        "label": "B",
+        "text": "β-particle"
+      },
+      {
+        "label": "C",
+        "text": "α-particle"
+      },
+      {
+        "label": "D",
+        "text": "proton"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0036",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Which accurately describes an atom?",
+    "options": [
+      {
+        "label": "A",
+        "text": "I and II"
+      },
+      {
+        "label": "B",
+        "text": "II and III"
+      },
+      {
+        "label": "C",
+        "text": "III and IV"
+      },
+      {
+        "label": "D",
+        "text": "II and IV"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0037",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Modulus of elasticity E and density p. Speed of elastic wave:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ep"
+      },
+      {
+        "label": "B",
+        "text": "E/p"
+      },
+      {
+        "label": "C",
+        "text": "√Ep"
+      },
+      {
+        "label": "D",
+        "text": "√(E/p)"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0038",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Copper plate irradiated with ultraviolet light wavelength 0.25μm. Work function of copper is 4.5eV. Calculate stopping potential V:",
+    "options": [
+      {
+        "label": "A",
+        "text": "7.5V"
+      },
+      {
+        "label": "B",
+        "text": "4.5V"
+      },
+      {
+        "label": "C",
+        "text": "3.45V"
+      },
+      {
+        "label": "D",
+        "text": "12.45V"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0039",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Circular arc conductor radius 30cm carries current. Calculate angle subtended by arc if B=10⁻⁵T:",
+    "options": [
+      {
+        "label": "A",
+        "text": "115°"
+      },
+      {
+        "label": "B",
+        "text": "14.6°"
+      },
+      {
+        "label": "C",
+        "text": "116°"
+      },
+      {
+        "label": "D",
+        "text": "112°"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0040",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Location on earth's surface: north, east, horizontal components of earth's magnetic field are 2nT, 2nT, 4nT respectively. Total intensity of earth's magnetic field at that location:",
+    "options": [
+      {
+        "label": "A",
+        "text": "D=1"
+      },
+      {
+        "label": "B",
+        "text": "D=41"
+      },
+      {
+        "label": "C",
+        "text": "D=21"
+      },
+      {
+        "label": "D",
+        "text": "2D=1"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0042",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Two parallel conductors each length L=60cm, separated d=2m. Same current flows through both. Force F=0.01N. Find current:",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.657nT"
+      },
+      {
+        "label": "B",
+        "text": "1.6574T"
+      },
+      {
+        "label": "C",
+        "text": "3.277nT"
+      },
+      {
+        "label": "D",
+        "text": "10.657nT"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0043",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Minimum height of vertical flat mirror for man 1.84m height to see full image:",
+    "options": [
+      {
+        "label": "A",
+        "text": "2.0m"
+      },
+      {
+        "label": "B",
+        "text": "1.5m"
+      },
+      {
+        "label": "C",
+        "text": "1.0m"
+      },
+      {
+        "label": "D",
+        "text": "0.92m"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0044",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Christmas tree ornament is silver sphere diameter 9.0m. Object should be placed where image is here fourth size:",
+    "options": [
+      {
+        "label": "A",
+        "text": "3.94cm in front of mirror"
+      },
+      {
+        "label": "B",
+        "text": "7.5cm in front of mirror -"
+      },
+      {
+        "label": "C",
+        "text": "5.25cm in front of mirror"
+      },
+      {
+        "label": "D",
+        "text": "3.45V"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "phy-2014-mq-0045",
+    "subject": "physics",
+    "year": 2014,
+    "category": "objective",
+    "question": "Sound in air at 20°C. Student standing still, ambulance bus horn producing pure 1000Hz tone. Ambulance approaches road student at speed 13m/s. Frequency heard by student:",
+    "options": [
+      {
+        "label": "A",
+        "text": "1093Hz"
+      },
+      {
+        "label": "B",
+        "text": "1903Hz"
+      },
+      {
+        "label": "C",
+        "text": "1039Hz"
+      },
+      {
+        "label": "D",
+        "text": "1039Hz"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

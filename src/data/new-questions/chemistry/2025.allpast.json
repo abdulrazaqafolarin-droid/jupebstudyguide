@@ -1,0 +1,1374 @@
+[
+  {
+    "id": "che-2025-mq-0001",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The ratio of the absolute error in measurement to the expected true value defines the:",
+    "options": [
+      {
+        "label": "A",
+        "text": "relative error"
+      },
+      {
+        "label": "B",
+        "text": "mean error"
+      },
+      {
+        "label": "C",
+        "text": "absolute error"
+      },
+      {
+        "label": "D",
+        "text": "random error"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0002",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Which element of group 16 cannot form a compound of the type XF₆?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Selenium"
+      },
+      {
+        "label": "B",
+        "text": "Sulphur"
+      },
+      {
+        "label": "C",
+        "text": "Oxygen"
+      },
+      {
+        "label": "D",
+        "text": "Tellurium"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0003",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The gas heavier than air is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "pure N₂"
+      },
+      {
+        "label": "B",
+        "text": "pure Cl₂"
+      },
+      {
+        "label": "C",
+        "text": "moist air"
+      },
+      {
+        "label": "D",
+        "text": "moist H₂"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0004",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "What is the atomic mass of a triatomic elementary gas with a vapour density of 48?",
+    "options": [
+      {
+        "label": "A",
+        "text": "48"
+      },
+      {
+        "label": "B",
+        "text": "96"
+      },
+      {
+        "label": "C",
+        "text": "32"
+      },
+      {
+        "label": "D",
+        "text": "16"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0005",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "In the equation: xNH₃ + yH₂O → zNO + wH₂O. If x is 2, then y, z and w are:",
+    "options": [
+      {
+        "label": "A",
+        "text": "5/2, 4, 6"
+      },
+      {
+        "label": "B",
+        "text": "5/2, 2, 3"
+      },
+      {
+        "label": "C",
+        "text": "3, 2, 4"
+      },
+      {
+        "label": "D",
+        "text": "2, 4, 6"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0006",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Which of the following characteristics shows that hydrogen resembles halogens?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Hydrogen is the lightest"
+      },
+      {
+        "label": "B",
+        "text": "H atom contains one electron"
+      },
+      {
+        "label": "C",
+        "text": "H forms ionic hydrides with alkali metals"
+      },
+      {
+        "label": "D",
+        "text": "Hydrogen has three allotropes"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0007",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "What type of reaction can convert alkyl halide into an alcohol?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Addition"
+      },
+      {
+        "label": "B",
+        "text": "Elimination"
+      },
+      {
+        "label": "C",
+        "text": "Substitution"
+      },
+      {
+        "label": "D",
+        "text": "Hydrolysis"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0008",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "A well-stoppered thermos flask contains some ice cubes. This is an example of:",
+    "options": [
+      {
+        "label": "A",
+        "text": "an isolated system"
+      },
+      {
+        "label": "B",
+        "text": "an open system"
+      },
+      {
+        "label": "C",
+        "text": "a non-thermodynamic system"
+      },
+      {
+        "label": "D",
+        "text": "a non-thermodynamic system"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0009",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Which of the following ionic compounds is insoluble in water?",
+    "options": [
+      {
+        "label": "A",
+        "text": "(NH₄)₂CO₃"
+      },
+      {
+        "label": "B",
+        "text": "AgBr"
+      },
+      {
+        "label": "C",
+        "text": "CuSO₄"
+      },
+      {
+        "label": "D",
+        "text": "KI"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0010",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "When lead acid battery is discharged:",
+    "options": [
+      {
+        "label": "A",
+        "text": "SO₂ gas is evolved"
+      },
+      {
+        "label": "B",
+        "text": "lead sulphate is consumed"
+      },
+      {
+        "label": "C",
+        "text": "lead is formed"
+      },
+      {
+        "label": "D",
+        "text": "sulphuric acid is used up"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0011",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The rate constant does not depend on:",
+    "options": [
+      {
+        "label": "A",
+        "text": "temperature"
+      },
+      {
+        "label": "B",
+        "text": "concentration"
+      },
+      {
+        "label": "C",
+        "text": "presence of catalyst"
+      },
+      {
+        "label": "D",
+        "text": "nature of reactants"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0012",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Identify the option which contains the highest number of atoms:",
+    "options": [
+      {
+        "label": "A",
+        "text": "71 g of chlorine"
+      },
+      {
+        "label": "B",
+        "text": "48 g of magnesium"
+      },
+      {
+        "label": "C",
+        "text": "127 g of iodine"
+      },
+      {
+        "label": "D",
+        "text": "4 g of hydrogen"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0013",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "If 2.5 L of a sample of a gas at 27 °C and 1 bar pressure is compressed to a volume of 500 ml at constant temperature, what is the percentage increase in pressure?",
+    "options": [
+      {
+        "label": "A",
+        "text": "100 %"
+      },
+      {
+        "label": "B",
+        "text": "400 %"
+      },
+      {
+        "label": "C",
+        "text": "500 %"
+      },
+      {
+        "label": "D",
+        "text": "80 %"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0014",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The formula for washing soda is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Na₂CO₃"
+      },
+      {
+        "label": "B",
+        "text": "Na₂CO₃.10H₂O"
+      },
+      {
+        "label": "C",
+        "text": "Na₂CO₃.3H₂O"
+      },
+      {
+        "label": "D",
+        "text": "Na₂CO₃.7H₂O"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0015",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Synthesis gas is a mixture of:",
+    "options": [
+      {
+        "label": "A",
+        "text": "steam and CO"
+      },
+      {
+        "label": "B",
+        "text": "CO and N₂"
+      },
+      {
+        "label": "C",
+        "text": "H₂ and CO"
+      },
+      {
+        "label": "D",
+        "text": "H₂ and CH₄"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0016",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The destructive action of hydrogen bombs is based on:",
+    "options": [
+      {
+        "label": "A",
+        "text": "natural radioactivity"
+      },
+      {
+        "label": "B",
+        "text": "nuclear fission"
+      },
+      {
+        "label": "C",
+        "text": "nuclear fusion"
+      },
+      {
+        "label": "D",
+        "text": "natural reaction"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0017",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "If the half-life of a radioactive nuclide is 24 hours. What time will be required for 12.5 % of its original amount to remain?",
+    "options": [
+      {
+        "label": "A",
+        "text": "1 day"
+      },
+      {
+        "label": "B",
+        "text": "2 days"
+      },
+      {
+        "label": "C",
+        "text": "3 days"
+      },
+      {
+        "label": "D",
+        "text": "4 days"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0018",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "For exothermic reactions to be spontaneous, the temperature should be:",
+    "options": [
+      {
+        "label": "A",
+        "text": "high"
+      },
+      {
+        "label": "B",
+        "text": "0 °C"
+      },
+      {
+        "label": "C",
+        "text": "low"
+      },
+      {
+        "label": "D",
+        "text": "373 K"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0019",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "What is the correct order of melting points of B, Al, and Ga?",
+    "options": [
+      {
+        "label": "A",
+        "text": "B > Al > Ga"
+      },
+      {
+        "label": "B",
+        "text": "B, Al > B > Ga"
+      },
+      {
+        "label": "C",
+        "text": "Ga > B > Al"
+      },
+      {
+        "label": "D",
+        "text": "B > Ga > Al"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0020",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The mixing of atomic orbitals at different energy levels to form hybrid orbitals is known as:",
+    "options": [
+      {
+        "label": "A",
+        "text": "isomerization"
+      },
+      {
+        "label": "B",
+        "text": "hybridization"
+      },
+      {
+        "label": "C",
+        "text": "delocalization"
+      },
+      {
+        "label": "D",
+        "text": "cyclization"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0021",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "An organic reaction in which bond fission results in formation of free radicals is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "homolytic"
+      },
+      {
+        "label": "B",
+        "text": "ozonolysis"
+      },
+      {
+        "label": "C",
+        "text": "rearrangement"
+      },
+      {
+        "label": "D",
+        "text": "elimination"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0022",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Grignard reagent is prepared by the reaction between an alkyl halide and:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Zn in the presence of alcohol"
+      },
+      {
+        "label": "B",
+        "text": "Mg in the presence of dry ether"
+      },
+      {
+        "label": "C",
+        "text": "Mg in the presence of alcohol"
+      },
+      {
+        "label": "D",
+        "text": "Mg in the presence of moist ether"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0023",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Which of the following is the most stable hydroxides?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mg(OH)₂"
+      },
+      {
+        "label": "B",
+        "text": "Ca(OH)₂"
+      },
+      {
+        "label": "C",
+        "text": "Sr(OH)₂"
+      },
+      {
+        "label": "D",
+        "text": "Ba(OH)₂"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0024",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "In the esterification of carboxylic acid with alcohol, which bond of the carboxylic acid undergoes cleavage?",
+    "options": [
+      {
+        "label": "A",
+        "text": "C – C"
+      },
+      {
+        "label": "B",
+        "text": "C = O"
+      },
+      {
+        "label": "C",
+        "text": "C – C"
+      },
+      {
+        "label": "D",
+        "text": "O – H"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0025",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "What is the hybrid state of boron in boric acid?",
+    "options": [
+      {
+        "label": "A",
+        "text": "sp"
+      },
+      {
+        "label": "B",
+        "text": "sp²"
+      },
+      {
+        "label": "C",
+        "text": "sp³"
+      },
+      {
+        "label": "D",
+        "text": "sp³d"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0026",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "An example of a zwitterion is:",
+    "options": [
+      {
+        "label": "B",
+        "text": "sp²"
+      },
+      {
+        "label": "C",
+        "text": "sp³"
+      },
+      {
+        "label": "D",
+        "text": "sp³d"
+      },
+      {
+        "label": "A",
+        "text": "alanine"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0027",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The acid with the highest Ka value is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "HIO"
+      },
+      {
+        "label": "B",
+        "text": "HFO"
+      },
+      {
+        "label": "C",
+        "text": "HClO"
+      },
+      {
+        "label": "D",
+        "text": "BrOH"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0028",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The force of attraction between the neighbouring peptide chains is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Van der Waal's forces"
+      },
+      {
+        "label": "B",
+        "text": "covalent bond"
+      },
+      {
+        "label": "C",
+        "text": "hydrogen bond"
+      },
+      {
+        "label": "D",
+        "text": "peptide bond"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0029",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "What is the same in various hydrides of chalcogens?",
+    "options": [
+      {
+        "label": "B",
+        "text": "Reducing nature"
+      },
+      {
+        "label": "C",
+        "text": "Central bond angle"
+      },
+      {
+        "label": "D",
+        "text": "Magnitude of inter-particle forces"
+      },
+      {
+        "label": "A",
+        "text": "Molecular shape"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0030",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Synthesis gas is a mixture of:",
+    "options": [
+      {
+        "label": "A",
+        "text": "steam and CO"
+      },
+      {
+        "label": "B",
+        "text": "H₂ and CH₄"
+      },
+      {
+        "label": "C",
+        "text": "H₂ and CO"
+      },
+      {
+        "label": "D",
+        "text": "CO and N₂"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0031",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The reaction ²³⁴₉₁Pa → ²³⁴₉₂Pa occurs with the emission of:",
+    "options": [
+      {
+        "label": "A",
+        "text": "α-particle"
+      },
+      {
+        "label": "B",
+        "text": "β-particle"
+      },
+      {
+        "label": "C",
+        "text": "p-particle"
+      },
+      {
+        "label": "D",
+        "text": "positron"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0033",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Give the empirical formula of a compound contains 92.26 % C and H.",
+    "options": [
+      {
+        "label": "A",
+        "text": "CH"
+      },
+      {
+        "label": "B",
+        "text": "CH₂"
+      },
+      {
+        "label": "C",
+        "text": "C₂H₃"
+      },
+      {
+        "label": "D",
+        "text": "C₂H₅"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0034",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The mass spectrum of an atom shows two peaks with masses 80 and 100. If the isotopic ratio of the isotopes is 6:5 respectively, determine the average atomic mass of the atom.",
+    "options": [
+      {
+        "label": "A",
+        "text": "98.0"
+      },
+      {
+        "label": "B",
+        "text": "90.2"
+      },
+      {
+        "label": "C",
+        "text": "89.1"
+      },
+      {
+        "label": "D",
+        "text": "72.7"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0035",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The element whose electronic configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d¹⁰ is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "metal"
+      },
+      {
+        "label": "B",
+        "text": "non-metal"
+      },
+      {
+        "label": "C",
+        "text": "noble gas"
+      },
+      {
+        "label": "D",
+        "text": "metalloid"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0036",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Identify the elements that have the smallest first ionization energy:",
+    "options": [
+      {
+        "label": "A",
+        "text": "₁₅P"
+      },
+      {
+        "label": "B",
+        "text": "₁₉K"
+      },
+      {
+        "label": "C",
+        "text": "₆C"
+      },
+      {
+        "label": "D",
+        "text": "₁₂Mg"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0037",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The total mass of protons and neutrons of an isotope are not equal to the actual mass of the nuclide because of:",
+    "options": [
+      {
+        "label": "A",
+        "text": "radioactivity"
+      },
+      {
+        "label": "B",
+        "text": "binding energy"
+      },
+      {
+        "label": "C",
+        "text": "attraction between electrons and the nucleus"
+      },
+      {
+        "label": "D",
+        "text": "proton-proton attraction"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0038",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The process of preparing hydrogen from red-hot coke and steam is generally called:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Lane's process"
+      },
+      {
+        "label": "B",
+        "text": "Reforming gas"
+      },
+      {
+        "label": "C",
+        "text": "Linde's process"
+      },
+      {
+        "label": "D",
+        "text": "Bosch process"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0039",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The kind of bonding in NH₄⁺ is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "ionic/dative"
+      },
+      {
+        "label": "B",
+        "text": "ionic/covalent"
+      },
+      {
+        "label": "C",
+        "text": "dative/covalent"
+      },
+      {
+        "label": "D",
+        "text": "metallic/dative"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0040",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "If a radioactive element is placed in an evacuated container, its rate of disintegration:",
+    "options": [
+      {
+        "label": "A",
+        "text": "will be increased"
+      },
+      {
+        "label": "B",
+        "text": "will be decreased"
+      },
+      {
+        "label": "C",
+        "text": "will change very slightly"
+      },
+      {
+        "label": "D",
+        "text": "will remain unchanged"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0041",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "How does a catalyst alter the rate of a reaction?",
+    "options": [
+      {
+        "label": "A",
+        "text": "By changing the reaction conditions"
+      },
+      {
+        "label": "B",
+        "text": "By lowering the activation energy"
+      },
+      {
+        "label": "C",
+        "text": "By changing the order"
+      },
+      {
+        "label": "D",
+        "text": "By reversing the order"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0042",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The 3d metal ions are generally paramagnetic in nature because:",
+    "options": [
+      {
+        "label": "A",
+        "text": "they form coloured salts"
+      },
+      {
+        "label": "B",
+        "text": "they have one or more unpaired electrons"
+      },
+      {
+        "label": "C",
+        "text": "they have one or more paired s-electrons"
+      },
+      {
+        "label": "D",
+        "text": "they are reducing agents"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0043",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Which of the following oxides is neutral but toxic?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CO₂"
+      },
+      {
+        "label": "B",
+        "text": "CO"
+      },
+      {
+        "label": "C",
+        "text": "SnO"
+      },
+      {
+        "label": "D",
+        "text": "H₂O"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0044",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Which of the following is the main structural feature of proteins?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Peptide linkage"
+      },
+      {
+        "label": "B",
+        "text": "Glycoside linkage"
+      },
+      {
+        "label": "C",
+        "text": "Ether linkage"
+      },
+      {
+        "label": "D",
+        "text": "ester linkage"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0045",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Which of the following compounds can be used as a refrigerant?",
+    "options": [
+      {
+        "label": "A",
+        "text": "CCl₄"
+      },
+      {
+        "label": "B",
+        "text": "CH₂Cl₂"
+      },
+      {
+        "label": "C",
+        "text": "CF₄"
+      },
+      {
+        "label": "D",
+        "text": "CF₂Cl₂"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0046",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "An element with high electronegativity has:",
+    "options": [
+      {
+        "label": "A",
+        "text": "high ionization energy and high electron affinity"
+      },
+      {
+        "label": "B",
+        "text": "high ionization energy and low electron affinity"
+      },
+      {
+        "label": "C",
+        "text": "low ionization energy and high electron affinity"
+      },
+      {
+        "label": "D",
+        "text": "low ionization energy and low electron affinity"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0047",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "Calculate the volume of 0.200 M Na₂CO₃ solution which contains 53.0 g of Na₂CO₃?",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.20 L"
+      },
+      {
+        "label": "B",
+        "text": "1.60 L"
+      },
+      {
+        "label": "C",
+        "text": "2.50 L"
+      },
+      {
+        "label": "D",
+        "text": "0.50 L"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0048",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The substance that adsorbs and activates reactants to form products which cannot break away is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "catalyst"
+      },
+      {
+        "label": "B",
+        "text": "metal"
+      },
+      {
+        "label": "C",
+        "text": "adsorbate"
+      },
+      {
+        "label": "D",
+        "text": "precipitate"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0049",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The Scientist who discovered neutron is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "J.J. Thomson"
+      },
+      {
+        "label": "B",
+        "text": "Rutherford"
+      },
+      {
+        "label": "C",
+        "text": "James Chadwick"
+      },
+      {
+        "label": "D",
+        "text": "G.T. Seabury"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "che-2025-mq-0050",
+    "subject": "chemistry",
+    "year": 2025,
+    "category": "objective",
+    "question": "The product of the polymerization of styrene is:",
+    "options": [
+      {
+        "label": "A",
+        "text": "polyethylene"
+      },
+      {
+        "label": "B",
+        "text": "polypropylene"
+      },
+      {
+        "label": "C",
+        "text": "polystyrene"
+      },
+      {
+        "label": "D",
+        "text": "toluene"
+      }
+    ],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

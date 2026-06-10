@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { getAllStudyQuestions, getAllStudyQuestionsForSubject } from '@/data/study-questions';
 import { toQuestions } from '@/lib/question-adapter';
@@ -31,6 +32,17 @@ import rutexLogo from '@/assets/rutex-logo.jpg';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { cn } from '@/lib/utils';
+
+const springBounce = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
+const fastSpring = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const cardVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.9 },
+  show: { opacity: 1, y: 0, scale: 1, transition: springBounce },
+};
 
 
 type View = 'home' | 'study' | 'quiz-setup' | 'quiz' | 'syllabus-setup' | 'syllabus';
@@ -624,28 +636,41 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {subjectStats.map(({ subject, questions: subjectQuestions, stats }) => (
-              <SubjectCard
-                key={subject}
-                subject={subject}
-                questionCount={stats.total}
-                studiedCount={stats.studied}
-                learnedCount={stats.learned}
-                onClick={() => handleSubjectClick(subject)}
-              />
+          <motion.div
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+          >
+            {subjectStats.map(({ subject, questions: subjectQuestions, stats }, idx) => (
+              <motion.div key={subject} variants={cardVariants}>
+                <SubjectCard
+                  subject={subject}
+                  questionCount={stats.total}
+                  studiedCount={stats.studied}
+                  learnedCount={stats.learned}
+                  onClick={() => handleSubjectClick(subject)}
+                />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
 
         {/* Quick Actions */}
         <section className="mt-12">
           <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <motion.div
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {(['physics', 'chemistry', 'biology', 'math'] as Subject[]).map(subject => {
               const info = SUBJECT_INFO[subject];
               return (
-                <button
+                <motion.button
                   key={subject}
                   onClick={() => handleStartQuiz(subject)}
                   className={cn(
@@ -656,22 +681,28 @@ const Index = () => {
                     subject === 'biology' && 'border-biology/30 hover:border-biology hover:bg-biology/5',
                     subject === 'math' && 'border-math/30 hover:border-math hover:bg-math/5',
                   )}
+                  variants={cardVariants}
+                  whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
+                  whileTap={{ scale: 0.95, transition: fastSpring }}
                 >
                   <span className="text-2xl">{info.icon}</span>
                   <p className="font-medium mt-2">{info.name} Quiz</p>
                   <p className="text-xs text-muted-foreground">10 random questions</p>
-                </button>
+                </motion.button>
               );
             })}
-            <button
+            <motion.button
               onClick={() => toast("Textbook upload coming soon!")}
               className="p-4 rounded-xl border border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"
+              variants={cardVariants}
+              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
+              whileTap={{ scale: 0.95, transition: fastSpring }}
             >
               <Library className="w-7 h-7 mx-auto text-primary" />
               <p className="font-medium mt-2">Upload Textbook</p>
               <p className="text-xs text-muted-foreground">PDF for AI reference</p>
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </section>
 
         {/* Tips */}

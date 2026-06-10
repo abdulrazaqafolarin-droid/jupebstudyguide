@@ -38,9 +38,10 @@ function StatCard({ icon: Icon, label, value, sub, color, delay }: {
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay, type: "spring", stiffness: 250, damping: 12, mass: 0.8 }}
+      whileHover={{ y: -6, scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 10 } }}
     >
       <Card className={cn("border-l-4 overflow-hidden", color)}>
         <CardContent className="p-4 sm:p-5">
@@ -65,6 +66,7 @@ export default function AdminDashboard() {
   const { status } = useActivation();
   const { codes, loading, generateCodes, listCodes } = useAdminCodes();
   const navigate = useNavigate();
+  const [section, setSection] = useState<"dashboard" | "apikey">("dashboard");
 
   const handleSignOut = useCallback(async () => {
     await signOut();
@@ -221,77 +223,215 @@ export default function AdminDashboard() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-8">
-        {/* Stats Grid */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
-        >
-          <StatCard
-            icon={Users} label="Total Users"
-            value={stats.totalUsers}
-            color="border-l-primary"
-            delay={0}
-          />
-          <StatCard
-            icon={UserCheck} label="Activated"
-            value={stats.activatedUsers}
-            sub={`${stats.totalUsers > 0 ? Math.round((stats.activatedUsers / stats.totalUsers) * 100) : 0}% activation`}
-            color="border-l-emerald-500"
-            delay={0.1}
-          />
-          <StatCard
-            icon={Key} label="Codes Generated"
-            value={codeStats.total}
-            color="border-l-amber-500"
-            delay={0.2}
-          />
-          <StatCard
-            icon={Activity} label="Conversion"
-            value={`${codeStats.conversionRate}%`}
-            sub={`${codeStats.used} of ${codeStats.total} used`}
-            color="border-l-violet-500"
-            delay={0.3}
-          />
-        </motion.div>
+        {/* Section Toggle */}
+        <div className="flex items-center gap-2">
+          <div className="flex bg-muted rounded-lg p-0.5">
+            <button
+              onClick={() => setSection("dashboard")}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                section === "dashboard"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Admin
+            </button>
+            <button
+              onClick={() => setSection("apikey")}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                section === "apikey"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              API Key Vault
+            </button>
+          </div>
+        </div>
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* User Growth Chart */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-primary" />
-                      User Growth (30 days)
-                    </CardTitle>
-                    <CardDescription>Daily new signups</CardDescription>
-                  </div>
-                  <BarChart3 className="w-8 h-8 text-muted-foreground/30" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                {statsLoading ? (
-                  <div className="flex items-center justify-center h-48"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                ) : (
-                  <ResponsiveContainer width="100%" height={220}>
-                    <AreaChart data={safeSignups}>
-                      <defs>
-                        <linearGradient id="signupGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
+        {section === "dashboard" ? (
+          <>
+            {/* Stats Grid */}
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
+            >
+              <StatCard
+                icon={Users} label="Total Users"
+                value={stats.totalUsers}
+                color="border-l-primary"
+                delay={0}
+              />
+              <StatCard
+                icon={UserCheck} label="Activated"
+                value={stats.activatedUsers}
+                sub={`${stats.totalUsers > 0 ? Math.round((stats.activatedUsers / stats.totalUsers) * 100) : 0}% activation`}
+                color="border-l-emerald-500"
+                delay={0.1}
+              />
+              <StatCard
+                icon={Key} label="Codes Generated"
+                value={codeStats.total}
+                color="border-l-amber-500"
+                delay={0.2}
+              />
+              <StatCard
+                icon={Activity} label="Conversion"
+                value={`${codeStats.conversionRate}%`}
+                sub={`${codeStats.used} of ${codeStats.total} used`}
+                color="border-l-violet-500"
+                delay={0.3}
+              />
+            </motion.div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* User Growth Chart */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4 text-primary" />
+                          User Growth (30 days)
+                        </CardTitle>
+                        <CardDescription>Daily new signups</CardDescription>
+                      </div>
+                      <BarChart3 className="w-8 h-8 text-muted-foreground/30" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {statsLoading ? (
+                      <div className="flex items-center justify-center h-48"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height={220}>
+                        <AreaChart data={safeSignups}>
+                          <defs>
+                            <linearGradient id="signupGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="date" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
+                          <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                          <Tooltip
+                            contentStyle={{
+                              background: "hsl(var(--card))",
+                              border: "1px solid hsl(var(--border))",
+                              borderRadius: "8px",
+                              fontSize: "12px",
+                            }}
+                          />
+                          <Area
+                            type="monotone" dataKey="count" stroke="#8b5cf6" strokeWidth={2}
+                            fill="url(#signupGradient)" dot={{ r: 2, fill: "#8b5cf6" }}
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Plan Distribution */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <DollarSign className="w-4 h-4 text-primary" />
+                          Plan Distribution
+                        </CardTitle>
+                        <CardDescription>Codes by plan type</CardDescription>
+                      </div>
+                      <PieChart className="w-8 h-8 text-muted-foreground/30" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {statsLoading ? (
+                      <div className="flex items-center justify-center h-48"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+                    ) : safePlans.length === 0 || safePlans[0].name === "No data" ? (
+                      <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
+                        No codes generated yet
+                      </div>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row items-center gap-6">
+                        <ResponsiveContainer width="100%" height={200}>
+                          <PieChart>
+                            <Pie
+                              data={safePlans}
+                              cx="50%" cy="50%" innerRadius={45} outerRadius={80}
+                              paddingAngle={3} dataKey="value"
+                            >
+                              {safePlans.map((_, idx) => (
+                                <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip
+                              contentStyle={{
+                                background: "hsl(var(--card))",
+                                border: "1px solid hsl(var(--border))",
+                                borderRadius: "8px",
+                                fontSize: "12px",
+                              }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="space-y-2 shrink-0">
+                          {safePlans.map((p, idx) => (
+                            <div key={p.name} className="flex items-center gap-2 text-sm">
+                              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                              <span className="capitalize">{p.name}</span>
+                              <span className="text-muted-foreground">({Math.round((p.value / totalPlansValue) * 100)}%)</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Activation vs Total Users Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+            >
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-primary" />
+                    Activation Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={[
+                      { name: "Total Users", count: stats.totalUsers, fill: "#8b5cf6" },
+                      { name: "Activated", count: stats.activatedUsers, fill: "#10b981" },
+                      { name: "Codes Used", count: codeStats.used, fill: "#f59e0b" },
+                      { name: "Available", count: codeStats.available, fill: "#6366f1" },
+                    ]}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
-                      <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                      <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
                       <Tooltip
                         contentStyle={{
                           background: "hsl(var(--card))",
@@ -300,319 +440,207 @@ export default function AdminDashboard() {
                           fontSize: "12px",
                         }}
                       />
-                      <Area
-                        type="monotone" dataKey="count" stroke="#8b5cf6" strokeWidth={2}
-                        fill="url(#signupGradient)" dot={{ r: 2, fill: "#8b5cf6" }}
-                      />
-                    </AreaChart>
+                      <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                        {[{ name: "Total Users", count: stats.totalUsers, fill: "#8b5cf6" },
+                          { name: "Activated", count: stats.activatedUsers, fill: "#10b981" },
+                          { name: "Codes Used", count: codeStats.used, fill: "#f59e0b" },
+                          { name: "Available", count: codeStats.available, fill: "#6366f1" },
+                        ].map((entry, idx) => (
+                          <Cell key={idx} fill={entry.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
                   </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-          {/* Plan Distribution */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-          >
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-primary" />
-                      Plan Distribution
-                    </CardTitle>
-                    <CardDescription>Codes by plan type</CardDescription>
-                  </div>
-                  <PieChart className="w-8 h-8 text-muted-foreground/30" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                {statsLoading ? (
-                  <div className="flex items-center justify-center h-48"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                ) : safePlans.length === 0 || safePlans[0].name === "No data" ? (
-                  <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
-                    No codes generated yet
-                  </div>
-                ) : (
-                  <div className="flex flex-col sm:flex-row items-center gap-6">
-                    <ResponsiveContainer width="100%" height={200}>
-                      <PieChart>
-                        <Pie
-                          data={safePlans}
-                          cx="50%" cy="50%" innerRadius={45} outerRadius={80}
-                          paddingAngle={3} dataKey="value"
-                        >
-                          {safePlans.map((_, idx) => (
-                            <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          contentStyle={{
-                            background: "hsl(var(--card))",
-                            border: "1px solid hsl(var(--border))",
-                            borderRadius: "8px",
-                            fontSize: "12px",
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="space-y-2 shrink-0">
-                      {safePlans.map((p, idx) => (
-                        <div key={p.name} className="flex items-center gap-2 text-sm">
-                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
-                          <span className="capitalize">{p.name}</span>
-                          <span className="text-muted-foreground">({Math.round((p.value / totalPlansValue) * 100)}%)</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Activation vs Total Users Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.4 }}
-        >
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Activity className="w-4 h-4 text-primary" />
-                Activation Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={[
-                  { name: "Total Users", count: stats.totalUsers, fill: "#8b5cf6" },
-                  { name: "Activated", count: stats.activatedUsers, fill: "#10b981" },
-                  { name: "Codes Used", count: codeStats.used, fill: "#f59e0b" },
-                  { name: "Available", count: codeStats.available, fill: "#6366f1" },
-                ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip
-                    contentStyle={{
-                      background: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                      fontSize: "12px",
-                    }}
-                  />
-                  <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                    {[{ name: "Total Users", count: stats.totalUsers, fill: "#8b5cf6" },
-                      { name: "Activated", count: stats.activatedUsers, fill: "#10b981" },
-                      { name: "Codes Used", count: codeStats.used, fill: "#f59e0b" },
-                      { name: "Available", count: codeStats.available, fill: "#6366f1" },
-                    ].map((entry, idx) => (
-                      <Cell key={idx} fill={entry.fill} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Code Generation Panel */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.4 }}
-        >
-          <Card className="border-primary/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Key className="w-5 h-5 text-primary" />
-                Generate Activation Codes
-              </CardTitle>
-              <CardDescription>Create new codes for users to activate their accounts</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap gap-4 items-end">
-                <div className="space-y-1.5">
-                  <label className="text-sm text-muted-foreground">Quantity</label>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {[1, 5, 10, 25, 50, 100].map(n => (
-                      <button
-                        key={n}
-                        onClick={() => setCount(n)}
-                        className={cn(
-                          "px-3 py-1.5 rounded-lg border text-sm font-medium transition-all",
-                          count === n
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border text-muted-foreground hover:border-primary/50"
-                        )}
-                      >
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm text-muted-foreground">Plan Type</label>
-                  <Select value={planType} onValueChange={setPlanType}>
-                    <SelectTrigger className="w-36 bg-background/50">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="basic">Basic</SelectItem>
-                      <SelectItem value="premium">Premium</SelectItem>
-                      <SelectItem value="lifetime">Lifetime</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  onClick={handleGenerate}
-                  disabled={generating}
-                  className="bg-gradient-to-r from-primary to-accent"
-                >
-                  {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Key className="w-4 h-4 mr-2" />}
-                  Generate
-                </Button>
-              </div>
-
-              {generatedCodes.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  className="space-y-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-accent">
-                      <CheckCircle className="w-4 h-4 inline mr-1" />
-                      {generatedCodes.length} codes generated
-                      <span className="text-muted-foreground font-normal ml-2">
-                        (plan: {planType})
-                      </span>
-                    </p>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" onClick={copyAll} className="text-xs">
-                        <Copy className="w-3 h-3 mr-1" /> Copy all
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => setGeneratedCodes([])} className="text-xs">
-                        Clear
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="bg-secondary/30 rounded-lg p-3 max-h-48 overflow-y-auto border border-border/30">
-                    {generatedCodes.map((c, i: number) => (
-                      <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
-                        <code className="font-mono text-sm tracking-wider text-primary">{c.code}</code>
-                        <span className="text-xs text-muted-foreground capitalize">{c.plan_type}</span>
-                        <button
-                          onClick={() => { navigator.clipboard.writeText(c.code); toast.success("Copied!"); }}
-                          className="text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <Copy className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* All Codes Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.4 }}
-        >
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
+            {/* Code Generation Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >
+              <Card className="border-primary/30">
+                <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <TrendingUp className="w-5 h-5 text-primary" />
-                    All Codes ({codes.length})
+                    <Key className="w-5 h-5 text-primary" />
+                    Generate Activation Codes
                   </CardTitle>
-                  <CardDescription>Complete history of generated activation codes</CardDescription>
-                </div>
-                <Button
-                  variant="ghost" size="sm"
-                  onClick={() => {
-                    const csv = [["Code", "Plan", "Status", "Used By", "Created"].join(",")].concat(
-                      codes.map((c) =>
-                        [c.code, c.plan_type, c.is_used ? "Used" : "Available", c.used_by_profile?.display_name || "", c.created_at].join(",")
-                      )
-                    ).join("\n");
-                    navigator.clipboard.writeText(csv);
-                    toast.success("CSV copied to clipboard");
-                  }}
-                  className="text-xs"
-                >
-                  <Download className="w-3 h-3 mr-1" /> Export CSV
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-              ) : codes.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">No codes generated yet</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-2 px-2 text-muted-foreground font-medium">Code</th>
-                        <th className="text-left py-2 px-2 text-muted-foreground font-medium">Plan</th>
-                        <th className="text-left py-2 px-2 text-muted-foreground font-medium">Status</th>
-                        <th className="text-left py-2 px-2 text-muted-foreground font-medium">Used By</th>
-                        <th className="text-left py-2 px-2 text-muted-foreground font-medium">Created</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {codes.map((c) => (
-                        <tr key={c.id} className="border-b border-border/50 hover:bg-secondary/20 transition-colors">
-                          <td className="py-2 px-2">
-                            <code className="font-mono text-xs bg-secondary/50 px-1.5 py-0.5 rounded">{c.code}</code>
-                          </td>
-                          <td className="py-2 px-2 capitalize">{c.plan_type}</td>
-                          <td className="py-2 px-2">
-                            {c.is_used ? (
-                              <span className="text-emerald-500 text-xs flex items-center gap-1">
-                                <CheckCircle className="w-3 h-3" /> Used
-                              </span>
-                            ) : (
-                              <span className="text-muted-foreground text-xs">Available</span>
+                  <CardDescription>Create new codes for users to activate their accounts</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap gap-4 items-end">
+                    <div className="space-y-1.5">
+                      <label className="text-sm text-muted-foreground">Quantity</label>
+                      <div className="flex gap-1.5 flex-wrap">
+                        {[1, 5, 10, 25, 50, 100].map(n => (
+                          <button
+                            key={n}
+                            onClick={() => setCount(n)}
+                            className={cn(
+                              "px-3 py-1.5 rounded-lg border text-sm font-medium transition-all",
+                              count === n
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border text-muted-foreground hover:border-primary/50"
                             )}
-                          </td>
-                          <td className="py-2 px-2 text-xs text-muted-foreground">
-                            {c.used_by_profile?.display_name || "-"}
-                          </td>
-                          <td className="py-2 px-2 text-xs text-muted-foreground">
-                            {format(new Date(c.created_at), "MMM d, yyyy")}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-        {/* AI Key Vault */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.4 }}
-        >
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-sm text-muted-foreground">Plan Type</label>
+                      <Select value={planType} onValueChange={setPlanType}>
+                        <SelectTrigger className="w-36 bg-background/50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="basic">Basic</SelectItem>
+                          <SelectItem value="premium">Premium</SelectItem>
+                          <SelectItem value="lifetime">Lifetime</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      onClick={handleGenerate}
+                      disabled={generating}
+                      className="bg-gradient-to-r from-primary to-accent"
+                    >
+                      {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Key className="w-4 h-4 mr-2" />}
+                      Generate
+                    </Button>
+                  </div>
+
+                  {generatedCodes.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-accent">
+                          <CheckCircle className="w-4 h-4 inline mr-1" />
+                          {generatedCodes.length} codes generated
+                          <span className="text-muted-foreground font-normal ml-2">
+                            (plan: {planType})
+                          </span>
+                        </p>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="sm" onClick={copyAll} className="text-xs">
+                            <Copy className="w-3 h-3 mr-1" /> Copy all
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => setGeneratedCodes([])} className="text-xs">
+                            Clear
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="bg-secondary/30 rounded-lg p-3 max-h-48 overflow-y-auto border border-border/30">
+                        {generatedCodes.map((c, i: number) => (
+                          <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
+                            <code className="font-mono text-sm tracking-wider text-primary">{c.code}</code>
+                            <span className="text-xs text-muted-foreground capitalize">{c.plan_type}</span>
+                            <button
+                              onClick={() => { navigator.clipboard.writeText(c.code); toast.success("Copied!"); }}
+                              className="text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* All Codes Table */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.4 }}
+            >
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <TrendingUp className="w-5 h-5 text-primary" />
+                        All Codes ({codes.length})
+                      </CardTitle>
+                      <CardDescription>Complete history of generated activation codes</CardDescription>
+                    </div>
+                    <Button
+                      variant="ghost" size="sm"
+                      onClick={() => {
+                        const csv = [["Code", "Plan", "Status", "Used By", "Created"].join(",")].concat(
+                          codes.map((c) =>
+                            [c.code, c.plan_type, c.is_used ? "Used" : "Available", c.used_by_profile?.display_name || "", c.created_at].join(",")
+                          )
+                        ).join("\n");
+                        navigator.clipboard.writeText(csv);
+                        toast.success("CSV copied to clipboard");
+                      }}
+                      className="text-xs"
+                    >
+                      <Download className="w-3 h-3 mr-1" /> Export CSV
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {loading ? (
+                    <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+                  ) : codes.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">No codes generated yet</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border">
+                            <th className="text-left py-2 px-2 text-muted-foreground font-medium">Code</th>
+                            <th className="text-left py-2 px-2 text-muted-foreground font-medium">Plan</th>
+                            <th className="text-left py-2 px-2 text-muted-foreground font-medium">Status</th>
+                            <th className="text-left py-2 px-2 text-muted-foreground font-medium">Used By</th>
+                            <th className="text-left py-2 px-2 text-muted-foreground font-medium">Created</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {codes.map((c) => (
+                            <tr key={c.id} className="border-b border-border/50 hover:bg-secondary/20 transition-colors">
+                              <td className="py-2 px-2">
+                                <code className="font-mono text-xs bg-secondary/50 px-1.5 py-0.5 rounded">{c.code}</code>
+                              </td>
+                              <td className="py-2 px-2 capitalize">{c.plan_type}</td>
+                              <td className="py-2 px-2">
+                                {c.is_used ? (
+                                  <span className="text-emerald-500 text-xs flex items-center gap-1">
+                                    <CheckCircle className="w-3 h-3" /> Used
+                                  </span>
+                                ) : (
+                                  <span className="text-muted-foreground text-xs">Available</span>
+                                )}
+                              </td>
+                              <td className="py-2 px-2 text-xs text-muted-foreground">
+                                {c.used_by_profile?.display_name || "-"}
+                              </td>
+                              <td className="py-2 px-2 text-xs text-muted-foreground">
+                                {format(new Date(c.created_at), "MMM d, yyyy")}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          </>
+        ) : (
           <AIKeyVault />
-        </motion.div>
+        )}
       </main>
     </div>
   );

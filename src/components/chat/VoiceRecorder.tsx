@@ -1,342 +1,227 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
-import { Mic, Send, Trash2, Lock, ChevronLeft, ArrowUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 interface VoiceRecorderProps {
   waveform: number[];
   duration: number;
   isLocked: boolean;
   isSending: boolean;
+  dragX?: number;
+  dragY?: number;
+  isDragging?: boolean;
   onSend: () => void;
   onCancel: () => void;
   onLock: () => void;
-  onStart?: () => void;
 }
 
-const CANCEL_THRESHOLD = 80;
-const LOCK_THRESHOLD = -70;
+const formatTime = (s: number) => {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+};
 
 export function VoiceRecorder({
   waveform,
   duration,
   isLocked,
   isSending,
+  dragX = 0,
+  dragY = 0,
+  isDragging = false,
   onSend,
   onCancel,
   onLock,
 }: VoiceRecorderProps) {
-  const micRef = useRef<HTMLButtonElement>(null);
-  const startXRef = useRef(0);
-  const startYRef = useRef(0);
-  const [swipeX, setSwipeX] = useState(0);
-  const [swipeY, setSwipeY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const cancelRatio = Math.min(1, Math.max(0, -dragX / 110));
+  const lockRatio = Math.min(1, Math.max(0, -dragY / 90));
+  const isCancelling = cancelRatio > 0.6;
+  const isLocking = lockRatio > 0.6;
 
-  useEffect(() => {
-    if (!isLocked && !isSending) {
-      setSwipeX(0);
-      setSwipeY(0);
-      setIsDragging(false);
-    }
-  }, [isLocked, isSending]);
+  if (isSending) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-3 px-4 py-3"
+      >
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+          className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent shrink-0"
+        />
+        <span className="text-sm text-muted-foreground">Sending voice note...</span>
+      </motion.div>
+    );
+  }
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
-    startXRef.current = e.clientX;
-    startYRef.current = e.clientY;
-    setIsDragging(true);
-    setSwipeX(0);
-    setSwipeY(0);
-  }, []);
+  if (isLocked) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+        className="flex items-center gap-2 px-3 py-2"
+      >
+        <button
+          onClick={onCancel}
+          className="shrink-0 w-[46px] h-[46px] rounded-full bg-card border border-border/30 flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-transform"
+          aria-label="Delete recording"
+        >
+          <svg viewBox="0 0 24 24" strokeWidth="2" fill="none" stroke="currentColor" width="19" height="19" className="text-destructive">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19,6l-1,14H6L5,6"/>
+            <path d="M10,11v6m4-6v6"/>
+            <path d="M9,6V4h6v2"/>
+          </svg>
+        </button>
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging) return;
-    const dx = e.clientX - startXRef.current;
-    const dy = e.clientY - startYRef.current;
-    setSwipeX(dx);
-    setSwipeY(dy);
-  }, [isDragging]);
+        <div className="flex-1 flex items-center gap-2.5 h-[46px] rounded-2xl bg-card border border-border/30 shadow-sm px-3.5">
+          <motion.div
+            className="w-[7px] h-[7px] rounded-full bg-destructive shrink-0"
+            animate={{ opacity: [1, 0.2, 1] }}
+            transition={{ repeat: Infinity, duration: 1.1, ease: 'easeInOut' }}
+          />
+          <span className="text-sm font-mono tabular-nums font-semibold min-w-[38px] shrink-0">
+            {formatTime(duration)}
+          </span>
+          <div className="flex items-center gap-[2px] h-7 flex-1 overflow-hidden">
+            {waveform.map((h, i) => (
+              <div
+                key={i}
+                className="w-[3px] rounded-full shrink-0"
+                style={{ height: `${Math.max(2, h)}px`, backgroundColor: 'hsl(var(--primary))' }}
+              />
+            ))}
+          </div>
+        </div>
 
-  const handlePointerUp = useCallback(() => {
-    if (!isDragging) return;
-    setIsDragging(false);
-
-    const x = swipeX;
-    const y = swipeY;
-
-    if (x < -CANCEL_THRESHOLD) {
-      onCancel();
-    } else if (y < LOCK_THRESHOLD) {
-      onLock();
-    } else {
-      onSend();
-    }
-
-    setSwipeX(0);
-    setSwipeY(0);
-  }, [isDragging, swipeX, swipeY, onCancel, onLock, onSend]);
-
-  const isCancelling = swipeX < -CANCEL_THRESHOLD * 0.6;
-  const isLocking = swipeY < LOCK_THRESHOLD * 0.6;
-  const showTrashZone = swipeX < -20;
-  const showLockZone = swipeY < -20;
-
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, '0')}`;
-  };
+        <button
+          onClick={onSend}
+          className="shrink-0 w-[46px] h-[46px] rounded-full bg-primary flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-transform"
+          aria-label="Send voice note"
+        >
+          <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+            <path d="M22 2L11 13"/>
+            <polygon points="22,2 15,22 11,13 2,9"/>
+          </svg>
+        </button>
+      </motion.div>
+    );
+  }
 
   return (
-    <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: 'auto', opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-      className="overflow-hidden"
-    >
-      <div className="px-3 py-2 select-none" style={{ touchAction: 'none' }}>
-        {isSending ? (
-          <div className="flex items-center gap-3 h-14">
-            <div className="flex items-center gap-2.5 text-muted-foreground">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-              >
-                <Send className="w-4 h-4" />
-              </motion.div>
-              <span className="text-sm">Sending voice note...</span>
-            </div>
-          </div>
-        ) : isLocked ? (
-          <div className="flex items-center gap-3 h-14 bg-card/50 rounded-lg px-3 shadow-sm border border-border/50">
+    <div className="relative" style={{ touchAction: 'none' }}>
+      {/* Recording capsule */}
+      <motion.div
+        initial={{ opacity: 0, transform: 'scaleX(0.6) translateX(30%)' }}
+        animate={{
+          opacity: 0.55 + (1 - cancelRatio) * 0.45,
+          transform: 'scaleX(1) translateX(0)',
+          x: `${Math.min(0, dragX * 0.55)}px`,
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+        className="flex items-center gap-2.5 h-[46px] rounded-2xl bg-card border border-border/30 shadow-md px-3.5 overflow-hidden relative mx-3"
+        style={{ transformOrigin: 'right center' }}
+      >
+        {/* Trash hint */}
+        <motion.div
+          animate={{ opacity: Math.max(0, (cancelRatio - 0.35) * 2.5) }}
+          className="absolute left-3 flex items-center gap-1.5 text-destructive text-xs pointer-events-none"
+        >
+          <svg viewBox="0 0 24 24" strokeWidth="2" fill="none" stroke="currentColor" width="15" height="15">
+            <polyline points="3,6 5,6 21,6"/>
+            <path d="M19,6l-1,14H6L5,6"/>
+            <path d="M10,11v6m4-6v6"/>
+            <path d="M9,6V4h6v2"/>
+          </svg>
+          Cancel
+        </motion.div>
+
+        <motion.div
+          className="w-2 h-2 rounded-full bg-destructive shrink-0"
+          animate={{ opacity: [1, 0.2, 1] }}
+          transition={{ repeat: Infinity, duration: 1.1, ease: 'easeInOut' }}
+        />
+
+        <span className="text-sm font-mono tabular-nums font-semibold min-w-[38px] shrink-0">
+          {formatTime(duration)}
+        </span>
+
+        <div className="flex items-center gap-[2px] h-7 flex-1 overflow-hidden justify-center">
+          {waveform.map((h, i) => (
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="shrink-0"
-            >
-              <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center">
-                <Lock className="w-3.5 h-3.5 text-accent" />
-              </div>
-            </motion.div>
-            <motion.div
-              className="flex-1 flex items-center justify-center gap-[2px] h-8"
-              initial="init"
-              animate="in"
-              variants={{ init: {}, in: { transition: { staggerChildren: 0.012 } } }}
-            >
-              {waveform.map((h, i) => (
-                <motion.div
-                  key={i}
-                  custom={i}
-                  variants={{
-                    init: { height: 0, opacity: 0 },
-                    in: {
-                      height: `${Math.max(3, h)}px`,
-                      opacity: 1,
-                      transition: { type: 'spring', stiffness: 120, damping: 10, mass: 0.6 },
-                    },
-                  }}
-                  className={cn(
-                    'w-[3px] rounded-full',
-                    i % 2 === 0 ? 'bg-primary' : 'bg-primary/50'
-                  )}
-                />
-              ))}
-            </motion.div>
-            <span className="text-sm font-mono text-primary font-medium tabular-nums min-w-[40px] text-right">
-              {formatTime(duration)}
-            </span>
-            <div className="flex items-center gap-1.5">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={onCancel}
-                className="shrink-0 rounded-full h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                title="Delete"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </Button>
-              <Button
-                size="icon"
-                onClick={onSend}
-                className="shrink-0 rounded-full h-9 w-9 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg shadow-primary/20"
-                title="Send"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+              key={i}
+              className="w-[3px] rounded-full shrink-0"
+              style={{ backgroundColor: 'hsl(var(--primary))' }}
+              animate={{ height: `${Math.max(2, h)}px` }}
+              transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+            />
+          ))}
+        </div>
+
+        <motion.div
+          animate={{ opacity: Math.max(0, 1 - cancelRatio * 1.5) }}
+          className="flex items-center gap-1 text-muted-foreground/60 text-xs whitespace-nowrap pointer-events-none shrink-0"
+        >
+          <svg viewBox="0 0 24 24" strokeWidth="2" fill="none" stroke="currentColor" width="14" height="14">
+            <polyline points="15,18 9,12 15,6"/>
+          </svg>
+          Slide to cancel
+        </motion.div>
+
+        <button
+          onClick={onCancel}
+          className="text-muted-foreground/60 hover:text-destructive transition-colors text-lg leading-none p-1 shrink-0 bg-transparent border-none cursor-pointer"
+          aria-label="Cancel recording"
+        >
+          ✕
+        </button>
+      </motion.div>
+
+      {/* Lock float */}
+      <AnimatePresence>
+        {lockRatio > 0.05 && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 0.35 + lockRatio * 0.65, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            className="absolute right-[calc(12px+46px/2-11px)] -top-14 flex flex-col items-center gap-0 pointer-events-none"
+          >
+            <div className="w-[13px] h-[10px] border-2 border-muted-foreground border-b-0 rounded-t-[7px]" />
+            <div className={cn(
+              'w-[22px] h-[18px] border-2 rounded-[5px] flex items-center justify-center',
+              lockRatio > 0.85 ? 'bg-muted-foreground border-muted-foreground' : 'border-muted-foreground'
+            )}>
+              <div className={cn(
+                'w-full h-full rounded-[3px]',
+                lockRatio > 0.85 ? 'bg-muted-foreground' : 'bg-transparent'
+              )} />
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3 h-14 px-2 rounded-lg bg-card/20">
-            <div className="relative min-w-[90px]">
-              <motion.div
-                className="flex items-center gap-1"
-                animate={{
-                  x: showTrashZone ? -4 : 0,
-                  opacity: showTrashZone ? 1 : 0.5,
-                }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              >
-                <ChevronLeft
-                  className={cn(
-                    'w-3.5 h-3.5 transition-colors',
-                    isCancelling ? 'text-destructive' : 'text-muted-foreground'
-                  )}
-                />
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={isCancelling ? 'cancel' : 'slide'}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.12 }}
-                    className={cn(
-                      'text-[10px] whitespace-nowrap',
-                      isCancelling
-                        ? 'text-destructive font-semibold'
-                        : 'text-muted-foreground/60'
-                    )}
-                  >
-                    {isCancelling ? 'Release to cancel' : 'Slide to cancel'}
-                  </motion.span>
-                </AnimatePresence>
-              </motion.div>
-              <motion.div
-                className="flex items-center gap-1 mt-0.5"
-                animate={{
-                  x: showLockZone ? 0 : -4,
-                  opacity: showLockZone ? 1 : 0.3,
-                }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              >
-                <ArrowUp className="w-3 h-3 text-muted-foreground" />
-                <span className="text-[10px] whitespace-nowrap text-muted-foreground/40">
-                  Slide up to lock
-                </span>
-              </motion.div>
-            </div>
-
-            <motion.div
-              className="flex-1 flex items-center justify-center gap-[2px] h-10"
-              initial="init"
-              animate="in"
-              variants={{ init: {}, in: { transition: { staggerChildren: 0.012 } } }}
-            >
-              {waveform.map((h, i) => (
-                <motion.div
-                  key={i}
-                  custom={i}
-                  variants={{
-                    init: { height: 0, opacity: 0 },
-                    in: {
-                      height: `${Math.max(3, h)}px`,
-                      opacity: 1,
-                      transition: { type: 'spring', stiffness: 120, damping: 10, mass: 0.6 },
-                    },
-                  }}
-                  className={cn(
-                    'w-[3px] rounded-full',
-                    i % 2 === 0 ? 'bg-primary' : 'bg-primary/50'
-                  )}
-                />
-              ))}
-            </motion.div>
-
-            <span className="text-sm font-mono text-primary font-medium tabular-nums min-w-[40px] text-right">
-              {formatTime(duration)}
-            </span>
-
-            <div className="relative">
-              <AnimatePresence>
-                {showLockZone && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    className="absolute -top-14 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none"
-                  >
-                    <motion.div
-                      className="w-8 h-8 rounded-full bg-accent/15 flex items-center justify-center shadow-lg shadow-accent/10"
-                      animate={isLocking ? { scale: [1, 1.15, 1] } : {}}
-                      transition={{ repeat: Infinity, duration: 0.8 }}
-                    >
-                      <Lock className="w-3.5 h-3.5 text-accent" />
-                    </motion.div>
-                    <span className="text-[9px] text-accent font-semibold whitespace-nowrap tracking-wider uppercase">
-                      Lock
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <motion.button
-                ref={micRef}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerUp}
-                className="relative w-10 h-10 rounded-full flex items-center justify-center cursor-pointer select-none z-10 shadow-lg"
-                style={{ touchAction: 'none' }}
-                animate={{
-                  scale: 1 + (Math.abs(swipeX) / CANCEL_THRESHOLD) * 0.15,
-                }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              >
-                <motion.div
-                  className={cn(
-                    'absolute inset-0 rounded-full',
-                    isCancelling ? 'bg-destructive' : 'bg-gradient-to-r from-primary to-primary/80'
-                  )}
-                  animate={
-                    !isDragging
-                      ? { scale: [1, 1.08, 1] }
-                      : { scale: 1 }
-                  }
-                  transition={
-                    !isDragging
-                      ? { repeat: Infinity, duration: 1.2, ease: 'easeInOut' }
-                      : { type: 'spring', stiffness: 300, damping: 15 }
-                  }
-                />
-                <motion.div
-                  className="absolute inset-0 rounded-full bg-primary/20"
-                  animate={!isDragging ? {
-                    scale: [1, 1.6, 1],
-                    opacity: [0.3, 0, 0.3],
-                  } : {
-                    scale: 1,
-                    opacity: 0,
-                  }}
-                  transition={{
-                    repeat: !isDragging ? Infinity : 0,
-                    duration: 1.5,
-                    ease: 'easeInOut',
-                  }}
-                />
-                <Mic className="w-4 h-4 text-primary-foreground relative z-10" />
-              </motion.button>
-
-              <AnimatePresence>
-                {isCancelling && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    className="absolute -bottom-8 left-1/2 -translate-x-1/2"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-destructive/10 flex items-center justify-center">
-                      <Trash2 className="w-3 h-3 text-destructive" />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
+            <span className="text-[10px] text-muted-foreground mt-0.5" style={{ opacity: 0.5 + lockRatio * 0.5 }}>↑</span>
+          </motion.div>
         )}
-      </div>
-    </motion.div>
+      </AnimatePresence>
+
+      {/* Trash icon below mic when cancelling */}
+      <AnimatePresence>
+        {isCancelling && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="absolute -bottom-6 right-[calc(12px+23px-12px)] pointer-events-none"
+          >
+            <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" strokeWidth="2" fill="none" stroke="currentColor" width="11" height="11" className="text-destructive">
+                <polyline points="3,6 5,6 21,6"/>
+                <path d="M19,6l-1,14H6L5,6"/>
+                <path d="M10,11v6m4-6v6"/>
+                <path d="M9,6V4h6v2"/>
+              </svg>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

@@ -317,6 +317,14 @@ export function ChatArea({
   const isRecording = recordingState === 'recording';
   const isSending = recordingState === 'sending';
 
+  // WhatsApp-style press-hold gesture tracking (document-level)
+  const vnGestureRef = useRef({ startX: 0, startY: 0, started: false, pointerId: -1 });
+  const [vnDragX, setVnDragX] = useState(0);
+  const [vnDragY, setVnDragY] = useState(0);
+  const [vnIsDragging, setVnIsDragging] = useState(false);
+  const recordingStateRef = useRef(recordingState);
+  recordingStateRef.current = recordingState;
+
   // Camera / gallery preview
   const [cameraPreview, setCameraPreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
@@ -661,11 +669,52 @@ export function ChatArea({
     }
   }, []);
 
-  const handleVnStart = useCallback(async () => {
-    if (uploadingFile || recordingState !== 'idle') return;
-    const started = await vnStartRecording();
-    if (started) onRecordingVn?.(true);
-  }, [uploadingFile, recordingState, vnStartRecording, onRecordingVn]);
+  const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
+    if (uploadingFile || recordingStateRef.current !== 'idle') return;
+    e.preventDefault();
+    vnGestureRef.current = { startX: e.clientX, startY: e.clientY, started: false, pointerId: e.pointerId };
+    const el = e.currentTarget as HTMLElement;
+    try { el.setPointerCapture(e.pointerId); } catch {}
+    setVnIsDragging(true);
+    setVnDragX(0);
+    setVnDragY(0);
+    const ok = await vnStartRecording();
+    vnGestureRef.current.started = ok;
+    if (ok) onRecordingVn?.(true);
+    if (!ok) {
+      setVnIsDragging(false);
+      try { el.releasePointerCapture(e.pointerId); } catch {}
+    }
+  }, [uploadingFile, vnStartRecording, onRecordingVn]);
+
+  useEffect(() => {
+    if (!vnIsDragging) return;
+    const g = vnGestureRef.current;
+    const handleMove = (e: PointerEvent) => {
+      setVnDragX(e.clientX - g.startX);
+      setVnDragY(e.clientY - g.startY);
+    };
+    const handleUp = (e: PointerEvent) => {
+      setVnIsDragging(false);
+      const dx = e.clientX - g.startX;
+      const dy = e.clientY - g.startY;
+      if (!g.started) { onRecordingVn?.(false); return; }
+      if (dx < -80) {
+        vnCancelRecording();
+        onRecordingVn?.(false);
+      } else if (dy < -70) {
+        vnLockRecording();
+      } else {
+        handleVnSendLocked();
+      }
+    };
+    window.addEventListener('pointermove', handleMove);
+    window.addEventListener('pointerup', handleUp);
+    return () => {
+      window.removeEventListener('pointermove', handleMove);
+      window.removeEventListener('pointerup', handleUp);
+    };
+  }, [vnIsDragging, vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
 
   const handleVnLock = useCallback(async () => {
     await vnLockRecording();
@@ -1813,8 +1862,11 @@ export function ChatArea({
             duration={vnDuration}
             isLocked={vnIsLocked}
             isSending={isSending}
+            dragX={vnDragX}
+            dragY={vnDragY}
+            isDragging={vnIsDragging}
             onSend={handleVnSendLocked}
-            onCancel={() => { vnCancelRecording(); onRecordingVn?.(false); }}
+            onCancel={() => { setVnIsDragging(false); vnCancelRecording(); onRecordingVn?.(false); }}
             onLock={handleVnLock}
           />
         ) : (
@@ -1875,11 +1927,12 @@ export function ChatArea({
             </div>
             {!input.trim() && !editingMessage ? (
               <button
-                onClick={handleVnStart}
+                onPointerDown={handleVnPointerDown}
                 className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent"
                 disabled={uploadingFile || !canSend}
-                title={canSend ? "Record voice note" : "Only admins can send messages"}
+                title={canSend ? "Press & hold to record" : "Only admins can send messages"}
                 aria-label="Voice note"
+                style={{ touchAction: 'none' }}
               >
                 <Mic className="w-4 h-4" />
               </button>

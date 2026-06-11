@@ -8,11 +8,12 @@ interface VoiceNotePlayerProps {
   src: string;
   isOwn?: boolean;
   fileName?: string;
+  hideControls?: boolean;
 }
 
 const BAR_COUNT = 30;
 
-export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) {
+export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNotePlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -123,30 +124,32 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
 
   return (
     <div className="flex items-center gap-2.5 py-1 min-w-[200px] max-w-full">
-      <motion.button
-        onClick={togglePlay}
-        className={cn(
-          'w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm',
-          isOwn
-            ? 'bg-white/20 hover:bg-white/30 text-white'
-            : 'bg-primary/10 hover:bg-primary/20 text-primary'
-        )}
-        whileTap={{ scale: 0.88 }}
-        whileHover={{ scale: 1.05 }}
-        aria-label={isPlaying ? 'Pause' : 'Play'}
-      >
-        {isPlaying ? (
-          <Pause className="w-4 h-4 fill-current" />
-        ) : (
-          <Play className="w-4 h-4 fill-current ml-0.5" />
-        )}
-      </motion.button>
+      {!hideControls && (
+        <motion.button
+          onClick={togglePlay}
+          className={cn(
+            'w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm',
+            isOwn
+              ? 'bg-white/20 hover:bg-white/30 text-white'
+              : 'bg-primary/10 hover:bg-primary/20 text-primary'
+          )}
+          whileTap={{ scale: 0.88 }}
+          whileHover={{ scale: 1.05 }}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? (
+            <Pause className="w-4 h-4 fill-current" />
+          ) : (
+            <Play className="w-4 h-4 fill-current ml-0.5" />
+          )}
+        </motion.button>
+      )}
 
       <div className="flex-1 min-w-0">
         <motion.div
           ref={progressRef}
           className="flex items-center gap-[2px] h-8 cursor-pointer group relative"
-          onClick={isLoaded ? handleSeek : undefined}
+          onClick={!hideControls && isLoaded ? handleSeek : undefined}
           role="slider"
           aria-label="Seek"
           aria-valuemin={0}
@@ -191,38 +194,40 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
             }}
           />
          </motion.div>
-         <div className="flex justify-between items-center mt-0.5">
-          <span className="text-[10px] tabular-nums opacity-50 font-mono">
-            {formatTime(isPlaying ? remaining : duration)}
-          </span>
-          <div className="flex items-center gap-1.5">
-            {fileName && (
-              <span className="text-[9px] opacity-30 truncate max-w-[60px]">{fileName}</span>
-            )}
-            <button
-              onClick={handleDownload}
-              className="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-foreground/5"
-              title="Download"
-              aria-label="Download voice note"
-            >
-              <Download className="w-3 h-3" />
-            </button>
-            {typeof HTMLAudioElement.prototype.setSinkId === 'function' && (
+         {!hideControls && (
+           <div className="flex justify-between items-center mt-0.5">
+            <span className="text-[10px] tabular-nums opacity-50 font-mono">
+              {formatTime(isPlaying ? remaining : duration)}
+            </span>
+            <div className="flex items-center gap-1.5">
+              {fileName && (
+                <span className="text-[9px] opacity-30 truncate max-w-[60px]">{fileName}</span>
+              )}
               <button
-                onClick={() => setUseSpeaker(v => !v)}
+                onClick={handleDownload}
                 className="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-foreground/5"
-                title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
-                aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
+                title="Download"
+                aria-label="Download voice note"
               >
-                {useSpeaker ? (
-                  <Volume2 className="w-3 h-3" />
-                ) : (
-                  <VolumeX className="w-3 h-3" />
-                )}
+                <Download className="w-3 h-3" />
               </button>
-            )}
+              {typeof HTMLAudioElement.prototype.setSinkId === 'function' && (
+                <button
+                  onClick={() => setUseSpeaker(v => !v)}
+                  className="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-foreground/5"
+                  title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
+                  aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
+                >
+                  {useSpeaker ? (
+                    <Volume2 className="w-3 h-3" />
+                  ) : (
+                    <VolumeX className="w-3 h-3" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+         )}
       </div>
       <audio ref={audioRef} src={src} preload="metadata" />
     </div>

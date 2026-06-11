@@ -45,6 +45,7 @@ interface ChatAreaProps {
   onLoadMore?: () => void;
   onProfileClick?: (userId: string) => void;
   onPushMessage?: (message: Message) => void;
+  onBroadcastMessage?: (message: Message) => void;
 }
 
 const DELETE_EVERYONE_WINDOW_MS = 48 * 60 * 60 * 1000;
@@ -689,9 +690,10 @@ export function ChatArea({
     if (blob && activeConversation && user) {
       await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
         onPushMessage?.(message);
+        onBroadcastMessage?.(message);
       });
     }
-  }, [isRecording, onRecordingVn, vnIsLocked, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration, onPushMessage]);
+  }, [isRecording, onRecordingVn, vnIsLocked, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration, onPushMessage, onBroadcastMessage]);
 
   const handleVnSendLocked = useCallback(async () => {
     if (!isRecording || !activeConversation || !user) return;
@@ -699,9 +701,10 @@ export function ChatArea({
     if (blob) {
       await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
         onPushMessage?.(message);
+        onBroadcastMessage?.(message);
       });
     }
-  }, [isRecording, activeConversation, user, vnStopAndGetBlob, vnUploadAndSend, vnDuration, onPushMessage]);
+  }, [isRecording, activeConversation, user, vnStopAndGetBlob, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage]);
 
   // Reset VN on error and notify user
   useEffect(() => {

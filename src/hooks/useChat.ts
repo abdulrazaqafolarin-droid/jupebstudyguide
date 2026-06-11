@@ -653,95 +653,87 @@ export function useChat() {
     };
   }, [user, fetchConversations]);
 
-  // Polling fallback for when Realtime/WebSocket is unavailable
+  // Polling: runs continuously as primary message delivery mechanism
   useEffect(() => {
     if (!user) return;
 
-    const shouldPoll = globalChannelStatus === 'CHANNEL_ERROR' || globalChannelStatus === 'CLOSED' || globalChannelStatus === 'TIMED_OUT';
-    const shouldStop = globalChannelStatus === 'SUBSCRIBED' || globalChannelStatus === 'idle';
-
-    if (shouldStop) {
-      clearInterval(pollTimerRef.current);
-      pollTimerRef.current = undefined;
-      pollCursorRef.current = '';
-      return;
-    }
-
-    if (!shouldPoll) return;
-
-    clearInterval(pollTimerRef.current);
-    pollTimerRef.current = setInterval(async () => {
-      // Initialize cursor only when conversations are loaded
-      if (!pollCursorRef.current) {
-        const convs = conversationsRef.current;
-        if (convs.length === 0) return;
-        const latestTs = convs.reduce((latest, c) => {
-          if (!c.last_message?.created_at) return latest;
-          return c.last_message.created_at > latest ? c.last_message.created_at : latest;
-        }, '');
-        pollCursorRef.current = latestTs || new Date().toISOString();
-        return;
-      }
-
-      const convIds = convIdsRef.current;
-      if (convIds.length === 0) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('messages')
-          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
-          .in('conversation_id', convIds)
-          .gt('created_at', pollCursorRef.current)
-          .order('created_at', { ascending: true });
-
-        if (error) throw error;
-        if (!data || data.length === 0) return;
-
-        pollCursorRef.current = data[data.length - 1].created_at;
-
-        for (const newMsg of data) {
-          if (newMsg.sender_id === user.id) continue;
-
-          const currentConv = activeConvRef.current;
-          if (newMsg.conversation_id === currentConv) {
-            setMessages(prev =>
-              prev.some(m => m.id === newMsg.id)
-                ? prev
-                : [...prev, newMsg as Message].sort(
-                    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-                  )
-            );
-          }
-          setConversations(prev => {
-            const updated = prev.map(c =>
-              c.id === newMsg.conversation_id
-                ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg as Message }
-                : c
-            );
-            return updated.sort((a, b) => {
-              const aTime = a.last_message?.created_at;
-              const bTime = b.last_message?.created_at;
-              if (!aTime && !bTime) return 0;
-              if (!aTime) return 1;
-              if (!bTime) return -1;
-              return bTime.localeCompare(aTime);
-            });
-          });
-
-          window.dispatchEvent(new CustomEvent('chat-new-message', {
-            detail: { message: newMsg },
-          }));
+    const startPoll = () => {
+      if (pollTimerRef.current) return;
+      pollTimerRef.current = setInterval(async () => {
+        // Initialize cursor only when conversations are loaded
+        if (!pollCursorRef.current) {
+          const convs = conversationsRef.current;
+          if (convs.length === 0) return;
+          const latestTs = convs.reduce((latest, c) => {
+            if (!c.last_message?.created_at) return latest;
+            return c.last_message.created_at > latest ? c.last_message.created_at : latest;
+          }, '');
+          pollCursorRef.current = latestTs || new Date().toISOString();
+          return;
         }
-      } catch (err) {
-        debugWarn('[useChat] poll fallback error:', err);
-      }
-    }, 3000);
+
+        const convIds = convIdsRef.current;
+        if (convIds.length === 0) return;
+
+        try {
+          const { data, error } = await supabase
+            .from('messages')
+            .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
+            .in('conversation_id', convIds)
+            .gt('created_at', pollCursorRef.current)
+            .order('created_at', { ascending: true });
+
+          if (error) throw error;
+          if (!data || data.length === 0) return;
+
+          pollCursorRef.current = data[data.length - 1].created_at;
+
+          for (const newMsg of data) {
+            if (newMsg.sender_id === user.id) continue;
+
+            const currentConv = activeConvRef.current;
+            if (newMsg.conversation_id === currentConv) {
+              setMessages(prev =>
+                prev.some(m => m.id === newMsg.id)
+                  ? prev
+                  : [...prev, newMsg as Message].sort(
+                      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    )
+              );
+            }
+            setConversations(prev => {
+              const updated = prev.map(c =>
+                c.id === newMsg.conversation_id
+                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg as Message }
+                  : c
+              );
+              return updated.sort((a, b) => {
+                const aTime = a.last_message?.created_at;
+                const bTime = b.last_message?.created_at;
+                if (!aTime && !bTime) return 0;
+                if (!aTime) return 1;
+                if (!bTime) return -1;
+                return bTime.localeCompare(aTime);
+              });
+            });
+
+            window.dispatchEvent(new CustomEvent('chat-new-message', {
+              detail: { message: newMsg },
+            }));
+          }
+        } catch (err) {
+          debugWarn('[useChat] poll fallback error:', err);
+        }
+      }, 3000);
+    };
+
+    startPoll();
 
     return () => {
       clearInterval(pollTimerRef.current);
       pollTimerRef.current = undefined;
     };
-  }, [user, globalChannelStatus]);
+  }, [user]);
 
   useEffect(() => {
     try {
@@ -1314,6 +1306,14 @@ export function useChat() {
     });
   }, []);
 
+  const broadcastMessage = useCallback((message: Message) => {
+    msgBroadcastRef.current?.send({
+      type: 'broadcast',
+      event: 'msg',
+      payload: { message },
+    });
+  }, []);
+
   return {
     conversations,
     activeConversation,
@@ -1346,5 +1346,6 @@ export function useChat() {
     globalInsertCount,
     pendingCount,
     flushOfflineQueue,
+    broadcastMessage,
   };
 }

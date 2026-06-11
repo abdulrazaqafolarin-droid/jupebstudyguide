@@ -79,7 +79,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     }
   }, [useSpeaker]);
 
-  const togglePlay = useCallback(() => {
+  const togglePlay = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
     if (isPlaying) {
@@ -87,7 +87,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
       suspend();
       setIsPlaying(false);
     } else {
-      resume();
+      await resume();
       audio.play().catch(() => {});
       setIsPlaying(true);
     }
@@ -122,26 +122,24 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
   const waveform = isPlaying ? liveWaveform : staticBars;
 
   return (
-    <div className="flex items-center gap-2 py-0.5 min-w-[200px] max-w-full">
+    <div className="flex items-center gap-2.5 py-1 min-w-[200px] max-w-full">
       <motion.button
         onClick={togglePlay}
         className={cn(
-          'w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors',
-          isOwn ? 'bg-white/20 hover:bg-white/30' : 'bg-primary/10 hover:bg-primary/20'
+          'w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm',
+          isOwn
+            ? 'bg-white/20 hover:bg-white/30 text-white'
+            : 'bg-primary/10 hover:bg-primary/20 text-primary'
         )}
-        whileTap={{ scale: 0.9 }}
+        whileTap={{ scale: 0.88 }}
+        whileHover={{ scale: 1.05 }}
         aria-label={isPlaying ? 'Pause' : 'Play'}
       >
-        <motion.div
-          animate={isPlaying ? { rotate: 0 } : { rotate: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {isPlaying ? (
-            <Pause className="w-3.5 h-3.5 fill-current" />
-          ) : (
-            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-          )}
-        </motion.div>
+        {isPlaying ? (
+          <Pause className="w-4 h-4 fill-current" />
+        ) : (
+          <Play className="w-4 h-4 fill-current ml-0.5" />
+        )}
       </motion.button>
 
       <div className="flex-1 min-w-0">
@@ -161,32 +159,37 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
               <motion.div
                 key={i}
                 className={cn(
-                  'w-[3px] rounded-full',
+                  'w-[3px] rounded-full transition-colors duration-150',
                   isOwn
-                    ? isPlayed ? 'bg-white' : 'bg-white/40'
-                    : isPlayed ? 'bg-primary' : 'bg-foreground/25'
+                    ? isPlayed ? 'bg-white' : 'bg-white/30'
+                    : isPlayed ? 'bg-primary' : 'bg-foreground/20'
                 )}
                 animate={{ height: `${Math.max(3, h)}px` }}
-                transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               />
             );
           })}
           <div
-            className="absolute left-0 top-0 bottom-0 bg-foreground/5 rounded-full pointer-events-none"
-            style={{ width: `${progress * 100}%` }}
+            className="absolute left-0 top-0 bottom-0 rounded-full pointer-events-none"
+            style={{
+              width: `${progress * 100}%`,
+              background: isOwn
+                ? 'linear-gradient(90deg, rgba(255,255,255,0.08), transparent)'
+                : 'linear-gradient(90deg, hsl(var(--primary) / 0.08), transparent)',
+            }}
           />
         </div>
         <div className="flex justify-between items-center mt-0.5">
-          <span className="text-[9px] tabular-nums opacity-60">
+          <span className="text-[10px] tabular-nums opacity-50 font-mono">
             {formatTime(isPlaying ? remaining : duration)}
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {fileName && (
-              <span className="text-[9px] opacity-40 truncate max-w-[60px]">{fileName}</span>
+              <span className="text-[9px] opacity-30 truncate max-w-[60px]">{fileName}</span>
             )}
             <button
               onClick={handleDownload}
-              className="opacity-40 hover:opacity-100 transition-opacity p-0.5"
+              className="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-foreground/5"
               title="Download"
               aria-label="Download voice note"
             >
@@ -195,7 +198,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
             {typeof HTMLAudioElement.prototype.setSinkId === 'function' && (
               <button
                 onClick={() => setUseSpeaker(v => !v)}
-                className="opacity-40 hover:opacity-100 transition-opacity p-0.5"
+                className="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-foreground/5"
                 title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
                 aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
               >

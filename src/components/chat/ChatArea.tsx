@@ -9,7 +9,6 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { MessageReactions } from './MessageReactions';
-import { VoiceNotePlayer } from './VoiceNotePlayer';
 import { VoiceRecorder } from './VoiceRecorder';
 import { GroupInfoPanel } from './GroupInfoPanel';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
@@ -1385,12 +1384,14 @@ export function ChatArea({
                                     'max-w-full rounded-lg mb-1.5',
                                     isOwn ? 'bg-primary-foreground/10' : 'bg-secondary/40'
                                   )}>
-                                    <div className="px-3 pt-2 pb-1">
-                                      <VoiceNotePlayer
-                                        src={safeMediaUrl(msg.file_url)!}
-                                        isOwn={isOwn}
-                                        fileName={msg.file_name || undefined}
-                                      />
+                                    <div className="px-3 pt-2 pb-1 flex items-center gap-2">
+                                      <svg viewBox="0 0 24 24" strokeWidth="1.5" fill="none" stroke="currentColor" width="16" height="16" className="shrink-0 opacity-50">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                        <line x1="12" y1="19" x2="12" y2="23"/>
+                                        <line x1="8" y1="23" x2="16" y2="23"/>
+                                      </svg>
+                                      <span className="text-sm opacity-60">{msg.content}</span>
                                     </div>
                                   </div>
                                 )}

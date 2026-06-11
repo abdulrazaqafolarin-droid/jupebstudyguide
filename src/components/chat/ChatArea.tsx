@@ -716,26 +716,41 @@ export function ChatArea({
     setUploadingFile(true);
     setUploadProgress(0);
     let sent = 0;
-    for (const file of galleryFiles) {
+    let failed = 0;
+    for (let i = 0; i < galleryFiles.length; i++) {
+      const file = galleryFiles[i];
       try {
-        const compressed = await compressImage(file, 1920, 0.8);
-        const uploadFile = new File([compressed], file.name, { type: 'image/jpeg' });
+        let uploadFile: File;
+        try {
+          const compressed = await compressImage(file, 1920, 0.8);
+          uploadFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+        } catch {
+          uploadFile = file;
+        }
         const url = await onUploadImage?.(uploadFile);
         if (url) {
           onSendImage?.(url);
           sent++;
+        } else {
+          failed++;
         }
-        setUploadProgress(Math.round((sent / galleryFiles.length) * 100));
-      } catch {
-        // skip failed uploads
+      } catch (err) {
+        console.error('[gallery] upload failed:', i, err);
+        failed++;
       }
+      setUploadProgress(Math.round(((sent + failed) / galleryFiles.length) * 100));
     }
     setUploadProgress(null);
     setUploadingFile(false);
     galleryPreviews.forEach(u => revokeBlobUrl(u));
     setGalleryPreviews([]);
     setGalleryFiles([]);
-    toast.success(`${sent} image${sent !== 1 ? 's' : ''} sent`);
+    if (sent > 0) {
+      toast.success(`${sent} image${sent !== 1 ? 's' : ''} sent`);
+    }
+    if (failed > 0) {
+      toast.error(`${failed} image${failed !== 1 ? 's' : ''} failed`);
+    }
   }, [galleryFiles, galleryPreviews, onUploadImage, onSendImage, compressImage, revokeBlobUrl]);
 
   const discardGalleryPreviews = useCallback(() => {
@@ -750,14 +765,22 @@ export function ChatArea({
     setUploadProgress(0);
     try {
       const file = galleryFiles[0];
-      const compressed = await compressImage(file, 1920, 0.8);
-      const uploadFile = new File([compressed], file.name, { type: 'image/jpeg' });
+      let uploadFile: File;
+      try {
+        const compressed = await compressImage(file, 1920, 0.8);
+        uploadFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+      } catch {
+        uploadFile = file;
+      }
       const url = await onUploadImage?.(uploadFile);
       if (url) {
         onSendImage?.(url);
         toast.success('Photo sent');
+      } else {
+        toast.error('Failed to upload photo');
       }
-    } catch {
+    } catch (err) {
+      console.error('[camera] send failed:', err);
       toast.error('Failed to send photo');
     }
     setUploadProgress(null);

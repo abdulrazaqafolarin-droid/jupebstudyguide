@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
-import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File, Music, Trash2, Edit3, Download, Loader2, Camera, Image, Mic, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
+import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File, Music, Trash2, Edit3, Download, Loader2, Camera, Image, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Message, Conversation } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,10 +9,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { MessageReactions } from './MessageReactions';
-import { VoiceNotePlayer } from './VoiceNotePlayer';
-import { VoiceRecorder } from './VoiceRecorder';
 import { GroupInfoPanel } from './GroupInfoPanel';
-import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { linkify, getDocTypeIcon, formatFileSize } from '@/lib/linkify';
 import { safeMediaUrl, isValidUrl } from '@/lib/url';
@@ -36,17 +33,14 @@ interface ChatAreaProps {
   onBack?: () => void;
   isOnline: (userId: string) => boolean;
   isTyping: (userId: string) => boolean;
-  isRecordingVn?: (userId: string) => boolean;
   getLastSeen?: (userId: string) => string | null;
   onTyping: (isTyping: boolean) => void;
-  onRecordingVn?: (isRecording: boolean) => void;
   hasMoreMessages?: boolean;
   loadingMore?: boolean;
   onLoadMore?: () => void;
   onProfileClick?: (userId: string) => void;
   onPushMessage?: (message: Message) => void;
   onBroadcastMessage?: (message: Message) => void;
-  onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number) => void;
 }
 
 
@@ -243,17 +237,14 @@ export function ChatArea({
   onBack,
   isOnline,
   isTyping,
-  isRecordingVn,
   getLastSeen,
   onTyping,
-  onRecordingVn,
   hasMoreMessages,
   loadingMore,
   onLoadMore,
   onProfileClick,
   onPushMessage,
   onBroadcastMessage,
-  onQueueVoiceNote,
 }: ChatAreaProps) {
   const { user } = useAuth();
   const { compressImage } = useImageCompression();
@@ -302,39 +293,6 @@ export function ChatArea({
     return url;
   }, []);
 
-  // Voice note recording state
-  const {
-    recordingState,
-    duration: vnDuration,
-    error: vnError,
-    waveform: vnWaveform,
-    isLocked: vnIsLocked,
-    recordedBlob: vnRecordedBlob,
-    startRecording: vnStartRecording,
-    cancelRecording: vnCancelRecording,
-    lockRecording: vnLockRecording,
-    uploadAndSend: vnUploadAndSend,
-  } = useVoiceRecorder();
-  const [vnPreviewUrl, setVnPreviewUrl] = useState<string | null>(null);
-  useEffect(() => {
-    if (vnRecordedBlob) {
-      const url = URL.createObjectURL(vnRecordedBlob);
-      setVnPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-    setVnPreviewUrl(null);
-  }, [vnRecordedBlob]);
-  const isRecording = recordingState === 'recording';
-  const isSending = recordingState === 'sending';
-
-  // WhatsApp-style press-hold gesture tracking (document-level)
-  const vnGestureRef = useRef({ startX: 0, startY: 0, started: false, pointerId: -1 });
-  const [vnDragX, setVnDragX] = useState(0);
-  const [vnDragY, setVnDragY] = useState(0);
-  const [vnIsDragging, setVnIsDragging] = useState(false);
-  const recordingStateRef = useRef(recordingState);
-  recordingStateRef.current = recordingState;
-
   // Camera / gallery preview
   const [cameraPreview, setCameraPreview] = useState<string | null>(null);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
@@ -373,7 +331,6 @@ export function ChatArea({
   const otherUserId = isGroup ? null : activeConv?.other_user?.user_id;
   const otherOnline = otherUserId ? isOnline(otherUserId) : false;
   const showTyping = otherUserId ? isTyping(otherUserId) : false;
-  const showOtherRecording = otherUserId ? isRecordingVn?.(otherUserId) : false;
   const typingMemberNames = isGroup && activeConv?.participants
     ? activeConv.participants
         .filter(p => p.user_id !== user?.id && isTyping(p.user_id))
@@ -543,9 +500,6 @@ export function ChatArea({
     setSearchQuery('');
     setUnreadSinceScroll(0);
     setIsNearBottom(true);
-    // Clear VN recording
-    vnCancelRecording();
-    onRecordingVn?.(false);
     if (cameraPreview) { revokeBlobUrl(cameraPreview); setCameraPreview(null); }
     galleryPreviews.forEach(u => revokeBlobUrl(u));
     setGalleryPreviews([]);
@@ -678,83 +632,6 @@ export function ChatArea({
         break;
     }
   }, []);
-
-  const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
-    if (uploadingFile || recordingStateRef.current !== 'idle') return;
-    e.preventDefault();
-    vnGestureRef.current = { startX: e.clientX, startY: e.clientY, started: false, pointerId: e.pointerId };
-    const el = e.currentTarget as HTMLElement;
-    try { el.setPointerCapture(e.pointerId); } catch {}
-    setVnIsDragging(true);
-    setVnDragX(0);
-    setVnDragY(0);
-    const ok = await vnStartRecording();
-    vnGestureRef.current.started = ok;
-    if (ok) onRecordingVn?.(true);
-    if (!ok) {
-      setVnIsDragging(false);
-      try { el.releasePointerCapture(e.pointerId); } catch {}
-    }
-  }, [uploadingFile, vnStartRecording, onRecordingVn]);
-
-  const handleVnLock = useCallback(async () => {
-    await vnLockRecording();
-  }, [vnLockRecording]);
-
-  const handleVnSendLocked = useCallback(async () => {
-    if (!activeConversation || !user) return;
-    await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
-      onPushMessage?.(message);
-      onBroadcastMessage?.(message);
-    }, (blob, senderId, duration) => {
-      onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
-      toast.info('Voice note queued — will send when back online');
-    });
-  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote]);
-
-  useEffect(() => {
-    if (!vnIsDragging) return;
-    const g = vnGestureRef.current;
-    const handleMove = (e: PointerEvent) => {
-      if (e.pointerId !== g.pointerId) return;
-      setVnDragX(e.clientX - g.startX);
-      setVnDragY(e.clientY - g.startY);
-    };
-    const handleUp = (e: PointerEvent) => {
-      if (e.pointerId !== g.pointerId) return;
-      setVnIsDragging(false);
-      const dx = e.clientX - g.startX;
-      const dy = e.clientY - g.startY;
-      if (!g.started) { onRecordingVn?.(false); return; }
-      if (dx < -80) {
-        vnCancelRecording();
-        onRecordingVn?.(false);
-      } else if (dy < -70) {
-        vnLockRecording().catch(console.error);
-      } else {
-        handleVnSendLocked().catch(console.error);
-      }
-    };
-    window.addEventListener('pointermove', handleMove);
-    window.addEventListener('pointerup', handleUp);
-    return () => {
-      window.removeEventListener('pointermove', handleMove);
-      window.removeEventListener('pointerup', handleUp);
-    };
-  }, [vnIsDragging, vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
-
-  const lastVnErrorRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (vnError && vnError !== lastVnErrorRef.current) {
-      lastVnErrorRef.current = vnError;
-      onRecordingVn?.(false);
-      toast.error(vnError);
-    }
-    if (!vnError) {
-      lastVnErrorRef.current = null;
-    }
-  }, [vnError, onRecordingVn]);
 
   const sendGalleryImages = useCallback(async () => {
     if (galleryFiles.length === 0) return;
@@ -1086,17 +963,7 @@ export function ChatArea({
                 {isGroup ? (groupName || 'Group') : (activeConv?.other_user?.display_name || 'User')}
               </span>
               <span className="text-[10px] leading-tight text-muted-foreground">
-                {isRecording ? (
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-                    Recording…
-                  </span>
-                ) : showOtherRecording ? (
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                    Recording voice note…
-                  </span>
-                ) : isGroup ? (
+                {isGroup ? (
                   typingMemberNames.length > 0 ? (
                     <span className="flex items-center gap-1">
                       <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -1385,13 +1252,14 @@ export function ChatArea({
                                     'max-w-full rounded-lg mb-1.5',
                                     isOwn ? 'bg-primary-foreground/10' : 'bg-secondary/40'
                                   )}>
-                                    <div className="px-3 pt-2 pb-1">
-                                      <VoiceNotePlayer
-                                        src={safeMediaUrl(msg.file_url)!}
-                                        isOwn={isOwn}
-                                        fileName={msg.file_name || undefined}
-                                        hideControls
-                                      />
+                                    <div className="px-3 pt-2 pb-1 flex items-center gap-2">
+                                      <svg viewBox="0 0 24 24" strokeWidth="1.5" fill="none" stroke="currentColor" width="16" height="16" className="shrink-0 opacity-50">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                        <line x1="12" y1="19" x2="12" y2="23"/>
+                                        <line x1="8" y1="23" x2="16" y2="23"/>
+                                      </svg>
+                                      <span className="text-sm opacity-60">{msg.content}</span>
                                     </div>
                                   </div>
                                 )}
@@ -1869,21 +1737,6 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
-        {isRecording || isSending || vnIsLocked ? (
-          <VoiceRecorder
-            waveform={vnWaveform}
-            duration={vnDuration}
-            isLocked={vnIsLocked}
-            isSending={isSending}
-            previewUrl={vnPreviewUrl}
-            dragX={vnDragX}
-            dragY={vnDragY}
-            isDragging={vnIsDragging}
-            onSend={handleVnSendLocked}
-            onCancel={() => { setVnIsDragging(false); vnCancelRecording(); onRecordingVn?.(false); }}
-            onLock={handleVnLock}
-          />
-        ) : (
         <div className="px-3 py-2.5">
           {!canSend && (
             <div className="text-[11px] text-muted-foreground text-center pb-2">
@@ -1939,31 +1792,17 @@ export function ChatArea({
                 style={{ minHeight: '40px' }}
               />
             </div>
-            {!input.trim() && !editingMessage ? (
-              <button
-                onPointerDown={handleVnPointerDown}
-                className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent"
-                disabled={uploadingFile || !canSend}
-                title={canSend ? "Press & hold to record" : "Only admins can send messages"}
-                aria-label="Voice note"
-                style={{ touchAction: 'none' }}
-              >
-                <Mic className="w-4 h-4" />
-              </button>
-            ) : (
-              <Button
-                type="button"
-                size="icon"
-                className="shrink-0 rounded-full"
-                onClick={handleSend}
-                disabled={!input.trim() || uploadingFile || !canSend}
-              >
-                {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-              </Button>
-            )}
+            <Button
+              type="button"
+              size="icon"
+              className="shrink-0 rounded-full"
+              onClick={handleSend}
+              disabled={!input.trim() || uploadingFile || !canSend}
+            >
+              {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+            </Button>
           </div>
         </div>
-        )}
       </div>
 
       {/* Contact sharing form */}

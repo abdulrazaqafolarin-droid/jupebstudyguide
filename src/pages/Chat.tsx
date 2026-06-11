@@ -488,16 +488,13 @@ const Chat = () => {
             onBack={isMobile ? handleBackToSidebar : undefined}
             isOnline={presence.isOnline}
             isTyping={presence.isTyping}
-            isRecordingVn={presence.isRecordingVn}
             getLastSeen={presence.getLastSeen}
             onTyping={presence.setTyping}
-            onRecordingVn={presence.setRecordingVn}
             hasMoreMessages={chat.hasMoreMessages}
             loadingMore={chat.loadingMore}
             onLoadMore={chat.loadMoreMessages}
             onProfileClick={openProfile}
             onBroadcastMessage={chat.broadcastMessage}
-            onQueueVoiceNote={chat.queueVoiceNote}
           />
         </div>
       )}

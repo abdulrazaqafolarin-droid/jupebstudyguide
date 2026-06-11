@@ -249,6 +249,7 @@ export function ChatArea({
   onLoadMore,
   onProfileClick,
   onPushMessage,
+  onBroadcastMessage,
 }: ChatAreaProps) {
   const { user } = useAuth();
   const { compressImage } = useImageCompression();

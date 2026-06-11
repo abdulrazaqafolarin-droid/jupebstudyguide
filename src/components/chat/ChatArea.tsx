@@ -706,10 +706,12 @@ export function ChatArea({
     if (!vnIsDragging) return;
     const g = vnGestureRef.current;
     const handleMove = (e: PointerEvent) => {
+      if (e.pointerId !== g.pointerId) return;
       setVnDragX(e.clientX - g.startX);
       setVnDragY(e.clientY - g.startY);
     };
     const handleUp = (e: PointerEvent) => {
+      if (e.pointerId !== g.pointerId) return;
       setVnIsDragging(false);
       const dx = e.clientX - g.startX;
       const dy = e.clientY - g.startY;
@@ -718,9 +720,9 @@ export function ChatArea({
         vnCancelRecording();
         onRecordingVn?.(false);
       } else if (dy < -70) {
-        vnLockRecording();
+        vnLockRecording().catch(console.error);
       } else {
-        handleVnSendLocked();
+        handleVnSendLocked().catch(console.error);
       }
     };
     window.addEventListener('pointermove', handleMove);

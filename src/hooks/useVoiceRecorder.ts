@@ -16,6 +16,7 @@ export function useVoiceRecorder() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const startTimeRef = useRef<number>(0);
+  const cancelledRef = useRef(false);
 
   const {
     waveform,
@@ -85,11 +86,12 @@ export function useVoiceRecorder() {
   const stopAndGetBlob = useCallback((): Promise<Blob | null> => {
     return new Promise((resolve) => {
       const recorder = mediaRecorderRef.current;
-      if (!recorder) { resolve(null); return; }
+      if (!recorder || cancelledRef.current) { resolve(null); return; }
 
       if (timerRef.current) clearInterval(timerRef.current);
 
       recorder.onstop = () => {
+        if (cancelledRef.current) { resolve(null); return; }
         const mimeType = recorder.mimeType || 'audio/webm';
         const blob = new Blob(chunksRef.current, { type: mimeType });
         streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -99,13 +101,19 @@ export function useVoiceRecorder() {
         resolve(blob.size > 0 ? blob : null);
       };
 
-      recorder.stop();
+      if (recorder.state === 'recording') {
+        recorder.stop();
+      } else {
+        recorder.onstop = null;
+        resolve(null);
+      }
     });
   }, [cleanupAnalyser, resetWaveform]);
 
   const cancelRecording = useCallback(() => {
+    cancelledRef.current = true;
     if (timerRef.current) clearInterval(timerRef.current);
-    if (mediaRecorderRef.current) {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.onstop = null;
       mediaRecorderRef.current.stop();
     }
@@ -118,9 +126,11 @@ export function useVoiceRecorder() {
     setIsLocked(false);
     setRecordedBlob(null);
     chunksRef.current = [];
+    cancelledRef.current = false;
   }, [cleanupAnalyser, resetWaveform]);
 
   const lockRecording = useCallback(async (): Promise<boolean> => {
+    cancelledRef.current = false;
     const blob = await stopAndGetBlob();
     if (blob) {
       setRecordedBlob(blob);
@@ -138,8 +148,11 @@ export function useVoiceRecorder() {
     onSent: (message: any) => void,
     onQueueOffline?: (blob: Blob, senderId: string, duration: number) => void,
   ) => {
-    const blob = recordedBlob;
-    if (!blob) return;
+    let blob = recordedBlob;
+    if (!blob) {
+      blob = await stopAndGetBlob();
+      if (!blob) return;
+    }
 
     if (!navigator.onLine) {
       onQueueOffline?.(blob, senderId, currentDuration);
@@ -206,7 +219,7 @@ export function useVoiceRecorder() {
       setRecordedBlob(null);
       resetWaveform();
     }
-  }, [recordedBlob, resetWaveform]);
+  }, [recordedBlob, stopAndGetBlob, resetWaveform]);
 
   return {
     recordingState,

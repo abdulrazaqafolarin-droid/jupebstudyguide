@@ -687,6 +687,21 @@ export function ChatArea({
     }
   }, [uploadingFile, vnStartRecording, onRecordingVn]);
 
+  const handleVnLock = useCallback(async () => {
+    await vnLockRecording();
+  }, [vnLockRecording]);
+
+  const handleVnSendLocked = useCallback(async () => {
+    if (!activeConversation || !user) return;
+    await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
+      onPushMessage?.(message);
+      onBroadcastMessage?.(message);
+    }, (blob, senderId, duration) => {
+      onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
+      toast.info('Voice note queued — will send when back online');
+    });
+  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote]);
+
   useEffect(() => {
     if (!vnIsDragging) return;
     const g = vnGestureRef.current;
@@ -715,21 +730,6 @@ export function ChatArea({
       window.removeEventListener('pointerup', handleUp);
     };
   }, [vnIsDragging, vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
-
-  const handleVnLock = useCallback(async () => {
-    await vnLockRecording();
-  }, [vnLockRecording]);
-
-  const handleVnSendLocked = useCallback(async () => {
-    if (!activeConversation || !user) return;
-    await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
-      onPushMessage?.(message);
-      onBroadcastMessage?.(message);
-    }, (blob, senderId, duration) => {
-      onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
-      toast.info('Voice note queued — will send when back online');
-    });
-  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote]);
 
   const lastVnErrorRef = useRef<string | null>(null);
 

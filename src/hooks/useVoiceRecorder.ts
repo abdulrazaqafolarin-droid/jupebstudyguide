@@ -227,6 +227,7 @@ export function useVoiceRecorder() {
     error,
     waveform,
     isLocked,
+    recordedBlob,
     startRecording,
     stopAndGetBlob,
     cancelRecording,

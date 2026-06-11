@@ -309,11 +309,21 @@ export function ChatArea({
     error: vnError,
     waveform: vnWaveform,
     isLocked: vnIsLocked,
+    recordedBlob: vnRecordedBlob,
     startRecording: vnStartRecording,
     cancelRecording: vnCancelRecording,
     lockRecording: vnLockRecording,
     uploadAndSend: vnUploadAndSend,
   } = useVoiceRecorder();
+  const [vnPreviewUrl, setVnPreviewUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (vnRecordedBlob) {
+      const url = URL.createObjectURL(vnRecordedBlob);
+      setVnPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setVnPreviewUrl(null);
+  }, [vnRecordedBlob]);
   const isRecording = recordingState === 'recording';
   const isSending = recordingState === 'sending';
 
@@ -1864,6 +1874,7 @@ export function ChatArea({
             duration={vnDuration}
             isLocked={vnIsLocked}
             isSending={isSending}
+            previewUrl={vnPreviewUrl}
             dragX={vnDragX}
             dragY={vnDragY}
             isDragging={vnIsDragging}

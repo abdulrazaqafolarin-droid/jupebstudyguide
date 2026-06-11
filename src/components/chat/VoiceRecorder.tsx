@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 interface VoiceRecorderProps {
   waveform: number[];
   duration: number;
   isLocked: boolean;
   isSending: boolean;
+  previewUrl?: string | null;
   dragX?: number;
   dragY?: number;
   isDragging?: boolean;
@@ -25,6 +27,7 @@ export function VoiceRecorder({
   duration,
   isLocked,
   isSending,
+  previewUrl,
   dragX = 0,
   dragY = 0,
   isDragging = false,
@@ -32,6 +35,40 @@ export function VoiceRecorder({
   onCancel,
   onLock,
 }: VoiceRecorderProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [audioProgress, setAudioProgress] = useState(0);
+
+  const togglePlay = useCallback(() => {
+    if (!previewUrl) return;
+    if (isPlaying) {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+    } else {
+      if (!audioRef.current) {
+        const audio = new Audio(previewUrl);
+        audio.addEventListener('timeupdate', () => {
+          if (audio.duration) setAudioProgress(audio.currentTime / audio.duration);
+        });
+        audio.addEventListener('ended', () => { setIsPlaying(false); setAudioProgress(0); });
+        audio.onerror = () => setIsPlaying(false);
+        audioRef.current = audio;
+      } else {
+        audioRef.current.currentTime = 0;
+      }
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  }, [previewUrl, isPlaying]);
+
+  useEffect(() => {
+    if (!isLocked) {
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setIsPlaying(false);
+      setAudioProgress(0);
+    }
+  }, [isLocked]);
   const cancelRatio = Math.min(1, Math.max(0, -dragX / 110));
   const lockRatio = Math.min(1, Math.max(0, -dragY / 90));
   const isCancelling = cancelRatio > 0.6;
@@ -76,23 +113,31 @@ export function VoiceRecorder({
         </button>
 
         <div className="flex-1 flex items-center gap-2.5 h-[46px] rounded-2xl bg-card border border-border/30 shadow-sm px-3.5">
-          <motion.div
-            className="w-[7px] h-[7px] rounded-full bg-destructive shrink-0"
-            animate={{ opacity: [1, 0.2, 1] }}
-            transition={{ repeat: Infinity, duration: 1.1, ease: 'easeInOut' }}
-          />
+          <button
+            onClick={togglePlay}
+            className="shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? (
+              <svg viewBox="0 0 24 24" fill="hsl(var(--primary))" width="12" height="12">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="hsl(var(--primary))" width="12" height="12">
+                <polygon points="5,3 19,12 5,21"/>
+              </svg>
+            )}
+          </button>
+          <div className="flex-1 h-1 rounded-full bg-border/40 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-150"
+              style={{ width: `${audioProgress * 100}%` }}
+            />
+          </div>
           <span className="text-sm font-mono tabular-nums font-semibold min-w-[38px] shrink-0">
             {formatTime(duration)}
           </span>
-          <div className="flex items-center gap-[2px] h-7 flex-1 overflow-hidden">
-            {waveform.map((h, i) => (
-              <div
-                key={i}
-                className="w-[3px] rounded-full shrink-0"
-                style={{ height: `${Math.max(2, h)}px`, backgroundColor: 'hsl(var(--primary))' }}
-              />
-            ))}
-          </div>
         </div>
 
         <button

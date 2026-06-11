@@ -49,6 +49,8 @@ interface ChatAreaProps {
   onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number) => void;
 }
 
+
+
 const DELETE_EVERYONE_WINDOW_MS = 48 * 60 * 60 * 1000;
 const TYPING_TIMEOUT_MS = 3000;
 const SCROLL_BOTTOM_THRESHOLD = 200;
@@ -251,6 +253,7 @@ export function ChatArea({
   onProfileClick,
   onPushMessage,
   onBroadcastMessage,
+  onQueueVoiceNote,
 }: ChatAreaProps) {
   const { user } = useAuth();
   const { compressImage } = useImageCompression();

@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Download } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useAudioAnalyser } from '@/hooks/useAudioAnalyser';
 
 interface VoiceNotePlayerProps {
   src: string;
@@ -16,8 +18,25 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
   const [duration, setDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [useSpeaker, setUseSpeaker] = useState(true);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const hasStartedRef = useRef(false);
+
+  const {
+    waveform: liveWaveform,
+    startFromAudio,
+    cleanup: cleanupAnalyser,
+    resetWaveform,
+  } = useAudioAnalyser();
+
+  const [staticBars] = useState(() =>
+    Array.from({ length: BAR_COUNT }, (_, i) => {
+      const mid = BAR_COUNT / 2;
+      const dist = Math.abs(i - mid) / mid;
+      return Math.round(3 + (1 - dist * 0.6) * 14);
+    })
+  );
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -30,6 +49,9 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     const onEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
+      cleanupAnalyser();
+      resetWaveform();
+      hasStartedRef.current = false;
     };
     const onTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
@@ -39,16 +61,21 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     audio.addEventListener('loadedmetadata', onLoaded);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('timeupdate', onTimeUpdate);
+    audio.addEventListener('play', () => {
+      if (!hasStartedRef.current) {
+        hasStartedRef.current = true;
+        startFromAudio(audio);
+      }
+    });
 
     return () => {
       audio.removeEventListener('loadedmetadata', onLoaded);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('timeupdate', onTimeUpdate);
-      audio.pause();
+      cleanupAnalyser();
     };
-  }, []);
+  }, [src, startFromAudio, cleanupAnalyser, resetWaveform]);
 
-  // Toggle audio output: speaker vs earpiece (proximity)
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -79,6 +106,13 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     setCurrentTime(audio.currentTime);
   }, [duration]);
 
+  const handleDownload = useCallback(() => {
+    const a = document.createElement('a');
+    a.href = src;
+    a.download = fileName || 'voice-note';
+    a.click();
+  }, [src, fileName]);
+
   const progress = duration > 0 ? currentTime / duration : 0;
   const remaining = Math.max(0, duration - currentTime);
 
@@ -88,29 +122,31 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const barHeights = Array.from({ length: BAR_COUNT }, (_, i) => {
-    const mid = BAR_COUNT / 2;
-    const dist = Math.abs(i - mid) / mid;
-    const base = 3 + Math.random() * 2;
-    return Math.round(base + (1 - dist * 0.6) * 12);
-  });
+  const waveform = isPlaying ? liveWaveform : staticBars;
 
   return (
     <div className="flex items-center gap-2 py-0.5 min-w-[200px] max-w-full">
-      <button
+      <motion.button
         onClick={togglePlay}
         className={cn(
           'w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors',
           isOwn ? 'bg-white/20 hover:bg-white/30' : 'bg-primary/10 hover:bg-primary/20'
         )}
+        whileTap={{ scale: 0.9 }}
         aria-label={isPlaying ? 'Pause' : 'Play'}
       >
-        {isPlaying ? (
-          <Pause className="w-3.5 h-3.5 fill-current" />
-        ) : (
-          <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-        )}
-      </button>
+        <motion.div
+          animate={isPlaying ? { rotate: 0 } : { rotate: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {isPlaying ? (
+            <Pause className="w-3.5 h-3.5 fill-current" />
+          ) : (
+            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+          )}
+        </motion.div>
+      </motion.button>
+
       <div className="flex-1 min-w-0">
         <div
           ref={progressRef}
@@ -122,21 +158,26 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
           aria-valuemax={100}
           aria-valuenow={Math.round(progress * 100)}
         >
-          {barHeights.map((h, i) => {
+          {waveform.map((h, i) => {
             const isPlayed = i / BAR_COUNT <= progress;
             return (
-              <div
+              <motion.div
                 key={i}
                 className={cn(
-                  'w-[3px] rounded-full transition-all duration-100',
+                  'w-[3px] rounded-full',
                   isOwn
                     ? isPlayed ? 'bg-white' : 'bg-white/40'
                     : isPlayed ? 'bg-primary' : 'bg-foreground/25'
                 )}
-                style={{ height: `${h}px` }}
+                animate={{ height: `${Math.max(3, h)}px` }}
+                transition={{ type: 'spring', stiffness: 200, damping: 18 }}
               />
             );
           })}
+          <div
+            className="absolute left-0 top-0 bottom-0 bg-foreground/5 rounded-full pointer-events-none"
+            style={{ width: `${progress * 100}%` }}
+          />
         </div>
         <div className="flex justify-between items-center mt-0.5">
           <span className="text-[9px] tabular-nums opacity-60">
@@ -146,10 +187,18 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
             {fileName && (
               <span className="text-[9px] opacity-40 truncate max-w-[60px]">{fileName}</span>
             )}
+            <button
+              onClick={handleDownload}
+              className="opacity-40 hover:opacity-100 transition-opacity p-0.5"
+              title="Download"
+              aria-label="Download voice note"
+            >
+              <Download className="w-3 h-3" />
+            </button>
             {typeof HTMLAudioElement.prototype.setSinkId === 'function' && (
               <button
                 onClick={() => setUseSpeaker(v => !v)}
-                className="opacity-40 hover:opacity-100 transition-opacity"
+                className="opacity-40 hover:opacity-100 transition-opacity p-0.5"
                 title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
                 aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
               >

@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { MessageReactions } from './MessageReactions';
 import { VoiceNotePlayer } from './VoiceNotePlayer';
+import { VoiceRecorder } from './VoiceRecorder';
 import { GroupInfoPanel } from './GroupInfoPanel';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
@@ -300,9 +301,12 @@ export function ChatArea({
     recordingState,
     duration: vnDuration,
     error: vnError,
+    waveform: vnWaveform,
+    isLocked: vnIsLocked,
     startRecording: vnStartRecording,
     stopAndGetBlob: vnStopAndGetBlob,
     cancelRecording: vnCancelRecording,
+    lockRecording: vnLockRecording,
     uploadAndSend: vnUploadAndSend,
   } = useVoiceRecorder();
   const isRecording = recordingState === 'recording';
@@ -676,6 +680,7 @@ export function ChatArea({
   const handleVnPointerUp = useCallback(async () => {
     if (!isRecording) return;
     onRecordingVn?.(false);
+    if (vnIsLocked) return;
     if (slideRef.current) {
       vnCancelRecording();
       return;
@@ -686,7 +691,17 @@ export function ChatArea({
         onPushMessage?.(message);
       });
     }
-  }, [isRecording, onRecordingVn, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration, onPushMessage]);
+  }, [isRecording, onRecordingVn, vnIsLocked, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration, onPushMessage]);
+
+  const handleVnSendLocked = useCallback(async () => {
+    if (!isRecording || !activeConversation || !user) return;
+    const blob = await vnStopAndGetBlob();
+    if (blob) {
+      await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
+        onPushMessage?.(message);
+      });
+    }
+  }, [isRecording, activeConversation, user, vnStopAndGetBlob, vnUploadAndSend, vnDuration, onPushMessage]);
 
   // Reset VN on error and notify user
   useEffect(() => {
@@ -1785,39 +1800,16 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
-        {isRecording ? (
-          <div className="px-3 py-2.5">
-            <div className="flex items-center gap-3 h-10">
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <ChevronDown className="w-4 h-4 rotate-90" />
-                <span className="text-xs">Slide to cancel</span>
-              </div>
-              <div className="flex-1" />
-              <span className="text-sm font-mono text-red-500 font-medium tabular-nums">
-                {Math.floor(vnDuration / 60)}:{String(vnDuration % 60).padStart(2, '0')}
-              </span>
-              <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-              <button
-                onPointerDown={handleVnPointerDown}
-                onPointerMove={handleVnPointerMove}
-                onPointerUp={handleVnPointerUp}
-                onPointerLeave={handleVnPointerUp}
-                className="p-2 rounded-full bg-red-500 text-white scale-125 select-none touch-none"
-                style={{ userSelect: 'none', touchAction: 'none' }}
-                title="Release to send"
-                aria-label="Recording"
-              >
-                <Mic className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        ) : isSending ? (
-          <div className="px-3 py-2.5">
-            <div className="flex items-center gap-3 h-10">
-              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Sending voice note...</span>
-            </div>
-          </div>
+        {isRecording || isSending ? (
+          <VoiceRecorder
+            waveform={vnWaveform}
+            duration={vnDuration}
+            isLocked={vnIsLocked}
+            isSending={isSending}
+            onSend={handleVnSendLocked}
+            onCancel={() => { vnCancelRecording(); onRecordingVn?.(false); }}
+            onLock={vnLockRecording}
+          />
         ) : (
         <div className="px-3 py-2.5">
           {!canSend && (

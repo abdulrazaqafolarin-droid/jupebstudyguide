@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
-import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File, Music, Trash2, Edit3, Download, Loader2, Camera, Image, Mic, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
+import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File, Music, Trash2, Edit3, Download, Loader2, Camera, Image, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Message, Conversation } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
@@ -220,7 +220,6 @@ function stripHtml(text: string): string {
 const attachmentItems = [
   { key: 'camera', icon: Camera, label: 'Camera' },
   { key: 'gallery', icon: Image, label: 'Gallery' },
-  { key: 'vn', icon: Mic, label: 'VN' },
   { key: 'document', icon: FileText, label: 'Document' },
   { key: 'location', icon: MapPin, label: 'Location' },
   { key: 'contact', icon: UserIcon, label: 'Contact' },
@@ -1939,28 +1938,15 @@ export function ChatArea({
                 style={{ minHeight: '40px' }}
               />
             </div>
-            {!input.trim() && !editingMessage ? (
-              <button
-                onPointerDown={handleVnPointerDown}
-                className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent"
-                disabled={uploadingFile || !canSend}
-                title={canSend ? "Press & hold to record" : "Only admins can send messages"}
-                aria-label="Voice note"
-                style={{ touchAction: 'none' }}
-              >
-                <Mic className="w-4 h-4" />
-              </button>
-            ) : (
-              <Button
-                type="button"
-                size="icon"
-                className="shrink-0 rounded-full"
-                onClick={handleSend}
-                disabled={!input.trim() || uploadingFile || !canSend}
-              >
-                {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-              </Button>
-            )}
+            <Button
+              type="button"
+              size="icon"
+              className="shrink-0 rounded-full"
+              onClick={handleSend}
+              disabled={!input.trim() || uploadingFile || !canSend}
+            >
+              {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+            </Button>
           </div>
         </div>
         )}

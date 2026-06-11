@@ -9,6 +9,7 @@ export function useVoiceRecorder() {
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -28,6 +29,7 @@ export function useVoiceRecorder() {
     chunksRef.current = [];
     setDuration(0);
     setIsLocked(false);
+    setRecordedBlob(null);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -114,20 +116,30 @@ export function useVoiceRecorder() {
     setRecordingState('idle');
     setDuration(0);
     setIsLocked(false);
+    setRecordedBlob(null);
     chunksRef.current = [];
   }, [cleanupAnalyser, resetWaveform]);
 
-  const lockRecording = useCallback(() => {
-    setIsLocked(true);
-  }, []);
+  const lockRecording = useCallback(async (): Promise<boolean> => {
+    const blob = await stopAndGetBlob();
+    if (blob) {
+      setRecordedBlob(blob);
+      setIsLocked(true);
+      setRecordingState('idle');
+      return true;
+    }
+    return false;
+  }, [stopAndGetBlob]);
 
   const uploadAndSend = useCallback(async (
-    blob: Blob,
     conversationId: string,
     senderId: string,
     currentDuration: number,
     onSent: (message: any) => void
   ) => {
+    const blob = recordedBlob;
+    if (!blob) return;
+
     setRecordingState('sending');
 
     try {
@@ -180,9 +192,10 @@ export function useVoiceRecorder() {
       setRecordingState('idle');
       setDuration(0);
       setIsLocked(false);
+      setRecordedBlob(null);
       resetWaveform();
     }
-  }, [resetWaveform]);
+  }, [recordedBlob, resetWaveform]);
 
   return {
     recordingState,

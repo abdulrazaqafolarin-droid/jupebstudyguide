@@ -306,15 +306,12 @@ export function ChatArea({
     waveform: vnWaveform,
     isLocked: vnIsLocked,
     startRecording: vnStartRecording,
-    stopAndGetBlob: vnStopAndGetBlob,
     cancelRecording: vnCancelRecording,
     lockRecording: vnLockRecording,
     uploadAndSend: vnUploadAndSend,
   } = useVoiceRecorder();
   const isRecording = recordingState === 'recording';
   const isSending = recordingState === 'sending';
-  const slideRef = useRef(false);
-  const vnStartXRef = useRef(0);
 
   // Camera / gallery preview
   const [cameraPreview, setCameraPreview] = useState<string | null>(null);
@@ -660,52 +657,23 @@ export function ChatArea({
     }
   }, []);
 
-  const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
+  const handleVnStart = useCallback(async () => {
     if (uploadingFile || recordingState !== 'idle') return;
-    slideRef.current = false;
-    vnStartXRef.current = e.clientX;
-    e.preventDefault();
     const started = await vnStartRecording();
-    if (started) {
-      onRecordingVn?.(true);
-    }
+    if (started) onRecordingVn?.(true);
   }, [uploadingFile, recordingState, vnStartRecording, onRecordingVn]);
 
-  const handleVnPointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isRecording) return;
-    const diff = vnStartXRef.current - e.clientX;
-    if (diff > 80) {
-      slideRef.current = true;
-    }
-  }, [isRecording]);
-
-  const handleVnPointerUp = useCallback(async () => {
-    if (!isRecording) return;
-    onRecordingVn?.(false);
-    if (vnIsLocked) return;
-    if (slideRef.current) {
-      vnCancelRecording();
-      return;
-    }
-    const blob = await vnStopAndGetBlob();
-    if (blob && activeConversation && user) {
-      await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
-        onPushMessage?.(message);
-        onBroadcastMessage?.(message);
-      });
-    }
-  }, [isRecording, onRecordingVn, vnIsLocked, slideRef, vnCancelRecording, vnStopAndGetBlob, vnUploadAndSend, activeConversation, user, vnDuration, onPushMessage, onBroadcastMessage]);
+  const handleVnLock = useCallback(async () => {
+    await vnLockRecording();
+  }, [vnLockRecording]);
 
   const handleVnSendLocked = useCallback(async () => {
-    if (!isRecording || !activeConversation || !user) return;
-    const blob = await vnStopAndGetBlob();
-    if (blob) {
-      await vnUploadAndSend(blob, activeConversation, user.id, vnDuration, (message) => {
-        onPushMessage?.(message);
-        onBroadcastMessage?.(message);
-      });
-    }
-  }, [isRecording, activeConversation, user, vnStopAndGetBlob, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage]);
+    if (!activeConversation || !user) return;
+    await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
+      onPushMessage?.(message);
+      onBroadcastMessage?.(message);
+    });
+  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage]);
 
   // Reset VN on error and notify user
   useEffect(() => {
@@ -1827,7 +1795,7 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
-        {isRecording || isSending ? (
+        {isRecording || isSending || vnIsLocked ? (
           <VoiceRecorder
             waveform={vnWaveform}
             duration={vnDuration}
@@ -1835,7 +1803,7 @@ export function ChatArea({
             isSending={isSending}
             onSend={handleVnSendLocked}
             onCancel={() => { vnCancelRecording(); onRecordingVn?.(false); }}
-            onLock={vnLockRecording}
+            onLock={handleVnLock}
           />
         ) : (
         <div className="px-3 py-2.5">
@@ -1895,14 +1863,10 @@ export function ChatArea({
             </div>
             {!input.trim() && !editingMessage ? (
               <button
-                onPointerDown={handleVnPointerDown}
-                onPointerMove={handleVnPointerMove}
-                onPointerUp={handleVnPointerUp}
-                onPointerLeave={handleVnPointerUp}
-                className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent select-none touch-none"
-                style={{ touchAction: 'none', userSelect: 'none' }}
+                onClick={handleVnStart}
+                className="shrink-0 rounded-full flex items-center justify-center w-9 h-9 transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-secondary hover:bg-accent/20 text-muted-foreground hover:text-accent"
                 disabled={uploadingFile || !canSend}
-                title={canSend ? "Hold to record voice note" : "Only admins can send messages"}
+                title={canSend ? "Record voice note" : "Only admins can send messages"}
                 aria-label="Voice note"
               >
                 <Mic className="w-4 h-4" />

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import confetti from "canvas-confetti";
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { getAllStudyQuestions, getAllStudyQuestionsForSubject } from '@/data/study-questions';
 import { toQuestions } from '@/lib/question-adapter';
@@ -261,6 +262,16 @@ const Index = () => {
       const d = new Date();
       const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       awardStreakDay(todayStr);
+
+      // Celebration at streak milestones
+      const milestones = [3, 7, 14, 30, 50, 100];
+      if (milestones.includes(currentStreak)) {
+        const count = currentStreak >= 14 ? 60 : 30;
+        const spread = currentStreak >= 14 ? 90 : 60;
+        confetti({ particleCount: count, spread, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
+        setTimeout(() => confetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.2 }, colors: ["#8b5cf6", "#a78bfa"] }), 150);
+        setTimeout(() => confetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.8 }, colors: ["#8b5cf6", "#a78bfa"] }), 300);
+      }
     }
     prevStreakRef.current = currentStreak;
   }, [currentStreak, awardStreakDay]);
@@ -630,9 +641,16 @@ const Index = () => {
                   +{customQuestions.length} custom
                 </span>
               )}
-              <span className="text-sm text-muted-foreground">
-                {allQuestions.length} questions total
-              </span>
+              <motion.span
+                className="text-sm text-muted-foreground inline-flex items-center gap-1"
+                key={allQuestions.length}
+                initial={{ scale: 1 }}
+                animate={{ scale: [1, 1.15, 1] }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <span className="tabular-nums font-semibold text-foreground">{allQuestions.length}</span>
+                <span>questions total</span>
+              </motion.span>
             </div>
           </div>
 

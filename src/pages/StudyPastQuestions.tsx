@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import {
   ArrowLeft,
   BookOpen,
@@ -237,6 +238,31 @@ export default function StudyPastQuestions() {
       setQuizComplete(true);
     }
   }, [timer.state, quizComplete, questions, userAnswers]);
+
+  useEffect(() => {
+    if (quizComplete && score >= 70) {
+      const duration = 2500;
+      const end = Date.now() + duration;
+      const frame = () => {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: ["#8b5cf6", "#6366f1", "#a78bfa"],
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: ["#8b5cf6", "#6366f1", "#a78bfa"],
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      frame();
+    }
+  }, [quizComplete, score]);
 
   const handleRestartQuiz = () => {
     timer.stop();
@@ -551,20 +577,35 @@ export default function StudyPastQuestions() {
                   exit={PAGE_VARIANTS.exit}
                   transition={PAGE_TRANSITION}
                 >
-                  <QuestionViewer
-                    questions={questions}
-                    subject={selectedSubject!}
-                    timer={{
-                      state: timer.state,
-                      formatted: timer.formatted,
-                      progress: timer.progress,
-                      remaining: timer.remaining,
-                    }}
-                    onAnswer={handleAnswer}
-                    onComplete={handleComplete}
-                    isBookmarked={(id) => isBookmarked(id)}
-                    onToggleBookmark={(id) => toggle(id)}
-                  />
+                      <QuestionViewer
+                        questions={questions}
+                        subject={selectedSubject!}
+                        timer={{
+                          state: timer.state,
+                          formatted: timer.formatted,
+                          progress: timer.progress,
+                          remaining: timer.remaining,
+                        }}
+                        onAnswer={handleAnswer}
+                        onComplete={handleComplete}
+                        isBookmarked={(id) => isBookmarked(id)}
+                        onToggleBookmark={(id) => toggle(id)}
+                      />
+
+                      {/* Progress bar */}
+                      <div className="mt-4 flex items-center gap-3">
+                        <div className="flex-1 h-1.5 bg-muted/50 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(Object.keys(userAnswers).length / questions.length) * 100}%` }}
+                            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap tabular-nums">
+                          {Object.keys(userAnswers).length}/{questions.length}
+                        </span>
+                      </div>
                 </motion.div>
               ) : (
                 <motion.div

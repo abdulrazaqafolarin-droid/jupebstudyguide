@@ -95,6 +95,16 @@ async function callAdminManager(action: string, payload: Record<string, unknown>
 
 // ---- Component ----
 
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.23, 1, 0.32, 1] } },
+};
+
 export default function AIKeyVault() {
   const { user } = useAuth();
   const [keys, setKeys] = useState<ApiKey[]>([]);
@@ -263,34 +273,47 @@ export default function AIKeyVault() {
       </div>
 
       {/* Stats Summary Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card className="border-l-4 border-l-primary">
-          <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Total API Calls</p>
-            <p className="text-2xl font-bold">{summary?.totalRequests?.toLocaleString() || 0}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-violet-500">
-          <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Tokens</p>
-            <p className="text-2xl font-bold">{(summary?.totalTokens || 0).toLocaleString()}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-emerald-500">
-          <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Active Keys</p>
-            <p className="text-2xl font-bold">{activeKeys.length} / {keys.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-amber-500">
-          <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Current Key</p>
-            <p className="text-2xl font-bold truncate" title={summary?.currentActiveKey?.label}>
-              {summary?.currentActiveKey?.label || "None"}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 sm:grid-cols-4 gap-3"
+      >
+        <motion.div variants={item}>
+          <Card className="border-l-4 border-l-primary">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Total API Calls</p>
+              <p className="text-2xl font-bold">{summary?.totalRequests?.toLocaleString() || 0}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div variants={item}>
+          <Card className="border-l-4 border-l-violet-500">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Tokens</p>
+              <p className="text-2xl font-bold">{(summary?.totalTokens || 0).toLocaleString()}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div variants={item}>
+          <Card className="border-l-4 border-l-emerald-500">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Active Keys</p>
+              <p className="text-2xl font-bold">{activeKeys.length} / {keys.length}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div variants={item}>
+          <Card className="border-l-4 border-l-amber-500">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Current Key</p>
+              <p className="text-2xl font-bold truncate" title={summary?.currentActiveKey?.label}>
+                {summary?.currentActiveKey?.label || "None"}
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
 
       {/* SECTION A — Key Pool Manager */}
       <Card className="border-primary/20">

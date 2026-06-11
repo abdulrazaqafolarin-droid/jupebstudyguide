@@ -1,0 +1,4600 @@
+[
+  {
+    "id": "math-2022-objective-001",
+    "question": "When f(x) = x³ + 3x² + ax − 2 is divided by x−3, remainder is 100. Find a.",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "16"
+      },
+      {
+        "label": "D",
+        "text": "−3"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-002",
+    "question": "If α and β are roots of 2x²+3x−2=0, evaluate 1/α + 1/β",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2/1·3"
+      },
+      {
+        "label": "B",
+        "text": "3/1·2"
+      },
+      {
+        "label": "C",
+        "text": "2/1·−3"
+      },
+      {
+        "label": "D",
+        "text": "−3/1·2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-003",
+    "question": "Obtain coefficient of (ab)⁴ in expansion of (a + b/2)⁸",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "30"
+      },
+      {
+        "label": "B",
+        "text": "35/8"
+      },
+      {
+        "label": "C",
+        "text": "35"
+      },
+      {
+        "label": "D",
+        "text": "1/8"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-004",
+    "question": "Evaluate determinant of matrix [1 −2 3; 2 2 6; 4 1 4]",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "38"
+      },
+      {
+        "label": "B",
+        "text": "−48"
+      },
+      {
+        "label": "C",
+        "text": "28"
+      },
+      {
+        "label": "D",
+        "text": "−38"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-005",
+    "question": "The following curves are circle EXCEPT:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "x²+y²−2x+y=0"
+      },
+      {
+        "label": "B",
+        "text": "x²+y²−x=2"
+      },
+      {
+        "label": "C",
+        "text": "3x²+y²+4x−8y=0"
+      },
+      {
+        "label": "D",
+        "text": "x²+y²−4x−6y−3=0"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-006",
+    "question": "Evaluate directrix of parabola y²=36x",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "x=4"
+      },
+      {
+        "label": "B",
+        "text": "x=−9"
+      },
+      {
+        "label": "C",
+        "text": "x=−4"
+      },
+      {
+        "label": "D",
+        "text": "x=9"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-007",
+    "question": "Find x and y in matrix equation: [2 x; y −3]×[1 3; 2 5]=[6 16; 4 15]",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "x=2, y=10"
+      },
+      {
+        "label": "B",
+        "text": "x=3, y=2"
+      },
+      {
+        "label": "C",
+        "text": "x=10, y=2"
+      },
+      {
+        "label": "D",
+        "text": "x=2, y=5"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-008",
+    "question": "Line perpendicular to 3x−y+11=0 through point (1,−5). Find equation.",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "3y−x−14=0"
+      },
+      {
+        "label": "B",
+        "text": "3x+y+1=0"
+      },
+      {
+        "label": "C",
+        "text": "3y+x+14=0"
+      },
+      {
+        "label": "D",
+        "text": "3y+x+1=0"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-009",
+    "question": "Deduce quotient when 2x³+3x+1 is divided by x²+x−2",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x+1"
+      },
+      {
+        "label": "B",
+        "text": "2x−1"
+      },
+      {
+        "label": "C",
+        "text": "x−2"
+      },
+      {
+        "label": "D",
+        "text": "2x−2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-010",
+    "question": "Find 5th term of harmonic progression 2/9, 4/17, 1/4, ... **MAT 002: CALCULUS (Q11–30)**",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "3/5"
+      },
+      {
+        "label": "B",
+        "text": "2/5"
+      },
+      {
+        "label": "C",
+        "text": "3/4"
+      },
+      {
+        "label": "D",
+        "text": "2/7"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-011",
+    "question": "Given S={x:0<x≤10, x integer}, A={multiples of 3}, B={x:3≤x<8, x integer}. Find A∩B'",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "{3,6}"
+      },
+      {
+        "label": "B",
+        "text": "{9}"
+      },
+      {
+        "label": "C",
+        "text": "{6,9}"
+      },
+      {
+        "label": "D",
+        "text": "{5,6}"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-012",
+    "question": "Solve log₃3 + log₃9 = 2",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "√8"
+      },
+      {
+        "label": "B",
+        "text": "√7"
+      },
+      {
+        "label": "C",
+        "text": "3√3"
+      },
+      {
+        "label": "D",
+        "text": "14"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-013",
+    "question": "Binomial series for (1+x)ⁿ is valid only when:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "x<1"
+      },
+      {
+        "label": "B",
+        "text": "x<−1"
+      },
+      {
+        "label": "C",
+        "text": "|x|<1"
+      },
+      {
+        "label": "D",
+        "text": "n<1"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-014",
+    "question": "Distance between A(x,−8) and B(2,−5) is 5 units. Find x.",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-015",
+    "question": "4th and 6th terms of linear sequence are 8 and 14. Find first term and common difference.",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0,3"
+      },
+      {
+        "label": "B",
+        "text": "−1,2"
+      },
+      {
+        "label": "C",
+        "text": "0,2"
+      },
+      {
+        "label": "D",
+        "text": "−1,3"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-016",
+    "question": "Determine lim(x→∞) (5x²−x+2)/(4x²−4)",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "−3"
+      },
+      {
+        "label": "C",
+        "text": "5/4"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-017",
+    "question": "Volume when y=x² under y=1 rotated about x-axis, x=0 to x=1:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "6π/7"
+      },
+      {
+        "label": "B",
+        "text": "4π/5"
+      },
+      {
+        "label": "C",
+        "text": "3π/4"
+      },
+      {
+        "label": "D",
+        "text": "π/2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-018",
+    "question": "∫f'(x)/f(x)dx equals:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "ln f(x)"
+      },
+      {
+        "label": "B",
+        "text": "ln f'(x)"
+      },
+      {
+        "label": "C",
+        "text": "ln f(x²)"
+      },
+      {
+        "label": "D",
+        "text": "(ln f(x))²"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-019",
+    "question": "Evaluate lim(x→2⁻) |x−2|/(x−2)",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-020",
+    "question": "Differentiate e^(x cos x)",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "e^(x cos x)[cos x − x sin x]"
+      },
+      {
+        "label": "B",
+        "text": "eˣ(cos x − x sin x)"
+      },
+      {
+        "label": "C",
+        "text": "e^(x cos x) sin x"
+      },
+      {
+        "label": "D",
+        "text": "e^(x cos x) cos x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-021",
+    "question": "Max and min of y = x(x−1)²:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "(1/2, 1)max, (0,2)min"
+      },
+      {
+        "label": "B",
+        "text": "(0,3)max, (1,2)min"
+      },
+      {
+        "label": "C",
+        "text": "(1/3, 4/27)max, (1,0)min"
+      },
+      {
+        "label": "D",
+        "text": "(1/3,1)max, (0,1/2)min"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-022",
+    "question": "Evaluate ∫₀^(π/2) cos x dx",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-023",
+    "question": "Solve x dy/dx = 5x³+4",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "5x²/2 + 4 ln x + C"
+      },
+      {
+        "label": "B",
+        "text": "5x³/3 + 4 ln x + C"
+      },
+      {
+        "label": "C",
+        "text": "3x²/2 + 4 ln x + C"
+      },
+      {
+        "label": "D",
+        "text": "3x³/5 + 4 ln x + C"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-024",
+    "question": "Given y = e^(4x), find fourth derivative:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "4e^(4x)"
+      },
+      {
+        "label": "B",
+        "text": "64e^(4x)"
+      },
+      {
+        "label": "C",
+        "text": "128e^(4x)"
+      },
+      {
+        "label": "D",
+        "text": "256e^(4x)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-025",
+    "question": "Differentiate (∛(x²+2x−1))⁵:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "5(∛(x²+2x−1))⁴"
+      },
+      {
+        "label": "B",
+        "text": "5/3(2x+2)(x²+2x−1)^(3/2)"
+      },
+      {
+        "label": "C",
+        "text": "10/3(x+1)(x²+2x−1)^(2/3)"
+      },
+      {
+        "label": "D",
+        "text": "5(∛(x²+2x−1))^(−4)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-026",
+    "question": "Evaluate ∫₁²((1+x²)/x)dx",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "ln x + x²/2"
+      },
+      {
+        "label": "B",
+        "text": "1+ln2"
+      },
+      {
+        "label": "C",
+        "text": "1+(ln1−ln2)"
+      },
+      {
+        "label": "D",
+        "text": "3/2+(ln2−ln1)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-027",
+    "question": "Evaluate ∫cos x cos 2x dx:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "cos 4x/6 + C"
+      },
+      {
+        "label": "B",
+        "text": "sin 3x/6 + sin x/2 + C"
+      },
+      {
+        "label": "C",
+        "text": "sin³x/3 − sin x/2 + C"
+      },
+      {
+        "label": "D",
+        "text": "sin 5x/7 − sin 2x/5 + C"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-028",
+    "question": "If y = eˣ sin x, find d⁴y/dx⁴ + 4y:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "4x−1"
+      },
+      {
+        "label": "B",
+        "text": "2x−2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-029",
+    "question": "Solve ∫1/((1+x)(2+log(1+x)))dx:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "ln[2−log(1+x)]"
+      },
+      {
+        "label": "B",
+        "text": "ln[2+log(1+x)]"
+      },
+      {
+        "label": "C",
+        "text": "ln[2+log(1−x)]"
+      },
+      {
+        "label": "D",
+        "text": "ln[2+log(1+x)]"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-030",
+    "question": "Measure of location NOT affected by extreme values:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Harmonic mean"
+      },
+      {
+        "label": "B",
+        "text": "Arithmetic mean"
+      },
+      {
+        "label": "C",
+        "text": "Geometric mean"
+      },
+      {
+        "label": "D",
+        "text": "Median"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-031",
+    "question": "Marks: 5,5,8,4,7,6,5,3,9. Compute mean, median, mode:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "4,5,4"
+      },
+      {
+        "label": "B",
+        "text": "5.43,5,5"
+      },
+      {
+        "label": "C",
+        "text": "5.78,5,5"
+      },
+      {
+        "label": "D",
+        "text": "6,5,5"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-032",
+    "question": "Die tossed once. P(even or odd number):",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/2"
+      },
+      {
+        "label": "B",
+        "text": "1/3"
+      },
+      {
+        "label": "C",
+        "text": "1/6"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-033",
+    "question": "Population parameter given by single number is called:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "estimator"
+      },
+      {
+        "label": "B",
+        "text": "interval estimate"
+      },
+      {
+        "label": "C",
+        "text": "confidence interval"
+      },
+      {
+        "label": "D",
+        "text": "point estimate"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-034",
+    "question": "Unbiased die: score 2 on 2 sides, score 4 on 3 sides, score 6 on 1 side. P(score 4 or less):",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "3/6"
+      },
+      {
+        "label": "B",
+        "text": "2/6"
+      },
+      {
+        "label": "C",
+        "text": "5/6"
+      },
+      {
+        "label": "D",
+        "text": "4/6"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-035",
+    "question": "P(X=5) when X~Bi(9, 0.3):",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.975"
+      },
+      {
+        "label": "B",
+        "text": "0.901"
+      },
+      {
+        "label": "C",
+        "text": "0.74"
+      },
+      {
+        "label": "D",
+        "text": "0.074"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-036",
+    "question": "Z~N(0,1). If P(Z<a)=0.975, find a:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.975"
+      },
+      {
+        "label": "B",
+        "text": "0.025"
+      },
+      {
+        "label": "C",
+        "text": "1.96"
+      },
+      {
+        "label": "D",
+        "text": "−1.96"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-037",
+    "question": "Variance of data: 5,6,4,5:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.5"
+      },
+      {
+        "label": "B",
+        "text": "2.0"
+      },
+      {
+        "label": "C",
+        "text": "1.5"
+      },
+      {
+        "label": "D",
+        "text": "2.2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-038",
+    "question": "When is distribution symmetric? - I. Mean=Mode=Median - II. Mean−Mode=3(Mean−Median)",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "I only"
+      },
+      {
+        "label": "B",
+        "text": "I and II"
+      },
+      {
+        "label": "C",
+        "text": "II only"
+      },
+      {
+        "label": "D",
+        "text": "I or II"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-039",
+    "question": "Normal distribution f(x)=1/(σ√2π)·e^(−(x−μ)²/2σ²). Range of x:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0≤x≤b"
+      },
+      {
+        "label": "B",
+        "text": "−∞<x≤0"
+      },
+      {
+        "label": "C",
+        "text": "−∞<x<+∞"
+      },
+      {
+        "label": "D",
+        "text": "a≤x≤b"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-040",
+    "question": "Y~Po(2,4). Find P(5≤Y≤6): **MAT 004A: APPLIED MATHEMATICS — SCIENCES, ENGINEERING & ENVIRONMENTAL SCIENCES (Q41–50)**",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.024"
+      },
+      {
+        "label": "B",
+        "text": "0.988"
+      },
+      {
+        "label": "C",
+        "text": "0.84"
+      },
+      {
+        "label": "D",
+        "text": "0.084"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-041",
+    "question": "Particle moving at 30ms⁻¹ brought to rest after 5 seconds. Find deceleration:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "−9 m/s²"
+      },
+      {
+        "label": "B",
+        "text": "−8 m/s²"
+      },
+      {
+        "label": "C",
+        "text": "−6 m/s²"
+      },
+      {
+        "label": "D",
+        "text": "−7 m/s²"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-042",
+    "question": "Vector a=3i+j is normal to line ℓ and passes through (−1,4). Cartesian equation:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "3x+y=4"
+      },
+      {
+        "label": "B",
+        "text": "3x+y=−1"
+      },
+      {
+        "label": "C",
+        "text": "3x+y=1"
+      },
+      {
+        "label": "D",
+        "text": "3x−y=4"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-043",
+    "question": "Find angle B of triangle ABC: A=2i+4k, B=3i−2j+4k, C=2i−j+k:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "cos⁻¹(3/√55)"
+      },
+      {
+        "label": "B",
+        "text": "sin⁻¹(−√55/3)"
+      },
+      {
+        "label": "C",
+        "text": "cos⁻¹(−3/√55)"
+      },
+      {
+        "label": "D",
+        "text": "sin⁻¹(3/√55)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-044",
+    "question": "Vector equation for line: (x−1)/2 = (y+1)/3 = (z−4)/1:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "i−j+4k=λ(2i+3j+k)"
+      },
+      {
+        "label": "B",
+        "text": "i+j−4k=λ(2i−3j+k)"
+      },
+      {
+        "label": "C",
+        "text": "i−j−k=λ(i−3j−k)"
+      },
+      {
+        "label": "D",
+        "text": "i−j−k=λ(i−j−k)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-045",
+    "question": "|a+b| given a=3i+2j and b=4i−j:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "5√2"
+      },
+      {
+        "label": "B",
+        "text": "√5"
+      },
+      {
+        "label": "C",
+        "text": "√2"
+      },
+      {
+        "label": "D",
+        "text": "2√5"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-046",
+    "question": "Scalar product of a=2i+3j−4k and b=i−2j+k:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "B",
+        "text": "−6"
+      },
+      {
+        "label": "C",
+        "text": "−8"
+      },
+      {
+        "label": "D",
+        "text": "−10"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-047",
+    "question": "Sum of vectors AB, BC, 2CD and DC:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "CD"
+      },
+      {
+        "label": "B",
+        "text": "AD"
+      },
+      {
+        "label": "C",
+        "text": "AB"
+      },
+      {
+        "label": "D",
+        "text": "AC"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-048",
+    "question": "Object of mass 4kg hangs from fixed point, pulled by force FN, string inclined at 60°. Find F:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "60√3N"
+      },
+      {
+        "label": "B",
+        "text": "40√3N"
+      },
+      {
+        "label": "C",
+        "text": "20√3N"
+      },
+      {
+        "label": "D",
+        "text": "40√2N"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-049",
+    "question": "Object 5kg at 6m/s, force 100N for 0.4s. Final velocity:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "14m/s"
+      },
+      {
+        "label": "B",
+        "text": "7m/s"
+      },
+      {
+        "label": "C",
+        "text": "6m/s"
+      },
+      {
+        "label": "D",
+        "text": "40m/s"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-050",
+    "question": "Work done lifting 4.5kg through 10m (g=10ms⁻²): **MAT 004B: APPLIED BUSINESS MATHEMATICS — MANAGEMENT & SOCIAL SCIENCES (Q41–50)**",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "75J"
+      },
+      {
+        "label": "B",
+        "text": "240J"
+      },
+      {
+        "label": "C",
+        "text": "450J"
+      },
+      {
+        "label": "D",
+        "text": "400J"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-041",
+    "question": "Demand: x=15−5p−p², Supply: x=2p−1. Find equilibrium quantity:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-042",
+    "question": "C(x)=4x²+5x−2. Find marginal cost at x=3:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "29"
+      },
+      {
+        "label": "B",
+        "text": "41"
+      },
+      {
+        "label": "C",
+        "text": "34"
+      },
+      {
+        "label": "D",
+        "text": "39"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-043",
+    "question": "S(x)=20x²+20x. Instantaneous rate of change of supply at x=6:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "300"
+      },
+      {
+        "label": "B",
+        "text": "200"
+      },
+      {
+        "label": "C",
+        "text": "260"
+      },
+      {
+        "label": "D",
+        "text": "160"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-044",
+    "question": "Size of each payment of an annuity:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Payment period"
+      },
+      {
+        "label": "B",
+        "text": "Term of annuity"
+      },
+      {
+        "label": "C",
+        "text": "Periodic rent"
+      },
+      {
+        "label": "D",
+        "text": "Interest"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-045",
+    "question": "Perpetuity (A=annuity, n=continuous period):",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "lim(n→0)A"
+      },
+      {
+        "label": "B",
+        "text": "lim(n→t)A"
+      },
+      {
+        "label": "C",
+        "text": "lim(n→∞)A"
+      },
+      {
+        "label": "D",
+        "text": "lim(n→p)A"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-046",
+    "question": "Solution to LP model inequalities on graph:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-047",
+    "question": "Price elasticity of demand for x=10−2p at p=1:",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.25"
+      },
+      {
+        "label": "B",
+        "text": "−0.5"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-048",
+    "question": "MR=TR, MC=TC, V",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "C",
+        "text": "Fixed cost=0. Maximum profit when:"
+      },
+      {
+        "label": "A",
+        "text": "MR=TR"
+      },
+      {
+        "label": "B",
+        "text": "MC=TC"
+      },
+      {
+        "label": "D",
+        "text": "MC=VC"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2022-objective-049",
+    "question": "Which is NOT a technique of inventory control?",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Average cost"
+      },
+      {
+        "label": "B",
+        "text": "First in First out"
+      },
+      {
+        "label": "C",
+        "text": "Last in Last out"
+      },
+      {
+        "label": "D",
+        "text": "Last in First out"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-050",
+    "question": "Consumer surplus formula: **MAT 001: ADVANCED PURE MATHEMATICS** **Q1(a)** Given ellipse x²/16 + y²/9 = 1. Obtain: i. coordinates of foci [3 Marks] ii. eccentricity [2 Marks] (b) If equation of parabola is y²=−16x, determine coordinates of focus [2 Marks] (c) If α and β are roots of 2x²−5x+3=0, find: i. 1/α + 1/β [2 Marks] ii. α/β + β/α [2 Marks] (d) Solve 2sin²x = 2 + cos2x, for 0°≤x≤360° [4 Marks] **Q2(a)** Let ξ={x:0<x≤10, x∈Z}, P={1,2,3,4,5}, Q={x:3≤x<8, x∈N}, R={multiples of 2} i. Find P∪(Q'∩R') [2 Marks] ii. Show P∩(Q∪R)=(P∩Q)∪(P∩R) [3 Marks] (b)(i) Simplify log_a b²−2log_a C−2 [2 Marks] ii. Simplify √5+√2/√5−5√2 [3 Marks] (c) Find range of values of P for which roots of (p²+10p+2)x²+(3p+1)x+1=0 are NOT real [5 Marks] **MAT 002: CALCULUS** **Q3(a)** Find and classify stationary points of y=x³−3x²−9x+2 [5 Marks] (b) 120m fencing for 3 sides of rectangle. Find maximum area [5 Marks] (c) Find volume of solid generated if area enclosed by y=x² rotated about y=x+2 [5 Marks] **Q4(a)** Evaluate: i. ∫₋₁³(2x³+5x−6)dx [2 Marks] ii. ∫x²sin x dx [2 Marks] iii. ∫dx/√(3x+2) [2 Marks] (b) Particle along straight line, initial velocity 6m/s, acceleration a=(2t−5)ms⁻². Find: i. times instantaneously at rest [2½ Marks] ii. distance in first second [2½ Marks] (c) Given f(x)=(x+1)/(x−1), obtain f'(x) and f''(x). Show (x+1)f''(x)+2f'(x)=0 [4 Marks] **MAT 003: STATISTICS (for Sciences, Eng, Env)** **Q5(a)** Differentiate between goodness-of-fit test and contingency table analysis [2 Marks] (b) Die rolled 420 times with outcomes 63,67,66,73,72,79. Test if fair at α=0.05 [6 Marks] (c) Table: Age of voters (18–34, 35–59, 60+) vs Party A and",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "∫(p₀ to p₁)f(p)dp"
+      },
+      {
+        "label": "B",
+        "text": "−∫(p₀ to p₁)f(p)dp"
+      },
+      {
+        "label": "C",
+        "text": "−∫(p₁ to p₀)f(p)dp"
+      },
+      {
+        "label": "D",
+        "text": "−∫(p₁ to p₁)f(p)dp (c) Table: Age of voters (18–34, 35–59, 60+) vs Party A and"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-001",
+    "question": "P={x:3<x<15, x prime}, Q={x:2<x<14, x odd}. Evaluate n(P∩Q)+n(P∩Q)",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "35"
+      },
+      {
+        "label": "B",
+        "text": "26"
+      },
+      {
+        "label": "C",
+        "text": "12"
+      },
+      {
+        "label": "D",
+        "text": "10"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-002",
+    "question": "Range of x for −2x²+5x+3>0:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "−3<x<½"
+      },
+      {
+        "label": "B",
+        "text": "−2<x<3"
+      },
+      {
+        "label": "C",
+        "text": "½<x<2"
+      },
+      {
+        "label": "D",
+        "text": "−1/2<x<3"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-003",
+    "question": "Binary operations NOT commutative EXCEPT:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "a\\\\*b=a+b−3ab"
+      },
+      {
+        "label": "B",
+        "text": "a\\\\*b=5/a+5/b"
+      },
+      {
+        "label": "C",
+        "text": "a\\\\*b=a−b+3ab"
+      },
+      {
+        "label": "D",
+        "text": "a\\\\*b=2a+2b−ab"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-004",
+    "question": "Solve 0.25x+1=32:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "9/2"
+      },
+      {
+        "label": "B",
+        "text": "−5/2"
+      },
+      {
+        "label": "C",
+        "text": "−7/2"
+      },
+      {
+        "label": "D",
+        "text": "7/2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-005",
+    "question": "Solve log₂(2x−1)=log₂(x²−2)−1:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0 or −2"
+      },
+      {
+        "label": "B",
+        "text": "0 or 2"
+      },
+      {
+        "label": "C",
+        "text": "2 or −2"
+      },
+      {
+        "label": "D",
+        "text": "1 or 2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-006",
+    "question": "f(x)=x²−7x, find t for f(2t)=30:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "−5, 2/3"
+      },
+      {
+        "label": "B",
+        "text": "2/3, −1"
+      },
+      {
+        "label": "C",
+        "text": "½, 3/2"
+      },
+      {
+        "label": "D",
+        "text": "5, −3/2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-007",
+    "question": "AP: first term=2, common difference=3. Sum of first 11 terms:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "157"
+      },
+      {
+        "label": "B",
+        "text": "187"
+      },
+      {
+        "label": "C",
+        "text": "197"
+      },
+      {
+        "label": "D",
+        "text": "200"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-008",
+    "question": "f(x)=(5−x²)/(5x−x²). True statement:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "discontinuous at one point (x=0)"
+      },
+      {
+        "label": "B",
+        "text": "discontinuous at exactly two points"
+      },
+      {
+        "label": "C",
+        "text": "discontinuous at no point"
+      },
+      {
+        "label": "D",
+        "text": "discontinuous at one point (x=5)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-009",
+    "question": "Evaluate ∫(x³+1/x²)dx:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "x³+x⁻²/−2+c"
+      },
+      {
+        "label": "B",
+        "text": "x⁴/4+x⁻²/−2+c"
+      },
+      {
+        "label": "C",
+        "text": "x⁴+4x+c"
+      },
+      {
+        "label": "D",
+        "text": "x+x²−2+C"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-010",
+    "question": "If f(x−3)=x²+2x+3, find f(1):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "27"
+      },
+      {
+        "label": "B",
+        "text": "11"
+      },
+      {
+        "label": "C",
+        "text": "16"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-011",
+    "question": "Area bounded by y=x²−2x+3, x=−1 and x=3:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "13⅓"
+      },
+      {
+        "label": "B",
+        "text": "9 units"
+      },
+      {
+        "label": "C",
+        "text": "4⅓ units"
+      },
+      {
+        "label": "D",
+        "text": "5⅓ units"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-012",
+    "question": "dy/dx if y=t² and x=t³:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/t"
+      },
+      {
+        "label": "C",
+        "text": "2/3t"
+      },
+      {
+        "label": "D",
+        "text": "2t/3"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-013",
+    "question": "y=sin⁻¹x, deduce dy/dx at x=−1:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Undefined"
+      },
+      {
+        "label": "C",
+        "text": "1/√2"
+      },
+      {
+        "label": "D",
+        "text": "√2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-014",
+    "question": "Differentiate sin⁻¹(x²):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x/(1−x²)"
+      },
+      {
+        "label": "B",
+        "text": "2x/√(1+x²)"
+      },
+      {
+        "label": "C",
+        "text": "2x/√(x²−1)"
+      },
+      {
+        "label": "D",
+        "text": "2x/√(1−x²)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-015",
+    "question": "5th term of HP 1, 1/3, 1/5, ...:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/11"
+      },
+      {
+        "label": "B",
+        "text": "1/9"
+      },
+      {
+        "label": "C",
+        "text": "1/7"
+      },
+      {
+        "label": "D",
+        "text": "1/5"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-016",
+    "question": "α,β roots of 4x²−5x−3=0. Evaluate α²+β²:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "21/7"
+      },
+      {
+        "label": "B",
+        "text": "25/16"
+      },
+      {
+        "label": "C",
+        "text": "49/16"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-017",
+    "question": "Remainder when x⁴−3x³=4x−8 is divided by 2x+1:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "16"
+      },
+      {
+        "label": "B",
+        "text": "167/16"
+      },
+      {
+        "label": "C",
+        "text": "−1/3"
+      },
+      {
+        "label": "D",
+        "text": "112/5"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-018",
+    "question": "Resolve x/((x−3)(x+5)) into partial fractions:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/8{5/(x+5)−3/(x+5)}"
+      },
+      {
+        "label": "B",
+        "text": "1/3{8/(x+5)−5/(x+5)}"
+      },
+      {
+        "label": "C",
+        "text": "1/5{3/(x+3)−5/(x+5)}"
+      },
+      {
+        "label": "D",
+        "text": "1/8{3/(x−3)−5/(x+5)}"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-019",
+    "question": "Product and sum of roots of 2x²+3x+5=0:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x²−3x+5=0"
+      },
+      {
+        "label": "B",
+        "text": "2x²+3x+5=0"
+      },
+      {
+        "label": "C",
+        "text": "4x²−3x−5=0"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-020",
+    "question": "8^x=3x−8, x is member of real numbers. Find x:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-021",
+    "question": "f(x)=1−2x, g(x)=1+2x. x is a member of real numbers. Find (fg∘g)(−2):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-022",
+    "question": "f(x)=1−2x and g(x)=1+2x. Find (fg∘g)(x):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "C",
+        "text": "−4"
+      },
+      {
+        "label": "D",
+        "text": "6x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-023",
+    "question": "Solve differential equation y''+3y'−4y=0:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pe^x+Qe^x"
+      },
+      {
+        "label": "B",
+        "text": "Pe^x+Qe^(−x)"
+      },
+      {
+        "label": "C",
+        "text": "Pe^x+Qe^x"
+      },
+      {
+        "label": "D",
+        "text": "Pe^x+Qe^x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-024",
+    "question": "Let f(x)=sin x/x. Evaluate lim(x→∞)f(x):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "C",
+        "text": "−∞"
+      },
+      {
+        "label": "D",
+        "text": "−1"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-025",
+    "question": "Calculate Spearman's rank correlation for (40,27),(70,80),(80,67),(90,58),(50,60),(60,75):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.257"
+      },
+      {
+        "label": "B",
+        "text": "0.743"
+      },
+      {
+        "label": "C",
+        "text": "0.1"
+      },
+      {
+        "label": "D",
+        "text": "0.01"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-026",
+    "question": "Statistical hypothesis can be:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "null/exact"
+      },
+      {
+        "label": "B",
+        "text": "null/simple"
+      },
+      {
+        "label": "C",
+        "text": "simple/composite"
+      },
+      {
+        "label": "D",
+        "text": "exact/composite"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-027",
+    "question": "Four coins tossed. P(all same face):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/16"
+      },
+      {
+        "label": "B",
+        "text": "1/8"
+      },
+      {
+        "label": "C",
+        "text": "1/4"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-028",
+    "question": "Given table: x: 0, 1, 2; f(x): 2/7, 2/7, 3/7. Compute variance:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/16"
+      },
+      {
+        "label": "B",
+        "text": "1/8 ... (rest cut off)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-029",
+    "question": "Evaluate mean of data: 97, 91, 94, 90, 85:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "91"
+      },
+      {
+        "label": "B",
+        "text": "92"
+      },
+      {
+        "label": "C",
+        "text": "94"
+      },
+      {
+        "label": "D",
+        "text": "95"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-030",
+    "question": "Two fair dice tossed. P(total showing is 8):",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/36"
+      },
+      {
+        "label": "B",
+        "text": "3/12"
+      },
+      {
+        "label": "C",
+        "text": "5/36"
+      },
+      {
+        "label": "D",
+        "text": "19/36"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-031",
+    "question": "Arrangements of letters of OGBOMOSO:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2400"
+      },
+      {
+        "label": "B",
+        "text": "1280"
+      },
+      {
+        "label": "C",
+        "text": "1500"
+      },
+      {
+        "label": "D",
+        "text": "1680"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-032",
+    "question": "Evaluate ∫₁ˣ x³/(1+x²) dx... (cut off)",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "B",
+        "text": "π/4"
+      },
+      {
+        "label": "C",
+        "text": "2π"
+      },
+      {
+        "label": "D",
+        "text": "2/π"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-033",
+    "question": "If y=ln(x+2x), find dy/dx:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1+2/n·2"
+      },
+      {
+        "label": "B",
+        "text": "1−2/2·m·2"
+      },
+      {
+        "label": "C",
+        "text": "x²+2x−1/x+2²"
+      },
+      {
+        "label": "D",
+        "text": "−2cos x+2sin x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-034",
+    "question": "Coefficient of variation of data: 7, 10, 11, 12:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.87"
+      },
+      {
+        "label": "B",
+        "text": "0.187"
+      },
+      {
+        "label": "C",
+        "text": "0.35"
+      },
+      {
+        "label": "D",
+        "text": "0.035"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-035",
+    "question": "Obtain equation whose product and sum of roots are −1/4 and 4 respectively:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x²+3x+5=0"
+      },
+      {
+        "label": "B",
+        "text": "2x²+3x+5=0"
+      },
+      {
+        "label": "C",
+        "text": "4x²−3x−5=0"
+      },
+      {
+        "label": "D",
+        "text": "..."
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-036",
+    "question": "Derivative of y=cos²x+sin2x:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2sin2x"
+      },
+      {
+        "label": "B",
+        "text": "−2cos x+2sin x"
+      },
+      {
+        "label": "C",
+        "text": "x²+2²/x+2²"
+      },
+      {
+        "label": "D",
+        "text": "−2cos x+2sin x+2sin2x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2023-objective-037",
+    "question": "Coefficient of variation of population data: 7, 10, 11, 12:",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.87"
+      },
+      {
+        "label": "B",
+        "text": "0.187"
+      },
+      {
+        "label": "C",
+        "text": "0.35"
+      },
+      {
+        "label": "D",
+        "text": "0.035"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-038",
+    "question": "Random distribution measuring rare events with same mean and variance is: **Suggested Answers for 2022 MCQ (from study guide):** 1.C 2.A 3.D 4.B 5.D 6.C 7.B 8.A 9.B 10.B 11.D 12.C 13.A 14.B 15.C 16.D 17.B 18.A 19.B 20.A 21.C 22.B 23.D 24.B 25.A 26.B 27.A 28.B 29.D 30.B 31.D 32.B 33.A 34.B 35.A 36.C 37.A 38.B 39.D 40.B 41.C 42.B 43.D 44.A 45.C 46.C 47.B 48.B 49.A 50.C **Suggested Answers for 2023 MCQ (from study guide):** 1.D 2.D 3.B 4.D 5.C 6.B 7.A 8.D 9.B 10.C 11.A 12.C 13.A 14.D 15.C 16.B 17.B 18.D 19.C 20.B 21.A 22.B 23.D 24.B 25.A 26.B 27.A 28.B 29.A 30.B 31.D 32.A 33.B 34.C 35.D 36.D 37.A 38.D 39.A 40.A 41.A 42.B 43.D 44.A 45.B 46.D 47.B 48.B 49.C 50.B That covers the 2022 complete paper and the beginning of 2023. Please continue sending the remaining images — particularly the rest of the 2023 questions and any 2021, 2024, or earlier year papers you have. I'll keep building the full organized collection. **MAT 001: ADVANCED PURE MATHEMATICS (Q1–21)**",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Beta Distribution"
+      },
+      {
+        "label": "B",
+        "text": "Gamma Distribution"
+      },
+      {
+        "label": "C",
+        "text": "..."
+      },
+      {
+        "label": "D",
+        "text": "..."
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-001",
+    "question": "How many terms in expansion of (1+5x)¹⁰?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "18"
+      },
+      {
+        "label": "B",
+        "text": "19"
+      },
+      {
+        "label": "C",
+        "text": "17"
+      },
+      {
+        "label": "D",
+        "text": "20"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-002",
+    "question": "Evaluate log₁/₈ 1:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "3/2"
+      },
+      {
+        "label": "B",
+        "text": "−3/2"
+      },
+      {
+        "label": "C",
+        "text": "−1/2"
+      },
+      {
+        "label": "D",
+        "text": "1/2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-003",
+    "question": "Z₁=2(cos35°+isin35°), Z₂=5(cos25°+isin25°). Find Re(Z₁Z₂):",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "10"
+      },
+      {
+        "label": "C",
+        "text": "60"
+      },
+      {
+        "label": "D",
+        "text": "20"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-004",
+    "question": "10th and 21st terms of HP are 21 and 10. What is 210th term?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "B",
+        "text": "10"
+      },
+      {
+        "label": "C",
+        "text": "21"
+      },
+      {
+        "label": "D",
+        "text": "210"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-005",
+    "question": "Quadratic equation with sum=3/4 and product=−1/2:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "4x²+3x−2=0"
+      },
+      {
+        "label": "B",
+        "text": "4x²−3x−2=0"
+      },
+      {
+        "label": "C",
+        "text": "4x²−3x−8=0"
+      },
+      {
+        "label": "D",
+        "text": "4x²+3x−8=0"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-006",
+    "question": "Sum of non-zero x and y intercepts of line 3x+4y+12=0:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "B",
+        "text": "−3"
+      },
+      {
+        "label": "C",
+        "text": "−4"
+      },
+      {
+        "label": "D",
+        "text": "−7"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-007",
+    "question": "10x+21 = k+3. Find k:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "(x−2)(x+5), x−2, x+5"
+      },
+      {
+        "label": "B",
+        "text": "−3"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-008",
+    "question": "Range of x satisfying x(x−5)>−6:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2<x<−3"
+      },
+      {
+        "label": "B",
+        "text": "−2>x<3"
+      },
+      {
+        "label": "C",
+        "text": "x<2, x<3"
+      },
+      {
+        "label": "D",
+        "text": "x<2, x<3"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-009",
+    "question": "y=5−2x³+3x² has maximum value of y as:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-010",
+    "question": "Evaluate ∫(x⁵−3x²·1/x²)dx:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "5x⁴−6x²+1/x+c"
+      },
+      {
+        "label": "B",
+        "text": "x⁶/6−x⁴/4−ln|x|+c"
+      },
+      {
+        "label": "C",
+        "text": "x⁶/6−3x⁴/4−ln|x|+c"
+      },
+      {
+        "label": "D",
+        "text": "x⁶/6−3x⁴/4−1/x²+c"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-011",
+    "question": "f(x)=√(2sin³x+8). Obtain d/dx(∫f(x)dx):",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "√(2cosx+8)"
+      },
+      {
+        "label": "B",
+        "text": "√(2sin²x+8)"
+      },
+      {
+        "label": "C",
+        "text": "2√2cos³x+8"
+      },
+      {
+        "label": "D",
+        "text": "2√(ncos³x+8)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-012",
+    "question": "x=3t²+5, y=t²−1. Find dy/dx:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-013",
+    "question": "u=x²+3x²y+y², find u_y:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x+6xy"
+      },
+      {
+        "label": "B",
+        "text": "3x²+2y"
+      },
+      {
+        "label": "C",
+        "text": "6x"
+      },
+      {
+        "label": "D",
+        "text": "d/dx·x+3x²+2y"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-014",
+    "question": "y=eˣcosx, evaluate:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "eˣ(cosx−sinx)"
+      },
+      {
+        "label": "B",
+        "text": "−eˣ(cosx+sinx)"
+      },
+      {
+        "label": "C",
+        "text": "eˣ(cosx+sinx)"
+      },
+      {
+        "label": "D",
+        "text": "−eˣsinx"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-015",
+    "question": "One solution of y''+3y'+2y=0 is:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "eˣ"
+      },
+      {
+        "label": "B",
+        "text": "e³ˣ"
+      },
+      {
+        "label": "C",
+        "text": "eˣ"
+      },
+      {
+        "label": "D",
+        "text": "eˣ"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-016",
+    "question": "f(x)=kx²+3x−2. If lim(x→2)f(x)=8, find k:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-017",
+    "question": "Solve differential equation y'=e^(2x−y):",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "−e^y=e^(2x)/2+C"
+      },
+      {
+        "label": "B",
+        "text": "e^y=e^(2x)/2+C"
+      },
+      {
+        "label": "C",
+        "text": "y=e^(2y)+C"
+      },
+      {
+        "label": "D",
+        "text": "y+e^(−2y)·t/C=0"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-018",
+    "question": "Gradient of y=√(2x−) at x=1:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "4+√2/2"
+      },
+      {
+        "label": "B",
+        "text": "√2/2"
+      },
+      {
+        "label": "C",
+        "text": "√2/2"
+      },
+      {
+        "label": "D",
+        "text": "1+√2/2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-019",
+    "question": "Exam scores normally distributed, mean=80, SD=5. P(X≤82):",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.15542"
+      },
+      {
+        "label": "B",
+        "text": "0.65542"
+      },
+      {
+        "label": "C",
+        "text": "0.02275"
+      },
+      {
+        "label": "D",
+        "text": "0.11507"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-020",
+    "question": "Bag: 9 plates numbered 1−9. If even→coin tossed; if odd→die thrown. Outcomes possible:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "38"
+      },
+      {
+        "label": "B",
+        "text": "30"
+      },
+      {
+        "label": "C",
+        "text": "240"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-021",
+    "question": "Solve for n if ⁿC₁₃=ⁿC₂: **MAT 002: CALCULUS / STATISTICS (Q22–40)**",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-022",
+    "question": "At least one child in family of 2 is a boy. P(both children are boys)?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "3/5"
+      },
+      {
+        "label": "B",
+        "text": "1/5"
+      },
+      {
+        "label": "C",
+        "text": "2/5"
+      },
+      {
+        "label": "D",
+        "text": "1/4"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-023",
+    "question": "X is random variable with density function f(x)=αx², 0<x<3. Variance of X is 9/4:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "100"
+      },
+      {
+        "label": "B",
+        "text": "1.13"
+      },
+      {
+        "label": "C",
+        "text": "1.03"
+      },
+      {
+        "label": "D",
+        "text": "3.13"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-024",
+    "question": "Students t-distribution with 9 degrees of freedom. From figure, find value of freedom. Critical value at α=0.05:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "100"
+      },
+      {
+        "label": "B",
+        "text": "1.13"
+      },
+      {
+        "label": "C",
+        "text": "3.13"
+      },
+      {
+        "label": "D",
+        "text": "1.13"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-025",
+    "question": "Find validity of diffusible given density function F(x)=αx², 0<x<3 is probability function:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.95"
+      },
+      {
+        "label": "B",
+        "text": "1.83"
+      },
+      {
+        "label": "C",
+        "text": "−1.83"
+      },
+      {
+        "label": "D",
+        "text": "0.95"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-026",
+    "question": "Two regression coefficients are 0.8 and 0.2. What would be value of coefficient of correlation?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.6"
+      },
+      {
+        "label": "B",
+        "text": "7/2"
+      },
+      {
+        "label": "C",
+        "text": "0.4"
+      },
+      {
+        "label": "D",
+        "text": "1/6"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-027",
+    "question": "Parabola y²=4ax has focus (1,2) and directrix x=4. Obtain equation of parabola:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "y²+4y−10x−11=0"
+      },
+      {
+        "label": "B",
+        "text": "y²−4y−10x−11=0"
+      },
+      {
+        "label": "C",
+        "text": "y²+4y−10x+11=0"
+      },
+      {
+        "label": "D",
+        "text": "y²−4y+10x+11=0"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-028",
+    "question": "A=[2 5; 1 3; −2 1]. Evaluate (A^T)^? (specific question cut off)",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "12/(3x²−4)"
+      },
+      {
+        "label": "B",
+        "text": "12x/(3x²−4)"
+      },
+      {
+        "label": "C",
+        "text": "3x²−4"
+      },
+      {
+        "label": "D",
+        "text": "12x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-029",
+    "question": "Derivative of y=loge(3x²−4)?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "12/(3x²−4)"
+      },
+      {
+        "label": "B",
+        "text": "12x/(3x²−4)"
+      },
+      {
+        "label": "C",
+        "text": "3x²−4"
+      },
+      {
+        "label": "D",
+        "text": "12x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-030",
+    "question": "Which differential equation is non-linear?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "d²y/dx²+3y+4y=secx"
+      },
+      {
+        "label": "B",
+        "text": "dy/dx+3y+4y=secx"
+      },
+      {
+        "label": "C",
+        "text": "12x(3x−4)"
+      },
+      {
+        "label": "D",
+        "text": "12x"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-031",
+    "question": "Ant derivative of power series 1+t+t²+t³+p:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "eˣ⁺¹"
+      },
+      {
+        "label": "B",
+        "text": "e·t+1"
+      },
+      {
+        "label": "C",
+        "text": "t+1"
+      },
+      {
+        "label": "D",
+        "text": "et−1"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-032",
+    "question": "Name given to formula t₁/f(x)dx=(x) is:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Trapezoidal rule"
+      },
+      {
+        "label": "B",
+        "text": "Simpson rule"
+      },
+      {
+        "label": "C",
+        "text": "Lagrange rule"
+      },
+      {
+        "label": "D",
+        "text": "Newton's rule"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-033",
+    "question": "A criterion of judgment upon which a decision is made regarding the null hypothesis is:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Level of significance"
+      },
+      {
+        "label": "B",
+        "text": "P value"
+      },
+      {
+        "label": "C",
+        "text": "Critical value"
+      },
+      {
+        "label": "D",
+        "text": "Z test"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-034",
+    "question": "A, B, C, D, E and F are 6 students. How many ways can A and B must sit beside each other?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "240"
+      },
+      {
+        "label": "B",
+        "text": "480"
+      },
+      {
+        "label": "C",
+        "text": "120"
+      },
+      {
+        "label": "D",
+        "text": "720"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-035",
+    "question": "Var(X−Y) given X and Y are independent random variables?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "B",
+        "text": "7/2"
+      },
+      {
+        "label": "C",
+        "text": "..."
+      },
+      {
+        "label": "D",
+        "text": "..."
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-036",
+    "question": "Mean and SD for yield 50kg, mean and SD for plant height 55cm and 5cm. Coefficient of variation for yield greater/less than plant height?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "The yield is subject to more variation than plant height"
+      },
+      {
+        "label": "B",
+        "text": "Plant height is subject to more variation"
+      },
+      {
+        "label": "C",
+        "text": "Neither yield nor plant height and yield are subject to same amount variation"
+      },
+      {
+        "label": "D",
+        "text": "Both plant height and yield are subjected to the same amount variation"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-037",
+    "question": "For any given data set, value of (x−x̄)?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-038",
+    "question": "When is a distribution said to be symmetric? (question continues from previous batch)",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-039",
+    "question": "If sinθ=4 and θ is acute angle, obtain value of (sin2θ+cos2θ):",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "86"
+      },
+      {
+        "label": "B",
+        "text": "62"
+      },
+      {
+        "label": "C",
+        "text": "8·5·"
+      },
+      {
+        "label": "D",
+        "text": "24"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-040",
+    "question": "Which of the following statements is FALSE? **MAT 004A: APPLIED MATHEMATICS — SCIENCES, ENGINEERING & ENVIRONMENTAL SCIENCES (Q41–50)**",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Zero is a rational number"
+      },
+      {
+        "label": "B",
+        "text": "Every real number is a complex number"
+      },
+      {
+        "label": "C",
+        "text": "A natural number is a rational number"
+      },
+      {
+        "label": "D",
+        "text": "Every integer is a natural number"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-041",
+    "question": "Frictional force encountered after commencement of motion is called:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "Kinematics friction"
+      },
+      {
+        "label": "B",
+        "text": "dynamic friction"
+      },
+      {
+        "label": "C",
+        "text": "post friction"
+      },
+      {
+        "label": "D",
+        "text": "limiting friction"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-042",
+    "question": "Body at height 10m moves with velocity 10m/s, mass 10kg (g=10m/s²). Total energy of body?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "1500J"
+      },
+      {
+        "label": "B",
+        "text": "1000J"
+      },
+      {
+        "label": "C",
+        "text": "500J"
+      },
+      {
+        "label": "D",
+        "text": "2500J"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-043",
+    "question": "Average power required to raise a 10kg drum to height of 15m in one minute (g=10m/s²):",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "250W"
+      },
+      {
+        "label": "B",
+        "text": "25W"
+      },
+      {
+        "label": "C",
+        "text": "20W"
+      },
+      {
+        "label": "D",
+        "text": "2.5W"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-044",
+    "question": "Potential energy of body of mass 120g hanging at 10m above ground (g=10m/s²):",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "12J"
+      },
+      {
+        "label": "B",
+        "text": "0.12J"
+      },
+      {
+        "label": "C",
+        "text": "12J"
+      },
+      {
+        "label": "D",
+        "text": "1.2J"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-045",
+    "question": "Velocity of body due to vertical fall from rest:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "√(2gh)"
+      },
+      {
+        "label": "B",
+        "text": "√(2gh)"
+      },
+      {
+        "label": "C",
+        "text": "√(gh)"
+      },
+      {
+        "label": "D",
+        "text": "√(2g/h)"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-046",
+    "question": "Particle moves to position vector r=acosωt·i+b sinωt. Path described:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "a circle"
+      },
+      {
+        "label": "B",
+        "text": "an ellipse"
+      },
+      {
+        "label": "C",
+        "text": "a parabola"
+      },
+      {
+        "label": "D",
+        "text": "a straight line"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-047",
+    "question": "Particle moves in direction of 4i−3k: **MAT 004B: APPLIED BUSINESS MATHEMATICS — MANAGEMENT & SOCIAL SCIENCES (Q41–50)**",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "3 2"
+      },
+      {
+        "label": "B",
+        "text": "2 1"
+      },
+      {
+        "label": "C",
+        "text": "a parabola"
+      },
+      {
+        "label": "D",
+        "text": "a straight line"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-041",
+    "question": "Perfect competition: demand x=15−5p−p², supply x=2p−1. Equilibrium quantity:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "77"
+      },
+      {
+        "label": "B",
+        "text": "21"
+      },
+      {
+        "label": "C",
+        "text": "28"
+      },
+      {
+        "label": "D",
+        "text": "49"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-042",
+    "question": "Marketer's MR=6x²−7. Production increases 15 to 25 units. Total revenue of marketer?",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "22930"
+      },
+      {
+        "label": "B",
+        "text": "22390"
+      },
+      {
+        "label": "C",
+        "text": "32920"
+      },
+      {
+        "label": "D",
+        "text": "29230"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-043",
+    "question": "Inventory system describing \"first in, first out\":",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "FIFO"
+      },
+      {
+        "label": "B",
+        "text": "LIFO"
+      },
+      {
+        "label": "C",
+        "text": "Ending Inventory"
+      },
+      {
+        "label": "D",
+        "text": "Average Cost"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-044",
+    "question": "Fixed cost of manufacturing a carton of toothpick is ₦3500 and marginal cost at q unit is (100+2q). Total cost of 120 units:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "₦29,900"
+      },
+      {
+        "label": "B",
+        "text": "₦45,700"
+      },
+      {
+        "label": "C",
+        "text": "₦32,460"
+      },
+      {
+        "label": "D",
+        "text": "₦91,600"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-045",
+    "question": "Cost of asset ₦10,750. Asset to last 5 years, residual value ₦2. Annual depreciation:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "₦N1,700"
+      },
+      {
+        "label": "B",
+        "text": "₦8,500"
+      },
+      {
+        "label": "C",
+        "text": "₦13,000"
+      },
+      {
+        "label": "D",
+        "text": "₦2,600"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-046",
+    "question": "Amount to grow to ₦8000 in 4 years at 5% compound interest. Find marginal cost:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "−1"
+      },
+      {
+        "label": "B",
+        "text": "1/2"
+      },
+      {
+        "label": "D",
+        "text": "−1/2"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-047",
+    "question": "Cost function C = cost of television. Find p for minimum cost: (values cut off in image)",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-048",
+    "question": "LP problem: Maximize P=5x+6y, subject to x+2y≤15, x≥0, y≥0. Inequalities in equation (2) called:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "objective functions"
+      },
+      {
+        "label": "B",
+        "text": "constraints"
+      },
+      {
+        "label": "C",
+        "text": "feasible solutions"
+      },
+      {
+        "label": "D",
+        "text": "optimal values"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-049",
+    "question": "S(x)=20x²+10x. Supply of soft drink at price x=6. Instantaneous rate of change:",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "product of selling price and units bought"
+      },
+      {
+        "label": "B",
+        "text": "product of units sold and quantity bought"
+      },
+      {
+        "label": "C",
+        "text": "product of selling price and units sold"
+      },
+      {
+        "label": "D",
+        "text": "product of buying price and units sold"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  },
+  {
+    "id": "math-2024-objective-050",
+    "question": "200+0.25I where I=consumption. Marginal Propensity to Save: **MAT 001: ADVENTURES PURE MATHEMATICS** **Q1(a)** i. Given 3^(x+y)=81 and (x−y)log2 256, evaluate 2xy ii. Factorize polynomial −5x²+kx+8 which passes through (3,5). Let (x+2) be a factor iii. Obtain binomial expansion of (2.03)⁴ [various marks] **Q2(a)** Evaluate following limits: i. lim(x→3) (√(x+16−4))/(5−5x) ii. lim(x→∞) (3x⁴−4x+x²+4)/(x⁴+4x²−4x) [marks given] (b) Given y = 9x²−5 from first principle, find dy/dx. Hence evaluate d²y/dx² (c) i. Given y=ecosx between x=0 and z=0. Find volume of solid generated by rotation round x-axis ii. If normal distribution mean=230, SD=20, P(observation between 220 and 250) [marks] **Q3(a)** Discrete random variable X with probability function: P(X=x) = {hx/(x+1)²; x=2,3; (x·y)ⁿ; otherwise; 0} i. Show b is 6 ii. Find Var(X) iii. P(X is less than 3 or greater than 4) (b) Following data shows number of times X and Y attended JUPEB classes in semester. Compute Pearson's correlation coefficient between X and Y [table given] **MAT 002: CALCULUS** **Q3(a)** Prove area enclosed by y=sin x and line x=a(π−2) is 2 sq units (b) Given y=9x³+4x. Find: i. lim(x→−3) (3x²−2x)/(x²+3) ii. lim(x→1/2) (3x³−4x+x²+4)/(x⁴+4x²−4x) (c) Difference 9x²−5 from first principle; obtain d²y/dx²; evaluate d²y/dx² (d) a. Given y=ecosx, find volume of solid generated by rotation around x-axis between x=0 and x=0 b. Normal distribution mean=230, SD=20. P(observation between 220 and 250)? c. If A normal distribution mean=230, SD=20. Observation between 220 and 250? **Q4(a)** i. Factorize polynomial completely ii. Let (x+2) be factor of −5x²+kx+8 which passes through point (3,5). Find k iii. Obtain binomial expansion of (2.03)⁴ (b) Evaluate limits: i. lim(x→3) √(x+16−4)/(5−5x) ii. lim(x→∞) (3x⁴−4x+x²+4)/(x⁴+4x²−4x) = A/B, determine values of A and B; hence 3x−2 (c) Maximize P=5x+6y subject to x+2y≤15, x≥0, y≥0. What do x and y represent? **Q46.** Amount of money to be invested now to grow to ₦8000 in 4 years at 5% compound interest annually. Marginal cost: **Q49.** An annuity that is payable forever is called: **MAT 004A: APPLIED MATHEMATICS (Sciences)** **Q5(a)** Particle of mass 4kg rests on inclined plane at angle 30°, horizontal surface, friction=0.5, force of 80N: i. Find acceleration of particle if it moves up the plane [3 Marks] ii. Find velocity attained after 3s if it moves with initial velocity 12m/s [2 Marks] (b) i. T=2i−j+3k, B=3i+2j−k and C=i+qj+4k are coplanar. Find q [4 Marks] ii. If A=2i−3j+5k and B=3i+mj−2k are perpendicular. Find smallest value of m [3 Marks] iii. If W=3πi−j; and Z=3πi−3j; verify result d/dt(W·Z)=W·dZ/dt+dW/dt·Z [3 Marks] (c) i. Find value of m when 2i−3j+4k and m²+2k are perpendicular [2 Marks] ii. If A=2i−3j+5k, B=3i+mj−2k, find the Cartesian equation through point (2,5,3) with normal [3 Marks] iii. Given a quadrilateral ABCD in which AB=4, BC=7 [marks] **Q6(a)** Find resultant of two forces of magnitude 19N and 21N, resultant=37N [marks] (b) Mass 4kg hangs on light inextensible string, fixed at A and",
+    "subject": "math",
+    "year": 2024,
+    "category": "objective",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.25"
+      },
+      {
+        "label": "B",
+        "text": "0.45"
+      },
+      {
+        "label": "C",
+        "text": "0.55"
+      },
+      {
+        "label": "D",
+        "text": "0.75"
+      }
+    ],
+    "correctAnswer": "TBD",
+    "explanation": "",
+    "answerGuide": "",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ]
+  }
+]

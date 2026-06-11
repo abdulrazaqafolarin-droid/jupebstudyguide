@@ -15,10 +15,19 @@ interface VoiceRecorderProps {
   onStart?: () => void;
 }
 
-const CANCEL_THRESHOLD = 80;
+  const CANCEL_THRESHOLD = 80;
 const LOCK_THRESHOLD = -60;
 
 const spring = { type: 'spring' as const, stiffness: 400, damping: 28 };
+const barSpring = { type: 'spring', stiffness: 120, damping: 10, mass: 0.6 };
+const barVariants = {
+  init: (i: number) => ({ height: 0, opacity: 0 }),
+  in: (i: number) => ({
+    height: 'var(--h)',
+    opacity: 1,
+    transition: { delay: i * 0.015, type: 'spring', stiffness: 120, damping: 10, mass: 0.6 },
+  }),
+};
 
 export function VoiceRecorder({
   waveform,
@@ -123,22 +132,31 @@ export function VoiceRecorder({
                 <Lock className="w-3.5 h-3.5 text-accent" />
               </div>
             </motion.div>
-            <div className="flex-1 flex items-center justify-center gap-[2px] h-8">
-              {waveform.map((h, i) => {
-                const even = i % 2 === 0;
-                return (
-                  <motion.div
-                    key={i}
-                    className={cn(
-                      'w-[3px] rounded-full',
-                      even ? 'bg-primary' : 'bg-primary/50'
-                    )}
-                    animate={{ height: `${Math.max(3, h)}px` }}
-                    transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-                  />
-                );
-              })}
-            </div>
+            <motion.div
+              className="flex-1 flex items-center justify-center gap-[2px] h-8"
+              initial="init"
+              animate="in"
+              variants={{ init: {}, in: { transition: { staggerChildren: 0.012 } } }}
+            >
+              {waveform.map((h, i) => (
+                <motion.div
+                  key={i}
+                  custom={i}
+                  variants={{
+                    init: { height: 0, opacity: 0 },
+                    in: {
+                      height: `${Math.max(3, h)}px`,
+                      opacity: 1,
+                      transition: { type: 'spring', stiffness: 120, damping: 10, mass: 0.6 },
+                    },
+                  }}
+                  className={cn(
+                    'w-[3px] rounded-full',
+                    i % 2 === 0 ? 'bg-primary' : 'bg-primary/50'
+                  )}
+                />
+              ))}
+            </motion.div>
             <span className="text-sm font-mono text-primary font-medium tabular-nums min-w-[40px] text-right">
               {formatTime(duration)}
             </span>
@@ -212,22 +230,31 @@ export function VoiceRecorder({
               </motion.div>
             </div>
 
-            <div className="flex-1 flex items-center justify-center gap-[2px] h-10">
-              {waveform.map((h, i) => {
-                const even = i % 2 === 0;
-                return (
-                  <motion.div
-                    key={i}
-                    className={cn(
-                      'w-[3px] rounded-full',
-                      even ? 'bg-primary' : 'bg-primary/50'
-                    )}
-                    animate={{ height: `${Math.max(3, h)}px` }}
-                    transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-                  />
-                );
-              })}
-            </div>
+            <motion.div
+              className="flex-1 flex items-center justify-center gap-[2px] h-10"
+              initial="init"
+              animate="in"
+              variants={{ init: {}, in: { transition: { staggerChildren: 0.012 } } }}
+            >
+              {waveform.map((h, i) => (
+                <motion.div
+                  key={i}
+                  custom={i}
+                  variants={{
+                    init: { height: 0, opacity: 0 },
+                    in: {
+                      height: `${Math.max(3, h)}px`,
+                      opacity: 1,
+                      transition: { type: 'spring', stiffness: 120, damping: 10, mass: 0.6 },
+                    },
+                  }}
+                  className={cn(
+                    'w-[3px] rounded-full',
+                    i % 2 === 0 ? 'bg-primary' : 'bg-primary/50'
+                  )}
+                />
+              ))}
+            </motion.div>
 
             <span className="text-sm font-mono text-primary font-medium tabular-nums min-w-[40px] text-right">
               {formatTime(duration)}

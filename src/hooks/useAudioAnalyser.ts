@@ -105,11 +105,16 @@ export function useAudioAnalyser() {
   }, [cleanup, tick]);
 
   const resume = useCallback(() => {
-    ctxRef.current?.resume();
+    if (ctxRef.current?.state === 'suspended') {
+      return ctxRef.current.resume();
+    }
+    return Promise.resolve();
   }, []);
 
   const suspend = useCallback(() => {
-    ctxRef.current?.suspend();
+    if (ctxRef.current?.state === 'running') {
+      ctxRef.current.suspend();
+    }
   }, []);
 
   const resetWaveform = useCallback(() => {

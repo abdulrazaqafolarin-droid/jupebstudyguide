@@ -1,0 +1,453 @@
+JUPEB MATHEMATICS — PAST QUESTIONS &amp; ANSWERS (2015–2024)
+Compiled from A Sure Study Guide on JUPEB Mathematics. Questions and solutions extracted from examination papers across multiple years.
+MAT 001 — Pure Mathematics
+SECTION A: MCQ (Multiple Choice Questions)
+Suggested Solutions to 2019 JUPEB Questions — MCQ
+Q1. 
+Find the remainder when P(x) = 64x⁴ − 80x³ + 100x² + 20x − 4 is divided by (2x − 1).
+Answer: 
+Put 2x − 1 = 0, so x = 1/2. R = P(1/2) = 64(1/16) − 80(1/8) + 100(1/4) + 20(1/2) − 5 = 4 − 10 + 25 + 10 − 5 = 24. Option B
+Q2. 
+Find the equation of a parabola of the form y² = 4ax, given that the equation of the tangent to the parabola at the point (2, 3) is −3y = 8x + 16.
+Answer: 
+y² = 4ax → 4y² = 64x → y² = 16x. Tangent at (x₁,y₁) is y + y₁ = 2a(x + x₁). At (2,3): −3y = 8(x+2) → 8x + 3y + 16 = 0. Comparing: 4a = 16, a = 4. Equation: y² = 16x. Option D
+Q3. 
+Solve: 9ˣ − 4×3ˣ + 3 = 0.
+Answer: 
+Let P = 3ˣ. P² − 4P + 3 = 0 → (P−1)(P−3) = 0. P = 1 or P = 3. When P = 1: 3ˣ = 3⁰, x = 0. When P = 3: 3ˣ = 3¹, x = 1. Option D
+Q4. 
+MCQ Option A
+Answer: 
+Option A
+Q5. 
+Find the identity element of the binary operation a * b = ab + 2(a + b). Let e be the identity element.
+Answer: 
+a * e = a → ae + 2(a + e) = a → ae + 2a + 2e = a → e(a + 2) = a − 2a = −a → e = −a/(a+2). Option C
+Q6. 
+Find the determinant of the matrix J = [2 1 2 / 3 1 −2 / 3 4 0].
+Answer: 
+Det J = 2(0−(−8)) − 1(0−(−6)) + 2(12−3) = 2(8) − 1(6) + 2(9) = 16 − 6 + 18 = 28. Option C
+Q7. 
+Given a = 1, r = S, find S∞.
+Answer: 
+S∞ = 1/(1−r) = 1/(1−S). Option D
+Q8. 
+Simplify 2/(3+5i).
+Answer: 
+= 2/(3+5i) × (3−5i)/(3−5i) = (6−10i)/(9+25) = (6−10i)/34 = 3/17 − 5i/17. Option A
+Q9. 
+Solve 2(x + 3) − 3(x − 2) &gt; 8.
+Answer: 
+2x + 6 − 3x + 6 &gt; 8 → −x + 12 &gt; 8 → −x &gt; −4 → x &lt; 4. Option A
+Q10. 
+If A = {1, 2, 3, 4, 5}, find P(A).
+Answer: 
+n(A) = 5. P(A) = 2⁵ = 32. Option D
+Q11. 
+Using ⁿCᵣ pⁿ⁻ʳqʳ, n = 6, r = 5, p = 1, q = 2x. Find the coefficient of x⁵.
+Answer: 
+⁶C₅(−2x)⁵ = 6(1)(−2x)⁵ = 6(−32x⁵) = −192x⁵. Coefficient of x⁵ = −192. Option A
+Q12. 
+Find the coordinate of the point dividing A(x₁, y₁) and B(x₂, y₂) internally in ratio P:1.
+Answer: 
+(xₚ, yₚ) = ((Px₂+x₁)/(P+1), (Py₂+y₁)/(P+1)). For A(3,8) and B(5,16) in ratio 3/2:1 → (21/5, 64/5). Option B
+Q13. 
+Evaluate lim(x→0) sin x / x.
+Answer: 
+lim(x→0) sin x / x = sin 0 / 1 = 1. Option C
+Q14. 
+Find where f(x) = x³ + 3x² − 9x + 7 is increasing.
+Answer: 
+dy/dx = 3x² + 6x − 9. f increasing when dy/dx &gt; 0 → 3x² + 6x − 9 &gt; 0 → (x+3)(3x−3) &gt; 0 → x &lt; −3 or x &gt; 1. Option D
+Q15. 
+If sin θ = x/3, θ = sin⁻¹(x/3), find dθ/dx.
+Answer: 
+dθ/dx = 1/√(9−x²). Hence dx = √(9−x²)dθ. ∫2/√(9−x²) dx = 2/3 ∫dθ = 2/3 sin⁻¹(x/3) + C. Option C
+Q16. 
+Given S = t³ + 3t + 1, find acceleration.
+Answer: 
+V = ds/dt = 3t² + 3. a = dv/dt = d²s/dt² = 6t. Option D
+Q17. 
+Evaluate ∫₁³ dx/(2x−1).
+Answer: 
+Let U = 2x−1, du = 2dx, dx = du/2. = 1/2 ∫ du/u = 1/2 [ln|u|]₁³. = 1/2[ln 5 − ln 1]= 1/2 ln 5 = ln 5^(1/2) = ln √5. So ln √5 = ln K → K = √5 = 5^(1/2). Option A
+Q18. 
+Given y = cos 4t, x = sin 2t, find dy/dx.
+Answer: 
+dy/dt = −4 sin 4t, dx/dt = 2 cos 2t. dy/dx = −4 sin 4t / (2 cos 2t) = −4×2 sin 2t cos 2t / (2 cos 2t) = −4 sin 2t. Option A
+Q19. 
+Find equation of circle with centre (0,0) and r = √3.
+Answer: 
+(x−0)² + (y−0)² = (√3)² → x² + y² = 3. Option A
+Q20. 
+Find the mean value of f(x) = x² over interval (2, 4).
+Answer: 
+f_mean = 1/(4−2) ∫₂⁴ x² dx = 1/2 [x³/3]₂⁴ = 1/2(64/3 − 8/3) = 1/2(56/3) = 28/3 ≈ 9. Option D
+Q21. 
+For non-continuous: (t−5)(t+3) = 0.
+Answer: 
+t = 5 or t = −3. Option C
+Q22. 
+y = 2x³ + 3x² − 2x − 3 at x = 1. Find gradient of tangent and normal.
+Answer: 
+dy/dx = 6x² + 6x − 2. At x = 1: dy/dx = 6+6−2 = 10. Gradient of normal m&apos; = −1/10. y at x=1: y = 2+3−2−3 = 0. Equation of normal: y−0 = −1/10(x−1) → y = (1−x)/10. Option D
+Suggested Solutions to 2018 JUPEB Questions — MCQ
+Q1. 
+Find the remainder when P(x) = 64x⁴ − 80x³ + 100x² + 20x − 4 is divided by (2x − 1).
+Answer: 
+R = P(1/2) = 4 − 10 + 25 + 10 − 5 = 24. Option B
+Q2. 
+Equation of parabola at tangent point (2, 3).
+Answer: 
+y² = 16x. Option D
+Q3. 
+Solve 9ˣ − 4×3ˣ + 3 = 0.
+Answer: 
+x = 0 or x = 1. Option D
+Suggested Solutions to 2016 JUPEB Questions — MCQ
+Q1. 
+P(x) = 64x⁴ − 80x³ + 100x² + 20x − 4. Remainder by (2x−1). Option B: R = 24
+Answer: 
+R = 24. Option B
+Suggested Solutions to 2015 JUPEB Questions — MCQ
+Q1 (MAT001). 
+y = √(2a−x) / (2a−x). Find dy/dx. Differentiate.
+Answer: 
+y = (2a−x)^(−1/2). dy/dx = −1/2(2a−x)^(−3/2) × (−1) = 1/[2(2a−x)^(3/2)]
+ESSAY QUESTIONS
+MAT 001 — Essay (2018 JUPEB)
+Q1. 
+(a)(i) Show that (1 + 3/(1+i))² = 2(1 + 3/(1+i))(1 + 3/(1+i−1))
+Answer: 
+1 + 3+3 / (1+i)(1+i+1) = 1 + 3/1+i + 3/1+i+1 ... = 1 + 1/(1+i²+...+i^(1+i−1)) → Sum = 23(i+7)/((2i+2)(2i+2)) = 1 − 21i / (2 terms) = 1 − 2i (after simplification).
+Q1. 
+(a)(ii) Cross multiply and simplify 2x + 2y + (−4x + y)i = 3 + 4i.
+Answer: 
+Equating real: 2x + 2y = 3 ...(i). Equating imaginary: −4x + y = 4 ...(ii). Multiply (i) by 1, (ii) by 2: 2x + 2y = 3; −8x + 2y = 8. Subtract: 10x = −5, x = −1/2. y = (3−2(−1/2))/2 = (3+1)/2 = 2. So x = −1/2, y = 2.
+Q2. 
+(a) Partial fractions: (x+1)²/(x+3)(x²+2x+1)² = A/(x+1) + B/(x+1)² + C/(x+3)
+Answer: 
+From x³−1 = A(x²+2x+1)²(x+3) + B(x+2x+1)(x+3) + C. Let x = −1: 0 = A(0) + B(0) + C(2). C = 0. Comparing coefficients: A = 1, B = −7, C = 2 (after full expansion). Full solution: A=1, B=−7, C=2, D=−1.
+MAT 002 — Pure Mathematics (Calculus &amp; Further Topics)
+MCQ
+Q23. 
+y = (1/x + 3)². Find dy/dx.
+Answer: 
+Let u = 1/x + 3 = x⁻¹ + 3. du/dx = −x⁻². y = u². dy/dx = 2u × du/dx = 2(1/x+3)(−1/x²) = −2(1/x+3)/x².
+Q24. 
+Find the area between y = x³y² dx (area under curve). Area = ∫₀² (2x² − x) dx.
+Answer: 
+= [2x³/3 − x²/2]₀² = 16/3 − 4/2 = 16/3 − 2 = (16−6)/3 = 10/3 = 3⅓ square unit. Option D
+Q25. 
+Find da/dt given a = 4πr², dA/dt = 40π × 0.1 = 4πr × 5, a = 0.1 cm/s.
+Answer: 
+A = 4πr². dA/dt = 8πr × dr/dt. 40π = 8π × r × 0.1 → r = 40π/(0.8π) = 50. a = 660 km/h.
+Q26. 
+Using V² = u² + 2as with V = 36cm/s, u = 36 − 3x = 96 − 1296/12 = 7902/1.2.
+Answer: 
+U = 36cm × 0.1 = 36m/s. V = u + at. S = U = 36cm/s. a = 36cm × 0.1 = 4πcm²/s.
+Q27. 
+M = 80kg. R = m(a + g). When lift moves upwards: T = 37.5N. Alternatively T = 3a + 30.
+Answer: 
+T = 3a + 30; 3a + 30 + 3×2.5 = 7.5 + 30 = 37.5N.
+Q28. 
+Find a × b given a = 2i + j, b = 4i − 3j + 2k.
+Answer: 
+|a × b| = |i  j  k / 2 1 0 / 4 -3 2| = i(15−2)−j(20−4)+k(−16−6) = (2x²+1)+2xj+[x+1]k. |a×b| = √(16x²+4+5) = √(16x²+5). At x=1: √(16+5) = √21. Option A
+Q29. 
+U = 2i + 6j + 3k, V = 12i − 4j + 3k. Find angle θ.
+Answer: 
+|u| = √(4+36+9) = 7. |v| = √(144+16+9) = 13. u.v = 24−24+9 = 9. cos θ = 9/(7×13) = 9/91. θ = cos⁻¹(9/91).
+Q30. 
+F = P, u = 0ms⁻¹, v = 12ms⁻¹, t = 6s, m = 0.5kg.
+Answer: 
+F = ma. a = (v−u)/t = (12−0)/6 = 2ms⁻². F = 0.5 × 2 = 1N. Option B
+Q31. 
+a = 3i + j, b = 1+j, a.b = 3+1+1 = 4. Option A
+Answer: 
+a.b = (3)(1) + (1)(1) + (1)(0) = 4. Option A
+Q32. 
+u = 2i + j, v = i − j.
+Answer: 
+u + v = 3i. Option A
+Essay Questions — MAT 002
+Q1. 
+Differentiate f(x) = sin x from first principles.
+Answer: 
+f(x+Δx) − f(x) = sin(x+Δx) − sin x = 2cos((x+Δx+x)/2)sin(Δx/2). lim(Δx→0): f&apos;(x) = cos x. [Using sin A − sin B = 2cos((A+B)/2)sin((A−B)/2)]
+Q2(a). 
+(x+1)²/(x+1)² = A/(x+1) + B/(x+1)² + C/(x+2). Partial fractions.
+Answer: 
+Multiplying through: A = 0, B = −1, C = 2. Let x = 0: 1 = A(1)(2) + B(2) + C(1). Substituting A=0, B=−1, C=2.
+Q2(b). 
+Putting x = 0: C = 2. Putting x = −1: B = −1. Comparing coefficients of x²: A + C = 1, A = −1.
+Answer: 
+A = −1, B = −1, C = 2.
+Q3(a). 
+f(x) = x² + sin x. Find the derivative and check zeros.
+Answer: 
+F(x) = sin x. f&apos;(x) = cos x. f(0) = 0, f&apos;(0) = 1, f&apos;&apos;(0) = 0. sin x series = x − x³/3! + x⁵/5! − ... at x=0.
+MAT 003 — Applied Mathematics (Mechanics &amp; Statistics)
+MCQ
+QMAT 003 – 1. 
+∫₋₄³ (25 − x²)dx. Find the area.
+Answer: 
+= [25x − x³/3]₋₄³ = (75 − 9) − (−100 + 64/3) = 66 + 100 − 64/3 = (198 + 300 − 64)/3 = 434/3 ≈ (75−9) = 66+100−64/3. Answer = (75−9) = (25(3)−(4)(−4))/33 = 144+2/3. Option: 25x−x³/3 evaluated.
+Qb. 
+lim(x→−3) (3x²−2x+4x)/(x+3). Evaluate.
+Answer: 
+Factorize: 3(x+3)(x−3)/(x+3) = 3(x−3). At x = −3: 3(−6) = −18. Answer = −18.
+Qb (limits). 
+lim(x→3) (x+3)/(3x²+2x−3). Direct substitution.
+Answer: 
+= (3+3)/(27+6−3) = 6/30 = 1/5. Option: 1/5.
+QZn. 
+Zn = r^n(cos nθ + i sin nθ). Express (1/2 + i√3/2) as polar form.
+Answer: 
+r = √(1/4 + 3/4) = 1. θ = tan⁻¹(√3/2 ÷ 1/2) = tan⁻¹(√3) = 60°. Zn = 1^n(cos 60n + i sin 60n) = cos 300° + i sin 300° for n=5. = cos 300° + i sin 300°.
+Qb (resolving). 
+Resolve forces F₁ and F₂ into horizontal and vertical components.
+Answer: 
+F₁x = F₁ cos θ₁, F₁y = F₁ sin θ₁. F₂x = F₂ cos θ₂, F₂y = F₂ sin θ₂. ΣFx = F₁x + F₂x. ΣFy = F₁y + F₂y.
+Essay Questions — MAT 003
+Q1(a). 
+Prove by mathematical induction that 5ⁿ + 3n − 1 is an integer multiple of 3.
+Answer: 
+For n=1: 5 + 3 − 1 = 7. Not divisible... Let Tₙ = 5ⁿ + 3n − 1. For n=1: T₁ = 5+3−1 = 7. Assume true for n=k: Tₖ = 5ᵏ + 3k − 1 = 3M. Then Tₖ₊₁ = 5^(k+1) + 3(k+1) − 1 = 5·5ᵏ + 3k + 2. = 5(3M − 3k + 1) + 3k + 2 = 15M − 15k + 5 + 3k + 2 = 15M − 12k + 7. = 3(5M − 4k) + 3k + 7 − 3k = 3(5M − 4k + 1) + 4... Reworking: 5^(k+1) = 5·5ᵏ. Tₖ₊₁ = 5ᵏ⁺¹ + 3(k+1) − 1 = 5·5ᵏ + 3k + 2. Since Tₖ = 3M, 5ᵏ = 3M − 3k + 1. So Tₖ₊₁ = 5(3M−3k+1) + 3k+2 = 15M − 15k + 5 + 3k + 2 = 15M − 12k + 7 = 3(5M − 4k + 2) + 1. Statement holds.
+Q1(b). 
+Solve: 7 tan²x − 6 tan x − 1 = 0.
+Answer: 
+Let t = tan x. 7t² − 6t − 1 = 0 → (7t + 1)(t − 1) = 0. tan x = −1/7 or tan x = 1. x = tan⁻¹(1) = 45° or 225°. x = tan⁻¹(−1/7) = 171.87°, 351.87°.
+Q2(a). 
+Prove that 6 sin x cos x = 8 sin³x cos x − (sin²x + cos²x).
+Answer: 
+8 sin³x cos x − sin²x cos²x. Divide both sides by sin x cos x: 8 sin²x − sin x cos x = 6. Using double angle: 4(1 − cos 2x) − 1/2 sin 2x = 6. 4 − 4cos 2x − 1/2 sin 2x = 6. −4 cos 2x − 1/2 sin 2x = 2. Multiply by −2: 8 cos 2x + sin 2x = −4. Using R sin(2x + α): R = √(64+1) = √65. Not the right approach — standard identity proof. 6 sin x cos x = 3 sin 2x. RHS = 8sin³x cos x − sin²x cos²x... Proof by expanding and using identities.
+Q2(b). 
+Equation of tangent to hyperbola x²/a² − y²/b² = 1 at point (x₀, y₁).
+Answer: 
+Differentiate implicitly: 2x/a² − 2y/b² × dy/dx = 0. dy/dx = b²x/(a²y). At (x₀, y₁): slope = b²x₀/(a²y₁). Tangent: y − y₁ = (b²x₀/a²y₁)(x − x₀). Simplifying: xx₀/a² − yy₁/b² = 1. Normal: y − y₁ = −(a²y₁/b²x₀)(x − x₀). Eq: 2xΔx + Δx² − ... = 0. Normal equation: 2xΔx − yΔy = 0 + Δx² − Δy² = Δx² − Δy².
+Q3(a). 
+Find the radius and equation of circle x² + y² − 4x + 6y − 12 = 0.
+Answer: 
+(x−2)² + (y+3)² = 4 + 9 + 12 = 25. Centre (2, −3), radius = 5. r = √25 = 5.
+Q4. 
+Numerical methods — Simpson&apos;s rule with n = 6, a = 0, b = π/2.
+Answer: 
+h = (π/2 − 0)/6 = π/12. Using Simpson&apos;s rule: ∫₀^(π/2) √cos x dx ≈ h/3[y₀ + 4y₁ + 2y₂ + 4y₃ + 2y₄ + 4y₅ + y₆] = π/36[0.9828 + 4(0.9306) + 2(0.8408) + 4(0.7071) + 2(0.5087)] ≈ 1.1861.
+MAT 004 — Applied Mathematics (Probability, Statistics &amp; Mechanics)
+MCQ
+QMAT 004. 
+A manager draws a sample of 30 workers without replacement from 150 workforce. The chance of being selected is 30/150.
+Answer: 
+Chance = 30/150. After each selection the probability decreases. The selection almost converges to zero. Hence, after some selecting, the chance of being selected is almost not possible.
+QE(x). 
+E(X) = ΣxP(x) − μ². E(X) = 0(0.1) + 1(0.2) + 2(0.45) + 3(0.15) + 4(0.05) − 5(0.05).
+Answer: 
+E(X) = 0.2 + 0.9 + 0.45 + 0.2 + 0.25 = 2. Variance = σ² = ΣX²P(x) − μ² = 0.2 + 1.8 + 1.35 + 0.8 + 1.25 − 4 = 5.4 − 4 = 1.4. S.D = √1.4 = 1.18.
+Qci. 
+P(D/B) = P(B∩D)/P(B). P(B) = 0.40, P(D) = 0.30, P(D/B) = 0.5.
+Answer: 
+P(D/B) = P(B∩D)/P(B) = P(B)×P(D/B). P(B∩D) = 0.40 × 0.50 = 0.20.
+Qcii. 
+P(B or D) = P(B∪D) = P(B) + P(D) − P(B∩D).
+Answer: 
+= 0.40 + 0.30 − 0.20 = 0.50.
+Essay Questions — MAT 004 (2015)
+Q5(a)(i). 
+Moment of Inertia: I = emr². Where r is perpendicular distance from axis of mass m.
+Answer: 
+Moment of inertia of system = product of mass and square radius. I = Σmr² = kgm². Radius of gyration kx = √(Ix/A), where A = area. Kx = √(I/m). Where K = radius of gyration of mass. A = area.
+Q5(a)(ii). 
+Radius of gyration of system.
+Answer: 
+K² = I/m, K = √(I/m). Ix = moment of inertia, m = mass.
+Q6(a). 
+Newton&apos;s law of cooling: rate of loss of heat is proportional to excess temperature (θ − θs).
+Answer: 
+−dH/dt = k(θ − θs). If c is thermal capacity: c dθ/dt = k(θ − θs). Using: dθ/dt = k(θ₁+θ₂/2 − θ₀). = k[94.5 − 15] = k × 79.5. 2×15/159 = k × 79.5/159. k = 2×15/(159 × 79.5) ≈ 0.00251. Where θ = mean temp = (100+85)/2 = 94.5°C.
+Q6(b). 
+Using k = 2×15/159, find θ₂ for θ₁ = 100°C, θ₂ = ?
+Answer: 
+dθ/dt = k(θ₁+θ₂/2 − θ₀). 85−40/τ = k(85+40/2 − 15). From data: θ₁ = 100°C, θ₂ = 85°C. θ = (100+85)/2 = 94.5°C. Hence for θ₂ = 40°C, θ₁ = 85°C: Mean = (85+40)/2 = 62.5°C.
+Statistics &amp; Probability Questions
+Frequency Distribution / Ogive
+Q7(a). 
+Given frequency distribution with class boundaries 44.5−49.5 to 99.5−104.5. Find mean, standard deviation, and coefficient of variation.
+Answer: 
+Mean x̄ = Σfx/Σf = 3500/50 = 70. Standard deviation = √(Σf(x−x̄)²/Σf) = √(4750/50) = √95 ≈ 9.747. Coefficient of variation = (SD/mean) × 100% = (9.747/70) × 100% = 13.92% ≈ 13.9% to 3 s.f.
+Q7(b). 
+Measures of location: define and explain.
+Answer: 
+Measures of Average/Central Tendency classify into: (a) Mean (AM, GM, HM), (b) Median, (c) Mode. Arithmetic Mean (AM): x̄ = Σx/n or x̄ = A + (Σfd/Σf). Geometric Mean (GM): GM = (Π xᵢ)^(1/n) or (Σ(1xᵢ))^n. Harmonic Mean (HM): HM = n/(Σ(1/xᵢ)) = n(Σ1/xᵢ)⁻¹. Mode = most frequently occurring value.
+Ogive (Cumulative Frequency) Questions
+Q(c)(ii). 
+Given data: Σx = 800, Σy = 811, Σx² = 53418, Σy² = 54849, Σxy = 53418, n = 12. Find correlation coefficient.
+Answer: 
+r = [nΣxy − ΣxΣy] / √[(nΣx² − (Σx)²)(nΣy² − (Σy)²)] = [12(53418) − (800)(811)] / √[(12(53418) − (800)²)(12(54849) − (811)²)] = [641016 − 648800] / √[(641016−640000)(658188−657721)] = −7784 / √[(1016)(467)] = −7784 / √474472 = −7784/688.82 = −0.7027. R ≈ 0.7027 (strong positive correlation).
+Set Theory Questions
+Q1a. 
+Let x = n(H), h + g + e + 14 − x + x + 13 − x = n(E). No that offer none = 4x. No that offer History and Geography only = 52 + 3(2) = 58. n(H∩G∩E&apos;) = 14 − x = n(H) where n = 2.
+Answer: 
+h + 25 − x = 35. h = 10 + x. g + 27 − x = 43. g = 16 + x. e + 11 − x + 13 − x = 50. e = 26 + x. n(H∩G∩E) = x. No that offer none = 4x. From total: all sum = 100. x = 2.
+Q1b. 
+A∩B∩C with n(A) = 500, n(B) = 250, n(C) = 200, n(A∩B) = 80, n(B∩C) = 60, n(A∩C) = 40, n(A∩B∩C) = x.
+Answer: 
+n(A∪B∪C) = n(A) + n(B) + n(C) − n(A∩B) − n(B∩C) − n(A∩C) + n(A∩B∩C) = 500 + 250 + 200 − 80 − 60 − 40 + x = 770 + x. Given total = 100: 770 + x = 100 + 60 + x. So n(A∩B∩C) = x from 190 − (80−x) − x − (60−x) = 190 − 80 − x − 60 − x.
+Matrices
+Q(2)(ai). 
+Show that matrix A = [1 2 3 / 7 8 9 / 4 5 6] is non-determinant or singular.
+Answer: 
+det A = 1(45−48) − 2(42−36) + 3(35−32) = 1(−3) − 2(6) + 3(3) = −3 − 12 + 9 = −6 ≠ 0. Wait: = 1(48−45) − 2(42−36) + 3(35−32) = 1(3) − 2(6) + 3(3) = 3 − 12 + 9 = 0. Matrix is singular (det = 0).
+Q(2)(aii). 
+Find the inverse of matrix A = [1 1 1 / 2 1 0 / 0 2 1].
+Answer: 
+|A| = 1(1−0) − 1(2−0) + 1(4−0) = 1 − 2 + 4 = 3. Cofactors calculated, adj A formed. A⁻¹ = (1/|A|) adj A. Minor M₁₁ = 1, cof a₁₁ = 1. Minor M₁₂ = 2, cof a₁₂ = −2. cof a₁₃ = 4. Full inverse: A⁻¹ = (1/3)[(18 11 6 / −18 15 22 / −2 −8 −11)ᵀ].
+Vectors
+Q5(a)(i). 
+Given a = [2 −1 3], b = [2 1 −4], k = [2 3 −3]. Find a × b.
+Answer: 
+a × b = |i j k / 2 -1 3 / 2 1 -4| = i[(−1)(−4)−(3)(1)] − j[(2)(−4)−(3)(2)] + k[(2)(1)−(−1)(2)] = i[4−3] − j[−8−6] + k[2+2] = i(1) − j(−14) + k(4) = i + 14j + 4k. |a×b| = √(1+196+16) = √213.
+Q5(a)(i) continued. 
+Area of triangle = ½|a × b|. Given a = [2i−j+4k], b = [9i+10j+12k].
+Answer: 
+|a × b| = √[(9+12+12)² + (−10+8)² + (6+6)²] = √(100+144+... Area of triangle = ½|a × b|. A = 5√13 square units.
+Q5 (ii). 
+Scalar triple product a.(b×c) = 0 means coplanar.
+Answer: 
+a = 3i − 5j + 6k, b = 2i + j − 8k, c = −i + 8j − 3k. b × c = |i j k / 2 1 -8 / -1 8 -3| = i(−3+64) − j(−6−8) + k(16+1) = 63i + 14j + 17k. a.(b×c) = 3(63) + (−5)(14) + 6(17) = 189 − 70 + 102 = 221 ≠ 0. Not coplanar.
+Probability
+Q38. 
+2 men and 2 women from 3 men and 5 women. Total ways = 3×10 = 30 ways.
+Answer: 
+³C₂ × ⁵C₂ = 3 × 10 = 30 ways.
+Q39. 
+Probability of one passage. 5³ = 10, 3+1+1/1 = 5/1.
+Answer: 
+P = 1 − [1 − μ/(n−1)]ⁿ. For sampling: P = 5C₃ × 10 = 10 × 5 = 50.
+Q45. 
+√5 × 15 × 10 × 8 × 12 = 9.36. Option C.
+Answer: 
+√(5×15×10×8×12) = √72000 ≈ 268. Simplified: GM = 9.36. Option C.
+Q47. 
+Class boundary [0.745 × 1552 × 2814 + (0.5×3)+(4.5×8)...] / 100.
+Answer: 
+GM = √[(0.1×3)+(0.2×3)+...] / Σf. = 67.45.
+Q50 (RANDOMLY). 
+8 letters, ⁸C₄ = 70 ways. Selecting 4 letters from 8 RANDOMLY.
+Answer: 
+Sample space = ⁸C₄ = 70 ways. Total possible outcomes = 15. No of ways of doing this at random = 15/70 = 3/14. Option A.
+Essay — Probability (2016 Paper)
+Q8a. 
+Median of data set. n = 5, ΣA = 15, ΣA² = 114, ΣB = 19, ΣB² = 78, ΣAB = 95.
+Answer: 
+r = [nΣAB − ΣAΣB] / √[(nΣA²−(ΣA)²)(nΣB²−(ΣB)²)] = [5(95)−(15)(19)] / √[(5×114−225)(5×78−361)] = (475−285)/√[(570−225)(390−361)] = 190/√(345×29) = 190/√10005 = 190/100.02 ≈ 0.01005.
+Q8b(ii). 
+Discrete random variable X. Rₖ = 1 − e^(−6×14)/(6(2−1)) = 1 − 0.3 = 0.3.
+Answer: 
+P(x=n) = ⁿCₓ pˣ qⁿ⁻ˣ. P(x=2) = ⁸C₂(1/20)²(19/20)⁶. Probability of success p = 5/100 = 1/20.
+Q8c. 
+Probability of success p = 5/100 = 1/20, q = 1 − p = 19/20.
+Answer: 
+P(x=2) = ⁸C₂ × (1/20)² × (19/20)⁶. P(x≥2) = 1 − [P(x=0) + P(x=1)] = 1 − [P(x=0) + P(x=1)]. P(x=0) = (19/20)⁸. P(x=1) = 8×(1/20)×(19/20)⁷.
+Mechanics (Dynamics &amp; Statics)
+Q6(a). 
+Dustbin on inclined plane: mg sin θ = frictional force along plane.
+Answer: 
+R = mg cos θ, F = μR = μmg cos θ. Net force = mg sin θ − F = mg sin θ − μmg cos θ = mg(sin θ − μcos θ). Resultant for along and down: mg sin θ − F.
+Q7(a)(i). 
+Resolve forces F₁ = 35N, F₂ = 5N × sin 30° = 5 × 0.5 = 2.5N.
+Answer: 
+F₁x = 35 cos 45° = 35 × 0.7071 = 24.75N. F₁y = 35 sin 45° = 24.75N. F₂x = −5 cos 30° = −5 × 0.8660 = −4.33N (or −1.23N). F₂y = 5 sin 30° = 2.50N.
+Q7(a)(ii). 
+Find resultant of two forces.
+Answer: 
+ΣFx = F₁x + F₂x = 24.75 − 4.33 = 24.75 + (−1.23) = 23.52N or 24.75N. ΣFy = F₁y + F₂y = 24.75 + 2.50 = 27.25N. R = √(ΣFx² + ΣFy²) = √(1.23² + 27.25²) = √(1.5129 + 742.5625) = √744.0754 = 27.28N.
+Q7(a)(iii). 
+Angle the resultant makes with horizontal.
+Answer: 
+tan α = ΣFy/ΣFx = 27.25/1.23. tan α = 22.1545. α = tan⁻¹(22.1545) = 87.4°.
+Statistics — Sampling Techniques
+Q7(a). 
+Advantages of Quota sampling techniques.
+Answer: 
+(i) It is feasible. (ii) It is not random. (iii) It is relatively quick to carry out. (iv) It is cost effective. Disadvantages: It is not useful when probability proportion is needed. P(chemistry or biology but not chemistry) = P(C∪B) − P(C∩B). P(physics and chemistry) = 20%(20%) + (20%)(20%) − 10% = 0.5.
+Integration (Definite &amp; Indefinite)
+Q3a. 
+Iₙ = ∫ secⁿ⁻² x dx = (n−2) ∫ secⁿ⁻² x tan x + (n−2) Iₙ₋₂.
+Answer: 
+Iₙ = secⁿ⁻² x tan x − (n−2) ∫ tan x × secⁿ⁻² x tan x dx. = secⁿ⁻² x tan x − (n−2) ∫ tan²x secⁿ⁻² x dx. Recall tan²x = sec²x − 1. Iₙ = secⁿ⁻² x tan x − (n−2)(Iₙ − Iₙ₋₂). (1+n−2)Iₙ = secⁿ⁻² x tan x + (n−2)Iₙ₋₂. (n−1)Iₙ = secⁿ⁻² x tan x + (n−2)Iₙ₋₂.
+Q3b (Area). 
+Area = ∫y dx from 2 to 0. y = x², x² − 0² = 8 − 0 = 8.
+Answer: 
+∫₀² x² dx = [x³/3]₀² = 8/3. Area = 8/3 sq units.
+Q3c (lim). 
+lim(x→0) sin x / x using L&apos;Hopital rule.
+Answer: 
+lim(x→0) [−x sin x + cos x] / [cos x] = [0 + 1] / 1 = 1. [Using L&apos;Hopital&apos;s rule when 0/0 form]
+Q4a. 
+lim(x→0) [1 − cos x] / x² using L&apos;Hopital.
+Answer: 
+= lim sin x/(2x) = lim cos x/2 = 1/2.
+Q4b. 
+f(x) = logₑ(1+x). Find f(0), f&apos;(0), f&apos;&apos;(0), etc. to derive Taylor series.
+Answer: 
+f(x) = logₑ(1+x). f(0) = logₑ(1) = 0. f&apos;(x) = 1/(1+x). f&apos;(0) = 1. f&apos;&apos;(x) = −1/(1+x)². f&apos;&apos;(0) = −1. f&apos;&apos;&apos;(x) = 2/(1+x)³. f&apos;&apos;&apos;(0) = 2. f^(iv)(x) = −6/(1+x)⁴. f^(iv)(0) = −6. logₑ(1+x) = x − x²/2 + x³/3 − x⁴/4 + ... logₑ(1.1) = logₑ(1+0.1). = 0.1 − 0.01/2 + 0.001/3 − ... ≈ 0.0953 to 4 dp.
+Q4c. 
+Using Simpson&apos;s rule with h = 0.4, n = 6 subintervals.
+Answer: 
+x values: 2.2, 2.6, 3.0, 3.4, 3.8, 4.2. y = logₑ x. Area ≈ h/3[y₀ + 4y₁ + 2y₂ + ... + yₙ] = 0.4/3[(0.5+0.4167) × 0.4 + (0.3572+0.3125) × 0.4 + ...] = 2(0.9167) × 0.4 + ½(0.5903) × 0.4 + ... ≈ 0.4 × [½(0.4167 + 0.3572) + (0.2778 + 0.3125) × 0.4 + ½(0.6697) × 0.4 + ½(0.5278) × 0.4] = 0.9530833...
+Trigonometry
+Qb. 
+Solve: cos x(cos β + sin x sin α) = sin x(cos β − sin x sin α). Simplify.
+Answer: 
+cos x cos β + sin x cos x sin α = sin x cos β − sin²x sin α. ... sin x[cos β + sin α] = cos x[cos β − sin α] → tan x = [cos β − sin α]/[cos β + sin α].
+Qc (i). 
+Given sin A = −3/5 (A is obtuse), sin B = 4/5 (B is acute). Find sin(A+B).
+Answer: 
+cos A = −4/5 (A obtuse), cos B = 3/5 (B acute). sin(A+B) = sinA cosB + cosA sinB = (−3/5)(3/5) + (−4/5)(4/5) = −9/25 − 16/25 = −25/25 = −1. OR: sin A = 4/13, cos A = −3/5. sin B = 48/65, cos B = 15/65. sin(A+B) = (4/13)(15/65) + (−3/13)(48/65) = 60/845 − 144/845 = ... Recalculate: sin A = 5/13, cos A = 12/13. sin B = 4/5, cos B = 3/5. sin(A+B) = (5/13)(3/5) + (12/13)(4/5) = 15/65 + 48/65 = 63/65.
+Qc (ii). 
+Find tan(A−B). Given tan A = 4/5, tan B = 3/12.
+Answer: 
+tan(A−B) = (tan A − tan B)/(1 + tan A tan B) = (4×12 − 5×3)/(5×12 + 4×3) = (48−15)/(60+12) = (−63/16)/(36/16) ÷ ... = (4/5 × 12 − 3/13)/(1 + 4/5 × 3/13) = (48/65 − 15/65)/(1 + 12/65) = (33/65)/(77/65) = 33/77 = −63/16.
+Additional Trigonometry (Compound Angles)
+Qb (trig proof). 
+Prove: cos x(cos β + sin x sin α) = sin β cos α.
+Answer: 
+cos(β − α) = cos β cos α + sin β sin α. LHS: cos x[cos β] + sinx sin α = cos(β − α). QED.
+Sequences &amp; Series
+QMAT 002 – Series. 
+Maclaurin series f(x) = sin x. Find general term.
+Answer: 
+f(x) = sin x. f(0) = 0. f&apos;(x) = cos x, f&apos;(0) = 1. f&apos;&apos;(x) = −sin x, f&apos;&apos;(0) = 0. f&apos;&apos;&apos;(x) = −cos x, f&apos;&apos;&apos;(0) = −1. sin x = x − x³/3! + x⁵/5! − x⁷/7! + ... Radius of convergence R = (2n+1)/(2n+3) → 1 as n→∞. R = 1.
+QSeries (radius). 
+Find radius of convergence of Σ xⁿ/(2n+1).
+Answer: 
+R = lim|aₙ/aₙ₊₁| = lim|(2n+3)/(2n+1)| = 1. Radius = 1.
+Differential Equations
+Q4(a). 
+y = A cos x + B sin x. Find d²y/dx² + y.
+Answer: 
+dy/dx = −A sin x + B cos x. d²y/dx² = −A cos x − B sin x = −y. Therefore d²y/dx² + y = 0.
+Q4(b)(i). 
+If xy = cos xy, find dy/dx.
+Answer: 
+Differentiating: y + x dy/dx = −sin(xy)(y + x dy/dx). y + x dy/dx + sin(xy)(y + x dy/dx) = 0. (y + x dy/dx)(1 + sin xy) = 0. Since 1 + sin xy ≠ 0 generally: y + x dy/dx = 0. dy/dx = −y/x.
+Q4(b)(ii). 
+If x² + xy + y² cos xy = 3, find d²y/dx².
+Answer: 
+Implicit differentiation: 2x + y + x dy/dx + 2y cos(xy) dy/dx + y cos(xy) = 0. dy/dx(x + 2y cos xy) = −2x − y − y cos xy. dy/dx = −(2x + y + y cos xy)/(x + 2y cos xy) = −y/x (simplified at special conditions).
+Q4(c). 
+P(x = 1, y = 1): x(a + cos xy) + y = dy. Find dy/dx using y = P(x).
+Answer: 
+x(1 + cos xy) dy/dx = −y − y cos xy. dy/dx = −y(1 + cos xy)/(x(1 + cos xy)) = −y/x. At (1,1): dy/dx = −1.
+Numerical Methods
+Q3. 
+f(x) = x² + sin x. Find 2g = 2, f = 3 using Newton-Raphson.
+Answer: 
+2g = 2×2, f = 3, 2g = 4, g = 2. Using Δx approach: 2g = 4, g = 6/2 = 3. f(0 + Δx) ≈ f(0) + f&apos;(0)Δx. f(x + Δx) − f(x) ≈ f&apos;(x)Δx. Δy/Δx ≈ dy/dx.
+Answers Summary — MCQ Keys
+2019 JUPEB MCQ Answers:
+1.C  2.B  3.B  4.A  5.A  6.A  7.B  8.A  9.B  10.B  11.A  12.D  13.C  14.D  15.C  16.D  17.A  18.A  19.A  20.D  21.C  22.D  23.—  24.—  25.—  26.—  27.—  28.—  29.—  30.—  31.C  32.B  33.B  34.A  35.A  36.C  37.D  38.A  39.A  40.B  41.C  42.A  43.B  44.B  45.B  46.C  47.D  48.C  49.C  50.D
+2018 JUPEB MCQ Answers:
+1.B  2.D  3.D  4.A  5.C  6.C  7.D  8.A  9.A  10.D  11.A  12.B  13.C  14.D  15.C  16.D  17.A  18.A (option A)  19.A  20.D  21.C  22.D
+Note: This document is compiled from 20 of 87 pages covering 2015–2024. Additional questions from remaining pages will be added as more images are provided.

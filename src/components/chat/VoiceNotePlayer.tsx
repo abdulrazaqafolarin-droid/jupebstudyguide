@@ -143,7 +143,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
       </motion.button>
 
       <div className="flex-1 min-w-0">
-        <div
+        <motion.div
           ref={progressRef}
           className="flex items-center gap-[2px] h-8 cursor-pointer group relative"
           onClick={isLoaded ? handleSeek : undefined}
@@ -152,20 +152,30 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progress * 100)}
+          initial="init"
+          animate="in"
+          variants={{ init: {}, in: { transition: { staggerChildren: 0.015 } } }}
         >
           {waveform.map((h, i) => {
             const isPlayed = i / BAR_COUNT <= progress;
             return (
               <motion.div
                 key={i}
+                custom={i}
+                variants={{
+                  init: { height: 0, opacity: 0 },
+                  in: {
+                    height: `${Math.max(3, h)}px`,
+                    opacity: 1,
+                    transition: { type: 'spring', stiffness: 140, damping: 12, mass: 0.5 },
+                  },
+                }}
                 className={cn(
-                  'w-[3px] rounded-full transition-colors duration-150',
+                  'w-[3px] rounded-full',
                   isOwn
-                    ? isPlayed ? 'bg-white' : 'bg-white/30'
-                    : isPlayed ? 'bg-primary' : 'bg-foreground/20'
+                    ? isPlayed ? 'bg-white shadow-[0_0_4px_rgba(255,255,255,0.4)]' : 'bg-white/30'
+                    : isPlayed ? 'bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.4)]' : 'bg-foreground/20'
                 )}
-                animate={{ height: `${Math.max(3, h)}px` }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               />
             );
           })}
@@ -178,8 +188,8 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
                 : 'linear-gradient(90deg, hsl(var(--primary) / 0.08), transparent)',
             }}
           />
-        </div>
-        <div className="flex justify-between items-center mt-0.5">
+         </motion.div>
+         <div className="flex justify-between items-center mt-0.5">
           <span className="text-[10px] tabular-nums opacity-50 font-mono">
             {formatTime(isPlaying ? remaining : duration)}
           </span>

@@ -1,17 +1,17 @@
 import json, os, hashlib, urllib.request, urllib.error
 
 WORK = r"C:\Users\HP\Downloads\jupebstudyguide-main\jupebstudyguide-main"
-TOKEN = "vcp_360xFS0anzKP3RaTA6pD1IwivOlq3ONfkdBp7XkIXCz7vbxbSD3HpRqG"
+TOKEN = "vcp_5wbkLahDOyDcwUmsUHiBicOHn0hxDbIIfa8XNBygj0pNuWtITh14IlmH"
 TEAM_ID = "team_6ex5R4HbbOoHvNMMPQbRKbUA"
 
-ignore_dirs = {"node_modules", ".git", "dist", ".vercel", ".next", "cache", "__pycache__"}
+ignore_names = {"node_modules", ".git", "dist", ".vercel", ".next", "cache", "__pycache__", "nul", "NUL", "Nul"}
 ignore_ext = {".log", ".pyc"}
 
 files = []
 for root, dirs, fnames in os.walk(WORK):
-    dirs[:] = [d for d in dirs if d not in ignore_dirs and not d.startswith('.')]
+    dirs[:] = [d for d in dirs if d not in ignore_names and not d.startswith('.')]
     for fname in fnames:
-        if fname.startswith('.') or fname in {".env", ".env.local", "package-lock.json"}:
+        if fname.startswith('.') or fname in ignore_names or fname in {".env", ".env.local", "package-lock.json"}:
             continue
         ext = os.path.splitext(fname)[1]
         if ext in ignore_ext:

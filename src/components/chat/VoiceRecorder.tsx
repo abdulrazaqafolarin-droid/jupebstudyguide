@@ -15,19 +15,8 @@ interface VoiceRecorderProps {
   onStart?: () => void;
 }
 
-  const CANCEL_THRESHOLD = 80;
-const LOCK_THRESHOLD = -60;
-
-const spring = { type: 'spring' as const, stiffness: 400, damping: 28 };
-const barSpring = { type: 'spring', stiffness: 120, damping: 10, mass: 0.6 };
-const barVariants = {
-  init: (i: number) => ({ height: 0, opacity: 0 }),
-  in: (i: number) => ({
-    height: 'var(--h)',
-    opacity: 1,
-    transition: { delay: i * 0.015, type: 'spring', stiffness: 120, damping: 10, mass: 0.6 },
-  }),
-};
+const CANCEL_THRESHOLD = 80;
+const LOCK_THRESHOLD = -70;
 
 export function VoiceRecorder({
   waveform,
@@ -66,7 +55,7 @@ export function VoiceRecorder({
     if (!isDragging) return;
     const dx = e.clientX - startXRef.current;
     const dy = e.clientY - startYRef.current;
-    setSwipeX(Math.max(0, dx));
+    setSwipeX(dx);
     setSwipeY(dy);
   }, [isDragging]);
 
@@ -77,21 +66,21 @@ export function VoiceRecorder({
     const x = swipeX;
     const y = swipeY;
 
-    if (x > CANCEL_THRESHOLD) {
+    if (x < -CANCEL_THRESHOLD) {
       onCancel();
     } else if (y < LOCK_THRESHOLD) {
       onLock();
     } else {
-      onLock();
+      onSend();
     }
 
     setSwipeX(0);
     setSwipeY(0);
-  }, [isDragging, swipeX, swipeY, onCancel, onLock]);
+  }, [isDragging, swipeX, swipeY, onCancel, onLock, onSend]);
 
-  const isCancelling = swipeX > CANCEL_THRESHOLD * 0.6;
+  const isCancelling = swipeX < -CANCEL_THRESHOLD * 0.6;
   const isLocking = swipeY < LOCK_THRESHOLD * 0.6;
-  const showTrashZone = swipeX > 30;
+  const showTrashZone = swipeX < -20;
   const showLockZone = swipeY < -20;
 
   const formatTime = (s: number) => {
@@ -186,7 +175,7 @@ export function VoiceRecorder({
               <motion.div
                 className="flex items-center gap-1"
                 animate={{
-                  x: showTrashZone ? 0 : -6,
+                  x: showTrashZone ? -4 : 0,
                   opacity: showTrashZone ? 1 : 0.5,
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
@@ -218,7 +207,7 @@ export function VoiceRecorder({
               <motion.div
                 className="flex items-center gap-1 mt-0.5"
                 animate={{
-                  x: showLockZone ? 0 : -6,
+                  x: showLockZone ? 0 : -4,
                   opacity: showLockZone ? 1 : 0.3,
                 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
@@ -292,7 +281,7 @@ export function VoiceRecorder({
                 className="relative w-10 h-10 rounded-full flex items-center justify-center cursor-pointer select-none z-10 shadow-lg"
                 style={{ touchAction: 'none' }}
                 animate={{
-                  scale: 1 + (swipeX / CANCEL_THRESHOLD) * 0.15,
+                  scale: 1 + (Math.abs(swipeX) / CANCEL_THRESHOLD) * 0.15,
                 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >

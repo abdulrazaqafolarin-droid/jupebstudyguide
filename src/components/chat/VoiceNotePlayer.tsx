@@ -158,6 +158,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
         >
           {waveform.map((h, i) => {
             const isPlayed = i / BAR_COUNT <= progress;
+            const isActive = Math.floor(progress * BAR_COUNT) === i;
             return (
               <motion.div
                 key={i}
@@ -176,6 +177,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
                     ? isPlayed ? 'bg-white shadow-[0_0_4px_rgba(255,255,255,0.4)]' : 'bg-white/30'
                     : isPlayed ? 'bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.4)]' : 'bg-foreground/20'
                 )}
+                style={isActive && isPlaying ? { transform: 'scaleY(1.25)', transition: 'transform 0.1s' } : undefined}
               />
             );
           })}

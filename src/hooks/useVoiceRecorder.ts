@@ -135,10 +135,21 @@ export function useVoiceRecorder() {
     conversationId: string,
     senderId: string,
     currentDuration: number,
-    onSent: (message: any) => void
+    onSent: (message: any) => void,
+    onQueueOffline?: (blob: Blob, senderId: string, duration: number) => void,
   ) => {
     const blob = recordedBlob;
     if (!blob) return;
+
+    if (!navigator.onLine) {
+      onQueueOffline?.(blob, senderId, currentDuration);
+      setRecordingState('idle');
+      setDuration(0);
+      setIsLocked(false);
+      setRecordedBlob(null);
+      resetWaveform();
+      return;
+    }
 
     setRecordingState('sending');
 
@@ -149,7 +160,7 @@ export function useVoiceRecorder() {
         : 'webm';
 
       const fileName = `voice_${Date.now()}_${senderId}.${ext}`;
-      const filePath = `voice-notes/${conversationId}/${fileName}`;
+      const filePath = `${senderId}/voice-notes/${conversationId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('chat-files')

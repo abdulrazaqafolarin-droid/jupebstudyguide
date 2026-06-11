@@ -21,11 +21,12 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const hasStartedRef = useRef(false);
 
   const {
     waveform: liveWaveform,
     startFromAudio,
+    resume,
+    suspend,
     cleanup: cleanupAnalyser,
     resetWaveform,
   } = useAudioAnalyser();
@@ -45,13 +46,13 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     const onLoaded = () => {
       setDuration(audio.duration);
       setIsLoaded(true);
+      startFromAudio(audio);
     };
     const onEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
-      cleanupAnalyser();
       resetWaveform();
-      hasStartedRef.current = false;
+      suspend();
     };
     const onTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
@@ -61,12 +62,6 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     audio.addEventListener('loadedmetadata', onLoaded);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('timeupdate', onTimeUpdate);
-    audio.addEventListener('play', () => {
-      if (!hasStartedRef.current) {
-        hasStartedRef.current = true;
-        startFromAudio(audio);
-      }
-    });
 
     return () => {
       audio.removeEventListener('loadedmetadata', onLoaded);
@@ -74,7 +69,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
       audio.removeEventListener('timeupdate', onTimeUpdate);
       cleanupAnalyser();
     };
-  }, [src, startFromAudio, cleanupAnalyser, resetWaveform]);
+  }, [src, startFromAudio, cleanupAnalyser, resetWaveform, suspend]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -89,12 +84,14 @@ export function VoiceNotePlayer({ src, isOwn, fileName }: VoiceNotePlayerProps) 
     if (!audio) return;
     if (isPlaying) {
       audio.pause();
+      suspend();
       setIsPlaying(false);
     } else {
+      resume();
       audio.play().catch(() => {});
       setIsPlaying(true);
     }
-  }, [isPlaying]);
+  }, [isPlaying, resume, suspend]);
 
   const handleSeek = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const audio = audioRef.current;

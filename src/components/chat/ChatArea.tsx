@@ -46,6 +46,7 @@ interface ChatAreaProps {
   onProfileClick?: (userId: string) => void;
   onPushMessage?: (message: Message) => void;
   onBroadcastMessage?: (message: Message) => void;
+  onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number) => void;
 }
 
 const DELETE_EVERYONE_WINDOW_MS = 48 * 60 * 60 * 1000;
@@ -672,16 +673,24 @@ export function ChatArea({
     await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
       onPushMessage?.(message);
       onBroadcastMessage?.(message);
+    }, (blob, senderId, duration) => {
+      onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
+      toast.info('Voice note queued — will send when back online');
     });
-  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage]);
+  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote]);
 
-  // Reset VN on error and notify user
+  const lastVnErrorRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (vnError && recordingState !== 'idle') {
+    if (vnError && vnError !== lastVnErrorRef.current) {
+      lastVnErrorRef.current = vnError;
       onRecordingVn?.(false);
       toast.error(vnError);
     }
-  }, [vnError, recordingState, onRecordingVn]);
+    if (!vnError) {
+      lastVnErrorRef.current = null;
+    }
+  }, [vnError, onRecordingVn]);
 
   const sendGalleryImages = useCallback(async () => {
     if (galleryFiles.length === 0) return;

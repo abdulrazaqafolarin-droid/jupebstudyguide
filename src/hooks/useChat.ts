@@ -109,6 +109,7 @@ export function useChat() {
     | { kind: 'text'; content: string; replyToId?: string | null }
     | { kind: 'image'; imageUrl: string }
     | { kind: 'file'; fileUrl: string; fileName: string; fileSize: number; fileType: string }
+    | { kind: 'voice'; blob: Blob; senderId: string; duration: number }
   );
   const offlineQueueRef = useRef<OfflineItem[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
@@ -851,6 +852,52 @@ export function useChat() {
       }
       return true;
     }
+    if (item.kind === 'voice') {
+      try {
+        const ext = item.blob.type.includes('mp4') ? 'mp4'
+          : item.blob.type.includes('ogg') ? 'ogg'
+          : item.blob.type.includes('opus') ? 'webm'
+          : 'webm';
+        const fileName = `voice_${Date.now()}_${item.senderId}.${ext}`;
+        const filePath = `${item.senderId}/voice-notes/${item.conversationId}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('chat-files')
+          .upload(filePath, item.blob, {
+            contentType: item.blob.type,
+            cacheControl: '3600',
+          });
+        if (uploadError) return false;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('chat-files')
+          .getPublicUrl(filePath);
+
+        const mins = Math.floor(item.duration / 60);
+        const secs = item.duration % 60;
+
+        const { data, error } = await supabase.from('messages').insert({
+          conversation_id: item.conversationId,
+          sender_id: item.senderId,
+          content: `Voice note ${mins}:${secs.toString().padStart(2, '0')}`,
+          message_type: 'audio',
+          file_url: publicUrl,
+          file_name: 'Voice note',
+          file_type: item.blob.type,
+          file_size: item.blob.size,
+          client_msg_id: crypto.randomUUID(),
+        }).select();
+        if (error) return false;
+        if (data?.[0]) {
+          msgBroadcastRef.current?.send({
+            type: 'broadcast', event: 'msg', payload: { message: data[0] },
+          });
+        }
+        return true;
+      } catch {
+        return false;
+      }
+    }
     return false;
   }, [user]);
 
@@ -1314,6 +1361,16 @@ export function useChat() {
     });
   }, []);
 
+  const queueVoiceNote = useCallback((
+    conversationId: string,
+    blob: Blob,
+    senderId: string,
+    duration: number,
+  ) => {
+    offlineQueueRef.current.push({ kind: 'voice', conversationId, blob, senderId, duration });
+    setPendingCount(offlineQueueRef.current.length);
+  }, []);
+
   return {
     conversations,
     activeConversation,
@@ -1347,5 +1404,6 @@ export function useChat() {
     pendingCount,
     flushOfflineQueue,
     broadcastMessage,
+    queueVoiceNote,
   };
 }

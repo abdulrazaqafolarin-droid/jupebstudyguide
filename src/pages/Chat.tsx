@@ -497,6 +497,7 @@ const Chat = () => {
             onLoadMore={chat.loadMoreMessages}
             onProfileClick={openProfile}
             onBroadcastMessage={chat.broadcastMessage}
+            onQueueVoiceNote={chat.queueVoiceNote}
           />
         </div>
       )}

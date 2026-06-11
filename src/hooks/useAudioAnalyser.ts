@@ -12,6 +12,7 @@ export function useAudioAnalyser() {
   const rafRef = useRef<number>(0);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const initializedElRef = useRef<HTMLAudioElement | null>(null);
 
   const cleanup = useCallback(() => {
     if (rafRef.current) {
@@ -29,6 +30,7 @@ export function useAudioAnalyser() {
     analyserRef.current = null;
     dataArrayRef.current = null;
     streamRef.current = null;
+    initializedElRef.current = null;
   }, []);
 
   const tick = useCallback(() => {
@@ -78,7 +80,9 @@ export function useAudioAnalyser() {
   }, [cleanup, tick]);
 
   const startFromAudio = useCallback((audioEl: HTMLAudioElement) => {
+    if (initializedElRef.current === audioEl) return;
     cleanup();
+    initializedElRef.current = audioEl;
 
     try {
       const ctx = new AudioContext();
@@ -100,6 +104,14 @@ export function useAudioAnalyser() {
     }
   }, [cleanup, tick]);
 
+  const resume = useCallback(() => {
+    ctxRef.current?.resume();
+  }, []);
+
+  const suspend = useCallback(() => {
+    ctxRef.current?.suspend();
+  }, []);
+
   const resetWaveform = useCallback(() => {
     setWaveform(Array.from({ length: BAR_COUNT }, () => 2 + Math.random() * 3));
   }, []);
@@ -108,6 +120,8 @@ export function useAudioAnalyser() {
     waveform,
     startFromStream,
     startFromAudio,
+    resume,
+    suspend,
     cleanup,
     resetWaveform,
   };

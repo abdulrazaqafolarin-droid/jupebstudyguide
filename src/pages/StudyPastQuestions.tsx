@@ -239,6 +239,10 @@ export default function StudyPastQuestions() {
     }
   }, [timer.state, quizComplete, questions, userAnswers]);
 
+  const correctCount = quizResults.filter((r) => r.isCorrect).length;
+  const totalCount = quizResults.length;
+  const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+
   useEffect(() => {
     if (quizComplete && score >= 70) {
       const duration = 2500;
@@ -271,10 +275,6 @@ export default function StudyPastQuestions() {
     setUserAnswers({});
     setView("years");
   };
-
-  const correctCount = quizResults.filter((r) => r.isCorrect).length;
-  const totalCount = quizResults.length;
-  const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   const categoryLabel =
     selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);

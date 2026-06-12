@@ -103,6 +103,21 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("node_modules/@tanstack")) {
             return "vendor-query";
           }
+          if (id.includes("src/lib/")) {
+            return "shared-lib";
+          }
+          if (id.includes("src/contexts/")) {
+            return "shared-context";
+          }
+          if (id.includes("src/components/ui/")) {
+            return "shared-ui";
+          }
+          if (id.includes("src/integrations/")) {
+            return "shared-integrations";
+          }
+          if (id.includes("src/data/study-questions")) {
+            return "study-data";
+          }
           if (id.includes("node_modules")) {
             return "vendor-other";
           }

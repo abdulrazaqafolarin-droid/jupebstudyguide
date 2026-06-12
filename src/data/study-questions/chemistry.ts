@@ -1501,6 +1501,681 @@ const chemistryQuestions: StudyQuestion[] = [
       difficulty: "medium"
     },
     {
+      id: "che-2016-obj-0001",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which of the bonds of a carbon-carbon double bond has more effective orbital overlap?",
+      options: [
+        { label: "A", text: "Sigma bond" },
+        { label: "B", text: "Pi bond" },
+        { label: "C", text: "Alpha bond" },
+        { label: "D", text: "Beta bond" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0002",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Helium can be singly ionized by losing one electron to become the He⁺ cation. Which of the following statements is true concerning this helium cation?",
+      options: [
+        { label: "A", text: "The line spectrum of this helium cation will resemble the line spectrum of a hydrogen atom." },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0003",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "What is the shape of PF₅?",
+      options: [
+        { label: "A", text: "Tetrahedral" },
+        { label: "B", text: "Trigonal pyramidal" },
+        { label: "C", text: "Trigonal bipyramidal" },
+        { label: "D", text: "Square planar" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0004",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "A rigid metal tank contains helium gas. Which applies to the gas in the tank when some helium is removed at constant temperature?",
+      options: [
+        { label: "A", text: "The volume of the gas decreases" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0005",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Changes in which factors affect both the rate and the rate constant of a first order reaction? I. Temperature II. Concentration",
+      options: [
+        { label: "A", text: "I only" },
+        { label: "B", text: "II only" },
+        { label: "C", text: "both I and II" },
+        { label: "D", text: "neither I and II" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0006",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which of the following liquid/solutions is most likely to have the lowest pH?",
+      options: [
+        { label: "A", text: "H₂CO₃(aq)" },
+        { label: "B", text: "H₂O(l)" },
+        { label: "C", text: "NaOH(aq)" },
+        { label: "D", text: "KOH(aq)" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0007",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Identify the set of oxide that consist of an acid, a base, a neutral and an amphoteric oxide respectively.",
+      options: [
+        { label: "A", text: "SO₃, CaO, H₂O, Al₂O₃" },
+        { label: "B", text: "SO₃, MgO, NO, Na₂O" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0008",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The IUPAC name of the compound CH₃CH₂CH₂N(CH₃)₂ is:",
+      options: [
+        { label: "A", text: "1,1-dimethyl propylamine" },
+        { label: "B", text: "1,2-dimethylpropylamine" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0009",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The IUPAC name of [diagram of branched hydrocarbon with Br] is:",
+      options: [
+        { label: "A", text: "2-methylhexan" },
+        { label: "B", text: "2-bromobutane" },
+        { label: "C", text: "3-bromobutane" },
+        { label: "D", text: "3-bromopentane" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0010",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Household bleach contains sodium chlorate (I), NaClO, as its active ingredient. NaClO(aq) + H₂O₂(l) → NaCl(aq) + O₂(g) + H₂O(l) When 25.0 cm³ of bleach is treated with an excess of aqueous H₂O₂, 0.0350 mole of oxygen gas is given off. What is the concentration (moldm⁻³) of NaClO in the bleach?",
+      options: [
+        { label: "A", text: "8.75 × 10⁻⁴" },
+        { label: "B", text: "0.700" },
+        { label: "C", text: "0.875" },
+        { label: "D", text: "1.40" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0011",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "A 0.10 moldm⁻³ solution of a weak acid has a pH of 4.8. The value of pKa is:",
+      options: [
+        { label: "A", text: "3.8" },
+        { label: "B", text: "4.8" },
+        { label: "C", text: "8.6" },
+        { label: "D", text: "9.6" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0012",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which of these statements is correct in terms of the Bronsted-Lowry theory of acids and bases?",
+      options: [
+        { label: "A", text: "Water can act as either an acid or a base" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0013",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which equation represents the standard enthalpy change of atomisation of bromine?",
+      options: [
+        { label: "A", text: "Br₂(l) → Br₂(g)" },
+        { label: "B", text: "Br₂(g) → 2Br(g)" },
+        { label: "C", text: "½Br₂(l) → Br(g)" },
+        { label: "D", text: "½Br₂(g) → Br(g)" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0014",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "What is the bond angle in PH₃ molecule?",
+      options: [
+        { label: "A", text: "90°" },
+        { label: "B", text: "104°" },
+        { label: "C", text: "109°" },
+        { label: "D", text: "120°" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0015",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The alkanol obtained from the production of soap is:",
+      options: [
+        { label: "A", text: "ethanol" },
+        { label: "B", text: "glycerol" },
+        { label: "C", text: "methanol" },
+        { label: "D", text: "glycol" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0016",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Reactions of alkenes are mostly:",
+      options: [
+        { label: "A", text: "elimination reactions" },
+        { label: "B", text: "substitution reactions" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0017",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The reaction between sulphur dioxide and oxygen is a dynamic equilibrium. 2SO₂(g) + O₂(g) = 2SO₃(g) What happens when the pressure of the system is increased?",
+      options: [
+        { label: "A", text: "The rate of reaction will decrease and the position of equilibrium will move to the left" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0018",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which reaction will distinguish between a primary and a secondary alcohol?",
+      options: [
+        { label: "A", text: "Warming with H⁺/KMnO₄" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0019",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which is the correct reason for this observation? Mg(NO₃)₂ < Ca(NO₃)₂ < Sr(NO₃)₂ < Ba(NO₃)₂",
+      options: [
+        { label: "A", text: "The higher melting point of the nitrate" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0020",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "How many atoms of argon are present in one mole of the gas?",
+      options: [
+        { label: "A", text: "6.02 × 10²²" },
+        { label: "B", text: "6.02 × 10²³" },
+        { label: "C", text: "12.04 × 10²³" },
+        { label: "D", text: "12.04 × 10²" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0021",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "A radioactive element which gives off an alpha particle on bombardment means it has its atomic mass decreased by a factor of ……… and atomic number decreased by a factor of ……",
+      options: [
+        { label: "A", text: "4 and 2" },
+        { label: "B", text: "2 and 4" },
+        { label: "C", text: "0 and -1" },
+        { label: "D", text: "0 and 1" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0022",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which of the following factors does not influence the ionization energy of an element?",
+      options: [
+        { label: "A", text: "Distance between the nucleus and the electron" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0023",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The value of free energy change in a reaction can only provide:",
+      options: [
+        { label: "A", text: "the rate of a chemical reaction" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0024",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which factor helps to explain why the first ionization energies of the Group I elements decrease down the group?",
+      options: [
+        { label: "A", text: "The nuclear charge of the element increases" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0025",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Calculate the enthalpy change of the reaction: CH₄(g) + 2O₂(g) → CO₂(g) + 2H₂O(g) Given the bond energies of C-H, O=O, C=O and O-H as +413, +419, +740 and +463 kJmol⁻¹ respectively.",
+      options: [
+        { label: "A", text: "+686 kJmol⁻¹" },
+        { label: "B", text: "+437 kJmol⁻¹" },
+        { label: "C", text: "-686 kJmol⁻¹" },
+        { label: "D", text: "+437 kJmol⁻¹" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0026",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which reaction occurs in a catalytic converter and decreases the emission of nitrogen monoxide?",
+      options: [
+        { label: "A", text: "NO(g) + CO(g) → NO₂(g) + C(s)" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0027",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "What types of oxides does Group I elements formed?",
+      options: [
+        { label: "A", text: "Acidic oxides" },
+        { label: "B", text: "Amphoteric oxides" },
+        { label: "C", text: "Basic oxides" },
+        { label: "D", text: "Neutral oxides" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0028",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "A compound G, has the following composition by mass: C = 66.7%; H = 11.1%; O = 22.2% and has a molecular mass of 72. What is the molecular formula of G?",
+      options: [
+        { label: "A", text: "C₄H₁₀O" },
+        { label: "B", text: "C₄H₈O" },
+        { label: "C", text: "C₃H₆O₂" },
+        { label: "D", text: "C₄H₈O₂" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0029",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which of the reagents below can be used to distinguished between CH₃CH(OH)CH₂CHO and CH₃COCH₂CH₂OH?",
+      options: [
+        { label: "A", text: "Acidified potassium dichromate (VI)" },
+        { label: "B", text: "Acidified KMnO₄" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0030",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "In the modern periodic Table, transition metals are found in:",
+      options: [
+        { label: "A", text: "s-block" },
+        { label: "B", text: "p-block" },
+        { label: "C", text: "d-block" },
+        { label: "D", text: "f-block" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0031",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Example of a fully closed shell is:",
+      options: [
+        { label: "A", text: "2s² 2p⁶" },
+        { label: "B", text: "4s² 3d⁴" },
+        { label: "C", text: "3s² 3p⁶" },
+        { label: "D", text: "4s² 3d¹⁰4p³" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0032",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Ethene reacts with oxygen according to the equation: C₂H₄(g) + 3O₂(g) → 2CO₂(g) + 2H₂O(l). 15.0 cm³ of ethane were mixed with 60 cm³ of oxygen and the mixture was sparked to complete the reaction. What is the volume of the products? (All volumes were measured at room temperature and pressure).",
+      options: [
+        { label: "A", text: "15 cm³" },
+        { label: "B", text: "30 cm³" },
+        { label: "C", text: "45 cm³" },
+        { label: "D", text: "60 cm³" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0033",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "An organic compound analysis was shown to contain 40% carbon, 6.7% hydrogen and oxygen. Determine the empirical formula.",
+      options: [
+        { label: "A", text: "CHO" },
+        { label: "B", text: "C₂HO" },
+        { label: "C", text: "CH₂O" },
+        { label: "D", text: "CHO₂" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0034",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "In which sets do all the species contain the same number of electrons?",
+      options: [
+        { label: "A", text: "Co²⁺, Co³⁺, Co⁴⁺" },
+        { label: "B", text: "F⁻, Br⁻, I⁻" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0035",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Select an example each of pure covalent and pure ionic hydride from the following list of hydrides: H₂O(l), HCl(g), NaH(s), CH₄(g), B₂H₆(g)",
+      options: [
+        { label: "A", text: "HCl(g) and H₂O(l)" },
+        { label: "B", text: "H₂O(l) and B₂H₆(g)" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0036",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Two common allotropes of carbon are:",
+      options: [
+        { label: "A", text: "diamond and rhombic" },
+        { label: "B", text: "diamond and graphite" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0037",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The type of reaction that is peculiar to benzene is:",
+      options: [
+        { label: "A", text: "hydrolysis" },
+        { label: "B", text: "addition" },
+        { label: "C", text: "substitution" },
+        { label: "D", text: "polymerization" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0038",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "An example of an aliphatic unsaturated hydrocarbon is:",
+      options: [
+        { label: "A", text: "cyclobutene" },
+        { label: "B", text: "propene" },
+        { label: "C", text: "pentane" },
+        { label: "D", text: "benzene" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0039",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which ion is most polarizing?",
+      options: [
+        { label: "A", text: "Sr²⁺" },
+        { label: "B", text: "Na⁺" },
+        { label: "C", text: "Mg²⁺" },
+        { label: "D", text: "Cs⁺" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0040",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Which of the following is the correct expression for the solubility product constant of AgBr?",
+      options: [
+        { label: "A", text: "Ksp = [Ag⁺][Br⁻]" },
+        { label: "B", text: "Ksp = [Ag⁻][Br⁺]" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0041",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "What would be the outer electron configuration of halogens?",
+      options: [
+        { label: "A", text: "ns² np⁶" },
+        { label: "B", text: "ns² np⁵" },
+        { label: "C", text: "ns² np⁷" },
+        { label: "D", text: "ns² nd⁵ np⁰" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0042",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The standard molar enthalpy of combustion for propane is -2044 kilojoules. C₃H₈(g) + 5O₂(g) → 3CO₂(g) + 4H₂O(l) What is the standard enthalpy change for the combustion of 3.000 moles of propane?",
+      options: [
+        { label: "A", text: "-6132 kJ" },
+        { label: "B", text: "-4088 kJ" },
+        { label: "C", text: "-2044 kJ" },
+        { label: "D", text: "+2044 kJ" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0043",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Calculate the standard enthalpy change for the reaction: C₂H₂(g) + H₂(g) → C₂H₄(g) Based on the following standard enthalpies of formation: ΔHf°[C₂H₂(g)] = +226.7 kJ/mol and ΔHf°[C₂H₄(g)] = +52.3 kJ/mol",
+      options: [
+        { label: "A", text: "-56.4 kJmol⁻¹" },
+        { label: "B", text: "-174.4 kJ mol⁻¹" },
+        { label: "C", text: "-279.0 kJmol⁻¹" },
+        { label: "D", text: "-321.1 kJ mol⁻¹" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0044",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "In the radioactive decay of an isotope of ²³⁸₉₂U to give an isotope of ²³⁴₉₀T, which of these particles is emitted?",
+      options: [
+        { label: "A", text: "Beta" },
+        { label: "B", text: "Neutron" },
+        { label: "C", text: "Alpha" },
+        { label: "D", text: "Gamma" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0045",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "Colour in transition metal compounds is attributed to:",
+      options: [
+        { label: "A", text: "small size ion" },
+        { label: "B", text: "complete (ns) subshell" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0046",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The 3d metal ions are generally paramagnetic in nature because:",
+      options: [
+        { label: "A", text: "they have one or more paired s-electrons" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0047",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The IUPAC name of CH₃-C(CH₃)OH-CH₂-CH(CH₃)₂ is:",
+      options: [
+        { label: "A", text: "2,4-dimethyl pentan-2-ol" },
+        { label: "B", text: "2,4-dimethyl butan-2-ol" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0048",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "The flame used by welders in cutting metals is:",
+      options: [
+        { label: "A", text: "butane gas flame" },
+        { label: "B", text: "acetylene flame" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-obj-0049",
+      subject: "chemistry",
+      year: 2016,
+      category: "objective",
+      question: "On heating acetaldehyde with ammoniacal silver nitrate solution, we get:",
+      options: [
+        { label: "A", text: "CH₃OH" },
+        { label: "B", text: "silver acetate" },
+        { label: "C", text: "HCHO" },
+        { label: "D", text: "silver mirror" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-t0001",
+      subject: "chemistry",
+      year: 2016,
+      category: "theory",
+      question: "CHM 001: General Chemistry\n\n1(a). An electron (mass = 9.11 × 10⁻³¹ kg) moves with a speed of 1.00 × 10⁶ ± 1% ms⁻¹ (h = 6.626 × 10⁻³⁴ kg m² s⁻¹).\n(i). What is its de Broglie wavelength in meters?\n(ii). What is the uncertainty in its position?\n(iii). Magnetic quantum number (m)\n(i). Principal quantum number (n) (ii). Angular momentum quantum number (l)\n(b). Explain in a few lines the terms empirical formula and molecular formula.\n(c). Calculate how many moles of CO₂ are there in 12.0 g of CO₂; given that L = 6.02 × 10²³.\n(d). 20 g of a hydrocarbon sample was taken through a complete combustion. 62.85 g of CO₂ and 25.57 g of H₂O were generated.\n(i). Determine the empirical formula of this hydrocarbon.\n(ii). Chlorine occurs as Cl-35 and Cl-37 with 75% and 25% relative abundance respectively. Calculate the relative atomic mass of chlorine.\n2(a). Determine the molecular formula of this compound if its molecular weight is 252 gmol⁻¹.\n(b). Equations of reactions:\nH₂SO₄ + NaHCO₃ → NaHSO₄ + H₂O + CO₂\nH₂SO₄ + Na₂CO₃ → Na₂SO₄ + H₂O + CO₂",
+      totalMarks: 10,
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-t0002",
+      subject: "chemistry",
+      year: 2016,
+      category: "theory",
+      question: "CHM 002: Physical Chemistry\n\n3(a). Explain the following terms as used in reaction kinetics:\n(i). Activation energy (ii). Half-life (t½) (iii). Rate of reaction\nThe reaction: C₂H₅CHO + 2C₂H₅OH → C₂H₅CH(OC₂H₅)₂ + H₂O\nWas measured at various starting concentrations of its three reactants, the following results were obtained:\nExp.[C₂H₅CHO] moldm⁻³[C₂H₅OH] moldm⁻³[H⁺] moldm⁻³Relative rate10.200.100.051.0020.250.100.051.2530.200.200.052.0040.200.200.103.20\n(i). Use the data in the table to determine the order with respect to:\n(ii). [C₂H₅CHO] (iii). [H⁺]\n(ii). Use the results from (i) to write the rate equation for the reaction.\n(iii). Calculate the rate constant for a mixture in which the starting concentrations of all three reactants are 0.20 moldm⁻³.\n(d). State the unit of the rate constant in the rate equation.\n(e). From the standpoint of the kinetic-molecular theory, discuss briefly the properties of the gas molecules that cause deviations from ideal gas behaviour.\n4(a). Real gases approach ideality at low pressure, high temperature, or both. Explain these observations.\n(b). Real gases are compounds of fluorine and carbon. A 45.60 g sample of a gaseous fluorocarbon contains 7.94 g of carbon and 37.66 g of fluorine. It occupies 7.40 L at stp. Determine the approximate molecular mass of the fluorocarbon and give its molecular formula.\n(c). At 25°C and 1 atmosphere pressure, which of the following gases [CH₄, SO₂, O₂, H₂] shows the greatest deviation from ideal behaviour? Give two reasons for your choice.\n(d). Fluorocarbons are compounds of fluorine and carbon. A 45.60 g sample of a fluorocarbon and give its molecular formula.",
+      totalMarks: 10,
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-t0003",
+      subject: "chemistry",
+      year: 2016,
+      category: "theory",
+      question: "CHM 003: Inorganic Chemistry\n\n5(a). Group VII on the periodic table consists of five elements referred to as halogens. They are: fluorine, chlorine, bromine, iodine and astatine.\n(i). Write out the full electronic configuration of:\n(i). Fluorine (ii). Chloride ion, Cl⁻\n(b). Give three similar properties shown by all members of the group from F to Cl.\n(c). Give three properties which shows a gradation on moving down the group from F to Cl.\n(d). The boiling points of the hydrogen halides are shown in the table below:\nHydrogen halidesHFHClHBrHIBoiling point (°C)+20-85-67-35\nExplain why the boiling point of HF is so much higher than the boiling point form Cl to I.\n6(a). Explain why the boiling point of HF is so much higher than the boiling point of HCl in contrast to the increasing order of boiling point form Cl to I.[3 Marks]\n(i). Explain why the boiling point of HF is so much higher than the boiling point of HCl in contrast to the increasing order of boiling point from Cl to I.[3 Marks]\n(ii). Predict two of the likely oxidation states of chromium.\n(bi). The sample dissolves completely in water and a blue colour solution is observed.\n(ii). A deep blue solution is observed.\n(iii). Many transition element complexes are coloured because the transition metals have partially filled d-subshells in their respective oxidation states.\n(ci). Dicholoro diamine platinum (II)\n(ii). Tetrachloro palatinate (II) ion",
+      totalMarks: 10,
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-t0004",
+      subject: "chemistry",
+      year: 2016,
+      category: "theory",
+      question: "CHM 004: Organic Chemistry\n\n7(a). An organic compound that was found by quantitative elemental analysis to contain 40% C, 6.67% H and the remaining percentage is assumed to be for oxygen. Molecular mass of the unknown compound is 90.\n(i). [Pt(NH₃)₂Cl₂]\n(ii). [PtCl₄²⁻]\nGive the IUPAC nomenclature, give names to the two compounds below.\n(b). CHECK JUPEB 2025: Q7b\n(c). Using the IUPAC nomenclature, give names to the two compounds below: [diagrams of organic molecules shown]\n8(a). Organic reactions are broadly classified into three major types: substitution, addition and elimination. With appropriate example, briefly explain each of these reaction types.\n(b). Write equations to illustrate each of the following reactions:\n(i). Nitration of bromobenzene\n(ii). Bromination of nitrobenzene\n(iii). Sulphonation of bromobenzene followed by reduction\n(iv). Reduction of nitrobenzene followed by sulphonation\n(c). Write the open chain structures of D-glucose and D-fructose\n(d). Explain why Fehling's solution is reduced by glucose and not by fructose",
+      totalMarks: 10,
+      difficulty: "medium"
+    },
+    {
+      id: "che-2016-p0001",
+      subject: "chemistry",
+      year: 2016,
+      category: "practical",
+      question: "JUPEB 2016 — PRACTICAL QUESTIONS\nQuestion 1\nGiven a solution containing 3.5 g of a mixture of a hydrated sodium carbonate (Na₂CO₃) and sodium bicarbonate (NaHCO₃) in 1 dm³. Pipette 25 cm³ of this solution and titrate first to a phenolphthalein end point, and then to a methylorange end point using 0.1 M H₂SO₄. Calculate:\n(a). the average titre value of each of the titrations\n(b). the number of moles of NaHCO₃ in the second titration\n(c). the number of moles of Na₂CO₃ in the original mixture\n(d). the number of moles of NaHCO₃ in the original mixture\n(e). the percentage of sodium bicarbonate (NaHCO₃) in the mixture\nQuestion 2\nSample C is an inorganic compound that contains a cation and two anions. Carry out the following tests and from your inference, deduce the cation and the two anions in the sample. Report your answer in a tabular form and write chemical equations to illustrate the chemical reactions for each of the tests carried out.\n(a). Place a small portion of sample C on a spatula and heat in the flame test. Test any gas given off with litmus paper.\n(b). Place a small portion of sample C into a test tube and heat. Test any gas given off.\n(c). Divide a solution of sample C into three portions and carry out the following tests:\n(i). To a portion of the solution, add about 5 ml ethanoic acid and 5 ml of zinc uranyl acetate solution and shake.\n(ii). To another portion, add magnesium sulphate solution.\n(iii). To the last portion, add about 5 ml silver nitrate solution, wait for about 2 mins and add dilute ammonia solution.",
+      difficulty: "medium"
+    },
+    {
       id:"che-2017-q0001",
       subject:"chemistry",
       year:2017,

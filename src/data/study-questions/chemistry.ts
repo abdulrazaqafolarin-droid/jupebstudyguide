@@ -3718,147 +3718,750 @@ const chemistryQuestions: StudyQuestion[] = [
       difficulty:"medium"
     },
 
-    {
-      id:"che-2019-q0001",
-      subject:"chemistry",
-      year:2019,
-      category:"objective",
-      question:"When 4 mol of nitrogen dioxide was put into a 1 dm  container and heated to a constant temperature, the equilibrium mixture contained 0.8 mol of oxygen. What is the numerical value of equilibrium constant, Kc, at the temperature of the experiment? 14. In which of the following reactions is the change in entropy positive? 15. A system in which only energy is transferred between the system and the surroundings is 16. Which of these orbitals is the most stable? 17. Identify the species A in the radioactive reaction represented by the equation below.    Th      U + A 18. Arrange the following elements in order of decreasing reducing power Na, Rb, K, Cs 19. Hydride of the halogens with the highest stability to heat is 20. Hydrocarbons which react with ammoniacal copper(I)chloride solution conform to the general molecular formula _____ 21. In the coordination compounds, [Co(NH ) ]F , if the primary valences of Co and Fe are both +3, x? 22. Which of the following is TRUE about sodium chloride in the solid state? 23. A method of preventing corrosion that involves coating steel with zinc metal is called 24. Which type of radioactive decay produces a daughter nucleus with a higher atomic number? 25. For a reaction that is second order with respect to a reactant, A, how many times does the rate increase if the concentration of A increases by a factor of 2? 26. What is the number of atoms present in 21.6 g of silver? [Ag=108 gmol  , N =6.023 x 10   mol  ] 27. Transition metal atoms without unpaired electrons are said to be _____ 28. Strontium is an element in Group 2 of the Periodic Table. Which of the following statements about strontium is NOT correct?",
-      options:[
-            {label:"A", text:"0.8"},
-          {label:"B", text:"2.4"},
-          {label:"C", text:"1.6"},
-          {label:"A", text:"2Ag (aq) + Zn(s)   Zn  (aq) + 2Ag(s)"},
-          {label:"B", text:"2SO (g)   2SO (g) + O (g)"},
-          {label:"C", text:"2HF(g)   H (g) + F (g)"},
-          {label:"A", text:"open system."},
-          {label:"B", text:"closed system."},
-          {label:"C", text:"isolated system."},
-          {label:"A", text:"3d"},
-          {label:"B", text:"4p"},
-          {label:"C", text:"5p"},
-          {label:"A", text:" "},
-          {label:"B", text:" "},
-          {label:"C", text:" "},
-          {label:"A", text:"Cs > K > Rb > Na"},
-          {label:"B", text:"Na > K > Cs > Rb"},
-          {label:"C", text:"Cs > Rb > K > Na"},
-          {label:"A", text:"HCl"},
-          {label:"B", text:"HBr"},
-          {label:"C", text:"HF"},
-          {label:"A", text:"CnHn"},
-          {label:"B", text:"CnH2n"},
-          {label:"C", text:"CnH2n+2"},
-          {label:"A", text:"2"},
-          {label:"B", text:"1"},
-          {label:"A", text:"Its ions are linked by metallic bonds"},
-          {label:"B", text:"It exists as aggregate of ions"},
-          {label:"C", text:"It conducts electricity"},
-          {label:"A", text:"painting"},
-          {label:"B", text:"enameling"},
-          {label:"C", text:"electroplating"},
-          {label:"A", text:" "},
-          {label:"B", text:" -"},
-          {label:"A", text:"1 time"},
-          {label:"B", text:"2 times"},
-          {label:"C", text:"3 times"},
-          {label:"A", text:"0.2 x 10  "},
-          {label:"B", text:"1.204 x 10  "},
-          {label:"C", text:"6.02 x 10  "},
-          {label:"A", text:"diamagnetic"},
-          {label:"B", text:"paramagnetic"},
-          {label:"C", text:"ferromagnetic"},
-          {label:"A", text:"Its first ionization energy is lower than t"}
-          ],
-      correctAnswer:"C",
-      explanation:"Reaction: 2NO    2NO + O . Initial: 4 mol. Change: -1.6 mol NO , +1.6 mol NO, +0.8 mol O . Equilibrium: [NO ]=2.4, [NO]=1.6, [O ]=0.8. Kc = (1.6  * 0.8) / 2.4  = 1.6.",
-      difficulty:"medium"
-    },
-    {
-      id:"che-2019-q0002",
-      subject:"chemistry",
-      year:2019,
-      category:"objective",
-      question:"The energy associated with the process below is called:",
-      options:[
-            {label:"A", text:"electron affinity -"},
-          {label:"B", text:"ionization energy -"},
-          {label:"C", text:"lattice energy -"},
-          {label:"D", text:"binding energy"}
-          ],
-      difficulty:"medium"
-    },
-    {
-      id:"che-2019-q0003",
-      subject:"chemistry",
-      year:2019,
-      category:"objective",
-      question:"Nitrogen dioxide decomposes on heating according to the following equation:",
-      options:[
-            {label:"A", text:"4 /(0.8    0.8) -"},
-          {label:"B", text:"(1.6    0.8)/(4 ) -"},
-          {label:"C", text:"(1.6    0.8)/(4 ) -"},
-          {label:"D", text:"1.6 /(4 )"}
-          ],
-      difficulty:"medium"
-    },
-    {
-      id:"che-2019-q0004",
-      subject:"chemistry",
-      year:2019,
-      category:"objective",
-      question:"Identify the species A in the radioactive reaction represented by the equation below:",
-      options:[
-            {label:"A", text:" He (alpha) -"},
-          {label:"B", text:" e (beta) -"},
-          {label:"C", text:"   -"},
-          {label:"D", text:" He"}
-          ],
-      difficulty:"medium"
-    },
-    {
-      id:"che-2019-q0005",
-      subject:"chemistry",
-      year:2019,
-      category:"objective",
-      question:"Given that the standard enthalpy changes of formation of TiO (s) and CO(g) are 940 kJmol   and  110 kJmol   respectively. What is the standard enthalpy change for:",
-      options:[
-            {label:"A", text:" 830 -"},
-          {label:"B", text:" 720 -"},
-          {label:"C", text:"+720 -"},
-          {label:"D", text:"+830"}
-          ],
-      difficulty:"medium"
-    },
-    {
-      id:"che-2019-q0006",
-      subject:"chemistry",
-      year:2019,
-      category:"objective",
-      question:"Identify P in the reaction:",
-      options:[
-            {label:"A", text:"C H CHO -"},
-          {label:"B", text:"C H MgBr -"},
-          {label:"C", text:"C H COCH  -"},
-          {label:"D", text:"C H COC H "}
-          ],
-      difficulty:"medium"
-    },
-    {
-      id:"che-2019-q0007",
-      subject:"chemistry",
-      year:2019,
-      category:"objective",
-      question:"What is the major product of the following reaction?",
-      options:[
-            {label:"A", text:"(structure A   2-methylbut-1-ene type) -"},
-          {label:"B", text:"(structure B   2-methylbut-2-ene type) -"},
-          {label:"C", text:"(structure C   methylenbutane type) -"},
-          {label:"D", text:"(structure D)"}
-          ],
-      difficulty:"medium"
-    },
-    {
+    // === 2019 OBJECTIVE (50 questions from Supabase JSON) ===
+  {
+    id: "che-2019-obj-0001",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "A normal body temperature is 37℃, 𝐾𝑤 =  2.4 × 10−14. 𝐶𝑎𝑙𝑐𝑢𝑙𝑎𝑡𝑒 [𝐻3𝑂+] 𝑎𝑛𝑑 [𝑂𝐻−] for the body fluid at this temperature",
+    options: [
+      { label: "A", text: "[𝐻3𝑂+] = [𝑂𝐻−] =  2.5 × 10−7" },
+      { label: "B", text: "[𝐻3𝑂+] = [𝑂𝐻−] =  1.5 × 10−8" },
+      { label: "C", text: "[𝐻3𝑂+] = [𝑂𝐻−] =  1.5 × 10−6" },
+      { label: "D", text: "[𝐻3𝑂+] = [𝑂𝐻−] =  1.5 × 10−7" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0002",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Atoms of elements in a group on the Periodic Table have similar chemical properties. This similarity is most closely related to the atoms.",
+    options: [
+      { label: "A", text: "number of principal energy levels" },
+      { label: "B", text: "number of valence electrons" },
+      { label: "C", text: "atomic numbers" },
+      { label: "D", text: "atomic masses" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0003",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "How many atoms of 𝐶𝑢 are present in 35.4 𝑔 𝑜𝑓 𝐶𝑢? [𝐶𝑢 =  63.5𝑔𝑚𝑜𝑙−1]",
+    options: [
+      { label: "A", text: "1.08 × 1024 𝑎𝑡𝑜𝑚𝑠 𝑜𝑓 𝐶𝑢" },
+      { label: "B", text: "3.27 × 1023 𝑎𝑡𝑜𝑚𝑠 𝑜𝑓 𝐶𝑢" },
+      { label: "C", text: "6.02 × 1023 𝑎𝑡𝑜𝑚𝑠 𝑜𝑓 𝐶𝑢" },
+      { label: "D", text: "1.20 × 1022 𝑎𝑡𝑜𝑚𝑠 𝑜𝑓 𝐶𝑢" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0004",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "How would you prepare 250𝑐𝑚3 𝑜𝑓 0.25𝑀 aqueous solution of 𝑁𝑎𝐶𝑙? [𝑁𝑎=  23𝑔𝑚𝑜𝑙−1;  𝐶𝑙 =  35.5𝑔𝑚𝑜𝑙−1] 2",
+    options: [
+      { label: "A", text: "Add 3.66𝑔 𝑁𝑎𝐶𝑙 𝑡𝑜 250𝑐𝑚3 of distilled water" },
+      { label: "B", text: "Weigh 3.66𝑔 𝑁𝑎𝐶𝑙 𝑖𝑛𝑡𝑜 250𝑚𝑙 flask and add distilled water up to the mark" },
+      { label: "C", text: "Add 14.60𝑔 𝑁𝑎𝐶𝑙 𝑡𝑜 250𝑐𝑚3 of distilled water" },
+      { label: "D", text: "Weigh 14.60𝑔 𝑁𝑎𝐶𝑙 𝑖𝑛𝑡𝑜 250𝑚𝑙 flask and add distilled water up to the mark" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0005",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "What is the shape of 𝑃𝐶𝑙3?",
+    options: [
+      { label: "A", text: "Trigonal planar" },
+      { label: "B", text: "Trigonal pyramidal" },
+      { label: "C", text: "Tetrahedral" },
+      { label: "D", text: "V-shaped (bent)" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0006",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "𝑈𝑟𝑎𝑛𝑖𝑢𝑚 −233 (𝑈92 233)𝑑𝑒𝑐𝑎𝑦𝑠 𝑏𝑦 𝛼 –  𝑒𝑚𝑖𝑠𝑠𝑖𝑜𝑛. What is the decay product? 229 231 231 233",
+    options: [
+      { label: "A", text: "𝑇ℎ90" },
+      { label: "B", text: "𝑇ℎ90" },
+      { label: "C", text: "𝐴𝑐91" },
+      { label: "D", text: "𝐴𝑐91" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0007",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Arrange the following ions in order of decreasing charge density; 𝐶𝑎2+, 𝑀𝑔2+, 𝐴𝑙3+ 𝑎𝑛𝑑 𝐵𝑎2+",
+    options: [
+      { label: "A", text: "𝐴𝑙3+ > 𝑀𝑔2+ > 𝐶𝑎2+ > 𝐵𝑎2+" },
+      { label: "B", text: "𝐵𝑎2+ > 𝐶𝑎2+  > 𝑀𝑔2+  > 𝐴𝑙3+" },
+      { label: "C", text: "𝐴𝑙3+  < 𝑀𝑔2+ < 𝐶𝑎2+  < 𝐵𝑎2+" },
+      { label: "D", text: "𝑀𝑔2+  >  𝐴𝑙3+  > 𝐵𝑎2+  > 𝐶𝑎2+" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0008",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Which of the following statements explain why caesium has a lower melting point than sodium?",
+    options: [
+      { label: "A", text: "Sodium is a more electropositive metal" },
+      { label: "B", text: "Sodium has higher ionization energy" },
+      { label: "C", text: "Sodium has a stronger metallic bond" },
+      { label: "D", text: "Caesium has a larger atomic radius" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0009",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Transition metals can form complex ions because 3",
+    options: [
+      { label: "A", text: "They have paired electrons in the d subshell" },
+      { label: "B", text: "They have unpaired electrons in the d subshell" },
+      { label: "C", text: "They have empty d orbitals" },
+      { label: "D", text: "They have small charge/size ratio" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0010",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "How many equivalent hybrid orbitals are there in 𝑆𝑝2  − ℎ𝑦𝑏𝑟𝑖𝑑𝑖𝑧𝑒𝑑 𝑐𝑎𝑟𝑏𝑜𝑛?",
+    options: [
+      { label: "A", text: "Four" },
+      { label: "B", text: "Two" },
+      { label: "C", text: "Three" },
+      { label: "D", text: "One" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0011",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "When common names are used for acids, the underlined carbon atom in the molecule shown would be designated as the − 𝐶 𝑎𝑡𝑜𝑚. 𝐶𝐻3𝐶𝐻2𝐶𝐻2 − 𝑂 ‖ 𝐶−𝑂𝐻",
+    options: [
+      { label: "A", text: "Gamma" },
+      { label: "B", text: "Alpha" },
+      { label: "C", text: "Delta" },
+      { label: "D", text: "Beta" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0012",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Purification of a strip of impure copper metal in aqueous CuSO4 was carried out using a steady current. Which graph shows the change in mass of the cathode with time? 4",
+    options: [
+      { label: "A", text: "" },
+      { label: "B", text: "" },
+      { label: "C", text: "" },
+      { label: "D", text: "" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0013",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Which gas closely approaches ideal behaviour at room temperature and pressure?",
+    options: [
+      { label: "A", text: "Helium" },
+      { label: "B", text: "Carbon dioxide" },
+      { label: "C", text: "Ammonia" },
+      { label: "D", text: "Oxygen" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0014",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "A sample of a brown gas, a major air pollutant, is found to contain 2.34𝑔 𝑁 and 5.34𝑔 𝑂. Determine the empirical formula for this substance. [𝑁 =  14, 𝑂 =  16]",
+    options: [
+      { label: "A", text: "𝑁𝑂2" },
+      { label: "B", text: "𝑁𝑂" },
+      { label: "C", text: "𝑁2𝑂" },
+      { label: "D", text: "𝑁2𝑂3" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0015",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Why does the rate of a gaseous reaction increase when the pressure is increased at a constant temperature? 5",
+    options: [
+      { label: "A", text: "More particles have energy that exceeds the activation energy." },
+      { label: "B", text: "The particles have more space in which to move" },
+      { label: "C", text: "The particles move faster." },
+      { label: "D", text: "There are more frequent collisions between particles." },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0016",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Why is gaseous nitrogen less reactive than gaseous fluorine?",
+    options: [
+      { label: "A", text: "The boiling point of nitrogen is lower than that of fluorine" },
+      { label: "B", text: "The relative molecular mass of nitrogen is lower than that of fluorine" },
+      { label: "C", text: "The atomic radius of nitrogen is greater than that of fluorine" },
+      { label: "D", text: "The bond strength in the molecule is greater in nitrogen than in fluorine" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0017",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The first stage in the manufacture of nitric acid is the oxidation of ammonia by oxygen. 𝑤𝑁𝐻3(𝑔)  +  𝑥𝑂2(𝑔)  → 𝑦𝑁𝑂(𝑔)  +  𝑧𝐻2𝑂(𝑔) What values for 𝑤, 𝑥, 𝑦 𝑎𝑛𝑑 𝑧 are needed to balance the equation?",
+    options: [
+      { label: "A", text: "4, 5, 4 𝑎𝑛𝑑 6" },
+      { label: "B", text: "4, 6, 4 𝑎𝑛𝑑 5" },
+      { label: "C", text: "5, 6, 5 𝑎𝑛𝑑 4" },
+      { label: "D", text: "6, 5, 6 𝑎𝑛𝑑 4" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0018",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The reaction of chlorine with methane is carried out in the presence of light. What is the function of the light?",
+    options: [
+      { label: "A", text: "to break the 𝐶 –  𝐻 bonds in methane" },
+      { label: "B", text: "to break up the chlorine molecules into atoms" },
+      { label: "C", text: "to break up the chlorine molecules into ions" },
+      { label: "D", text: "to heat up the mixture" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0019",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "In the Solvay process, 𝑁𝑎𝐶𝑙(𝑎𝑞)  +  𝑁𝐻3(𝑔)  + 𝐻2𝑂(𝑙)  +  𝐶𝑂2(𝑔)  → 𝑁𝑎𝐻𝐶𝑂3(𝑠)  +  𝑁𝐻44𝐶𝑙(𝑎𝑞). What volume of carbon dioxide (at s.t.p) is required to produce 1.00 𝑘𝑔 𝑜𝑓 𝑠𝑜𝑑𝑖𝑢𝑚 ℎ𝑦𝑑𝑟𝑜𝑔𝑒𝑛 𝑐𝑎𝑟𝑏𝑜𝑛𝑎𝑡𝑒? (𝐼 𝑚𝑜𝑙𝑒 𝑜𝑓 𝑔𝑎𝑠 𝑎𝑡 𝑠. 𝑡. 𝑝 𝑜𝑐𝑐𝑢𝑝𝑖𝑒𝑠 22.4𝑑𝑚3) [𝑁𝑎 =  23, 𝐶𝑙 =  35.5, 𝐶 =  12, 𝑂 =  16, 𝐻 =  1, 𝑁 =  14]. 6",
+    options: [
+      { label: "A", text: "250𝑑𝑚3" },
+      { label: "B", text: "762𝑑𝑚3" },
+      { label: "C", text: "267𝑑𝑚3" },
+      { label: "D", text: "462𝑑𝑚3" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0020",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Which group of particles is in order of increasing size?",
+    options: [
+      { label: "A", text: "𝑁, 𝑂, 𝐹" },
+      { label: "B", text: "𝑁3−, 𝑂2−, 𝐹−" },
+      { label: "C", text: "𝑁𝑎+, 𝑀𝑔2+, 𝐴𝑙3+" },
+      { label: "D", text: "𝑁𝑎+, 𝑁𝑒, 𝐹−" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0021",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "River water in a chalky agricultural area may contain 𝐶𝑎2+,  𝑀𝑔2+, 𝐶𝑂3 2−, 𝐻𝐶𝑂3−, 𝐶𝑙−, 𝑁𝑂3− 𝑖𝑜𝑛𝑠. In a waterworks, such water is treated by adding a calculated quantity of calcium hydroxide. What will be precipitated following the addition of calcium hydroxide?",
+    options: [
+      { label: "A", text: "𝐶𝑎𝐶𝑙2" },
+      { label: "B", text: "𝐶𝑎𝐶𝑂3" },
+      { label: "C", text: "𝐶𝑎(𝑁𝑂3)2" },
+      { label: "D", text: "𝑀𝑔(𝑁𝑂3)2" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0022",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The electronic configuration of the 𝐹𝑒3+ is",
+    options: [
+      { label: "A", text: "1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑4" },
+      { label: "B", text: "1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑5" },
+      { label: "C", text: "1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑3" },
+      { label: "D", text: "1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑6" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0023",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "An element with an atomic number of 35 is --------- block element. 7",
+    options: [
+      { label: "A", text: "S – block" },
+      { label: "B", text: "P – block" },
+      { label: "C", text: "D – block" },
+      { label: "D", text: "F – block" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0024",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Iodine trichloride, 𝐼𝐶𝑙3 is made by reacting iodine with chlorine. 𝐼2(𝑠)  + 𝐶𝑙2(𝑔)  → 2𝐼𝐶𝑙(𝑠); 𝛥𝐻 = +14𝑘𝐽𝑚𝑜𝑙−1 𝐼𝐶𝑙(𝑠) +  𝐶𝑙2(𝑔)  → 𝐼𝐶𝑙3(𝑠);  𝛥𝐻𝜃= – 88𝑘𝐽𝑚𝑜𝑙−1 By using the data above, what is the enthalpy change of the formation for solid iodine trichloride? a reactant, A. how many times does the rate increase a [A] increases by a factor of 2?",
+    options: [
+      { label: "A", text: "−162𝑘𝐽𝑚𝑜𝑙−1" },
+      { label: "B", text: "−81𝑘𝐽𝑚𝑜𝑙−1" },
+      { label: "C", text: "−74𝑘𝐽𝑚𝑜𝑙−1" },
+      { label: "D", text: "−60𝑘𝐽𝑚𝑜𝑙−1" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0025",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The standard enthalpy changes of formation of 𝑇𝑖𝑂2(𝑠) 𝑎𝑛𝑑 𝐶𝑂(𝑔) 𝑎𝑟𝑒 –  940𝑘𝐽𝑚𝑜𝑙−1 𝑎𝑛𝑑 −110𝑘𝐽𝑚𝑜𝑙−1 respectively. 𝑇𝑖𝑂2(𝑠)  +  2𝐶(𝑠)  → 𝑇𝑖(𝑠)  +  2𝐶𝑂(𝑔) What is the standard enthalpy change of this reaction?",
+    options: [
+      { label: "A", text: "−830𝑘𝐽𝑚𝑜𝑙−1" },
+      { label: "B", text: "−720𝑘𝐽𝑚𝑜𝑙−1" },
+      { label: "C", text: "+720𝑘𝐽𝑚𝑜𝑙−1" },
+      { label: "D", text: "+830𝑘𝐽𝑚𝑜𝑙−1" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0026",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The standard enthalpy changes of formation of 𝐻𝐶𝑙 𝑎𝑛𝑑 𝐻𝐼 𝑎𝑟𝑒 – 93𝑘𝐽𝑚𝑜𝑙−1 𝑎𝑛𝑑 + 25𝑘𝐽𝑚𝑜𝑙−1 respectively. Which statement is most important in explaining this difference? 𝐻2 /  𝐼2 reaction.",
+    options: [
+      { label: "A", text: "The bond energy of 𝐶𝑙2 is smaller than the bond energy of 𝐼2." },
+      { label: "B", text: "The activation energy for the 𝐻2 / 𝐶𝑙2 reaction is much less than that for the" },
+      { label: "C", text: "The bond energy of 𝐼2 is smaller than the bond energy of 𝐶𝑙2." },
+      { label: "D", text: "The bond energy of 𝐻𝐼 is smaller than the bond energy of 𝐻𝐶𝑙." },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0027",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "What is the catalyst used in the contact process? 8",
+    options: [
+      { label: "A", text: "𝑃𝑑" },
+      { label: "B", text: "𝑃𝑡" },
+      { label: "C", text: "𝐹𝑒2𝑂3" },
+      { label: "D", text: "𝑉2𝑂5" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0028",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The main purpose of adding cryolite to the ore (bauxite) during the preparation of Aluminium metal by electrolysis is?",
+    options: [
+      { label: "A", text: "minimizes the release of oxygen at the graphite anode" },
+      { label: "B", text: "reduce the melting point of the bauxite" },
+      { label: "C", text: "increase the melting point of the bauxite" },
+      { label: "D", text: "enables the aluminum discharge at the anode" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0029",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "What type of bond needs to be broken for magnesium oxide to melt?",
+    options: [
+      { label: "A", text: "Co-ordinate" },
+      { label: "B", text: "Covalent" },
+      { label: "C", text: "Ionic" },
+      { label: "D", text: "Metallic" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0030",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "A substance which contains the following elements by mass: 𝐶, 17.8%;  𝐻, 1.5%;  𝐶𝑙, 52.6%;  𝐹, 28.1% has molecular mass of 135. Determine the molecular formula",
+    options: [
+      { label: "A", text: "𝐶2𝐻2𝐹𝐶𝑙" },
+      { label: "B", text: "𝐶2𝐻2𝐹2𝐶𝑙" },
+      { label: "C", text: "𝐶2𝐻2𝐹2𝐶𝑙2" },
+      { label: "D", text: "𝐶2𝐻2𝐹𝐶𝑙3" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0031",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "How many chiral centres does the compound below possess? 𝐶𝐻2𝐶𝑂2𝐻 | 𝐶(𝑂𝐻)𝐶𝑂2𝐻 | 𝐶𝐻2𝐶𝑂2𝐻 9",
+    options: [
+      { label: "A", text: "0" },
+      { label: "B", text: "1" },
+      { label: "C", text: "2" },
+      { label: "D", text: "3" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0032",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "0.200 𝑚𝑜𝑙 of a hydrocarbon undergo complete combustion to give 35.2𝑔 of Carbondioxide and 14.4𝑔 of water as the only products. What is the molecular formula of the hydrocarbon?",
+    options: [
+      { label: "A", text: "𝐶2H4" },
+      { label: "B", text: "𝐶2H6" },
+      { label: "C", text: "𝐶4H4" },
+      { label: "D", text: "𝐶4H8" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0033",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "One of the original postulates of Dalton’s Atomic Theory is: combined in simple whole number ratio.",
+    options: [
+      { label: "A", text: "An atom reacts to attain electronic configuration of the noble gas closest to it." },
+      { label: "B", text: "When atoms of different elements react to form chemical compound, the atoms are" },
+      { label: "C", text: "The isotopes of an element are in whole number ratio." },
+      { label: "D", text: "Atoms of different elements differ in terms of number of protons in their nuclei." },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0034",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The ions in a mass spectrophotometer are separated based on their mass: charge ratio by the",
+    options: [
+      { label: "A", text: "Ion source" },
+      { label: "B", text: "Mass analyzer" },
+      { label: "C", text: "Deflector" },
+      { label: "D", text: "Detector" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0035",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Which of the following terms accurately describes the energy associated with the process? 𝐿𝑖(𝑔) ⟶ 𝐿𝑖(𝑔) + +  𝑒− 10",
+    options: [
+      { label: "A", text: "Electron affinity" },
+      { label: "B", text: "Binding energy" },
+      { label: "C", text: "Ionization energy" },
+      { label: "D", text: "Electronegativity" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0036",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "If the activation energy in the forward direction of an elementary step is 52𝑘𝐽 and the activation energy in the reverse direction is 74𝑘𝐽, what is the energy of reaction 𝐸 for this step?",
+    options: [
+      { label: "A", text: "+22𝑘𝐽" },
+      { label: "B", text: "−22𝑘𝐽" },
+      { label: "C", text: "+52𝑘𝐽" },
+      { label: "D", text: "−52𝑘𝐽" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0037",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Sodium peroxide dissolves in water in accordance with the following reaction: 𝑁𝑎2𝑂2(𝑠)  +  2𝐻2𝑂(𝑙) ⟶𝑁𝑎𝑂𝐻(𝑎𝑞) + 𝐻2𝑂(𝑙) The 𝑝𝐻 of the solution after reaction will be",
+    options: [
+      { label: "A", text: "7 −8" },
+      { label: "B", text: "6 −7" },
+      { label: "C", text: "< 2" },
+      { label: "D", text: "> 10" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0038",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Gunpowder is a mixture of saltpeter, Sulphur and wood charcoal in the ratio of 6: 1: 1 by mass. The mixture burns with explosion because it produces a large volume of gases. Saltpeter in the mixture acts as",
+    options: [
+      { label: "A", text: "Modifier" },
+      { label: "B", text: "Reducing agent" },
+      { label: "C", text: "Oxidizing agent" },
+      { label: "D", text: "Fuel" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0039",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The oxidation state of 𝐴𝑢 𝑖𝑛 𝐾[𝐴𝑢(𝑂𝐻)4] is: 11",
+    options: [
+      { label: "A", text: "+1" },
+      { label: "B", text: "+2" },
+      { label: "C", text: "+3" },
+      { label: "D", text: "+4" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0040",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The most common type of chemical reaction which alkanes undergo is",
+    options: [
+      { label: "A", text: "Substitution" },
+      { label: "B", text: "Addition" },
+      { label: "C", text: "Condensation" },
+      { label: "D", text: "Elimination" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0041",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The boiling point of water is higher than that of methanol because",
+    options: [
+      { label: "A", text: "Water is oxide while methanol is an alcohol" },
+      { label: "B", text: "Inter molecular forces in water are stronger than those in methanol" },
+      { label: "C", text: "Water is an inorganic compound while methanol is organic" },
+      { label: "D", text: "Water is an ionic compound while methanol is covalent" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0042",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "In the Rutherford scattering experiment, Rutherford bombarded a thin piece of gold foil with a beam of",
+    options: [
+      { label: "A", text: "Electrons" },
+      { label: "B", text: "Neutrons" },
+      { label: "C", text: "Protons" },
+      { label: "D", text: "Alpha particles" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0043",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "When azimuthal quantum number (l = 2), what set of orbitals is designated?",
+    options: [
+      { label: "A", text: "P" },
+      { label: "B", text: "D" },
+      { label: "C", text: "F" },
+      { label: "D", text: "G" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0044",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Sodium hydroxide is an Arrhenius base because it contains 12",
+    options: [
+      { label: "A", text: "𝑁𝑎+" },
+      { label: "B", text: "𝑂𝐻−" },
+      { label: "C", text: "𝑁𝑎𝑂𝐻" },
+      { label: "D", text: "𝑁𝑎" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0045",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The standard state of an element or compound is determined at a pressure of________ and a temperature of _______",
+    options: [
+      { label: "A", text: "760𝑚𝑚𝐻𝑔, 0℃" },
+      { label: "B", text: "1 𝑎𝑡𝑚, 273℃" },
+      { label: "C", text: "760𝑚𝑚𝐻𝑔, 0𝐾" },
+      { label: "D", text: "1 𝑎𝑡𝑚, 298𝐾" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0046",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Which of the following is a state function?",
+    options: [
+      { label: "A", text: "Enthalpy" },
+      { label: "B", text: "Work" },
+      { label: "C", text: "Heat" },
+      { label: "D", text: "Power" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0047",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The method that cannot be used for removing permanent hardness of water is",
+    options: [
+      { label: "A", text: "Adding sodium carbonate" },
+      { label: "B", text: "Boiling" },
+      { label: "C", text: "Adding caustic soda" },
+      { label: "D", text: "Adding slaked lime" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0048",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Identify 𝑃 In which of the following characteristics does hydrogen resemble halogens?",
+    options: [
+      { label: "A", text: "Hydrogen is the lightest" },
+      { label: "B", text: "Hydrogen forms ionic hydrides with alkali metals" },
+      { label: "C", text: "Hydrogen atom contains one electron each" },
+      { label: "D", text: "Hydrogen has three isotopes" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0049",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "Which alkali metal reacts directly with Nitrogen to form nitride? 13",
+    options: [
+      { label: "A", text: "Na" },
+      { label: "B", text: "K" },
+      { label: "C", text: "Rb" },
+      { label: "D", text: "Li" },
+    ],
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-obj-0050",
+    subject: "chemistry",
+    year: 2019,
+    category: "objective",
+    question: "The isomerism which exists between 𝐶𝐻3𝐶𝐻𝐶𝐼2 and 𝐶𝐻2𝐶𝐼. 𝐶𝐻2𝐶𝐼 is",
+    options: [
+      { label: "A", text: "Chain isomerism" },
+      { label: "B", text: "Functional group isomerism" },
+      { label: "C", text: "Positional isomerism" },
+      { label: "D", text: "metamerism" },
+    ],
+    difficulty: "medium"
+  },
+
+  // === 2019 THEORY ===
+  {
+    id: "che-2019-theory-001",
+    subject: "chemistry",
+    year: 2019,
+    category: "theory",
+    question: "Alevelschool.com.ng \n \n14 \n \nSECTION B: ESSAY QUESTIONS \nAnswer FOUR Questions in all; Not more than ONE Question from each course",
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-theory-002",
+    subject: "chemistry",
+    year: 2019,
+    category: "theory",
+    question: "CHM 001: GENERAL CHEMISTRY \n1.a \nExplain the following terms: \ni) Precision \nii) Accuracy  \n \n \n \n \n \n \n \n(4 𝑀𝑎𝑟𝑘𝑠) \n1.b \nThe concentration of Nickel in Nigerian coin was determined with visible \nspectrophotometer and the following results (%) were obtained: \n3.65, 4.11, 3.59, 7.51, 3.95, 3.87, 4.06, 1.48, 3.60, 3.76 𝑎𝑛𝑑 3.99. if the true \nconcentration (%) of nickel in coin as determined by atomic absorption and \ninductively coupled plasma atomic emission spectrophotometer was 3.92. \n \nUse the above data to determine \ni) Absolute error \nii) Percentage relative error \niii) Average error \n \n \n \n \n \n \n \n(6 𝑀𝑎𝑟𝑘𝑠) \n \n \n2.a \nWrite an equation for the synthesis of hydrogen gas by the reaction of methane \nwith steam.  \n \n \n \n \n \n \n \n(1 𝑀𝑎𝑟𝑘) \n2.b \nCompare the physical and chemical properties of the hydrides of; \n𝑁𝑎, 𝐶, 𝑁 𝑎𝑛𝑑 𝑆  \n \n \n \n \n \n \n(3 𝑀𝑎𝑟𝑘𝑠) \n2.c \nExplain using equation why rain falling in unpolluted air is acidic with a 𝑝𝐻 of \nabout 5.6.  \n \n \n \n \n \n \n \n(2 𝑀𝑎𝑟𝑘𝑠) \n2.d \nAcid rain has a 𝑝𝐻 value less than 5.6. Explain using equation how the burning of \ncoal can contribute to acid rain formation \n \n \n \n(2 𝑀𝑎𝑟𝑘𝑠) \n2.e \nWhat are the consequences of global warming on the environment? \n  \n \n \n \n \n \n \n \n \n \n(2 𝑀𝑎𝑟𝑘𝑠) \nAlevelschool.com.ng \n \n15",
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-theory-003",
+    subject: "chemistry",
+    year: 2019,
+    category: "theory",
+    question: "CHM 002: PHYSICAL CHEMISTRY \n3.a \nExplain the condition of chemical equilibrium using the hypothetical equilibrium \nequation 𝑎𝐴+  𝑏𝐵⇌ 𝑐𝐶 +  𝑑𝐷  \n \n \n \n \n(3 𝑀𝑎𝑟𝑘𝑠) \n3.b \nWrite the equilibrium constant, 𝐾𝐶 expressions for the following reactions \ni) 3𝐶2𝐻2(𝑔)  ⇌𝐶2𝐻6(𝑔)   \n \n \n \n \n \n(1 𝑀𝑎𝑟𝑘) \nii) 2𝑁𝑂𝐶𝑙 ⇌2𝑁𝑂 + 𝐶𝑙2  \n \n \n \n \n \n(1 𝑀𝑎𝑟𝑘) \niii) 𝑁2𝑂4(𝑔)  ⇌2𝑁𝑂2  \n \n \n \n \n \n \n(1 𝑀𝑎𝑟𝑘) \n3.c \nA mixture of 0.003 𝑚𝑜𝑙 𝑜𝑓 𝐻2 𝑎𝑛𝑑 0.002 𝑚𝑜𝑙𝑒 𝑜𝑓 𝐼2 were reacted to attain \nequilibrium in a 2 − 𝐿 container at 400℃. Analysis of the equilibrium mixtures \nshows that the concentration of 𝐻𝐼 𝑖𝑠 0.0022 𝑀. Calculate 𝐾𝐶 for the reaction at \n400℃.  \n \n \n \n \n \n \n \n \n(4 𝑚𝑎𝑟𝑘𝑠) \n \n \n4.a \nState three (3) major factors which affect the discharge of ions at the electrodes \nduring electrolysis. \n \n \n \n \n \n \n(2 𝑚𝑎𝑟𝑘𝑠) \n4.b \nExplain why a tin-plated iron container corrodes faster than a galvanized iron \ncontainer with reference to the electrochemical series. \n \n \n \n \n \n \n \n \n \n \n \n \n \n(2 𝑚𝑎𝑟𝑘𝑠) \n4.c \n5.28𝑔 of a trivalent metal is deposited when a current of 1.56𝐴 is passed through a \nsolution of its salt for 1 ℎ𝑜𝑢𝑟; calculate the relative atomic mass of the metal. \nHence identify the metal. (1𝐹 =  96500𝐶).  \n \n \n(2 𝑚𝑎𝑟𝑘𝑠) \n4.d \nState any three (3) common applications of electrolysis. \n \n \n \n \n \n \n \n \n \n \n \n \n \n(2 𝑚𝑎𝑟𝑘𝑠) \n \n \n \n \n \nAlevelschool.com.ng \n \n16",
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-theory-004",
+    subject: "chemistry",
+    year: 2019,
+    category: "theory",
+    question: "CHM 003: INORGANIC CHEMISTRY \n5.a \nName the strongest type of intermolecular force between hydrogen fluoride \nmolecules and draw a diagram to illustrate how two molecules of HF are attracted \nto each other. In your diagram show all lone pairs of electrons and any partial \ncharges. Explain the origin of these charges. Suggest why this strong \nintermolecular force is not present between HI molecules. \n(3 𝑚𝑎𝑟𝑘𝑠) \n5.b \nCrystals of sodium chloride and of diamond both have giant structures. Their \nmelting points are 1074𝐾 𝑎𝑛𝑑 3827𝐾, respectively. State the type of structure \npresent in each case and explain why the melting point of diamond is so high. \n  \n \n \n \n \n \n \n \n \n \n(3 𝑚𝑎𝑟𝑘𝑠) \n5.c \nWrite a Lewis structure and identify the octet-rule exception for \ni) 𝑆𝐶𝑙𝐹5 \nii) 𝐵𝐹𝐶𝑙2 \n \n \n \n \n \n \n \n \n(4 𝑚𝑎𝑟𝑘𝑠) \n \n6.a \nState Gay-Lussac’s law  \n \n \n \n \n \n(2  𝑚𝑎𝑟𝑘) \n6.b \nState Aufbau’s principle and hund’s rule of maximum multiplicity \n \n \n \n \n \n \n \n \n \n \n \n(2 𝑚𝑎𝑟𝑘𝑠) \n6.c \nWhat do you understand by a Bronsted acid? \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n(1 𝑚𝑎𝑟𝑘𝑠) \n6.d \nExplain briefly the term “Inert pair Effect”  \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n(2 𝑚𝑎𝑟𝑘𝑠) \n6.e \nCompare and contrast the following properties of the transition elements with that \nof S and P- block elements.  \ni) Colour  \nii) Atomic / ionic radius  \niii) Oxidation states  \n \n \n \n \n \n \n(3 𝑚𝑎𝑟𝑘𝑠) \n \nAlevelschool.com.ng \n \n17",
+    difficulty: "medium"
+  },
+  {
+    id: "che-2019-theory-005",
+    subject: "chemistry",
+    year: 2019,
+    category: "theory",
+    question: "CHM 004: ORGANIC CHEMISTRY \n7.a \nCrude oil is the principal source of hydrocarbons. The following are examples of \nsuch hydrocarbons. \n𝐻−\n𝐻\n|\n𝐶\n|\n𝐻\n−\n𝐻\n|\n𝐶\n|\n𝐻\n−𝐻 \nethane \n \n𝐻\n|\n𝐶\n|\n𝐻\n=\n𝐻\n|\n𝐶\n|\n𝐶𝐻3\n \npropane \n \n \ncyclohexane \n \nGive the structural formulae of the organic products in the following reactions. \ni) The reaction of ethane with bromine in the presence of U.V. light. \n \n \n \n \n \n \n \n \n \n \n \n(1 𝑚𝑎𝑟𝑘) \nii) The reaction of HBr with butene. \n \n \n \n \n(1 𝑚𝑎𝑟𝑘) \niii) The reaction of cyclohexene with hydrogen bromide. \n \n(1 𝑚𝑎𝑟𝑘) \n7.b \nWrite equations for the following reactions.  \ni) The complete combustion of propane  \n \n \n \n(1 𝑚𝑎𝑟𝑘)  \nii) The action of steam on propene in the presence of a catalyst. \n(1 𝑚𝑎𝑟𝑘) \niii) The reaction of cyclohexene with hydrogen in the presence of a catalyst. \n(1 𝑚𝑎𝑟𝑘)",
+    difficulty: "medium"
+  },
+{
       id:"che-2020-q0001",
       subject:"chemistry",
       year:2020,

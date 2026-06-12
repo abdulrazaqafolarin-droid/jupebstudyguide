@@ -1,0 +1,725 @@
+    // === 2014 CHEMISTRY ===
+    {
+      id: "che-2014-obj-0001",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The equilibrium constant Keq = 0.040 for the system PCl₅(g) → PCl₃(g) + Cl₂(g). Evaluate Kp for the reaction at 450°",
+      options: [
+        { label: "A", text: "0.40" },
+        { label: "B", text: "0.64" },
+        { label: "C", text: "2.4" },
+        { label: "D", text: "0.052" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0002",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What is the conjugate acid of OH⁻?",
+      options: [
+        { label: "A", text: "It does not have a conjugate acid" },
+        { label: "B", text: "H₂O" },
+        { label: "C", text: "H₃O⁺" },
+        { label: "D", text: "O²⁻" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0003",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Given Kb for ammonia, NH₃ is 1.8 x 10⁻⁵ and that of hydroxylamine, NH₂OH is 1.1 x 10⁻⁸, which of the following is true?",
+      options: [
+        { label: "A", text: "Ammonia is a stronger base" },
+        { label: "B", text: "Hydroxylamine is a stronger base" },
+        { label: "C", text: "Ammonia and Hydroxylamine have equal strength" },
+        { label: "D", text: "Their relative strengths cannot be determined" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0004",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The addition of a common ion to an equilibrium:",
+      options: [
+        { label: "A", text: "increase the degree of ionization of the substance" },
+        { label: "B", text: "Reduce the degree of ionization of the substance" },
+        { label: "C", text: "Make the solution a better buffer" },
+        { label: "D", text: "None of the above" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0005",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "List the following atoms in order of decreasing electronegativity: Cl, K, Cu",
+      options: [
+        { label: "A", text: "Cu > Cl > K" },
+        { label: "B", text: "K > Cu > Cl" },
+        { label: "C", text: "Cl > Cu > K" },
+        { label: "D", text: "Cu > K > Cl" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0007",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "How many atoms of Cu are there in 34.5 g of Cu?\n[Cu = 63.5; NA = 6.0 x 10²³]",
+      options: [
+        { label: "A", text: "3.4 x 10²³ atoms" },
+        { label: "B", text: "6.0 x 10²³ atoms" },
+        { label: "C", text: "12.04 x 10²³ atoms" },
+        { label: "D", text: "3.4 x 10²⁴ atoms" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0008",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which of the following statements is correct for an electron that has the quantum numbers n = 4 and ml = -2?",
+      options: [
+        { label: "A", text: "The electron may be in a p-orbital" },
+        { label: "B", text: "The electron may be in a d-orbital" },
+        { label: "C", text: "The electron must have a spin quantum number, ms = +½" },
+        { label: "D", text: "The electron is in second principal shell" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0009",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The e.m.f. of a simple cell is 1.5 V under standard conditions. The following standard electrode potentials are given. (The letters are not the usual symbols of the elements concerned).\n\n| | |\n|--|--|\n| L⁺/L | -1.8 V |\n| M²⁺/M | +0.3 V |\n| W⁺/W | -0.3 V |\n| X²⁺/X | -0.3 V |",
+      options: [
+        { label: "A", text: "L and M" },
+        { label: "B", text: "L and X" },
+        { label: "C", text: "M and W" },
+        { label: "D", text: "M and X" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0010",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What were the two electrodes of the cell?\nA current of 8 A was passed for 100 minutes through molten aluminium oxide using inert electrodes. What would be the approximate volume of gas liberated, measured at s.t.p.?",
+      options: [
+        { label: "A", text: "5.6 dm³" },
+        { label: "B", text: "2.8 dm³" },
+        { label: "C", text: "8.4 dm³" },
+        { label: "D", text: "11.2 dm³" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0011",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which theory postulated that the electrons in an atom revolve about the nucleus in a circular orbit?",
+      options: [
+        { label: "A", text: "Rutherford's theory" },
+        { label: "B", text: "Bohr's theory" },
+        { label: "C", text: "Dalton's theory" },
+        { label: "D", text: "Thompson's theory" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0012",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The rate of formation of O₃(g) is 2.0 x 10⁷ mol L⁻¹s⁻¹. What is the rate of disappearance of O₂(g) in mol L⁻¹s⁻¹ for the reaction 3O₂(g) →",
+      options: [
+        { label: "A", text: "2.0 x 10⁷" },
+        { label: "B", text: "2.0 x 10⁷" },
+        { label: "C", text: "3.0 x 10⁻⁷" },
+        { label: "D", text: "4.5 x 10⁻⁷" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0013",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The following data were obtained for a reaction at constant concentration while temperature is changed.\nRate constant (moldm⁻³s⁻¹): 1.5\nTemp: 20°C 30°C\nThe activation energy for the reaction in kJmol⁻¹ is",
+      options: [
+        { label: "A", text: "1.3 x 10⁻⁷" },
+        { label: "B", text: "2.0 x 10⁻⁷" },
+        { label: "C", text: "3.0 x 10⁻⁷" },
+        { label: "D", text: "(2.4)" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0014",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "A radioactive element has an initial count rate of 1200 cpm measured by a scalar and falls to 150 cpm after 15 hours. Calculate the half-life of the radioactive element.",
+      options: [
+        { label: "A", text: "5 Hrs" },
+        { label: "B", text: "10 Hrs" },
+        { label: "C", text: "2Hrs" },
+        { label: "D", text: "7 Hrs" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0015",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Calculate the molar mass of a solution given that 35.0 g of the solute in 1.00 dm³ has an osmotic pressure of 5.15 x 10⁵ Nm⁻² at 20°",
+      options: [
+        { label: "A", text: "0.211 g/mol" },
+        { label: "B", text: "11.3 g/mol" },
+        { label: "C", text: "16.6 g/mol" },
+        { label: "D", text: "166 g/mol" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0016",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "At a constant temperature, which of the following molecules has an average velocity closest to that of ethylene, C₂H₄, at the same temperature?",
+      options: [
+        { label: "A", text: "N₂" },
+        { label: "B", text: "CO₂" },
+        { label: "C", text: "NO₂" },
+        { label: "D", text: "O₂" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0017",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "A mixture of the gases neon and krypton are in a 2.0 L container. The partial pressure of the neon is 0.40 atm and the partial pressure of the krypton is 1.20 atm. What is the mole fraction of neon?",
+      options: [
+        { label: "A", text: "0.20" },
+        { label: "B", text: "0.25" },
+        { label: "C", text: "0.60" },
+        { label: "D", text: "0.80" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0018",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What type of intermolecular forces holds liquid N₂ together?",
+      options: [
+        { label: "A", text: "Covalent bonding" },
+        { label: "B", text: "London forces" },
+        { label: "C", text: "hydrogen bonding" },
+        { label: "D", text: "Dipole-dipole interaction" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0019",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The neutral atom of BrF₅ has ……… bond pairs of electrons and ………… non-bonding pairs of electrons.\n\n| | Bonding | Nonbonding |\n|--|---------|------------|\n|",
+      options: [
+        { label: "A", text: "| 1 | 5 |\n|" },
+        { label: "B", text: "| 0 | 5 |\n|" },
+        { label: "C", text: "| 5 | 1 |\n|" },
+        { label: "D", text: "| 5 | 0 |" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0020",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What are assumptions of kinetic theory of gases and hence, of the ideal gas equation, PV = nRT?\nI. Molecules move without interacting with one another except for collisions.\nII. Intermolecular forces are negligible\nIII. Intermolecular distances are much greater than the molecular size.",
+      options: [
+        { label: "A", text: "I, II and III are correct" },
+        { label: "B", text: "I and II only are correct" },
+        { label: "C", text: "II and III only are correct" },
+        { label: "D", text: "I only is correct" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0021",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "A student borrowed a friend's chemistry notes and copied out the notes. From the Chemistry note, which of the following statements is/are correct? A gas behaves less like an ideal gas when the gas\nI. is at low pressure II. is at low temperature III. can be easily liquefied",
+      options: [
+        { label: "A", text: "I, II and III" },
+        { label: "B", text: "I and II only" },
+        { label: "C", text: "II and III only" },
+        { label: "D", text: "I only" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0022",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Beryllium shows a diagonal relationship with",
+      options: [
+        { label: "A", text: "Magnesium" },
+        { label: "B", text: "Boron" },
+        { label: "C", text: "Aluminium" },
+        { label: "D", text: "Sodium" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0023",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Metal carbonates decompose on heating to give metal oxides and carbon dioxide. Which of the following metal carbonates is most stable thermally?",
+      options: [
+        { label: "A", text: "MgCO₃" },
+        { label: "B", text: "CaCO₃" },
+        { label: "C", text: "SrCO₃" },
+        { label: "D", text: "BaCO₃" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0024",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "A substance which gives brick red flame and breaks down on heating to give oxygen and a brown gas is",
+      options: [
+        { label: "A", text: "Magnesium nitrate" },
+        { label: "B", text: "Calcium nitrate" },
+        { label: "C", text: "Barium nitrate" },
+        { label: "D", text: "Strontium nitrate" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0025",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which compound is expected to be diamagnetic?",
+      options: [
+        { label: "A", text: "ZnCl₂" },
+        { label: "B", text: "FeCl₃" },
+        { label: "C", text: "CuCl₂" },
+        { label: "D", text: "VCl₃" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0026",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What is the coordination number and oxidation state of the central atom in [PtCl₂(en)₂]?",
+      options: [
+        { label: "A", text: "2 and 0" },
+        { label: "B", text: "4 and 0" },
+        { label: "C", text: "3 and 0" },
+        { label: "D", text: "4 and +2" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0027",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The IUPAC name for [Co(NH₃)₆]²⁺ is",
+      options: [
+        { label: "A", text: "Hexaammine cobaltate (II) ion" },
+        { label: "B", text: "Hexaammonia cobaltate (II) ion" },
+        { label: "C", text: "Hexaammonia cobalte (II) ion" },
+        { label: "D", text: "Hexaammine cobalt (II) ion" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0028",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which of the following is not a greenhouse gas?",
+      options: [
+        { label: "A", text: "CFC" },
+        { label: "B", text: "SO₂" },
+        { label: "C", text: "H₂O" },
+        { label: "D", text: "CH₄" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0029",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Diamond is hard due to the",
+      options: [
+        { label: "A", text: "polymerization of the benzene type ring" },
+        { label: "B", text: "interlocking of strong covalent bonds" },
+        { label: "C", text: "delocalization of electrons" },
+        { label: "D", text: "free electrons" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0030",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The decreasing order of electron affinity for the halogens is",
+      options: [
+        { label: "A", text: "F < Cl < Br < I" },
+        { label: "B", text: "Cl > F > Br > I" },
+        { label: "C", text: "I > Br > Cl > F" },
+        { label: "D", text: "I > Br > Cl > I" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0031",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Polysaccharides are made up of",
+      options: [
+        { label: "A", text: "thousands of units of acids linked by glycosidic linkage" },
+        { label: "B", text: "thousands of units of amino acids linked by peptide bonds" },
+        { label: "C", text: "thousands of units of monosaccharide linked by glycosidic bonds" },
+        { label: "D", text: "thousands of units of glucose linked by glycosidic bonds" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0032",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Isomerization is the phenomenon of:",
+      options: [
+        { label: "A", text: "Existence of molecules with the same composition but different structures" },
+        { label: "B", text: "Molecules absorbing all lights" },
+        { label: "C", text: "Molecules with the same molecular mass" },
+        { label: "D", text: "Molecules differing in one segment constituted by one atom of carbon and two atoms of hydrogen" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0033",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Oils are:",
+      options: [
+        { label: "A", text: "esters of glycerol and unsaturated fatty acids" },
+        { label: "B", text: "esters of superior alcohols and saturated fatty acids" },
+        { label: "C", text: "esters of superior alcohols and unsaturated fatty acids" },
+        { label: "D", text: "esters of glycerol and saturated fatty acids" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0034",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What class of compound is produced in the following reaction?\nCH₃CHCH₂CH₃ (with OH group) + Na₂Cr₂O₇/H₂SO₄ →",
+      options: [
+        { label: "A", text: "Alcohols" },
+        { label: "B", text: "Carboxylic acids" },
+        { label: "C", text: "Aldehydes" },
+        { label: "D", text: "Ketones" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0035",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Alkynes react with water in the presence of a catalyst to give",
+      options: [
+        { label: "A", text: "a diol" },
+        { label: "B", text: "an alkane" },
+        { label: "C", text: "an enol" },
+        { label: "D", text: "an alkoxy alkane" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0037",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which of the following compounds will show a geometrical isomerism?",
+      options: [
+        { label: "A", text: "Pentanone bromide" },
+        { label: "B", text: "ethyl bromopropanone" },
+        { label: "C", text: "2-pentyne" },
+        { label: "D", text: "1-bromo pentan-3-one" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0038",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which of the following will likely give only one product when dehydrated?",
+      options: [
+        { label: "A", text: "1-butane" },
+        { label: "B", text: "2-butene" },
+        { label: "C", text: "2-pentyne" },
+        { label: "D", text: "1,2-dichloropropane" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0039",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which of the following reagents can be used to differentiate a terminal alkyne from a non-terminal alkyne?",
+      options: [
+        { label: "A", text: "H₂SO₄" },
+        { label: "B", text: "KMnO₄" },
+        { label: "C", text: "HBr" },
+        { label: "D", text: "CuCl" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0040",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What are the hybridization of C1, C2 and N in the following molecule (oxime structure shown)?\nC1: sp², C2: sp², N: sp²",
+      options: [
+        { label: "A", text: "sp², sp², sp²" },
+        { label: "B", text: "sp², sp³, sp²" },
+        { label: "C", text: "sp², sp², sp³" },
+        { label: "D", text: "sp³, sp², sp²" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0041",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "How many unpaired electrons are in Cu²⁺ ion?",
+      options: [
+        { label: "A", text: "3" },
+        { label: "B", text: "1" },
+        { label: "C", text: "2" },
+        { label: "D", text: "0" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0042",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Polarizing power of cation increases with",
+      options: [
+        { label: "A", text: "small charge" },
+        { label: "B", text: "small charge and large size" },
+        { label: "C", text: "high charge and large size" },
+        { label: "D", text: "large size" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0043",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The path of ion after deflection depends on",
+      options: [
+        { label: "A", text: "only the mass of the ion" },
+        { label: "B", text: "neither the charge nor the mass of the ion" },
+        { label: "C", text: "both the charge and the mass of the ion" },
+        { label: "D", text: "only the charge on the ion" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0044",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "A sample of a nitrogen containing gas is found to contain 2.34 g N and 5.34 g [N = 14; O = 16]. Determine the empirical formula of this substance",
+      options: [
+        { label: "A", text: "NO" },
+        { label: "B", text: "NO₂" },
+        { label: "C", text: "N₂O₄" },
+        { label: "D", text: "N₂O" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0045",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "What order process is radioactive decay?",
+      options: [
+        { label: "A", text: "zeroth" },
+        { label: "B", text: "first" },
+        { label: "C", text: "second" },
+        { label: "D", text: "third" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0046",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The activation energy for a reaction can be determined by measuring the reaction rate at different",
+      options: [
+        { label: "A", text: "temperatures" },
+        { label: "B", text: "catalyst concentrations" },
+        { label: "C", text: "reactant concentrations" },
+        { label: "D", text: "time of reaction" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0047",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Which law states that the rate of a chemical reaction is proportional to the product of the masses of the reacting substances, with each mass raised to a power equal to the coefficient that occurs in the chemical equation?",
+      options: [
+        { label: "A", text: "Law of mass action" },
+        { label: "B", text: "Law of active mass" },
+        { label: "C", text: "Law of reaction" },
+        { label: "D", text: "Law of kinetics" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0048",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "When 5 moles of electrons are passed through a molten aluminium salt, what is the maximum mass of aluminium formed at the cathode?",
+      options: [
+        { label: "A", text: "54 g" },
+        { label: "B", text: "16.2 g" },
+        { label: "C", text: "45 g" },
+        { label: "D", text: "27 g" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0049",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "The enthalpy changes for two reactions are given by the equations below:\n2Fe(s) + 3/2 O₂(g) → Fe₂O₃(s) ΔH = -822 kJmol⁻¹\n2Fe(s) + ½O₂(g) → CO(g); ΔH = -110 kJmol⁻¹\nWhat is the enthalpy change for the following reaction?\n3C(s) + Fe₂O₃(g) → 2Fe(s) + 3CO(g)",
+      options: [
+        { label: "A", text: "-71.2" },
+        { label: "B", text: "-492" },
+        { label: "C", text: "+492" },
+        { label: "D", text: "+712" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-obj-0050",
+      subject: "chemistry",
+      year: 2014,
+      category: "objective",
+      question: "Arrange the following carboxylic acids in increasing order of acidic strength. (Five benzoic acid derivative structures shown: benzoic acid, 2-methylbenzoic acid, 2,6-dinitrobenzoic acid, 2-nitrobenzoic acid, 4-nitrobenzoic acid)",
+      options: [
+        { label: "A", text: "i, ii, iii, iv, v" },
+        { label: "B", text: "ii, i, iii, iv, v" },
+        { label: "C", text: "iii, v, iv, i, ii" },
+        { label: "D", text: "ii, i, iv, iii, v\n\n---" },
+      ],
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-t0001",
+      subject: "chemistry",
+      year: 2014,
+      category: "theory",
+      question: "CHM 001: Answer One (1) Question from this course\\n\\n**1(a).** The following quantum number contributions are not allowed. Assuming the n and ml values are correct, change the values of l to create an allowed combination.\n(i). n = 3; l = 0; ml = -1\n(ii). n = 3; l = 3; ml = +1\n(iii). n = 7; l = 2; ml = +3\n(iv). n = 4; l = 1; ml = -2\n\n**(b).** Trimethylamine is a gas with a fishy, ammonia-like odour.\n(i). Write equation to show the dissociation of trimethylamine in water.\n(ii). Calculate the base protonation constant for an aqueous solution that is 0.25 M trimethylamine has a pH of 11.63.\n\n**(c).** When a solution of CaCl₂ is added to a solution of dicarboxylic acid, malonic acid, the salt, calcium malonate is precipitated as a white solid. The solid has the following composition by mass: Ca = 28.2%; C = 25.2%; H = 1.4%; O = 45.2%. Calculate the empirical formula of calcium malonate from this data.\n\n**2(a).** Briefly describe the following:\n(i). Absorption spectrum\n(ii). Emission spectrum\n\n**(b).** A buffered solution is made by dissolving 0.10 mole of acetic acid, CH₃COOH and 0.10 mole of sodium acetate, CH₃COONa in 1.00 L. Calculate the pH of this buffer. [pKa for acetic acid = 4.76]\n\n**(c).** What is an activity series and how does it relate to chemical reaction?\n\n---",
+      totalMarks: 10,
+      difficulty: "hard"
+    },
+    {
+      id: "che-2014-t0002",
+      subject: "chemistry",
+      year: 2014,
+      category: "theory",
+      question: "CHM 002: Answer One (1) Question from this course\\n\\n**3(ai).** Name a mineral from which aluminium may be extracted.\n(ii). Describe with the aid of a diagram, the electrolytic extraction of aluminium from purified aluminium oxide. State what the electrodes are made of.\n(iii). Give ionic equations for each of the electrode reaction.\n(iv). What further reaction takes place at the anode?\n(v). State two other industrial applications of electrolysis.\n\n**(b).** A first order reaction is monitored by measuring the concentration of the reactant as a function of time. The initial concentration was 0.2 moldm⁻³. Calculate:\n(i). the reaction rate constant.\n(ii). The rate of change of concentration of the reactant at 24 minutes.\n\n**4(ai).** A flask with a volume of 100 cm³ was first weighed with air filling the flask, and then with another gas, Y, filling the flask. The results, measured at 26°C and 1.00 x 10⁵ Pa are shown:\nMass of flask containing air = 47.930 g\nMass of flask containing Y = 47.982 g\nDensity of air = 0.00118 gcm⁻³\nCalculate the relative molecular mass of Y.\n\n(ii). Calculate the molar mass of a solute given that 85.0 g of the solute in 1.00 dm³ water has an osmotic pressure of 5.15 x 10⁵ Nm⁻² at 20°C.\n(b). Calculate the temperature of an ideal gas in a sealed container falls. State, with reason, what happens to the:\n(i). root mean speed of the gas molecules\n(ii). Pressure of the gas\n\n---",
+      totalMarks: 10,
+      difficulty: "hard"
+    },
+    {
+      id: "che-2014-t0003",
+      subject: "chemistry",
+      year: 2014,
+      category: "theory",
+      question: "CHM 003: Answer One (1) Question from this course\\n\\n**5(ai).** Describe the trend in the thermal stabilities of the carbonates of the Group II elements down the group.\n(ii). Give the equation for the thermal decomposition of magnesium carbonate.\n\n**(b).** The elements in Group II show a variety of trends in the reactivity.\n(i). Explain the trend in reactivity of magnesium, calcium and barium with water.\n(ii). Suggest the equation for the reaction of magnesium with steam.\n(c). Give four (4) structural differences between diamond and graphite.\n**6(a).** Define the term complex ion, ligand and coordination number.\n**(b).** Name the following complex ions:\n(i). [CuCl₄]²⁻ (ii). [Cu(NH₃)₄]²⁺ (iii). [CuCl₄]²⁻ (iv). K₄[Fe(CN)₆] (v). [Cr(H₂O)₆]³⁺\n**(c).** Name three greenhouse gases and mention a source each of the gases.\n\n---",
+      totalMarks: 10,
+      difficulty: "hard"
+    },
+    {
+      id: "che-2014-t0004",
+      subject: "chemistry",
+      year: 2014,
+      category: "theory",
+      question: "CHM 004: Answer One (1) Question from this course\\n\\n**7(a).** Hydrocarbon with molecular formula C₅H₁₀ may be branched chain, straight chain or cyclic.\n(i). Draw a displayed formula of C₅H₁₀ as a branched chain hydrocarbon.\n(ii). Pent-2-ene is a straight chain hydrocarbon with formula C₅H₁₀ and it exhibits cis-trans isomerism. Draw and name the structural formulae of the two cis-trans isomers of pent-2-ene.\n(iii). Draw the structural formulae of two alcohols which would each produced pent-2-ene on dehydration.\n(iv). One of these alcohols exhibits optical isomerism. Draw the structural formulae of the two isomers of this alcohol. Your structure should clearly indicate the three-dimensional nature of the structure.\n(v). Pent-2-ene can be polymerized. Draw the structure of the polymer chain produced showing two repeat units.\n(b). Proteins are formed by the polymerization of amino acids. State the type of chemical reaction used to form these polymer chains.\n(c). The amino acids serine and valine can combine together to form a dipeptide. (Structures of Serine and Valine shown.)\n\n**8(a).** Three organic compounds G, H and J, each have the empirical formula CH₂O. The number of carbon atoms in their molecules are shown in the Table.\n\n| Compound | Number of carbon atoms |\n|----------|----------------------|\n| G | 1 |\n| H | 2 |\n| J | 3 |\n\nIn H and in J, the carbon atoms are bonded directly to one another. G gives a silver mirror when treated with Tollen's reagent. H and J each gives a brisk effervescence with Na₂CO₃(aq).\n(ai). Identify G\n(ii). What functional group is common to both H and J?\n(iii). Identify H\n(iv). Identify J\n\n**(b).** When J is heated under reflux with acidified K₂Cr₂O₇, the product K gives a red orange precipitate with 2,4-dinitrophenyl hydrazine reagent.\n(i). Draw the structural formula of K, the compound formed from J.\nWhen J is warmed with concentrated sulphuric acid, a cyclic compound, L, is formed. L has the molecular formula C₆H₈O₄.\n(ii). Suggest a displayed formula for L.\n(iii). What type of reaction occurred when L is formed from J?\n\n**(c).** Ethanoic acid can also be formed in the laboratory by the oxidation of ethanol.\nCH₃CH₂OH + 2[O] → CH₃CO₂H + H₂O\n(i). What oxidizing agent is used for this laboratory reaction?\n(ii). What colour change would be observed?\n(iii). When ethanoic acid is prepared in this way in the laboratory, the reagents are heated under reflux for some time before the ethanoic acid is separated. Why is this reaction carried out by heating under reflux?\n\n---",
+      totalMarks: 10,
+      difficulty: "hard"
+    },
+    {
+      id: "che-2014-p0001",
+      subject: "chemistry",
+      year: 2014,
+      category: "practical",
+      question: "Quantitative Analysis\\n\\n**1.** Solution A1 contains 6.95 g of hydrated ammonium iron (II) sulphate, (NH₄)₂Fe(SO₄)₂.6H₂O per dm³ of the solution. Solution B is acidified potassium permanganate.\nDetermine the concentration of potassium permanganate per dm³ in B using the following procedure:\nPipette 10 cm³ of the solution A1 into a clean conical flask and add 10 cm³ of 2M H₂SO₄ solution using measuring cylinder.\nTitrate the resulting solution with the provided acidified potassium permanganate solution.\nRecord your results in an appropriate Table and answer the following questions.\n(ai). What is the concentration of (NH₄)₂Fe(SO₄)₂.6H₂O in mol/dm³.\n(ii). Outline three precautions taken in order to get accurate results in your titration.\n(iii). State the colour change at the end of the titration.\n(bi). Write the half equation for the oxidation of iron (II) ions to iron (III) ions.\n(ii). Write the half equation for the reduction of manganese (VII) ions to manganese (II) ions.\n(iii). Write the ionic equation for the reaction.\n(c). Calculate the concentration of acidified potassium permanganate solution in mol/dm³.\n(d). Two students determine the percentage water of crystallization of a hydrated salt using four different titrations each. The accepted value of the percentage water of crystallization for the salt is 23.55% and the students' results in % are:\nStudent A: 25.31, 25.37, 25.35 and 25.33\nStudent B: 23.50, 24.04, 22.96 and 23.70\nCalculate the standard deviation for the two set of results and comment on their precision and accuracy.",
+      difficulty: "medium"
+    },
+    {
+      id: "che-2014-p0002",
+      subject: "chemistry",
+      year: 2014,
+      category: "practical",
+      question: "Qualitative Analysis\\n\\n**2.** You are provided with an organic sample Y. Carryout the following tests, record your observations and inferences clearly in a tabular form.\n(a). Record the physical appearance of Y.\n(b). Using a clean spatula, heat small quantity of Y in a Bunsen burner flame.\n(c). To a little amount of Y, add a drop of dilute H₂SO₄ and add % KMnO₄ dropwise and shake thoroughly.\n(d). Test the solubility of Y in cold and hot water.\n(e). Test the solution obtained in (2d) above with blue and red litmus paper.\n(f). To a small quantity of sample, add drop wise ceric ammonium nitrate.\n(g). To a small amount of Y, add saturated solution of NaHCO₃ drop by drop.\n(h). To a small quantity of the sample, add 2-3 drops of FeCl₃ solution, warm the test tube.\n(i). Mix dilute NaOH with aqueous AgNO₃ solution follow by few amounts of NH₄OH solution. Then, add few drops of sample Y.",
+      difficulty: "medium"
+    },

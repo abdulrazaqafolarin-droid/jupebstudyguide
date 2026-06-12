@@ -1,0 +1,822 @@
+    {
+      id:"che-2018-q0001",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The electronic configuration for Cu is",
+      options:[
+            {label:"A", text:"1s 22s 22p 63s 23p 6"},
+            {label:"B", text:"1s 22s 22p 63s 23p 64s 23d 9"},
+            {label:"C", text:"1s 22s 22p 63s 23p 64s 13d 10"},
+            {label:"D", text:"1s 22s 23s 22p 64s 22p 6"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0002",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"What is the value of angular momentum quantum of a 3d orbital?",
+      options:[
+            {label:"A", text:"3"},
+            {label:"B", text:"0"},
+            {label:"C", text:"1"},
+            {label:"D", text:"2"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0003",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The energy needed to remove an electron in the outermost shell of a gaseous atom is called?",
+      options:[
+            {label:"A", text:"Ionization energy"},
+            {label:"B", text:"Electron affinity"},
+            {label:"C", text:"Electrode potential"},
+            {label:"D", text:"Photoelectronic energy"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0004",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following atomic properties generally increases down a group in the periodic table of elements?",
+      options:[
+            {label:"A", text:"Electronegativity"},
+            {label:"B", text:"Atomic radius"},
+            {label:"C", text:"Electron affinity"},
+            {label:"D", text:"Ionization energy"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0005",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Substances that are electron pair acceptors are called",
+      options:[
+            {label:"A", text:"Arrhenius bases"},
+            {label:"B", text:"Lewis acids"},
+            {label:"C", text:"Bronsted Lowry acids"},
+            {label:"D", text:"Lewis bases"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0006",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"All the A shampoo solution at 25degC has a hydroxide-ion concentration of 1.5 x 10-9moldm-3 . The solution is",
+      options:[
+            {label:"A", text:"Acidic"},
+            {label:"B", text:"Neutral"},
+            {label:"C", text:"Basic"},
+            {label:"D", text:"Amphiprotic"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0007",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"In a measurement, significant figures include",
+      options:[
+            {label:"A", text:"All digits except zero that are measured"},
+            {label:"B", text:"All digits except zero that are not measured"},
+            {label:"C", text:"All zeros at the beginning of a number"},
+            {label:"D", text:"All digits in a number"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0008",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The degeneracy of orbitals with angular momentum quantum number i = 2 is",
+      options:[
+            {label:"A", text:"2"},
+            {label:"B", text:"3"},
+            {label:"C", text:"5"},
+            {label:"D", text:"1"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0009",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"What is the principle that allows the use of mass spectrometry in determination of the molecular weight of a compound?",
+      options:[
+            {label:"A", text:"Higher molecular weight compounds are less volatile"},
+            {label:"B", text:"Higher molecular weight compounds are denser"},
+            {label:"C", text:"A beam of higher molecular weight cations is deflected less by magnetic field"},
+            {label:"D", text:"Ions with higher molecular weight absorb higher frequencies of light"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0010",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"State What is the oxidation state of oxygen in OF2?",
+      options:[
+            {label:"A", text:"+2"},
+            {label:"B", text:"-2"},
+            {label:"C", text:"-1"},
+            {label:"D", text:"+1"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0011",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following is not true about ionization energy?",
+      options:[
+            {label:"A", text:"Ionization energy increases across a period"},
+            {label:"B", text:"Reversal in trend of ionization occurs in passing from beryllium to baron"},
+            {label:"C", text:"Half-filled subshell makes ionization energy of oxygen lower than that of nitrogen"},
+            {label:"D", text:"Ionization energy does not depend on nuclear charge"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0012",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"In terms of Lewis concept, an acid and a base are a/an:",
+      options:[
+            {label:"A", text:"Proton donor and proton acceptor respectively"},
+            {label:"B", text:"Electron donor and electron acceptor respectively"},
+            {label:"C", text:"Proton acceptor and proton donor respectively"},
+            {label:"D", text:"Electron acceptor and electron donor respectively"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0013",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following will affect the equilibrium position of the reaction? I2(g) + H2(g) <-> 2HI(g)",
+      options:[
+            {label:"A", text:"Addition of a catalyst"},
+            {label:"B", text:"Increase in pressure"},
+            {label:"C", text:"Decrease in pressure"},
+            {label:"D", text:"Addition of HI"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0014",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following ions has the smallest size?",
+      options:[
+            {label:"A", text:"O 2+"},
+            {label:"B", text:"Na+"},
+            {label:"C", text:"Mg2+"},
+            {label:"D", text:"F -"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0015",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"A sodium pellet is dropped into warm water and 500cm3 of hydrogen gas is liberated. What mass of sodium is involved in the reaction? [Na = 23; Vm = 22400cm3 ]",
+      options:[
+            {label:"A", text:"1.03g"},
+            {label:"B", text:"0.51g"},
+            {label:"C", text:"2.30g"},
+            {label:"D", text:"0.98g"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0016",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Calculate the percentage by mass of water of crystallization in MgSO4 . 7H2O [Mg = 24, S = 32,O = 16, H = 1]",
+      options:[
+            {label:"A", text:"51.2%"},
+            {label:"B", text:"56.7%"},
+            {label:"C", text:"50.12%"},
+            {label:"D", text:"52.55%"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0017",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"What volume of 5 moldm-3 tetraoxosulp ate (VI) acid is required to prepare 300cm3 0f 0.5moldm-3 solutions?",
+      options:[
+            {label:"A", text:"30cm3"},
+            {label:"B", text:"50cm3"},
+            {label:"C", text:"3cm3"},
+            {label:"D", text:"30cm3"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0018",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"An iron complex with molecular formula C34H32FeN4O4 , constitutes 6% of haemoglobin by mass. If a blood sample contains 0.75g haemoglobin, what mass of Fe is contributed by the complex? [O = 12, H = 1, Fe = 56, N = 14,O = 16]",
+      options:[
+            {label:"A", text:"0.0041g"},
+            {label:"B", text:"0.0450g"},
+            {label:"C", text:"0.06000g"},
+            {label:"D", text:"0.0056g"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0019",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The temperature above which the liquid states of a substance no longer exist is called",
+      options:[
+            {label:"A", text:"Supercritical temperature"},
+            {label:"B", text:"Critical pressure"},
+            {label:"C", text:"Critical temperature"},
+            {label:"D", text:"Critical point"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0020",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"According to the collision theory and kinetic theory, increase in temperature does the following except",
+      options:[
+            {label:"A", text:"Increases the frequency of collision"},
+            {label:"B", text:"Increases the number of particles with energy greater than the activation energy"},
+            {label:"C", text:"Increases the activation energy"},
+            {label:"D", text:"Increases the kinetic energy of the molecules"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0021",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The part of the universe that is of immediate interest in a reaction is termed",
+      options:[
+            {label:"A", text:"Universe"},
+            {label:"B", text:"Surrounding"},
+            {label:"C", text:"System"},
+            {label:"D", text:"Environment"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0022",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"An example of a natural radioactivity is",
+      options:[
+            {label:"A", text:"14 7N + 2 4He -> 17 8O + 1 1H"},
+            {label:"B", text:"214 83Bi -> 214 84Po + -1 0 e"},
+            {label:"C", text:"238 92U + 2 4He -> 17 8O + 1 1H"},
+            {label:"D", text:"12 6C -> 12 7N + -1 1 e"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0023",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The general gas equation can be used to calculate the molar mass, Mr value of a gas. For a sample of a gas of mass mg, which expression will give the value of Mr?",
+      options:[
+            {label:"A", text:"Mr = PVRT m"},
+            {label:"B", text:"Mr = mPV RT"},
+            {label:"C", text:"Mr = mRT PV"},
+            {label:"D", text:"Mr = PV mRT"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0024",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of these bonds does not exist within a molecule of ammonium chloride?",
+      options:[
+            {label:"A", text:"Ionic"},
+            {label:"B", text:"Covalent"},
+            {label:"C", text:"Dative covalent"},
+            {label:"D", text:"Van der waals"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0025",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The dissolution of a non-volatile solute in a volatile solvent",
+      options:[
+            {label:"A", text:"Increases its boiling point"},
+            {label:"B", text:"Decreases its boiling point"},
+            {label:"C", text:"Has no effect"},
+            {label:"D", text:"Increases the vapour pressure"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0026",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Gaseous deviate from Charles' law at",
+      options:[
+            {label:"A", text:"High temperature"},
+            {label:"B", text:"Low pressure"},
+            {label:"C", text:"Low temperature"},
+            {label:"D", text:"Moderate pressure"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0027",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The average distance of the orbital from the nucleus of an atom orbital is determined by the",
+      options:[
+            {label:"A", text:"Spin quantum number"},
+            {label:"B", text:"Principal quantum number"},
+            {label:"C", text:"Magnetic quantum"},
+            {label:"D", text:"Orbital subshell"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0028",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"What is the standard cell potential for the overall reaction of the cell below? Cu(s)/Cu2+ (1M)//Ag+ (1M)/Ag(s) [Eredox 0 Cu2+ (aq)/Cu(s) = 0.3402V and E 0Ag+(aq)/Ag(s) = 0.7996V]",
+      options:[
+            {label:"A", text:"0.229V"},
+            {label:"B", text:"1.2590V"},
+            {label:"C", text:"0.4594V"},
+            {label:"D", text:"1.1398V"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0029",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The element that gives no colour in flame is",
+      options:[
+            {label:"A", text:"Be"},
+            {label:"B", text:"Ca"},
+            {label:"C", text:"Na"},
+            {label:"D", text:"Li"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0030",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"All group I metals react with water to form",
+      options:[
+            {label:"A", text:"Hydrogen gas only"},
+            {label:"B", text:"Neutral solutions"},
+            {label:"C", text:"Acidic solution with liberation of hydrogen"},
+            {label:"D", text:"Strong caustic solution with liberation of hydrogen"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0031",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The effect of acid rain includes the following except",
+      options:[
+            {label:"A", text:"Death of aquatic animals"},
+            {label:"B", text:"Damage of buildings and status"},
+            {label:"C", text:"Corrosion of iron"},
+            {label:"D", text:"Depletion of ozone layer"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0032",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following is not a greenhouse gas?",
+      options:[
+            {label:"A", text:"CFCS"},
+            {label:"B", text:"SO2"},
+            {label:"C", text:"H2O"},
+            {label:"D", text:"CH4"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0033",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following is the correct increasing order of conductivity in aqueous solution?",
+      options:[
+            {label:"A", text:"Li+, Na+, K +, Cs+,Rb+"},
+            {label:"B", text:"Rb+, Na+, K +, Cs+, Li+"},
+            {label:"C", text:"Li+, Na+, K +,Rb+, Cs+"},
+            {label:"D", text:"Na+, K +, Cs+, Li+, Rb+"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0034",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The alkaline earth metals become more reactive as we",
+      options:[
+            {label:"A", text:"Ascend the group"},
+            {label:"B", text:"Descend the group"},
+            {label:"C", text:"Introduce other group elements"},
+            {label:"D", text:"Introduce an external force"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0035",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Chromium has the following isotopic masses and fractional abundances Mass Number Isotopic Mass (amu) Fractional Abundance 50 49.9461 0.0435 52 51.9405 0.8379 53 52.9407 0.0950 54 53.9389 0.0236 What is the atomic mass of chromium?",
+      options:[
+            {label:"A", text:"55.49 amu"},
+            {label:"B", text:"50.49 amu"},
+            {label:"C", text:"51.99 amu"},
+            {label:"D", text:"51.00 amu"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0036",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"What is the name given to this complex ion [Co(SO4)(NH3)5 ] +?",
+      options:[
+            {label:"A", text:"Pentaaminesulphatocobalt(I)ion"},
+            {label:"B", text:"Pentaaminesulphatocobaltate(II)ion"},
+            {label:"C", text:"Pentaaminesulphatocobalt(III)ion"},
+            {label:"D", text:"Pentaaminesulphatocobalt(IV)ion"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0037",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following will form pale yellow precipitate slightly soluble in aqueous ammonia upon treatment with trioxonitrate (V) acid followed by silver nitrate",
+      options:[
+            {label:"A", text:"NAHCO3"},
+            {label:"B", text:"NaCI"},
+            {label:"C", text:"NaBr"},
+            {label:"D", text:"Nal"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0038",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the statement below is not a property of halogen?",
+      options:[
+            {label:"A", text:"They all exhibit valency of +1"},
+            {label:"B", text:"They belong to the P - Block of the periodic table"},
+            {label:"C", text:"They are non-metals"},
+            {label:"D", text:"They are all oxidizing agents"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0039",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"An element which can be detected using Lassaigne's test is",
+      options:[
+            {label:"A", text:"Sodium"},
+            {label:"B", text:"Sulphur"},
+            {label:"C", text:"Potassium"},
+            {label:"D", text:"Magnesium"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0040",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"If the molecule A-B breaks homolytically, then",
+      options:[
+            {label:"A", text:"A becomes negatively charged"},
+            {label:"B", text:"A becomes positively charged"},
+            {label:"C", text:"Electrons are shared evenly"},
+            {label:"D", text:"Both electrons move to B because B is more electronegative"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0041",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Lucas reagent is used to distinguish between",
+      options:[
+            {label:"A", text:"Saturated and unsaturated hydrocarbons"},
+            {label:"B", text:"Primary and secondary amines"},
+            {label:"C", text:"Alkanals and alkanones"},
+            {label:"D", text:"The three classes of alkanols"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0042",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The IUPAC name of the compound CH = C - CH2 - CH2 - COOH is",
+      options:[
+            {label:"A", text:"1 - pentyne - 4 - oic acid"},
+            {label:"B", text:"Pentyne - 1 - oic acid"},
+            {label:"C", text:"5 - pentyn - 1 - oic acid"},
+            {label:"D", text:"Pent - 4 - yne - 1 - oic acid"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0043",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following compounds will show geometrical isomerism?",
+      options:[
+            {label:"A", text:"1 - butane"},
+            {label:"B", text:"2 - butene"},
+            {label:"C", text:"2 - pentyne"},
+            {label:"D", text:"1, 2 - dic loropropane"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0044",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The number of pi electrons in butyne is",
+      options:[
+            {label:"A", text:"6"},
+            {label:"B", text:"2"},
+            {label:"C", text:"4"},
+            {label:"D", text:"8"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0045",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The change in hybridization of carbon when two moles of hydrogen gas is passed over ethyne in the presence of platinum is",
+      options:[
+            {label:"A", text:"Sp 2 to Sp 3"},
+            {label:"B", text:"Sp to Sp 3"},
+            {label:"C", text:"Sp 3 to Sp"},
+            {label:"D", text:"Sp to Sp 2"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0046",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"2.40g of ethanol was reacted with an excess of aqueous acidified potassium dic romate (VI). The yield of the desired organic product was 70.0%. What mass of the desired product was collected? [C = 12,O = 16, H = 1]",
+      options:[
+            {label:"A", text:"1.60g"},
+            {label:"B", text:"4.10g"},
+            {label:"C", text:"2.29g"},
+            {label:"D", text:"3.29g"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0047",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"In the reaction between propene and hydrogen chloride, the electrophile that initiates the reaction is",
+      options:[
+            {label:"A", text:"The pi electrons of C = C bond in propane"},
+            {label:"B", text:"The partially positive hydrogen atom from HCI"},
+            {label:"C", text:"The partially negative chlorine atom from HCI"},
+            {label:"D", text:"The fully positive hydrogen from HCI"},
+          ],
+      correctAnswer:"B",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0048",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Iodo exane and 2 - iodooctane are related as",
+      options:[
+            {label:"A", text:"Functional isomers"},
+            {label:"B", text:"Positional isomers"},
+            {label:"C", text:"Chain isomers"},
+            {label:"D", text:"Homologues"},
+          ],
+      correctAnswer:"D",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0049",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"Which of the following has the shortest carbon-carbon bond length?",
+      options:[
+            {label:"A", text:"Propene"},
+            {label:"B", text:"Propane"},
+            {label:"C", text:"Propyne"},
+            {label:"D", text:"Ethane"},
+          ],
+      correctAnswer:"C",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-q0050",
+      subject:"chemistry",
+      year:2018,
+      category:"objective",
+      question:"The properties of organic molecules are related to Carbon to Carbon bond properties such as: (I) Bond Length (II) Bond dissociation energy (III) Bond rotation Which of these properties reveal the fact that a pi - bond is weaker than a   - bond?",
+      options:[
+            {label:"A", text:"(II) Only"},
+            {label:"B", text:"(III) Only"},
+            {label:"C", text:"(I) Only"},
+            {label:"D", text:"(I) and (III)"},
+          ],
+      correctAnswer:"A",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0001",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 001",
+      question:"1.a What are acid-base indicators? (1 mark)\n1.b A 550mg tablet containing vitamin C, C6H8O6\n, was dissolved in water and \nreacted with bromine (C6H8O6\n, + Br2 -> C6H6O6 + 2HBr). The resulting \nsolution was titrated with 40cm3 of 0.145M NaOH\n(HBr + NaOH -> NaBr + H2O)\n[C = 12, Na = 23,O = 16, H = 1, Br = 79]\ni) Calculate the percentage of vitamin C in the tablet. Calculate the percentage of \nCarbon in the Vitamin C content of the tablet.\n(6 marks)\n1.c The equilibrium-constant expression for a reaction is \nKC =\n[NO2] [O2]\n[N2O5\n]\n2\ni) Write the balanced chemical equation corresponding to this expression.\nii) What is the equilibrium constant expression when the concentrations are halved?\niii) Write the equilibrium constant expression for c (ii) above when the equation is \nreversed\n(3 marks)\n2.a\ni) Define an acid and a base in terms of Browsted-Lowry concept\n(2 marks)\nii) Calculate the pH of a buffer solution containing\n0.623moldm-3  exanoic acid and 0.812moldm-3\nsodium  exanoate.\n[Ka  exanoic acid = 1.32 x 10 - 5]. (2 marks)",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0002",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 001",
+      question:"2.a\ni) Define an acid and a base in terms of Browsted-Lowry concept\n(2 marks)\nii) Calculate the pH of a buffer solution containing\n0.623moldm-3  exanoic acid and 0.812moldm-3\nsodium  exanoate.\n[Ka  exanoic acid = 1.32 x 10 - 5]. (2 marks)\n2.b Classify the reactants in each of the following reactions as acid or base and \nidentify the acid-base conjugate pairs:\ni) NH4\n+ + H2O <-> NH3 + H2O\n+ (2 marks)\nii) OH- + CH3NH2 <-> CH3NH3\n+ + O\n2- (2 marks)\n2.c Using relevant reactions equations, explain why\ni) Water is amphiprotic (1 mark)\nii) Methanol is a Bronsted-Lowry acid (1 mark)\nCHM 002: PHYSICAL CHEMISTRY",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0003",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 002",
+      question:"3.a Using the following data\nFe(\n3\naq\n+\n) + e\n- <-> Fe(\n2\naq\n+\n)\n; E\n0 = +0.77V\nMnO4(aq) + 8H(\n+\naq) + 5e\n- <-> Mn(\n2\naq\n+\n) + 4H2O(l)\n; E\n0 = +1.52V\nI2(aq) + 2e\n- <-> 2l(\n-\naq)\n; E\n0 = +0.54V\nCr2O7\n2\n(\n-\naq) + 14H(\n+\naq) + 6e\n- <-> 2Cr5+ + 7H2O(l)\n; E\n0 = +1.33V\nPredict the outcome of mixing aqueous solutions of\ni) Iron (II) sulphate with acidified potassium manganese (VII) (1 mark)\nii) Potassium iodide with acidified potassium dichromate (VI) (1 mark)\n3.b Write the half equations and the balanced equations for the reactions you predict \nabove. (2 marks)\n3.c Calculate the standard cell potential in each case (2 marks)\n3.d The reaction 1\n2\nN2 +\n3\n2\nH2 -> NH2 proceeded in a closed autoclave of volume\n5dm-3\nin 1 second, 0.01 mole of nitrogen reacted. Calculate the rate of\ni) Consumption of nitrogen (1 mark)\nii) Consumption of hydrogen (1 mark)\niii) Formation of ammonia (1 mark)\niv) The reaction (1 mark)",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0004",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 002",
+      question:"4.a State two differences between alpha ( ) and beta ( ) particles. \n(2 marks)\n4.b\ni) Define nuclear fusion \nii) Calculate the nuclear energy per mole for the following nuclear reaction:\nN7\n14 + 2\n4He <-> 17\n8O + 1\n1H\nGiven the following isotropic masses\nN7\n14 = 13.9992amu\nHe 2\n4 = 4.0026amu\nO8\n17 = 16.9991amu\nH1\n1 = 1.0078amu\n1amu = 1.66 x 10-27kg atom-1\nNA = 6.023 x 1023 atom mol-1\n4.c\ni) State Hess's Law\nii) For the reaction:\nC2H4(g) + 3O2(g) -> 2CO2(g) + 2H2O(g)\n Hrxn\n0 = -1323kJmol-1\nGiven t at S\n0\n[C2H4(g)\n] = 219.6 Jmol-1\n;\nS\n0\n[O2(g)] = 205 Jmol-1\nS\n0\n[CO2(g)] = 213.6 Jmol-1\nS\n0\n[H2O(g)] = 130.6 Jmol-1\n, Calculate the value of  Grxn\n0 at 250\n(3 marks)\nCHM 003: INORGANIC CHEMISTRY",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0005",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 003",
+      question:"5.a The elements in Group II show a variety of trends in their properties\ni) Explain the trend in reactivity of magnesium, calcium and barium with cold water.\n(2 marks)\nii) Write the equation for the reaction of magnesium with steam\n(1 mark)\n5.b Name an element among the period three elements which forms an amphoteric \noxide and write equations which illustrate this amphoteric property.\n(2 marks)\n5.c\ni) What is meant by the term ionization energy?\n(1 mark)\nii) Explain why the first ionization energy of nitrogen is greater than that of oxygen.\n(2 marks)\n5.d List four unique properties of carbon that makes it different from other members of \ngroup 14 elements. (2 marks)\n6.a\ni) What is a Complex ion? (1 mark)\nii) What is the name given to the molecules of ions bonded to a complex ion?\n(1 mark)\n6.b\ni) What is the co-ordination number of the metal in the following complexes\n[Cu(NH3\n)4\n(H2O)2\n]\n2+ and\n[Cu(H2NCH2CH2NH2\n)2\n]\n2+ (1 mark)\nii) Provide the IUPAC names for the following:\n(1) [Fe(H2O)2\n(en)2\n]\n +\n(2) [Ni(NH3\n)2Cl4\n]\n -\n(3) [Cr(NH3\n)3\n(H2O)3\n]Cl3\n(4) [Co(H2NCH2CH2NH2\n)3\n(SO4\n)3\n] (2 marks)\n6.c\ni) Briefly explain why beryllium tends to be different from the elements in group 2 of \nthe periodic table. Give two anomalous properties of beryllium\n(2 marks)\nii) Explain the trend of the thermal decomposition of the carbonates and nitrates of \nthe alkaline earth metals. (2 marks)\nCHM 004: ORGANIC CHEMISTRY\n7.a\ni) What is isomerism? (1 mark)\nii) Draw the structural formula of the isomeric alcohols with the molecular formula \nC4H10O and name them using the IUPAC system of naming. (4 marks)\niii) What are the products of oxidation of each of the isomers in 1a (ii)?\n(2 marks)",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0006",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 003",
+      question:"6.a\ni) What is a Complex ion? (1 mark)\nii) What is the name given to the molecules of ions bonded to a complex ion?\n(1 mark)\n6.b\ni) What is the co-ordination number of the metal in the following complexes\n[Cu(NH3\n)4\n(H2O)2\n]\n2+ and\n[Cu(H2NCH2CH2NH2\n)2\n]\n2+ (1 mark)\nii) Provide the IUPAC names for the following:\n(1) [Fe(H2O)2\n(en)2\n]\n +\n(2) [Ni(NH3\n)2Cl4\n]\n -\n(3) [Cr(NH3\n)3\n(H2O)3\n]Cl3\n(4) [Co(H2NCH2CH2NH2\n)3\n(SO4\n)3\n] (2 marks)\n6.c\ni) Briefly explain why beryllium tends to be different from the elements in group 2 of \nthe periodic table. Give two anomalous properties of beryllium\n(2 marks)\nii) Explain the trend of the thermal decomposition of the carbonates and nitrates of \nthe alkaline earth metals. (2 marks)\nCHM 004: ORGANIC CHEMISTRY\n7.a\ni) What is isomerism? (1 mark)\nii) Draw the structural formula of the isomeric alcohols with the molecular formula \nC4H10O and name them using the IUPAC system of naming. (4 marks)\niii) What are the products of oxidation of each of the isomers in 1a (ii)?\n(2 marks)",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0007",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 004",
+      question:"7.a\ni) What is isomerism? (1 mark)\nii) Draw the structural formula of the isomeric alcohols with the molecular formula \nC4H10O and name them using the IUPAC system of naming. (4 marks)\niii) What are the products of oxidation of each of the isomers in 1a (ii)?\n(2 marks)\n7.b Show the conversion of ethanoic acid into the following with suitable equation and \nreagents;\ni) Acid chloride (II) Acid anhydride (III) Ester (3 marks)\n8.a\ni) What is a Grignard reagent?\n(1 mark)\nii) Give an equation for the preparation of Grignard reagent. \n(1 mark)\niii) What is the product of the reaction?\nCH3CH2CHO + CH3CH2MgBr -> ? + ?\nGive the IUPAC name of the product\n(1 mark)",
+      difficulty:"medium"
+    },
+    {
+      id:"che-2018-t0008",
+      subject:"chemistry",
+      year:2018,
+      category:"theory",
+      course:"CHM 004",
+      question:"8.a\ni) What is a Grignard reagent?\n(1 mark)\nii) Give an equation for the preparation of Grignard reagent. \n(1 mark)\niii) What is the product of the reaction?\nCH3CH2CHO + CH3CH2MgBr -> ? + ?\nGive the IUPAC name of the product\n(1 mark)\n8.b Reactions of alcohols involve cleavage of the C - O bond or that of the O - H\nbond. Give one example each of such reactions\n(2 marks)\n8.c Why does benzene not undergo addition reaction as expected of unsaturated \nhydrocarbons? (1 mark)\n8.d State two (2) reasons why aldehydes are more reactive than ketones.\n(2 marks)\n8.e Name the monomers used in the synthesis of Nylon 6,6. (1 mark)",
+      difficulty:"medium"
+    },

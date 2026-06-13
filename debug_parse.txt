@@ -1,0 +1,10 @@
+Q6: options=0, text=All the A shampoo solution at 25°𝐶 has a hydroxide-ion conce
+
+Total: 49
+Q6: opts={}, i_after=28
+Q14: opts={'A': '𝑂 2+', 'B': '𝑁𝑎+', 'C': '𝑀𝑔2+', 'D': '𝐹 −'}, i_after=80
+Q22: opts len=4, i_after=150
+  A: 14 7𝑁 + 2 4𝐻𝑒 → 17 8𝑂 + 1 1𝐻
+  B: 214 83𝐵𝑖 → 214 84𝑃𝑜 + −1 0 𝑒
+  C: 238 92𝑈 + 2 4𝐻𝑒 → 17 8𝑂 + 1 1𝐻
+  D: 12 6𝐶 → 12 7𝑁 + −1 1 𝑒

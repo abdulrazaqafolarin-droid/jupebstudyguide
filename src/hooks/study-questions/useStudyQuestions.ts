@@ -1,35 +1,21 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import type { Subject } from "@/types/question";
-import type { StudyQuestion, StudyCategory, StudyBookmark, StudyProgressEntry } from "@/types/study-questions";
-import { getStudyQuestionsBySubject, getStudyQuestionsByYear } from "@/data/study-questions";
-import { isMergedReady } from "@/data/study-questions";
+import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
+import { getStudyQuestionsBySubject, subscribe } from "@/data/study-questions";
 
 export function useStudyQuestions() {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<StudyCategory>("objective");
-  const [cacheTick, setCacheTick] = useState(0);
-  const wasReadyRef = useRef(false);
+  const [tick, setTick] = useState(0);
 
-  useEffect(() => {
-    const check = () => {
-      const ready = isMergedReady();
-      if (ready && !wasReadyRef.current) {
-        wasReadyRef.current = true;
-        setCacheTick(t => t + 1);
-      } else if (!ready) {
-        wasReadyRef.current = false;
-      }
-      setTimeout(check, 200);
-    };
-    const id = setTimeout(check, 200);
-    return () => clearTimeout(id);
-  }, []);
+  useEffect(() => subscribe(() => setTick(t => t + 1)), []);
 
   const questions = useMemo(() => {
     if (!selectedSubject || !selectedYear) return [];
+    void tick;
     return getStudyQuestionsBySubject(selectedSubject, selectedYear, selectedCategory);
-  }, [selectedSubject, selectedYear, selectedCategory, cacheTick]);
+  }, [selectedSubject, selectedYear, selectedCategory, tick]);
 
   const selectSubject = useCallback((s: Subject) => setSelectedSubject(s), []);
   const selectYear = useCallback((y: number) => setSelectedYear(y), []);
@@ -42,7 +28,7 @@ export function useStudyQuestions() {
 
   return {
     selectedSubject, selectedYear, selectedCategory,
-    questions, cacheTick,
+    questions, tick,
     selectSubject, selectYear, selectCategory, reset,
   };
 }

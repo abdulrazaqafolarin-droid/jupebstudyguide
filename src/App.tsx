@@ -1,4 +1,5 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { initDataLayer } from "@/data/study-questions";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -284,28 +285,31 @@ function PageLoader() {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-      <PushNotificationsProvider>
-      <ChatUnreadProvider>
-        <ProfilePhotoViewerProvider>
-          <Toaster />
-          <Sonner />
-          <InstallPrompt />
-          <BrowserRouter>
-            <AnimatedRoutes />
-            <ErrorBoundary>
-            <FloatingAITutor />
-            </ErrorBoundary>
-          </BrowserRouter>
-        </ProfilePhotoViewerProvider>
-      </ChatUnreadProvider>
-      </PushNotificationsProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => { initDataLayer(); }, []);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+        <PushNotificationsProvider>
+        <ChatUnreadProvider>
+          <ProfilePhotoViewerProvider>
+            <Toaster />
+            <Sonner />
+            <InstallPrompt />
+            <BrowserRouter>
+              <AnimatedRoutes />
+              <ErrorBoundary>
+              <FloatingAITutor />
+              </ErrorBoundary>
+            </BrowserRouter>
+          </ProfilePhotoViewerProvider>
+        </ChatUnreadProvider>
+        </PushNotificationsProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

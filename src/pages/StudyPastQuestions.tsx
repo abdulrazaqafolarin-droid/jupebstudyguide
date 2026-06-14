@@ -19,7 +19,7 @@ import {
 import type { Subject } from "@/types/question";
 import type { StudyCategory, StudyQuestion } from "@/types/study-questions";
 import { STUDY_SUBJECT_INFO, STUDY_YEARS } from "@/types/study-questions";
-import { getStudyQuestionsBySubject, invalidateAndRefetch } from "@/data/study-questions";
+import { getStudyQuestionsBySubject, refreshData } from "@/data/study-questions";
 import { useStudyQuestions } from "@/hooks/study-questions/useStudyQuestions";
 import { useQuestionTimer } from "@/hooks/study-questions/useQuestionTimer";
 import { useBookmarks } from "@/hooks/study-questions/useBookmarks";
@@ -76,7 +76,7 @@ export default function StudyPastQuestions() {
     selectYear,
     selectCategory,
     reset,
-    cacheTick,
+    tick: cacheTick,
   } = useStudyQuestions();
   const timer = useQuestionTimer();
   const { bookmarks, toggle, isBookmarked } = useBookmarks();
@@ -121,7 +121,7 @@ export default function StudyPastQuestions() {
       delete next[updated.id];
       return next;
     });
-    invalidateAndRefetch();
+    refreshData();
   }, []);
 
   const handleQuestionDeleted = useCallback((id: string) => {
@@ -135,12 +135,12 @@ export default function StudyPastQuestions() {
       delete next[id];
       return next;
     });
-    invalidateAndRefetch();
+    refreshData();
   }, []);
 
   const handleQuestionAdded = useCallback((added: StudyQuestion) => {
     setAddedQuestions(prev => [...prev, added]);
-    invalidateAndRefetch();
+    refreshData();
   }, []);
   const subjectFilteredResults = useMemo(() =>
     searchResults.filter(q => searchSubjectFilter.includes(q.subject)),

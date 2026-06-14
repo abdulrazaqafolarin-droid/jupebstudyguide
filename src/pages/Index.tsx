@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import confetti from "canvas-confetti";
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
-import { getAllStudyQuestions, getAllStudyQuestionsForSubject, isMergedReady } from '@/data/study-questions';
+import { getAllStudyQuestions, getAllStudyQuestionsForSubject, subscribe } from '@/data/study-questions';
 import { toQuestions } from '@/lib/question-adapter';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
 import { SubjectCard } from '@/components/SubjectCard';
@@ -54,8 +54,7 @@ const Index = () => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [quizPlan, setQuizPlan] = useState<QuizPlan | null>(null);
   const [currentQuizQuestions, setCurrentQuizQuestions] = useState<Question[]>([]);
-  const [dataReady, setDataReady] = useState(false);
-  const wasDataReadyRef = useRef(false);
+  const [tick, setTick] = useState(0);
 
   const { getStats, updateProgress, progress } = useStudyProgress();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
@@ -80,23 +79,13 @@ const Index = () => {
     quizComplete: awardQuizComplete,
   } = useScoreAwarder();
 
-  useEffect(() => {
-    const check = () => {
-      const ready = isMergedReady();
-      if (ready && !wasDataReadyRef.current) {
-        wasDataReadyRef.current = true;
-        setDataReady(true);
-      } else if (!ready) {
-        wasDataReadyRef.current = false;
-      }
-      setTimeout(check, 200);
-    };
-    const id = setTimeout(check, 200);
-    return () => clearTimeout(id);
-  }, []);
+  useEffect(() => subscribe(() => setTick(t => t + 1)), []);
 
   // Combine study pipeline questions with custom questions (must be before subjectsStudied)
-  const allStudyQuestions = useMemo(() => toQuestions(getAllStudyQuestions()), [dataReady]);
+  const allStudyQuestions = useMemo(() => {
+    void tick;
+    return toQuestions(getAllStudyQuestions());
+  }, [tick]);
   const allQuestions = useMemo(() => {
     return [...allStudyQuestions, ...customQuestions];
   }, [allStudyQuestions, customQuestions]);

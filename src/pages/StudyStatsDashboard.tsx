@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Trophy, Flame, BookOpen, Brain, Target, Award, Zap, TrendingUp } from 'lucide-react';
@@ -8,7 +8,7 @@ import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useStreak } from '@/hooks/useStreak';
 import { supabase } from '@/integrations/supabase/client';
 import { STUDY_SUBJECT_INFO } from '@/types/study-questions';
-import { getStudyQuestionsBySubject } from '@/data/study-questions';
+import { getStudyQuestionsBySubject, isMergedReady } from '@/data/study-questions';
 import { STUDY_YEARS } from '@/types/study-questions';
 import type { Subject } from '@/types/question';
 import type { StudyCategory } from '@/types/study-questions';
@@ -36,6 +36,8 @@ export default function StudyStatsDashboard() {
   const streak = useStreak();
   const [scoreEvents, setScoreEvents] = useState<ScoreEvent[]>([]);
   const [loadingScore, setLoadingScore] = useState(true);
+  const [dataReady, setDataReady] = useState(false);
+  const wasDataReadyRef = useRef(false);
 
   useEffect(() => {
     if (!user) return;
@@ -51,6 +53,21 @@ export default function StudyStatsDashboard() {
       });
   }, [user]);
 
+  useEffect(() => {
+    const check = () => {
+      const ready = isMergedReady();
+      if (ready && !wasDataReadyRef.current) {
+        wasDataReadyRef.current = true;
+        setDataReady(true);
+      } else if (!ready) {
+        wasDataReadyRef.current = false;
+      }
+      setTimeout(check, 200);
+    };
+    const id = setTimeout(check, 200);
+    return () => clearTimeout(id);
+  }, []);
+
   const allQuestions = useMemo(() => {
     const qs: { id: string; subject: Subject }[] = [];
     for (const year of STUDY_YEARS) {
@@ -63,7 +80,7 @@ export default function StudyStatsDashboard() {
       }
     }
     return qs;
-  }, []);
+  }, [dataReady]);
 
   const overallStats = useMemo(() => {
     if (!isLoaded) return { total: 0, studied: 0, learned: 0, dueToday: 0, studiedPercentage: 0, learnedPercentage: 0 };

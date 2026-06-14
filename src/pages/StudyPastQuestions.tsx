@@ -13,19 +13,23 @@ import {
   ChevronRight,
   AlertTriangle,
   Search,
+  Shield,
+  ShieldCheck,
 } from "lucide-react";
 import type { Subject } from "@/types/question";
 import type { StudyCategory, StudyQuestion } from "@/types/study-questions";
 import { STUDY_SUBJECT_INFO, STUDY_YEARS } from "@/types/study-questions";
-import { getStudyQuestionsBySubject } from "@/data/study-questions";
+import { getStudyQuestionsBySubject, invalidateAndRefetch } from "@/data/study-questions";
 import { useStudyQuestions } from "@/hooks/study-questions/useStudyQuestions";
 import { useQuestionTimer } from "@/hooks/study-questions/useQuestionTimer";
 import { useBookmarks } from "@/hooks/study-questions/useBookmarks";
+import { useActivation } from "@/hooks/useActivation";
 import { StudyCategoryTabs } from "@/components/study-past-questions/StudyCategoryTabs";
 import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionViewer } from "@/components/study-past-questions/QuestionViewer";
 import { StudyTimer } from "@/components/study-past-questions/StudyTimer";
+import { AdminQuestionPanel } from "@/components/study-past-questions/AdminQuestionPanel";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -72,9 +76,11 @@ export default function StudyPastQuestions() {
     selectYear,
     selectCategory,
     reset,
+    cacheTick,
   } = useStudyQuestions();
   const timer = useQuestionTimer();
   const { bookmarks, toggle, isBookmarked } = useBookmarks();
+  const { status: activationStatus } = useActivation();
 
   const [view, setView] = useState<View>("subjects");
   const [quizComplete, setQuizComplete] = useState(false);
@@ -85,6 +91,57 @@ export default function StudyPastQuestions() {
   const [searchResults, setSearchResults] = useState<StudyQuestion[]>([]);
   const [showSearch, setShowSearch] = useState(false);
   const [searchSubjectFilter, setSearchSubjectFilter] = useState<Subject[]>(SUBJECTS);
+
+  const isAdmin = activationStatus.is_admin;
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+  const [selectedAdminQuestion, setSelectedAdminQuestion] = useState<StudyQuestion | null>(null);
+  const [overrideQuestions, setOverrideQuestions] = useState<Map<string, StudyQuestion>>(new Map());
+  const [deletedQuestionIds, setDeletedQuestionIds] = useState<Set<string>>(new Set());
+  const [addedQuestions, setAddedQuestions] = useState<StudyQuestion[]>([]);
+
+  const effectiveQuestions = useMemo(() => {
+    const base = questions.filter(q => !deletedQuestionIds.has(q.id));
+    const mapped = base.map(q => overrideQuestions.get(q.id) || q);
+    return [...mapped, ...addedQuestions];
+  }, [questions, overrideQuestions, deletedQuestionIds, addedQuestions]);
+
+  const openAdminPanel = useCallback((q?: StudyQuestion) => {
+    setSelectedAdminQuestion(q || null);
+    setAdminPanelOpen(true);
+  }, []);
+
+  const handleQuestionUpdated = useCallback((updated: StudyQuestion) => {
+    setOverrideQuestions(prev => {
+      const next = new Map(prev);
+      next.set(updated.id, updated);
+      return next;
+    });
+    setUserAnswers(prev => {
+      const next = { ...prev };
+      delete next[updated.id];
+      return next;
+    });
+    invalidateAndRefetch();
+  }, []);
+
+  const handleQuestionDeleted = useCallback((id: string) => {
+    setDeletedQuestionIds(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    setUserAnswers(prev => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    invalidateAndRefetch();
+  }, []);
+
+  const handleQuestionAdded = useCallback((added: StudyQuestion) => {
+    setAddedQuestions(prev => [...prev, added]);
+    invalidateAndRefetch();
+  }, []);
   const subjectFilteredResults = useMemo(() =>
     searchResults.filter(q => searchSubjectFilter.includes(q.subject)),
     [searchResults, searchSubjectFilter]
@@ -101,7 +158,7 @@ export default function StudyPastQuestions() {
       }
     }
     return counts as Record<StudyCategory, number>;
-  }, []);
+  }, [cacheTick]);
 
   const subjectCounts = useMemo(() => {
     const counts: Partial<Record<Subject, number>> = {};
@@ -112,7 +169,7 @@ export default function StudyPastQuestions() {
       }
     }
     return counts as Record<Subject, number>;
-  }, [selectedCategory]);
+  }, [selectedCategory, cacheTick]);
 
   const yearCounts = useMemo(() => {
     if (!selectedSubject) return {} as Record<number, number>;
@@ -121,7 +178,7 @@ export default function StudyPastQuestions() {
       counts[year] = getStudyQuestionsBySubject(selectedSubject, year, selectedCategory).length;
     }
     return counts;
-  }, [selectedSubject, selectedCategory]);
+  }, [selectedSubject, selectedCategory, cacheTick]);
 
   const yearCategoryCounts = useMemo(() => {
     if (!selectedSubject) return {} as Record<number, Record<StudyCategory, number>>;
@@ -133,7 +190,7 @@ export default function StudyPastQuestions() {
       }
     }
     return result;
-  }, [selectedSubject]);
+  }, [selectedSubject, cacheTick]);
 
   const bookmarkedQuestions = useMemo(() => {
     return bookmarks
@@ -225,8 +282,8 @@ export default function StudyPastQuestions() {
   };
 
   useEffect(() => {
-    if (timer.state === "expired" && !quizComplete && questions.length > 0) {
-      const results = questions.map((q) => {
+    if (timer.state === "expired" && !quizComplete && effectiveQuestions.length > 0) {
+      const results = effectiveQuestions.map((q) => {
         const answer = userAnswers[q.id] || "";
         const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
         const isCorrect = hasRealAnswer
@@ -237,7 +294,7 @@ export default function StudyPastQuestions() {
       setQuizResults(results);
       setQuizComplete(true);
     }
-  }, [timer.state, quizComplete, questions, userAnswers]);
+  }, [timer.state, quizComplete, effectiveQuestions, userAnswers]);
 
   const correctCount = quizResults.filter((r) => r.isCorrect).length;
   const totalCount = quizResults.length;
@@ -339,6 +396,15 @@ export default function StudyPastQuestions() {
                     >
                       <Bookmark className="w-[18px] h-[18px] text-muted-foreground" />
                     </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => openAdminPanel()}
+                        className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                        aria-label="Admin: Manage questions"
+                      >
+                        <Shield className="w-[18px] h-[18px] text-muted-foreground" />
+                      </button>
+                    )}
                   </div>
                 </>
               )}
@@ -551,6 +617,20 @@ export default function StudyPastQuestions() {
                 {subjectLabel} &mdash; {selectedYear}
               </h1>
               <div className="flex-shrink-0 flex items-center gap-2">
+                {isAdmin && (
+                  <button
+                    onClick={() => openAdminPanel()}
+                    className={cn(
+                      "flex-shrink-0 p-2 rounded-lg transition-all active:scale-95",
+                      adminPanelOpen
+                        ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                        : "hover:bg-accent text-muted-foreground hover:text-foreground"
+                    )}
+                    title="Admin: Manage Questions"
+                  >
+                    {adminPanelOpen ? <ShieldCheck className="h-[18px] w-[18px]" /> : <Shield className="h-[18px] w-[18px]" />}
+                  </button>
+                )}
                 {hasTimerRunning && (
                   <div className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground bg-secondary/50 rounded-lg px-2.5 py-1 border border-border/30">
                     <Clock className="h-3.5 w-3.5" />
@@ -569,7 +649,7 @@ export default function StudyPastQuestions() {
 
            <main className="max-w-2xl mx-auto px-4 py-6 pb-28">
             <AnimatePresence mode="wait">
-              {!quizComplete ? (
+                  {!quizComplete ? (
                 <motion.div
                   key="questions"
                   initial={PAGE_VARIANTS.initial}
@@ -578,7 +658,7 @@ export default function StudyPastQuestions() {
                   transition={PAGE_TRANSITION}
                 >
                       <QuestionViewer
-                        questions={questions}
+                        questions={effectiveQuestions}
                         subject={selectedSubject!}
                         timer={{
                           state: timer.state,
@@ -598,12 +678,12 @@ export default function StudyPastQuestions() {
                           <motion.div
                             className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
                             initial={{ width: 0 }}
-                            animate={{ width: `${(Object.keys(userAnswers).length / questions.length) * 100}%` }}
+                            animate={{ width: `${(Object.keys(userAnswers).length / effectiveQuestions.length) * 100}%` }}
                             transition={{ type: "spring", stiffness: 200, damping: 20 }}
                           />
                         </div>
                         <span className="text-xs text-muted-foreground whitespace-nowrap tabular-nums">
-                          {Object.keys(userAnswers).length}/{questions.length}
+                          {Object.keys(userAnswers).length}/{effectiveQuestions.length}
                         </span>
                       </div>
                 </motion.div>
@@ -639,7 +719,7 @@ export default function StudyPastQuestions() {
 
                   <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-1 scrollbar-thin">
                     {quizResults.map((r, i) => {
-                      const q = questions[i];
+                      const q = effectiveQuestions[i];
                       if (!q) return null;
                       return (
                         <motion.div
@@ -919,6 +999,20 @@ export default function StudyPastQuestions() {
             </AnimatePresence>
           </main>
         </>
+      )}
+      {isAdmin && (
+        <AdminQuestionPanel
+          question={selectedAdminQuestion}
+          questions={effectiveQuestions}
+          subject={selectedSubject || "chemistry"}
+          year={selectedYear || 2025}
+          category={selectedCategory}
+          onQuestionUpdated={handleQuestionUpdated}
+          onQuestionDeleted={handleQuestionDeleted}
+          onQuestionAdded={handleQuestionAdded}
+          isOpen={adminPanelOpen}
+          onClose={() => setAdminPanelOpen(false)}
+        />
       )}
     </div>
   );

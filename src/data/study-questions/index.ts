@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { getChemistryQuestions } from "./chemistry";
 import { getBiologyQuestions } from "./biology";
 import { getMathQuestions } from "./math";
+import { getPhysicsQuestions } from "./physics";
 
 const ALL_YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 const CATEGORIES: StudyCategory[] = ["objective", "theory", "practical"];
@@ -45,6 +46,7 @@ function loadLocalQuestions(): StudyQuestion[] {
   const all: StudyQuestion[] = [];
   for (const year of ALL_YEARS) {
     for (const cat of CATEGORIES) {
+      for (const q of getPhysicsQuestions(year)[cat]) all.push(q);
       for (const q of getChemistryQuestions(year)[cat]) all.push(q);
       for (const q of getBiologyQuestions(year)[cat]) all.push(q);
       for (const q of getMathQuestions(year)[cat]) all.push(q);

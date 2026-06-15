@@ -132,6 +132,17 @@ export function QuestionViewer({
     setDirection(0);
   }, []);
 
+  const allSubmittedSubQuestions = useMemo(() => {
+    const ids = new Set<string>();
+    for (const q of questions) {
+      if (q.subQuestions) {
+        const allSubs = q.subQuestions.every(sq => submittedTheory.has(sq.id));
+        if (allSubs) ids.add(q.id);
+      }
+    }
+    return ids;
+  }, [questions, submittedTheory]);
+
   const bookmark = isBookmarked?.(question?.id ?? "");
   const userAnswer = answers[question?.id ?? ""];
   const hasRealAnswer = !!question?.correctAnswer && question.correctAnswer !== "TBD" && question.correctAnswer !== "tbd";
@@ -197,17 +208,6 @@ export function QuestionViewer({
       </motion.div>
     );
   }
-
-  const allSubmittedSubQuestions = useMemo(() => {
-    const ids = new Set<string>();
-    for (const q of questions) {
-      if (q.subQuestions) {
-        const allSubs = q.subQuestions.every(sq => submittedTheory.has(sq.id));
-        if (allSubs) ids.add(q.id);
-      }
-    }
-    return ids;
-  }, [questions, submittedTheory]);
 
   const getQuestionStatus = (idx: number) => {
     const q = questions[idx];

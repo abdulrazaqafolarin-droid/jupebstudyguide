@@ -53,6 +53,10 @@ export function QuestionViewer({
   const [results, setResults] = useState<AnswerEntry[]>([]);
   const [showJumpGrid, setShowJumpGrid] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
+  const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
+  const handleImageError = useCallback((id: string) => {
+    setBrokenImages(prev => new Set(prev).add(id));
+  }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const question = questions[current];
@@ -354,8 +358,8 @@ export function QuestionViewer({
             <div>
               {category === "practical" && (
                 <div className="mb-4 p-4 rounded-xl bg-muted/50 border space-y-3">
-                  {question.imageUrl && (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-lg" loading="lazy" />
+                  {question.imageUrl && !brokenImages.has(question.id) && (
+                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-lg" loading="lazy" onError={() => handleImageError(question.id)} />
                   )}
                   <p className="font-semibold text-lg">{question.title}</p>
                   <p className="text-sm text-muted-foreground">{question.objective}</p>
@@ -400,8 +404,8 @@ export function QuestionViewer({
                 </div>
               ) : category === "objective" ? (
                 <div className="space-y-3">
-                  {question.imageUrl ? (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" />
+                  {question.imageUrl && !brokenImages.has(question.id) ? (
+                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(question.id)} />
                   ) : (
                     <p className="text-base font-medium leading-relaxed">{question.question}</p>
                   )}
@@ -489,8 +493,8 @@ export function QuestionViewer({
                   </div>
                 ) : (
                 <div className="space-y-3">
-                  {question.imageUrl ? (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" />
+                  {question.imageUrl && !brokenImages.has(question.id) ? (
+                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(question.id)} />
                   ) : (
                     <p className="text-base font-medium leading-relaxed">{question.question}</p>
                   )}

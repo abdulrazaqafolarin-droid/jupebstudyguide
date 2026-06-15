@@ -7,6 +7,7 @@ import { addQuestion, updateQuestion, deleteQuestion, generateQuestionId, batchU
 import { refreshData } from "@/data/study-questions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ImageCropper } from "./ImageCropper";
 
 interface AdminQuestionPanelProps {
   question: StudyQuestion | null;
@@ -55,6 +56,9 @@ export function AdminQuestionPanel({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
+  const [cropFileName, setCropFileName] = useState<string>("");
+  const [editingQuestion, setEditingQuestion] = useState<StudyQuestion | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
@@ -70,6 +74,7 @@ export function AdminQuestionPanel({
   }, [isOpen]);
 
   const loadQuestion = useCallback((q: StudyQuestion) => {
+    setEditingQuestion(q);
     setQuestionText(q.question || "");
     setImageUrl(q.imageUrl || null);
     setImagePreview(null);
@@ -84,6 +89,7 @@ export function AdminQuestionPanel({
   }, []);
 
   const resetForm = useCallback(() => {
+    setEditingQuestion(null);
     setQuestionText("");
     setImageUrl(null);
     setImagePreview(null);
@@ -116,6 +122,14 @@ export function AdminQuestionPanel({
     resetForm();
   };
 
+  const prevObjectUrl = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
+    };
+  }, []);
+
   const handleImageSelect = (file: File) => {
     if (!file.type.startsWith("image/")) {
       setError("Only image files are allowed (JPEG, PNG, WebP, GIF)");
@@ -125,14 +139,32 @@ export function AdminQuestionPanel({
       setError("Image must be less than 5 MB");
       return;
     }
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-    setImageUrl(null);
+    setCropFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => setCropImageUrl(reader.result as string);
+    reader.readAsDataURL(file);
     setError(null);
   };
 
+  const handleCropComplete = useCallback((croppedBlob: Blob) => {
+    const croppedFile = new File([croppedBlob], cropFileName.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
+    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
+    prevObjectUrl.current = URL.createObjectURL(croppedFile);
+    setImageFile(croppedFile);
+    setImagePreview(prevObjectUrl.current);
+    setImageUrl(null);
+    setCropImageUrl(null);
+    setCropFileName("");
+  }, [cropFileName]);
+
+  const handleCancelCrop = useCallback(() => {
+    setCropImageUrl(null);
+    setCropFileName("");
+  }, []);
+
   const handleRemoveImage = () => {
-    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
+    prevObjectUrl.current = null;
     setImageFile(null);
     setImagePreview(null);
     setImageUrl(null);
@@ -163,6 +195,9 @@ export function AdminQuestionPanel({
       }
     }
 
+    const qId = mode === "edit" && editingQuestion ? editingQuestion.id : generateQuestionId(subject, year, category);
+    const existingImageUrl = mode === "edit" && editingQuestion ? editingQuestion.imageUrl : undefined;
+
     setSaving(true);
     setError(null);
     setUploadingImage(!!imageFile);
@@ -171,10 +206,7 @@ export function AdminQuestionPanel({
       let resolvedImageUrl = imageUrl;
 
       if (imageFile) {
-        const uploadResult = await uploadQuestionImage(
-          mode === "edit" && question ? question.id : generateQuestionId(subject, year, category),
-          imageFile
-        );
+        const uploadResult = await uploadQuestionImage(qId, imageFile);
         if (!uploadResult.success) {
           setError(uploadResult.error || "Failed to upload image");
           setSaving(false);
@@ -182,20 +214,15 @@ export function AdminQuestionPanel({
           return;
         }
         resolvedImageUrl = uploadResult.url!;
-      } else if (mode === "edit" && question && imageUrl === null && question.imageUrl) {
-        const deleteResult = await deleteQuestionImage(question.id);
-        if (!deleteResult.success) {
-          console.error("Failed to delete old image:", deleteResult.error);
-        }
       }
 
-      if (mode === "edit" && question) {
+      if (mode === "edit" && editingQuestion) {
         const result = await updateQuestion({
-          id: question.id,
-          subject: question.subject,
-          year: question.year,
-          category: question.category,
-          question: questionText.trim() || imageUrl || "",
+          id: qId,
+          subject: editingQuestion.subject,
+          year: editingQuestion.year,
+          category: editingQuestion.category,
+          question: questionText.trim() || resolvedImageUrl || "",
           options: isObjective ? options.filter(o => o.text.trim()) : null,
           correctAnswer: correctAnswer.trim().toUpperCase() || null,
           explanation: explanation.trim() || null,
@@ -212,8 +239,8 @@ export function AdminQuestionPanel({
           return;
         }
 
-        onQuestionUpdated({
-          ...question,
+        const updated: StudyQuestion = {
+          ...editingQuestion,
           question: questionText.trim() || resolvedImageUrl || "",
           options: isObjective ? options.filter(o => o.text.trim()) : undefined,
           correctAnswer: correctAnswer.trim().toUpperCase() || undefined,
@@ -221,12 +248,26 @@ export function AdminQuestionPanel({
           difficulty: difficulty as "easy" | "medium" | "hard",
           topic: topic.trim() || undefined,
           sortOrder: parseInt(sortOrder) || 0,
-          imageUrl: resolvedImageUrl,
-        });
+        };
+        if (resolvedImageUrl) updated.imageUrl = resolvedImageUrl;
+        onQuestionUpdated(updated);
+
+        if (!imageFile && imageUrl === null && existingImageUrl) {
+          const deleteResult = await deleteQuestionImage(qId);
+          if (!deleteResult.success) {
+            console.error("Failed to delete old image:", deleteResult.error);
+          }
+        }
+
+        if (imageFile && existingImageUrl) {
+          const deleteResult = await deleteQuestionImage(qId);
+          if (!deleteResult.success) {
+            console.error("Failed to delete replaced image:", deleteResult.error);
+          }
+        }
       } else if (mode === "add") {
-        const newId = generateQuestionId(subject, year, category);
         const result = await addQuestion({
-          id: newId,
+          id: qId,
           subject,
           year,
           category,
@@ -247,8 +288,8 @@ export function AdminQuestionPanel({
           return;
         }
 
-        onQuestionAdded({
-          id: newId,
+        const added: StudyQuestion = {
+          id: qId,
           subject,
           year,
           category,
@@ -259,36 +300,38 @@ export function AdminQuestionPanel({
           difficulty: difficulty as "easy" | "medium" | "hard",
           topic: topic.trim() || undefined,
           sortOrder: parseInt(sortOrder) || 0,
-          imageUrl: resolvedImageUrl,
-        });
+        };
+        if (resolvedImageUrl) added.imageUrl = resolvedImageUrl;
+        onQuestionAdded(added);
       }
 
       setUploadingImage(false);
-
       setSaving(false);
       setMode(null);
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
       setSaving(false);
+      setUploadingImage(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!question) return;
+    if (!editingQuestion) return;
     setSaving(true);
     setError(null);
 
     try {
-      const result = await deleteQuestion(question.id);
+      const result = await deleteQuestion(editingQuestion.id);
       if (!result.success) {
         setError(result.error || "Failed to delete question");
         setSaving(false);
         return;
       }
 
+      await deleteQuestionImage(editingQuestion.id).catch(() => {});
       setSaving(false);
-      onQuestionDeleted(question.id);
+      onQuestionDeleted(editingQuestion.id);
       setMode(null);
       onClose();
     } catch (err) {
@@ -420,19 +463,29 @@ export function AdminQuestionPanel({
                     </label>
 
                     {(imagePreview || imageUrl) && (
-                      <div className="relative mb-2 rounded-xl overflow-hidden border bg-muted/30">
+                      <div className="relative mb-2 rounded-xl overflow-hidden border bg-muted/30 group">
                         <img
                           src={imagePreview || imageUrl}
                           alt="Question preview"
-                          className="w-full max-h-64 object-contain"
+                          className="w-full max-h-64 object-contain cursor-pointer"
+                          onClick={() => fileInputRef.current?.click()}
                         />
-                        <button
-                          onClick={handleRemoveImage}
-                          className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
-                          title="Remove image"
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </button>
+                        <div className="absolute top-2 right-2 flex gap-1.5">
+                          <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
+                            title="Replace image"
+                          >
+                            <ImageIcon className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={handleRemoveImage}
+                            className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-red-500/80 transition-colors"
+                            title="Remove image"
+                          >
+                            <XCircle className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
                     )}
 
@@ -685,6 +738,14 @@ export function AdminQuestionPanel({
             )}
           </motion.div>
         </motion.div>
+      )}
+      {cropImageUrl && (
+        <ImageCropper
+          image={cropImageUrl}
+          fileName={cropFileName}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCancelCrop}
+        />
       )}
     </AnimatePresence>
   );

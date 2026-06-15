@@ -82,8 +82,32 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     if (processing.current) return;
     processing.current = true;
     try {
-      const res = await fetch(image);
-      const blob = await res.blob();
+      const imageObj = new Image();
+      imageObj.crossOrigin = "anonymous";
+      const imageLoadPromise = new Promise<void>((resolve, reject) => {
+        imageObj.onload = () => resolve();
+        imageObj.onerror = () => reject(new Error("Failed to load image"));
+      });
+      imageObj.src = image;
+      await imageLoadPromise;
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("No canvas context");
+      canvas.width = imageObj.naturalWidth;
+      canvas.height = imageObj.naturalHeight;
+      ctx.drawImage(imageObj, 0, 0);
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (b) => {
+            if (b) resolve(b);
+            else reject(new Error("Canvas toBlob failed"));
+          },
+          "image/jpeg",
+          0.92
+        );
+      });
       onSkip(blob);
     } catch {
       onCancel();

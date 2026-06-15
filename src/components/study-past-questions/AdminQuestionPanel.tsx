@@ -309,6 +309,8 @@ export function AdminQuestionPanel({
         onQuestionAdded(added);
       }
 
+      refreshData();
+
       setUploadingImage(false);
       setSaving(false);
       setMode(null);

@@ -32,6 +32,8 @@ function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
   if (row.correct_answer) sq.correctAnswer = row.correct_answer as string;
   if (row.explanation) sq.explanation = row.explanation as string;
   if (row.course) sq.topic = row.course as string;
+  if (row.sort_order !== null && row.sort_order !== undefined) sq.sortOrder = row.sort_order as number;
+  if (row.image_url) sq.imageUrl = row.image_url as string;
   return sq;
 }
 
@@ -103,7 +105,7 @@ export function getStudyQuestionsByYear(year: number): StudyQuestion[] {
 export function getStudyQuestionsBySubject(subject: Subject, year: number, category?: StudyCategory): StudyQuestion[] {
   let filtered = currentData.filter(q => q.subject === subject && q.year === year);
   if (category) filtered = filtered.filter(q => q.category === category);
-  return filtered;
+  return filtered.sort((a, b) => (a.sortOrder ?? 9999) - (b.sortOrder ?? 9999));
 }
 
 export function getAllStudyYears(): number[] {

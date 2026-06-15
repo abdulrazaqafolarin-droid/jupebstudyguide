@@ -173,7 +173,7 @@ export function QuestionViewer({
                 }`}
               >
                 <p className="text-sm font-medium mb-1">
-                  Q{i + 1}. {q.question}
+                  Q{q.sortOrder != null ? q.sortOrder + 1 : i + 1}. {q.question}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
@@ -265,7 +265,7 @@ export function QuestionViewer({
                       {status === "answered" ? (
                         <Check className="h-3.5 w-3.5" />
                       ) : (
-                        idx + 1
+                        q.sortOrder != null ? q.sortOrder + 1 : idx + 1
                       )}
                     </button>
                   );
@@ -297,7 +297,7 @@ export function QuestionViewer({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1 gap-2">
               <span className="text-xs text-muted-foreground tabular-nums truncate">
-                Q{current + 1}/{total}
+                Q{questions[current]?.sortOrder != null ? questions[current].sortOrder + 1 : current + 1}/{total}
               </span>
               <span className="text-xs text-muted-foreground tabular-nums flex-shrink-0">
                 {answeredCount}/{total}
@@ -354,6 +354,9 @@ export function QuestionViewer({
             <div>
               {category === "practical" && (
                 <div className="mb-4 p-4 rounded-xl bg-muted/50 border space-y-3">
+                  {question.imageUrl && (
+                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-lg" loading="lazy" />
+                  )}
                   <p className="font-semibold text-lg">{question.title}</p>
                   <p className="text-sm text-muted-foreground">{question.objective}</p>
                   {question.apparatus && question.apparatus.length > 0 && (
@@ -397,7 +400,11 @@ export function QuestionViewer({
                 </div>
               ) : category === "objective" ? (
                 <div className="space-y-3">
-                  <p className="text-base font-medium leading-relaxed">{question.question}</p>
+                  {question.imageUrl ? (
+                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" />
+                  ) : (
+                    <p className="text-base font-medium leading-relaxed">{question.question}</p>
+                  )}
                   <div className="space-y-2">
                     {(question.options ?? []).map((opt) => {
                       const isSelected = answers[question.id] === opt.label;
@@ -482,7 +489,11 @@ export function QuestionViewer({
                   </div>
                 ) : (
                 <div className="space-y-3">
-                  <p className="text-base font-medium leading-relaxed">{question.question}</p>
+                  {question.imageUrl ? (
+                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" />
+                  ) : (
+                    <p className="text-base font-medium leading-relaxed">{question.question}</p>
+                  )}
                   {submittedTheory.has(question.id) ? (
                     <div className="space-y-3">
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">

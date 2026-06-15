@@ -37,6 +37,7 @@ export interface StudyQuestion {
   year: number;
   category: StudyCategory;
   topic?: string;
+  sortOrder?: number;
   question: string;
   options?: MCQOption[];
   correctAnswer?: string;

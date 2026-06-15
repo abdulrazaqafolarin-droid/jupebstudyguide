@@ -84,9 +84,15 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
               {/* Question - Scrollable */}
               <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="text-lg font-medium mb-4 leading-relaxed overflow-y-auto max-h-[140px] scrollbar-thin">
-                  <MathRenderer content={question.question} />
-                </div>
+                {question.imageUrl ? (
+                  <div className="mb-4 rounded-xl overflow-hidden border bg-muted/30">
+                    <img src={question.imageUrl} alt="Question" className="w-full max-h-48 object-contain" loading="lazy" />
+                  </div>
+                ) : (
+                  <div className="text-lg font-medium mb-4 leading-relaxed overflow-y-auto max-h-[140px] scrollbar-thin">
+                    <MathRenderer content={question.question} />
+                  </div>
+                )}
 
                 {/* MCQ Options - Scrollable container */}
                 {question.options && (

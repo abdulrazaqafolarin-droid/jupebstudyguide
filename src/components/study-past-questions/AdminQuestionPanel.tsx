@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Trash2, Plus, AlertTriangle, GripVertical } from "lucide-react";
+import { X, Save, Trash2, Plus, AlertTriangle, GripVertical, ListOrdered, ImageIcon, Upload, XCircle, Loader2 } from "lucide-react";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import type { Subject } from "@/types/question";
-import { addQuestion, updateQuestion, deleteQuestion, generateQuestionId } from "@/lib/admin-questions-service";
+import { addQuestion, updateQuestion, deleteQuestion, generateQuestionId, batchUpdateSortOrder, uploadQuestionImage, deleteQuestionImage } from "@/lib/admin-questions-service";
+import { refreshData } from "@/data/study-questions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,14 @@ export function AdminQuestionPanel({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [sortOrder, setSortOrder] = useState("0");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
 
   const isObjective = category === "objective";
 
@@ -62,23 +71,31 @@ export function AdminQuestionPanel({
 
   const loadQuestion = useCallback((q: StudyQuestion) => {
     setQuestionText(q.question || "");
+    setImageUrl(q.imageUrl || null);
+    setImagePreview(null);
+    setImageFile(null);
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
     setCorrectAnswer(q.correctAnswer || "");
     setExplanation(q.explanation || "");
     setDifficulty(q.difficulty || "medium");
     setTopic(q.topic || "");
+    setSortOrder(q.sortOrder != null ? String(q.sortOrder) : "0");
     setError(null);
   }, []);
 
   const resetForm = useCallback(() => {
     setQuestionText("");
+    setImageUrl(null);
+    setImagePreview(null);
+    setImageFile(null);
     setOptions(isObjective ? [{ label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" }] : []);
     setCorrectAnswer("");
     setExplanation("");
     setDifficulty("medium");
     setTopic("");
+    setSortOrder(String(questions ? questions.length : 0));
     setError(null);
-  }, [isObjective]);
+  }, [isObjective, questions]);
 
   useEffect(() => {
     if (mode === "edit" && question) {
@@ -99,9 +116,31 @@ export function AdminQuestionPanel({
     resetForm();
   };
 
+  const handleImageSelect = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setError("Only image files are allowed (JPEG, PNG, WebP, GIF)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be less than 5 MB");
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setImageUrl(null);
+    setError(null);
+  };
+
+  const handleRemoveImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImageFile(null);
+    setImagePreview(null);
+    setImageUrl(null);
+  };
+
   const handleSave = async () => {
-    if (!questionText.trim()) {
-      setError("Question text is required");
+    if (!questionText.trim() && !imageFile && !imageUrl) {
+      setError("Question text or an image is required");
       return;
     }
     if (isObjective) {
@@ -114,41 +153,75 @@ export function AdminQuestionPanel({
         setError("Correct answer is required");
         return;
       }
-      const validLabels = validOptions.map(o => o.label);
-      if (!validLabels.includes(correctAnswer.trim().toUpperCase())) {
-        setError(`Correct answer must be one of: ${validLabels.join(", ")}`);
-        return;
+      const normalizedAnswer = correctAnswer.trim().toUpperCase();
+      if (normalizedAnswer !== "TBD") {
+        const validLabels = validOptions.map(o => o.label);
+        if (!validLabels.includes(normalizedAnswer)) {
+          setError(`Correct answer must be one of: ${validLabels.join(", ")}`);
+          return;
+        }
       }
     }
 
     setSaving(true);
     setError(null);
+    setUploadingImage(!!imageFile);
 
     try {
+      let resolvedImageUrl = imageUrl;
+
+      if (imageFile) {
+        const uploadResult = await uploadQuestionImage(
+          mode === "edit" && question ? question.id : generateQuestionId(subject, year, category),
+          imageFile
+        );
+        if (!uploadResult.success) {
+          setError(uploadResult.error || "Failed to upload image");
+          setSaving(false);
+          setUploadingImage(false);
+          return;
+        }
+        resolvedImageUrl = uploadResult.url!;
+      } else if (mode === "edit" && question && imageUrl === null && question.imageUrl) {
+        const deleteResult = await deleteQuestionImage(question.id);
+        if (!deleteResult.success) {
+          console.error("Failed to delete old image:", deleteResult.error);
+        }
+      }
+
       if (mode === "edit" && question) {
-        const result = await updateQuestion(question.id, {
-          question: questionText.trim(),
+        const result = await updateQuestion({
+          id: question.id,
+          subject: question.subject,
+          year: question.year,
+          category: question.category,
+          question: questionText.trim() || imageUrl || "",
           options: isObjective ? options.filter(o => o.text.trim()) : null,
           correctAnswer: correctAnswer.trim().toUpperCase() || null,
           explanation: explanation.trim() || null,
           difficulty,
           topic: topic.trim() || null,
+          sortOrder: parseInt(sortOrder) || 0,
+          imageUrl: resolvedImageUrl,
         });
 
         if (!result.success) {
           setError(result.error || "Failed to update question");
           setSaving(false);
+          setUploadingImage(false);
           return;
         }
 
         onQuestionUpdated({
           ...question,
-          question: questionText.trim(),
+          question: questionText.trim() || resolvedImageUrl || "",
           options: isObjective ? options.filter(o => o.text.trim()) : undefined,
           correctAnswer: correctAnswer.trim().toUpperCase() || undefined,
           explanation: explanation.trim() || undefined,
           difficulty: difficulty as "easy" | "medium" | "hard",
           topic: topic.trim() || undefined,
+          sortOrder: parseInt(sortOrder) || 0,
+          imageUrl: resolvedImageUrl,
         });
       } else if (mode === "add") {
         const newId = generateQuestionId(subject, year, category);
@@ -157,17 +230,20 @@ export function AdminQuestionPanel({
           subject,
           year,
           category,
-          question: questionText.trim(),
+          question: questionText.trim() || resolvedImageUrl || "",
           options: isObjective ? options.filter(o => o.text.trim()) : null,
           correctAnswer: correctAnswer.trim().toUpperCase() || null,
           explanation: explanation.trim() || null,
           difficulty,
           topic: topic.trim() || null,
+          sortOrder: parseInt(sortOrder) || 0,
+          imageUrl: resolvedImageUrl,
         });
 
         if (!result.success) {
           setError(result.error || "Failed to add question");
           setSaving(false);
+          setUploadingImage(false);
           return;
         }
 
@@ -176,14 +252,18 @@ export function AdminQuestionPanel({
           subject,
           year,
           category,
-          question: questionText.trim(),
+          question: questionText.trim() || resolvedImageUrl || "",
           options: isObjective ? options.filter(o => o.text.trim()) : undefined,
           correctAnswer: correctAnswer.trim().toUpperCase() || undefined,
           explanation: explanation.trim() || undefined,
           difficulty: difficulty as "easy" | "medium" | "hard",
           topic: topic.trim() || undefined,
+          sortOrder: parseInt(sortOrder) || 0,
+          imageUrl: resolvedImageUrl,
         });
       }
+
+      setUploadingImage(false);
 
       setSaving(false);
       setMode(null);
@@ -224,6 +304,23 @@ export function AdminQuestionPanel({
   const addOption = () => {
     const nextLabel = String.fromCharCode(65 + options.length);
     setOptions(prev => [...prev, { label: nextLabel, text: "" }]);
+  };
+
+  const handleDragSort = async () => {
+    if (dragItem.current === null || dragOverItem.current === null || !questions) return;
+    if (dragItem.current === dragOverItem.current) return;
+    const reordered = [...questions];
+    const [removed] = reordered.splice(dragItem.current, 1);
+    reordered.splice(dragOverItem.current, 0, removed);
+    const updates = reordered.map((q, i) => ({ id: q.id, sort_order: i }));
+    const result = await batchUpdateSortOrder(updates);
+    if (!result.success) {
+      setError(result.error || "Failed to reorder questions");
+      return;
+    }
+    dragItem.current = null;
+    dragOverItem.current = null;
+    refreshData();
   };
 
   const removeOption = (idx: number) => {
@@ -316,13 +413,74 @@ export function AdminQuestionPanel({
                   )}
 
                   <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1 block">Question Text</label>
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block flex items-center gap-1.5">
+                      <ImageIcon className="h-3.5 w-3.5" />
+                      Question Image
+                      <span className="text-muted-foreground/50 font-normal">(optional)</span>
+                    </label>
+
+                    {(imagePreview || imageUrl) && (
+                      <div className="relative mb-2 rounded-xl overflow-hidden border bg-muted/30">
+                        <img
+                          src={imagePreview || imageUrl}
+                          alt="Question preview"
+                          className="w-full max-h-64 object-contain"
+                        />
+                        <button
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
+                          title="Remove image"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+
+                    {!imagePreview && !imageUrl && (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-primary'); }}
+                        onDragLeave={(e) => { e.currentTarget.classList.remove('border-primary'); }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.remove('border-primary');
+                          const file = e.dataTransfer.files[0];
+                          if (file) handleImageSelect(file);
+                        }}
+                        className="border-2 border-dashed rounded-xl px-4 py-8 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-all"
+                      >
+                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">
+                          Click or drag an image here
+                        </p>
+                        <p className="text-xs text-muted-foreground/50 mt-1">
+                          JPEG, PNG, WebP, GIF &middot; Max 5 MB
+                        </p>
+                      </div>
+                    )}
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageSelect(file);
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                      Question Text <span className="text-muted-foreground/50 font-normal">(optional fallback)</span>
+                    </label>
                     <textarea
                       value={questionText}
                       onChange={e => setQuestionText(e.target.value)}
-                      rows={4}
+                      rows={3}
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
-                      placeholder="Enter the question text..."
+                      placeholder="Type the question text, or leave blank if using an image..."
                     />
                   </div>
 
@@ -390,6 +548,20 @@ export function AdminQuestionPanel({
                   </div>
 
                   <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1 block flex items-center gap-1">
+                      <ListOrdered className="h-3 w-3" /> Question Number
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={sortOrder}
+                      onChange={e => setSortOrder(e.target.value)}
+                      className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      placeholder="Position in list (0 = first)"
+                    />
+                  </div>
+
+                  <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 block">Topic / Course</label>
                     <input
                       type="text"
@@ -420,36 +592,58 @@ export function AdminQuestionPanel({
                   {questions && questions.length > 0 && (
                     <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1">
                       {questions.map((q, idx) => (
-                        <button
+                        <div
                           key={q.id}
-                          onClick={() => {
-                            loadQuestion(q);
-                            setMode("edit");
-                          }}
-                          className="w-full flex items-start gap-2 p-3 rounded-xl border bg-card hover:bg-accent/50 text-left transition-all active:scale-[0.98]"
+                          draggable
+                          onDragStart={() => { dragItem.current = idx; }}
+                          onDragEnter={() => { dragOverItem.current = idx; }}
+                          onDragEnd={handleDragSort}
+                          onDragOver={(e) => e.preventDefault()}
+                          className="flex items-center gap-1 group"
                         >
-                          <span className="shrink-0 w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
-                            {idx + 1}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm line-clamp-2">{q.question}</p>
-                            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                              <span className="capitalize">{q.category}</span>
-                              {q.correctAnswer && (
-                                <>
-                                  <span className="text-muted-foreground/40">&middot;</span>
-                                  <span className="font-mono text-green-600 dark:text-green-400">Ans: {q.correctAnswer}</span>
-                                </>
+                          <button
+                            className="p-1 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-muted-foreground transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                            title="Drag to reorder"
+                          >
+                            <GripVertical className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              loadQuestion(q);
+                              setMode("edit");
+                            }}
+                            className="flex-1 flex items-start gap-2 p-3 rounded-xl border bg-card hover:bg-accent/50 text-left transition-all active:scale-[0.98]"
+                          >
+                            <span className="shrink-0 w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                              {q.sortOrder != null ? q.sortOrder : idx + 1}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              {q.imageUrl ? (
+                                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                  <ImageIcon className="h-3.5 w-3.5 shrink-0" />
+                                  <span className="italic">Image question</span>
+                                </div>
+                              ) : (
+                                <p className="text-sm line-clamp-2">{q.question}</p>
                               )}
-                              {q.difficulty && (
-                                <>
-                                  <span className="text-muted-foreground/40">&middot;</span>
-                                  <span className="capitalize">{q.difficulty}</span>
-                                </>
-                              )}
+                              <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                <span className="capitalize">{q.category}</span>
+                                {q.correctAnswer && (
+                                  <>
+                                    <span className="text-muted-foreground/40">&middot;</span>
+                                    <span className="font-mono text-green-600 dark:text-green-400">Ans: {q.correctAnswer}</span>
+                                  </>
+                                )}
+                                {q.difficulty && (
+                                  <>
+                                    <span className="text-muted-foreground/40">&middot;</span>
+                                    <span className="capitalize">{q.difficulty}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </button>
+                          </button>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -481,11 +675,11 @@ export function AdminQuestionPanel({
                 <Button
                   size="sm"
                   onClick={handleSave}
-                  disabled={saving}
+                  disabled={saving || uploadingImage}
                   className="flex items-center gap-1"
                 >
-                  <Save className="h-4 w-4" />
-                  {saving ? "Saving..." : "Save"}
+                  {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                  {uploadingImage ? "Uploading image..." : saving ? "Saving..." : "Save"}
                 </Button>
               </div>
             )}

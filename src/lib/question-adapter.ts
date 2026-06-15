@@ -13,6 +13,7 @@ export function toQuestion(sq: StudyQuestion): Question {
     correctAnswer: sq.correctAnswer ?? "",
     explanation: sq.explanation ?? sq.answerGuide ?? "",
     difficulty: sq.difficulty,
+    imageUrl: sq.imageUrl,
   };
 }
 

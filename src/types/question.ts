@@ -18,6 +18,7 @@ export interface Question {
   correctAnswer: string;
   explanation: string;
   difficulty?: Difficulty;
+  imageUrl?: string;
 }
 
 export interface StudyProgress {

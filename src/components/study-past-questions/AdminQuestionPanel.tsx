@@ -157,6 +157,17 @@ export function AdminQuestionPanel({
     setCropFileName("");
   }, [cropFileName]);
 
+  const handleSkipCrop = useCallback((originalBlob: Blob) => {
+    const originalFile = new File([originalBlob], cropFileName, { type: originalBlob.type });
+    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
+    prevObjectUrl.current = URL.createObjectURL(originalFile);
+    setImageFile(originalFile);
+    setImagePreview(prevObjectUrl.current);
+    setImageUrl(null);
+    setCropImageUrl(null);
+    setCropFileName("");
+  }, [cropFileName]);
+
   const handleCancelCrop = useCallback(() => {
     setCropImageUrl(null);
     setCropFileName("");
@@ -206,6 +217,9 @@ export function AdminQuestionPanel({
       let resolvedImageUrl = imageUrl;
 
       if (imageFile) {
+        if (existingImageUrl) {
+          await deleteQuestionImage(qId).catch(() => {});
+        }
         const uploadResult = await uploadQuestionImage(qId, imageFile);
         if (!uploadResult.success) {
           setError(uploadResult.error || "Failed to upload image");
@@ -253,17 +267,7 @@ export function AdminQuestionPanel({
         onQuestionUpdated(updated);
 
         if (!imageFile && imageUrl === null && existingImageUrl) {
-          const deleteResult = await deleteQuestionImage(qId);
-          if (!deleteResult.success) {
-            console.error("Failed to delete old image:", deleteResult.error);
-          }
-        }
-
-        if (imageFile && existingImageUrl) {
-          const deleteResult = await deleteQuestionImage(qId);
-          if (!deleteResult.success) {
-            console.error("Failed to delete replaced image:", deleteResult.error);
-          }
+          await deleteQuestionImage(qId).catch(() => {});
         }
       } else if (mode === "add") {
         const result = await addQuestion({
@@ -744,6 +748,7 @@ export function AdminQuestionPanel({
           image={cropImageUrl}
           fileName={cropFileName}
           onCropComplete={handleCropComplete}
+          onSkip={handleSkipCrop}
           onCancel={handleCancelCrop}
         />
       )}

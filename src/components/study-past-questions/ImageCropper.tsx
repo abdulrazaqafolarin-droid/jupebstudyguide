@@ -6,10 +6,11 @@ interface ImageCropperProps {
   image: string;
   fileName: string;
   onCropComplete: (croppedBlob: Blob) => void;
+  onSkip: (originalBlob: Blob) => void;
   onCancel: () => void;
 }
 
-export function ImageCropper({ image, fileName, onCropComplete, onCancel }: ImageCropperProps) {
+export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel }: ImageCropperProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -77,6 +78,18 @@ export function ImageCropper({ image, fileName, onCropComplete, onCancel }: Imag
     }
   }, [image, croppedAreaPixels, onCropComplete, onCancel]);
 
+  const handleUseOriginal = useCallback(async () => {
+    if (processing.current) return;
+    processing.current = true;
+    try {
+      const res = await fetch(image);
+      const blob = await res.blob();
+      onSkip(blob);
+    } catch {
+      onCancel();
+    }
+  }, [image, onSkip, onCancel]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="bg-background rounded-2xl w-full max-w-lg mx-4 overflow-hidden shadow-2xl border">
@@ -122,6 +135,12 @@ export function ImageCropper({ image, fileName, onCropComplete, onCancel }: Imag
             className="px-4 py-2 rounded-xl text-sm font-medium hover:bg-accent transition-colors"
           >
             Cancel
+          </button>
+          <button
+            onClick={handleUseOriginal}
+            className="px-4 py-2 rounded-xl text-sm font-medium border hover:bg-accent transition-colors"
+          >
+            Use Original
           </button>
           <button
             onClick={handleApply}

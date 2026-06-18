@@ -40,20 +40,32 @@ function notifyListeners() {
 
 async function fetchAll() {
   const locallyDeleted = getPersistedDeletedIds();
+  const PAGE_SIZE = 1000;
 
-  const { data, error } = await supabase
-    .from("study_questions")
-    .select("*")
-    .eq("hidden", false)
-    .limit(5000);
+  let allData: Record<string, unknown>[] = [];
+  let from = 0;
 
-  if (!error && data) {
-    currentData = data
-      .filter(row => !locallyDeleted.has(row.id as string))
-      .map(rowToQuestion);
-    _ready = true;
-    notifyListeners();
+  while (true) {
+    const { data, error } = await supabase
+      .from("study_questions")
+      .select("*")
+      .eq("hidden", false)
+      .range(from, from + PAGE_SIZE - 1);
+
+    if (error) break;
+    if (!data || data.length === 0) break;
+
+    allData = allData.concat(data);
+
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
   }
+
+  currentData = allData
+    .filter(row => !locallyDeleted.has(row.id as string))
+    .map(rowToQuestion);
+  _ready = true;
+  notifyListeners();
 }
 
 export function initDataLayer() {

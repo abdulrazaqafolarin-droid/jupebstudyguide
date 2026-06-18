@@ -2,18 +2,14 @@ import type { Subject } from "@/types/question";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
-import { getChemistryQuestions } from "./chemistry";
-import { getBiologyQuestions } from "./biology";
-import { getMathQuestions } from "./math";
-import { getPhysicsQuestions } from "./physics";
+import { getPersistedDeletedIds } from "@/lib/admin-questions-service";
 
 const ALL_YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
-const CATEGORIES: StudyCategory[] = ["objective", "theory", "practical"];
 
 let currentData: StudyQuestion[] = [];
 let listeners: Set<() => void> = new Set();
 let fetchStarted = false;
-let initialLocalLoadDone = false;
+let _ready = false;
 
 function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
   const sq: StudyQuestion = {
@@ -34,6 +30,7 @@ function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
   if (row.course) sq.topic = row.course as string;
   if (row.sort_order !== null && row.sort_order !== undefined) sq.sortOrder = row.sort_order as number;
   if (row.image_url) sq.imageUrl = row.image_url as string;
+  if (row.image_position) sq.imagePosition = row.image_position as StudyQuestion["imagePosition"];
   return sq;
 }
 
@@ -41,41 +38,20 @@ function notifyListeners() {
   listeners.forEach(fn => fn());
 }
 
-let cachedLocal: StudyQuestion[] | null = null;
-
-function loadLocalQuestions(): StudyQuestion[] {
-  if (cachedLocal) return cachedLocal;
-  const all: StudyQuestion[] = [];
-  for (const year of ALL_YEARS) {
-    for (const cat of CATEGORIES) {
-      for (const q of getPhysicsQuestions(year)[cat]) all.push(q);
-      for (const q of getChemistryQuestions(year)[cat]) all.push(q);
-      for (const q of getBiologyQuestions(year)[cat]) all.push(q);
-      for (const q of getMathQuestions(year)[cat]) all.push(q);
-    }
-  }
-  cachedLocal = all;
-  return all;
-}
-
-function mergeSupabaseIntoLocal(remoteRows: Record<string, unknown>[]) {
-  const localQs = loadLocalQuestions();
-  const map = new Map(localQs.map(q => [q.id, q]));
-  for (const row of remoteRows) {
-    const q = rowToQuestion(row);
-    map.set(q.id, q);
-  }
-  currentData = Array.from(map.values());
-  notifyListeners();
-}
-
 async function fetchAll() {
-  const { data, error } = await supabase.from("study_questions").select("*");
-  if (!error && data && data.length > 0) {
-    mergeSupabaseIntoLocal(data);
-  } else if (!initialLocalLoadDone) {
-    initialLocalLoadDone = true;
-    currentData = loadLocalQuestions();
+  const locallyDeleted = getPersistedDeletedIds();
+
+  const { data, error } = await supabase
+    .from("study_questions")
+    .select("*")
+    .eq("hidden", false)
+    .limit(5000);
+
+  if (!error && data) {
+    currentData = data
+      .filter(row => !locallyDeleted.has(row.id as string))
+      .map(rowToQuestion);
+    _ready = true;
     notifyListeners();
   }
 }
@@ -83,10 +59,11 @@ async function fetchAll() {
 export function initDataLayer() {
   if (fetchStarted) return;
   fetchStarted = true;
-  currentData = loadLocalQuestions();
-  initialLocalLoadDone = true;
-  notifyListeners();
   fetchAll();
+}
+
+export function isDataReady(): boolean {
+  return _ready;
 }
 
 export function subscribe(fn: () => void): () => void {

@@ -9,6 +9,7 @@ import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import type { Subject, Question } from "@/types/question";
 
 import { cn } from "@/lib/utils";
+import { MathRenderer } from "@/components/MathRenderer";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 
 interface AnswerEntry {
@@ -59,9 +60,10 @@ export function QuestionViewer({
   }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const question = questions[current];
-  const category = question?.category ?? "objective";
   const total = questions.length;
+  const clampedCurrent = Math.min(current, Math.max(0, total - 1));
+  const question = questions[clampedCurrent];
+  const category = question?.category ?? "objective";
   const answeredCount = useMemo(() => {
     let count = Object.keys(answers).length;
     for (const q of questions) {
@@ -82,6 +84,20 @@ export function QuestionViewer({
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [current]);
+
+  useEffect(() => {
+    if (current >= total) {
+      setDirection(0);
+      setCurrent(Math.max(0, total - 1));
+    }
+  }, [total, current]);
+
+  useEffect(() => {
+    if (submitted) {
+      setSubmitted(false);
+      setResults([]);
+    }
+  }, [questions]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -152,13 +168,36 @@ export function QuestionViewer({
   const hasRealAnswer = !!question?.correctAnswer && question.correctAnswer !== "TBD" && question.correctAnswer !== "tbd";
   const isAnswerCorrect = hasRealAnswer && userAnswer?.toUpperCase() === question?.correctAnswer?.toUpperCase();
 
-  if (!questions.length) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <p className="text-muted-foreground">No questions available.</p>
-      </div>
+  const renderQuestionMedia = useCallback((q: StudyQuestion) => {
+    const hasImage = !!q.imageUrl && !brokenImages.has(q.id);
+    const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
+    if (pos === "text-only" || (!hasImage && pos !== "text-only")) {
+      return q.question ? (
+        <MathRenderer content={q.question} className="text-base font-medium" />
+      ) : null;
+    }
+    const img = (
+      <img src={q.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
     );
-  }
+    if (pos === "image-only") return img;
+    if (pos === "image-above") {
+      return (
+        <>
+          {img}
+          {q.question && <MathRenderer content={q.question} className="text-base font-medium" />}
+        </>
+      );
+    }
+    if (pos === "image-beside") {
+      return (
+        <div className="flex flex-col sm:flex-row gap-4 items-start">
+          <div className="sm:w-1/2 shrink-0">{img}</div>
+          {q.question && <MathRenderer content={q.question} className="text-base font-medium sm:w-1/2" />}
+        </div>
+      );
+    }
+    return img;
+  }, [brokenImages, handleImageError]);
 
   if (submitted) {
     const correct = results.filter((r) => r.isCorrect).length;
@@ -180,6 +219,7 @@ export function QuestionViewer({
         <div className="space-y-3 max-h-[400px] overflow-y-auto">
           {results.map((r, i) => {
             const q = questions[i];
+            if (!q) return null;
             return (
               <div
                 key={r.questionId}
@@ -187,9 +227,9 @@ export function QuestionViewer({
                   r.isCorrect ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20" : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
                 }`}
               >
-                <p className="text-sm font-medium mb-1">
-                  Q{q.sortOrder != null ? q.sortOrder + 1 : i + 1}. {q.question}
-                </p>
+                <div className="text-sm font-medium mb-1">
+                  Q{q.sortOrder != null ? q.sortOrder + 1 : i + 1}. <MathRenderer content={q.question} className="inline" />
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
                 </p>
@@ -288,6 +328,11 @@ export function QuestionViewer({
         )}
       </AnimatePresence>
 
+      {questions.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <p className="text-muted-foreground">No questions available.</p>
+        </div>
+      ) : (
       <div ref={scrollRef} className="space-y-4 pb-24 overflow-y-auto">
         <div className="flex items-center gap-2 sm:gap-3">
           {onBack && (
@@ -356,6 +401,11 @@ export function QuestionViewer({
             className="space-y-5"
           >
             <div>
+              {question.topic && (
+                <div className="mb-3 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-xs font-medium text-primary inline-block">
+                  {question.topic}
+                </div>
+              )}
               {category === "practical" && (
                 <div className="mb-4 p-4 rounded-xl bg-muted/50 border space-y-3">
                   {question.imageUrl && !brokenImages.has(question.id) && (
@@ -404,11 +454,7 @@ export function QuestionViewer({
                 </div>
               ) : category === "objective" ? (
                 <div className="space-y-3">
-                  {question.imageUrl && !brokenImages.has(question.id) ? (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(question.id)} />
-                  ) : (
-                    <p className="text-base font-medium leading-relaxed">{question.question}</p>
-                  )}
+                  {renderQuestionMedia(question)}
                   <div className="space-y-2">
                     {(question.options ?? []).map((opt) => {
                       const isSelected = answers[question.id] === opt.label;
@@ -441,7 +487,7 @@ export function QuestionViewer({
                           >
                           {opt.label}
                             </span>
-                          <span className="text-pretty break-words">{opt.text}</span>
+                          <MathRenderer content={opt.text} className="flex-1 text-pretty break-words" />
                           {showFeedback && isCorrect && (
                             <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>
                           )}
@@ -477,7 +523,7 @@ export function QuestionViewer({
                         {question.explanation && (
                           <div className="p-3 rounded-xl bg-card border">
                             <p className="text-xs font-medium text-muted-foreground mb-1">Explanation</p>
-                            <p className="text-sm leading-relaxed">{question.explanation}</p>
+                            <MathRenderer content={question.explanation} className="text-sm" />
                           </div>
                         )}
                         <button
@@ -493,11 +539,7 @@ export function QuestionViewer({
                   </div>
                 ) : (
                 <div className="space-y-3">
-                  {question.imageUrl && !brokenImages.has(question.id) ? (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(question.id)} />
-                  ) : (
-                    <p className="text-base font-medium leading-relaxed">{question.question}</p>
-                  )}
+                  {renderQuestionMedia(question)}
                   {submittedTheory.has(question.id) ? (
                     <div className="space-y-3">
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
@@ -506,14 +548,14 @@ export function QuestionViewer({
                       {question.answerGuide && (
                         <div className="p-3 rounded-xl bg-card border">
                           <p className="text-xs font-medium text-muted-foreground mb-1">Answer Guide</p>
-                          <p className="text-sm leading-relaxed whitespace-pre-line">{question.answerGuide}</p>
+                          <MathRenderer content={question.answerGuide} className="text-sm" />
                         </div>
                       )}
                       <button
                         onClick={() => setShowAITutor(true)}
                         className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg"
                       >
-                        <Bot className="w-4 h-4" />
+                        <Bot className="w-4 w-4" />
                         <span>Need a deeper explanation?</span>
                         <Sparkles className="w-3 h-3 text-accent" />
                       </button>
@@ -533,6 +575,7 @@ export function QuestionViewer({
           </motion.div>
         </AnimatePresence>
       </div>
+      )}
 
       {/* Sticky bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-20 bg-background/95 backdrop-blur-lg border-t border-border">

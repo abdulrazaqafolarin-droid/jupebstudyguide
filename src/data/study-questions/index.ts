@@ -27,7 +27,10 @@ function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
   }
   if (row.correct_answer) sq.correctAnswer = row.correct_answer as string;
   if (row.explanation) sq.explanation = row.explanation as string;
-  if (row.course) sq.topic = row.course as string;
+  if (row.course) {
+    sq.course = row.course as string;
+    sq.topic = row.course as string;
+  }
   if (row.sort_order !== null && row.sort_order !== undefined) sq.sortOrder = row.sort_order as number;
   if (row.image_url) sq.imageUrl = row.image_url as string;
   if (row.image_position) sq.imagePosition = row.image_position as StudyQuestion["imagePosition"];
@@ -49,10 +52,9 @@ async function fetchAll() {
     const { data, error } = await supabase
       .from("study_questions")
       .select("*")
-      .eq("hidden", false)
       .range(from, from + PAGE_SIZE - 1);
 
-    if (error) break;
+    if (error) { console.error("Failed to fetch study questions:", error); break; }
     if (!data || data.length === 0) break;
 
     allData = allData.concat(data);

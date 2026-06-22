@@ -578,7 +578,7 @@ export function QuestionViewer({
       )}
 
       {/* Sticky bottom bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 bg-background/95 backdrop-blur-lg border-t border-border">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border drop-shadow-[0_-2px_8px_rgba(0,0,0,0.08)]">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
           <button
             onClick={() => goTo(current - 1, -1)}

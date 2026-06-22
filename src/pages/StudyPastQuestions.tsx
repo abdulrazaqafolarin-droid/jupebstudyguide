@@ -27,6 +27,7 @@ import { useActivation } from "@/hooks/useActivation";
 import { StudyCategoryTabs } from "@/components/study-past-questions/StudyCategoryTabs";
 import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
+import { MathRenderer } from "@/components/MathRenderer";
 import { QuestionViewer } from "@/components/study-past-questions/QuestionViewer";
 import { StudyTimer } from "@/components/study-past-questions/StudyTimer";
 import { AdminQuestionPanel } from "@/components/study-past-questions/AdminQuestionPanel";
@@ -45,9 +46,9 @@ const SUBJECTS: Subject[] = ["physics", "chemistry", "biology", "math"];
 const CATEGORIES: StudyCategory[] = ["objective", "theory", "practical"];
 
 const PAGE_VARIANTS = {
-  initial: { opacity: 0, x: 20 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -20 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
@@ -72,6 +73,7 @@ export default function StudyPastQuestions() {
     selectedYear,
     selectedCategory,
     questions,
+    isReady,
     selectSubject,
     selectYear,
     selectCategory,
@@ -102,7 +104,8 @@ export default function StudyPastQuestions() {
   const effectiveQuestions = useMemo(() => {
     const base = questions.filter(q => !deletedQuestionIds.has(q.id));
     const mapped = base.map(q => overrideQuestions.get(q.id) || q);
-    return [...mapped, ...addedQuestions];
+    const existingIds = new Set(mapped.map(q => q.id));
+    return [...mapped, ...addedQuestions.filter(q => !existingIds.has(q.id))];
   }, [questions, overrideQuestions, deletedQuestionIds, addedQuestions]);
 
   const openAdminPanel = useCallback((q?: StudyQuestion) => {
@@ -111,6 +114,7 @@ export default function StudyPastQuestions() {
   }, []);
 
   const handleQuestionUpdated = useCallback((updated: StudyQuestion) => {
+    console.log("handleQuestionUpdated", updated.id, "imageUrl:", updated.imageUrl);
     setOverrideQuestions(prev => {
       const next = new Map(prev);
       next.set(updated.id, updated);
@@ -140,7 +144,6 @@ export default function StudyPastQuestions() {
 
   const handleQuestionAdded = useCallback((added: StudyQuestion) => {
     setAddedQuestions(prev => [...prev, added]);
-    refreshData();
   }, []);
   const subjectFilteredResults = useMemo(() =>
     searchResults.filter(q => searchSubjectFilter.includes(q.subject)),
@@ -475,7 +478,7 @@ export default function StudyPastQuestions() {
                       >
                         <span className="text-lg mt-0.5">{info.icon}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium line-clamp-2">{q.question}</p>
+                          <MathRenderer content={q.question} className="text-sm font-medium line-clamp-2" />
                           <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                             <span className="tabular-nums">{q.year}</span>
                             <span className="capitalize">{q.category}</span>
@@ -649,7 +652,7 @@ export default function StudyPastQuestions() {
 
            <main className="max-w-2xl mx-auto px-4 py-6 pb-28">
             <AnimatePresence mode="wait">
-                  {!quizComplete ? (
+                   {!quizComplete ? (
                 <motion.div
                   key="questions"
                   initial={PAGE_VARIANTS.initial}
@@ -657,6 +660,12 @@ export default function StudyPastQuestions() {
                   exit={PAGE_VARIANTS.exit}
                   transition={PAGE_TRANSITION}
                 >
+                  {!isReady ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mb-4" />
+                      <p className="text-muted-foreground text-sm">Loading questions...</p>
+                    </div>
+                  ) : (
                       <QuestionViewer
                         questions={effectiveQuestions}
                         subject={selectedSubject!}
@@ -671,8 +680,9 @@ export default function StudyPastQuestions() {
                         isBookmarked={(id) => isBookmarked(id)}
                         onToggleBookmark={(id) => toggle(id)}
                       />
+                  )}
 
-                      {/* Progress bar */}
+                      {isReady && (
                       <div className="mt-4 flex items-center gap-3">
                         <div className="flex-1 h-1.5 bg-muted/50 rounded-full overflow-hidden">
                           <motion.div
@@ -686,6 +696,7 @@ export default function StudyPastQuestions() {
                           {Object.keys(userAnswers).length}/{effectiveQuestions.length}
                         </span>
                       </div>
+                      )}
                 </motion.div>
               ) : (
                 <motion.div
@@ -742,7 +753,7 @@ export default function StudyPastQuestions() {
                               {i + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium">{q.question}</p>
+                              <MathRenderer content={q.question} className="text-sm font-medium" />
                               <div className="flex items-center gap-2 mt-1.5 text-xs">
                                 <span className="text-muted-foreground">Your answer:</span>
                                 <span className={cn(
@@ -760,9 +771,7 @@ export default function StudyPastQuestions() {
                                 </p>
                               )}
                               {q.explanation && (
-                                <p className="text-xs text-muted-foreground/70 mt-2 pt-2 border-t border-border/30 leading-relaxed">
-                                  {q.explanation}
-                                </p>
+                                <MathRenderer content={q.explanation} className="text-xs text-muted-foreground/70 mt-2 pt-2 border-t border-border/30" />
                               )}
                             </div>
                           </div>
@@ -853,9 +862,7 @@ export default function StudyPastQuestions() {
                   </div>
 
                   <div className="space-y-4">
-                    <p className="text-base font-medium leading-relaxed">
-                      {selectedBookmarkQuestion.question}
-                    </p>
+                    <MathRenderer content={selectedBookmarkQuestion.question} className="text-base font-medium" />
 
                     {selectedBookmarkQuestion.options && (
                       <div className="space-y-2">
@@ -882,7 +889,7 @@ export default function StudyPastQuestions() {
                               >
                                 {opt.label}
                               </span>
-                              {opt.text}
+                              <MathRenderer content={opt.text} className="flex-1" />
                             </div>
                           );
                         })}
@@ -902,9 +909,7 @@ export default function StudyPastQuestions() {
                         <p className="text-xs font-medium text-muted-foreground mb-1">
                           Explanation
                         </p>
-                        <p className="text-sm leading-relaxed">
-                          {selectedBookmarkQuestion.explanation}
-                        </p>
+                        <MathRenderer content={selectedBookmarkQuestion.explanation} className="text-sm" />
                       </div>
                     )}
 
@@ -913,9 +918,7 @@ export default function StudyPastQuestions() {
                         <p className="text-xs font-medium text-muted-foreground mb-1">
                           Answer Guide
                         </p>
-                        <p className="text-sm leading-relaxed whitespace-pre-line">
-                          {selectedBookmarkQuestion.answerGuide}
-                        </p>
+                        <MathRenderer content={selectedBookmarkQuestion.answerGuide} className="text-sm" />
                       </div>
                     )}
                   </div>
@@ -965,9 +968,7 @@ export default function StudyPastQuestions() {
                         >
                           <span className="text-xl mt-0.5">{info.icon}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium line-clamp-2">
-                              {q.question}
-                            </p>
+                            <MathRenderer content={q.question} className="text-sm font-medium line-clamp-2" />
                             <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                               <span className="tabular-nums">{q.year}</span>
                               <span className="capitalize">{q.category}</span>

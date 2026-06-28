@@ -698,10 +698,9 @@ export default function AIKeyVault() {
       <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-xs text-muted-foreground">
         <Shield className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
         <p>
-          All API keys are encrypted at rest using AES-256-GCM with a server-side
-          KEY_ENCRYPTION_SECRET. The raw key value is never stored or transmitted in plain text
-          after initial saving. The admin-key-manager edge function validates JWT authentication
-          on every request. Only the admin email can manage keys.
+          All API keys are stored securely with database-level RLS policies. The
+          admin-key-manager edge function validates JWT authentication on every request.
+          Only the admin email can manage keys.
         </p>
       </div>
     </div>

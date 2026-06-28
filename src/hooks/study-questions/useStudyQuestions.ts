@@ -1,15 +1,19 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { Subject } from "@/types/question";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
-import { getStudyQuestionsBySubject, subscribe } from "@/data/study-questions";
+import { getStudyQuestionsBySubject, subscribe, isDataReady } from "@/data/study-questions";
 
 export function useStudyQuestions() {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<StudyCategory>("objective");
   const [tick, setTick] = useState(0);
+  const [ready, setReady] = useState(isDataReady());
 
-  useEffect(() => subscribe(() => setTick(t => t + 1)), []);
+  useEffect(() => subscribe(() => {
+    setTick(t => t + 1);
+    setReady(isDataReady());
+  }), []);
 
   const questions = useMemo(() => {
     if (!selectedSubject || !selectedYear) return [];
@@ -28,7 +32,7 @@ export function useStudyQuestions() {
 
   return {
     selectedSubject, selectedYear, selectedCategory,
-    questions, tick,
+    questions, tick, isReady: ready,
     selectSubject, selectYear, selectCategory, reset,
   };
 }

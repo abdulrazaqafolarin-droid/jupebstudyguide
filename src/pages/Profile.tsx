@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFriends } from '@/hooks/useFriends';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +16,7 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, Eye, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy, UserPlus, UserCheck, UserX, Clock, Send, Ban, Flag } from 'lucide-react';
 import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 import { ACHIEVEMENTS, Achievement } from '@/hooks/useAchievements';
@@ -24,9 +26,39 @@ import { cn } from '@/lib/utils';
 export default function ProfilePage() {
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
   const { signOut, user, deleteAccount } = useAuth();
+  const friends = useFriends();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const viewUserId = searchParams.get('userId');
+  const isOwnProfile = !viewUserId || viewUserId === user?.id;
+
+  // State for viewing another user's profile
+  const [viewProfile, setViewProfile] = useState<{
+    display_name: string | null;
+    avatar_url: string | null;
+    bio: string | null;
+    achievements: string[];
+  } | null>(null);
+  const [viewLoading, setViewLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOwnProfile || !viewUserId || !user) return;
+    setViewLoading(true);
+    supabase.from('profiles')
+      .select('display_name, avatar_url, bio, achievements')
+      .eq('user_id', viewUserId)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) console.error('Failed to fetch user profile:', error);
+        if (data) setViewProfile(data as typeof viewProfile);
+      })
+      .finally(() => setViewLoading(false));
+  }, [viewUserId, user, isOwnProfile]);
+
+  // Own profile state
   const [displayName, setDisplayName] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -34,7 +66,7 @@ export default function ProfilePage() {
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [deleting, setDeleting] = useState(false);
 
-  // Achievements
+  // Achievements (own profile)
   const [unlockedIds] = useUserStorage<string[]>('achievements-unlocked', []);
   const unlockedAchievements = useMemo(
     () => ACHIEVEMENTS.filter(a => unlockedIds.includes(a.id)),
@@ -52,6 +84,51 @@ export default function ProfilePage() {
   useEffect(() => {
     if (profile) setDisplayName(profile.display_name ?? '');
   }, [profile]);
+
+  // Other user's achievements
+  const otherAchievements = useMemo(() => {
+    if (!viewProfile?.achievements) return [];
+    return ACHIEVEMENTS.filter(a => viewProfile.achievements.includes(a.id));
+  }, [viewProfile?.achievements]);
+  const otherOrdered = useMemo(() => {
+    const order = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
+    return [...otherAchievements].sort((a, b) => order[a.rarity] - order[b.rarity]);
+  }, [otherAchievements]);
+  const otherLegendary = otherAchievements.filter(a => a.rarity === 'legendary').length;
+  const otherEpic = otherAchievements.filter(a => a.rarity === 'epic').length;
+  const otherRare = otherAchievements.filter(a => a.rarity === 'rare').length;
+
+  // Relationship actions for viewing another user
+  const isAlreadyFriend = viewUserId ? friends.friends.some(f => f.user_id === viewUserId) : false;
+  const hasPendingOutgoing = viewUserId ? friends.outgoingRequests.some(r => r.receiver_id === viewUserId) : false;
+  const hasIncomingRequest = viewUserId ? friends.incomingRequests.some(r => r.sender_id === viewUserId) : false;
+
+  const handleFriendAction = async (action: string) => {
+    if (!viewUserId) return;
+    setActionLoading(action);
+    if (action === 'add') {
+      const { error } = await friends.sendRequest(viewUserId);
+      if (error) toast.error(error.message);
+    } else if (action === 'cancel') {
+      const req = friends.outgoingRequests.find(r => r.receiver_id === viewUserId);
+      if (req) { const { error } = await friends.cancelRequest(req.id); if (error) toast.error(error.message); }
+    } else if (action === 'accept') {
+      const req = friends.incomingRequests.find(r => r.sender_id === viewUserId);
+      if (req) { const { error } = await friends.respondToRequest(req.id, true); if (error) toast.error(error.message); }
+    } else if (action === 'decline') {
+      const req = friends.incomingRequests.find(r => r.sender_id === viewUserId);
+      if (req) { const { error } = await friends.respondToRequest(req.id, false); if (error) toast.error(error.message); }
+    } else if (action === 'unfriend') {
+      if (viewUserId) { const { error } = await friends.removeFriend(viewUserId); if (error) toast.error(error.message); }
+    } else if (action === 'message') {
+      startChat(viewUserId);
+    }
+    setActionLoading(null);
+  };
+
+  const startChat = (otherUserId: string) => {
+    navigate('/chat?dm=' + otherUserId);
+  };
 
   const handleAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,7 +165,22 @@ export default function ProfilePage() {
     navigate('/auth');
   };
 
-  if (loading) {
+  // Shared action button helper
+  const renderActionBtn = (label: string, icon: typeof Eye, onClick: () => void, variant: 'default' | 'outline' | 'ghost' = 'default') => {
+    const IconComponent = icon;
+    return (
+      <Button size="sm" variant={variant} onClick={onClick} disabled={actionLoading !== null}
+        className="flex-1 h-9 text-xs rounded-lg"
+      >
+        {actionLoading !== null ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
+        <IconComponent className="w-3.5 h-3.5 mr-1.5" />
+        {label}
+      </Button>
+    );
+  };
+
+  // Loading states
+  if ((isOwnProfile && loading) || (!isOwnProfile && viewLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -96,6 +188,101 @@ export default function ProfilePage() {
     );
   }
 
+  // ============================================
+  // VIEWING ANOTHER USER
+  // ============================================
+  if (!isOwnProfile && viewUserId && viewProfile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border">
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+            <button onClick={() => navigate(-1)} className="p-1 -ml-1 rounded-lg hover:bg-accent transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="font-semibold text-sm">{viewProfile.display_name || 'User'}</h1>
+          </div>
+        </header>
+
+        <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+          {/* Avatar + Name */}
+          <section className="bg-card rounded-2xl border border-border p-8 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <UserAvatar
+                url={viewProfile.avatar_url}
+                name={viewProfile.display_name}
+                className="w-28 h-28 ring-2 ring-primary/20"
+                viewable
+                targetUserId={viewUserId}
+              />
+              <div>
+                <h2 className="text-xl font-bold">{viewProfile.display_name || 'User'}</h2>
+                {viewProfile.bio && <p className="text-sm text-muted-foreground mt-1">{viewProfile.bio}</p>}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-2 mt-6">
+              {isAlreadyFriend ? (
+                <>
+                  {renderActionBtn('Message', Send, () => handleFriendAction('message'))}
+                  {renderActionBtn('Unfriend', UserX, () => handleFriendAction('unfriend'), 'outline')}
+                </>
+              ) : hasPendingOutgoing ? (
+                <>
+                  {renderActionBtn('Cancel Request', Clock, () => handleFriendAction('cancel'), 'outline')}
+                  {renderActionBtn('Message', Send, () => handleFriendAction('message'))}
+                </>
+              ) : hasIncomingRequest ? (
+                <>
+                  {renderActionBtn('Accept', UserCheck, () => handleFriendAction('accept'))}
+                  {renderActionBtn('Decline', UserX, () => handleFriendAction('decline'), 'destructive')}
+                </>
+              ) : (
+                <>
+                  {renderActionBtn('Add Friend', UserPlus, () => handleFriendAction('add'))}
+                  {renderActionBtn('Message', Send, () => handleFriendAction('message'), 'outline')}
+                </>
+              )}
+            </div>
+          </section>
+
+          {/* Achievements */}
+          {otherAchievements.length > 0 && (
+            <section className="bg-card rounded-2xl border border-border p-6 space-y-4">
+              <h3 className="text-base font-semibold flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-primary" />
+                Achievements
+                <span className="text-xs font-normal text-muted-foreground">({otherAchievements.length})</span>
+              </h3>
+
+              {otherLegendary + otherEpic > 0 && (
+                <div className="bg-gradient-to-br from-yellow-500/5 via-purple-500/5 to-accent/5 rounded-xl border border-primary/10 p-5">
+                  <div className="flex flex-wrap gap-5 justify-center">
+                    {otherOrdered.filter(a => a.rarity === 'legendary' || a.rarity === 'epic').map((a) => (
+                      <EliteBadge key={a.id} achievement={a} unlocked featured />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                {otherOrdered.filter(a => a.rarity !== 'legendary' && a.rarity !== 'epic').map((a) => (
+                  <div key={a.id} className="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-secondary/40 transition-colors">
+                    <AchievementBadge achievement={a} unlocked size="md" showDetails={false} />
+                    <p className="text-[10px] text-muted-foreground text-center leading-tight line-clamp-2">{a.name}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </main>
+      </div>
+    );
+  }
+
+  // ============================================
+  // OWN PROFILE
+  // ============================================
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border">
@@ -183,7 +370,6 @@ export default function ProfilePage() {
               <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-accent/5 rounded-full blur-3xl" />
 
               <div className="relative">
-                {/* Header */}
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-base font-semibold flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-primary" />
@@ -211,7 +397,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Elite Showcase - Legendary + Epic badges */}
                 {ordered.filter(a => a.rarity === 'legendary' || a.rarity === 'epic').length > 0 && (
                   <div className="bg-gradient-to-br from-yellow-500/5 via-purple-500/5 to-accent/5 rounded-xl border border-primary/10 p-5">
                     <div className="flex items-center gap-1.5 mb-4">
@@ -234,7 +419,6 @@ export default function ProfilePage() {
                   </div>
                 )}
 
-                {/* All unlocked badges grid */}
                 <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                   {ordered.filter(a => a.rarity !== 'legendary' && a.rarity !== 'epic').slice(0, 12).map((achievement, i) => (
                     <motion.div
@@ -284,28 +468,15 @@ export default function ProfilePage() {
                 Contact the administrator to purchase additional tokens for yourself or friends.
               </p>
               <div className="flex flex-col gap-2">
-                <a
-                  href={`mailto:${ADMIN_EMAIL}`}
-                  className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50"
-                >
+                <a href={`mailto:${ADMIN_EMAIL}`} className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50">
                   <Mail className="w-4 h-4 shrink-0 text-accent" />
                   {ADMIN_EMAIL}
                 </a>
-                <a
-                  href="https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50"
-                >
+                <a href="https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50">
                   <MessageCircle className="w-4 h-4 shrink-0 text-accent" />
                   08124504552 (WhatsApp)
                 </a>
-                <a
-                  href="https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50"
-                >
+                <a href="https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50">
                   <MessageCircle className="w-4 h-4 shrink-0 text-accent" />
                   07043353166 (WhatsApp)
                 </a>
@@ -326,12 +497,7 @@ export default function ProfilePage() {
               <p className="text-sm text-muted-foreground mb-4">
                 Permanently delete your account and all associated data. This action cannot be undone.
               </p>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setShowDeleteDialog(true)}
-                className="w-full sm:w-auto hover:scale-105 active:scale-95 transition-all duration-200"
-              >
+              <Button variant="destructive" size="sm" onClick={() => setShowDeleteDialog(true)} className="w-full sm:w-auto hover:scale-105 active:scale-95 transition-all duration-200">
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Account
               </Button>
@@ -348,36 +514,17 @@ export default function ProfilePage() {
               Delete your account?
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-3">
-              <p>
-                This will permanently delete your account, your profile, your chat history,
-                and all your study data. This action cannot be undone.
-              </p>
+              <p>This will permanently delete your account, your profile, your chat history, and all your study data. This action cannot be undone.</p>
               <div className="bg-destructive/5 rounded-lg p-3 border border-destructive/20">
-                <p className="text-xs font-medium mb-2">
-                  Type <strong className="text-destructive">DELETE</strong> to confirm:
-                </p>
-                <Input
-                  value={deleteConfirm}
-                  onChange={(e) => setDeleteConfirm(e.target.value)}
-                  placeholder="DELETE"
-                  className="font-mono text-sm uppercase"
-                  autoComplete="off"
-                />
+                <p className="text-xs font-medium mb-2">Type <strong className="text-destructive">DELETE</strong> to confirm:</p>
+                <Input value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)} placeholder="DELETE" className="font-mono text-sm uppercase" autoComplete="off" />
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={deleteConfirm !== 'DELETE' || deleting}
-              onClick={handleDeleteAccount}
-              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-            >
-              {deleting ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Deleting...</>
-              ) : (
-                <><Trash2 className="w-4 h-4 mr-2" /> Delete Forever</>
-              )}
+            <AlertDialogAction disabled={deleteConfirm !== 'DELETE' || deleting} onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+              {deleting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Deleting...</> : <><Trash2 className="w-4 h-4 mr-2" /> Delete Forever</>}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

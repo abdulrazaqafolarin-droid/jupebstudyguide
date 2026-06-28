@@ -18,8 +18,10 @@ import {
   Pause,
   PlayCircle,
   Trash2,
+  Shuffle,
 } from 'lucide-react';
 import SyllabusDayView from './SyllabusDayView';
+import SubjectReorder from './SubjectReorder';
 
 interface SessionCardProps {
   session: StudySessionData;
@@ -29,6 +31,7 @@ interface SessionCardProps {
   onPause: (id: string) => void;
   onResume: (id: string) => void;
   onDelete: (id: string) => void;
+  onReorderSubjects?: (ordered: Subject[]) => void;
   onStartTeaching?: (session: StudySessionData, day: number) => void;
 }
 
@@ -63,6 +66,7 @@ export function SessionCard({
   onPause,
   onResume,
   onDelete,
+  onReorderSubjects,
   onStartTeaching,
 }: SessionCardProps) {
   const [expanded, setExpanded] = useState(false);
@@ -71,6 +75,7 @@ export function SessionCard({
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState(session.name);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showReorder, setShowReorder] = useState(false);
 
   const { progress } = session;
   const completedDays = progress.dailyTasks.filter(t => t.isCompleted).length;
@@ -182,6 +187,14 @@ export function SessionCard({
                       <PlayCircle className="w-4 h-4" /> Resume
                     </button>
                   ) : null}
+                  {onReorderSubjects && (
+                    <button
+                      onClick={() => { setMenuOpen(false); setShowReorder(true); setExpanded(true); }}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-secondary/50 text-left"
+                    >
+                      <Shuffle className="w-4 h-4" /> Reorder subjects
+                    </button>
+                  )}
                   {confirmDelete ? (
                     <div className="px-4 py-2 space-y-2">
                       <p className="text-xs text-destructive font-medium">Delete this session?</p>
@@ -280,7 +293,16 @@ export function SessionCard({
 
       {/* Expanded day grid */}
       {expanded && (
-        <div className="border-t border-border px-4 py-4">
+        <div className="border-t border-border px-4 py-4 space-y-4">
+          {showReorder && onReorderSubjects && (
+            <SubjectReorder
+              subjects={session.subjects}
+              onApply={(ordered) => {
+                onReorderSubjects(ordered);
+                setShowReorder(false);
+              }}
+            />
+          )}
           <div className="grid grid-cols-6 sm:grid-cols-10 gap-1.5">
             {progress.dailyTasks.map(task => {
               const canAccess = canAdvanceToDay(session.id, task.day);

@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat as aiStreamChat } from '@/lib/ai-service';
+import { streamChat as aiStreamChat, stripThinking } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -407,17 +407,20 @@ export const FloatingAITutor = () => {
           setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
         }
         acc += text;
-        assistantContentRef.current = acc;
+        const stripped = stripThinking(acc);
+        assistantContentRef.current = stripped;
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length && arr[arr.length - 1].role === 'assistant') {
-            arr[arr.length - 1] = { role: 'assistant', content: acc };
+            arr[arr.length - 1] = { role: 'assistant', content: stripped };
           }
           return arr;
         });
       },
       onDone: async () => {
-        if (!firstToken && assistantContentRef.current) {
+        if (firstToken) {
+          toast.error('AI did not respond. Check your connection and try again.');
+        } else if (assistantContentRef.current) {
           try {
             await saveAssistantMessage(chatId, assistantContentRef.current);
           } catch {

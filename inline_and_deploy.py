@@ -16,9 +16,11 @@ NPM_IMPORT_RE = re.compile(r"^\s*import\s+\{([^}]+)\}\s+from\s+[\'\"]npm:@supaba
 STAR_IMPORT_RE = re.compile(r"^\s*import\s+\*\s+as\s+(\w+)\s+from\s+[\'\"]npm:([^\'\"]+)[\'\"]\s*;?\s*$")
 IMPORT_REMAIN_RE = re.compile(r"^\s*import\s+")
 
-def inline_imports(source, seen=None):
+def inline_imports(source, seen=None, npm_seen=None):
     if seen is None:
         seen = set()
+    if npm_seen is None:
+        npm_seen = set()
     lines = source.split("\n")
     result = []
     for line in lines:
@@ -33,7 +35,7 @@ def inline_imports(source, seen=None):
             if fname and fname in shared and fname not in seen:
                 seen.add(fname)
                 result.append(f"// --- inlined from {fname} ---")
-                inlined = inline_imports(shared[fname], seen)
+                inlined = inline_imports(shared[fname], seen, npm_seen)
                 inlined = re.sub(r"^export\s+(async\s+)?function\s+", r"\1function ", inlined, flags=re.MULTILINE)
                 inlined = re.sub(r"^export\s+\{[^}]+\}\s*;?\s*$", "", inlined, flags=re.MULTILINE)
                 result.append(inlined)
@@ -42,12 +44,19 @@ def inline_imports(source, seen=None):
         
         npm_m = NPM_IMPORT_RE.match(line)
         if npm_m:
-            result.append(f"const {{ {npm_m.group(1)} }} = await import(\"npm:@supabase/supabase-js@2\");")
+            var_name = npm_m.group(1).strip()
+            if var_name not in npm_seen:
+                npm_seen.add(var_name)
+                result.append(f"const {{ {var_name} }} = await import(\"npm:@supabase/supabase-js@2\");")
             continue
         
         star_m = STAR_IMPORT_RE.match(line)
         if star_m:
-            result.append(f"const {star_m.group(1)} = await import(\"npm:{star_m.group(2)}\");")
+            ns = star_m.group(1).strip()
+            mod = star_m.group(2).strip()
+            if ns not in npm_seen:
+                npm_seen.add(ns)
+                result.append(f"const {ns} = await import(\"npm:{mod}\");")
             continue
         
         if IMPORT_REMAIN_RE.match(line) and "import.meta" not in line:

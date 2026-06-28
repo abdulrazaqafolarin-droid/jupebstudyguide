@@ -25,6 +25,50 @@ const EMOJI_CATEGORIES = [
 const ALL_EMOJIS = EMOJI_CATEGORIES.flatMap(c => c.emojis);
 const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥'];
 
+const EMOJI_NAMES: Record<string, string> = {
+  '👍': 'thumbs up like',
+  '❤️': 'heart love',
+  '😂': 'laugh cry tears joy',
+  '😮': 'surprised shocked wow',
+  '😢': 'cry sad tear',
+  '🔥': 'fire hot',
+  '🎉': 'party celebrate confetti',
+  '💯': '100 perfect score',
+  '👏': 'clap applause',
+  '😍': 'love eyes crush',
+  '🤣': 'rolling laugh floor',
+  '😭': 'crying loudly sob',
+  '😤': 'frustrated annoyed',
+  '🙄': 'eye roll',
+  '🤔': 'thinking think',
+  '🥺': 'pleading please beg',
+  '🙏': 'pray please thank you',
+  '💪': 'muscle strong flex',
+  '👋': 'wave hello goodbye',
+  '✌️': 'peace victory',
+  '🤝': 'handshake deal agree',
+  '✨': 'sparkle magic',
+  '💀': 'skull dead',
+  '🎊': 'confetti party',
+  '💅': 'nail care',
+  '🤌': 'chef kiss italian',
+  '🧡': 'orange heart',
+  '💛': 'yellow heart',
+  '💚': 'green heart',
+  '💙': 'blue heart',
+  '💜': 'purple heart',
+  '🖤': 'black heart',
+  '🤍': 'white heart',
+  '💝': 'heart with ribbon gift',
+  '💖': 'sparkling heart',
+  '🚀': 'rocket launch',
+  '⭐': 'star',
+  '✅': 'check mark done',
+  '❌': 'cross mark wrong',
+  '💡': 'light bulb idea',
+  '🎯': 'target bullseye',
+};
+
 interface MessageReactionsProps {
   reactions: Record<string, string[]>;
   messageId: string;
@@ -94,7 +138,10 @@ export function MessageReactions({
       return EMOJI_CATEGORIES[activeCategory]?.emojis || ALL_EMOJIS;
     }
     const q = searchQuery.toLowerCase();
-    return ALL_EMOJIS.filter(e => e.toLowerCase().includes(q));
+    return ALL_EMOJIS.filter(e => {
+      const name = EMOJI_NAMES[e] || '';
+      return name.includes(q) || e === q;
+    });
   }, [searchQuery, activeCategory]);
 
   const quickReact = useCallback((emoji: string) => {
@@ -292,7 +339,7 @@ export function MessageReactions({
                           ? 'bg-primary/15 ring-1 ring-primary/30 scale-110'
                           : 'hover:bg-secondary/80 hover:scale-110'
                       )}
-                      title={emoji}
+                      title={EMOJI_NAMES[emoji] || emoji}
                     >
                       {emoji}
                     </button>

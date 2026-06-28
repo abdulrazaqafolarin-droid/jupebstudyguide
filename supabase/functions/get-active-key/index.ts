@@ -1,5 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { decryptApiKey } from "../_shared/keyVault.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -11,7 +10,6 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: CORS_HEADERS });
   }
 
-  // Only allow service_role key — never expose this to anon/public users
   const authHeader = req.headers.get("authorization");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!authHeader || !serviceRoleKey || authHeader.replace("Bearer ", "") !== serviceRoleKey) {
@@ -23,22 +21,15 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const supabase = createClient(supabaseUrl, serviceRoleKey);
-  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
-
-  if (!encryptionSecret) {
-    return new Response(
-      JSON.stringify({ error: "KEY_ENCRYPTION_SECRET not configured" }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
-    );
-  }
 
   try {
     const { data, error } = await supabase
       .from("ai_api_keys")
-      .select("id, label, encrypted_key")
+      .select("id, label, api_key")
       .eq("is_active", true)
       .eq("token_exhausted", false)
-      .order("priority", { ascending: true })
+      .order("total_requests", { ascending: true })
+      .order("last_used_at", { ascending: true, nullsFirst: true })
       .limit(1)
       .maybeSingle();
 
@@ -50,10 +41,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    const apiKey = await decryptApiKey(data.encrypted_key, encryptionSecret);
-
     return new Response(
-      JSON.stringify({ keyId: data.id, apiKey, label: data.label }),
+      JSON.stringify({ keyId: data.id, apiKey: data.api_key, label: data.label }),
       { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   } catch (err) {

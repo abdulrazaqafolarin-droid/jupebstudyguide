@@ -1,15 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { encryptApiKey } from "../_shared/keyVault.ts";
-
-/// DEPLOYMENT — FIRST-TIME SETUP
-/// ==============================
-/// After deploying this edge function, set KEY_ENCRYPTION_SECRET in Supabase secrets:
-///   supabase secrets set KEY_ENCRYPTION_SECRET=$(openssl rand -hex 32)
-/// This secret is used for AES-256-GCM encryption of API keys at rest.
-/// If not set, ALL key management operations will fail with 500.
-/// Also verify ADMIN_EMAIL is set in Supabase secrets:
-///   supabase secrets set ADMIN_EMAIL=admin@yourdomain.com
-/// ==============================
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -81,14 +70,6 @@ Deno.serve(async (req) => {
     );
   }
 
-  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
-  if (!encryptionSecret) {
-    return new Response(
-      JSON.stringify({ error: "KEY_ENCRYPTION_SECRET not configured" }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
-    );
-  }
-
   try {
     const payload: Payload = await req.json();
     const { action } = payload;
@@ -101,7 +82,7 @@ Deno.serve(async (req) => {
       case "list-keys":
         return handleListKeys(supabase);
       case "add-key":
-        return handleAddKey(supabase, encryptionSecret, payload);
+        return handleAddKey(supabase, payload);
       case "update-key":
         return handleUpdateKey(supabase, payload);
       case "delete-key":
@@ -178,7 +159,6 @@ async function handleListKeys(supabase: ReturnType<typeof createClient>) {
 
 async function handleAddKey(
   supabase: ReturnType<typeof createClient>,
-  encryptionSecret: string,
   payload: Payload
 ) {
   if (!payload.label || !payload.apiKey) {
@@ -188,10 +168,8 @@ async function handleAddKey(
     );
   }
 
-  const encrypted = await encryptApiKey(payload.apiKey, encryptionSecret);
   const preview = payload.apiKey.slice(-4);
 
-  // Auto-assign priority if not given
   let priority = payload.priority;
   if (!priority) {
     const { data: maxKey } = await supabase
@@ -207,7 +185,7 @@ async function handleAddKey(
     .from("ai_api_keys")
     .insert({
       label: payload.label,
-      encrypted_key: encrypted,
+      api_key: payload.apiKey,
       key_preview: `••••••••••••${preview}`,
       priority,
     })
@@ -242,6 +220,10 @@ async function handleUpdateKey(
   if (payload.label !== undefined) updates.label = payload.label;
   if (payload.priority !== undefined) updates.priority = payload.priority;
   if (payload.is_active !== undefined) updates.is_active = payload.is_active;
+  if (payload.apiKey !== undefined) {
+    updates.api_key = payload.apiKey;
+    updates.key_preview = `••••••••••••${payload.apiKey.slice(-4)}`;
+  }
 
   const { data, error } = await supabase
     .from("ai_api_keys")

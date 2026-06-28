@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, MessageCircle, User, Users, Trophy, Clock, ArrowLeft, Loader2, Compass } from 'lucide-react';
+import { Search, Users, Trophy, Clock, ArrowLeft, Loader2, Compass, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -14,10 +14,10 @@ interface DiscoverUser {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
-  email: string | null;
   last_seen_at: string | null;
   total_score: number;
   is_online: boolean;
+  rank: number;
 }
 
 export default function DiscoverPage() {
@@ -26,79 +26,64 @@ export default function DiscoverPage() {
   const [users, setUsers] = useState<DiscoverUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [startingChat, setStartingChat] = useState<string | null>(null);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedQuery(searchQuery), 250);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (!user) return;
     setLoading(true);
 
     Promise.all([
-      supabase.from('profiles').select('user_id, display_name, avatar_url, email, last_seen_at').neq('user_id', user.id),
-      supabase.rpc('get_weekly_leaderboard', { p_week_start: new Date().toISOString().slice(0, 10) }),
-    ]).then(([profilesRes, leaderboardRes]) => {
+      supabase.from('profiles').select('user_id, display_name, avatar_url, last_seen_at').neq('user_id', user.id),
+      supabase.from('score_events').select('user_id, amount'),
+    ]).then(([profilesRes, scoresRes]) => {
+      if (profilesRes.error) console.warn('profiles error:', profilesRes.error);
+      if (scoresRes.error) console.warn('score_events error:', scoresRes.error);
+
       const profileData = (profilesRes.data ?? []) as DiscoverUser[];
-      const leaderboardData = (leaderboardRes.data ?? []) as { user_id: string; total_score: number }[];
-      const scoreMap = new Map(leaderboardData.map(l => [l.user_id, l.total_score]));
+      const scoreEvents = (scoresRes.data ?? []) as { user_id: string; amount: number }[];
+
+      const scoreMap = new Map<string, number>();
+      for (const ev of scoreEvents) {
+        scoreMap.set(ev.user_id, (scoreMap.get(ev.user_id) ?? 0) + ev.amount);
+      }
 
       const enriched: DiscoverUser[] = profileData.map(p => ({
         ...p,
         total_score: scoreMap.get(p.user_id) ?? 0,
-        is_online: false, // will be refined after privacy check
+        is_online: false,
+        rank: 0,
       }));
 
       enriched.sort((a, b) => b.total_score - a.total_score);
+      enriched.forEach((u, i) => { u.rank = i + 1; });
       setUsers(enriched);
 
-      // Privacy-respecting online status check
-      if (user) {
-        const onlineIds: string[] = [];
-        profileData.forEach(p => {
-          if (p.last_seen_at && Date.now() - new Date(p.last_seen_at).getTime() < 5 * 60 * 1000) {
-            onlineIds.push(p.user_id);
-          }
-        });
-        if (onlineIds.length > 0) {
-          Promise.all(
-            onlineIds.map(async (uid) => {
-              const { data: allowed } = await supabase.rpc('can_view_online_status', {
-                p_target_user_id: uid,
-              });
-              return { uid, allowed: allowed !== false };
-            })
-          ).then((results) => {
-            const visibleOnlineIds = new Set(results.filter(r => r.allowed).map(r => r.uid));
-            setUsers(prev => prev.map(u => ({
-              ...u,
-              is_online: visibleOnlineIds.has(u.user_id),
-            })));
-          });
-        }
-      }
-
+      setLoading(false);
+    }).catch(err => {
+      console.warn('DiscoverPage load failed:', err);
       setLoading(false);
     });
   }, [user]);
 
   const filtered = useMemo(() => {
-    if (!searchQuery.trim()) return users;
-    const q = searchQuery.toLowerCase();
+    if (!debouncedQuery.trim()) return users;
+    const q = debouncedQuery.toLowerCase();
     return users.filter(u =>
-      u.display_name?.toLowerCase().includes(q) ||
-      u.email?.toLowerCase().includes(q)
+      u.display_name?.toLowerCase().includes(q)
     );
-  }, [users, searchQuery]);
+  }, [users, debouncedQuery]);
 
   const onlineUsers = useMemo(() => filtered.filter(u => u.is_online), [filtered]);
   const topUsers = useMemo(() => [...filtered].sort((a, b) => b.total_score - a.total_score).slice(0, 20), [filtered]);
 
-  const handleChat = async (otherUserId: string) => {
-    if (!user) return;
-    setStartingChat(otherUserId);
-    const { data, error } = await supabase.rpc('find_or_create_dm', { other_user_id: otherUserId });
-    setStartingChat(null);
-    if (error || !data) return;
-    navigate(`/chat?conversation=${data.id}`);
-  };
+  const openProfile = (userId: string) => navigate(`/profile?userId=${userId}`);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -146,7 +131,7 @@ export default function DiscoverPage() {
                   {onlineUsers.slice(0, 10).map((u) => (
                     <button
                       key={u.user_id}
-                      onClick={() => navigate(`/profile?userId=${u.user_id}`)}
+                      onClick={() => openProfile(u.user_id)}
                       className="flex flex-col items-center gap-1.5 min-w-[64px]"
                     >
                       <div className="relative">
@@ -187,7 +172,7 @@ export default function DiscoverPage() {
                       )}>
                         {i + 1}
                       </span>
-                      <button onClick={() => navigate(`/profile?userId=${u.user_id}`)} className="relative shrink-0">
+                      <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-9 h-9 ring-0" targetUserId={u.user_id} />
                         {u.is_online && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
@@ -195,26 +180,24 @@ export default function DiscoverPage() {
                       </button>
                       <div className="flex-1 min-w-0">
                         <button
-                          onClick={() => navigate(`/profile?userId=${u.user_id}`)}
+                          onClick={() => openProfile(u.user_id)}
                           className="text-sm font-medium truncate block text-left hover:underline"
                         >
                           {u.display_name || 'User'}
                         </button>
                         <p className="text-[10px] text-muted-foreground">{u.total_score.toLocaleString()} pts</p>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleChat(u.user_id)}
-                        disabled={startingChat === u.user_id}
-                      >
-                        {startingChat === u.user_id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <MessageCircle className="w-4 h-4" />
-                        )}
-                      </Button>
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs rounded-lg"
+                          onClick={(e) => { e.stopPropagation(); openProfile(u.user_id); }}
+                        >
+                          <Eye className="w-3.5 h-3.5 mr-1" />
+                          View Profile
+                        </Button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
@@ -242,7 +225,7 @@ export default function DiscoverPage() {
                       animate={{ opacity: 1 }}
                       className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/50 transition-colors group"
                     >
-                      <button onClick={() => navigate(`/profile?userId=${u.user_id}`)} className="relative shrink-0">
+                      <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-10 h-10 ring-0" targetUserId={u.user_id} />
                         {u.is_online && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
@@ -250,7 +233,7 @@ export default function DiscoverPage() {
                       </button>
                       <div className="flex-1 min-w-0">
                         <button
-                          onClick={() => navigate(`/profile?userId=${u.user_id}`)}
+                          onClick={() => openProfile(u.user_id)}
                           className="text-sm font-medium truncate block text-left hover:underline"
                         >
                           {u.display_name || 'User'}
@@ -277,19 +260,17 @@ export default function DiscoverPage() {
                           )}
                         </div>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleChat(u.user_id)}
-                        disabled={startingChat === u.user_id}
-                      >
-                        {startingChat === u.user_id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <MessageCircle className="w-4 h-4" />
-                        )}
-                      </Button>
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs rounded-lg"
+                          onClick={(e) => { e.stopPropagation(); openProfile(u.user_id); }}
+                        >
+                          <Eye className="w-3.5 h-3.5 mr-1" />
+                          View Profile
+                        </Button>
+                      </div>
                     </motion.div>
                   ))}
                 </div>

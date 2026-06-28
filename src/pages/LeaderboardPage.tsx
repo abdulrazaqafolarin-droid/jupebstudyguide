@@ -83,19 +83,8 @@ export default function LeaderboardPage() {
     });
   }, [pastChampions]);
 
-  const startChat = useCallback(async (otherUserId: string) => {
-    try {
-      const { data, error } = await supabase
-        .rpc('find_or_create_dm', { other_user_id: otherUserId });
-      if (error) throw new Error(error.message);
-      const result = data as { conversation_id?: string; error?: string };
-      if (result?.error) throw new Error(result.error);
-      if (result?.conversation_id) {
-        navigate(`/chat?conversation=${result.conversation_id}`);
-      }
-    } catch (err) {
-      toast.error(String(err));
-    }
+  const startChat = useCallback((otherUserId: string) => {
+    navigate('/chat?dm=' + otherUserId);
   }, [navigate]);
 
   return (

@@ -130,12 +130,10 @@ export async function searchRelevantChunks(
   query: string,
   k = 5
 ): Promise<string> {
-  const [queryEmb, chunks] = await Promise.all([
-    generateEmbedding(query),
-    getAllChunks(),
-  ]);
-
+  const chunks = await getAllChunks();
   if (chunks.length === 0) return "";
+
+  const queryEmb = await generateEmbedding(query);
 
   const scored = chunks
     .map((c) => ({ chunk: c, score: cosineSimilarity(queryEmb, c.embedding) }))

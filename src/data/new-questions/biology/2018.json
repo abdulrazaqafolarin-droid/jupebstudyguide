@@ -1,0 +1,1200 @@
+[
+  {
+    "id": "bio-2018-import-1",
+    "question": "The first scientist to discover a cell when observing a thin section of dead cork under a crude compound microscope is",
+    "options": [
+      {
+        "label": "A",
+        "text": "Robert Hooke"
+      },
+      {
+        "label": "B",
+        "text": "Anthony Van Leewenhoek"
+      },
+      {
+        "label": "C",
+        "text": "Theodore Schwann"
+      },
+      {
+        "label": "D",
+        "text": "Matthias J. Schneider"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-2",
+    "question": "The lowest layer of earth's atmosphere is the conducive place we live, weather happens there and as such, almost all clouds are found in this layer. In one word, make an evaluation of the description above",
+    "options": [
+      {
+        "label": "A",
+        "text": "mesosphere"
+      },
+      {
+        "label": "B",
+        "text": "thermosphere"
+      },
+      {
+        "label": "D",
+        "text": "stratosphere"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-3",
+    "question": "The type of relationship in which an aphid (insect) harbours the bacterium Buchneraaphidicola, in its cytoplasm as source for essential amino acids while in exchange providing a secure habitat and ample nutrients for the bacterium can best be described as",
+    "options": [
+      {
+        "label": "A",
+        "text": "mutualism"
+      },
+      {
+        "label": "B",
+        "text": "tynergism"
+      },
+      {
+        "label": "C",
+        "text": "commensalism"
+      },
+      {
+        "label": "D",
+        "text": "syntrophism"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-4",
+    "question": "The simplest viruses are referred to as",
+    "options": [
+      {
+        "label": "A",
+        "text": "capsid"
+      },
+      {
+        "label": "C",
+        "text": "enveloped viruses"
+      },
+      {
+        "label": "D",
+        "text": "nucleocapsid"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-5",
+    "question": "Which of the following shows a scattered arrangement of vascular bundles?",
+    "options": [
+      {
+        "label": "A",
+        "text": "T.S of monocot root"
+      },
+      {
+        "label": "B",
+        "text": "T.S of monocot stem"
+      },
+      {
+        "label": "C",
+        "text": "T.S of dicot root"
+      },
+      {
+        "label": "D",
+        "text": "T.S of Dicot stem"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-6",
+    "question": "In the decomposition process, different products are released. Carbon dioxide, energy, water plant nutrients and resynthesized organic carbon compounds. Identify the microorganisms responsible for the process",
+    "options": [
+      {
+        "label": "A",
+        "text": "viruses"
+      },
+      {
+        "label": "B",
+        "text": "bacteria"
+      },
+      {
+        "label": "C",
+        "text": "fungi"
+      },
+      {
+        "label": "D",
+        "text": "algae"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-7",
+    "question": "The idea that cells always emerge from cell division i.e. Omis cellula a cellula",
+    "options": [
+      {
+        "label": "A",
+        "text": "Robert Hooke"
+      },
+      {
+        "label": "B",
+        "text": "Anthony Van Leewenhoek"
+      },
+      {
+        "label": "D",
+        "text": "Matthias J. Schneider"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-8",
+    "question": "\\_\\_\\_\\_\\_\\_\\_\\_ is the plant growth regulator that acts as anti transpirant",
+    "options": [
+      {
+        "label": "A",
+        "text": "cytokinin"
+      },
+      {
+        "label": "C",
+        "text": "ethylene"
+      },
+      {
+        "label": "D",
+        "text": "absiscic acid"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-9",
+    "question": "In the protozoan termite relationship the flagellated protozoan living in the gut converts the cellulose in the diet of wood into \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "glucose"
+      },
+      {
+        "label": "B",
+        "text": "cellulose"
+      },
+      {
+        "label": "D",
+        "text": "ethanol"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-10",
+    "question": "A farmer wets his crops daily. He noticed that the crops were growing but realized some had evaporated through the aerial parts of the plant. The process is referred to as \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "transportation"
+      },
+      {
+        "label": "B",
+        "text": "Osmosi"
+      },
+      {
+        "label": "C",
+        "text": "excretion"
+      },
+      {
+        "label": "D",
+        "text": "transpiration"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-11",
+    "question": "The sac like structures which are present in the cell and function in the structure and transport of the selected particles throughout the cell are called \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "B",
+        "text": "Golgi bodies"
+      },
+      {
+        "label": "C",
+        "text": "nuclei"
+      },
+      {
+        "label": "D",
+        "text": "ribosome"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-12",
+    "question": "During coral bleaching there is loss of \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "phosphates"
+      },
+      {
+        "label": "B",
+        "text": "nitrogenous compounds"
+      },
+      {
+        "label": "C",
+        "text": "carbon dioxide"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-13",
+    "question": "Plasma membrane is",
+    "options": [
+      {
+        "label": "A",
+        "text": "a non selective barrier"
+      },
+      {
+        "label": "B",
+        "text": "made of cellulose"
+      },
+      {
+        "label": "C",
+        "text": "impermeable"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-14",
+    "question": "A vegetable farmer might wish to increase the number of leaves, what will you recommend?",
+    "options": [
+      {
+        "label": "A",
+        "text": "give the plant a dose of gibberellins"
+      },
+      {
+        "label": "C",
+        "text": "decapitate the shoot tip"
+      },
+      {
+        "label": "D",
+        "text": "remove side branches"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-15",
+    "question": "A slender, prostrate stem branches with long or short internodes, creeping on the ground and such internodes is called \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "B",
+        "text": "offset"
+      },
+      {
+        "label": "C",
+        "text": "sucker"
+      },
+      {
+        "label": "D",
+        "text": "runner"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-16",
+    "question": "What was the contribution of Schleiden and Schwann to the knowledge of cell?",
+    "options": [
+      {
+        "label": "B",
+        "text": "development of cell theory"
+      },
+      {
+        "label": "C",
+        "text": "development of cell structure"
+      },
+      {
+        "label": "D",
+        "text": "development of prokaryotic cell"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-17",
+    "question": "From a patient's complaints, and through observation of signs and symptoms, it was discovered that an acute infectious disease caused by the spare forming bacterium, Bacillus species called \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "SARS"
+      },
+      {
+        "label": "C",
+        "text": "diphtheria"
+      },
+      {
+        "label": "D",
+        "text": "brucellosis"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-18",
+    "question": "Which of the following is not a usual approach for the preservation of food and food products from microbial spoilage?",
+    "options": [
+      {
+        "label": "A",
+        "text": "low temperatures"
+      },
+      {
+        "label": "C",
+        "text": "radiation"
+      },
+      {
+        "label": "D",
+        "text": "filtration"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-19",
+    "question": "A plantain trader needed to supply ripe plantains to a consumer in three days but he had unripe plantains. He then tied up the unripe plantains in a sac for three days after which the plantains became ripe. The ripening process could be likened to the effect of which of the following hormones?",
+    "options": [
+      {
+        "label": "A",
+        "text": "gibberellins"
+      },
+      {
+        "label": "B",
+        "text": "cytokinin"
+      },
+      {
+        "label": "D",
+        "text": "auxin"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-20",
+    "question": "Beilschmiediamann is a plant that produces a fruit which is used as a rising agent in baking. The fruit is likely to contain \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mucor ellipsoideus"
+      },
+      {
+        "label": "B",
+        "text": "rhizopus stolonifer"
+      },
+      {
+        "label": "C",
+        "text": "rhizobium leguminosarum"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-21",
+    "question": "In 1984, there was an invasion of Lagos water hyancith (Eichhornicrassipes) in order to control it without polluting the waters with herbicide, an insect was introduces to selectively feed on water hyacinth and not on any other aquatic plants. The type of consecration measure is known as",
+    "options": [
+      {
+        "label": "A",
+        "text": "pest control"
+      },
+      {
+        "label": "C",
+        "text": "biological selection"
+      },
+      {
+        "label": "D",
+        "text": "competitive selection"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-22",
+    "question": "In a tissue culture experiment, an investigator wishes to initiate root development; the appropriate hormone to be used to achieve is \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "zeatin"
+      },
+      {
+        "label": "B",
+        "text": "kinetic"
+      },
+      {
+        "label": "C",
+        "text": "gibberellic acid"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-23",
+    "question": "During pasteurization, milk and milk products are treated to the following conditions",
+    "options": [
+      {
+        "label": "B",
+        "text": "60°C for 1h"
+      },
+      {
+        "label": "C",
+        "text": "100°C for 30mins"
+      },
+      {
+        "label": "D",
+        "text": "121°C for 30mins"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-24",
+    "question": "Communities have been known to exhibits stratification on both \\_\\_\\_\\_\\_\\_\\_\\_ and \\_\\_\\_\\_\\_\\_\\_\\_ planes",
+    "options": [
+      {
+        "label": "A",
+        "text": "transverse; vertical"
+      },
+      {
+        "label": "C",
+        "text": "vertical; horizontal"
+      },
+      {
+        "label": "D",
+        "text": "tangential; parallel"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-25",
+    "question": "Guard cell differ from epidermal cells in having \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "mitochondria"
+      },
+      {
+        "label": "B",
+        "text": "vacuoles"
+      },
+      {
+        "label": "C",
+        "text": "cell wall"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-26",
+    "question": "Four potted plants were placed each in four sealed container. The relative humidity in container A was 70%, 50% in container B, 30% in container C and 10% in container D. In which of the containers will the rate of transpiration be highest?",
+    "options": [
+      {
+        "label": "A",
+        "text": "container A"
+      },
+      {
+        "label": "B",
+        "text": "container B"
+      },
+      {
+        "label": "C",
+        "text": "container C"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-27",
+    "question": "Steam sterilization is carried out with an antoclave, a device somewhat like a pressure cooker. What are the operating conditions of the autoclave that makes it capable of being used to eliminate microbial spores?",
+    "options": [
+      {
+        "label": "A",
+        "text": "100°C for 15mins"
+      },
+      {
+        "label": "B",
+        "text": "121°C for 15mins"
+      },
+      {
+        "label": "D",
+        "text": "121°C for 30mins"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-28",
+    "question": "\\_\\_\\_\\_\\_\\_\\_\\_ is the plant anatomical structure that is responsible for humidification of the atmosphere",
+    "options": [
+      {
+        "label": "A",
+        "text": "epidermis"
+      },
+      {
+        "label": "C",
+        "text": "cuticle"
+      },
+      {
+        "label": "D",
+        "text": "trochomes"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-29",
+    "question": "Autecology tends to describe relationship between which of the following components",
+    "options": [
+      {
+        "label": "A",
+        "text": "organisms, edaphic and population"
+      },
+      {
+        "label": "B",
+        "text": "population, plants and temperature"
+      },
+      {
+        "label": "C",
+        "text": "environment, animals and community"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-30",
+    "question": "Transpiration in plants will be lowest when \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "B",
+        "text": "wind velocity is high"
+      },
+      {
+        "label": "C",
+        "text": "there is excess of water in the soil"
+      },
+      {
+        "label": "D",
+        "text": "the atmosphere is dry"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-31",
+    "question": "The group of plants that absorb and transport water, minerals and organic nutrients by diffusion is called \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "B",
+        "text": "nonvascular plants"
+      },
+      {
+        "label": "C",
+        "text": "hepatophyta"
+      },
+      {
+        "label": "D",
+        "text": "anthoceratphyta"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-32",
+    "question": "Glassware and other heat stable items may be sterilized by dry heat at \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "160°C for 30mins"
+      },
+      {
+        "label": "C",
+        "text": "160°C for 4"
+      },
+      {
+        "label": "D",
+        "text": "160°C for 1h"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-33",
+    "question": "The relationship between the man and his cat can be described as \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "parasitism"
+      },
+      {
+        "label": "B",
+        "text": "predation"
+      },
+      {
+        "label": "D",
+        "text": "commensalism"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-34",
+    "question": "The relationship between the cat and the rate is called \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "ammensalism"
+      },
+      {
+        "label": "C",
+        "text": "commensalism"
+      },
+      {
+        "label": "D",
+        "text": "parasitism"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-35",
+    "question": "A flower that bears the ovary above the other floral parts is said to be \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "B",
+        "text": "inferior"
+      },
+      {
+        "label": "C",
+        "text": "semi inferior"
+      },
+      {
+        "label": "D",
+        "text": "semi superior"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-36",
+    "question": "In chloroplasts of green plant, photosynthesis converts Carbon dioxide into sugars in a process called \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "carbon synthesis"
+      },
+      {
+        "label": "C",
+        "text": "chemosynthesis"
+      },
+      {
+        "label": "D",
+        "text": "redox reaction"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-37",
+    "question": "The father of zoological classification is \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Anthony Van Leeuwenhoek"
+      },
+      {
+        "label": "C",
+        "text": "Luis Pasteur"
+      },
+      {
+        "label": "D",
+        "text": "Charles Darwin"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-38",
+    "question": "\\_\\_\\_\\_\\_\\_\\_\\_ is a protein produced by lymphocytes in the presence of a specific foreign substance",
+    "options": [
+      {
+        "label": "A",
+        "text": "antigen"
+      },
+      {
+        "label": "B",
+        "text": "antigenic agent"
+      },
+      {
+        "label": "C",
+        "text": "chemotherapeutic agent"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-39",
+    "question": "Nuclear membrane disappears of \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "anaphase"
+      },
+      {
+        "label": "B",
+        "text": "telophase"
+      },
+      {
+        "label": "D",
+        "text": "late prophase"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-40",
+    "question": "Which of the following ecological instruments measures the transparency of water?",
+    "options": [
+      {
+        "label": "A",
+        "text": "hygrometer"
+      },
+      {
+        "label": "B",
+        "text": "hydrometer"
+      },
+      {
+        "label": "C",
+        "text": "light meter"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-41",
+    "question": "\\_\\_\\_\\_\\_\\_\\_\\_ consists of groups of axially elongated and tightly packed cells with unevenly thickened walls.",
+    "options": [
+      {
+        "label": "B",
+        "text": "sclerenchyma"
+      },
+      {
+        "label": "C",
+        "text": "protective tissue"
+      },
+      {
+        "label": "D",
+        "text": "aerenchyma"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-42",
+    "question": "Artificially acquired active immunity can be induced by \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "B",
+        "text": "antibiotic"
+      },
+      {
+        "label": "C",
+        "text": "Injection"
+      },
+      {
+        "label": "D",
+        "text": "antibody"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-43",
+    "question": "\\_\\_\\_\\_\\_\\_\\_\\_ exhibits alternating medusoid and polypoid forms in its life cycle.",
+    "options": [
+      {
+        "label": "A",
+        "text": "vorticella"
+      },
+      {
+        "label": "C",
+        "text": "actinia"
+      },
+      {
+        "label": "D",
+        "text": "entamoeba"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-44",
+    "question": "Annelids have \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "elongated felt body"
+      },
+      {
+        "label": "C",
+        "text": "segmented flat body"
+      },
+      {
+        "label": "D",
+        "text": "elongated ciliated body"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-45",
+    "question": "Chiasma formation during meiosis occurs at which stage?",
+    "options": [
+      {
+        "label": "B",
+        "text": "leplotene"
+      },
+      {
+        "label": "C",
+        "text": "zygotene"
+      },
+      {
+        "label": "D",
+        "text": "pachytene"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-46",
+    "question": "Infectious agents that cause spongiform encephalopathies such as scrapie in sheep and composed only of protein are called \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "viruses"
+      },
+      {
+        "label": "C",
+        "text": "virion"
+      },
+      {
+        "label": "D",
+        "text": "prokaryotic call"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-47",
+    "question": "Another word for detritus is \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "producer"
+      },
+      {
+        "label": "C",
+        "text": "consumer"
+      },
+      {
+        "label": "D",
+        "text": "primary consumer"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-48",
+    "question": "The respiratory pigment in insect is known as \\_\\_\\_\\_\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "haemogoblin"
+      },
+      {
+        "label": "C",
+        "text": "haemocyanin"
+      },
+      {
+        "label": "D",
+        "text": "haemocytes"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-49",
+    "question": "The following organisms have uniform cilia except",
+    "options": [
+      {
+        "label": "A",
+        "text": "paramecium"
+      },
+      {
+        "label": "C",
+        "text": "bolancidium"
+      },
+      {
+        "label": "D",
+        "text": "didymium"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-50",
+    "question": "A loaf of bread left on a kitchen cupboard was observed to have been infested with yellow, black and white patches after four days. The organisms that have imparted the colours are most likely to be",
+    "options": [
+      {
+        "label": "A",
+        "text": "mucor, rhizopus and bacillus respectively"
+      },
+      {
+        "label": "C",
+        "text": "aspergillus, trochoderma and trochronympa respectively"
+      },
+      {
+        "label": "D",
+        "text": "bacillus, gonoderma and trichoderma respectively"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2018-import-theory-1",
+    "question": "1. (a) A breeder had rabbits with brown hair. Using a Punnet square describe how the breeder could possibly know if the rabbits are homozygous dominant or heterozygous recessive\n(b) For two parents with sickle cell trait, work out the chances of producing a sickle cell anaemic child and a normal child",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2018-import-theory-2",
+    "question": "2. (a) Define evolution\n(b) Differentiate between the following terms:\n(i) Divergent and convergent\n(ii) Ammesaism and commensalism\n(c) Enumerate four differences between Meiosis and Mitosis",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2018-import-theory-3",
+    "question": "3. (a) Define the term autotrophic nutrition\n(b) Briefly describe the three main events that take place during the light dependent reactions of photosynthesis\n(c) State any two pigments present in the membranes of the chloroplast",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2018-import-theory-4",
+    "question": "4. (a) In a tabular form, give 5 differences between the xylem tissue and the phloem tissue\n(b) Define the following terms:\ni. Apopast movement\nii. Perfect flower\niii. Translocation\niv. Photorespiration\nv. Alternation of generation",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2018-import-theory-5",
+    "question": "5. (a) Outline the function of the following organelles/structure in a prokaryotic cell:\ni. Gas vacuole\nii. Fimbriae\niii. Capsule\niv. Endosphere\nv. Flagella\n(b) Write short notes on the following types of culture media:\ni. Enriched medium\nii. Selective medium\niii. Differential medium\niv. Complex medium\nv. Chemically defined medium",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2018-import-theory-6",
+    "question": "6. (a) Outline the general morphological shape of bacteria\n(b) Explain the roles of safranin and methylene Blue in Gram staining procedure",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2018-import-theory-7",
+    "question": "7. (a) State seven characteristics of phylum arthropoda\n(b) Insects are said to be the most successful animals. Discuss the characteristics that contribute to their success",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2018-import-theory-8",
+    "question": "8. (a) Draw and label the mammalian heart\n(b) Briefly describe pulmonary circulation in mammals\na. Specimen A = carrot tuber\nb. Specimen B = cassava tuber\nc. Specimen C = Sweet potato tuber\nd. Specimen D = Irish potato tuber\ne. Specimen E = cloves of garlic\nf. Specimen F = tapeworm\ng. Specimen G = housefly\nh. Specimen H = anopheles mosquito\nIn a tabular form, state FOUR observable differences between specimens C and D\n(a) Mention two economic importance of specimen\n(b) How are specimens A and B propagated?\n(c) Which of the specimens provided is a good source of Vitamin A?\n(d) List at least two main features of specimen E\n(a) State 3 adaptive structures of specimen F to its environment\n(b) Highlight 2 economic importance of specimen G\n(c) What significant difference is there in the mouth parts of specimen G\n(d) State any 3 observable similarities between specimens G and H",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2018,
+    "category": "theory"
+  }
+]

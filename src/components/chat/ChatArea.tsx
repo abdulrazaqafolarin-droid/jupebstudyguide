@@ -494,7 +494,7 @@ export function ChatArea({
       if (dir === 'up') return prev <= 0 ? searchMatches.length - 1 : prev - 1;
       return prev >= searchMatches.length - 1 ? 0 : prev + 1;
     });
-  }, [searchMatches.length]);
+  }, [searchMatches]);
 
   // Scroll to bottom on new messages + track pending sends
   useEffect(() => {

@@ -1,10 +1,14 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Question, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
-import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, ImageOff } from 'lucide-react';
+import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, ImageOff, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { AITutor } from './AITutor';
 import MathRenderer from './MathRenderer';
+import { streamChat, stripThinking } from "@/lib/ai-service";
+import type { AIChatMessage } from "@/lib/ai-service";
+
+const AI_ANSWER_SYSTEM_PROMPT = `You are a JUPEB exam expert. Given a theory question, provide a concise, accurate model answer that would receive full marks. Keep it brief (2-4 sentences). Use LaTeX for math if applicable.`;
 
 interface FlashcardProps {
   question: Question;
@@ -17,7 +21,38 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
+  const [aiTheoryAnswer, setAiTheoryAnswer] = useState<string | null>(null);
+  const [aiTheoryLoading, setAiTheoryLoading] = useState(false);
   const [imageBroken, setImageBroken] = useState(false);
+  const aiAccumRef = useRef("");
+
+  const handleAIRevealAnswer = useCallback(async () => {
+    if (aiTheoryLoading || !question) return;
+    setAiTheoryLoading(true);
+    setAiTheoryAnswer("");
+    aiAccumRef.current = "";
+    try {
+      const messages: AIChatMessage[] = [
+        { role: "user", content: `Subject: ${question.subject}\nYear: ${question.year}\nQuestion: ${question.question}\n\nProvide a model answer for this question.` }
+      ];
+      await streamChat(AI_ANSWER_SYSTEM_PROMPT, messages, {
+        onDelta: (text) => {
+          aiAccumRef.current += text;
+          setAiTheoryAnswer(stripThinking(aiAccumRef.current));
+        },
+        onDone: () => {
+          setAiTheoryLoading(false);
+        },
+        onError: () => {
+          setAiTheoryAnswer("Failed to generate answer. Please try again.");
+          setAiTheoryLoading(false);
+        },
+      });
+    } catch {
+      setAiTheoryAnswer("Failed to generate answer. Please try again.");
+      setAiTheoryLoading(false);
+    }
+  }, [question, aiTheoryLoading]);
 
   const subjectInfo = SUBJECT_INFO[question.subject];
 
@@ -58,7 +93,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
       <div className="flashcard-container">
         <div
           className={cn(
-            'flashcard relative w-full min-h-[520px] cursor-pointer',
+            'flashcard relative w-full min-h-[520px] max-h-[calc(100vh-320px)] cursor-pointer',
             isFlipped && 'flipped'
           )}
           onClick={!question.options ? handleFlip : undefined}
@@ -84,25 +119,25 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
               </div>
 
               {/* Question - Scrollable */}
-              <div className="flex-1 flex flex-col overflow-hidden">
+              <div className={cn("flex-1 flex flex-col min-h-0", !question.options ? "overflow-y-auto" : "overflow-hidden")}>
                 {question.imageUrl && !imageBroken ? (
-                  <div className="mb-4 rounded-xl overflow-hidden border bg-muted/30">
+                  <div className="mb-4 rounded-xl overflow-hidden border bg-muted/30 shrink-0">
                     <img src={question.imageUrl} alt="Question" className="w-full max-h-48 object-contain" loading="lazy" onError={() => setImageBroken(true)} />
                   </div>
                 ) : imageBroken ? (
-                  <div className="mb-4 flex flex-col items-center justify-center gap-2 p-6 rounded-xl border border-dashed bg-muted/20 text-muted-foreground">
+                  <div className="mb-4 flex flex-col items-center justify-center gap-2 p-6 rounded-xl border border-dashed bg-muted/20 text-muted-foreground shrink-0">
                     <ImageOff className="h-8 w-8" />
                     <p className="text-xs">Image failed to load</p>
                   </div>
                 ) : (
-                  <div className="text-lg font-medium mb-4 leading-relaxed overflow-y-auto max-h-[140px] scrollbar-thin">
+                  <div className="text-lg font-medium mb-4 leading-relaxed shrink-0">
                     <MathRenderer content={question.question} />
                   </div>
                 )}
 
                 {/* MCQ Options - Scrollable container */}
                 {question.options && (
-                  <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[280px] pr-1 scrollbar-thin">
+                  <div className="space-y-2.5 flex-1 overflow-y-auto min-h-0 max-h-[280px] pr-1 scrollbar-thin">
                     {question.options.map((option, oi) => {
                       const isSelected = selectedOption === option.label;
                       const isCorrectOption = option.label === question.correctAnswer;
@@ -148,7 +183,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </div>
                 )}
 
-                {/* Essay question hint */}
+                {/* Essay question - flip hint */}
                 {!question.options && (
                   <div className="mt-auto text-center text-muted-foreground py-8">
                     <p className="text-sm mb-2">Think about your answer, then click to reveal</p>
@@ -166,7 +201,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
               <div className="absolute inset-0 chalk-texture opacity-30" />
               
               <div className="relative h-full p-6 flex flex-col">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-accent/30">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-accent/30 shrink-0">
                   <span className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium bg-accent/20 text-accent'
                   )}>
@@ -174,13 +209,51 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </span>
                 </div>
 
-                <div className="flex-1 overflow-y-auto">
-                  <div className="text-base leading-relaxed">
-                    <MathRenderer content={question.explanation} />
-                  </div>
+                <div className="flex-1 overflow-y-auto min-h-0 space-y-4">
+                  {question.explanation && (
+                    <div className="text-base leading-relaxed">
+                      <MathRenderer content={question.explanation} />
+                    </div>
+                  )}
+
+                  {aiTheoryAnswer && (
+                    <div className="p-4 rounded-xl bg-card/50 border border-accent/20">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">AI Model Answer</p>
+                      <div className="text-base leading-relaxed">
+                        <MathRenderer content={aiTheoryAnswer} />
+                      </div>
+                    </div>
+                  )}
+
+                  {aiTheoryLoading && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                      <span>Generating answer...</span>
+                    </div>
+                  )}
+
+                  {!aiTheoryAnswer && !aiTheoryLoading && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleAIRevealAnswer(); }}
+                      className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>AI Reveal Answer</span>
+                    </button>
+                  )}
+
+                  {aiTheoryAnswer && !aiTheoryLoading && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleAIRevealAnswer(); }}
+                      className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>Regenerate</span>
+                    </button>
+                  )}
                 </div>
 
-                <div className="mt-auto pt-4 text-center text-muted-foreground">
+                <div className="mt-auto pt-4 text-center text-muted-foreground shrink-0">
                   <p className="text-sm">Click to see question again</p>
                 </div>
               </div>

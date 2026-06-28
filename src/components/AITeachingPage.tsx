@@ -12,7 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat } from '@/lib/ai-service';
+import { streamChat, stripThinking } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, SYLLABUS_TEACHING_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -131,15 +131,19 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
     await streamChat(systemPrompt, newMessages, {
       onDelta: (text) => {
         acc += text;
+        const stripped = stripThinking(acc);
         setMessages(prev => {
           const newArr = [...prev];
           if (newArr.length > 0 && newArr[newArr.length - 1].role === 'assistant') {
-            newArr[newArr.length - 1] = { role: 'assistant', content: acc };
+            newArr[newArr.length - 1] = { role: 'assistant', content: stripped };
           }
           return newArr;
         });
       },
-      onDone: () => setIsLoading(false),
+      onDone: () => {
+        if (!acc.trim()) toast.error('AI did not respond. Check your connection and try again.');
+        setIsLoading(false);
+      },
       onError: (err) => {
         toast.error(err?.message ?? String(err));
         setIsLoading(false);

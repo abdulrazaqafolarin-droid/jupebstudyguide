@@ -3,7 +3,7 @@ import { AITutor } from "@/components/AITutor";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft, ChevronRight, Bookmark, BookmarkCheck, Send, RotateCcw,
-  Grid3X3, X, Check, Minus, Bot, Sparkles,
+  Grid3X3, X, Check, Minus, Bot,
 } from "lucide-react";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import type { Subject, Question } from "@/types/question";
@@ -128,13 +128,21 @@ export function QuestionViewer({
     onAnswer?.(qId, answerText);
   }, [theoryAnswers, onAnswer]);
 
+  const handleUnsubmitTheory = useCallback((qId: string) => {
+    setSubmittedTheory((prev) => {
+      const next = new Set(prev);
+      next.delete(qId);
+      return next;
+    });
+  }, []);
+
   const handleSubmitAll = useCallback(() => {
     const all: AnswerEntry[] = questions.map((q) => {
       const answer = answers[q.id] ?? theoryAnswers[q.id] ?? "";
       const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
       const isCorrect = hasRealAnswer
         ? answer.toUpperCase() === q.correctAnswer.toUpperCase()
-        : true;
+        : false;
       return { questionId: q.id, answer, isCorrect };
     });
     setResults(all);
@@ -446,6 +454,7 @@ export function QuestionViewer({
                             subject={subject}
                             year={question.year}
                             onSubmit={(text) => handleSubmitTheory(sq.id, text)}
+                            onUnsubmit={() => handleUnsubmitTheory(sq.id)}
                           />
                         )}
                       </div>
@@ -458,7 +467,7 @@ export function QuestionViewer({
                   <div className="space-y-2">
                     {(question.options ?? []).map((opt) => {
                       const isSelected = answers[question.id] === opt.label;
-                      const isCorrect = question.correctAnswer?.toUpperCase() === opt.label.toUpperCase();
+                      const isCorrect = question.correctAnswer?.toUpperCase() === opt.label?.toUpperCase();
                       const showFeedback = answers[question.id] !== undefined;
                       return (
                         <button
@@ -526,14 +535,6 @@ export function QuestionViewer({
                             <MathRenderer content={question.explanation} className="text-sm" />
                           </div>
                         )}
-                        <button
-                          onClick={() => setShowAITutor(true)}
-                          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg"
-                        >
-                          <Bot className="w-4 h-4" />
-                          <span>Need a deeper explanation?</span>
-                          <Sparkles className="w-3 h-3 text-accent" />
-                        </button>
                       </div>
                     )}
                   </div>
@@ -551,14 +552,6 @@ export function QuestionViewer({
                           <MathRenderer content={question.answerGuide} className="text-sm" />
                         </div>
                       )}
-                      <button
-                        onClick={() => setShowAITutor(true)}
-                        className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium bg-primary/5 hover:bg-primary/10 px-3 py-1.5 rounded-lg"
-                      >
-                        <Bot className="w-4 w-4" />
-                        <span>Need a deeper explanation?</span>
-                        <Sparkles className="w-3 h-3 text-accent" />
-                      </button>
                     </div>
                   ) : (
                     <ImageAnswerInput
@@ -567,6 +560,7 @@ export function QuestionViewer({
                       subject={subject}
                       year={question.year}
                       onSubmit={(text) => handleSubmitTheory(question.id, text)}
+                      onUnsubmit={() => handleUnsubmitTheory(question.id)}
                     />
                   )}
                 </div>

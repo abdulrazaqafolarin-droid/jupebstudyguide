@@ -5,6 +5,7 @@ import {
   StoredStudySession,
   SyllabusProgress,
   DailyTask,
+  SyllabusTopic,
   SessionStatus,
   generateSessionTasks,
   serializeProgress,
@@ -250,6 +251,69 @@ export function useStudySessions() {
     [updateSession],
   );
 
+  const reorderSubjects = useCallback(
+    (sessionId: string, orderedSubjects: Subject[]) => {
+      setSessions(prev => prev.map(s => {
+        if (s.id !== sessionId) return s;
+
+        const progress = s.progress;
+        const total = progress.dailyTasks.length || TOTAL_DAYS;
+        const locked = progress.dailyTasks.filter(t => t.isCompleted || t.day < progress.currentDay);
+        const lockedDays = new Set(locked.map(t => t.day));
+        const coveredTopicIds = new Set(locked.flatMap(t => t.topics.map(tp => tp.id)));
+
+        const allowed = new Set<Subject>([...progress.combination.core, ...progress.combination.elective]);
+        const subjectOrder = orderedSubjects.filter(sub => allowed.has(sub));
+        for (const sub of allowed) if (!subjectOrder.includes(sub)) subjectOrder.push(sub);
+
+        const pool: { topic: SyllabusTopic; subject: Subject }[] = [];
+        for (const subject of subjectOrder) {
+          for (const topic of SYLLABUSES[subject]) {
+            if (!coveredTopicIds.has(topic.id)) pool.push({ topic, subject });
+          }
+        }
+
+        const remainingDays: number[] = [];
+        for (let d = 1; d <= total; d++) if (!lockedDays.has(d)) remainingDays.push(d);
+
+        const perDay = Math.max(1, Math.ceil(pool.length / Math.max(1, remainingDays.length)));
+        const newRemaining: DailyTask[] = [];
+        let idx = 0;
+        for (const day of remainingDays) {
+          const dayTopics: SyllabusTopic[] = [];
+          let daySubject: Subject = subjectOrder[0];
+          const objectives: string[] = [];
+          const checkpoints: string[] = [];
+          for (let i = 0; i < perDay && idx < pool.length; i++) {
+            const { topic, subject } = pool[idx++];
+            dayTopics.push(topic);
+            daySubject = subject;
+            objectives.push(`Understand the key concepts of ${topic.name}`);
+            topic.subtopics.slice(0, 2).forEach(sub => objectives.push(`Master ${sub}`));
+            checkpoints.push(`Can you explain ${topic.name} in your own words?`);
+            if (topic.subtopics[0]) checkpoints.push(`What are the key formulas/concepts in ${topic.subtopics[0]}?`);
+          }
+          newRemaining.push({
+            day,
+            topics: dayTopics,
+            subject: daySubject,
+            learningObjectives: dayTopics.length > 0 ? objectives : ['Review previous topics', 'Practice past questions', 'Strengthen weak areas'],
+            checkpointQuestions: dayTopics.length > 0 ? checkpoints : ['Can you solve problems from the topics covered this week?'],
+            isCompleted: false,
+          });
+        }
+
+        const merged = [...locked, ...newRemaining].sort((a, b) => a.day - b.day);
+        return {
+          ...s,
+          updatedAt: new Date().toISOString(),
+          progress: { ...progress, dailyTasks: merged },
+        };
+      }));
+    },
+    [setSessions],
+  );
+
   return {
     sessions: sortedSessions,
     activeSessions,
@@ -263,5 +327,6 @@ export function useStudySessions() {
     pauseSession,
     resumeSession,
     setSessions,
+    reorderSubjects,
   };
 }

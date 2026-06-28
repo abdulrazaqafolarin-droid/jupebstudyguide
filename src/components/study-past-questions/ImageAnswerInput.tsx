@@ -1,12 +1,11 @@
-import { useState, useCallback } from "react";
-import { Camera, Upload, Send, X, Check, Loader2, Award, FileText, Image } from "lucide-react";
-import { useImageUpload } from "@/hooks/useImageUpload";
+import { useState, useCallback, useRef } from "react";
+import { Camera, Upload, Send, X, Loader2, FileText, Bot, ImagePlus } from "lucide-react";
+import { useImageUpload, type ImageItem } from "@/hooks/useImageUpload";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { markAnswer } from "@/lib/marking-service";
 import type { StudyQuestion } from "@/types/study-questions";
-import type { MarkingResult } from "@/lib/marking-service";
 import { motion, AnimatePresence } from "framer-motion";
+import { TheoryAnswerFeedback, type EvalData } from "./TheoryAnswerFeedback";
 
 interface ImageAnswerInputProps {
   question: StudyQuestion;
@@ -14,23 +13,29 @@ interface ImageAnswerInputProps {
   subject: string;
   year?: number;
   onSubmit: (text: string) => void;
+  onUnsubmit?: () => void;
   disabled?: boolean;
 }
 
 export function ImageAnswerInput({
-  question, questionId, subject, year, onSubmit, disabled,
+  question, questionId, subject, year, onSubmit, onUnsubmit, disabled,
 }: ImageAnswerInputProps) {
   const { user } = useAuth();
   const {
-    image, preview, uploading, showCamera, videoRef,
+    images, uploading, showCamera, videoRef,
     fileInputRef, startCamera, stopCamera, captureFrame,
-    handleFileInput, handlePickImage, upload, reset,
+    handleFileInput, handlePickImage, addImage, removeImage, uploadAll, reset,
   } = useImageUpload(user?.id);
 
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [marking, setMarking] = useState<MarkingResult | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [showReview, setShowReview] = useState(false);
+  const [submittedAnswer, setSubmittedAnswer] = useState("");
+  const lastFeedbackRef = useRef("");
+  const lastEvalRef = useRef<EvalData | null>(null);
+  const attachmentsRef = useRef<{ base64: string; mimeType: string; name: string }[]>([]);
 
   const fileToBase64 = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -44,162 +49,113 @@ export function ImageAnswerInput({
     });
   };
 
+  const buildAttachments = async (): Promise<{ base64: string; mimeType: string; name: string }[]> => {
+    const result: { base64: string; mimeType: string; name: string }[] = [];
+    for (const item of images) {
+      const base64 = await fileToBase64(item.file);
+      result.push({ base64, mimeType: item.file.type, name: item.file.name });
+    }
+    return result;
+  };
+
   const handleSubmit = useCallback(async () => {
-    if (!text.trim() && !image) return;
+    if (!text.trim() && !images.length) return;
     setSubmitting(true);
     try {
-      let imageUrl: string | null = null;
-      let attachment: { base64: string; mimeType: string; name: string } | undefined;
-
-      if (image) {
-        imageUrl = await upload();
-        const base64 = await fileToBase64(image);
-        attachment = { base64, mimeType: image.type, name: image.name };
-      }
-
-      const answerText = text.trim() || "[Image/PDF submitted]";
-
-      const result = await markAnswer(question, answerText, attachment);
-
-      setMarking(result);
+      const [atts, urls] = await Promise.all([
+        buildAttachments(),
+        images.length > 0 ? uploadAll() : Promise.resolve([] as string[]),
+      ]);
+      attachmentsRef.current = atts;
+      const answerText = text.trim() || "[Images submitted]";
+      setSubmittedAnswer(answerText);
       setSubmitted(true);
-      onSubmit(answerText);
-
-      if (user?.id) {
-        await supabase.from("answer_markings").insert({
-          user_id: user.id,
-          question_id: questionId,
-          subject,
-          year: year ?? null,
-          answer_text: answerText,
-          image_url: imageUrl,
-          score: result.score,
-          feedback: result.feedback,
-          strengths: result.strengths.join("\n"),
-          weaknesses: result.weaknesses.join("\n"),
-          corrections: result.corrections,
-        });
-      }
+      setShowFeedback(true);
     } catch (err) {
       console.error('Failed to submit answer:', err);
       setSubmitted(true);
-      onSubmit(text.trim() || "[Image/PDF submitted]");
+      setSubmittedAnswer(text.trim() || "[Images submitted]");
     } finally {
       setSubmitting(false);
     }
-  }, [text, image, upload, question, questionId, subject, year, onSubmit, user]);
+  }, [text, images, uploadAll]);
 
-  if (submitted && marking) {
+  const handleFeedbackComplete = useCallback((evalData: EvalData, feedbackContent: string) => {
+    lastFeedbackRef.current = feedbackContent;
+    lastEvalRef.current = evalData;
+    onSubmit(submittedAnswer);
+    setShowFeedback(false);
+
+    if (user?.id) {
+      supabase.from("answer_markings").insert({
+        user_id: user.id,
+        question_id: questionId,
+        subject,
+        year: year ?? null,
+        answer_text: submittedAnswer,
+        score: evalData.score,
+        feedback: "See AI evaluation in study session",
+        strengths: evalData.strengths.join("\n"),
+        weaknesses: evalData.weaknesses.join("\n"),
+        corrections: evalData.corrections,
+      }).then(() => {}).catch((err) => {
+        console.warn("Background marking save failed (non-blocking):", err);
+      });
+    }
+  }, [onSubmit, submittedAnswer, user, questionId, subject, year]);
+
+  const handleRetry = useCallback(() => {
+    setSubmitted(false);
+    setShowFeedback(false);
+    setShowReview(false);
+    setSubmittedAnswer("");
+    reset();
+    onUnsubmit?.();
+  }, [reset, onUnsubmit]);
+
+  if (showReview && lastEvalRef.current) {
     return (
-      <div className="rounded-xl border bg-card p-4 space-y-4">
-        <div className="flex items-center gap-2">
-          <Award className="h-5 w-5 text-primary" />
-          <span className="font-semibold text-sm">Marking Result</span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "text-3xl font-bold tabular-nums",
-            marking.score >= 70 ? "text-green-600" :
-            marking.score >= 40 ? "text-amber-600" : "text-red-600",
-          )}>
-            {marking.score}%
-          </div>
-          <div className="h-2.5 flex-1 rounded-full bg-muted overflow-hidden ring-1 ring-border/20">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${marking.score}%` }}
-              className={cn(
-                "h-full rounded-full",
-                marking.score >= 70 ? "bg-green-500" :
-                marking.score >= 40 ? "bg-amber-500" : "bg-red-500",
-              )}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            />
-          </div>
-        </div>
-
-        {marking.feedback && (
-          <p className="text-sm text-muted-foreground leading-relaxed">{marking.feedback}</p>
-        )}
-
-        {marking.breakdown && marking.breakdown.length > 0 && (
-          <div className="space-y-2 py-1">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Mark Breakdown</p>
-            {marking.breakdown.map((b, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground w-36 shrink-0">{b.criterion}</span>
-                <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden ring-1 ring-border/10">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(b.awarded / b.maxMarks) * 100}%` }}
-                    className={cn(
-                      "h-full rounded-full",
-                      b.awarded / b.maxMarks >= 0.7 ? "bg-green-500" :
-                      b.awarded / b.maxMarks >= 0.4 ? "bg-amber-500" : "bg-red-500",
-                    )}
-                    transition={{ duration: 0.6, ease: "easeOut", delay: i * 0.1 }}
-                  />
-                </div>
-                <span className="text-xs font-medium tabular-nums w-16 text-right shrink-0">
-                  {b.awarded}/{b.maxMarks}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="space-y-3">
-          <div className="p-3 rounded-lg bg-green-50/50 dark:bg-green-950/10 border border-green-500/20">
-            <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1.5 flex items-center gap-1.5">
-              <Check className="h-3 w-3" /> What You Got Right
-            </p>
-            {marking.strengths.length > 0 ? (
-              <ul className="space-y-1">
-                {marking.strengths.map((s, i) => (
-                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
-                    <span className="text-green-500 mt-0.5">&bull;</span>
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-xs text-muted-foreground">No specific strengths identified.</p>
-            )}
-          </div>
-
-          <div className="p-3 rounded-lg bg-red-50/50 dark:bg-red-950/10 border border-red-500/20">
-            <p className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1.5 flex items-center gap-1.5">
-              <X className="h-3 w-3" /> What Was Wrong
-            </p>
-            {marking.weaknesses.length > 0 ? (
-              <ul className="space-y-1">
-                {marking.weaknesses.map((w, i) => (
-                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
-                    <span className="text-red-500 mt-0.5">&bull;</span>
-                    {w}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-xs text-muted-foreground">No significant errors found.</p>
-            )}
-          </div>
-
-          <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/10 border border-blue-500/20">
-            <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1.5">Ideal Answer</p>
-            <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">{marking.corrections}</p>
-          </div>
-        </div>
-      </div>
+      <TheoryAnswerFeedback
+        question={question}
+        userAnswer={submittedAnswer}
+        isOpen={showReview}
+        onClose={() => setShowReview(false)}
+        initialContent={lastFeedbackRef.current}
+        initialEvalData={lastEvalRef.current}
+      />
     );
   }
 
-  if (submitted && !marking) {
+  if (showFeedback) {
     return (
-      <div className="flex items-center gap-2 text-xs font-medium text-green-600 dark:text-green-400">
-        <Check className="h-3.5 w-3.5" />
-        Answer submitted
+      <TheoryAnswerFeedback
+        question={question}
+        userAnswer={submittedAnswer}
+        imageAttachments={attachmentsRef.current}
+        isOpen={showFeedback}
+        onClose={handleRetry}
+        onRetry={handleRetry}
+        onComplete={handleFeedbackComplete}
+      />
+    );
+  }
+
+  if (submitted) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 text-xs font-medium text-green-600 dark:text-green-400">
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>
+          Answer submitted
+        </div>
+        {lastEvalRef.current && (
+          <button
+            onClick={() => setShowReview(true)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors bg-primary/5 hover:bg-primary/10 px-2.5 py-1 rounded-lg"
+          >
+            <Bot className="w-3 h-3" />
+            View AI Feedback
+          </button>
+        )}
       </div>
     );
   }
@@ -210,7 +166,7 @@ export function ImageAnswerInput({
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type your answer... (or upload an image)"
+          placeholder="Type your answer... (or upload images)"
           rows={4}
           className="w-full rounded-xl border bg-background px-4 py-3 pr-12 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow"
           disabled={disabled}
@@ -220,7 +176,7 @@ export function ImageAnswerInput({
             type="button"
             onClick={handlePickImage}
             className="p-1.5 rounded-lg hover:bg-accent transition-colors"
-            title="Attach image"
+            title="Attach images"
           >
             <Upload className="h-4 w-4 text-muted-foreground" />
           </button>
@@ -238,6 +194,7 @@ export function ImageAnswerInput({
       <input
         ref={fileInputRef}
         type="file"
+        multiple
         accept="image/png,image/jpeg,image/webp,application/pdf"
         className="hidden"
         onChange={handleFileInput}
@@ -269,50 +226,56 @@ export function ImageAnswerInput({
           </motion.div>
         )}
 
-        {preview && !showCamera && image?.type.startsWith("image/") && (
+        {images.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative rounded-xl overflow-hidden border max-h-48"
+            className="grid grid-cols-3 gap-2"
           >
-            <img src={preview} alt="Answer preview" className="w-full h-full object-contain max-h-48" loading="lazy" />
-            <button
-              onClick={reset}
-              className="absolute top-1 right-1 p-1 rounded-lg bg-black/60 text-white hover:bg-black/80"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </motion.div>
-        )}
-
-        {image?.type === "application/pdf" && !showCamera && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative rounded-xl overflow-hidden border bg-muted/30 p-4 flex items-center gap-3"
-          >
-            <FileText className="h-8 w-8 text-primary/70" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{image.name}</p>
-              <p className="text-xs text-muted-foreground">PDF document attached</p>
-            </div>
-            <button
-              onClick={reset}
-              className="p-1 rounded-lg bg-black/60 text-white hover:bg-black/80"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
+            {images.map((item, i) => (
+              <div
+                key={`${item.file.name}-${i}`}
+                className="relative rounded-xl overflow-hidden border aspect-square bg-muted/30"
+              >
+                {item.file.type.startsWith("image/") ? (
+                  <img src={item.preview} alt={`Work ${i+1}`} className="w-full h-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-1 p-2">
+                    <FileText className="h-6 w-6 text-primary/70" />
+                    <span className="text-[10px] text-muted-foreground truncate max-w-full">{item.file.name}</span>
+                  </div>
+                )}
+                <button
+                  onClick={() => removeImage(i)}
+                  className="absolute top-1 right-1 p-1 rounded-lg bg-black/60 text-white hover:bg-black/80"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+                <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-black/50 text-white">
+                  {i+1}
+                </span>
+              </div>
+            ))}
+            {images.length < 3 && (
+              <button
+                onClick={handlePickImage}
+                className="rounded-xl border border-dashed border-white/20 hover:border-primary/40 aspect-square flex flex-col items-center justify-center gap-1 transition-colors bg-muted/10 hover:bg-muted/20"
+              >
+                <ImagePlus className="h-5 w-5 text-muted-foreground/60" />
+                <span className="text-[10px] text-muted-foreground/60">Add more</span>
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
 
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
-          {image ? "1 image attached" : "Attach a photo of written work"}
+          {images.length > 0 ? `${images.length}/3 file${images.length > 1 ? 's' : ''} attached` : "Attach photos of written work (max 3)"}
         </span>
         <button
           onClick={handleSubmit}
-          disabled={(!text.trim() && !image) || submitting || disabled}
+          disabled={(!text.trim() && !images.length) || submitting || disabled}
           className="flex items-center gap-1.5 px-5 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 transition-all active:scale-[0.97]"
         >
           {submitting ? (
@@ -320,13 +283,9 @@ export function ImageAnswerInput({
           ) : (
             <Send className="h-4 w-4" />
           )}
-          {submitting ? "Marking..." : "Submit & Mark"}
+          {submitting ? "Submitting..." : "Submit & Mark"}
         </button>
       </div>
     </div>
   );
-}
-
-function cn(...classes: (string | false | undefined | null)[]) {
-  return classes.filter(Boolean).join(" ");
 }

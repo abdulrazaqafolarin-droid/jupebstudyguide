@@ -12,7 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, MessageCircle, Search, UserCheck, UserPlus, Users, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -66,20 +66,58 @@ const Chat = () => {
   const [showProfile, setShowProfile] = useState(false);
   const { markReadByKind } = useNotificationsContext();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const processedConvRef = useRef<string | null>(null);
+  const processedAuthRef = useRef<string | null>(null);
+  const startChatProcessedRef = useRef<string | null>(null);
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const { startConversation, openConversation } = chat;
 
-  // Handle URL params from notification bar navigation
+  // Handle incoming navigation — three patterns:
+  // 1. ?dm=userId (Profile/Leaderboard/Friends Message button via URL param — most reliable)
+  // 2. startChatWith in location.state (legacy fallback)
+  // 3. openConversation in location.state or ?conversation= (notification clicks)
   useEffect(() => {
+    const dmParam = searchParams.get('dm');
+    const startChatState = (location.state as { startChatWith?: string } | null)?.startChatWith;
+    const dmUserId = dmParam || startChatState;
+    const stateConvId = (location.state as { openConversation?: string } | null)?.openConversation;
     const convParam = searchParams.get('conversation');
-    const tabParam = searchParams.get('tab');
-    if (convParam) {
-      chat.openConversation(convParam);
-      if (isMobile) setShowSidebar(false);
+
+    // Pattern 1 & 2: User ID → let Chat handle DM creation + opening
+    if (dmUserId && dmUserId !== startChatProcessedRef.current) {
+      startChatProcessedRef.current = dmUserId;
+      (async () => {
+        try {
+          const convId = await startConversation(dmUserId);
+          if (convId) {
+            await openConversation(convId);
+          }
+        } catch (err) {
+          toast.error('Failed to start conversation');
+          console.error('startChatWith error:', err);
+        }
+      })();
+      return;
     }
-    if (tabParam === 'friends') {
+
+    // Pattern 3: Conversation ID → open directly
+    const convId = stateConvId || convParam;
+    const currentUserId = user?.id ?? null;
+    if (convId && (convId !== processedConvRef.current || currentUserId !== processedAuthRef.current)) {
+      processedConvRef.current = convId;
+      processedAuthRef.current = currentUserId;
+      openConversation(convId);
+      if (isMobile) setShowSidebar(false);
+      if (stateConvId) {
+        window.history.replaceState({}, '', '/chat');
+      }
+    }
+
+    if (searchParams.get('tab') === 'friends') {
       setTab('friends');
     }
-  }, []);
+  }, [location, searchParams, startConversation, openConversation, isMobile, user]);
 
   const { setStaleUnread } = useChatUnreadCount();
 
@@ -91,8 +129,6 @@ const Chat = () => {
     chat.pushMessage(message);
   }, [chat]);
 
-  console.log('[Chat] conversationId passed to hook:', chat.activeConversation);
-  console.log('[Chat] currentUserId passed to hook:', user?.id ?? null);
   useRealtimeChat({
     conversationId: chat.activeConversation,
     currentUserId: user?.id ?? null,
@@ -102,7 +138,8 @@ const Chat = () => {
   // Sync active conversation to presence context for typing indicators
   useEffect(() => {
     presence.setActiveConversation(chat.activeConversation);
-  }, [chat.activeConversation, presence]);
+    if (chat.activeConversation && isMobile) setShowSidebar(false);
+  }, [chat.activeConversation, presence, isMobile]);
   useEffect(() => {
     markReadByKind('chat_message');
   }, [chat.activeConversation, markReadByKind]);
@@ -144,7 +181,10 @@ const Chat = () => {
   const handleStartConversation = async (userId: string) => {
     try {
       const convId = await chat.startConversation(userId);
-      if (convId && isMobile) setShowSidebar(false);
+      if (convId) {
+        await chat.openConversation(convId);
+        if (isMobile) setShowSidebar(false);
+      }
     } catch (err) {
       toast.error(String(err));
     }

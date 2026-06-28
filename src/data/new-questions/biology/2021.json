@@ -1,7 +1,7 @@
 [
   {
     "id": "bio-2021-import-1",
-    "question": "The process of a white blood cell engulfing a bacterium is known as",
+    "question": "The process of a white blood cell engulfing a",
     "options": [
       {
         "label": "A",
@@ -13,7 +13,7 @@
       },
       {
         "label": "C",
-        "text": "osmosis."
+        "text": "asmosis."
       },
       {
         "label": "D",
@@ -21,7 +21,6 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "Endocytosis (specifically phagocytosis) is the process by which a cell engulfs large particles like bacteria.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -49,7 +48,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Cactus is a xerophyte, adapted to survive in dry, arid environments, unlike the others which are hydrophytes.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -57,7 +55,7 @@
   },
   {
     "id": "bio-2021-import-3",
-    "question": "In plants cells, the chloroplast are located",
+    "question": "In a plant cell, the chloroplast is located",
     "options": [
       {
         "label": "A",
@@ -65,7 +63,7 @@
       },
       {
         "label": "B",
-        "text": "outside the protoplasm."
+        "text": "Outside the protoplasm."
       },
       {
         "label": "C",
@@ -77,7 +75,6 @@
       }
     ],
     "correctAnswer": "D",
-    "explanation": "Chloroplasts are organelles suspended within the cytoplasm of plant cells.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -85,7 +82,7 @@
   },
   {
     "id": "bio-2021-import-4",
-    "question": "The ability of the cockroach to live in cracks and crevices is enhanced by the possession of",
+    "question": "The ability of the cockroach to live in cracks and",
     "options": [
       {
         "label": "A",
@@ -105,7 +102,6 @@
       }
     ],
     "correctAnswer": "D",
-    "explanation": "The dorso-ventrally flattened body allows the cockroach to squeeze into narrow cracks and crevices.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -117,23 +113,21 @@
     "options": [
       {
         "label": "A",
-        "text": "keep the temperature of the testes equal to that of the rest of the body."
+        "text": "keep the temperature of the testes equal to that"
       },
       {
         "label": "B",
-        "text": "keep the temperature of the testes slightly lower than that of the rest of the body."
+        "text": "keep the temperature of the testes slightly"
       },
       {
         "label": "C",
-        "text": "keep the temperature of the testes slightly higher than that of the rest of the body."
+        "text": "keep the temperature of the testes slightly"
       },
       {
         "label": "D",
-        "text": "keep the temperature of the testes at a constant 45°C."
+        "text": "keep the temperature of the testes at a"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "The scrotum maintains the testes at a temperature slightly lower than body temperature, which is necessary for viable sperm production.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -141,8 +135,12 @@
   },
   {
     "id": "bio-2021-import-6",
-    "question": "RNA viruses require their own supply of certain enzymes because 3",
+    "question": "RNA viruses require their own supply of certain",
     "options": [
+      {
+        "label": "A",
+        "text": "the viruses are rapidly destroyed by host cell"
+      },
       {
         "label": "B",
         "text": "the enzymes translate viral RNA into proteins."
@@ -153,11 +151,10 @@
       },
       {
         "label": "D",
-        "text": "those cells do not possess RNA-RNA or RNA-DNA enzymes."
+        "text": "those cells do not possess RNA-RNA or RNA-"
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "Host cells lack the specific RNA-dependent RNA polymerase or reverse transcriptase enzymes required for viral replication.",
+    "correctAnswer": "C",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -165,7 +162,7 @@
   },
   {
     "id": "bio-2021-import-7",
-    "question": "An infectious agent containing only protein and without nucleic acid molecule is a",
+    "question": "An infectious agent containing only protein and",
     "options": [
       {
         "label": "A",
@@ -185,7 +182,6 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "A prion is an infectious agent composed entirely of protein material that can fold in multiple, structurally abstract ways.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -213,7 +209,6 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "A peptide bond is a covalent chemical bond formed between the carboxyl group of one amino acid and the amino group of another.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -221,7 +216,7 @@
   },
   {
     "id": "bio-2021-import-9",
-    "question": "Which one of the following molecules contains amino acids?",
+    "question": "Which one of the following molecules contains",
     "options": [
       {
         "label": "A",
@@ -241,7 +236,6 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "Collagen is a structural protein made up of amino acids, whereas the others are carbohydrates.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -249,7 +243,7 @@
   },
   {
     "id": "bio-2021-import-10",
-    "question": "A researcher, who wants to study the composition of a plant’s sap, inserts a capillary tube into the phloem. What causes the sap to flow out of the tube?",
+    "question": "A researcher, who wants to study the composition",
     "options": [
       {
         "label": "A",
@@ -265,11 +259,10 @@
       },
       {
         "label": "D",
-        "text": "Transpiration stream."
+        "text": "transpiration stream"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "Phloem sap flows due to high hydrostatic pressure generated by the loading of sugars into the sieve tubes.",
+    "correctAnswer": "A",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -277,7 +270,7 @@
   },
   {
     "id": "bio-2021-import-11",
-    "question": "In terms of the number of individuals, which of the following taxa is most inclusive?",
+    "question": "In terms of number of individuals, which of the",
     "options": [
       {
         "label": "A",
@@ -297,7 +290,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "In the taxonomic hierarchy, Class is higher than Order, Family, and Species, making it the most inclusive.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -305,11 +297,15 @@
   },
   {
     "id": "bio-2021-import-12",
-    "question": "Unsaturated fat is in the form of 4",
+    "question": "Unsaturated fat is in the form of",
     "options": [
       {
         "label": "A",
         "text": "liquid."
+      },
+      {
+        "label": "B",
+        "text": "solid."
       },
       {
         "label": "C",
@@ -317,11 +313,10 @@
       },
       {
         "label": "D",
-        "text": "mixture of liquid and home."
+        "text": "mixture of liquid and gas."
       }
     ],
     "correctAnswer": "A",
-    "explanation": "Unsaturated fats contain double bonds that prevent tight packing, causing them to remain liquid at room temperature.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -329,7 +324,7 @@
   },
   {
     "id": "bio-2021-import-13",
-    "question": "On the basis of susceptibility of organisms to thermal conditions, microorganisms are classified into all the following EXCEPT",
+    "question": "On the basis of susceptibility of organisms to",
     "options": [
       {
         "label": "A",
@@ -349,7 +344,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Agarmophiles is not a recognized classification for microorganisms based on thermal susceptibility; the others are standard categories.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -377,7 +371,6 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "RNA is the standard abbreviation for Ribonucleic acid.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -385,7 +378,7 @@
   },
   {
     "id": "bio-2021-import-15",
-    "question": "One of these is NOT an element in the chain of infection?",
+    "question": "One of these is NOT an element in the chain of",
     "options": [
       {
         "label": "A",
@@ -405,7 +398,6 @@
       }
     ],
     "correctAnswer": "D",
-    "explanation": "The chain of infection includes an infectious agent, reservoir, portal of exit, mode of transmission, portal of entry, and susceptible host; 'mode of defence' is not a link in this chain.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -425,7 +417,7 @@
       },
       {
         "label": "C",
-        "text": "Fungi."
+        "text": "Fungi"
       },
       {
         "label": "D",
@@ -433,7 +425,6 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "Bacteria are unicellular organisms that lack a membrane-bound nucleus, which is the defining characteristic of prokaryotes.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -461,7 +452,6 @@
       }
     ],
     "correctAnswer": "D",
-    "explanation": "Carl Linnaeus is known as the father of taxonomy for developing the binomial nomenclature system used to classify organisms.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -469,11 +459,15 @@
   },
   {
     "id": "bio-2021-import-18",
-    "question": "The second scientific name of a microorganism is the name 5",
+    "question": "The second scientific name of a microorganism is",
     "options": [
       {
         "label": "A",
         "text": "scientific."
+      },
+      {
+        "label": "B",
+        "text": "specific."
       },
       {
         "label": "C",
@@ -484,8 +478,7 @@
         "text": "general."
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "In binomial nomenclature, the first name is the genus (generic) and the second name is the species (specific) epithet.",
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -493,7 +486,7 @@
   },
   {
     "id": "bio-2021-import-19",
-    "question": "Which of these organelles synthesize, refines, sorts, stores and secretes chemical products in the cell?",
+    "question": "Which of these organelles synthesize, refines,",
     "options": [
       {
         "label": "A",
@@ -513,7 +506,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "The Golgi apparatus is responsible for modifying, sorting, and packaging proteins and lipids for secretion or delivery to other organelles.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -533,7 +525,7 @@
       },
       {
         "label": "C",
-        "text": "corms."
+        "text": "Corms."
       },
       {
         "label": "D",
@@ -541,7 +533,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Cocoyam (Colocasia esculenta) reproduces vegetatively using corms, which are swollen underground stems.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -549,15 +540,15 @@
   },
   {
     "id": "bio-2021-import-21",
-    "question": "Which of these is the worst cause of animal extinction?",
+    "question": "Which of these is the worst cause of animal",
     "options": [
       {
         "label": "A",
-        "text": "Hunting."
+        "text": "Hunting"
       },
       {
         "label": "B",
-        "text": "Species introduction."
+        "text": "Species Introduction."
       },
       {
         "label": "C",
@@ -569,7 +560,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Habitat destruction is widely considered the primary and most significant cause of animal extinction globally.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -577,15 +567,15 @@
   },
   {
     "id": "bio-2021-import-22",
-    "question": "The movement of molecules or ions from a region of high concentration to a region of low concentration is known as",
+    "question": "The movement of molecules or ions from a region",
     "options": [
       {
         "label": "A",
-        "text": "photosynthesis."
+        "text": "photosymthesis."
       },
       {
         "label": "B",
-        "text": "osmosis."
+        "text": "Osmosis."
       },
       {
         "label": "C",
@@ -597,7 +587,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Diffusion is the passive movement of particles from an area of higher concentration to an area of lower concentration.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -605,7 +594,7 @@
   },
   {
     "id": "bio-2021-import-23",
-    "question": "The antibiotic neomycin is obtained from the bacterium",
+    "question": "The antibiotic neomycin is obtained from the",
     "options": [
       {
         "label": "A",
@@ -624,8 +613,7 @@
         "text": "Streptomyces griseus."
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Neomycin is an aminoglycoside antibiotic produced by the bacterium Streptomyces fradiae.",
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -633,8 +621,12 @@
   },
   {
     "id": "bio-2021-import-24",
-    "question": "All EXCEPT one of the following is a characteristic of pathogenic bacterium. 6",
+    "question": "All EXCEPT one of the following is a characteristic",
     "options": [
+      {
+        "label": "A",
+        "text": "Spread between hosts."
+      },
       {
         "label": "B",
         "text": "Become established in the host."
@@ -649,7 +641,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Pathogenic bacteria typically evade or suppress the immune system rather than repairing it.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -657,7 +648,7 @@
   },
   {
     "id": "bio-2021-import-25",
-    "question": "One of these is NOT a classification of egg based on the yolk content.",
+    "question": "One of these is NOT a classification of egg based",
     "options": [
       {
         "label": "A",
@@ -677,7 +668,6 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "Eggs are classified as isolecithal, mesolecithal, telolecithal, or centrolecithal based on yolk distribution; 'nanolecithal' is not a standard classification.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -685,27 +675,25 @@
   },
   {
     "id": "bio-2021-import-26",
-    "question": "Active transport is",
+    "question": "Which of the following statements correctly defines",
     "options": [
       {
         "label": "A",
-        "text": "the movement of molecules in and out of a cell."
+        "text": "The movement of molecules in and out of a cell"
       },
       {
         "label": "B",
-        "text": "an energy-requiring process in which ions and molecules are moved across membranes against a concentration gradient."
+        "text": "An energy-requiring process in which ions and"
       },
       {
         "label": "C",
-        "text": "active uptake of materials."
+        "text": "Active uptake of materials."
       },
       {
         "label": "D",
-        "text": "use of heat to transport materials."
+        "text": "Use of heat to transport materials."
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "Active transport is defined by the movement of substances against a concentration gradient, which requires the expenditure of metabolic energy (ATP).",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -713,27 +701,26 @@
   },
   {
     "id": "bio-2021-import-27",
-    "question": "Which statement(s) are correct about glycolysis? i. Glucose molecule is phosphorylated ii. The 6-carbon hexose phosphate is split into three molecules of triose phosphate iii. Triose phosphate is converted to pyruvic acid",
+    "question": "Which statement(s) are correct about glycolysis?",
     "options": [
       {
         "label": "A",
-        "text": "i and ii"
+        "text": "I and II."
       },
       {
         "label": "B",
-        "text": "i and iii"
+        "text": "I and III."
       },
       {
         "label": "C",
-        "text": "i,ii and iii"
+        "text": "I, II and III."
       },
       {
         "label": "D",
-        "text": "ii and iii"
+        "text": "II and III."
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Glycolysis involves the phosphorylation of glucose, the cleavage of hexose phosphate into triose phosphates, and the final conversion to pyruvic acid.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -741,7 +728,7 @@
   },
   {
     "id": "bio-2021-import-28",
-    "question": "Which of the following biomes is characterized by short growing seasons?",
+    "question": "Which of the following biomes is characterized",
     "options": [
       {
         "label": "A",
@@ -761,7 +748,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "The Arctic tundra is characterized by extremely cold temperatures and a very short growing season.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -769,19 +755,26 @@
   },
   {
     "id": "bio-2021-import-29",
-    "question": "In which of the following organisms would glycogen be stored? 7",
+    "question": "In which of the following organisms would",
     "options": [
       {
         "label": "A",
-        "text": "Spirogyra.  B . Chlamydomonas."
+        "text": "Spirogyra."
+      },
+      {
+        "label": "B",
+        "text": "Chlamydomonas."
       },
       {
         "label": "C",
         "text": "Rattus rattus."
+      },
+      {
+        "label": "D",
+        "text": "Mangifera."
       }
     ],
     "correctAnswer": "C",
-    "explanation": "Glycogen is the primary storage polysaccharide in animals (Rattus rattus), whereas plants and algae typically store starch.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -789,19 +782,19 @@
   },
   {
     "id": "bio-2021-import-30",
-    "question": "The phenotype ratio resulting from Mendel’s law of independent assortment is",
+    "question": "The phenotype ratio resulting from Mendel's law",
     "options": [
       {
         "label": "A",
-        "text": "9:3:3:1"
+        "text": "9:3:3:1."
       },
       {
         "label": "B",
-        "text": "3:1"
+        "text": "3:1."
       },
       {
         "label": "C",
-        "text": "3:1:1"
+        "text": "3:1:1."
       },
       {
         "label": "D",
@@ -809,7 +802,6 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "The dihybrid cross of two heterozygous individuals following the law of independent assortment results in a phenotypic ratio of 9:3:3:1.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -837,7 +829,6 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "Ribosomes are the sites of protein synthesis in the cell, where mRNA is translated into polypeptide chains.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -845,27 +836,26 @@
   },
   {
     "id": "bio-2021-import-32",
-    "question": "The joint between the atlas and the vertebrae allows for",
+    "question": "The joint between the atlas and the vertebrae",
     "options": [
       {
         "label": "A",
-        "text": "rotary movement only"
+        "text": "rotary movement only."
       },
       {
         "label": "B",
-        "text": "up and down and nodding movement only"
+        "text": "up and down and nodding movement only."
       },
       {
         "label": "C",
-        "text": "rotatory and nodding movements only"
+        "text": "rotary and nodding movements only."
       },
       {
         "label": "D",
-        "text": "no movement at all"
+        "text": "no movement at all."
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "The joint between the atlas (C1) and the axis (C2) allows for rotation, but the joint between the atlas and the skull (occipital condyles) allows for nodding (up and down) movements.",
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -893,7 +883,6 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "In anaerobic respiration (fermentation) in yeast and some bacteria, glucose is broken down into ethanol (alcohol) and carbon dioxide.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -901,27 +890,26 @@
   },
   {
     "id": "bio-2021-import-34",
-    "question": "During the excretion of urea, there is also a corresponding re-absorption of water into the blood stream. This re-absorption take place in the",
+    "question": "During the excretion of urea, there is also a",
     "options": [
       {
         "label": "A",
-        "text": "uriniferous tubules."
+        "text": "Uriniferous tubules."
       },
       {
         "label": "B",
-        "text": "Bowman’s capsule."
+        "text": "Bowman's capsule."
       },
       {
         "label": "C",
-        "text": "glomerulus."
+        "text": "Glomerulus."
       },
       {
         "label": "D",
         "text": "Malpighian capsule."
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "The reabsorption of water, glucose, and ions back into the bloodstream occurs primarily in the uriniferous (renal) tubules.",
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -929,23 +917,26 @@
   },
   {
     "id": "bio-2021-import-35",
-    "question": "Which of the following statement(s) is/are true of adult butterfly? I. It is a specialist reproductive stage II. Needs vast amounts of energy which are supplied by nectar. III. Aids the dispersal of the species 8",
+    "question": "Which of the following statement(s) is/are true of",
     "options": [
       {
         "label": "A",
-        "text": "II and III only"
+        "text": "All and III only."
+      },
+      {
+        "label": "B",
+        "text": "I and III only."
       },
       {
         "label": "C",
-        "text": "II and III only"
+        "text": "II and III only."
       },
       {
         "label": "D",
-        "text": "I, II and III"
+        "text": "I, II and III only."
       }
     ],
     "correctAnswer": "D",
-    "explanation": "Adult butterflies focus on reproduction, require nectar for energy to fly, and their mobility aids in the dispersal of the species.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -953,7 +944,7 @@
   },
   {
     "id": "bio-2021-import-36",
-    "question": "Organisms which take in complex organic molecules are called",
+    "question": "Organisms which take in complex organic",
     "options": [
       {
         "label": "A",
@@ -961,19 +952,18 @@
       },
       {
         "label": "B",
-        "text": "Heterotrophs."
+        "text": "Heterotroph."
       },
       {
         "label": "C",
-        "text": "Symbionts."
+        "text": "Symbiosis."
       },
       {
         "label": "D",
         "text": "Parasites."
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "Heterotrophs are organisms that cannot produce their own food and must ingest complex organic molecules.",
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -981,7 +971,7 @@
   },
   {
     "id": "bio-2021-import-37",
-    "question": "The genotype ratio of a monohybrid cross in the F2 generation is",
+    "question": "The genotype ratio of a monohybrid cross in the",
     "options": [
       {
         "label": "A",
@@ -1001,7 +991,6 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "In a monohybrid cross (e.g., Aa x Aa), the F2 genotypic ratio is 1 homozygous dominant (AA) : 2 heterozygous (Aa) : 1 homozygous recessive (aa).",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1009,27 +998,26 @@
   },
   {
     "id": "bio-2021-import-38",
-    "question": "Chiasmata formation leads to",
+    "question": "Chiasma formation leads to",
     "options": [
       {
         "label": "A",
-        "text": "formation of gametes"
+        "text": "formation of gametes."
       },
       {
         "label": "B",
-        "text": "creation of variability"
+        "text": "creation of variability."
       },
       {
         "label": "C",
-        "text": "formation of genes"
+        "text": "formation of genes."
       },
       {
         "label": "D",
-        "text": "formation of the different sexes"
+        "text": "formation of the different sexes."
       }
     ],
     "correctAnswer": "B",
-    "explanation": "Chiasmata are the sites of crossing over during meiosis, which results in the exchange of genetic material and creates genetic variability.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1041,23 +1029,22 @@
     "options": [
       {
         "label": "A",
-        "text": "Louis Pasteur"
+        "text": "Louis Pasteur."
       },
       {
         "label": "B",
-        "text": "Robert Koch"
+        "text": "Robert Koch."
       },
       {
         "label": "C",
-        "text": "Ferdinard Cohn"
+        "text": "Ferdinand Cohn."
       },
       {
         "label": "D",
-        "text": "John Needham"
+        "text": "John Needham."
       }
     ],
     "correctAnswer": "A",
-    "explanation": "Louis Pasteur is credited with developing techniques of sterilization and pasteurization to kill microorganisms.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1065,7 +1052,7 @@
   },
   {
     "id": "bio-2021-import-40",
-    "question": "Lipopolysaccharide is a major constituent in cell wall.",
+    "question": "Lipopolysaccharide is a major constituent in cell",
     "options": [
       {
         "label": "A",
@@ -1073,7 +1060,7 @@
       },
       {
         "label": "B",
-        "text": "Gram-negative bacteria"
+        "text": "Gram-negative bacteria."
       },
       {
         "label": "C",
@@ -1081,11 +1068,10 @@
       },
       {
         "label": "D",
-        "text": "Protozoa"
+        "text": "Protozoa."
       }
     ],
     "correctAnswer": "B",
-    "explanation": "Lipopolysaccharides (LPS) are a characteristic component of the outer membrane of Gram-negative bacteria.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1093,23 +1079,26 @@
   },
   {
     "id": "bio-2021-import-41",
-    "question": "Acquisition of naked DNA by a bacterium from its environment and incorporation in its genome is known as 9",
+    "question": "Acquisition of naked DNA by a bacterium from its",
     "options": [
       {
         "label": "A",
-        "text": "Transformation"
+        "text": "Transformation."
       },
       {
         "label": "B",
-        "text": "Transduction"
+        "text": "Transduction."
       },
       {
         "label": "C",
-        "text": "Conjugation"
+        "text": "Conjugation."
+      },
+      {
+        "label": "D",
+        "text": "Lysogenic conversion."
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "Transformation is the process by which a bacterium takes up naked DNA fragments from its surrounding environment.",
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1117,11 +1106,11 @@
   },
   {
     "id": "bio-2021-import-42",
-    "question": "HIV belongs to the family Retroviridae and subfamily",
+    "question": "HIV belongs to the family Retroviridae and",
     "options": [
       {
         "label": "A",
-        "text": "Lentivirinae."
+        "text": "Lentivinae."
       },
       {
         "label": "B",
@@ -1137,7 +1126,6 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "HIV is a member of the Retroviridae family and specifically belongs to the Lentivirinae subfamily.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1145,27 +1133,26 @@
   },
   {
     "id": "bio-2021-import-43",
-    "question": "Two useful substances produced by the light-dependent stage of photosynthesis are",
+    "question": "Two useful substances produced by the light-",
     "options": [
       {
         "label": "A",
-        "text": "ATP and ribulose"
+        "text": "ATP and NADP2."
       },
       {
         "label": "B",
-        "text": "Ribulose and NADP 2"
+        "text": "ATP and NADPH2."
       },
       {
         "label": "C",
-        "text": "ATP and ethanol"
+        "text": "ADP and ethanol."
       },
       {
         "label": "D",
-        "text": "ATP and NADPH 2"
+        "text": "ATP and NADPH2."
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "The light-dependent reactions of photosynthesis produce ATP and NADPH, which are used in the Calvin cycle.",
+    "correctAnswer": "B",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1173,35 +1160,7 @@
   },
   {
     "id": "bio-2021-import-44",
-    "question": "In animals cleavage produces a mass of cells called",
-    "options": [
-      {
-        "label": "A",
-        "text": "Organs"
-      },
-      {
-        "label": "B",
-        "text": "Blastula"
-      },
-      {
-        "label": "C",
-        "text": "System"
-      },
-      {
-        "label": "D",
-        "text": "Cellular"
-      }
-    ],
-    "correctAnswer": "B",
-    "explanation": "Cleavage is a series of rapid mitotic divisions that transform the zygote into a hollow ball of cells known as the blastula.",
-    "difficulty": "medium",
-    "subject": "biology",
-    "year": 2021,
-    "category": "objective"
-  },
-  {
-    "id": "bio-2021-import-45",
-    "question": "Which of the following mode of nutrition is not among fungi?",
+    "question": "Which of the following mode of nutrition is not",
     "options": [
       {
         "label": "A",
@@ -1209,7 +1168,7 @@
       },
       {
         "label": "B",
-        "text": "Symbiosis."
+        "text": "Saprotrophism."
       },
       {
         "label": "C",
@@ -1217,11 +1176,33 @@
       },
       {
         "label": "D",
-        "text": "Saprotrophism."
+        "text": "Cellular."
       }
     ],
     "correctAnswer": "A",
-    "explanation": "Fungi are heterotrophic and lack chlorophyll; therefore, they cannot perform autotrophism (photosynthesis).",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2021,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2021-import-45",
+    "question": "All and III only.",
+    "options": [
+      {
+        "label": "B",
+        "text": "I and III only."
+      },
+      {
+        "label": "C",
+        "text": "II and III only."
+      },
+      {
+        "label": "D",
+        "text": "I, II and III only."
+      }
+    ],
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1229,7 +1210,7 @@
   },
   {
     "id": "bio-2021-import-46",
-    "question": "Which one of the following provided the least supportive evidence to theory of evolution?",
+    "question": "Which one of the following provided the least",
     "options": [
       {
         "label": "A",
@@ -1237,7 +1218,7 @@
       },
       {
         "label": "B",
-        "text": "Paleontology."
+        "text": "Palaeontology."
       },
       {
         "label": "C",
@@ -1249,7 +1230,6 @@
       }
     ],
     "correctAnswer": "D",
-    "explanation": "While biogeography provides evidence, it is often considered less direct or 'supportive' compared to the fossil record (paleontology), comparative embryology, and the observable mechanism of natural selection.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1257,23 +1237,25 @@
   },
   {
     "id": "bio-2021-import-47",
-    "question": "Staining techniques are useful in microbiology because 10",
+    "question": "Staining techniques are useful in microbiology",
     "options": [
       {
         "label": "A",
-        "text": "stains deflect electrons propagated towards the slide"
+        "text": "stains deflect electrons propagated towards"
       },
       {
         "label": "B",
-        "text": "most microscopes are of poor quality"
+        "text": "most microscopes are of poor quality."
       },
       {
         "label": "C",
-        "text": "the cytoplasm of microorganisms is transparent"
+        "text": "the cytoplasm of microorganisms is"
+      },
+      {
+        "label": "D",
+        "text": "stains make the condenser and diaphragm of"
       }
     ],
-    "correctAnswer": "C",
-    "explanation": "Most microorganisms are composed primarily of water and are nearly transparent, making them difficult to see under a light microscope without staining to provide contrast.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1281,7 +1263,7 @@
   },
   {
     "id": "bio-2021-import-48",
-    "question": "Microorganisms selected for probiotic use should exhibit all the following characteristics EXCEPT",
+    "question": "Microorganisms selected for probiotic use should",
     "options": [
       {
         "label": "A",
@@ -1289,7 +1271,7 @@
       },
       {
         "label": "B",
-        "text": "Be toxic and pathogenic to the host’s microflora."
+        "text": "Be toxic and pathogenic to the host's"
       },
       {
         "label": "C",
@@ -1297,11 +1279,9 @@
       },
       {
         "label": "D",
-        "text": "Withstand HCl in the host’s stomach."
+        "text": "Withstand HCl in the host's stomach."
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "Probiotics are beneficial microorganisms; they must be non-toxic and non-pathogenic to the host and should not harm the host's existing beneficial microflora.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
@@ -1309,7 +1289,7 @@
   },
   {
     "id": "bio-2021-import-49",
-    "question": "Which of these statements do you consider to be CORRECT? I. Rickettsia cause several human diseases including epidemic typhus. II. Viruses lack the ability to grow and reproduce. III. Viruses use the energy and protein producing machinery of cells to make new viral particles.",
+    "question": "Which of these statements is/are CORRECT?",
     "options": [
       {
         "label": "A",
@@ -1317,7 +1297,34 @@
       },
       {
         "label": "B",
-        "text": "I & II only."
+        "text": "I and III only."
+      },
+      {
+        "label": "C",
+        "text": "II and III only."
+      },
+      {
+        "label": "D",
+        "text": "I, II and III only."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2021,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2021-import-50",
+    "question": "Which of the following can be used in the",
+    "options": [
+      {
+        "label": "A",
+        "text": "I only."
+      },
+      {
+        "label": "B",
+        "text": "I & III only."
       },
       {
         "label": "C",
@@ -1328,99 +1335,66 @@
         "text": "I, II & III."
       }
     ],
-    "correctAnswer": "D",
-    "explanation": "Rickettsia are obligate intracellular bacteria causing typhus; viruses are acellular and cannot reproduce independently; viruses rely entirely on host cell machinery for energy and protein synthesis.",
+    "correctAnswer": "C",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
     "category": "objective"
   },
   {
-    "id": "bio-2021-import-50",
-    "question": "Which of the following can be used in the classification of the monerans? I. Physical appearance. II. Nutritional requirements. III. Cell chemistry. 11 1. (a) What is gaseous exchange? [1 mark] (b) What is respiratory surface? [1 mark] (c) State FOUR properties required for a cell to be an effective respiratory surface. [4 marks] (d) Give FOUR examples of respiratory surfaces [4 marks] 2. (a) Define the following Ecological terms: [4 marks] i. Niche ii. Microhabitat iii. Ecosystem iv. Population (b) Give TWO reasons why a small population can easily go into extinction. [2 marks] (c) Give TWO explanations each on how the population growth of an organism can be affected by density dependent and density independent factors. [ 4 marks] BIO 002: BOTANY 3 (a) i.) Mention TEN macro-elements (excluding phosphorus) which are required by plants for healthy growth. [2½ marks] ii.) State THREE anatomical differences between Monocot and Dicot [3 marks] (b) State THREE importance of phosphorus to plants [1½ marks] (c) State THREE symptoms which can be observed in a plant growing in soil that is deficient in phosphorus [ 3 marks] 4. (a) Mention FOUR roles of cytokinin in plant growth [4 marks] (b) Define the following terms: i. Hypogeal germination ii. Meristem iii. Epigeal germination iv. Geotropism [ 4 marks] (c) List TWO conditions necessary for growth. [ 1 mark] (d) State ONE feature possessed by a seed or fruit dispersed by wind [ 1 mark] 12 BIO 003: MICROBIOLOGY 5. (a) Enumerate TWO major historical issues/challenges / events that contributed to the historical development of Microbiology. [2marks] (b) Describe the FOUR major groups of fungi based on the spores produced. [4 marks] (c) Give FOUR differences between bacteria and viruses. [4 marks] 6. (a) State FOUR differences between mutational and plasmids mediated drug resistance. [4marks] (b) What is bacteriophage? [1 mark] (c) Describe the life cycle of",
-    "options": [
-      {
-        "label": "A",
-        "text": "I only."
-      },
-      {
-        "label": "B",
-        "text": "I & II only."
-      },
-      {
-        "label": "C",
-        "text": "II & III only."
-      },
-      {
-        "label": "E",
-        "text": "Coli.   [4 marks]  (d)   Define intermediate host.   [1 mark]  BIO 004: ZOOLOGY  7 (a) Enumerate   FIVE   reasons why Monotremes and Marsupials are special categories of mammals.   [2½ marks]  (b)   List   FIVE   biological advancements of Amphibians over Fishes.   [2½ marks]  (c)   Explain ultrafiltration.   [5 marks]  8 (a)   Name the constituents of a balanced diet and state their importance in the diet.   [4 marks]  (b)   What are the modifications and the mechanisms associated with the following habits; i. Filter feeding in mosquito larva   [3 marks]  ii. Parasitic feeding in tapeworms   [3 marks]"
-      }
-    ],
-    "correctAnswer": "D",
-    "explanation": "Monerans (bacteria) are classified based on their morphology (physical appearance), their metabolic/nutritional needs, and their biochemical/genetic characteristics (cell chemistry).",
+    "id": "bio-2021-import-theory-1",
+    "question": "1(a) What is gaseous exchange?\n\n(b)  What is respiratory surface?\n\n(c)  State FOUR properties required for a cell to\nbe an effective respiratory surface.\n\n(d)  Give FOUR examples of respiratory surfaces.",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
-    "category": "objective"
+    "category": "theory"
   },
   {
-    "question": ": \n  Answer   FOUR   questions;   ONE   question from each course . Ensure you read and follow all the Instructions on the cover page of the Answer Booklet.  JSC 604   Turn Over\n\n=== PAGE 2 ===\n2  SECTION A: MULTIPLE CHOICE QUESTIONS. Answer ALL Questions.  1.   The process of a white blood cell engulfing a bacterium is known as A. endocytosis. B. exocytosis. C. osmosis. D. diffusion. 2.   Each of the following is a water plant EXCEPT A. Hycinth. B. Lilly. C. Cactus. D. Letuce. 3.   In plants ce",
-    "answerGuide": "",
-    "markScheme": [],
-    "totalMarks": 10,
+    "id": "bio-2021-import-theory-2",
+    "question": "2(a) Define the following Ecological terms:\ni.   Niche.\nii.  Microhabitat.\niii. Ecosystem, and\niv.  Population.\n\n(b)  Give TWO explanations each on how the\npopulation growth of an organism can be affected\nby density dependent and density independent\nfactors.\n\n(c)  Give TWO reasons why a small population can\neasily go into extinction.",
+    "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
-    "category": "theory",
-    "id": "bio-2021-import-theory-1"
+    "category": "theory"
   },
   {
-    "question": "1. (a) What is gaseous exchange?   [1 mark]  (b) What is respiratory surface?   [1 mark]  (c) State   FOUR   properties required for a cell to be an effective respiratory surface.   [4 marks]  (d) Give   FOUR   examples of respiratory surfaces   [4 marks]",
-    "answerGuide": "",
-    "markScheme": [],
-    "totalMarks": 10,
+    "id": "bio-2021-import-theory-3",
+    "question": "3(a) Mention TEN macro-elements (excluding\nphosphorus) which are required by plants for\nhealthy growth.\n\n(b)  State THREE anatomical differences between\nMonocot and Dicot.\n\n(c)  State THREE symptoms which can be\nobserved in a plant growing in soil that is\ndeficient in Phosphorus.\n\n(d)  Mention FOUR roles of cytokinin in plant\ngrowth.\n\n(e)  Define the following terms:\ni.   Hypogeal germination.\nii.  Mesisten.\niii. Epigeal germination.\niv.  Georopism.",
+    "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
-    "category": "theory",
-    "id": "bio-2021-import-theory-2"
+    "category": "theory"
   },
   {
-    "question": "2. (a) Define the following Ecological terms:   [4 marks]  i.   Niche ii.   Microhabitat iii.   Ecosystem iv.   Population (b) Give   TWO   reasons why a small population can easily go into extinction.   [2 marks]  (c) Give   TWO   explanations each on how the population growth of an organism can be affected by density dependent and density independent factors.   [ 4 marks]  BIO 002: BOTANY  3 (a) i.) Mention   TEN   macro-elements (excluding phosphorus) which are required by plants for healthy ",
-    "answerGuide": "",
-    "markScheme": [],
-    "totalMarks": 10,
+    "id": "bio-2021-import-theory-5",
+    "question": "5(a) Enumerate Two major historical\ndevelopments of Microbiology.\n\n(b)  Describe the FOUR major groups of fungi\nbased on the spores produced.\n\n(c)  Give FOUR differences between mutational\nand plasmids mediated drug resistance.\n\n(d)  Define introduction of E. Coli.",
+    "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
-    "category": "theory",
-    "id": "bio-2021-import-theory-3"
+    "category": "theory"
   },
   {
-    "question": "4. (a) Mention   FOUR   roles of cytokinin in plant growth   [4 marks]  (b) Define the following terms: i. Hypogeal germination ii. Meristem iii. Epigeal germination iv. Geotropism   [ 4 marks]  (c) List   TWO   conditions necessary for growth.   [ 1 mark]  (d)   State   ONE   feature possessed by a seed or fruit dispersed by wind   [ 1 mark]\n\n=== PAGE 12 ===\n12  BIO 003: MICROBIOLOGY",
-    "answerGuide": "",
-    "markScheme": [],
-    "totalMarks": 10,
+    "id": "bio-2021-import-theory-6",
+    "question": "6(a) Name the constituents of a balanced diet and\nthe their importance in the diet.\n\n(b)  What are the modifications and the\nmechanisms associated with the following habits:\ni.   Filter feeding in mosquito larva.\nii.  Parasitic feeding in tapeworms.",
+    "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
-    "category": "theory",
-    "id": "bio-2021-import-theory-4"
+    "category": "theory"
   },
   {
-    "question": "5. (a) Enumerate   TWO   major historical issues/challenges / events that contributed to the historical development of Microbiology.   [2marks]  (b) Describe the   FOUR   major groups of fungi based on the spores produced.   [4 marks]  (c) Give   FOUR   differences between bacteria and viruses.   [4 marks]",
-    "answerGuide": "",
-    "markScheme": [],
-    "totalMarks": 10,
+    "id": "bio-2021-import-theory-7",
+    "question": "7(a) Enumerate FIVE reasons why Monotremes and\nMarsupials are special categories of mammals\n\n(b)  List FIVE biological advancements of\nAmphibians over Fishes.\n\n(c)  Explain ultra filtration.\n\n(d)  Describe the life cycle of E. Coli.",
+    "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
-    "category": "theory",
-    "id": "bio-2021-import-theory-5"
+    "category": "theory"
   },
   {
-    "question": "6. (a) State   FOUR   differences between mutational and plasmids mediated drug resistance.  [4marks]  (b) What is bacteriophage?   [1 mark]  (c)   Describe the life cycle of   E. Coli.   [4 marks]  (d)   Define intermediate host.   [1 mark]  BIO 004: ZOOLOGY  7 (a) Enumerate   FIVE   reasons why Monotremes and Marsupials are special categories of mammals.   [2½ marks]  (b)   List   FIVE   biological advancements of Amphibians over Fishes.   [2½ marks]  (c)   Explain ultrafiltration.   [5 marks]",
-    "answerGuide": "",
-    "markScheme": [],
-    "totalMarks": 10,
+    "id": "bio-2021-import-theory-8",
+    "question": "8(a) Describe the intermediate host.\n\n(b)  State FOUR differences between bacteria and\nviruses.\n\n(c)  List TWO conditions necessary for growth.\n\n(d)  State ONE feature possessed by a seed or fruit\ndispersed by wind.",
+    "difficulty": "medium",
     "subject": "biology",
     "year": 2021,
-    "category": "theory",
-    "id": "bio-2021-import-theory-6"
+    "category": "theory"
   }
 ]

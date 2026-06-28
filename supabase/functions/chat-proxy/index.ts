@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { CORS_HEADERS, aiChatStream } from "../_shared/ai.ts";
+import { CORS_HEADERS, aiChatStream, aiChatJSON } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 
 Deno.serve(async (req) => {
@@ -66,6 +66,20 @@ Deno.serve(async (req) => {
         JSON.stringify({ embedding }),
         { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
+    }
+
+    if (action === "json") {
+      const chatMessages = (messages || []).filter((m: any) => m.role !== "system").map((m: any) => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: m.content,
+      }));
+      const result = await aiChatJSON(Deno.env, systemPrompt || "You are a helpful assistant.", chatMessages, {
+        temperature: 0.1,
+        maxTokens: 2048,
+      });
+      return new Response(JSON.stringify(result), {
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+      });
     }
 
     if (!messages || !Array.isArray(messages)) {

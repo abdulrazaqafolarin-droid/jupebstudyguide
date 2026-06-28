@@ -70,7 +70,6 @@ function buildGeminiBody(systemPrompt: string, messages: RouterMessage[], opts: 
     temperature: opts.temperature ?? 0.7,
     maxOutputTokens: opts.maxTokens ?? 2048,
   };
-  if (opts.json) body.generationConfig.responseMimeType = "application/json";
   return body;
 }
 
@@ -110,7 +109,8 @@ async function geminiCall(
       return { text: null, is429, error: `${res.status}: ${err.slice(0, 200)}` };
     }
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const text = parts.filter((p: any) => !p.thought).map((p: any) => p.text).join("").trim() || null;
     const usageMeta: GeminiUsageMeta | undefined = data.usageMetadata ? {
       promptTokenCount: data.usageMetadata.promptTokenCount,
       candidatesTokenCount: data.usageMetadata.candidatesTokenCount,
@@ -132,10 +132,16 @@ async function tryGemini(
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
 
-  // Fallback to static env var if key vault is not configured
-  const fallbackKey = !supabaseUrl || !supabaseKey || !encryptionSecret ? getKey("GEMINI_API_KEY") : null;
+  // Try vault path first (when Supabase creds available)
+  if (supabaseUrl && supabaseKey) {
+    const vaultResult = await tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, t0, 0);
+    if (vaultResult.text) return vaultResult;
+    console.warn("[Router] Vault returned no active keys, falling back to GEMINI_API_KEY env var");
+  }
+
+  // Fallback to GEMINI_API_KEY env var (vault empty or unavailable)
+  const fallbackKey = getKey("GEMINI_API_KEY");
   if (fallbackKey) {
     const result = await geminiCall(systemPrompt, messages, opts, fallbackKey);
     const ms = Math.round(performance.now() - t0);
@@ -144,17 +150,12 @@ async function tryGemini(
     return { text: result.text, latency: ms };
   }
 
-  // No static key either — can't do Gemini
-  if (!supabaseUrl || !supabaseKey || !encryptionSecret) {
-    return { text: null, latency: 0 };
-  }
-
-  return tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, encryptionSecret, t0, 0);
+  return { text: null, latency: 0 };
 }
 
 async function tryGeminiWithFailover(
   systemPrompt: string, messages: RouterMessage[], opts: Opts,
-  supabaseUrl: string, supabaseKey: string, encryptionSecret: string,
+  supabaseUrl: string, supabaseKey: string,
   t0: number, depth: number
 ): Promise<{ text: string | null; latency: number }> {
   // Safety: max 3 retries to avoid infinite loops
@@ -163,7 +164,7 @@ async function tryGeminiWithFailover(
     return { text: null, latency: Math.round(performance.now() - t0) };
   }
 
-  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey, encryptionSecret);
+  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey);
   if (!activeKey) {
     if (depth === 0) console.warn("[Router] No active Gemini keys available");
     return { text: null, latency: Math.round(performance.now() - t0) };
@@ -174,7 +175,6 @@ async function tryGeminiWithFailover(
 
   if (result.text) {
     recordSuccess("Gemini", ms);
-    // Log success usage asynchronously — don't block response
     logKeyUsage(supabaseUrl, supabaseKey, {
       keyId: activeKey.keyId, feature: "ai-router",
       usageMeta: result.usageMeta,
@@ -186,7 +186,6 @@ async function tryGeminiWithFailover(
   if (result.is429) {
     console.warn(`[Router] Gemini key ${activeKey.label} exhausted (429), failing over`);
     recordError("Gemini", result.error || "429", ms);
-    // Mark exhausted + log error asynchronously
     Promise.all([
       markKeyExhausted(supabaseUrl, supabaseKey, activeKey.keyId),
       logKeyUsage(supabaseUrl, supabaseKey, {
@@ -194,8 +193,7 @@ async function tryGeminiWithFailover(
         status: "quota_error", errorMessage: result.error,
       }),
     ]).catch(e => console.error("[Router] Failed to mark key exhausted:", e));
-    // Retry with next key
-    return tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, encryptionSecret, t0, depth + 1);
+    return tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, t0, depth + 1);
   }
 
   // Non-429 error
@@ -366,13 +364,46 @@ export async function routerText(
   return { text: result.text, provider: result.name, latency: result.latency };
 }
 
+function extractJSON(text: string): any {
+  const trimmed = text.trim();
+  try {
+    return JSON.parse(trimmed);
+  } catch {}
+  const codeMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)```/);
+  if (codeMatch) {
+    try {
+      return JSON.parse(codeMatch[1].trim());
+    } catch {}
+  }
+  const braceMatch = trimmed.match(/\{[\s\S]*\}/);
+  if (braceMatch) {
+    try {
+      return JSON.parse(braceMatch[0]);
+    } catch {}
+  }
+  throw new Error(`response was not valid JSON: ${text.slice(0, 200)}`);
+}
+
 export async function routerJSON(
   systemPrompt: string,
   messages: RouterMessage[],
   opts: Opts = {}
 ): Promise<any> {
-  const { text } = await routerText(systemPrompt, messages, { ...opts, json: true });
-  return JSON.parse(text);
+  const jsonPrompt = `${systemPrompt}\n\nIMPORTANT: You MUST respond with ONLY valid JSON. No other text before or after the JSON object.`;
+  const maxRetries = 2;
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const { text } = await routerText(jsonPrompt, messages, { ...opts, json: true });
+      return extractJSON(text);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      if (attempt < maxRetries) {
+        console.warn(`[Router] JSON parse attempt ${attempt + 1}/${maxRetries + 1} failed, retrying with different key`);
+      }
+    }
+  }
+  throw lastError;
 }
 
 // ============================================================
@@ -389,9 +420,15 @@ async function tryGeminiStream(
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
 
-  const fallbackKey = !supabaseUrl || !supabaseKey || !encryptionSecret ? getKey("GEMINI_API_KEY") : null;
+  // Try vault path first (when Supabase creds available)
+  if (supabaseUrl && supabaseKey) {
+    const vaultResult = await tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, 0);
+    if (vaultResult.stream) return vaultResult;
+  }
+
+  // Fallback to GEMINI_API_KEY env var (vault empty or unavailable)
+  const fallbackKey = getKey("GEMINI_API_KEY");
   if (fallbackKey) {
     try {
       const body = buildGeminiBody(systemPrompt, messages, opts);
@@ -405,19 +442,17 @@ async function tryGeminiStream(
     }
   }
 
-  if (!supabaseUrl || !supabaseKey || !encryptionSecret) return { stream: null };
-
-  return tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, encryptionSecret, 0);
+  return { stream: null };
 }
 
 async function tryGeminiStreamWithFailover(
   systemPrompt: string, messages: RouterMessage[], opts: Opts, signal: AbortSignal,
-  supabaseUrl: string, supabaseKey: string, encryptionSecret: string,
+  supabaseUrl: string, supabaseKey: string,
   depth: number
 ): Promise<{ stream: ReadableStream | null; keyId?: string; label?: string }> {
   if (depth >= 3) return { stream: null };
 
-  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey, encryptionSecret);
+  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey);
   if (!activeKey) return { stream: null };
 
   try {
@@ -431,7 +466,7 @@ async function tryGeminiStreamWithFailover(
       const is429 = res.status === 429 || errText.toLowerCase().includes("quota") || errText.toLowerCase().includes("rate limit");
       if (is429) {
         await markKeyExhausted(supabaseUrl, supabaseKey, activeKey.keyId);
-        return tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, encryptionSecret, depth + 1);
+        return tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, depth + 1);
       }
       return { stream: null };
     }

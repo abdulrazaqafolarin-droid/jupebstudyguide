@@ -1,0 +1,1416 @@
+[
+  {
+    "id": "bio-2016-import-1",
+    "question": "Which of the following devised the modern system of classifying living organisms?",
+    "options": [
+      {
+        "label": "A",
+        "text": "aristotle"
+      },
+      {
+        "label": "B",
+        "text": "carolus linnaeus"
+      },
+      {
+        "label": "C",
+        "text": "charles darwin"
+      },
+      {
+        "label": "D",
+        "text": "gregor mendel"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-2",
+    "question": "Choose from the list below the one that is not a kind of adoption by animals",
+    "options": [
+      {
+        "label": "A",
+        "text": "camoflaged"
+      },
+      {
+        "label": "B",
+        "text": "warning coloration"
+      },
+      {
+        "label": "C",
+        "text": "minicry"
+      },
+      {
+        "label": "D",
+        "text": "growth"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-3",
+    "question": "Which of these organelles is involved in protrin synthesis? **",
+    "options": [
+      {
+        "label": "A",
+        "text": "ribosomes"
+      },
+      {
+        "label": "B",
+        "text": "golgi apparatus"
+      },
+      {
+        "label": "C",
+        "text": "mitochondrai"
+      },
+      {
+        "label": "D",
+        "text": "endoplasmic reticulum"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-4",
+    "question": "Which of the following is a function of monomers of biological molecule? **",
+    "options": [
+      {
+        "label": "A",
+        "text": "serves as building blocks"
+      },
+      {
+        "label": "B",
+        "text": "are not soluble in water"
+      },
+      {
+        "label": "C",
+        "text": "are connected by dehydration reactions"
+      },
+      {
+        "label": "D",
+        "text": "are not linked by covalent bond"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-5",
+    "question": "The under listed are function of lipids except",
+    "options": [
+      {
+        "label": "A",
+        "text": "storage of energy"
+      },
+      {
+        "label": "B",
+        "text": "protection of body organs"
+      },
+      {
+        "label": "C",
+        "text": "structural components of membranes"
+      },
+      {
+        "label": "D",
+        "text": "repairs warn out tissues"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-6",
+    "question": "Identify the statement that is wrong",
+    "options": [
+      {
+        "label": "A",
+        "text": "recessive traits are not expressed in heterozygote"
+      },
+      {
+        "label": "B",
+        "text": "dominant traits are governed by an allele that can be expressed in the presence of another allele"
+      },
+      {
+        "label": "C",
+        "text": "homozygous means having the same allele at the same locuson both members of a pair of chromosomes"
+      },
+      {
+        "label": "D",
+        "text": "hetezygous means having two allele at two loci of a pair of chromosomes"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-7",
+    "question": "Mycorrhizae represents a",
+    "options": [
+      {
+        "label": "A",
+        "text": "symbiotic association between a fungus and liverworts"
+      },
+      {
+        "label": "B",
+        "text": "parasitic association between a fungus and an alga"
+      },
+      {
+        "label": "C",
+        "text": "parasitic association between a fungus and roots of plants"
+      },
+      {
+        "label": "D",
+        "text": "symbolic association between a fungus and roots of higher plants"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-8",
+    "question": "In Meiosis, the daughter cells differ from parent cell as well as amongst themselves due to an allele that can be expressed in the presence of another allele **",
+    "options": [
+      {
+        "label": "A",
+        "text": "segregation, independence assortment and crossing over"
+      },
+      {
+        "label": "B",
+        "text": "segregation and crossing over"
+      },
+      {
+        "label": "C",
+        "text": "independent assortment and crossing over"
+      },
+      {
+        "label": "D",
+        "text": "segregation and independent assortment"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-9",
+    "question": "Prokaryotic cells have a specialized material called",
+    "options": [
+      {
+        "label": "A",
+        "text": "peptidoglycan"
+      },
+      {
+        "label": "B",
+        "text": "pectin"
+      },
+      {
+        "label": "C",
+        "text": "peptidoglucose"
+      },
+      {
+        "label": "D",
+        "text": "peptidoaminose"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-10",
+    "question": "Proteins synthesized by the rough endoplasmic reticulum are",
+    "options": [
+      {
+        "label": "A",
+        "text": "for internal regulation"
+      },
+      {
+        "label": "B",
+        "text": "to build more membranes in the cell"
+      },
+      {
+        "label": "C",
+        "text": "exported from the cell"
+      },
+      {
+        "label": "D",
+        "text": "for internal storage"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-11",
+    "question": "Within chloroplasts, light is captured by",
+    "options": [
+      {
+        "label": "A",
+        "text": "thylakiods with grana"
+      },
+      {
+        "label": "B",
+        "text": "grana within thylakiods"
+      },
+      {
+        "label": "C",
+        "text": "grana within cisternae"
+      },
+      {
+        "label": "D",
+        "text": "cisternae within grana"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-12",
+    "question": "In what organelle are ribophorins located?",
+    "options": [
+      {
+        "label": "A",
+        "text": "mitochondria"
+      },
+      {
+        "label": "B",
+        "text": "rough endoplasmic reticulum"
+      },
+      {
+        "label": "C",
+        "text": "nuclear membrane"
+      },
+      {
+        "label": "D",
+        "text": "lysosomes"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-13",
+    "question": "In the life cycle of pteridophytes embryo becomes **",
+    "options": [
+      {
+        "label": "A",
+        "text": "zygote"
+      },
+      {
+        "label": "B",
+        "text": "sporophytes"
+      },
+      {
+        "label": "C",
+        "text": "seed"
+      },
+      {
+        "label": "D",
+        "text": "leaves"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-14",
+    "question": "Which of the following fundamental processes reproduction in the plants",
+    "options": [
+      {
+        "label": "A",
+        "text": "mitosis and somatic cells expansion"
+      },
+      {
+        "label": "B",
+        "text": "pollination and fertilization"
+      },
+      {
+        "label": "C",
+        "text": "fruit formation and seed dispersal"
+      },
+      {
+        "label": "D",
+        "text": "meiosis and somatic cell expansion"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-15",
+    "question": "Which of these best defines a fruit?",
+    "options": [
+      {
+        "label": "A",
+        "text": "an immature ovule"
+      },
+      {
+        "label": "B",
+        "text": "a budding gametophyte"
+      },
+      {
+        "label": "C",
+        "text": "an immature sporophyte"
+      },
+      {
+        "label": "D",
+        "text": "a developed ovary"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-16",
+    "question": "In primary growth, plant stems and roots elongate by",
+    "options": [
+      {
+        "label": "A",
+        "text": "cell division"
+      },
+      {
+        "label": "B",
+        "text": "cell enlargement"
+      },
+      {
+        "label": "C",
+        "text": "cell elongation"
+      },
+      {
+        "label": "D",
+        "text": "cell compartment"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-17",
+    "question": "Angiosperm can be distinguished from gymnospersm by **",
+    "options": [
+      {
+        "label": "A",
+        "text": "naked seeds"
+      },
+      {
+        "label": "B",
+        "text": "enclosed seeds"
+      },
+      {
+        "label": "C",
+        "text": "vascular structures"
+      },
+      {
+        "label": "D",
+        "text": "Variable leaves"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-18",
+    "question": "Soil microorganism are beneficial because their involvement in",
+    "options": [
+      {
+        "label": "A",
+        "text": "photosynthesis"
+      },
+      {
+        "label": "B",
+        "text": "translocation"
+      },
+      {
+        "label": "C",
+        "text": "cycling of nutrients"
+      },
+      {
+        "label": "D",
+        "text": "respiration using soil air"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-19",
+    "question": "Which of the equipment sterilizes by moist heat?",
+    "options": [
+      {
+        "label": "A",
+        "text": "oven"
+      },
+      {
+        "label": "B",
+        "text": "autoclave"
+      },
+      {
+        "label": "C",
+        "text": "incubator"
+      },
+      {
+        "label": "D",
+        "text": "water bath"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-20",
+    "question": "Which of the following group microbiological method employed in the identification of microorganisms? **",
+    "options": [
+      {
+        "label": "A",
+        "text": "gram staining"
+      },
+      {
+        "label": "B",
+        "text": "sterilization"
+      },
+      {
+        "label": "C",
+        "text": "inoculation"
+      },
+      {
+        "label": "D",
+        "text": "pasteurization"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-21",
+    "question": "Which of the following group of microorganisms lack a true nucleus?",
+    "options": [
+      {
+        "label": "A",
+        "text": "protozoa"
+      },
+      {
+        "label": "B",
+        "text": "fungi"
+      },
+      {
+        "label": "C",
+        "text": "bacteria"
+      },
+      {
+        "label": "D",
+        "text": "algae"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-22",
+    "question": "Bacteria which grows in the absence of oxygen are referred as",
+    "options": [
+      {
+        "label": "A",
+        "text": "aerobes"
+      },
+      {
+        "label": "B",
+        "text": "anaerobics"
+      },
+      {
+        "label": "C",
+        "text": "facultative aerobes"
+      },
+      {
+        "label": "D",
+        "text": "microaerophiles"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-23",
+    "question": "Which of the following class of fungi is referred to as fungi imperticti?",
+    "options": [
+      {
+        "label": "A",
+        "text": "basidiomycets"
+      },
+      {
+        "label": "B",
+        "text": "ascomycetes"
+      },
+      {
+        "label": "C",
+        "text": "deuteromycets"
+      },
+      {
+        "label": "D",
+        "text": "zygomycets"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-24",
+    "question": "Which of the following vascular tissue conduct water and mineral salt?",
+    "options": [
+      {
+        "label": "A",
+        "text": "cambium"
+      },
+      {
+        "label": "B",
+        "text": "xylem"
+      },
+      {
+        "label": "C",
+        "text": "phloem"
+      },
+      {
+        "label": "D",
+        "text": "companion cell"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-25",
+    "question": "Which of the following statements is correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "all epidermis cells lacks chloroplast"
+      },
+      {
+        "label": "B",
+        "text": "vitamins are one of the assimilates made from leaf"
+      },
+      {
+        "label": "C",
+        "text": "photosynthesis occur more in spongy mesophyll than palisade mesophyll"
+      },
+      {
+        "label": "D",
+        "text": "transpiration occurs most in stomata than any other opening in plant"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-26",
+    "question": "The term microbiology was given by",
+    "options": [
+      {
+        "label": "A",
+        "text": "Louis Pasteur (1822-1895)"
+      },
+      {
+        "label": "B",
+        "text": "Robert Hooke (1665-1789)"
+      },
+      {
+        "label": "C",
+        "text": "Girolamo Fracastoro (1478-1533)"
+      },
+      {
+        "label": "D",
+        "text": "John Needham (1713-1781)"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-27",
+    "question": "The fundamental differences between gram positive and gram negative bacteria is that **",
+    "options": [
+      {
+        "label": "A",
+        "text": "the former contain thick peptidoglycan layer while the latter posses thin peptidoglycan layer"
+      },
+      {
+        "label": "B",
+        "text": "gram positive bacteria often contain lipopolysaccharides in addition to peptidoglycan"
+      },
+      {
+        "label": "C",
+        "text": "the latter contain peptioglyan in addition to lilpopysaccharides layers"
+      },
+      {
+        "label": "D",
+        "text": "the former contain high technoic acid than the latter"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-28",
+    "question": "Which type of cell actually secrets antibodies?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Tcells"
+      },
+      {
+        "label": "B",
+        "text": "macrophages"
+      },
+      {
+        "label": "C",
+        "text": "plasma"
+      },
+      {
+        "label": "D",
+        "text": "monocytes"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-29",
+    "question": "A typical transport medium must **",
+    "options": [
+      {
+        "label": "A",
+        "text": "provide temporary storage of specimens"
+      },
+      {
+        "label": "B",
+        "text": "provide nutrients for the organism"
+      },
+      {
+        "label": "C",
+        "text": "provide organic buffers and salts"
+      },
+      {
+        "label": "D",
+        "text": "provide only vitamins and growth factors"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-30",
+    "question": "The removal of all microorganisms including spores from a sample is termed",
+    "options": [
+      {
+        "label": "A",
+        "text": "disinfection"
+      },
+      {
+        "label": "B",
+        "text": "sterilization... [shows C]  Wait — let me re-check: based on key, #30 ="
+      },
+      {
+        "label": "C",
+        "text": "A. disinfection B. ~~~ C. sterilization"
+      },
+      {
+        "label": "D",
+        "text": "radiation"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-31",
+    "question": "A student wishes to isolate the bacterium staphylococcus...aureus. The technologist is expected to provide one of the following media for primary isolation of the organism **",
+    "options": [
+      {
+        "label": "A",
+        "text": "eosin methylene blue agar"
+      },
+      {
+        "label": "B",
+        "text": "mannitol salt agar"
+      },
+      {
+        "label": "C",
+        "text": "sabourard dextrose agar"
+      },
+      {
+        "label": "D",
+        "text": "macconkey agar"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-32",
+    "question": "Which of these is not produced by microorganisms?",
+    "options": [
+      {
+        "label": "A",
+        "text": "penicillin"
+      },
+      {
+        "label": "B",
+        "text": "streptomycin"
+      },
+      {
+        "label": "C",
+        "text": "polysaccharides"
+      },
+      {
+        "label": "D",
+        "text": "poly vinylchloreide"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-33",
+    "question": "Which of the following equipment sterilization by dry heat **",
+    "options": [
+      {
+        "label": "A",
+        "text": "oven"
+      },
+      {
+        "label": "B",
+        "text": "autoclave"
+      },
+      {
+        "label": "C",
+        "text": "incubator"
+      },
+      {
+        "label": "D",
+        "text": "water bath"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-34",
+    "question": "The causative organism of amoebic dysentery is a **",
+    "options": [
+      {
+        "label": "A",
+        "text": "protozoa"
+      },
+      {
+        "label": "B",
+        "text": "fungi"
+      },
+      {
+        "label": "C",
+        "text": "bacterial"
+      },
+      {
+        "label": "D",
+        "text": "algae"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-35",
+    "question": "In a vinegar production company, some microorganisms are used. Choose the one that are relevant form the give microorganism I. bacteria II. Protozoa III. Yeast IV. Protista **",
+    "options": [
+      {
+        "label": "A",
+        "text": "I and II"
+      },
+      {
+        "label": "B",
+        "text": "II and III"
+      },
+      {
+        "label": "C",
+        "text": "I and II"
+      },
+      {
+        "label": "D",
+        "text": "I and IV"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-36",
+    "question": "Each HIV particle possesses a glycoprotein called on its surface",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cd4"
+      },
+      {
+        "label": "B",
+        "text": "gp8"
+      },
+      {
+        "label": "C",
+        "text": "gp120"
+      },
+      {
+        "label": "D",
+        "text": "CXXR4"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-37",
+    "question": "What is plasmid?",
+    "options": [
+      {
+        "label": "A",
+        "text": "self-replicating strand of double stranded DNA"
+      },
+      {
+        "label": "B",
+        "text": "self-replicating strand of single stranded RNA"
+      },
+      {
+        "label": "C",
+        "text": "bacteria chromosome"
+      },
+      {
+        "label": "D",
+        "text": "all of the above"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-38",
+    "question": "Which of the following organism, passes tube feet?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cray fish"
+      },
+      {
+        "label": "B",
+        "text": "jelly fish"
+      },
+      {
+        "label": "C",
+        "text": "star fish"
+      },
+      {
+        "label": "D",
+        "text": "moon"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-39",
+    "question": "Annelid with well-developed head are called",
+    "options": [
+      {
+        "label": "A",
+        "text": "oligochaetes"
+      },
+      {
+        "label": "B",
+        "text": "hirudinae"
+      },
+      {
+        "label": "C",
+        "text": "polychaetes"
+      },
+      {
+        "label": "D",
+        "text": "monochaetes"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-40",
+    "question": "The most adapted and diverse species on the terrestrial ecosystem are",
+    "options": [
+      {
+        "label": "A",
+        "text": "mammals"
+      },
+      {
+        "label": "B",
+        "text": "reptiles"
+      },
+      {
+        "label": "C",
+        "text": "insects"
+      },
+      {
+        "label": "D",
+        "text": "birds"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-41",
+    "question": "Which of the following organs is used by reptiles for taste and smell detection",
+    "options": [
+      {
+        "label": "A",
+        "text": "Thompson organ"
+      },
+      {
+        "label": "B",
+        "text": "robinson organ"
+      },
+      {
+        "label": "C",
+        "text": "Johnson organ"
+      },
+      {
+        "label": "D",
+        "text": "Jacobson organ"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-42",
+    "question": "Vipers detect thermal radiation and their prey a two chambered organ located between the eye and the nostril on each side of the head called",
+    "options": [
+      {
+        "label": "A",
+        "text": "Rx organ"
+      },
+      {
+        "label": "B",
+        "text": "heat organ"
+      },
+      {
+        "label": "C",
+        "text": "pit organ"
+      },
+      {
+        "label": "D",
+        "text": "kit organ"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-43",
+    "question": "Which of the following is not a mammal",
+    "options": [
+      {
+        "label": "A",
+        "text": "fruit eating bat"
+      },
+      {
+        "label": "B",
+        "text": "swimming seal"
+      },
+      {
+        "label": "C",
+        "text": "blue whale"
+      },
+      {
+        "label": "D",
+        "text": "turtle"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-44",
+    "question": "The following blood vessels have value except **",
+    "options": [
+      {
+        "label": "A",
+        "text": "renal artery"
+      },
+      {
+        "label": "B",
+        "text": "renal vein"
+      },
+      {
+        "label": "C",
+        "text": "pulmonary artery"
+      },
+      {
+        "label": "D",
+        "text": "pulmonary vein"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-45",
+    "question": "Which of the following plasma protein is involved in blood clotting?",
+    "options": [
+      {
+        "label": "A",
+        "text": "albumin"
+      },
+      {
+        "label": "B",
+        "text": "globulin"
+      },
+      {
+        "label": "C",
+        "text": "fibrinogen"
+      },
+      {
+        "label": "D",
+        "text": "thrombin"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-46",
+    "question": "The following act in an alkaline medium except",
+    "options": [
+      {
+        "label": "A",
+        "text": "ptyalin"
+      },
+      {
+        "label": "B",
+        "text": "pepsin"
+      },
+      {
+        "label": "C",
+        "text": "crepsin"
+      },
+      {
+        "label": "D",
+        "text": "steapsin"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-47",
+    "question": "The intestinal coenzyme that activates the pancreatic enzyme is called",
+    "options": [
+      {
+        "label": "A",
+        "text": "polyptide"
+      },
+      {
+        "label": "B",
+        "text": "enterokinase"
+      },
+      {
+        "label": "C",
+        "text": "succusentericus"
+      },
+      {
+        "label": "D",
+        "text": "amylase *(Diagram of human digestive system referenced for questions 48–49)*"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-48",
+    "question": "The organ labeled C is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "gall bladder"
+      },
+      {
+        "label": "B",
+        "text": "stomach"
+      },
+      {
+        "label": "C",
+        "text": "liver"
+      },
+      {
+        "label": "D",
+        "text": "small intestine"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-49",
+    "question": "Absence of structure D in the human body will result in",
+    "options": [
+      {
+        "label": "A",
+        "text": "inability to digest starch"
+      },
+      {
+        "label": "B",
+        "text": "inability to secret mucus"
+      },
+      {
+        "label": "C",
+        "text": "inability to emulsify fat"
+      },
+      {
+        "label": "D",
+        "text": "inability to denature protein"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-50",
+    "question": "In absence of oxygen in animal pyruvate is converted to",
+    "options": [
+      {
+        "label": "A",
+        "text": "ethanol"
+      },
+      {
+        "label": "B",
+        "text": "lactate"
+      },
+      {
+        "label": "C",
+        "text": "acetyl CoA"
+      },
+      {
+        "label": "D",
+        "text": "oxaloacetate"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2016-import-theory-1",
+    "question": "Describe five evidence of evolution\n**(b)** Discuss briefly the factors affecting enzyme activity\n**(c)** Differentiate between an aldose an a ketose",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2016-import-theory-2",
+    "question": "The following set of data represents the number of seeds obtained from 60 pod of cocoa:\n102, 187, 116, 129, 100, 121, 121, 196, 194, 128,\n106, 189, 100, 108, 124, 114, 118, 199, 108, 191,\n137, 102, 126, 111, 192, 100, 116, 198, 116, 110,\n109, 119, 113, 123, 132, 124, 156, 164, 132, 167,\n122, 134, 145, 165, 187, 100, 123, 143, 100, 165,\n127, 165, 1776, 190\nUse the data given above to answer the following questions:\n- a. Prepare a frequency distribution table using the interval of 10\n- b. Use the frequencies obtained to plot a histogram representing the number of seeds in the pod of cocoa\n- c. Determine the mean seed per pod of cocoa",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2016-import-theory-3",
+    "question": "- a. List two major types of passive transport\n- b. State two major differences between positive and active transport\n- c. State one reason why energy is required in active transport\n- d. Differentiate between phospholipid and glycolipids",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2016-import-theory-4",
+    "question": "- a. List the plant tissues that constitutes the functional structures of the leaf veins\n- b. Outline the role of medullary rays in xylem parenchyma\n- c. Discuss the importance of parenchyma tissue to plants",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2016-import-theory-5",
+    "question": "- a. Name and describe a specific relationship that is beneficial to both participating organisms\n- b. Differentiate between antiseptics and disinfectants sterilization and sanitation\n- c. Mention one application of generic engineering in each of the following agriculture, medicine and industry",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2016-import-theory-6",
+    "question": "- a. Write a succinct note on this topic: bacteria are more beneficial to humans than viruses\n- b. Differentiate between bacteria and viruses",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2016-import-theory-7",
+    "question": "- a. List ten characteristics of the phylum annelid\n- b. State four economic importance of earthworm\n- c. State five similarities between reptilian and aye",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2016-import-theory-8",
+    "question": "- a. List eight characteristics of mammals\n- b. Explain two of the characteristics that ensured their supremacy over the reptiles\n- c. Explain the functions of the epithelium of the stomach in the digestion of food in mammals",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2016,
+    "category": "theory"
+  }
+]

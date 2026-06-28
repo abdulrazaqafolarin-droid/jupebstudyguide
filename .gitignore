@@ -12,3 +12,35 @@ android/local.properties
 
 .vercel
 nul
+
+.env*.local
+
+# Debug / test artifacts
+test_*.py
+check_*.py
+diagnose_*.py
+batch_*.py
+*_test.py
+*_debug.py
+import-keys.sql
+all_questions_raw.json
+
+# Temp build artifacts
+*_inlined.ts
+*_fixed.ts
+chat_proxy_inlined.ts
+bundled-*.ts
+
+# Deploy payloads
+fn*.json
+deploy-*.json
+deploy-all-debug.cjs
+
+# Generated/restored data
+physics_*_db.json
+physics_*_fresh.json
+physics_*_restored.json
+physics_ts_recovered.ts
+
+# Processed output
+output/processed/

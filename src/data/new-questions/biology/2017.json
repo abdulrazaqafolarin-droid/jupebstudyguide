@@ -1,0 +1,1389 @@
+[
+  {
+    "id": "bio-2017-import-1",
+    "question": "The part that will develop into an organ for feeling is labeled",
+    "options": [
+      {
+        "label": "A",
+        "text": "IV"
+      },
+      {
+        "label": "B",
+        "text": "III"
+      },
+      {
+        "label": "C",
+        "text": "II"
+      },
+      {
+        "label": "D",
+        "text": "I"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-2",
+    "question": "The part labeled II is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Silk thread"
+      },
+      {
+        "label": "B",
+        "text": "thorax"
+      },
+      {
+        "label": "C",
+        "text": "fore win"
+      },
+      {
+        "label": "D",
+        "text": "anchor"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-3",
+    "question": "Which of the following features are all associated with monocots?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Fibrous root system, branched network of vein and one seed leaf"
+      },
+      {
+        "label": "B",
+        "text": "Fibrous root system, two seed leaves an floral parts in threes"
+      },
+      {
+        "label": "C",
+        "text": "One seed leaf, petals in threes or group of threes and parallel venation of leaves"
+      },
+      {
+        "label": "D",
+        "text": "One seed leaf, net veined leaves and petals in three or multiples of three"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-4",
+    "question": "The set of fins that controls steering, balancing and change of direction and pitch in fish is",
+    "options": [
+      {
+        "label": "A",
+        "text": "Dorsal and anal"
+      },
+      {
+        "label": "B",
+        "text": "pectoral and pelvic"
+      },
+      {
+        "label": "C",
+        "text": "caudal and dorsal"
+      },
+      {
+        "label": "D",
+        "text": "anal and pelvic"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-5",
+    "question": "The most recently evolved structure in animals is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Hair"
+      },
+      {
+        "label": "B",
+        "text": "cilium"
+      },
+      {
+        "label": "C",
+        "text": "scale"
+      },
+      {
+        "label": "D",
+        "text": "feather"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-6",
+    "question": "Coelom is absent in the class of animals termed",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mollusca"
+      },
+      {
+        "label": "B",
+        "text": "reptilia"
+      },
+      {
+        "label": "C",
+        "text": "arthropoda"
+      },
+      {
+        "label": "D",
+        "text": "coelenterate"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-7",
+    "question": "A characteristics of vertebrate that unique to mammals is",
+    "options": [
+      {
+        "label": "A",
+        "text": "The presence of pentadacty 1 limbs"
+      },
+      {
+        "label": "B",
+        "text": "Parental care"
+      },
+      {
+        "label": "C",
+        "text": "The possession of scrotum"
+      },
+      {
+        "label": "D",
+        "text": "Pulmonary circulation"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-8",
+    "question": "The order in which organic evolution has progressed in plant is",
+    "options": [
+      {
+        "label": "A",
+        "text": "thallophyta, schizophyta, bryophyta, pteridophyta and spermatophyte"
+      },
+      {
+        "label": "B",
+        "text": "schizophyta, thallophyta, bryophyta, pteridophyta and spermatophyte"
+      },
+      {
+        "label": "C",
+        "text": "pteridophyta, spermatophyte, thallophyta, schizophyta and bryophyta"
+      },
+      {
+        "label": "D",
+        "text": "bryophyta, pteridophyta, spermatophyte, thallophyta and schizophyta"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-9",
+    "question": "In which part of the human body does the secretion of the growth hormone occur?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Head region"
+      },
+      {
+        "label": "B",
+        "text": "waist region"
+      },
+      {
+        "label": "C",
+        "text": "neck region"
+      },
+      {
+        "label": "D",
+        "text": "gonads"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-10",
+    "question": "The part labeled I and II make up the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Glomerulus"
+      },
+      {
+        "label": "B",
+        "text": "convoluted tubules"
+      },
+      {
+        "label": "C",
+        "text": "malpighian"
+      },
+      {
+        "label": "D",
+        "text": "bowman's capsule"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-11",
+    "question": "In mammals, re-absorption of salt takes place in",
+    "options": [
+      {
+        "label": "A",
+        "text": "IV"
+      },
+      {
+        "label": "B",
+        "text": "III"
+      },
+      {
+        "label": "C",
+        "text": "II"
+      },
+      {
+        "label": "D",
+        "text": "I"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-12",
+    "question": "The part of the brain that controls body posture in mammals is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Thalamus"
+      },
+      {
+        "label": "B",
+        "text": "cerebrum"
+      },
+      {
+        "label": "C",
+        "text": "spinal cord"
+      },
+      {
+        "label": "D",
+        "text": "cerebrum"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-13",
+    "question": "Peripheral arrangement of vascular tissues in dicots is a characteristics of the internal structures of the",
+    "options": [
+      {
+        "label": "A",
+        "text": "leaf"
+      },
+      {
+        "label": "B",
+        "text": "petiole"
+      },
+      {
+        "label": "C",
+        "text": "steam"
+      },
+      {
+        "label": "D",
+        "text": "root"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-14",
+    "question": "The substance labeled II originates from",
+    "options": [
+      {
+        "label": "A",
+        "text": "III only"
+      },
+      {
+        "label": "B",
+        "text": "IV only"
+      },
+      {
+        "label": "C",
+        "text": "I and IV"
+      },
+      {
+        "label": "D",
+        "text": "III and IV"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-15",
+    "question": "The gas occupying the space labeled I is",
+    "options": [
+      {
+        "label": "A",
+        "text": "Carbon (IV)oxide"
+      },
+      {
+        "label": "B",
+        "text": "nitrogen"
+      },
+      {
+        "label": "C",
+        "text": "hydrogen"
+      },
+      {
+        "label": "D",
+        "text": "oxygen"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-16",
+    "question": "The scapula and the ischium are part of the",
+    "options": [
+      {
+        "label": "A",
+        "text": "pectoral girdle"
+      },
+      {
+        "label": "B",
+        "text": "pelvic girdle"
+      },
+      {
+        "label": "C",
+        "text": "appendicular skeleton"
+      },
+      {
+        "label": "D",
+        "text": "hind limb"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-17",
+    "question": "Bacteria in the large intestine of man are important in the",
+    "options": [
+      {
+        "label": "A",
+        "text": "synthesis of vitamins K and B₂"
+      },
+      {
+        "label": "B",
+        "text": "digestion of vegetables"
+      },
+      {
+        "label": "C",
+        "text": "synthesis of vitamin A and D"
+      },
+      {
+        "label": "D",
+        "text": "absorption of water"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-18",
+    "question": "Short-sightedness can be corrected by lenses which are",
+    "options": [
+      {
+        "label": "A",
+        "text": "convex"
+      },
+      {
+        "label": "B",
+        "text": "biconvex"
+      },
+      {
+        "label": "C",
+        "text": "piano-convex"
+      },
+      {
+        "label": "D",
+        "text": "concave"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-19",
+    "question": "The inner ear contains two main organs, namely, the",
+    "options": [
+      {
+        "label": "A",
+        "text": "eardrum and Eustachian tube"
+      },
+      {
+        "label": "B",
+        "text": "cochlea and semi-circular canal"
+      },
+      {
+        "label": "C",
+        "text": "oval window and ossicles"
+      },
+      {
+        "label": "D",
+        "text": "pinna and cochlea"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-20",
+    "question": "For growth to occur in organisms. The rate of",
+    "options": [
+      {
+        "label": "A",
+        "text": "food storages must be low"
+      },
+      {
+        "label": "B",
+        "text": "catabolism must exceed that of anabolism"
+      },
+      {
+        "label": "C",
+        "text": "anabolism must exceed that of catabolism"
+      },
+      {
+        "label": "D",
+        "text": "food storages must be high"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-21",
+    "question": "The production of violet coloration, when dilute NaOH solution is added to a solution of food substance, followed by drops of 1% CuSO₄ solution while making indicates the presence of",
+    "options": [
+      {
+        "label": "A",
+        "text": "protein"
+      },
+      {
+        "label": "B",
+        "text": "carbohydrates"
+      },
+      {
+        "label": "C",
+        "text": "fats"
+      },
+      {
+        "label": "D",
+        "text": "reducing sugar"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-22",
+    "question": "The greatest amount of energy will be sustained by the oxidation of 100kg of",
+    "options": [
+      {
+        "label": "A",
+        "text": "meat"
+      },
+      {
+        "label": "B",
+        "text": "butter"
+      },
+      {
+        "label": "C",
+        "text": "sugar"
+      },
+      {
+        "label": "D",
+        "text": "Biscuits"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-23",
+    "question": "The chamber of the mammalian heart with the thickest wall is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "right ventricle"
+      },
+      {
+        "label": "B",
+        "text": "left auricle"
+      },
+      {
+        "label": "C",
+        "text": "right auricle"
+      },
+      {
+        "label": "D",
+        "text": "left ventricle"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-24",
+    "question": "Serum differs from blood plasma because it",
+    "options": [
+      {
+        "label": "A",
+        "text": "contain blood cell and fibrinogen"
+      },
+      {
+        "label": "B",
+        "text": "contain soluble food and mineral salts"
+      },
+      {
+        "label": "C",
+        "text": "lack of the blood protein fibrinogen"
+      },
+      {
+        "label": "D",
+        "text": "lacks blood cells and albumin"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-25",
+    "question": "The part labeled II is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "mesocarp"
+      },
+      {
+        "label": "B",
+        "text": "pericarp"
+      },
+      {
+        "label": "C",
+        "text": "endocarp"
+      },
+      {
+        "label": "D",
+        "text": "Epicarp"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-26",
+    "question": "The fruit represented is mainly dispersed by",
+    "options": [
+      {
+        "label": "A",
+        "text": "animals"
+      },
+      {
+        "label": "B",
+        "text": "water"
+      },
+      {
+        "label": "C",
+        "text": "wind"
+      },
+      {
+        "label": "D",
+        "text": "birds"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-27",
+    "question": "In an experiment to estimate the volume of air in a soil sample using a measuring cylinder, it was found that: initial volume of water = p cm³, volume of water before mixing with water = q cm³, final volume of water after adding soil = r cm³. From the data above, which of the following deductions is correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "r=p+q"
+      },
+      {
+        "label": "B",
+        "text": "r>p+q"
+      },
+      {
+        "label": "C",
+        "text": "q=r-p"
+      },
+      {
+        "label": "D",
+        "text": "r<p+q"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-28",
+    "question": "An ecological succession often leads to",
+    "options": [
+      {
+        "label": "A",
+        "text": "an increase in species diversity"
+      },
+      {
+        "label": "B",
+        "text": "a decrease in species diversity"
+      },
+      {
+        "label": "C",
+        "text": "an unstable community"
+      },
+      {
+        "label": "D",
+        "text": "the dispersal of species"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-29",
+    "question": "Atmospheric nitrogen is converted to soil nitrogen for plant use by",
+    "options": [
+      {
+        "label": "A",
+        "text": "nitrification and combustion"
+      },
+      {
+        "label": "B",
+        "text": "putrefaction and lighting"
+      },
+      {
+        "label": "C",
+        "text": "lighting nitrification"
+      },
+      {
+        "label": "D",
+        "text": "combustion and putrefaction"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-30",
+    "question": "The soil becomes toxic to plants when the concentration of its essential elements is the range labeled",
+    "options": [
+      {
+        "label": "A",
+        "text": "IV"
+      },
+      {
+        "label": "B",
+        "text": "III"
+      },
+      {
+        "label": "C",
+        "text": "II"
+      },
+      {
+        "label": "D",
+        "text": "I"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-31",
+    "question": "The range at which soil essential element concentration is recorded for optimal plant growth is marked",
+    "options": [
+      {
+        "label": "A",
+        "text": "IV"
+      },
+      {
+        "label": "B",
+        "text": "III"
+      },
+      {
+        "label": "C",
+        "text": "II"
+      },
+      {
+        "label": "D",
+        "text": "I"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-32",
+    "question": "Which of the following growth activities in plants is brought about by gibberellins?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Rapid cell division"
+      },
+      {
+        "label": "B",
+        "text": "Tropical response"
+      },
+      {
+        "label": "C",
+        "text": "Cell elongation"
+      },
+      {
+        "label": "D",
+        "text": "Main stem elongation"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-33",
+    "question": "Which of the following are adaptations of animals to aquatic habitants?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Gills streamlined bodies and lateral line"
+      },
+      {
+        "label": "B",
+        "text": "lateral line, streamline and lungs"
+      },
+      {
+        "label": "C",
+        "text": "Gills, scaly skin and lungs"
+      },
+      {
+        "label": "D",
+        "text": "Gills, streamlined bodies and spiracles"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-34",
+    "question": "Which of the following is an adaptation of forest species?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Few stomata"
+      },
+      {
+        "label": "B",
+        "text": "tick bark"
+      },
+      {
+        "label": "C",
+        "text": "buttress roots"
+      },
+      {
+        "label": "D",
+        "text": "Reduced leaves"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-35",
+    "question": "In a food chain, each succeeding level in a forward direction, represent?",
+    "options": [
+      {
+        "label": "A",
+        "text": "an increase in the number of individuals"
+      },
+      {
+        "label": "B",
+        "text": "a decrease in the number of individuals"
+      },
+      {
+        "label": "C",
+        "text": "an increase in the biomass of individuals"
+      },
+      {
+        "label": "D",
+        "text": "a gain in the total energy being transferred"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-36",
+    "question": "The disaster that would have the least destructive impact on animal life and balance in nature is",
+    "options": [
+      {
+        "label": "A",
+        "text": "chemical pollution"
+      },
+      {
+        "label": "B",
+        "text": "forest fires"
+      },
+      {
+        "label": "C",
+        "text": "oil spillage"
+      },
+      {
+        "label": "D",
+        "text": "grasshopper pests"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-37",
+    "question": "The legs and beak of an egret resemble those of the heron because they",
+    "options": [
+      {
+        "label": "A",
+        "text": "both"
+      },
+      {
+        "label": "B",
+        "text": "are both birds"
+      },
+      {
+        "label": "C",
+        "text": "occupy similar niche"
+      },
+      {
+        "label": "D",
+        "text": "occupy the same tropical level"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-38",
+    "question": "The factors that determine the distribution of vegetable zones are",
+    "options": [
+      {
+        "label": "A",
+        "text": "temperature, light, rain and humidity"
+      },
+      {
+        "label": "B",
+        "text": "light, humidity, air and mist"
+      },
+      {
+        "label": "C",
+        "text": "temperature, light, air and humidity"
+      },
+      {
+        "label": "D",
+        "text": "humidity, snow, frost and dew"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-39",
+    "question": "A cross between an albino female and a genetically normal male will result in offspring that are",
+    "options": [
+      {
+        "label": "A",
+        "text": "all albino"
+      },
+      {
+        "label": "B",
+        "text": "all phenotypically normal"
+      },
+      {
+        "label": "C",
+        "text": "all genetically normally"
+      },
+      {
+        "label": "D",
+        "text": "half albino"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-40",
+    "question": "The pollutants that contribute to the depletion of the zone layer in the atmosphere are",
+    "options": [
+      {
+        "label": "A",
+        "text": "radioactive materials"
+      },
+      {
+        "label": "B",
+        "text": "oxides of Sulphur"
+      },
+      {
+        "label": "C",
+        "text": "oxides of carbon"
+      },
+      {
+        "label": "D",
+        "text": "chlorofluorocarbons"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-41",
+    "question": "The surest way to combine the best qualities of both parents and offspring is by",
+    "options": [
+      {
+        "label": "A",
+        "text": "cross-breeding"
+      },
+      {
+        "label": "B",
+        "text": "inbreeding"
+      },
+      {
+        "label": "C",
+        "text": "selective breeding"
+      },
+      {
+        "label": "D",
+        "text": "pure breeding"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-42",
+    "question": "Blood grouping in human beings is derived from combination of",
+    "options": [
+      {
+        "label": "A",
+        "text": "two different alleles"
+      },
+      {
+        "label": "B",
+        "text": "four different alleles"
+      },
+      {
+        "label": "C",
+        "text": "three different alleles"
+      },
+      {
+        "label": "D",
+        "text": "two different genes"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-43",
+    "question": "The older fossil-bearing rocks, in contra to the more recent ones, are more likely to contain",
+    "options": [
+      {
+        "label": "A",
+        "text": "animal rather than plant remains"
+      },
+      {
+        "label": "B",
+        "text": "invertebrates rather than birds"
+      },
+      {
+        "label": "C",
+        "text": "flowering plants rather than mosses"
+      },
+      {
+        "label": "D",
+        "text": "reptiles rather that fishes"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-44",
+    "question": "In a group of male Agama lizards, the one brightest head color is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "dominant"
+      },
+      {
+        "label": "B",
+        "text": "youngest"
+      },
+      {
+        "label": "C",
+        "text": "oldest"
+      },
+      {
+        "label": "D",
+        "text": "largest"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-45",
+    "question": "(diagram-based question)",
+    "options": [
+      {
+        "label": "A",
+        "text": "taeniasis an malaria"
+      },
+      {
+        "label": "B",
+        "text": "cholera and gonorrhea"
+      },
+      {
+        "label": "C",
+        "text": "typhoid and syphilis"
+      },
+      {
+        "label": "D",
+        "text": "Dracunculiasis and haemophilia"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-46",
+    "question": "The mutation theory of organic evolution was propounded by",
+    "options": [
+      {
+        "label": "A",
+        "text": "Gregor Mendal"
+      },
+      {
+        "label": "B",
+        "text": "Hugo vries"
+      },
+      {
+        "label": "C",
+        "text": "Jean Lamarck"
+      },
+      {
+        "label": "D",
+        "text": "Charles Darwin"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-47",
+    "question": "A certain savanna grasshopper changes color from green during the rainy season to brown during the dry season bush fires. The reason for these color changes is that the",
+    "options": [
+      {
+        "label": "A",
+        "text": "grasshopper is getting older"
+      },
+      {
+        "label": "B",
+        "text": "environment temperatures is changing"
+      },
+      {
+        "label": "C",
+        "text": "grasshopper is avoiding predation"
+      },
+      {
+        "label": "D",
+        "text": "grasshopper is frequently moulting"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-48",
+    "question": "Complex social behavior and organization are found mostly in",
+    "options": [
+      {
+        "label": "A",
+        "text": "insects"
+      },
+      {
+        "label": "B",
+        "text": "birds"
+      },
+      {
+        "label": "C",
+        "text": "reptiles"
+      },
+      {
+        "label": "D",
+        "text": "mammals"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-49",
+    "question": "Which of the following structural features are adapted for uses other than water conservation?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Succulent stems"
+      },
+      {
+        "label": "B",
+        "text": "Scales in annals"
+      },
+      {
+        "label": "C",
+        "text": "Spines in plants"
+      },
+      {
+        "label": "D",
+        "text": "Feathers in birds"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2017-import-theory-1",
+    "question": "1a) Outline the general characteristics of viruses\nb) State the beneficial roles of bacteria in agriculture and food processing\nc) State the ways of food processing by which bacteria activity is controlled",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2017-import-theory-2",
+    "question": "2a) Explain the term Mitosis\nb) State the differences between mitosis and meiosis with illustrated examples\nc) Outline the significance of mitosis",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2017-import-theory-3",
+    "question": "3a) Describe the range of forms within the Algae giving named examples\nb) Range of forms within the Algae",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2017-import-theory-4",
+    "question": "4a) State the beneficial roles of bacteria in agriculture and food processing\nb) State the ways of food processing by which bacteria activity is controlled\nc) Outline the general characteristics of viruses",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2017-import-theory-5",
+    "question": "5a) Explain fully the concept of alternation of generation in the life cycle of a named pteridophyte\nb) What is it significance to the plant?",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2017-import-theory-6",
+    "question": "6a) What are the \"seed plants\"\nb) Tabulate ten differences between gymnosperms and angiosperms\nc) List five characteristics of hydrophytes",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2017-import-theory-7",
+    "question": "7a) Make a well labelled diagram of the vertical section of a molar tooth of a mammal\nb) Outline the roles of enzymes in digestion\nc) Point out the differences between digestive enzymes and other enzymes",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2017-import-theory-8",
+    "question": "8a) List the characteristics of respiratory surfaces\nb) Outline the process of gaseous exchange in class amphibian",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2017,
+    "category": "theory"
+  }
+]

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Zap } from "lucide-react";
 import type { StudyCategory } from "@/types/study-questions";
 
 const CATEGORY_LABELS: Record<StudyCategory, string> = {
@@ -20,9 +20,11 @@ interface YearAccordionProps {
   categoryCounts?: Record<number, Record<StudyCategory, number>>;
   selectedYear: number | null;
   onSelectYear: (year: number | null) => void;
+  onAnalyzeYear?: (year: number) => void;
+  isAdmin?: boolean;
 }
 
-export function YearAccordion({ years, counts, categoryCounts, selectedYear, onSelectYear }: YearAccordionProps) {
+export function YearAccordion({ years, counts, categoryCounts, selectedYear, onSelectYear, onAnalyzeYear, isAdmin }: YearAccordionProps) {
   return (
     <div className="space-y-1.5">
       {years.map((year, i) => {
@@ -47,12 +49,23 @@ export function YearAccordion({ years, counts, categoryCounts, selectedYear, onS
                   {count} question{count !== 1 ? "s" : ""}
                 </span>
               </div>
-              <motion.div
-                animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-              >
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              </motion.div>
+              <div className="flex items-center gap-2">
+                {isAdmin && onAnalyzeYear && count > 0 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onAnalyzeYear(year); }}
+                    className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                    title={`Analyze all ${count} questions for ${year} with AI`}
+                  >
+                    <Zap className="h-4 w-4" />
+                  </button>
+                )}
+                <motion.div
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+                >
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </motion.div>
+              </div>
             </button>
             <AnimatePresence>
               {isOpen && (
@@ -76,12 +89,23 @@ export function YearAccordion({ years, counts, categoryCounts, selectedYear, onS
                         ))}
                       </div>
                     )}
-                    <button
-                      onClick={() => onSelectYear(year)}
-                      className="px-4 py-2 text-xs font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-[0.97]"
-                    >
-                      View Questions
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => onSelectYear(year)}
+                        className="px-4 py-2 text-xs font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-[0.97]"
+                      >
+                        View Questions
+                      </button>
+                      {isAdmin && onAnalyzeYear && count > 0 && (
+                        <button
+                          onClick={() => onAnalyzeYear(year)}
+                          className="px-4 py-2 text-xs font-medium rounded-lg border border-primary/30 text-primary hover:bg-primary/5 transition-colors active:scale-[0.97] flex items-center gap-1.5"
+                        >
+                          <Zap className="h-3.5 w-3.5" />
+                          Analyze {count} Questions
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               )}

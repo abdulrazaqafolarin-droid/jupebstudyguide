@@ -1,0 +1,1385 @@
+[
+  {
+    "id": "bio-2023-import-1",
+    "question": "The concept that explains that microorganisms",
+    "options": [
+      {
+        "label": "A",
+        "text": "germ theory of disease"
+      },
+      {
+        "label": "B",
+        "text": "theory of evolution"
+      },
+      {
+        "label": "C",
+        "text": "cell theory of biology"
+      },
+      {
+        "label": "D",
+        "text": "theory of spontaneous generation"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-2",
+    "question": "At which stage of the cell cycle does",
+    "options": [
+      {
+        "label": "A",
+        "text": "G2 phase"
+      },
+      {
+        "label": "B",
+        "text": "S phase"
+      },
+      {
+        "label": "C",
+        "text": "G1 phase"
+      },
+      {
+        "label": "D",
+        "text": "M phase"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-3",
+    "question": "Which of these pairs of dyes are used in the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Methylene blue and congo red"
+      },
+      {
+        "label": "B",
+        "text": "Nigrosin and carbol fuchsin"
+      },
+      {
+        "label": "C",
+        "text": "Iodine and methylene blue"
+      },
+      {
+        "label": "D",
+        "text": "Safranin and crystal violet"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-4",
+    "question": "An organism which lives inside a host and at",
+    "options": [
+      {
+        "label": "A",
+        "text": "ectoparasite"
+      },
+      {
+        "label": "B",
+        "text": "symbiont"
+      },
+      {
+        "label": "C",
+        "text": "endoparasite"
+      },
+      {
+        "label": "D",
+        "text": "commensal"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-5",
+    "question": "Short, hair-like structures on the surface of",
+    "options": [
+      {
+        "label": "A",
+        "text": "pili"
+      },
+      {
+        "label": "B",
+        "text": "capsules"
+      },
+      {
+        "label": "C",
+        "text": "cell wall"
+      },
+      {
+        "label": "D",
+        "text": "flagella"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-6",
+    "question": "Which of the following denatures protein?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Osmotic strength"
+      },
+      {
+        "label": "B",
+        "text": "Membrane filtration"
+      },
+      {
+        "label": "C",
+        "text": "Ultrafiltration"
+      },
+      {
+        "label": "D",
+        "text": "Heat"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-7",
+    "question": "A vegetative propagation method that involves",
+    "options": [
+      {
+        "label": "A",
+        "text": "Grafting"
+      },
+      {
+        "label": "B",
+        "text": "Cutting"
+      },
+      {
+        "label": "C",
+        "text": "Budding"
+      },
+      {
+        "label": "D",
+        "text": "Layering"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-8",
+    "question": "Summarize the characteristic feature that",
+    "options": [
+      {
+        "label": "A",
+        "text": "They are multicellular"
+      },
+      {
+        "label": "B",
+        "text": "They perform photosynthesis"
+      },
+      {
+        "label": "C",
+        "text": "Their cells have distinct nuclei"
+      },
+      {
+        "label": "D",
+        "text": "They are visible only with a microscope"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-9",
+    "question": "The chronological sequence of stages in",
+    "options": [
+      {
+        "label": "A",
+        "text": "Leptotene, Zygotene, Pachytene,"
+      },
+      {
+        "label": "B",
+        "text": "Zygotene, Diplotene, Pachytene,"
+      },
+      {
+        "label": "C",
+        "text": "Pachytene, Leptotene, Diakinesis,"
+      },
+      {
+        "label": "D",
+        "text": "Diplotene, Zygotene, Pachytene,"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-10",
+    "question": "The theory of spontaneous generation",
+    "options": [
+      {
+        "label": "A",
+        "text": "evolution has taken place in large animals"
+      },
+      {
+        "label": "B",
+        "text": "viruses are degenerated forms of bacteria"
+      },
+      {
+        "label": "C",
+        "text": "microorganisms arise from lifeless matter"
+      },
+      {
+        "label": "D",
+        "text": "microorganisms arise from existing ones"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-11",
+    "question": "After the Gram staining procedure, a Gram-",
+    "options": [
+      {
+        "label": "A",
+        "text": "iodine"
+      },
+      {
+        "label": "B",
+        "text": "crystal violet"
+      },
+      {
+        "label": "C",
+        "text": "safranin"
+      },
+      {
+        "label": "D",
+        "text": "alcohol"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-12",
+    "question": "If an environment has a 20 mol/dm³",
+    "options": [
+      {
+        "label": "A",
+        "text": "the high solute concentration to low"
+      },
+      {
+        "label": "B",
+        "text": "20 mol/dm³ to -20 mol/dm³"
+      },
+      {
+        "label": "C",
+        "text": "the environment to the cell"
+      },
+      {
+        "label": "D",
+        "text": "the cell to the environment"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-13",
+    "question": "The point at which plasmolysis is about to",
+    "options": [
+      {
+        "label": "A",
+        "text": "initial plasmolysis"
+      },
+      {
+        "label": "B",
+        "text": "activation plasmolysis"
+      },
+      {
+        "label": "C",
+        "text": "start plasmolysis"
+      },
+      {
+        "label": "D",
+        "text": "incipient plasmolysis"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-14",
+    "question": "Deficiency of calcium in plants is found to",
+    "options": [
+      {
+        "label": "A",
+        "text": "stunted growth"
+      },
+      {
+        "label": "B",
+        "text": "yellowing of the leaves"
+      },
+      {
+        "label": "C",
+        "text": "weak stem"
+      },
+      {
+        "label": "D",
+        "text": "poor stem and root growth"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-15",
+    "question": "In the process of Nitrogen fixation, which of",
+    "options": [
+      {
+        "label": "A",
+        "text": "Escherichia"
+      },
+      {
+        "label": "B",
+        "text": "Rhizobium"
+      },
+      {
+        "label": "C",
+        "text": "Lactobacillus"
+      },
+      {
+        "label": "D",
+        "text": "Ammonibacterium"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-16",
+    "question": "A typical neuron consists of",
+    "options": [
+      {
+        "label": "A",
+        "text": "Myelin sheath, Axon, and Nodes of Ranvier"
+      },
+      {
+        "label": "B",
+        "text": "Cell body, myelin sheath, and Axon"
+      },
+      {
+        "label": "C",
+        "text": "Cell body, dendrites, and Axon"
+      },
+      {
+        "label": "D",
+        "text": "Dendrites, Nodes of Ranvier, and Cell Body"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-17",
+    "question": "In Cnidarians, a middle false layer called",
+    "options": [
+      {
+        "label": "A",
+        "text": "Spongy"
+      },
+      {
+        "label": "B",
+        "text": "Jelly-like"
+      },
+      {
+        "label": "C",
+        "text": "Fibrous"
+      },
+      {
+        "label": "D",
+        "text": "Soapy"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-18",
+    "question": "The layer that gives rise to complex organs in",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mesoderm"
+      },
+      {
+        "label": "B",
+        "text": "Mesoglea"
+      },
+      {
+        "label": "C",
+        "text": "Ectoderm"
+      },
+      {
+        "label": "D",
+        "text": "Endoderm"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-19",
+    "question": "Which of the following worm types causes",
+    "options": [
+      {
+        "label": "A",
+        "text": "Hookworm"
+      },
+      {
+        "label": "B",
+        "text": "Filarial worm"
+      },
+      {
+        "label": "C",
+        "text": "Tapeworm"
+      },
+      {
+        "label": "D",
+        "text": "Earthworm"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-20",
+    "question": "Which of these elements acts as a catalyst for",
+    "options": [
+      {
+        "label": "A",
+        "text": "Copper"
+      },
+      {
+        "label": "B",
+        "text": "Iron"
+      },
+      {
+        "label": "C",
+        "text": "Molybdenum"
+      },
+      {
+        "label": "D",
+        "text": "Sulfur"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-21",
+    "question": "An example of a gaseous plant hormone is",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cytokinin"
+      },
+      {
+        "label": "B",
+        "text": "Ethylene"
+      },
+      {
+        "label": "C",
+        "text": "Ascorbic acid"
+      },
+      {
+        "label": "D",
+        "text": "Auxin"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-22",
+    "question": "The condition in which Amoebae that lack",
+    "options": [
+      {
+        "label": "A",
+        "text": "Hypertonic environment"
+      },
+      {
+        "label": "B",
+        "text": "Isotonic environment"
+      },
+      {
+        "label": "C",
+        "text": "Hypotonic environment"
+      },
+      {
+        "label": "D",
+        "text": "Hypratonic environment"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-23",
+    "question": "Excretion in crustaceans is by",
+    "options": [
+      {
+        "label": "A",
+        "text": "Coxal glands"
+      },
+      {
+        "label": "B",
+        "text": "Nephridia"
+      },
+      {
+        "label": "C",
+        "text": "Green glands"
+      },
+      {
+        "label": "D",
+        "text": "Malpighian tubules"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-24",
+    "question": "The following are features of insect-",
+    "options": [
+      {
+        "label": "A",
+        "text": "The flower produces large quantities of"
+      },
+      {
+        "label": "B",
+        "text": "The pollen grain is sticky"
+      },
+      {
+        "label": "C",
+        "text": "The flower is brightly colored"
+      },
+      {
+        "label": "D",
+        "text": "The stigma is within the petal"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-25",
+    "question": "Bone consists of two principal elements namely",
+    "options": [
+      {
+        "label": "A",
+        "text": "Iron and Calcium"
+      },
+      {
+        "label": "B",
+        "text": "Potassium and Iron"
+      },
+      {
+        "label": "C",
+        "text": "Calcium and Phosphorus"
+      },
+      {
+        "label": "D",
+        "text": "Calcium and Potassium"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-26",
+    "question": "The process by which energy is used to move",
+    "options": [
+      {
+        "label": "A",
+        "text": "Bulk transport"
+      },
+      {
+        "label": "B",
+        "text": "Osmosis"
+      },
+      {
+        "label": "C",
+        "text": "Active transport"
+      },
+      {
+        "label": "D",
+        "text": "Passive transport"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-27",
+    "question": "The growth regulator responsible for the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Auxin"
+      },
+      {
+        "label": "B",
+        "text": "Gibberellin"
+      },
+      {
+        "label": "C",
+        "text": "Abscisic acid"
+      },
+      {
+        "label": "D",
+        "text": "Ethylene"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-28",
+    "question": "The stem-modified plant with a large base stem",
+    "options": [
+      {
+        "label": "A",
+        "text": "Bulb"
+      },
+      {
+        "label": "B",
+        "text": "Corm"
+      },
+      {
+        "label": "C",
+        "text": "Rhizome"
+      },
+      {
+        "label": "D",
+        "text": "Tuber"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-29",
+    "question": "If a DNA strand has a base sequence TCA, its",
+    "options": [
+      {
+        "label": "A",
+        "text": "CAT"
+      },
+      {
+        "label": "B",
+        "text": "ACT"
+      },
+      {
+        "label": "C",
+        "text": "AGT"
+      },
+      {
+        "label": "D",
+        "text": "TAC"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-31",
+    "question": "The part labelled 1 is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "nuclear membrane"
+      },
+      {
+        "label": "B",
+        "text": "cell wall"
+      },
+      {
+        "label": "C",
+        "text": "endoplasmic reticulum"
+      },
+      {
+        "label": "D",
+        "text": "plasmalemma"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-32",
+    "question": "The following taxa require water for sexual",
+    "options": [
+      {
+        "label": "A",
+        "text": "Bryophytes"
+      },
+      {
+        "label": "B",
+        "text": "Pteridophytes"
+      },
+      {
+        "label": "C",
+        "text": "Gymnosperms"
+      },
+      {
+        "label": "D",
+        "text": "Thallophytes"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-33",
+    "question": "Which of the following is a feature of self-",
+    "options": [
+      {
+        "label": "A",
+        "text": "Dioecious"
+      },
+      {
+        "label": "B",
+        "text": "Protandry"
+      },
+      {
+        "label": "C",
+        "text": "Homogamy"
+      },
+      {
+        "label": "D",
+        "text": "Protogyny"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-34",
+    "question": "Asexual reproduction in plants involves the",
+    "options": [
+      {
+        "label": "A",
+        "text": "genes"
+      },
+      {
+        "label": "B",
+        "text": "somatic parts"
+      },
+      {
+        "label": "C",
+        "text": "gametes"
+      },
+      {
+        "label": "D",
+        "text": "flowers"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-35",
+    "question": "Mycelium is a characteristic feature of",
+    "options": [
+      {
+        "label": "A",
+        "text": "amoeba"
+      },
+      {
+        "label": "B",
+        "text": "bacteria"
+      },
+      {
+        "label": "C",
+        "text": "mould"
+      },
+      {
+        "label": "D",
+        "text": "yeast"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-36",
+    "question": "Gaseous exchange in Molluscs is through the",
+    "options": [
+      {
+        "label": "A",
+        "text": "mantle"
+      },
+      {
+        "label": "B",
+        "text": "skin"
+      },
+      {
+        "label": "C",
+        "text": "lung"
+      },
+      {
+        "label": "D",
+        "text": "tracheal system"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-37",
+    "question": "A young man harvested some unripe mangoes",
+    "options": [
+      {
+        "label": "A",
+        "text": "Auxin"
+      },
+      {
+        "label": "B",
+        "text": "Cytokinins"
+      },
+      {
+        "label": "C",
+        "text": "Ethylene"
+      },
+      {
+        "label": "D",
+        "text": "Ascorbic acid"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-38",
+    "question": "C4 plants include the following EXCEPT",
+    "options": [
+      {
+        "label": "A",
+        "text": "Beans"
+      },
+      {
+        "label": "B",
+        "text": "Rice"
+      },
+      {
+        "label": "C",
+        "text": "Maize"
+      },
+      {
+        "label": "D",
+        "text": "Sugarcane"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-39",
+    "question": "A type of reproduction in which the fertilized",
+    "options": [
+      {
+        "label": "A",
+        "text": "ovoviviparous"
+      },
+      {
+        "label": "B",
+        "text": "oviparous"
+      },
+      {
+        "label": "C",
+        "text": "viviparous"
+      },
+      {
+        "label": "D",
+        "text": "oviviparous"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-40",
+    "question": "Why is the blood that flows from the lungs to",
+    "options": [
+      {
+        "label": "A",
+        "text": "Oxygen makes it red"
+      },
+      {
+        "label": "B",
+        "text": "Carbon dioxide makes it red"
+      },
+      {
+        "label": "C",
+        "text": "Gastric juices produce the red color of"
+      },
+      {
+        "label": "D",
+        "text": "Potassium concentration is higher than"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-41",
+    "question": "The reason why active transport of potassium",
+    "options": [
+      {
+        "label": "A",
+        "text": "concentration gradient and electric gradient"
+      },
+      {
+        "label": "B",
+        "text": "Sodium-Potassium pump is saturated"
+      },
+      {
+        "label": "C",
+        "text": "concentration gradient and electric gradient"
+      },
+      {
+        "label": "D",
+        "text": "Potassium concentration is higher than"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-42",
+    "question": "Keeping organisms in their natural habitat",
+    "options": [
+      {
+        "label": "A",
+        "text": "zoo"
+      },
+      {
+        "label": "B",
+        "text": "in-situ method"
+      },
+      {
+        "label": "C",
+        "text": "garden"
+      },
+      {
+        "label": "D",
+        "text": "cryopreservation"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-43",
+    "question": "The hydra is composed of two layers of tissues",
+    "options": [
+      {
+        "label": "A",
+        "text": "mesodermis"
+      },
+      {
+        "label": "B",
+        "text": "gastrodermis"
+      },
+      {
+        "label": "C",
+        "text": "endodermis"
+      },
+      {
+        "label": "D",
+        "text": "mesoglea"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-44",
+    "question": "A monocot flower has",
+    "options": [
+      {
+        "label": "A",
+        "text": "2 floral parts"
+      },
+      {
+        "label": "B",
+        "text": "3 floral parts"
+      },
+      {
+        "label": "C",
+        "text": "4 floral parts"
+      },
+      {
+        "label": "D",
+        "text": "5 floral parts"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-45",
+    "question": "Cnidarians possess two body forms: the polyp",
+    "options": [
+      {
+        "label": "A",
+        "text": "It is umbrella-shaped"
+      },
+      {
+        "label": "B",
+        "text": "The mouth is centrally located and"
+      },
+      {
+        "label": "C",
+        "text": "More mesoglea is present"
+      },
+      {
+        "label": "D",
+        "text": "It is sessile"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-46",
+    "question": "The polar nucleus in the ovule has how many",
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "2"
+      },
+      {
+        "label": "C",
+        "text": "3"
+      },
+      {
+        "label": "D",
+        "text": "4"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-47",
+    "question": "If a genetic disease is transferred from a",
+    "options": [
+      {
+        "label": "A",
+        "text": "autosomal dominant"
+      },
+      {
+        "label": "B",
+        "text": "autosomal recessive"
+      },
+      {
+        "label": "C",
+        "text": "sex-linked dominant"
+      },
+      {
+        "label": "D",
+        "text": "sex-linked recessive"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-48",
+    "question": "Identify the scientific name of the common",
+    "options": [
+      {
+        "label": "A",
+        "text": "Candida albicans"
+      },
+      {
+        "label": "B",
+        "text": "Escherichia coli"
+      },
+      {
+        "label": "C",
+        "text": "Amanita toxicans"
+      },
+      {
+        "label": "D",
+        "text": "Saccharomyces cerevisiae"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-49",
+    "question": "Fungi of the class Deuteromycetes are notable",
+    "options": [
+      {
+        "label": "A",
+        "text": "undergo photosynthesis"
+      },
+      {
+        "label": "B",
+        "text": "lack septa"
+      },
+      {
+        "label": "C",
+        "text": "produce basidiospores"
+      },
+      {
+        "label": "D",
+        "text": "lack a known sexual cycle of reproduction"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-50",
+    "question": "Those bacteria designated as microaerophilic",
+    "options": [
+      {
+        "label": "A",
+        "text": "in low concentration of O₂"
+      },
+      {
+        "label": "B",
+        "text": "in high concentration of O₂"
+      },
+      {
+        "label": "C",
+        "text": "in low concentration of CO₂"
+      },
+      {
+        "label": "D",
+        "text": "in microhabitats"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2023-import-theory-1",
+    "question": "1. Define the following terms:\n(a) Autecology\n(b) Synecology\n(c) Environment\n(d) Biosphere\n(e) Habitat\n(f) Niche\n(g) Biome\n(h) Community\n(i) Ecosystem\n(j) Population",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2023-import-theory-2",
+    "question": "2. In an experiment to evaluate the effect of\nlight spectra on the weight of rodents, two\nlight spectra were used; Blue light and Yellow\nlight. 10 rats each were exposed to these light\nspectra for 30 days. At the end of the exposure,\nthe weight of the rodents was taken to the\nnearest 0.1 kg. The table below represents the\nvalue of the weight recorded for each spectrum:\n\n| Rat        | 1    | 2    | 3    | 4    | 5    |\n|------------|------|------|------|------|------|\n| Blue Light | 39.2 | 37.8 | 36.3 | 40.1 | 39.2 |\n| Yellow     | 32.1 | 33.9 | 35.4 | 35.4 | 33.3 |\n| Light      |      |      |      |      |      |\n\n| Rat        | 6    | 7    | 8    | 9    | 10   |\n|------------|------|------|------|------|------|\n| Blue Light | 39.2 | 39.7 | 37.5 | 38.6 | 37.4 |\n| Yellow     | 34.9 | 32.4 | 31.9 | 35.1 | 34.8 |\n| Light      |      |      |      |      |      |\n\nUse the information above to answer the\nquestions below:\n\n(a) i.  Calculate the difference between the mean\nweight of the rodents exposed to blue light\nand yellow light.\nii. What can you infer from the experiment\nbetween the light spectra?\n\n(b) State the Mendelian law of segregation.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2023-import-theory-3",
+    "question": "3. (a) Write short notes on the following fungi\ndivisions:\ni.   Ascomycota\nii.  Basidiomycota\niii. Deuteromycota\n\n(b) Name FOUR diseases caused by prions.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2023-import-theory-4",
+    "question": "4. (a) Explain any of the methods of how genetic\nmaterials can be transferred from one\nprokaryote to another.\n\n(b) Briefly describe the TWO major steps\ninvolved in the process of synthesizing\nprotein from DNA of prokaryotes.\n\n(c) Define the term 'Mutation'.\n\n(d) In a tabular form, differentiate between\nthe following types of mutation:\n• Types of Mutation\n• Point vs. Multiple\n• Somatic vs. Germinal\n• Spontaneous vs. Induced",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2023-import-theory-5",
+    "question": "5. (a) State and explain the TWO plant nutrition\nprocesses represented by the equations below:\ni.  6CO₂ + 12H₂O → C₆H₁₂O₆ + 6O₂ + 6H₂O\nii. NH₃ + O₂ → 2NO₂ + 2H₂O + 4H⁺ + energy\n\n(b) State ONE deficiency symptom of each of\nthe following plant nutrient elements:\ni.   Nitrogen\nii.  Phosphorus\niii. Calcium\niv.  Iron\nv.   Zinc",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2023-import-theory-6",
+    "question": "6. (a) Mention FOUR characteristics of\nAngiosperms.\n\n(b) State FOUR economic importance of Lichen.\n\n(c) How are seeds of gymnosperms different\nfrom those of angiosperms?",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2023-import-theory-7",
+    "question": "7. (a) What is respiration?\n\n(b) State TWO similarities and three differences\nbetween aerobic and anaerobic respiration.\n\n(c) Briefly explain the mechanism of inspiration\nin humans.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2023-import-theory-8",
+    "question": "8. (a) i.  Define a balanced diet.\nii. State FOUR classes of food.\n\n(b) State THREE functions of bile.\n\n(c) State a function each of the following\nenzymes:\ni.   Erepsin\nii.  Maltase\niii. Lipase\niv.  Sucrase",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2023,
+    "category": "theory"
+  }
+]

@@ -1,126 +1,1266 @@
 [
   {
     "id": "bio-2020-import-1",
-    "question": "In mushroom, the function of the gills is to produce spores. Choose the option below that best describes the function of the hyphae produced by the mushroom 43. Which of these is a xerophyte? 44. Which of the following is NOT true of Bryophytes? 45. One of the following is not a causative organism of human malaria. 46. Choose the option that best describes the lag phase. It is the period when the 47. Identify the option which is not caused by a pathogen 48. A pharmaceutical company involved in the production of penicillin would find one of these organisms useful 49. A person who consumes mouldy bread is most likely to consume one of the following organisms. 50. A piece of yam fell into a solution of unknown concentration. After 5 days, the piece of yam was found to be of the same size because the solution it fell into is",
+    "question": "Antonie van Leeuwenhoek first observed microorganisms in 1674 and called them",
     "options": [
       {
         "label": "A",
-        "text": "It assimilates the nutrients in the substrate"
+        "text": "microbes."
       },
       {
         "label": "B",
-        "text": "It absorbs nutrients from the substrate"
+        "text": "cells."
       },
       {
         "label": "C",
-        "text": "It digests the nutrients in the substrate"
-      },
-      {
-        "label": "A",
-        "text": "Cactus"
-      },
-      {
-        "label": "B",
-        "text": "Moss"
-      },
-      {
-        "label": "C",
-        "text": "Fern"
-      },
-      {
-        "label": "A",
-        "text": "Possession of rhizoids"
-      },
-      {
-        "label": "B",
-        "text": "Production of spores"
-      },
-      {
-        "label": "C",
-        "text": "Alternation of generation"
-      },
-      {
-        "label": "A",
-        "text": "Plasmodium falciparum"
-      },
-      {
-        "label": "B",
-        "text": "Plasmodium ovale"
-      },
-      {
-        "label": "C",
-        "text": "Plasmodium vivax"
-      },
-      {
-        "label": "A",
-        "text": "bacteria are adjusting to the environment"
-      },
-      {
-        "label": "B",
-        "text": "environment is adjusting to the bacteria"
-      },
-      {
-        "label": "C",
-        "text": "bacteria records the highest growth rate"
-      },
-      {
-        "label": "A",
-        "text": "Malaria"
-      },
-      {
-        "label": "B",
-        "text": "Cancer"
-      },
-      {
-        "label": "C",
-        "text": "Measles"
-      },
-      {
-        "label": "A",
-        "text": "Bacteria"
-      },
-      {
-        "label": "B",
-        "text": "Protozoa"
-      },
-      {
-        "label": "C",
-        "text": "Fungi"
-      },
-      {
-        "label": "A",
-        "text": "Aspergillus sp"
-      },
-      {
-        "label": "B",
-        "text": "Penicillium sp"
-      },
-      {
-        "label": "C",
-        "text": "Mycelium sp"
-      },
-      {
-        "label": "A",
-        "text": "hypotonic"
-      },
-      {
-        "label": "B",
-        "text": "hypertonic"
-      },
-      {
-        "label": "C",
-        "text": "isotonic"
+        "text": "bacteria."
       },
       {
         "label": "D",
-        "text": "hydrotonic"
+        "text": "animalcules."
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "Hyphae form the mycelium, which secretes enzymes to break down organic matter and absorbs the resulting nutrients from the substrate.",
+    "correctAnswer": "D",
     "difficulty": "medium",
     "subject": "biology",
     "year": 2020,
     "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-2",
+    "question": "The name 'Enterobacteriaceae' denotes a bacterial",
+    "options": [
+      {
+        "label": "A",
+        "text": "Class."
+      },
+      {
+        "label": "B",
+        "text": "Division."
+      },
+      {
+        "label": "C",
+        "text": "Order."
+      },
+      {
+        "label": "D",
+        "text": "Family."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-3",
+    "question": "Choose the option below that is INCORRECT about fungal groups.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Deuteromycetes are fungal groups that form asexual spores."
+      },
+      {
+        "label": "B",
+        "text": "Oomycetes are fungal groups that form asexual spores."
+      },
+      {
+        "label": "C",
+        "text": "Basidiomycetes are fungal groups that form asexual spores."
+      },
+      {
+        "label": "D",
+        "text": "Zygomycetes are fungal groups that form asexual spores."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-4",
+    "question": "In which part of the leaves does photosynthesis take place?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Stomata."
+      },
+      {
+        "label": "B",
+        "text": "Chloroplast."
+      },
+      {
+        "label": "C",
+        "text": "Mesophyll."
+      },
+      {
+        "label": "D",
+        "text": "Vascular bundle."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-5",
+    "question": "The by-product of light-dependent reaction of photosynthesis is",
+    "options": [
+      {
+        "label": "A",
+        "text": "H₂O"
+      },
+      {
+        "label": "B",
+        "text": "CO₂"
+      },
+      {
+        "label": "C",
+        "text": "O₂."
+      },
+      {
+        "label": "D",
+        "text": "ATP."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-6",
+    "question": "The internal changes that seeds pass through before they start germinating is known as",
+    "options": [
+      {
+        "label": "A",
+        "text": "after-ripening."
+      },
+      {
+        "label": "B",
+        "text": "dormancy."
+      },
+      {
+        "label": "C",
+        "text": "sprouting."
+      },
+      {
+        "label": "D",
+        "text": "fertilization."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-7",
+    "question": "Which of the following statements is CORRECT about Bryophytes and Pteridophytes?",
+    "options": [
+      {
+        "label": "A",
+        "text": "The organ of anchorage are rhizoids and roots respectively."
+      },
+      {
+        "label": "B",
+        "text": "Bryophytes are terrestrial while Pteridophytes are amphibious."
+      },
+      {
+        "label": "C",
+        "text": "Bryophytes have complex body structures while Pteridophytes have simpler body structures."
+      },
+      {
+        "label": "D",
+        "text": "Bryophytes and Pteridophytes possess rhizolds."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-8",
+    "question": "One of the importance of mosses is that they",
+    "options": [
+      {
+        "label": "A",
+        "text": "initiate soil erosion."
+      },
+      {
+        "label": "B",
+        "text": "reduce soil quality."
+      },
+      {
+        "label": "C",
+        "text": "initiate soil formation."
+      },
+      {
+        "label": "D",
+        "text": "serve as source of income."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-9",
+    "question": "A cell that has thin cell walls, dense cytoplasm, small sized vacuoles and capable of dividing is likely to be a",
+    "options": [
+      {
+        "label": "A",
+        "text": "meristematic cell."
+      },
+      {
+        "label": "B",
+        "text": "secondary cell."
+      },
+      {
+        "label": "C",
+        "text": "lateral cell."
+      },
+      {
+        "label": "D",
+        "text": "differentiated cell."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-10",
+    "question": "The floral leaves of a typical flower are divided into four parts where the sepals form the",
+    "options": [
+      {
+        "label": "A",
+        "text": "corolla."
+      },
+      {
+        "label": "B",
+        "text": "calyx."
+      },
+      {
+        "label": "C",
+        "text": "androecium."
+      },
+      {
+        "label": "D",
+        "text": "gynoecium."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-11",
+    "question": "When the sepals of a flowering plant are separated from each other, such plant is referred to as a",
+    "options": [
+      {
+        "label": "A",
+        "text": "gamosepalous plant."
+      },
+      {
+        "label": "B",
+        "text": "monosepalous plant."
+      },
+      {
+        "label": "C",
+        "text": "heterosepalous plant."
+      },
+      {
+        "label": "D",
+        "text": "polysepalous plant."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-12",
+    "question": "The mass flow of sap through sieve elements is described as an active process because",
+    "options": [
+      {
+        "label": "A",
+        "text": "sucrose moves out of the phloem into area of cell multiplication."
+      },
+      {
+        "label": "B",
+        "text": "phloem sap is capable of moving in the sieve elements against the force of gravity."
+      },
+      {
+        "label": "C",
+        "text": "sucrose is loaded into a sieve element against the concentration gradient."
+      },
+      {
+        "label": "D",
+        "text": "water moves along with the sucrose down the concentration gradient."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-13",
+    "question": "The rate of diffusion is inversely proportional to the size of diffusing molecules and",
+    "options": [
+      {
+        "label": "A",
+        "text": "concentration gradient."
+      },
+      {
+        "label": "B",
+        "text": "surface area of the cell involved."
+      },
+      {
+        "label": "C",
+        "text": "density of the diffusing molecules."
+      },
+      {
+        "label": "D",
+        "text": "temperature in the cell involved."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-14",
+    "question": "When the filaments of stamens are attached to the petal, the flower is referred to as",
+    "options": [
+      {
+        "label": "A",
+        "text": "epipetalous."
+      },
+      {
+        "label": "B",
+        "text": "gamopetalous."
+      },
+      {
+        "label": "C",
+        "text": "polypetalous."
+      },
+      {
+        "label": "D",
+        "text": "monopetalous."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-15",
+    "question": "In seed vascular plants, the first fertilization occurs",
+    "options": [
+      {
+        "label": "A",
+        "text": "when two nuclei fuse together to form a zygote."
+      },
+      {
+        "label": "B",
+        "text": "when one nucleus fuses with the ovum to form a diploid cell."
+      },
+      {
+        "label": "C",
+        "text": "when one nucleus fuses with the ovum to form a zygote."
+      },
+      {
+        "label": "D",
+        "text": "when two nuclei fuse together to form a diploid cell."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-16",
+    "question": "Body segmentation is pronounced in the following groups of animals EXCEPT",
+    "options": [
+      {
+        "label": "A",
+        "text": "Arthropoda."
+      },
+      {
+        "label": "B",
+        "text": "Chordata."
+      },
+      {
+        "label": "C",
+        "text": "Annelida."
+      },
+      {
+        "label": "D",
+        "text": "Coelenterata."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-17",
+    "question": "The Sarcodinea are very unique with the presence of",
+    "options": [
+      {
+        "label": "A",
+        "text": "ciliated body."
+      },
+      {
+        "label": "B",
+        "text": "long flagella."
+      },
+      {
+        "label": "C",
+        "text": "amorphous body structure."
+      },
+      {
+        "label": "D",
+        "text": "binucleated cytoplasm."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-18",
+    "question": "Which of the listed phyla is referred to as a dead end phylum?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Coelentrata."
+      },
+      {
+        "label": "B",
+        "text": "Annelida."
+      },
+      {
+        "label": "C",
+        "text": "Porifera."
+      },
+      {
+        "label": "D",
+        "text": "Arthropoda."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-19",
+    "question": "Sexual maturity of animal parasites is attained in the",
+    "options": [
+      {
+        "label": "A",
+        "text": "reservoir host."
+      },
+      {
+        "label": "B",
+        "text": "definitive host."
+      },
+      {
+        "label": "C",
+        "text": "primary host."
+      },
+      {
+        "label": "D",
+        "text": "intermediate host."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-20",
+    "question": "A mantle and mantle cavity are present in the class",
+    "options": [
+      {
+        "label": "A",
+        "text": "Oligochaete."
+      },
+      {
+        "label": "B",
+        "text": "Bivalvia."
+      },
+      {
+        "label": "C",
+        "text": "Polychaeta."
+      },
+      {
+        "label": "D",
+        "text": "hiruclinea."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-21",
+    "question": "The believe that certain living things arose from vital forces present in non-living or decomposing matter is known as",
+    "options": [
+      {
+        "label": "A",
+        "text": "initial generation."
+      },
+      {
+        "label": "B",
+        "text": "biogenesis."
+      },
+      {
+        "label": "C",
+        "text": "spontaneous generation."
+      },
+      {
+        "label": "D",
+        "text": "induced generation."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-22",
+    "question": "The part labeled II is the",
+    "options": [
+      {
+        "label": "A",
+        "text": "nucleus."
+      },
+      {
+        "label": "B",
+        "text": "eyespot."
+      },
+      {
+        "label": "C",
+        "text": "basal granule."
+      },
+      {
+        "label": "D",
+        "text": "contractile vacuole."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-23",
+    "question": "Which of these cell structures can be seen only with an electron microscope?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cell surface membrane."
+      },
+      {
+        "label": "B",
+        "text": "Chromosome."
+      },
+      {
+        "label": "C",
+        "text": "Nucleolus."
+      },
+      {
+        "label": "D",
+        "text": "Vacuole."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-24",
+    "question": "Which of the following are found in both eukaryotic and prokaiyotic cells?",
+    "options": [
+      {
+        "label": "A",
+        "text": "I, II and III."
+      },
+      {
+        "label": "B",
+        "text": "I, II and IV."
+      },
+      {
+        "label": "C",
+        "text": "I, III and IV."
+      },
+      {
+        "label": "D",
+        "text": "II, III and IV."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-25",
+    "question": "Which of the following listed organisms is a multicellular organism?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Rhizopus."
+      },
+      {
+        "label": "B",
+        "text": "Euglena."
+      },
+      {
+        "label": "C",
+        "text": "Paramecium."
+      },
+      {
+        "label": "D",
+        "text": "Chlorella."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-26",
+    "question": "Birds and mammals have certain shared characteristics. Which of these is NOT a shared characteristic?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ossified endoskeleton."
+      },
+      {
+        "label": "B",
+        "text": "Breathing using lungs."
+      },
+      {
+        "label": "C",
+        "text": "Viviparity."
+      },
+      {
+        "label": "D",
+        "text": "Warm blooded."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-27",
+    "question": "Choose the option that is associated with an open vascular system.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Man."
+      },
+      {
+        "label": "B",
+        "text": "Fish."
+      },
+      {
+        "label": "C",
+        "text": "Prawn."
+      },
+      {
+        "label": "D",
+        "text": "Snakes."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-28",
+    "question": "Choose the option that is associated with the measuring of the pulse beat.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Artery."
+      },
+      {
+        "label": "B",
+        "text": "Vein."
+      },
+      {
+        "label": "C",
+        "text": "Capillary."
+      },
+      {
+        "label": "D",
+        "text": "Nerves."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-29",
+    "question": "Study the options carefully and identify the organism that excretes uric acid as its main nitrogenous waste.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Frog."
+      },
+      {
+        "label": "B",
+        "text": "Birds."
+      },
+      {
+        "label": "C",
+        "text": "Fishes."
+      },
+      {
+        "label": "D",
+        "text": "Man."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-30",
+    "question": "Study the options A–D carefully. Identify the cells which secrete the male sex hormone, testosterone.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Isthmus."
+      },
+      {
+        "label": "B",
+        "text": "Cryptic cells."
+      },
+      {
+        "label": "C",
+        "text": "Lieberklihn."
+      },
+      {
+        "label": "D",
+        "text": "Leydig's cells."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-31",
+    "question": "Which of the options below best describes an electron microscope in comparison with a light microscope?",
+    "options": [
+      {
+        "label": "A",
+        "text": "(Option A — Higher magnification, Higher resolution)"
+      },
+      {
+        "label": "B",
+        "text": "(Option B — Higher magnification, Lower resolution)"
+      },
+      {
+        "label": "C",
+        "text": "(Option C — Lower magnification, Higher resolution)"
+      },
+      {
+        "label": "D",
+        "text": "(Option D — Lower magnification, Lower resolution)"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-33",
+    "question": "Which of these is the intermediate host of Fasciola?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pig globosa."
+      },
+      {
+        "label": "B",
+        "text": "Lymnaea truncatula."
+      },
+      {
+        "label": "C",
+        "text": "Lamellidens marginalis."
+      },
+      {
+        "label": "D",
+        "text": "Achatina achiatina."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-36",
+    "question": "Students in a biology class were asked to use the following information to draw a bar chart to show number of babies born in twelve villages on a certain day:",
+    "options": [
+      {
+        "label": "A",
+        "text": "Graph of number of babies against number of villages."
+      },
+      {
+        "label": "B",
+        "text": "Graph of number of villages against number of babies."
+      },
+      {
+        "label": "C",
+        "text": "Bar chart showing number of villages against number of babies."
+      },
+      {
+        "label": "D",
+        "text": "Bar chart showing number of babies against number of villages."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-37",
+    "question": "What is the ecological definition of the term community?",
+    "options": [
+      {
+        "label": "A",
+        "text": "All the food web in an ecosystem."
+      },
+      {
+        "label": "B",
+        "text": "All the individuals of one species in an area."
+      },
+      {
+        "label": "C",
+        "text": "All the organisms in an area."
+      },
+      {
+        "label": "D",
+        "text": "All the biotic and abiotic components in an ecosystem."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-39",
+    "question": "Identify the option that is not an anti sera used in blood grouping.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Anti sera A."
+      },
+      {
+        "label": "B",
+        "text": "Anti sera B."
+      },
+      {
+        "label": "C",
+        "text": "Anti sera C."
+      },
+      {
+        "label": "D",
+        "text": "Anti sera D."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-40",
+    "question": "Identify the odd ecological instrument from the options given below.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Anemometer."
+      },
+      {
+        "label": "B",
+        "text": "Ecological meter."
+      },
+      {
+        "label": "C",
+        "text": "Ecological meter."
+      },
+      {
+        "label": "D",
+        "text": "(Refer to options in book)"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-43",
+    "question": "Which of these is a xerophyte?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cactus."
+      },
+      {
+        "label": "B",
+        "text": "Moss."
+      },
+      {
+        "label": "C",
+        "text": "Fern."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-44",
+    "question": "Which of the following is NOT true of Bryophytes?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Possession of rhizoids."
+      },
+      {
+        "label": "B",
+        "text": "Production of spores."
+      },
+      {
+        "label": "C",
+        "text": "Alternation of generation."
+      },
+      {
+        "label": "D",
+        "text": "Xerophytic life cycle."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-45",
+    "question": "One of the following is not a causative organism of human malaria.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Plasmodium falciparum."
+      },
+      {
+        "label": "B",
+        "text": "Plasmodium ovale."
+      },
+      {
+        "label": "C",
+        "text": "Plasmodium vivax."
+      },
+      {
+        "label": "D",
+        "text": "Plasmodium berghei."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-46",
+    "question": "Choose the option that best describes the lag phase. It is the period when the",
+    "options": [
+      {
+        "label": "A",
+        "text": "bacteria are adjusting to the environment."
+      },
+      {
+        "label": "B",
+        "text": "environment is adjusting to the bacteria."
+      },
+      {
+        "label": "C",
+        "text": "bacteria records the highest growth rate."
+      },
+      {
+        "label": "D",
+        "text": "environment slows down the bacteria growth."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-47",
+    "question": "Identify the option which is not caused by a pathogen.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Malaria."
+      },
+      {
+        "label": "B",
+        "text": "Cancer."
+      },
+      {
+        "label": "C",
+        "text": "Measles."
+      },
+      {
+        "label": "D",
+        "text": "Tuberculosis."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-48",
+    "question": "A pharmaceutical company involved in the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Bacteria."
+      },
+      {
+        "label": "B",
+        "text": "Protozoa."
+      },
+      {
+        "label": "C",
+        "text": "Fungi."
+      },
+      {
+        "label": "D",
+        "text": "Virus."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-49",
+    "question": "A person who consumes mouldy bread is most likely",
+    "options": [
+      {
+        "label": "A",
+        "text": "Aspergillus sp."
+      },
+      {
+        "label": "B",
+        "text": "Plorutus sp."
+      },
+      {
+        "label": "C",
+        "text": "Mycelium sp."
+      },
+      {
+        "label": "D",
+        "text": "Mouldellum sp."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-50",
+    "question": "A piece of yam fell into a solution of unknown",
+    "options": [
+      {
+        "label": "A",
+        "text": "hypotonic."
+      },
+      {
+        "label": "B",
+        "text": "hypertonic."
+      },
+      {
+        "label": "C",
+        "text": "isotonic."
+      },
+      {
+        "label": "D",
+        "text": "hydrotonic."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2020-import-theory-1",
+    "question": "1(a) State ONE function of the following cell organelles:\ni.   Nucleus\nii.  Plasma membrane\niii. Ribosome\niv.  Chloroplast\nv.   Ribosomal Endoplasmic Reticulum\nvi.  Golgi apparatus\nvii. Mitochondria\nviii.Cell wall\nix.  Lysosome\nx.   Vacuoles.          [5 Marks]\n\n(b) Mention THREE similarities between a prokaryotic\nand an eukaryotic cell. [3 Marks]\n\n(c) Mention TWO differences between a prokaryotic\nand an eukaryotic cell. [2 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-theory-2",
+    "question": "2.  A breed of dog is said to have genes for hair\ncolour and leg length. Allele 'A' is dominant and\ngives brown hair. Allele 'a' is recessive and gives\nblack hair. Allele 'L' is dominant and gives long legs,\nand allele 'l' is recessive and gives short legs.\n\n(a) Present in tabular form, the various types of\ngenotypes and phenotypes that the dogs may\nhave. [5 Marks]\n\n(b) Construct a genetic table to show the offspring a\nbreeder would expect between two dogs that are\nheterozygote for both genes using Punnet square.\n[4 Marks]\n\n(c) State the phenotypic ratio of the cross. [1 Mark]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-theory-3",
+    "question": "3(a) What is conservation? [2 Marks]\n\n(b)  Differentiate between in-situ and ex-situ\nconservation. [2 Marks]\n\n(c)  Outline the merits and demerits of each of\nin-situ and ex-situ conservation. [6 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-theory-4",
+    "question": "4(a) With the aid of a labelled diagram alone, show the\ngeneral sexual life cycle of fungi.\n\n(b)  Outline the general characteristics of\nBasidiomycetes.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-theory-5",
+    "question": "5(a) Name THREE major constituents of plant tissues\ndecomposed by fungi.\n\n(b)  Write TWO importance of fungi to the soil.\n\n(c)  List FIVE general characteristics of fungi.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-theory-6",
+    "question": "6(a) In a tabular form, name SIX microorganisms\ncausing infectious diseases in animals, indicating\nthe diseases caused and their common sources.\n\n(b)  Briefly describe yeast reproduction.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-theory-7",
+    "question": "7(a) Define the term: 'tissue'.\n\n(b)  State the FOUR main types of tissue found in\nanimals.\n\n(c)  Write short notes on each of the various types of\nepithelial tissues, indicating their structures,\nlocations and functions.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-theory-8",
+    "question": "8(a) Describe sexual reproduction in Hydra.\n\n(b)  Briefly describe nutrition in Hydra.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2020-import-practical-1",
+    "question": "(a) You have been provided with two (2) samples\nlabelled specimen N and specimen K. Use iodine,\nBenedict's solution, Fehling's solution A and B to\ntest the samples for:\ni.  Starch.\nii. Reducing sugar.\nRecord your findings for (i) and (ii) in a tabular\nform.\n\n(b)\ni.  Add four drops of Millon's reagent to 5ml of\nspecimen J in a test-tube and heat.\n\nii. Add 10 drops of specimen K to 5ml of Benedict's\nsolution and boil for 2 minutes. Allow the mixture\nto cool. Report your findings using the format\nshown below.\n\n| SPECIMEN | TEST | OBSERVATION | INFERENCE |\n|----------|------|-------------|-----------|\n|    J     |      |             |           |\n|    K     |      |             |           |",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "practical"
+  },
+  {
+    "id": "bio-2020-import-practical-2",
+    "question": "You have been provided with the specimens P, Q, R\nand S.\n\n(a) Identify specimens P, Q, R and S stating their\nGenus without reasons.\n\n(b) What classes do specimens P, Q, R, and S belong?\n\n(c) Construct a food chain using specimens P, Q, R\nand S.\n\n(d) What is the trophic level of specimen R?\n\n(e) State four (4) adaptive features of specimen P.\n\n(f) What are the four (4) observable (external)\ndifferences between specimens R and S?\n\n(g) Draw a labelled diagram of the lateral view of\nspecimen R.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2020,
+    "category": "practical"
   }
 ]

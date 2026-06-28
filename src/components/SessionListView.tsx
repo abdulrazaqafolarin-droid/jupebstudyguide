@@ -15,6 +15,7 @@ interface SessionListViewProps {
   onPauseSession: (id: string) => void;
   onResumeSession: (id: string) => void;
   onDeleteSession: (id: string) => void;
+  onReorderSubjects?: (sessionId: string, ordered: Subject[]) => void;
   onBack: () => void;
   onStartTeaching?: (session: StudySessionData, day: number) => void;
 }
@@ -28,6 +29,7 @@ export function SessionListView({
   onPauseSession,
   onResumeSession,
   onDeleteSession,
+  onReorderSubjects,
   onBack,
   onStartTeaching,
 }: SessionListViewProps) {
@@ -97,6 +99,7 @@ export function SessionListView({
               onPause={onPauseSession}
               onResume={onResumeSession}
               onDelete={onDeleteSession}
+              onReorderSubjects={onReorderSubjects ? (ordered) => onReorderSubjects(session.id, ordered) : undefined}
               onStartTeaching={onStartTeaching}
             />
           ))}

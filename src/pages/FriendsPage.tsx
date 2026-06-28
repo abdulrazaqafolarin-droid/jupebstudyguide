@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MessageCircle, Search, UserCheck, UserPlus, Users } from "lucide-react";
+import { ArrowLeft, MessageCircle, Search, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFriends } from "@/hooks/useFriends";
-import { useChat, Profile } from "@/hooks/useChat";
 import { usePresenceContext } from "@/contexts/PresenceContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
 import { UserProfileDialog } from "@/components/profile/UserProfileDialog";
@@ -18,43 +17,27 @@ export default function FriendsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const friends = useFriends();
-  const chat = useChat();
   const { isOnline } = usePresenceContext();
   const { markReadByKind } = useNotificationsContext();
 
-  const [addFriendQuery, setAddFriendQuery] = useState("");
-  const [addFriendResults, setAddFriendResults] = useState<Profile[]>([]);
-  const [searchingUsers, setSearchingUsers] = useState(false);
+  const [friendFilter, setFriendFilter] = useState("");
   const [profileTarget, setProfileTarget] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     markReadByKind("friend_request");
   }, [markReadByKind]);
 
-  useEffect(() => {
-    if (addFriendQuery.trim().length < 2) {
-      setAddFriendResults([]);
-      return;
-    }
-    setSearchingUsers(true);
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      const results = await chat.searchUsers(addFriendQuery);
-      setAddFriendResults(results);
-      setSearchingUsers(false);
-    }, 300);
-    return () => clearTimeout(debounceRef.current);
-  }, [addFriendQuery, chat]);
+  const filteredFriends = useMemo(() => {
+    if (!friendFilter.trim()) return friends.friends;
+    const q = friendFilter.toLowerCase();
+    return friends.friends.filter(f =>
+      f.display_name?.toLowerCase().includes(q)
+    );
+  }, [friends.friends, friendFilter]);
 
-  const handleStartConversation = async (userId: string) => {
-    try {
-      const convId = await chat.startConversation(userId);
-      navigate(convId ? `/chat?conversation=${convId}` : "/chat");
-    } catch (err) {
-      toast.error(String(err));
-    }
+  const handleStartConversation = (userId: string) => {
+    navigate('/chat?dm=' + userId);
   };
 
   const openProfile = (userId: string) => {
@@ -85,65 +68,49 @@ export default function FriendsPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        {/* Add friend search */}
+        {/* Filter friends search */}
         <div>
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-            Add Friends
+            Filter Friends
           </h3>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <Input
-              placeholder="Find people to add..."
-              value={addFriendQuery}
-              onChange={(e) => setAddFriendQuery(e.target.value)}
+              placeholder="Search your friends..."
+              value={friendFilter}
+              onChange={(e) => setFriendFilter(e.target.value)}
               className="pl-8 bg-secondary/30 border-border/30 h-9 text-xs"
             />
           </div>
-          {addFriendQuery.length >= 2 && (
+          {friendFilter.trim().length >= 1 && filteredFriends.length === 0 && (
+            <p className="text-xs text-muted-foreground text-center py-3">No friends match "{friendFilter}"</p>
+          )}
+          {friendFilter.trim().length >= 1 && filteredFriends.length > 0 && (
             <div className="mt-1 space-y-0.5 max-h-40 overflow-y-auto scrollbar-thin">
-              {searchingUsers && (
-                <p className="text-xs text-muted-foreground text-center py-3">Searching...</p>
-              )}
-              {!searchingUsers && addFriendResults.length === 0 && (
-                <p className="text-xs text-muted-foreground text-center py-3">No users found</p>
-              )}
-              {addFriendResults.map((profile) => {
-                const isAlreadyFriend = friends.friends.some((f) => f.user_id === profile.user_id);
-                const hasPendingOutgoing = friends.outgoingRequests.some((r) => r.receiver_id === profile.user_id);
-                const hasIncomingRequest = friends.incomingRequests.some((r) => r.sender_id === profile.user_id);
-                return (
-                  <div key={profile.id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/30 transition-all">
-                    <button onClick={() => openProfile(profile.user_id)}>
-                      <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-8 h-8 ring-0" targetUserId={profile.user_id} />
-                    </button>
-                    <button
-                      onClick={() => openProfile(profile.user_id)}
-                      className="flex-1 min-w-0 text-left"
-                    >
-                      <p className="text-sm font-medium truncate">{profile.display_name || "User"}</p>
-                    </button>
-                    {isAlreadyFriend ? (
-                      <span className="text-[10px] text-muted-foreground">Friends</span>
-                    ) : hasIncomingRequest ? (
-                      <span className="text-[10px] text-accent">Respond</span>
-                    ) : hasPendingOutgoing ? (
-                      <span className="text-[10px] text-muted-foreground">Pending</span>
-                    ) : (
-                      <Button
-                        size="sm"
-                        className="h-7 text-xs rounded-lg"
-                        onClick={async () => {
-                          const { error } = await friends.sendRequest(profile.user_id);
-                          if (error) toast.error(error.message);
-                        }}
-                      >
-                        <UserPlus className="w-3 h-3 mr-1" />
-                        Add
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
+              {filteredFriends.map((f) => (
+                <div key={f.user_id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/30 transition-all">
+                  <button onClick={() => openProfile(f.user_id)}>
+                    <UserAvatar url={f.avatar_url} name={f.display_name} className="w-8 h-8 ring-0" targetUserId={f.user_id} />
+                  </button>
+                  <button
+                    onClick={() => openProfile(f.user_id)}
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <p className="text-sm font-medium truncate">{f.display_name || "User"}</p>
+                  </button>
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs rounded-lg"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      handleStartConversation(f.user_id);
+                    }}
+                  >
+                    <MessageCircle className="w-3 h-3 mr-1" />
+                    Message
+                  </Button>
+                </div>
+              ))}
             </div>
           )}
         </div>

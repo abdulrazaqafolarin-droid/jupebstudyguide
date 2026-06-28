@@ -31,6 +31,8 @@ import { MathRenderer } from "@/components/MathRenderer";
 import { QuestionViewer } from "@/components/study-past-questions/QuestionViewer";
 import { StudyTimer } from "@/components/study-past-questions/StudyTimer";
 import { AdminQuestionPanel } from "@/components/study-past-questions/AdminQuestionPanel";
+import { BatchAnalysisBar } from "@/components/study-past-questions/BatchAnalysisBar";
+import { BatchAnalysisProvider, useBatchAnalysis } from "@/contexts/BatchAnalysisContext";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -66,7 +68,8 @@ function findQuestionById(id: string): StudyQuestion | null {
   return null;
 }
 
-export default function StudyPastQuestions() {
+function StudyPastQuestionsInner() {
+  const { addToQueue: addYearToQueue } = useBatchAnalysis();
   const navigate = useNavigate();
   const {
     selectedSubject,
@@ -194,6 +197,17 @@ export default function StudyPastQuestions() {
     }
     return result;
   }, [selectedSubject, cacheTick]);
+
+  const handleAnalyzeYear = useCallback((year: number) => {
+    if (!selectedSubject) return;
+    const cats: StudyCategory[] = ["objective", "theory", "practical"];
+    for (const cat of cats) {
+      const catCount = yearCategoryCounts?.[year]?.[cat] ?? 0;
+      if (catCount > 0) {
+        addYearToQueue(selectedSubject, year, cat);
+      }
+    }
+  }, [selectedSubject, yearCategoryCounts, addYearToQueue]);
 
   const bookmarkedQuestions = useMemo(() => {
     return bookmarks
@@ -596,6 +610,8 @@ export default function StudyPastQuestions() {
                     categoryCounts={yearCategoryCounts}
                     selectedYear={selectedYear}
                     onSelectYear={handleYearSelect}
+                    onAnalyzeYear={handleAnalyzeYear}
+                    isAdmin={isAdmin}
                   />
                 </div>
               </motion.div>
@@ -1015,6 +1031,15 @@ export default function StudyPastQuestions() {
           onClose={() => setAdminPanelOpen(false)}
         />
       )}
+      <BatchAnalysisBar />
     </div>
+  );
+}
+
+export default function StudyPastQuestions() {
+  return (
+    <BatchAnalysisProvider>
+      <StudyPastQuestionsInner />
+    </BatchAnalysisProvider>
   );
 }

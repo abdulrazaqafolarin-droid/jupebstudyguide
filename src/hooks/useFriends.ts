@@ -31,35 +31,74 @@ export function useFriends() {
     if (!user) return;
     setLoading(true);
 
-    try {
-      const [friendsData, incomingData, outgoingData] = await Promise.all([
-        supabase.rpc('get_friends', { user_id: user.id }),
+    const safe = (p: Promise<{ data: unknown; error: unknown }>, label: string) =>
+      p.then(r => {
+        if (r.error) console.error(`useFriends: ${label} error:`, r.error);
+        return (r.data || []) as Record<string, unknown>[];
+      });
+
+    const [friendsRaw, incomingRows, outgoingRows, profileRows] = await Promise.all([
+      safe(
         supabase.from('friend_requests')
-          .select('*, sender:profiles!sender_id(display_name, avatar_url)')
+          .select('*')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .eq('status', 'accepted'),
+        'friends query'
+      ),
+      safe(
+        supabase.from('friend_requests')
+          .select('*')
           .eq('receiver_id', user.id)
           .eq('status', 'pending')
           .order('created_at', { ascending: false }),
+        'incoming query'
+      ),
+      safe(
         supabase.from('friend_requests')
-          .select('*, receiver:profiles!receiver_id(display_name, avatar_url)')
+          .select('*')
           .eq('sender_id', user.id)
           .eq('status', 'pending')
           .order('created_at', { ascending: false }),
-      ]);
+        'outgoing query'
+      ),
+      safe(
+        supabase.from('profiles')
+          .select('user_id, display_name, avatar_url'),
+        'profiles query'
+      ),
+    ]);
 
-      setFriends((friendsData.data || []).map((f: Record<string, unknown>) => ({
-        user_id: f.friend_id as string,
-        display_name: f.display_name as string | null,
-        avatar_url: f.avatar_url as string | null,
-      })));
-      setIncomingRequests(incomingData.data || []);
-      setOutgoingRequests(outgoingData.data || []);
-    } catch (err) {
-      console.error('Failed to fetch friends data:', err);
-      toast.error('Failed to load friends');
-      setFriends([]);
-      setIncomingRequests([]);
-      setOutgoingRequests([]);
-    }
+    const profileMap = new Map(
+      profileRows.map((p) => [
+        p.user_id as string,
+        { display_name: p.display_name as string | null, avatar_url: p.avatar_url as string | null },
+      ])
+    );
+
+    const friendIds = friendsRaw.map((r) =>
+      r.sender_id === user.id ? r.receiver_id : r.sender_id
+    ) as string[];
+    setFriends(
+      friendIds.map((id) => ({
+        user_id: id,
+        display_name: profileMap.get(id)?.display_name ?? null,
+        avatar_url: profileMap.get(id)?.avatar_url ?? null,
+      }))
+    );
+
+    setIncomingRequests(
+      incomingRows.map((r) => ({
+        ...r,
+        sender: profileMap.get(r.sender_id as string) || null,
+      })) as FriendRequest[]
+    );
+    setOutgoingRequests(
+      outgoingRows.map((r) => ({
+        ...r,
+        receiver: profileMap.get(r.receiver_id as string) || null,
+      })) as FriendRequest[]
+    );
+
     setLoading(false);
   }, [user]);
 

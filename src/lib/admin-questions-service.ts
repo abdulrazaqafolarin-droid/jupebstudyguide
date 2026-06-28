@@ -7,7 +7,7 @@ interface MCQOption {
   text: string;
 }
 
-interface QuestionInput {
+export interface QuestionInput {
   id: string;
   subject: Subject;
   year: number;
@@ -20,6 +20,7 @@ interface QuestionInput {
   topic?: string | null;
   sortOrder?: number;
   imageUrl?: string | null;
+  imagePosition?: string | null;
 }
 
 function toDbRow(input: QuestionInput) {
@@ -36,6 +37,7 @@ function toDbRow(input: QuestionInput) {
     course: input.topic || null,
     sort_order: input.sortOrder ?? 0,
     image_url: input.imageUrl || null,
+    image_position: input.imagePosition || null,
   };
 }
 
@@ -85,13 +87,36 @@ export async function batchUpdateSortOrder(
   }
 }
 
+const DELETED_IDS_KEY = "study-questions:deleted-ids";
+
+function loadDeletedIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(DELETED_IDS_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch { return new Set(); }
+}
+
+function saveDeletedIds(ids: Set<string>) {
+  try {
+    localStorage.setItem(DELETED_IDS_KEY, JSON.stringify(Array.from(ids)));
+  } catch {}
+}
+
+export function getPersistedDeletedIds(): Set<string> {
+  return loadDeletedIds();
+}
+
 export async function deleteQuestion(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
-      .from("study_questions")
-      .delete()
-      .eq("id", id);
+    const { data, error } = await supabase.rpc("admin_delete_question", {
+      p_question_id: id,
+    });
     if (error) return { success: false, error: error.message };
+    const result = data as { success: boolean; error?: string } | null;
+    if (!result?.success) return { success: false, error: result?.error || "Delete failed" };
+    const deleted = loadDeletedIds();
+    deleted.add(id);
+    saveDeletedIds(deleted);
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Unknown error" };

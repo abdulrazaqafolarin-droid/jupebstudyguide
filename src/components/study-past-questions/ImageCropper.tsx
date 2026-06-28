@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
-import Cropper, { Area } from "react-easy-crop";
-import { X, Check, ZoomIn, ZoomOut } from "lucide-react";
+import { Cropper, CropperRef, RectangleStencil } from "react-advanced-cropper";
+import "react-advanced-cropper/dist/style.css";
+import { X, Check, Lock, Unlock } from "lucide-react";
 
 interface ImageCropperProps {
   image: string;
@@ -10,73 +11,53 @@ interface ImageCropperProps {
   onCancel: () => void;
 }
 
+type AspectPreset = { label: string; ratio: number | null };
+
+const ASPECT_PRESETS: AspectPreset[] = [
+  { label: "Free", ratio: null },
+  { label: "1:1", ratio: 1 },
+  { label: "4:3", ratio: 4 / 3 },
+  { label: "3:2", ratio: 3 / 2 },
+  { label: "16:9", ratio: 16 / 9 },
+  { label: "21:9", ratio: 21 / 9 },
+];
+
 export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel }: ImageCropperProps) {
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const cropperRef = useRef<CropperRef>(null);
+  const [selectedPreset, setSelectedPreset] = useState<AspectPreset>(ASPECT_PRESETS[4]);
+  const [customW, setCustomW] = useState("");
+  const [customH, setCustomH] = useState("");
+  const [useCustom, setUseCustom] = useState(false);
   const processing = useRef(false);
 
-  const onCropChange = useCallback((location: { x: number; y: number }) => {
-    setCrop(location);
-  }, []);
+  const aspectRatio = useCustom
+    ? (parseFloat(customW) && parseFloat(customH) ? parseFloat(customW) / parseFloat(customH) : undefined)
+    : (selectedPreset.ratio ?? undefined);
 
-  const onZoomChange = useCallback((z: number) => {
-    setZoom(z);
-  }, []);
-
-  const onCropAreaChange = useCallback((_area: Area, pixels: Area) => {
-    setCroppedAreaPixels(pixels);
-  }, []);
-
-  const handleApply = useCallback(async () => {
-    if (processing.current || !croppedAreaPixels) return;
+  const handleApply = useCallback(() => {
+    if (processing.current) return;
     processing.current = true;
-
     try {
-      const imageObj = new Image();
-      imageObj.crossOrigin = "anonymous";
-      const imageLoadPromise = new Promise<void>((resolve, reject) => {
-        imageObj.onload = () => resolve();
-        imageObj.onerror = () => reject(new Error("Failed to load image"));
-      });
-      imageObj.src = image;
-      await imageLoadPromise;
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("No canvas context");
-
-      canvas.width = croppedAreaPixels.width;
-      canvas.height = croppedAreaPixels.height;
-
-      ctx.drawImage(
-        imageObj,
-        croppedAreaPixels.x,
-        croppedAreaPixels.y,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height,
-        0,
-        0,
-        croppedAreaPixels.width,
-        croppedAreaPixels.height
+      const canvas = cropperRef.current?.getCanvas();
+      if (!canvas) {
+        processing.current = false;
+        return;
+      }
+      canvas.toBlob(
+        (b) => {
+          if (b) {
+            onCropComplete(b);
+          } else {
+            processing.current = false;
+          }
+        },
+        "image/jpeg",
+        0.92
       );
-
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob(
-          (b) => {
-            if (b) resolve(b);
-            else reject(new Error("Canvas toBlob failed"));
-          },
-          "image/jpeg",
-          0.92
-        );
-      });
-
-      onCropComplete(blob);
     } catch {
-      onCancel();
+      processing.current = false;
     }
-  }, [image, croppedAreaPixels, onCropComplete, onCancel]);
+  }, [onCropComplete]);
 
   const handleUseOriginal = useCallback(async () => {
     if (processing.current) return;
@@ -114,6 +95,21 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     }
   }, [image, onSkip, onCancel]);
 
+  const handlePresetClick = (preset: AspectPreset) => {
+    setSelectedPreset(preset);
+    setUseCustom(false);
+    setCustomW("");
+    setCustomH("");
+  };
+
+  const handleCustomToggle = () => {
+    setUseCustom(!useCustom);
+    if (!useCustom) {
+      setCustomW("");
+      setCustomH("");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="bg-background rounded-2xl w-full max-w-lg mx-4 overflow-hidden shadow-2xl border">
@@ -129,28 +125,86 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
 
         <div className="relative w-full h-80 bg-black">
           <Cropper
-            image={image}
-            crop={crop}
-            zoom={zoom}
-            aspect={16 / 9}
-            onCropChange={onCropChange}
-            onZoomChange={onZoomChange}
-            onCropComplete={onCropAreaChange}
+            ref={cropperRef}
+            src={image}
+            className="w-full h-full"
+            stencilComponent={RectangleStencil}
+            stencilProps={{
+              aspectRatio,
+              handlers: {
+                "north": true,
+                "east": true,
+                "south": true,
+                "west": true,
+                "east-north": true,
+                "east-south": true,
+                "west-north": true,
+                "west-south": true,
+              },
+              lines: {
+                north: true,
+                east: true,
+                south: true,
+                west: true,
+              },
+              grid: true,
+              movable: true,
+              resizable: true,
+            }}
           />
         </div>
 
-        <div className="flex items-center justify-center gap-4 p-4 border-b">
-          <ZoomOut className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="range"
-            min={1}
-            max={3}
-            step={0.1}
-            value={zoom}
-            onChange={(e) => onZoomChange(parseFloat(e.target.value))}
-            className="w-40 accent-primary"
-          />
-          <ZoomIn className="h-4 w-4 text-muted-foreground" />
+        <div className="px-4 py-3 border-b space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground">Aspect Ratio</span>
+            <button
+              onClick={handleCustomToggle}
+              className={`flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors ${
+                useCustom ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+              }`}
+            >
+              {useCustom ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+              Custom
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {ASPECT_PRESETS.map((preset) => (
+              <button
+                key={preset.label}
+                onClick={() => handlePresetClick(preset)}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  !useCustom && selectedPreset.label === preset.label
+                    ? "bg-primary text-primary-foreground"
+                    : "border hover:bg-accent"
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
+          {useCustom && (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                placeholder="W"
+                value={customW}
+                onChange={(e) => setCustomW(e.target.value)}
+                className="w-full h-8 rounded-lg border bg-background px-2 text-xs"
+              />
+              <span className="text-xs text-muted-foreground shrink-0">:</span>
+              <input
+                type="number"
+                min={1}
+                placeholder="H"
+                value={customH}
+                onChange={(e) => setCustomH(e.target.value)}
+                className="w-full h-8 rounded-lg border bg-background px-2 text-xs"
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-end gap-2 p-4 bg-muted/30">

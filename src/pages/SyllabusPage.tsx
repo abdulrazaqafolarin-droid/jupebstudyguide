@@ -36,7 +36,7 @@ export default function SyllabusPage() {
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
 
-  const subjects = Object.keys(SYLLABUSES) as Subject[];
+  const subjects = useMemo(() => Object.keys(SYLLABUSES) as Subject[], []);
 
   const filteredSubjects = useMemo(() => {
     if (!search.trim()) return subjects;

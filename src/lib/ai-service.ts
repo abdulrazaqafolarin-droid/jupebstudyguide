@@ -2,6 +2,45 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat-proxy`;
 import { supabase } from '@/integrations/supabase/client';
 
+export interface ParsedThinkBlock {
+  thinking: string;
+  answer: string;
+}
+
+export function parseThinkResponse(fullText: string): ParsedThinkBlock {
+  const closeIdx = fullText.indexOf('</think>');
+  if (closeIdx !== -1) {
+    let thinking = fullText.slice(0, closeIdx).trim();
+    const openIdx = thinking.indexOf('<think>');
+    if (openIdx !== -1) {
+      thinking = thinking.slice(openIdx + 7).trim();
+    }
+    return { thinking, answer: fullText.slice(closeIdx + 8).trim() };
+  }
+  const openIdx = fullText.indexOf('<think>');
+  if (openIdx !== -1) {
+    return { thinking: fullText.slice(openIdx + 7).trim(), answer: '' };
+  }
+  return { thinking: fullText.trim(), answer: '' };
+}
+
+export function stripThinking(text: string): string {
+  let result = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  const leakPatterns = [
+    /^[\s\S]*?(?=\bDraft\b|\bFinal(?:\s+Answer)?\b)/i,
+    /^(?:.*?(?:check\.|✓|→|No\s+\w+\?|Self-[Cc]orrection).*\n)+/gm,
+  ];
+  for (const pattern of leakPatterns) {
+    const cleaned = result.replace(pattern, '').trim();
+    if (cleaned.length > 50) result = cleaned;
+  }
+  const draftSplit = result.split(/\bDraft\b/i);
+  if (draftSplit.length > 1) {
+    result = draftSplit[draftSplit.length - 1].trim();
+  }
+  return result;
+}
+
 export interface AIChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -96,6 +135,10 @@ export async function streamChat(
         }
         try {
           const parsed = JSON.parse(data);
+          if (parsed.error) {
+            callbacks.onError(parsed.error);
+            return;
+          }
           const delta = parsed.choices?.[0]?.delta?.content;
           if (delta) callbacks.onDelta(delta);
         } catch (e) { console.warn('AI stream parse error:', e); }
@@ -105,6 +148,24 @@ export async function streamChat(
   } catch (err) {
     callbacks.onError("AI error: " + (err instanceof Error ? err.message : String(err)));
   }
+}
+
+export async function chatCompletionJSON(systemPrompt: string, messages: AIChatMessage[]): Promise<any> {
+  const token = await getAuthToken();
+  const msgs = buildMessages(systemPrompt, messages);
+  const res = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ action: "json", systemPrompt, messages: msgs }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`AI error (${res.status}): ${body}`);
+  }
+  return res.json();
 }
 
 export async function chatCompletion(systemPrompt: string, messages: AIChatMessage[], ragContext?: string): Promise<string> {

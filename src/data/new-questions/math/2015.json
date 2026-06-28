@@ -864,7 +864,7 @@
     "category": "objective"
   },
   {
-    "question": "1 (a). Given   A = {-5, -3, -1, 0, 1, 2, 3} , B = {-4, -3, 0, 3, 5, 8}.   MAT001  Find   A   Δ   B.   2 Marks (b)   If A, B, and C are any sets, show that   A   ∪   (B   ∪   C) = (A   ∪   B)   ∪   C   3 Marks (c ) In an election involving three parties for the chairmanship and gubernatorial election of Lagos State, voters cast their votes as follows: 190 voted for party A, 200 for party B and 250 for party C. 80 voted for A and B, 60 voted for A and C, 100 voted for B and C and 40 voted for B al",
+    "question": "(a). Given A = {-5, -3, -1, 0, 1, 2, 3}, B = {-4, -3, 0, 3, 5, 8}. MAT001 Find A Δ B. [2 marks]\n(b) If A, B, and C are any sets, show that A ∪ (B ∪ C) = (A ∪ B) ∪ C [3 marks]\n(c) In an election involving three parties for the chairmanship and gubernatorial election of Lagos State, voters cast their votes as follows: 190 voted for party A, 200 for party B and 250 for party C. 80 voted for A and B, 60 voted for A and C, 100 voted for B and C and 40 voted for B al",
     "answerGuide": "",
     "markScheme": [],
     "totalMarks": 10,

@@ -132,8 +132,13 @@ export function ChatSidebar({
 
   const filteredConversations = conversations.filter(c => {
     if (!searchQuery) return true;
-    const name = c.is_group ? c.group_name : c.other_user?.display_name;
-    return name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.toLowerCase();
+    const name = c.is_group
+      ? (c.group_name || c.participants?.map(p => p.display_name).filter(Boolean).join(', ') || '')
+      : (c.other_user?.display_name || '');
+    if (name.toLowerCase().includes(q)) return true;
+    if (c.last_message?.content?.toLowerCase().includes(q)) return true;
+    return false;
   });
 
   return (

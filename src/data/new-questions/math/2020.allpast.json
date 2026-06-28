@@ -456,11 +456,11 @@
     "options": [
       {
         "label": "A",
-        "text": "−e^y=e^(2x)/2+C"
+        "text": "−$e^y=e^{2x}/2+C$"
       },
       {
         "label": "B",
-        "text": "e^y=e^(2x)/2+C -"
+        "text": "$e^y = e^{2x}/2 + C$"
       },
       {
         "label": "C",

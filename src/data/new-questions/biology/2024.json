@@ -1,0 +1,1411 @@
+[
+  {
+    "id": "bio-2024-import-1",
+    "question": "True motility is present in bacteria that possess",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cilia."
+      },
+      {
+        "label": "B",
+        "text": "Pseudopods."
+      },
+      {
+        "label": "C",
+        "text": "Flagella."
+      },
+      {
+        "label": "D",
+        "text": "Cirri."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-2",
+    "question": "The uniqueness of chordates is",
+    "options": [
+      {
+        "label": "A",
+        "text": "presence of triploblastic layers."
+      },
+      {
+        "label": "B",
+        "text": "possession of notochord."
+      },
+      {
+        "label": "C",
+        "text": "possession of exoskeleton."
+      },
+      {
+        "label": "D",
+        "text": "possession of gill."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-3",
+    "question": "Holometabolous feature is NOT exhibited in",
+    "options": [
+      {
+        "label": "A",
+        "text": "housefly."
+      },
+      {
+        "label": "B",
+        "text": "cockroach."
+      },
+      {
+        "label": "C",
+        "text": "butterfly."
+      },
+      {
+        "label": "D",
+        "text": "mosquito."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-4",
+    "question": "Spiders are carnivorous arthropods with simple",
+    "options": [
+      {
+        "label": "A",
+        "text": "body surface."
+      },
+      {
+        "label": "B",
+        "text": "trachea."
+      },
+      {
+        "label": "C",
+        "text": "booklung."
+      },
+      {
+        "label": "D",
+        "text": "spiracle."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-5",
+    "question": "Which food nutrient is detected in urine to",
+    "options": [
+      {
+        "label": "A",
+        "text": "Insulin."
+      },
+      {
+        "label": "B",
+        "text": "Carbohydrate."
+      },
+      {
+        "label": "C",
+        "text": "Protein."
+      },
+      {
+        "label": "D",
+        "text": "Lipid."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-6",
+    "question": "Which of the following is FALSE for an axon?",
+    "options": [
+      {
+        "label": "A",
+        "text": "At resting potential, membrane of axon is"
+      },
+      {
+        "label": "B",
+        "text": "At action potential, membrane of axon is"
+      },
+      {
+        "label": "C",
+        "text": "At resting potential, membrane of axon is"
+      },
+      {
+        "label": "D",
+        "text": "Repolarization returns the potential"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-7",
+    "question": "The supply of blood to the tissues of the heart",
+    "options": [
+      {
+        "label": "A",
+        "text": "pulmonary circulation."
+      },
+      {
+        "label": "B",
+        "text": "systemic circulation."
+      },
+      {
+        "label": "C",
+        "text": "open circulation."
+      },
+      {
+        "label": "D",
+        "text": "coronary circulation."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-8",
+    "question": "For effective development of an embryo, which",
+    "options": [
+      {
+        "label": "A",
+        "text": "Brain."
+      },
+      {
+        "label": "B",
+        "text": "Sense organs."
+      },
+      {
+        "label": "C",
+        "text": "Intestine."
+      },
+      {
+        "label": "D",
+        "text": "Heart."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-9",
+    "question": "Which is NOT a bone involved in the connection",
+    "options": [
+      {
+        "label": "A",
+        "text": "Tympanum."
+      },
+      {
+        "label": "B",
+        "text": "Stapes."
+      },
+      {
+        "label": "C",
+        "text": "Malleus."
+      },
+      {
+        "label": "D",
+        "text": "Incus."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-10",
+    "question": "The tubercle bacillus is best stained with",
+    "options": [
+      {
+        "label": "A",
+        "text": "Hematoxylin."
+      },
+      {
+        "label": "B",
+        "text": "Acid Fast stain."
+      },
+      {
+        "label": "C",
+        "text": "Chromic Acid."
+      },
+      {
+        "label": "D",
+        "text": "Glacial Acetic Acid."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-11",
+    "question": "Which among the following is NOT part of the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Olfactory lobes."
+      },
+      {
+        "label": "B",
+        "text": "Medulla oblongata."
+      },
+      {
+        "label": "C",
+        "text": "Cerebrum."
+      },
+      {
+        "label": "D",
+        "text": "Hypothalamus."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-12",
+    "question": "Penicillin is effective because it",
+    "options": [
+      {
+        "label": "A",
+        "text": "prevents DNA replication."
+      },
+      {
+        "label": "B",
+        "text": "blocks protein synthesis."
+      },
+      {
+        "label": "C",
+        "text": "inhibits glycolysis enzymes."
+      },
+      {
+        "label": "D",
+        "text": "blocks cell wall synthesis."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-13",
+    "question": "Which compound in hemoglobin gives blood its",
+    "options": [
+      {
+        "label": "A",
+        "text": "Sulphur."
+      },
+      {
+        "label": "B",
+        "text": "Zinc."
+      },
+      {
+        "label": "C",
+        "text": "Mercury."
+      },
+      {
+        "label": "D",
+        "text": "Iron."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-14",
+    "question": "How many thoracic vertebrae are present in",
+    "options": [
+      {
+        "label": "A",
+        "text": "10."
+      },
+      {
+        "label": "B",
+        "text": "11."
+      },
+      {
+        "label": "C",
+        "text": "12."
+      },
+      {
+        "label": "D",
+        "text": "13."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-15",
+    "question": "A co-factor that binds tightly to an enzyme is",
+    "options": [
+      {
+        "label": "A",
+        "text": "Apoenzyme."
+      },
+      {
+        "label": "B",
+        "text": "Prosthetic group."
+      },
+      {
+        "label": "C",
+        "text": "Holoenzyme."
+      },
+      {
+        "label": "D",
+        "text": "Meroenzyme."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-16",
+    "question": "Prokaryotic cells differ in that they",
+    "options": [
+      {
+        "label": "A",
+        "text": "reproduce only asexually."
+      },
+      {
+        "label": "B",
+        "text": "lack a nuclear membrane."
+      },
+      {
+        "label": "C",
+        "text": "may reproduce sexually or asexually."
+      },
+      {
+        "label": "D",
+        "text": "are anaerobic."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-17",
+    "question": "The process of destroying all microorganisms",
+    "options": [
+      {
+        "label": "A",
+        "text": "Immunization."
+      },
+      {
+        "label": "B",
+        "text": "Pasteurization."
+      },
+      {
+        "label": "C",
+        "text": "Sanitation."
+      },
+      {
+        "label": "D",
+        "text": "Sterilization."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-18",
+    "question": "Which of the following are antibiotics?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Penicillin, Streptomycin, ACTH."
+      },
+      {
+        "label": "B",
+        "text": "Chloromycetin, Terramycin, Cortisol."
+      },
+      {
+        "label": "C",
+        "text": "Sulfanilamide, DNA, Penicillin."
+      },
+      {
+        "label": "D",
+        "text": "Penicillin, Terramycin, Streptomycin."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-19",
+    "question": "The following cause food spoilage EXCEPT",
+    "options": [
+      {
+        "label": "A",
+        "text": "Molds."
+      },
+      {
+        "label": "B",
+        "text": "Bacteria."
+      },
+      {
+        "label": "C",
+        "text": "Yeasts."
+      },
+      {
+        "label": "D",
+        "text": "Viruses."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-20",
+    "question": "Observable, heritable features in living",
+    "options": [
+      {
+        "label": "A",
+        "text": "Deoxyribonucleic acids."
+      },
+      {
+        "label": "B",
+        "text": "Ribonucleic acids."
+      },
+      {
+        "label": "C",
+        "text": "Genotype."
+      },
+      {
+        "label": "D",
+        "text": "Phenotype."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-21",
+    "question": "Microorganisms are classified by thermal",
+    "options": [
+      {
+        "label": "A",
+        "text": "Thermophiles."
+      },
+      {
+        "label": "B",
+        "text": "Psychrophiles."
+      },
+      {
+        "label": "C",
+        "text": "Mesophiles."
+      },
+      {
+        "label": "D",
+        "text": "Osmophiles."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-22",
+    "question": "Early prophase of mitosis includes all EXCEPT",
+    "options": [
+      {
+        "label": "A",
+        "text": "Chromosomes become long and thin."
+      },
+      {
+        "label": "B",
+        "text": "Nucleolus shrinks."
+      },
+      {
+        "label": "C",
+        "text": "Chromosomes condense."
+      },
+      {
+        "label": "D",
+        "text": "Centrioles move together."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-23",
+    "question": "Protozoan and termite relationship is best",
+    "options": [
+      {
+        "label": "A",
+        "text": "Saprophytism."
+      },
+      {
+        "label": "B",
+        "text": "Commensalism."
+      },
+      {
+        "label": "C",
+        "text": "Mutualism."
+      },
+      {
+        "label": "D",
+        "text": "Parasitism."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-24",
+    "question": "Crossing homologous parental stocks produces",
+    "options": [
+      {
+        "label": "A",
+        "text": "Monohybrid cross."
+      },
+      {
+        "label": "B",
+        "text": "Dihybrid cross."
+      },
+      {
+        "label": "C",
+        "text": "F1 generation."
+      },
+      {
+        "label": "D",
+        "text": "F2 generation."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-25",
+    "question": "A change in DNA structure of an organism is",
+    "options": [
+      {
+        "label": "A",
+        "text": "Allele."
+      },
+      {
+        "label": "B",
+        "text": "Mutation."
+      },
+      {
+        "label": "C",
+        "text": "Genome."
+      },
+      {
+        "label": "D",
+        "text": "RNA."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-26",
+    "question": "Which is NOT true about mitosis and meiosis?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mitosis occurs in somatic cells."
+      },
+      {
+        "label": "B",
+        "text": "Mitosis does not occur in sex cells."
+      },
+      {
+        "label": "C",
+        "text": "Genetic material exchanges in meiosis."
+      },
+      {
+        "label": "D",
+        "text": "No genetic material exchange in meiosis."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-27",
+    "question": "The cell division reducing chromosomes to half",
+    "options": [
+      {
+        "label": "A",
+        "text": "Meiosis."
+      },
+      {
+        "label": "B",
+        "text": "Mitosis."
+      },
+      {
+        "label": "C",
+        "text": "Gametogenesis."
+      },
+      {
+        "label": "D",
+        "text": "Cytokinesis."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-28",
+    "question": "The scientific study of cells is called",
+    "options": [
+      {
+        "label": "A",
+        "text": "Anthropology."
+      },
+      {
+        "label": "B",
+        "text": "Cytology."
+      },
+      {
+        "label": "C",
+        "text": "Entomology."
+      },
+      {
+        "label": "D",
+        "text": "Anatomy."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-29",
+    "question": "An alternative form of a gene for contrasting",
+    "options": [
+      {
+        "label": "A",
+        "text": "DNA."
+      },
+      {
+        "label": "B",
+        "text": "Allele."
+      },
+      {
+        "label": "C",
+        "text": "Phenotype."
+      },
+      {
+        "label": "D",
+        "text": "Genome."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-30",
+    "question": "Transferring pollen within the same plant's",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cross-pollination."
+      },
+      {
+        "label": "B",
+        "text": "Self-pollination."
+      },
+      {
+        "label": "C",
+        "text": "Self-fertilization."
+      },
+      {
+        "label": "D",
+        "text": "Cross-fertilization."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-31",
+    "question": "The electron transport system is located in the",
+    "options": [
+      {
+        "label": "A",
+        "text": "mitochondrion."
+      },
+      {
+        "label": "B",
+        "text": "Golgi apparatus."
+      },
+      {
+        "label": "C",
+        "text": "nucleus."
+      },
+      {
+        "label": "D",
+        "text": "cytoplasm."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-32",
+    "question": "Mr. Audu, a plantain farmer, on harvesting",
+    "options": [
+      {
+        "label": "A",
+        "text": "Parthenogenesis."
+      },
+      {
+        "label": "B",
+        "text": "Parthenocarpy."
+      },
+      {
+        "label": "C",
+        "text": "Cross fertilization."
+      },
+      {
+        "label": "D",
+        "text": "Cross fertilization."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-33",
+    "question": "A plant researcher while carrying out a project",
+    "options": [
+      {
+        "label": "A",
+        "text": "nitrogen."
+      },
+      {
+        "label": "B",
+        "text": "phosphorus."
+      },
+      {
+        "label": "C",
+        "text": "magnesium."
+      },
+      {
+        "label": "D",
+        "text": "zinc."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-34",
+    "question": "One of the ways to identify a monocotyledonous",
+    "options": [
+      {
+        "label": "A",
+        "text": "there is presence of pericycle in the stem."
+      },
+      {
+        "label": "B",
+        "text": "flowers are pentamerous."
+      },
+      {
+        "label": "C",
+        "text": "cambium is present."
+      },
+      {
+        "label": "D",
+        "text": "scattered and numerous vascular bundles."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-35",
+    "question": "Gymnosperms are plants that",
+    "options": [
+      {
+        "label": "A",
+        "text": "produce flowers."
+      },
+      {
+        "label": "B",
+        "text": "produce fruit."
+      },
+      {
+        "label": "C",
+        "text": "produce naked seed."
+      },
+      {
+        "label": "D",
+        "text": "do not produce seeds."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-36",
+    "question": "Protandrous are plants that",
+    "options": [
+      {
+        "label": "A",
+        "text": "First produce female flowers and then"
+      },
+      {
+        "label": "B",
+        "text": "First produce male flowers and then"
+      },
+      {
+        "label": "C",
+        "text": "produce both male and female flowers"
+      },
+      {
+        "label": "D",
+        "text": "produce male, female, and perfect flowers"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-37",
+    "question": "Monoecious are plants that",
+    "options": [
+      {
+        "label": "A",
+        "text": "First produce female flowers and then"
+      },
+      {
+        "label": "B",
+        "text": "First produce male flowers and then"
+      },
+      {
+        "label": "C",
+        "text": "produce both male and female flowers"
+      },
+      {
+        "label": "D",
+        "text": "produce male, female, and perfect flowers"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-38",
+    "question": "Mosses belong to what phylum of plants?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Lycophyta."
+      },
+      {
+        "label": "B",
+        "text": "Pteridophyta."
+      },
+      {
+        "label": "C",
+        "text": "Spermatophyta."
+      },
+      {
+        "label": "D",
+        "text": "Bryophyta."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-39",
+    "question": "Non-vascular plants have",
+    "options": [
+      {
+        "label": "A",
+        "text": "sporophyte as its principal generation phase."
+      },
+      {
+        "label": "B",
+        "text": "haploid gametophyte."
+      },
+      {
+        "label": "C",
+        "text": "specialized roots, stem, leaves, and a"
+      },
+      {
+        "label": "D",
+        "text": "specialized dermal that prevent desiccation"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-40",
+    "question": "The Kingdom of organisms that does not have a",
+    "options": [
+      {
+        "label": "A",
+        "text": "Monera."
+      },
+      {
+        "label": "B",
+        "text": "Protista."
+      },
+      {
+        "label": "C",
+        "text": "Fungi."
+      },
+      {
+        "label": "D",
+        "text": "Plantae."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-41",
+    "question": "The correct arrangement of the categories in",
+    "options": [
+      {
+        "label": "A",
+        "text": "Species, Family, Genus, Order, Class,"
+      },
+      {
+        "label": "B",
+        "text": "Species, Family, Genus, Class, Order,"
+      },
+      {
+        "label": "C",
+        "text": "Species, Genus, Family, Order, Class,"
+      },
+      {
+        "label": "D",
+        "text": "Species, Genus, Order, Family, Class,"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-42",
+    "question": "One of the following is NOT a type of",
+    "options": [
+      {
+        "label": "A",
+        "text": "Light or optical microscope."
+      },
+      {
+        "label": "B",
+        "text": "Phase contrast microscope."
+      },
+      {
+        "label": "C",
+        "text": "Medical microscope."
+      },
+      {
+        "label": "D",
+        "text": "Electron microscope."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-43",
+    "question": "Bacilli are",
+    "options": [
+      {
+        "label": "A",
+        "text": "spherical shaped cells."
+      },
+      {
+        "label": "B",
+        "text": "comma-shaped cells."
+      },
+      {
+        "label": "C",
+        "text": "spiral-shaped cells."
+      },
+      {
+        "label": "D",
+        "text": "rod-shaped cells."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-44",
+    "question": "The plant tissue that cannot stretch and",
+    "options": [
+      {
+        "label": "A",
+        "text": "Sclerenchyma."
+      },
+      {
+        "label": "B",
+        "text": "Parenchyma."
+      },
+      {
+        "label": "C",
+        "text": "Collenchyma."
+      },
+      {
+        "label": "D",
+        "text": "Meristem tissue."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-45",
+    "question": "Which of the following is NOT correct about",
+    "options": [
+      {
+        "label": "A",
+        "text": "It controls the passage of substances into"
+      },
+      {
+        "label": "B",
+        "text": "Cells are thickened with waxy materials."
+      },
+      {
+        "label": "C",
+        "text": "It stores water, which is later carried into"
+      },
+      {
+        "label": "D",
+        "text": "It is a single layer that separates the cortex"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-46",
+    "question": "Which of the following increases population",
+    "options": [
+      {
+        "label": "A",
+        "text": "Seasonal climatic changes."
+      },
+      {
+        "label": "B",
+        "text": "Availability of food."
+      },
+      {
+        "label": "C",
+        "text": "Natural disaster."
+      },
+      {
+        "label": "D",
+        "text": "Emigration."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-47",
+    "question": "Which of the following is the ecological",
+    "options": [
+      {
+        "label": "A",
+        "text": "Baermann funnel."
+      },
+      {
+        "label": "B",
+        "text": "Pooler."
+      },
+      {
+        "label": "C",
+        "text": "Grapnel."
+      },
+      {
+        "label": "D",
+        "text": "Plankton net."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-48",
+    "question": "After undergoing genetic testing, a patient who",
+    "options": [
+      {
+        "label": "A",
+        "text": "A chronic disease."
+      },
+      {
+        "label": "B",
+        "text": "Transferable gene."
+      },
+      {
+        "label": "C",
+        "text": "DNA transfer."
+      },
+      {
+        "label": "D",
+        "text": "Gene mutation."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-49",
+    "question": "The following are nucleotide bases EXCEPT",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cytosine."
+      },
+      {
+        "label": "B",
+        "text": "Uracil."
+      },
+      {
+        "label": "C",
+        "text": "Thymine."
+      },
+      {
+        "label": "D",
+        "text": "Ribose."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-50",
+    "question": "In which order will the synthesis of",
+    "options": [
+      {
+        "label": "A",
+        "text": "Initiation, elongation, and termination."
+      },
+      {
+        "label": "B",
+        "text": "Elongation, initiation, and termination."
+      },
+      {
+        "label": "C",
+        "text": "Termination, elongation, and initiation."
+      },
+      {
+        "label": "D",
+        "text": "Elongation, termination, and initiation."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2024-import-theory-1",
+    "question": "1. A study was conducted in a school field to\ndetermine the distribution and abundance of\nsome insects. Three sections were selected,\nA, B, and C. The collection of the samples was\ndone on the same day for hours between 6am\nand 11am. The table below shows the results\nobtained:\n\n| S/N | Insects        | Site A | Site B | Site C |\n|-----|----------------|--------|--------|--------|\n| 1.  | Butterfly      | 18     | 5      | 12     |\n| 2.  | Housefly       | 21     | 11     | 37     |\n| 3.  | Tsetse fly     | 3      | 0      | 7      |\n| 4.  | Soldier Ant    | 42     | 19     | 9      |\n| 5.  | Termite        | 13     | 7      | 27     |\n| 6.  | Praying Mantis | 2      | 0      | 0      |\n| 7.  | Cockroach      | 8      | 4      | 1      |\n| 8.  | Mosquito       | 3      | 0      | 9      |\n| 9.  | Dragonfly      | 3      | 0      | 9      |\n| 10. | Bee            | 29     | 12     | 7      |\n\nUse the information provided to answer the\nfollowing questions:\n\n(a)\ni.  Determine the mean of the insects from\neach site. [3 Marks]\nii. Which site has the highest abundance of\ninsects? [4 Marks]\niii.Draw a pie chart to show the percentage\ncomposition of insects in the three sites.\n[24 Marks]\niv. What is likely to be the implication of\ninsects on Site A? [1 Mark]\n\n(b)\ni.  Name the purines of the nitrogenous bases\nof nucleic acids. [1 Mark]\nii. Define evolution. [1 Mark]\niii.List TWO functions of lipids in a cell.\n[1 Mark]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2024-import-theory-2",
+    "question": "2. (a) Define the following terms:\ni.   Synecology\nii.  Systematics\niii. Succession\niv.  Aestivation\nv.   Carrying capacity. [5 Marks]\n\n(b) State the THREE cell theories. [3 Marks]\n\n(c) Name the bonds that are formed between\nmonomers of the following biological\nmolecules:\ni.   Starch\nii.  Protein\niii. Lipid\niv.  Nucleic acid. [2 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2024-import-theory-3",
+    "question": "3. (a) Differentiate between Septate and Aseptate\nhyphae. [1 Mark]\n\n(b) State TWO examples of diseases caused by\nprions. [1 Mark]\n\n(c) What is the generation time of a bacterial\npopulation that increases from one thousand\ncells to one million cells in four hours of\ngrowth? [3 Marks]\n\n(d) Briefly explain the following:\ni.   Facultative anaerobes\nii.  Inoculation\niii. Nucleotide\niv.  Lymphocytes\nv.   Plasmids. [5 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2024-import-theory-4",
+    "question": "4. (a) In an attempt to understand the difference\nbetween Gram-positive and Gram-negative\nbacteria, Chidozie arrived with the table\nbelow. Fill in the missing spaces.\n\n| Characteristics      | Gram Positive | Gram Negative |\n|----------------------|---------------|---------------|\n| Thickness of cell    |               |               |\n| wall                 |               |               |\n| Variety of amino     |               |               |\n| acids                |               |               |\n| Outer membrane       |               |               |\n| Teichoic acid        |               |               |\n\n(b) Name FOUR enzymes that facilitate DNA\nreplication in bacteria. [4 Marks]\n\n(c) State the conditions for the use of the\nfollowing methods for the control of\nmicrobial activities:\ni.   Steam under pressure,\nii.  Boiling,\niii. Pasteurization,\niv.  Dry heat. [4 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2024-import-theory-5",
+    "question": "5. (a) Draw and label the plant cell. [4 Marks]\n\n(b)\ni.  List FOUR modifications in leaves of\nplants. [2 Marks]\nii. List FOUR modifications in the stems of\nplants. [2 Marks]\niii.State TWO functions of Auxin. [1 Mark]\niv. State TWO functions of Cytokinins.\n[1 Mark]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2024-import-theory-6",
+    "question": "6. (a)\ni.  State FOUR general characteristics of\nSpermatophytes. [2 Marks]\nii. List THREE divisions of the Spermatophytes\nand give one example of each. [3 Marks]\n\n(c) i.  Explain briefly the mechanism of\ntransport of materials through the\nphloem. [3 Marks]\nii. Highlight FOUR ethical implications of\ngenetically modified foods. [2 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2024-import-theory-7",
+    "question": "7. (a) i.  Define Gametogenesis. [2 Marks]\nii. Name the TWO different types of\ngametogenesis in organisms. [2 Marks]\niii.Describe the process of gametogenesis\nin male mammals. [3 Marks]\n\n(b) Explain the processes that occur in a\nnephron. [3 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2024-import-theory-8",
+    "question": "8. (a) i.  Explain briefly salutatory conduction\nin an axon. [2 Marks]\nii. Give TWO differences between a resting\npotential and depolarization. [2 Marks]\n\n(b) State TWO ways by which white blood cells\ncarry out their activity in the human body.\n[1 Mark]\n\n(c) i.  Draw a well-labelled diagram of a\nspermatozoon. [3 Marks]\nii. State the functions of any FOUR of the\nlabelled parts. [2 Marks]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2024,
+    "category": "theory"
+  }
+]

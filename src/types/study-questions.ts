@@ -36,6 +36,7 @@ export interface StudyQuestion {
   subject: Subject;
   year: number;
   category: StudyCategory;
+  course?: string;
   topic?: string;
   sortOrder?: number;
   question: string;
@@ -52,6 +53,7 @@ export interface StudyQuestion {
   subQuestions?: { id: string; text: string; answerGuide: string }[];
   difficulty?: Difficulty;
   imageUrl?: string;
+  imagePosition?: "text-only" | "image-only" | "image-above" | "image-beside";
 }
 
 export interface YearData {

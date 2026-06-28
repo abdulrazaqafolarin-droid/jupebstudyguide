@@ -10,7 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat } from '@/lib/ai-service';
+import { streamChat, stripThinking } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -116,19 +116,22 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
       ragContext = await searchRelevantChunks(userMessage);
     } catch (e) { console.warn("RAG unavailable, continuing without it:", e); }
 
+    let firstToken = true;
     await streamChat(systemPrompt, allMessages, {
       onDelta: (text) => {
+        firstToken = false;
         assistantContentRef.current += text;
-        const content = assistantContentRef.current;
+        const stripped = stripThinking(assistantContentRef.current);
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length > 0 && arr[arr.length - 1].role === 'assistant') {
-            arr[arr.length - 1] = { role: 'assistant', content };
+            arr[arr.length - 1] = { role: 'assistant', content: stripped };
           }
           return arr;
         });
       },
       onDone: () => {
+        if (firstToken) toast.error('AI did not respond. Check your connection and try again.');
         setIsLoading(false);
       },
       onError: (err) => {

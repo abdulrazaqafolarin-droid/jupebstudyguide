@@ -1,0 +1,1432 @@
+[
+  {
+    "id": "bio-2019-import-1",
+    "question": "Protozoa that move by pseudopodia belong to class\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Ciliophora."
+      },
+      {
+        "label": "B",
+        "text": "Sarcodina."
+      },
+      {
+        "label": "C",
+        "text": "Mastigophora."
+      },
+      {
+        "label": "D",
+        "text": "Apicomplexa."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-2",
+    "question": "The bonding between two complementary base in a nucleotide is\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Van der waal's forces."
+      },
+      {
+        "label": "B",
+        "text": "Covalent bond"
+      },
+      {
+        "label": "C",
+        "text": "Hydrogen bond."
+      },
+      {
+        "label": "D",
+        "text": "Bi-polar forces."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-3",
+    "question": "\\_\\_\\_\\_\\_ is the basic unit of inheritance.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Allele."
+      },
+      {
+        "label": "B",
+        "text": "Locus"
+      },
+      {
+        "label": "C",
+        "text": "Gene"
+      },
+      {
+        "label": "D",
+        "text": "Chromosome"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-4",
+    "question": "Which statement describes events during interphase of mitosis?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Chromosomes start to coil, becoming shorter and fatter."
+      },
+      {
+        "label": "B",
+        "text": "Chromosome line up on the equator of the spindle."
+      },
+      {
+        "label": "C",
+        "text": "Chromosomes are pulled apart by spindle fibres."
+      },
+      {
+        "label": "D",
+        "text": "Chromosomes are replicated ready for next division."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-5",
+    "question": "Which process occurs during prophase of the mitotic cell cycle in an animal cell?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Division of centromeres."
+      },
+      {
+        "label": "B",
+        "text": "Formation of chromosomes."
+      },
+      {
+        "label": "C",
+        "text": "Replication of DNA."
+      },
+      {
+        "label": "D",
+        "text": "Separation of centrioles."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-6",
+    "question": "The intermediate host of *Taeniasaginata* is\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pig."
+      },
+      {
+        "label": "B",
+        "text": "Dog."
+      },
+      {
+        "label": "C",
+        "text": "Cattle."
+      },
+      {
+        "label": "D",
+        "text": "Horse."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-7",
+    "question": "The formal system for organizing, classifying and naming living thing is known as\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Nomenclature."
+      },
+      {
+        "label": "B",
+        "text": "Classification."
+      },
+      {
+        "label": "C",
+        "text": "Taxonomy."
+      },
+      {
+        "label": "D",
+        "text": "Hierarchy."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-8",
+    "question": "The group of insects that have mouth parts adapted for both piercing and sucking is\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cockroaches, aphids and mosquito."
+      },
+      {
+        "label": "B",
+        "text": "Aphids, houseflies and moths."
+      },
+      {
+        "label": "C",
+        "text": "Mosquitoes, tse-tse flies and aphids."
+      },
+      {
+        "label": "D",
+        "text": "Aphids, bee and grasshoppers."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-9",
+    "question": "Cells consist of a number of different components. Which row shows the components present in both a prokaryotic and a eukaryotic cell",
+    "options": [
+      {
+        "label": "A",
+        "text": "Absent | Present | Absent | Present"
+      },
+      {
+        "label": "B",
+        "text": "Present | Present | Absent | Absent"
+      },
+      {
+        "label": "C",
+        "text": "Absent | Absent | Present | Present"
+      },
+      {
+        "label": "D",
+        "text": "Present | Absent | Present | Absent"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-10",
+    "question": "Four different juices A, B, C and D were tested with Benedict solution. A second sample of each juice was hydrolysed and tested with Benedict solution. The table below shows the masses of the precipitate formed. Which juice contains the greatest mass of non-reducing sugar?",
+    "options": [
+      {
+        "label": "A",
+        "text": "30 | 55"
+      },
+      {
+        "label": "B",
+        "text": "55 | 55"
+      },
+      {
+        "label": "C",
+        "text": "65 | 85"
+      },
+      {
+        "label": "D",
+        "text": "70 | 80"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-11",
+    "question": "The gas exchange of CO2 and O2 in plants occurs through small regulated opening called\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "mesophyll"
+      },
+      {
+        "label": "B",
+        "text": "stomata"
+      },
+      {
+        "label": "C",
+        "text": "chloroplast"
+      },
+      {
+        "label": "D",
+        "text": "thylakoids"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-12",
+    "question": "Moss is an example of \\_\\_\\_\\_ plant.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Vascular"
+      },
+      {
+        "label": "B",
+        "text": "haplontic"
+      },
+      {
+        "label": "C",
+        "text": "diplontic"
+      },
+      {
+        "label": "D",
+        "text": "flowering"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-13",
+    "question": "Which of these options is an example of a pair of thallus liverwort.",
+    "options": [
+      {
+        "label": "A",
+        "text": "*Pellia* and *Lophocolea*"
+      },
+      {
+        "label": "B",
+        "text": "*Pellia* and *Marchantia*"
+      },
+      {
+        "label": "C",
+        "text": "*Lophocolea* and *Marchantia*"
+      },
+      {
+        "label": "D",
+        "text": "*Lophocolea* and *Funaria*"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-14",
+    "question": "The base of ferns, is protected against drought or frost by\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "ramenta"
+      },
+      {
+        "label": "B",
+        "text": "strobili"
+      },
+      {
+        "label": "C",
+        "text": "sori"
+      },
+      {
+        "label": "D",
+        "text": "rhizome"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-15",
+    "question": "Which of these is true about protoplast at incipient plasmolysis?",
+    "options": [
+      {
+        "label": "A",
+        "text": "It ceased to exert pressure against the cell membrane."
+      },
+      {
+        "label": "B",
+        "text": "It ceased to exert pressure against the cell wall."
+      },
+      {
+        "label": "C",
+        "text": "It adhered to the cell wall under high pressure."
+      },
+      {
+        "label": "D",
+        "text": "It adhered to the cell membrane under high pressure."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-16",
+    "question": "The main function of a companion cell in phloem tissue during translocation is\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "To provide cytoplasmic contact with the sieve tube for loading."
+      },
+      {
+        "label": "B",
+        "text": "To provide structural support for the sieve tube."
+      },
+      {
+        "label": "C",
+        "text": "To provide nucleus during cell division in the phloem."
+      },
+      {
+        "label": "D",
+        "text": "To provide assimilates for storage of the transported sucrose."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-17",
+    "question": "The fastest and simplest pathway of water in the root and leaf is the\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cell wall."
+      },
+      {
+        "label": "B",
+        "text": "Cell membrane."
+      },
+      {
+        "label": "C",
+        "text": "Cytoplasm."
+      },
+      {
+        "label": "D",
+        "text": "Vacuole."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-18",
+    "question": "The pollen grains in the pollen sacs of an anther consist of\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Two coats, diploid generative nucleus and haploid nucleus."
+      },
+      {
+        "label": "B",
+        "text": "Two coats, haploid generative nucleus and haploid nucleus."
+      },
+      {
+        "label": "C",
+        "text": "One coat, diploid generative nucleus and diploid nucleus."
+      },
+      {
+        "label": "D",
+        "text": "One coat, haploid generative nucleus and haploid nucleus."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-19",
+    "question": "The use of neutral enemy to control a particular pest can be regarded as\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Chemical control."
+      },
+      {
+        "label": "B",
+        "text": "Physical control."
+      },
+      {
+        "label": "C",
+        "text": "Biological control."
+      },
+      {
+        "label": "D",
+        "text": "Natural control."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-20",
+    "question": "The female reproductive organ of a typical flower is known as\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Gynoecium."
+      },
+      {
+        "label": "B",
+        "text": "Androecium."
+      },
+      {
+        "label": "C",
+        "text": "Calyx."
+      },
+      {
+        "label": "D",
+        "text": "Corolla."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-21",
+    "question": "Ada wants to get her fruits ripened. Which plant hormone will you advice her to use for this purpose?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Giberlin."
+      },
+      {
+        "label": "B",
+        "text": "Indole Acetic Acid."
+      },
+      {
+        "label": "C",
+        "text": "Cytokinin."
+      },
+      {
+        "label": "D",
+        "text": "Ethylene."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-22",
+    "question": "Which statement about thylakoids in eukaryotes is true?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Thylakoids exist as a maze of folded membrane."
+      },
+      {
+        "label": "B",
+        "text": "The space surrounding the thylakoids is called stroma."
+      },
+      {
+        "label": "C",
+        "text": "Chlorophyll contains the folded thylakoid."
+      },
+      {
+        "label": "D",
+        "text": "Thylakoids bring about the separation of water."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-23",
+    "question": "What does A represent, and in what condition does this reaction occur in non-photosynthetic plants?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Cytochrome oxidase, aerobic."
+      },
+      {
+        "label": "B",
+        "text": "Pyruvate decarboxylase, anaerobic."
+      },
+      {
+        "label": "C",
+        "text": "Pyruvate dehydrogenase, aerobic."
+      },
+      {
+        "label": "D",
+        "text": "NAD, anaerobic."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-24",
+    "question": "What does B represent, and in what condition does this reaction occurs in animal cells?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Lactate dehydrogenase, anaerobic."
+      },
+      {
+        "label": "B",
+        "text": "Cytochrome oxidase, aerobic."
+      },
+      {
+        "label": "C",
+        "text": "NAD, aerobic."
+      },
+      {
+        "label": "D",
+        "text": "Lactate decarboxylase, anaerobic."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-25",
+    "question": "The transport of water from the root through the xylem vessels to the leaves is affected by environment factors. A decrease in one of the following environmental factors would lead to increase in water transport.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Wind direction."
+      },
+      {
+        "label": "B",
+        "text": "Temperature."
+      },
+      {
+        "label": "C",
+        "text": "Humidity."
+      },
+      {
+        "label": "D",
+        "text": "Light intensity."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-26",
+    "question": "Genetically Modified crops (GMCs) are important in combating food insecurity among the world ever increasing population however, their major challenge is\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pest resistance."
+      },
+      {
+        "label": "B",
+        "text": "Adaptation."
+      },
+      {
+        "label": "C",
+        "text": "Enabling law."
+      },
+      {
+        "label": "D",
+        "text": "High cost of production."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-27",
+    "question": "The scientist whose findings resolved the debate on spontaneous generation was\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Louis Pasteur."
+      },
+      {
+        "label": "B",
+        "text": "Rudolf Virchow."
+      },
+      {
+        "label": "C",
+        "text": "LazzaroSpallanzani."
+      },
+      {
+        "label": "D",
+        "text": "John Needham."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-28",
+    "question": "Bacteria that require oxygen for growth are called\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Aerobes."
+      },
+      {
+        "label": "B",
+        "text": "Oxygenic Bacteria."
+      },
+      {
+        "label": "C",
+        "text": "Anoxygenic Bacteria."
+      },
+      {
+        "label": "D",
+        "text": "Anaerobes."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-29",
+    "question": "Viruses have a core of either DNA or RNA surrounded by a\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Lipid envelope."
+      },
+      {
+        "label": "B",
+        "text": "Protein coat."
+      },
+      {
+        "label": "C",
+        "text": "Cell wall."
+      },
+      {
+        "label": "D",
+        "text": "Cell membrane."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-30",
+    "question": "The parts labeled A, B, C are \\_\\_\\_\\_ respectively. *(referring to bacteriophage diagram)*",
+    "options": [
+      {
+        "label": "A",
+        "text": "Head, Collar, Sheath."
+      },
+      {
+        "label": "B",
+        "text": "Head, Neck and sheath."
+      },
+      {
+        "label": "C",
+        "text": "Head, sheath and Neck."
+      },
+      {
+        "label": "D",
+        "text": "Head, sheath and collar."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-31",
+    "question": "What is the name of the diagram represented above?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Bacteriophage virus."
+      },
+      {
+        "label": "B",
+        "text": "Sperm cell."
+      },
+      {
+        "label": "C",
+        "text": "Stem cell."
+      },
+      {
+        "label": "D",
+        "text": "Bacteria."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-32",
+    "question": "Which of the following occurs at the part labeled DNA?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Replication."
+      },
+      {
+        "label": "B",
+        "text": "Death."
+      },
+      {
+        "label": "C",
+        "text": "Growth."
+      },
+      {
+        "label": "D",
+        "text": "Development."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-33",
+    "question": "The undifferentiated body of thallophyta is called\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Thallus."
+      },
+      {
+        "label": "B",
+        "text": "Thallophytes."
+      },
+      {
+        "label": "C",
+        "text": "False stems."
+      },
+      {
+        "label": "D",
+        "text": "False roots."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-34",
+    "question": "Mr Tari is reported to have a swollen region and localized pains around his leg injury. What best describes this situation?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Infection leading to inflammation."
+      },
+      {
+        "label": "B",
+        "text": "Immunity decline."
+      },
+      {
+        "label": "C",
+        "text": "Reflex response."
+      },
+      {
+        "label": "D",
+        "text": "Metabolic Internal process."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-35",
+    "question": "\\_\\_\\_\\_ are organism which depend on other living organisms (plant and animals) for their nutritional requirements.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Parasites."
+      },
+      {
+        "label": "B",
+        "text": "Symbionts."
+      },
+      {
+        "label": "C",
+        "text": "Saprophytes."
+      },
+      {
+        "label": "D",
+        "text": "Weeds."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-36",
+    "question": "The stored carbonhydrate nutrient in animal is known as\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Glycogen."
+      },
+      {
+        "label": "B",
+        "text": "Chitin."
+      },
+      {
+        "label": "C",
+        "text": "Starch."
+      },
+      {
+        "label": "D",
+        "text": "Glucose."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-37",
+    "question": "How many embryonic layers are present in Phylum Mollusca?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Two."
+      },
+      {
+        "label": "B",
+        "text": "Three."
+      },
+      {
+        "label": "C",
+        "text": "Four."
+      },
+      {
+        "label": "D",
+        "text": "Five."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-38",
+    "question": "The main function of the epithelial tissue is\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Movement."
+      },
+      {
+        "label": "B",
+        "text": "Protection and defense."
+      },
+      {
+        "label": "C",
+        "text": "Covering."
+      },
+      {
+        "label": "D",
+        "text": "Binding and support."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-39",
+    "question": "Which of these is a connective tissue?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Blood."
+      },
+      {
+        "label": "B",
+        "text": "Epidermis."
+      },
+      {
+        "label": "C",
+        "text": "Falloplan tube."
+      },
+      {
+        "label": "D",
+        "text": "Nervous tissue."
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-40",
+    "question": "Which of the following is not a member of phylum Chordata?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Lung fish."
+      },
+      {
+        "label": "B",
+        "text": "Star fish."
+      },
+      {
+        "label": "C",
+        "text": "Frog."
+      },
+      {
+        "label": "D",
+        "text": "Parrot."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-41",
+    "question": "Some unicellular animals have developed different organelles for locomotion. Which of the combination indicated below provides a corresponding pair?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Sarcodina and cilia."
+      },
+      {
+        "label": "B",
+        "text": "Mastigophora and flagella."
+      },
+      {
+        "label": "C",
+        "text": "Mastigophora and cilia."
+      },
+      {
+        "label": "D",
+        "text": "Mastigophora, three membranest membranes to be reckoned with are \\_\\_\\_\\_ membranes."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-42",
+    "question": "In embryology, three membranest membranes to be reckoned with are \\_\\_\\_\\_ membranes.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Plasma, chorion and embryonic"
+      },
+      {
+        "label": "B",
+        "text": "Chorion, amnion and yolk sac"
+      },
+      {
+        "label": "C",
+        "text": "Plasma, chorion and embryonic"
+      },
+      {
+        "label": "D",
+        "text": "Chorion, amnion and umbilical"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-43",
+    "question": "Physiology is the study of\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Algae."
+      },
+      {
+        "label": "B",
+        "text": "Nematodes."
+      },
+      {
+        "label": "C",
+        "text": "Viruses."
+      },
+      {
+        "label": "D",
+        "text": "Protozoa."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-44",
+    "question": "The conversion of a nutrient into a molecule in the body of a consumer is referred to as\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Digestion."
+      },
+      {
+        "label": "B",
+        "text": "Assimilation."
+      },
+      {
+        "label": "C",
+        "text": "Inhibition."
+      },
+      {
+        "label": "D",
+        "text": "Absorption."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-45",
+    "question": "Which of these best explains why arthropods are successful?",
+    "options": [
+      {
+        "label": "A",
+        "text": "They possess muscular appendages which may be adapted for crawling."
+      },
+      {
+        "label": "B",
+        "text": "Their bodies are divided into segments called sepa."
+      },
+      {
+        "label": "C",
+        "text": "Their exoskeletons protect them from predators and water loss."
+      },
+      {
+        "label": "D",
+        "text": "The produce silk from abdominal glands to spin webs from trapping their prey."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-46",
+    "question": "Determine the major difference between the skeleton of earthworm and arthropods.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Earthworms possess exoskeleton while arthropods possess skeletons made up of non-living materials"
+      },
+      {
+        "label": "B",
+        "text": "Earthworms possess skeletons made up of living materials while arthropods possess hydrostatic skeletons"
+      },
+      {
+        "label": "C",
+        "text": "Earthworms possess hydrostatic skeletons while arthropods possess exoskeleton"
+      },
+      {
+        "label": "D",
+        "text": "Earthworms possess skeletons of non-living materials while arthropods possess living materials"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-47",
+    "question": "The method of fertilization among vertebrates in which fertilized eggs are retained in the body of the female until when matured and then hatched out is\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Oviparity."
+      },
+      {
+        "label": "B",
+        "text": "Ovoviviparity."
+      },
+      {
+        "label": "C",
+        "text": "Viviparity."
+      },
+      {
+        "label": "D",
+        "text": "Bird."
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-48",
+    "question": "From the adaptive features below, choose the class of organism it best describes.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Reptilian."
+      },
+      {
+        "label": "B",
+        "text": "Amphibian."
+      },
+      {
+        "label": "C",
+        "text": "Aves."
+      },
+      {
+        "label": "D",
+        "text": "Pisces."
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-49",
+    "question": "The presence of endoskeleton, gill slits and well developed central nervous system are characteristics of which of the following?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pisces."
+      },
+      {
+        "label": "B",
+        "text": "Mammalia and Arachnida."
+      },
+      {
+        "label": "C",
+        "text": "Myriapoda and Amphibian."
+      },
+      {
+        "label": "D",
+        "text": "Insects and Reptilia."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-50",
+    "question": "*Paramecium* moves about by\\_\\_\\_\\_",
+    "options": [
+      {
+        "label": "A",
+        "text": "Floating."
+      },
+      {
+        "label": "B",
+        "text": "Looping."
+      },
+      {
+        "label": "C",
+        "text": "Crawling."
+      },
+      {
+        "label": "D",
+        "text": "Beating of cilia."
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2019-import-theory-1",
+    "question": "(a) A breeder had rabbits with normal skin and hair colouring had six (6) children, of whom three (3) were albino. Albino people have no colouring in their skin or hair due to having an inactive form of the enzyme tyrosinase. Tyrosinase is essential for the formation of the brown pigment melanin.\n— The normal allele of the tyrosinase gene is 'A', and the allele that produces faulty tyrosinase gene is 'a'. State the genotype of the parents and their albino children.\n(b) Briefly write on the structure that prokaryotes use for attachment.\n(c) With illustration, describe the events in each stage of a microbial growth curve of a batch culture.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-theory-2",
+    "question": "As the team leader of an environmental study team, you have been commissioned to undergo a field study to determine the population density and population size of given species in a habitat.\n(a) Design a *pro-forma* that would guide your team to success.\n(b) Mention any four (4) materials would be required.\n(c) If the population size of grasshopper is 700 in a sample plot of 100m², what is the population density of grasshopper in the plot?",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-theory-3",
+    "question": "(a) Using six (6) points each describe the following:\ni. Biological control\nii. Chemical control.\n(b) Enumerate four (4) impacts of climate change on plants.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-theory-4",
+    "question": "(a) Outline eight (8) general characteristic of ferns.\n(b) With the aid of diagram only, describe the life cycle of *Selaginella.*",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-theory-5",
+    "question": "(a) State the characteristics of the Archaea using the following guidelines:\ni. Mesophiles.\nii. Halophiles.\niii. Acidophiles.\niv. Alkaliphiles.\nv. Thermophiles.\n(b) Highlight five (5) biotechnological or beneficial uses of micro-organisms.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-theory-6",
+    "question": "(a) List two (2) media that are used for the growth of micro-organism in the laboratory\n(b) Briefly write on the structure that prokaryotes use for attachment.\n(c) With illustration, describe the events in each stage of a microbial growth curve of a batch culture.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-theory-7",
+    "question": "(a) Describe the life cycle of *Plasmodium* in man.\n(b) Mention four (4) economic importance of Plasmodium.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-theory-8",
+    "question": "(a) List ten (10) characteristics of the Class Reptilia.\n(b) Itemize five (5) adaptation of animal in transition from water to land",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2019-import-practical-1",
+    "question": "You have been provided with specimens V and X.\na. Identify specimens V and X without reasons. [1/2 mark]\nb. Classify specimens X based on the following taxa: Phylum, Class, Order and Genus. [1 mark]\nc. Mention two (2) important adaptive features for each specimens V and X. [1 mark]\nd. State two (2) similarity in their external features. [1 mark]\ne. In a tabular form, state one observable characteristic difference between specimens V and X. [1/2 mark]\nf. Make labeled drawings of specimens V and X. [5 marks]\ng. Examine the mouthparts of specimens V and X using a hand lens. State the components of their mouthparts, indicating their functions. [1 mark]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "practical"
+  },
+  {
+    "id": "bio-2019-import-practical-2",
+    "question": "a. Identify specimens L, M, N and O without reasons. [2 marks]\nb. Classify the specimens L, M, N and O under the following:\n(i) Berry\n(ii) Drupe\n(iii) Samara [2 marks]\n(iv) Capsule\nc. Draw a well labeled diagram of longitudinal section of specimens O. [4 marks]\nd. Outline any two (2) differences between specimen L and O. [1 mark]\ne. State one (1) method of dispersal for specimens L, M, N and O. [1 mark]",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2019,
+    "category": "practical"
+  }
+]

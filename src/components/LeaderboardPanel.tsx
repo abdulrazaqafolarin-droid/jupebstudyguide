@@ -15,8 +15,6 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 
 const achievementNameMap = new Map(ACHIEVEMENTS.map(a => [a.id, a.name]));
 const achievementIconMap = new Map(ACHIEVEMENTS.map(a => [a.id, a.icon]));
@@ -42,19 +40,8 @@ export const LeaderboardPanel = ({ stats }: LeaderboardPanelProps) => {
     achievements: string[];
   } | null>(null);
 
-  const startChat = useCallback(async (otherUserId: string) => {
-    try {
-      const { data, error } = await supabase
-        .rpc('find_or_create_dm', { other_user_id: otherUserId });
-      if (error) throw new Error(error.message);
-      const result = data as { conversation_id?: string; error?: string };
-      if (result?.error) throw new Error(result.error);
-      if (result?.conversation_id) {
-        navigate(`/chat?conversation=${result.conversation_id}`);
-      }
-    } catch (err) {
-      toast.error(String(err));
-    }
+  const startChat = useCallback((otherUserId: string) => {
+    navigate('/chat?dm=' + otherUserId);
   }, [navigate]);
 
   return (

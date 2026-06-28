@@ -6,6 +6,14 @@
 
 /* JUPEB Study App - Chalkboard-inspired Academic Design System */
 
+/* KaTeX error safety net: override default #cc0000 error color so
+   any KaTeX parse errors inherit the surrounding text color instead
+   of appearing as jarring red text */
+.katex .katex-error,
+.katex-error {
+  color: currentColor !important;
+}
+
 @layer base {
   :root {
     /* Default: light theme for when class is not set */

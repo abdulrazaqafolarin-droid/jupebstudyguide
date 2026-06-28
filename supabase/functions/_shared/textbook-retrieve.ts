@@ -1,4 +1,27 @@
-import { generateEmbedding } from "./textbook-embed.ts";
+const EMBED_BASE = "https://generativelanguage.googleapis.com/v1beta";
+
+async function generateEmbedding(text: string): Promise<number[] | null> {
+  const key = Deno.env.get("GEMINI_API_KEY");
+  if (!key) return null;
+  try {
+    const res = await fetch(
+      `${EMBED_BASE}/models/gemini-embedding-001:embedContent?key=${key}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "models/gemini-embedding-001",
+          content: { parts: [{ text }] },
+        }),
+      }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.embedding?.values || null;
+  } catch {
+    return null;
+  }
+}
 
 export interface RetrievedChunk {
   id: string;

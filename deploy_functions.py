@@ -1,6 +1,6 @@
 import json, os, urllib.request, re
 
-SUPABASE_TOKEN = "vcp_5wbkLahDOyDcwUmsUHiBicOHn0hxDbIIfa8XNBygj0pNuWtITh14IlmH"
+SUPABASE_TOKEN = "sbp_4f03466f94898fd81acadcc51c9edfcb94c9af01"
 PROJECT_REF = "gzyczowqqywesqhqqpdi"
 BASE = f"https://api.supabase.com/v1/projects/{PROJECT_REF}/functions"
 
@@ -11,10 +11,10 @@ HEADERS = {
 
 # Functions to deploy: (slug, filepath, verify_jwt)
 FUNCTIONS = [
-    ("get-active-key", "supabase/functions/get-active-key/index.ts", False),
-    ("admin-key-manager", "supabase/functions/admin-key-manager/index.ts", False),
-    ("chat-proxy", "supabase/functions/chat-proxy/index.ts", False),
-    ("ai-tutor", "supabase/functions/ai-tutor/index.ts", False),
+    ("get-active-key", "bundled-get-active-key.ts", False),
+    ("admin-key-manager", "bundled-admin-key-manager.ts", False),
+    ("chat-proxy", "bundled-chat-proxy.ts", False),
+    ("ai-tutor", "bundled-ai-tutor.ts", False),
 ]
 
 def read_clean(path):

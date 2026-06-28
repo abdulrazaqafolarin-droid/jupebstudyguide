@@ -1,0 +1,1428 @@
+[
+  {
+    "id": "bio-2022-import-1",
+    "question": "The figure above is a typical internal structure",
+    "options": [
+      {
+        "label": "A",
+        "text": "monocotyledons stem"
+      },
+      {
+        "label": "B",
+        "text": "dicotyledonous stem"
+      },
+      {
+        "label": "C",
+        "text": "monocotyledonous root"
+      },
+      {
+        "label": "D",
+        "text": "dicotyledonous root"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-2",
+    "question": "The parts labeled II and III are together known",
+    "options": [
+      {
+        "label": "A",
+        "text": "piliferous layer"
+      },
+      {
+        "label": "B",
+        "text": "endodermis"
+      },
+      {
+        "label": "C",
+        "text": "vascular bundle"
+      },
+      {
+        "label": "D",
+        "text": "pericycle region"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-3",
+    "question": "Which part of a plant is usually referred to as",
+    "options": [
+      {
+        "label": "A",
+        "text": "leaf"
+      },
+      {
+        "label": "B",
+        "text": "root"
+      },
+      {
+        "label": "C",
+        "text": "stem"
+      },
+      {
+        "label": "D",
+        "text": "branch"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-4",
+    "question": "The part labeled II is called",
+    "options": [
+      {
+        "label": "A",
+        "text": "region of maturation"
+      },
+      {
+        "label": "B",
+        "text": "region of elongation"
+      },
+      {
+        "label": "C",
+        "text": "region of cell division"
+      },
+      {
+        "label": "D",
+        "text": "root cap"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-5",
+    "question": "Which of the parts contains dense mass of",
+    "options": [
+      {
+        "label": "A",
+        "text": "I"
+      },
+      {
+        "label": "B",
+        "text": "II"
+      },
+      {
+        "label": "C",
+        "text": "III"
+      },
+      {
+        "label": "D",
+        "text": "IV"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-6",
+    "question": "The part labeled II is called",
+    "options": [
+      {
+        "label": "A",
+        "text": "region of maturation"
+      },
+      {
+        "label": "B",
+        "text": "region of elongation"
+      },
+      {
+        "label": "C",
+        "text": "root cap"
+      },
+      {
+        "label": "D",
+        "text": "region of cell division"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-7",
+    "question": "Which of the parts contains dense mass of",
+    "options": [
+      {
+        "label": "A",
+        "text": "cytokinins"
+      },
+      {
+        "label": "B",
+        "text": "Gibberellins"
+      },
+      {
+        "label": "C",
+        "text": "abscisic acid"
+      },
+      {
+        "label": "D",
+        "text": "ethylene"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-8",
+    "question": "Snapdragon plant has three genotypes RR, Rr",
+    "options": [
+      {
+        "label": "A",
+        "text": "polygenic inheritance"
+      },
+      {
+        "label": "B",
+        "text": "incomplete dominance"
+      },
+      {
+        "label": "C",
+        "text": "codominance"
+      },
+      {
+        "label": "D",
+        "text": "multiple alleles"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-9",
+    "question": "Which of these could be the reason why water is",
+    "options": [
+      {
+        "label": "A",
+        "text": "increase in solute potential in the leaves and"
+      },
+      {
+        "label": "B",
+        "text": "high solute potential in the leaves and high"
+      },
+      {
+        "label": "C",
+        "text": "low solute potential in the leaves and low"
+      },
+      {
+        "label": "D",
+        "text": "high solute potential in the leaves and low"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-10",
+    "question": "Which of these modified leaves is for defense",
+    "options": [
+      {
+        "label": "A",
+        "text": "leaf tendrils"
+      },
+      {
+        "label": "B",
+        "text": "leaf spines"
+      },
+      {
+        "label": "C",
+        "text": "phyllocodes"
+      },
+      {
+        "label": "D",
+        "text": "leaf scales"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-11",
+    "question": "Microorganisms that cause diseases are known as",
+    "options": [
+      {
+        "label": "A",
+        "text": "disease microbes"
+      },
+      {
+        "label": "B",
+        "text": "pathogens"
+      },
+      {
+        "label": "C",
+        "text": "parasites"
+      },
+      {
+        "label": "D",
+        "text": "pathogerns"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-12",
+    "question": "The marine bacterium, pyrodictium, which has an",
+    "options": [
+      {
+        "label": "A",
+        "text": "thermophile"
+      },
+      {
+        "label": "B",
+        "text": "mesophile"
+      },
+      {
+        "label": "C",
+        "text": "psychrophile"
+      },
+      {
+        "label": "D",
+        "text": "psychrotroph"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-13",
+    "question": "The pigments phycocyanin and phycoerythrin are",
+    "options": [
+      {
+        "label": "A",
+        "text": "chlorophyta"
+      },
+      {
+        "label": "B",
+        "text": "chrysophyta"
+      },
+      {
+        "label": "C",
+        "text": "Rhodophyta"
+      },
+      {
+        "label": "D",
+        "text": "chaecophyta"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-14",
+    "question": "Which of these is inversely proportional to action",
+    "options": [
+      {
+        "label": "A",
+        "text": "cytokinins"
+      },
+      {
+        "label": "B",
+        "text": "Rhodophyta"
+      },
+      {
+        "label": "C",
+        "text": "chrysphyta"
+      },
+      {
+        "label": "D",
+        "text": "chaecophyta"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-15",
+    "question": "Vegetative propagation using natural methods",
+    "options": [
+      {
+        "label": "A",
+        "text": "corn"
+      },
+      {
+        "label": "B",
+        "text": "bulb"
+      },
+      {
+        "label": "C",
+        "text": "rhizome"
+      },
+      {
+        "label": "D",
+        "text": "budding"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-16",
+    "question": "A vegetable seller will use one of these hormones",
+    "options": [
+      {
+        "label": "A",
+        "text": "abscisic acid"
+      },
+      {
+        "label": "B",
+        "text": "cytokinins"
+      },
+      {
+        "label": "C",
+        "text": "auxin"
+      },
+      {
+        "label": "D",
+        "text": "gibberellins"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-17",
+    "question": "The aspect of zoology that deals with the behavior",
+    "options": [
+      {
+        "label": "A",
+        "text": "behavioural science"
+      },
+      {
+        "label": "B",
+        "text": "ethology"
+      },
+      {
+        "label": "C",
+        "text": "malacology"
+      },
+      {
+        "label": "D",
+        "text": "herpetology"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-18",
+    "question": "The middle layer of the layer of the body wall in",
+    "options": [
+      {
+        "label": "A",
+        "text": "mesoderm"
+      },
+      {
+        "label": "B",
+        "text": "ectoderm"
+      },
+      {
+        "label": "C",
+        "text": "mesoglea"
+      },
+      {
+        "label": "D",
+        "text": "endoderm"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-19",
+    "question": "Birds and bats are both flying animals of different",
+    "options": [
+      {
+        "label": "A",
+        "text": "divergent evolutionary adaptive features"
+      },
+      {
+        "label": "B",
+        "text": "convergent evolutionary adaptive features"
+      },
+      {
+        "label": "C",
+        "text": "parallel evolutionary adaptive features"
+      },
+      {
+        "label": "D",
+        "text": "unification of features"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-20",
+    "question": "The process by which an organism survives in its",
+    "options": [
+      {
+        "label": "A",
+        "text": "evolution"
+      },
+      {
+        "label": "B",
+        "text": "adaption"
+      },
+      {
+        "label": "C",
+        "text": "ecology"
+      },
+      {
+        "label": "D",
+        "text": "aestivation"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-21",
+    "question": "Which of the following is not a means of malaria",
+    "options": [
+      {
+        "label": "A",
+        "text": "control the population and reproduction of"
+      },
+      {
+        "label": "B",
+        "text": "control the reproduction of plasmodium sp in"
+      },
+      {
+        "label": "C",
+        "text": "remove stagnant water around human habitat"
+      },
+      {
+        "label": "D",
+        "text": "eating balanced diet and improving immune"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-22",
+    "question": "The longest, heaviest and strongest bone in the",
+    "options": [
+      {
+        "label": "A",
+        "text": "humerus"
+      },
+      {
+        "label": "B",
+        "text": "tibla"
+      },
+      {
+        "label": "C",
+        "text": "skull"
+      },
+      {
+        "label": "D",
+        "text": "femur"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-23",
+    "question": "Which of these hormones is responsible for water",
+    "options": [
+      {
+        "label": "A",
+        "text": "oxytocin"
+      },
+      {
+        "label": "B",
+        "text": "vasopressin"
+      },
+      {
+        "label": "C",
+        "text": "somatotropin"
+      },
+      {
+        "label": "D",
+        "text": "prolactin"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-24",
+    "question": "Which of the following is a viral disease?",
+    "options": [
+      {
+        "label": "A",
+        "text": "cholera"
+      },
+      {
+        "label": "B",
+        "text": "measles"
+      },
+      {
+        "label": "C",
+        "text": "typhoid fever"
+      },
+      {
+        "label": "D",
+        "text": "tetanus"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-25",
+    "question": "The organelle responsible for the breakdown of old",
+    "options": [
+      {
+        "label": "A",
+        "text": "ribosome"
+      },
+      {
+        "label": "B",
+        "text": "nucleus"
+      },
+      {
+        "label": "C",
+        "text": "mitochondria"
+      },
+      {
+        "label": "D",
+        "text": "lysosome"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-26",
+    "question": "If 3 Na⁺ leave a plant cell into extracellular",
+    "options": [
+      {
+        "label": "A",
+        "text": "3.5"
+      },
+      {
+        "label": "B",
+        "text": "3.0"
+      },
+      {
+        "label": "C",
+        "text": "7.5"
+      },
+      {
+        "label": "D",
+        "text": "7.0"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-27",
+    "question": "Which of these statements is true about a plant",
+    "options": [
+      {
+        "label": "A",
+        "text": "gains water from its environment"
+      },
+      {
+        "label": "B",
+        "text": "has high solute potential"
+      },
+      {
+        "label": "C",
+        "text": "has high pressure potential"
+      },
+      {
+        "label": "D",
+        "text": "loses solute to its environment"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-28",
+    "question": "Ovary, style and the stigma of a flower are found",
+    "options": [
+      {
+        "label": "A",
+        "text": "androecium"
+      },
+      {
+        "label": "B",
+        "text": "gynoecium"
+      },
+      {
+        "label": "C",
+        "text": "calyx"
+      },
+      {
+        "label": "D",
+        "text": "corolla"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-29",
+    "question": "The type of flowers that attach singly to either",
+    "options": [
+      {
+        "label": "A",
+        "text": "inflorescence"
+      },
+      {
+        "label": "B",
+        "text": "solitary flower"
+      },
+      {
+        "label": "C",
+        "text": "imperfect flower"
+      },
+      {
+        "label": "D",
+        "text": "complete flower"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-30",
+    "question": "A flower that is usually large and conspicuous can",
+    "options": [
+      {
+        "label": "A",
+        "text": "wind"
+      },
+      {
+        "label": "B",
+        "text": "insects"
+      },
+      {
+        "label": "C",
+        "text": "rodents"
+      },
+      {
+        "label": "D",
+        "text": "water"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-31",
+    "question": "Which of the following is not a feature common to",
+    "options": [
+      {
+        "label": "A",
+        "text": "development into a fixed body plan"
+      },
+      {
+        "label": "B",
+        "text": "asexual reproduction"
+      },
+      {
+        "label": "C",
+        "text": "specialized tissues"
+      },
+      {
+        "label": "D",
+        "text": "heterotrophic nutrient sourcing"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-32",
+    "question": "Which of these listed fishes is a member of the",
+    "options": [
+      {
+        "label": "A",
+        "text": "tilapia"
+      },
+      {
+        "label": "B",
+        "text": "skate"
+      },
+      {
+        "label": "C",
+        "text": "shark"
+      },
+      {
+        "label": "D",
+        "text": "ray"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-33",
+    "question": "An example of acellular microorganism is",
+    "options": [
+      {
+        "label": "A",
+        "text": "virus"
+      },
+      {
+        "label": "B",
+        "text": "bacterium"
+      },
+      {
+        "label": "C",
+        "text": "fungus"
+      },
+      {
+        "label": "D",
+        "text": "archaes"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-34",
+    "question": "The process in which bacterial DNA is moved from",
+    "options": [
+      {
+        "label": "A",
+        "text": "transformation"
+      },
+      {
+        "label": "B",
+        "text": "transduction"
+      },
+      {
+        "label": "C",
+        "text": "conjugation"
+      },
+      {
+        "label": "D",
+        "text": "transportation"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-35",
+    "question": "The gaps in the sheath between successive",
+    "options": [
+      {
+        "label": "A",
+        "text": "Myelin sheath"
+      },
+      {
+        "label": "B",
+        "text": "Axons"
+      },
+      {
+        "label": "C",
+        "text": "Node of Ranvier"
+      },
+      {
+        "label": "D",
+        "text": "dendrites"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-36",
+    "question": "A fertilized matured ovary in plant is referred",
+    "options": [
+      {
+        "label": "A",
+        "text": "leaf"
+      },
+      {
+        "label": "B",
+        "text": "fruit"
+      },
+      {
+        "label": "C",
+        "text": "root"
+      },
+      {
+        "label": "D",
+        "text": "stem"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-37",
+    "question": "Which polysaccharides are branched and which are",
+    "options": [
+      {
+        "label": "A",
+        "text": "Amylose — Cellulose"
+      },
+      {
+        "label": "B",
+        "text": "Amylopectin — Cellulose"
+      },
+      {
+        "label": "C",
+        "text": "Cellulose — Amylose"
+      },
+      {
+        "label": "D",
+        "text": "Cellulose — Amylopectin"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-38",
+    "question": "Immediately after which stage in mitosis in an",
+    "options": [
+      {
+        "label": "A",
+        "text": "anaphase"
+      },
+      {
+        "label": "B",
+        "text": "metaphase"
+      },
+      {
+        "label": "C",
+        "text": "prophase"
+      },
+      {
+        "label": "D",
+        "text": "telophase"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-39",
+    "question": "Each of the following events takes place during",
+    "options": [
+      {
+        "label": "A",
+        "text": "I → II → IV → V → III"
+      },
+      {
+        "label": "B",
+        "text": "III → I → II → IV"
+      },
+      {
+        "label": "C",
+        "text": "V → III → I → II → IV"
+      },
+      {
+        "label": "D",
+        "text": "IV → V → III → I → II"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-40",
+    "question": "Centromere is important for",
+    "options": [
+      {
+        "label": "A",
+        "text": "movement of chromosomes toward the pole"
+      },
+      {
+        "label": "B",
+        "text": "replication of DNA"
+      },
+      {
+        "label": "C",
+        "text": "cytoplasmic cleavage"
+      },
+      {
+        "label": "D",
+        "text": "mis-segregation of chromosome"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-41",
+    "question": "One of the following is correct about the use of",
+    "options": [
+      {
+        "label": "A",
+        "text": "to measure relative humidity"
+      },
+      {
+        "label": "B",
+        "text": "to measure transparency and light absorption"
+      },
+      {
+        "label": "C",
+        "text": "to determine atmospheric pressure"
+      },
+      {
+        "label": "D",
+        "text": "to measure the slope of an area of land"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-42",
+    "question": "Which of the following is NOT a method of",
+    "options": [
+      {
+        "label": "A",
+        "text": "quadrat sampling method"
+      },
+      {
+        "label": "B",
+        "text": "transect sampling method"
+      },
+      {
+        "label": "C",
+        "text": "capture and recapture method"
+      },
+      {
+        "label": "D",
+        "text": "capture and label method"
+      }
+    ],
+    "correctAnswer": "D",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-43",
+    "question": "People with sickle cell anaemia have haemoglobin",
+    "options": [
+      {
+        "label": "A",
+        "text": "S and are homozygous recessive"
+      },
+      {
+        "label": "B",
+        "text": "A and are heterozygous recessive"
+      },
+      {
+        "label": "C",
+        "text": "S and are heterozygous recessive"
+      },
+      {
+        "label": "D",
+        "text": "A and are homozygous recessive"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-44",
+    "question": "Down's syndrome is as a result of chromosomal",
+    "options": [
+      {
+        "label": "A",
+        "text": "12"
+      },
+      {
+        "label": "B",
+        "text": "21"
+      },
+      {
+        "label": "C",
+        "text": "13"
+      },
+      {
+        "label": "D",
+        "text": "8"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-45",
+    "question": "Protists and bacteria are grouped into different",
+    "options": [
+      {
+        "label": "A",
+        "text": "protists have a membrane bounded nucleus,"
+      },
+      {
+        "label": "B",
+        "text": "bacteria are not made of cells"
+      },
+      {
+        "label": "C",
+        "text": "protists eat bacteria"
+      },
+      {
+        "label": "D",
+        "text": "bacteria decompose protists"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-46",
+    "question": "The term viviparity means",
+    "options": [
+      {
+        "label": "A",
+        "text": "ability of animals to give birth to young ones"
+      },
+      {
+        "label": "B",
+        "text": "ability to lay eggs"
+      },
+      {
+        "label": "C",
+        "text": "ability of animals to derive food from plant"
+      },
+      {
+        "label": "D",
+        "text": "ability for parental"
+      }
+    ],
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-47",
+    "question": "The organism that has a hydrostatic skeleton is",
+    "options": [
+      {
+        "label": "A",
+        "text": "tilapia"
+      },
+      {
+        "label": "B",
+        "text": "hydra"
+      },
+      {
+        "label": "C",
+        "text": "planaria"
+      },
+      {
+        "label": "D",
+        "text": "lumbricus"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-48",
+    "question": "A feature that makes locomotion easy for fish is",
+    "options": [
+      {
+        "label": "A",
+        "text": "scaly body"
+      },
+      {
+        "label": "B",
+        "text": "slimy body"
+      },
+      {
+        "label": "C",
+        "text": "streamlined body"
+      },
+      {
+        "label": "D",
+        "text": "lateral line"
+      }
+    ],
+    "correctAnswer": "C",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-49",
+    "question": "Select the correct option that indicates the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Circular | Present | Absent | Large"
+      },
+      {
+        "label": "B",
+        "text": "Circular | Absent | Present | Small"
+      },
+      {
+        "label": "C",
+        "text": "Linear | Absent | Present | Small"
+      },
+      {
+        "label": "D",
+        "text": "Linear | Present | Absent | Large"
+      }
+    ],
+    "correctAnswer": "B",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-50",
+    "question": "A ten year old boy was taken to an optician based",
+    "options": [
+      {
+        "label": "A",
+        "text": "nyctalopia"
+      },
+      {
+        "label": "B",
+        "text": "myopia"
+      },
+      {
+        "label": "C",
+        "text": "hypermetropia"
+      },
+      {
+        "label": "D",
+        "text": "astigmatism"
+      }
+    ],
+    "correctAnswer": "A",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "objective"
+  },
+  {
+    "id": "bio-2022-import-theory-1",
+    "question": "1(a) Define the following:\ni.    Genes\nii.   Alleles\niii.  Homozygous organism\niv.   Heterozygous organism\nv.    Dominant allele\nvi.   Recessive allele\nvii.  Test cross\nviii. Sex linked genes\nix.   Rhesus\nx.    Albinism\n\n(b)  The following set of data represents the length\nin millimeters of 20 maize fruits harvested and\nmeasured by students during a biology session.\nStudy the data carefully and use it to answer the\nfollowing questions:\n\nLength (mm) of maize fruits:\n100  120  125  140  140\n110  100  150  140  130\n135  125  140  120  130\n120  130  155  140  150\n\nArrange the set of data from lowest to highest\nvalues. Calculate the:\ni.   mean\nii.  Median\niii. Mode\niv.  Range\n\n(c)  Define genetic variation",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2022-import-theory-2",
+    "question": "2(a) A recent ecological study in a commodity, put\nthe mass of organisms found as follow:\nRats 2000g/m², Man 600g/m², locust 3500g/m².\nRepresent this information using a pyramid of\nbiomass.\n\n(b)  What is trophic level of each organism?\n\n(c)  It is said that only about 10% of the energy in\none trophic level is transferred to the next trophic\nlevel in an ecosystem, the grass contained\n6000Kg worth of energy with varying quantities\nin grasshopper, Man, lizard and Bird.\nUse the above information to construct a pyramid\nof energy.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2022-import-theory-3",
+    "question": "3(a) Distinguish between natural active immunity\nand artificial active immunity.\n\n(b)  Describe the process of binary fission in\nprokaryotic cells.\n\n(c)  Define and provide example of cases of\npandemic and epidermis disease.\n\n(d)  Outline the steps of the Koch's postulate and\nstate how it can be applied in medical\nmicrobiology.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2022-import-theory-4",
+    "question": "4(a) Using a table, outline three differences\nbetween primary immune response and\nsecondary immune response.\n\n(b)  List four differences between bacteriophage\nand bacteria.\n\n(c)  Copy and complete the table below:\n\n| Nutritional Type          | Energy | Electron | Carbon |\n|                           | Source | Source   | Source |\n|---------------------------|--------|----------|--------|\n| Photolitho autotrophs     |        |          |        |\n| Chemoorgano heterotrophs  |        |          |        |",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2022-import-theory-5",
+    "question": "5(a) Write briefly two points on each of the\nfollowing plant hormones:\ni.   gibberellins\nii.  auxin\niii. cytokinin\niv.  ethylene\n\n(b)  Outline the steps involved in the development\nof the pollen grains in angiosperms.\n\n(c)  State the function of each of the following\nplant tissues:\n- Xylem\n- Phloem\n- Sclerenchyma\n- Chlorenchyma",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2022-import-theory-6",
+    "question": "6(a) Define fertilization.\n\n(b)  Differentiate between seeds and fruits of\nplants in a tabular form.\n\n(c)  Describe the process of fertilization in plants.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2022-import-theory-7",
+    "question": "7(a) Give six characteristics of the sub kingdom\nprotozoa.\n\n(b)  Complete the table below by showing one\nexample of each class of protozoa:\n\n| Groups                    | Free living | Parasitic |\n|                           | examples    | forms     |\n|                           |             | examples  |\n|---------------------------|-------------|-----------|\n| Sarcodina                 |             |           |\n| Mastigophora (flagellates)|             |           |\n| Ciliophora (Ciliates)     |             |           |\n| Apicomplexa (sporozoans)  |             |           |\n\n(c)  Differentiate between paramecium and\namoeba.",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "theory"
+  },
+  {
+    "id": "bio-2022-import-practical-1",
+    "question": "(a) Summarize the characteristic feature that\napplies to all microorganisms:\nA. They are multicellular\nB. They perform photosynthesis\nC. Their cells have distinct nuclei\nD. They are visible only with a microscope",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "practical"
+  },
+  {
+    "id": "bio-2022-import-practical-2",
+    "question": "Use the diagram below to answer questions 3 and 4\n\n1. In a cell, glycolysis and Kreb's cycle takes\nplace respectively in the\nA. mitochondria cytoplasm\nB. cytoplasm, mitochondria ✓\nC. cytoplasm, protoplasm\nD. mitochondria, protoplasm\n\n2. Plants produce oxygen as a by product during\nphotosynthesis and this oxygen comes from\nA. the splitting of water molecule ✓\nB. the chlorophyll in the chloroplast\nC. the electrons transport chain\nD. ATP and NADPH synthesis",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "practical"
+  },
+  {
+    "id": "bio-2022-import-practical-3",
+    "question": "Use the diagram below to answer questions 3 and 4:\n\n3. The chronological sequence of stages in\nMeiosis I Prophase is\nA. Leptotene, Zygotene, Pachytene,\nDiplotene, Diakinesis ✓\nB. Zygotene, Diplotene, Pachytene,\nLeptotene, Diakinesis\nC. Pachytene, Leptotene, Diakinesis,\nDiplotene, Diakinesis\nD. Diplotene, Zygotene, Pachytene,\nLeptotene, Diakinesis\n\n4. The theory of spontaneous generation\npredicts that\nA. evolution has taken place in large animals\nB. viruses are degenerated forms of bacteria\nC. microorganisms arise from lifeless matter ✓\nD. microorganisms arise from existing ones\nby reproduction",
+    "difficulty": "medium",
+    "subject": "biology",
+    "year": 2022,
+    "category": "practical"
+  }
+]

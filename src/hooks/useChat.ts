@@ -1227,11 +1227,8 @@ export function useChat() {
     if (result?.error) throw new Error(result.error);
     if (!result?.conversation_id) throw new Error('Failed to create conversation');
 
-    const convId = result.conversation_id;
-    await fetchConversations();
-    await openConversation(convId);
-    return convId;
-  }, [user, openConversation, fetchConversations]);
+    return result.conversation_id;
+  }, [user]);
 
   const deleteConversation = useCallback(async (conversationId: string): Promise<(() => Promise<void>) | undefined> => {
     if (!user) return;
@@ -1276,12 +1273,18 @@ export function useChat() {
     if (!user || !query.trim()) return [];
 
     try {
-      const { data } = await supabase
+      const sanitized = query.replace(/,/g, ' ');
+      const { data, error } = await supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url, bio, email')
+        .select('user_id, display_name, avatar_url, bio')
         .neq('user_id', user.id)
-        .or(`display_name.ilike.%${query}%,email.ilike.%${query}%,bio.ilike.%${query}%`)
+        .or(`display_name.ilike.%${sanitized}%,bio.ilike.%${sanitized}%`)
         .limit(20);
+
+      if (error) {
+        console.error('User search error:', error);
+        return [];
+      }
 
       return data || [];
     } catch (err) {

@@ -44,10 +44,11 @@ const DEFAULT_IMPORT_RE = /^\s*import\s+(\w+)\s+from\s+['"]npm:(.+?)['"]\s*;?\s*
 const SHARED_IMPORT_RE = /^\s*import\s+(?:type\s+)?\{(.+?)\}\s+from\s+['"]\.\.\/_shared\/(.+?)['"]\s*;?\s*$/m;
 const LOCAL_IMPORT_RE = /^\s*import\s+(?:type\s+)?\{(.+?)\}\s+from\s+['"]\.\/(.+?)['"]\s*;?\s*$/m;
 
-function inlineShared(code, name) {
+function inlineShared(code, name, inlined, npmInlined) {
   const lines = code.split("\n");
   const result = [];
-  const inlined = new Set();
+  if (!inlined) inlined = new Set();
+  if (!npmInlined) npmInlined = new Set();
 
   for (const line of lines) {
     const trimmed = line.trim();
@@ -67,35 +68,64 @@ function inlineShared(code, name) {
       }
       result.push(`// --- inlined from _shared/${fname} ---`);
       // Recursively inline this shared file's own imports
-      const inlinedShared = inlineShared(sharedCode, `_shared/${fname}`);
+      const inlinedShared = inlineShared(sharedCode, `_shared/${fname}`, inlined, npmInlined);
       result.push(inlinedShared);
       result.push(`// --- end inlined from _shared/${fname} ---`);
       continue;
     }
 
-    // Match ./local imports (within the function itself)
+    // Match ./local imports (within the function itself, or _shared peer imports)
     const localMatch = trimmed.match(LOCAL_IMPORT_RE);
     if (localMatch) {
-      // These are typically embedded files, skip them
+      // If we're already inlining a _shared file, resolve ./ as peer in _shared/
+      const sharedPeer = name.startsWith("_shared/") || name.startsWith("_shared\\");
+      if (sharedPeer) {
+        const fname = localMatch[2];
+        if (!fname.endsWith(".ts")) continue;
+        if (inlined.has(fname)) continue;
+        inlined.add(fname);
+        const sharedCode = sharedCache[fname];
+        if (sharedCode) {
+          result.push(`// --- inlined from _shared/${fname} ---`);
+          const inlinedShared = inlineShared(sharedCode, `_shared/${fname}`, inlined, npmInlined);
+          result.push(inlinedShared);
+          result.push(`// --- end inlined from _shared/${fname} ---`);
+        } else {
+          console.warn(`  WARN: _shared/${fname} not found (resolved from ./ in ${name})`);
+        }
+      }
+      // Skip the import line itself (don't emit it)
       continue;
     }
 
     // Convert npm imports to dynamic imports (compatible with Supabase runtime)
     const npmMatch = trimmed.match(NPM_IMPORT_RE);
     if (npmMatch) {
-      result.push(`const { ${npmMatch[1]} } = await import("npm:${npmMatch[2]}");`);
+      const varName = `npm_${npmMatch[2]}`;
+      if (!npmInlined.has(varName)) {
+        npmInlined.add(varName);
+        result.push(`const { ${npmMatch[1]} } = await import("npm:${npmMatch[2]}");`);
+      }
       continue;
     }
 
     const starMatch = trimmed.match(STAR_IMPORT_RE);
     if (starMatch) {
-      result.push(`const ${starMatch[1]} = await import("npm:${starMatch[2]}");`);
+      const varName = `star_${starMatch[1]}`;
+      if (!npmInlined.has(varName)) {
+        npmInlined.add(varName);
+        result.push(`const ${starMatch[1]} = await import("npm:${starMatch[2]}");`);
+      }
       continue;
     }
 
     const defaultMatch = trimmed.match(DEFAULT_IMPORT_RE);
     if (defaultMatch) {
-      result.push(`const ${defaultMatch[1]} = (await import("npm:${defaultMatch[2]}")).default;`);
+      const varName = `def_${defaultMatch[1]}`;
+      if (!npmInlined.has(varName)) {
+        npmInlined.add(varName);
+        result.push(`const ${defaultMatch[1]} = (await import("npm:${defaultMatch[2]}")).default;`);
+      }
       continue;
     }
 

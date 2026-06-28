@@ -152,6 +152,7 @@ const Index = () => {
     deleteSession,
     updateSession,
     setSessions,
+    reorderSubjects: reorderSessionSubjects,
   } = useStudySessions();
 
   // Syllabus completed progress (across all sessions)
@@ -310,7 +311,7 @@ const Index = () => {
 
   const handleStartQuiz = (subject?: Subject) => {
     if (subject) {
-      const pool = getAllQuestionsBySubject(subject);
+      const pool = getAllQuestionsBySubject(subject).filter(q => q.type === "mcq");
       const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
       setSelectedSubject(subject);
       setQuizPlan({ perSubject: { [subject]: 10 }, uniform: false });
@@ -382,10 +383,10 @@ const Index = () => {
   // Quiz setup
   if (currentView === 'quiz-setup') {
     const available = {
-      physics: getAllQuestionsBySubject('physics').length,
-      chemistry: getAllQuestionsBySubject('chemistry').length,
-      biology: getAllQuestionsBySubject('biology').length,
-      math: getAllQuestionsBySubject('math').length,
+      physics: getAllQuestionsBySubject('physics').filter(q => q.type === "mcq").length,
+      chemistry: getAllQuestionsBySubject('chemistry').filter(q => q.type === "mcq").length,
+      biology: getAllQuestionsBySubject('biology').filter(q => q.type === "mcq").length,
+      math: getAllQuestionsBySubject('math').filter(q => q.type === "mcq").length,
     } as Record<Subject, number>;
 
     // Pre-seed: when user came in via a subject quick action, only that subject is on.
@@ -417,7 +418,7 @@ const Index = () => {
       : quizPlan
         ? (Object.entries(quizPlan.perSubject) as Array<[Subject, number]>)
             .flatMap(([subject, count]) => {
-              const pool = getAllQuestionsBySubject(subject);
+              const pool = getAllQuestionsBySubject(subject).filter(q => q.type === "mcq");
               return [...pool].sort(() => Math.random() - 0.5).slice(0, count);
             })
             .sort(() => Math.random() - 0.5)
@@ -477,6 +478,7 @@ const Index = () => {
         onPauseSession={pauseSession}
         onResumeSession={resumeSession}
         onDeleteSession={deleteSession}
+        onReorderSubjects={reorderSessionSubjects}
         onBack={handleBack}
       />
     );

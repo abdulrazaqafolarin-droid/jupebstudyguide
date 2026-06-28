@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
 import { processMathText } from "@/lib/process-math";
-import { PreviewMath } from "@/components/PreviewMath";
+import { MathRenderer } from "@/components/MathRenderer";
 import { analyzeQuestionWithAI } from "@/lib/ai-question-analyzer";
 import { useBatchAnalysis } from "@/contexts/BatchAnalysisContext";
 
@@ -746,7 +746,7 @@ export function AdminQuestionPanel({
                     {showPreview && (
                       <div className="mt-2 p-3 rounded-xl bg-muted/30 border">
                         <div className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider mb-1.5">Rendered Preview</div>
-                        <PreviewMath content={questionText} />
+                        <MathRenderer content={questionText} />
                       </div>
                     )}
                   </div>
@@ -781,7 +781,7 @@ export function AdminQuestionPanel({
                               </div>
                               {showPreview && (
                                 <div className="mt-1 text-xs text-muted-foreground">
-                                  <PreviewMath content={opt.text} />
+                                  <MathRenderer content={opt.text} />
                                 </div>
                               )}
                             </div>
@@ -863,7 +863,7 @@ export function AdminQuestionPanel({
                     {showPreview && (
                       <div className="mt-2 p-3 rounded-xl bg-muted/30 border">
                         <div className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider mb-1.5">Rendered Preview</div>
-                        <PreviewMath content={explanation} />
+                        <MathRenderer content={explanation} />
                       </div>
                     )}
                   </div>

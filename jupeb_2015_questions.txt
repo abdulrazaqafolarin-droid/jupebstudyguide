@@ -1,0 +1,1031 @@
+======================================================================
+JUPEB 2015 PAST QUESTIONS
+======================================================================
+
+
+PHYSICS 2015
+----------------------------------------------------------------------
+
+--- PHYSICS 2015 THEORY Q0 ---
+**(a)** State Ohm's Law. **[1 Mark]**
+
+**(b)** A battery of emf 24V and internal resistance r is connected to a circuit having two parallel resistors of 3Ω and 6Ω in series with an 8Ω resistor. The current flowing in the 3Ω resistor is 0.8A. Calculate:
+- (i) The current in the 6Ω resistor
+- (ii) The internal resistance r of the battery
+- (iii) The terminal potential difference of the battery **[6 Marks]**
+
+**(c)**
+- (i) Define the capacitance of a capacitor. **[1 Mark]**
+- (ii) A capacitor carrying 10μC charge has a voltage of 50V across its plates. Calculate its capacitance and the energy stored in it. **[2 Marks]**
+   Correct Answer: None
+
+--- PHYSICS 2015 THEORY Q0 ---
+**$\mathrm{(a)}$** From a consideration of the flow of a liquid through a narrow tube, define viscosity. Express the coefficient of viscosity η in terms of the internal frictional force F, surface area A of the liquid and velocity gradient dv/dx, and derive its units using dimensional analysis.
+**[2 Marks]**
+
+**(b)**
+- (i) Discuss qualitatively the motion of a small metal ball allowed to drop downwards in a long vertical tube of viscous liquid so that it moves along the axis of the tube. Sketch the variation of velocity v with time t. **[3 Marks]**
+- (ii) Write down the equation relating the velocity v of a ball bearing of radius r and mass m falling vertically from rest, in a viscous liquid after an elapsed time t. The effect of the buoyancy of the liquid should be neglected. Obtain an expression for the terminal velocity 0v. **[2 Marks]**
+
+**(c)** An object is thrown forward horizontally from the top of a cliff 20m high with a horizontal velocity of 15 m/s. Calculate:
+- (i) The time to return to the ground
+- (ii) The horizontal distance from the foot of the cliff at which the object strikes the ground. [Take g = 10m/s²] **[3 Marks]**
+   Correct Answer: None
+
+--- PHYSICS 2015 THEORY Q0 ---
+**$\mathrm{(a)}$** A narrow beam of light travelling in air is incident on a slab of transparent material. The incident beam makes an angle of 40.0° with the normal, and the refracted beam makes an angle of 26.0° with the normal (Refractive index = 1.00 for air). Use Snell's law of refraction to:
+- (i) Find the index of refraction of the slab material. **[2 Marks]**
+- (ii) A ray of light, travelling in crown glass of refractive index 1.52, is incident on a glass-air interface. Calculate the incident angle at which the total internal reflection begins to occur. **[2 Marks]**
+- (iii) Draw a diagram to support your answer in (ii) above. **[1 Mark]**
+- (iv) Explain the concept of total internal reflection. **[2 Marks]**
+
+**(b)** Complete the table of the image properties for converging and diverging lenses below: **[3 Marks]**
+
+| Cases | Lens type | Object Position | Image Position | Orientation | Size | Type |
+|---|---|---|---|---|---|---|
+| 1 | Converging | $\gt$2f | $\lt$2f | Inverted | Smaller | Real |
+| 2 | Converging | 2f | **(i)** | Inverted | Same Size | Real |
+| 3 | Converging | $\gt$f but $\lt$2f | $\gt$2f | **(ii)** | Larger | Real |
+| 4 | Converging | **(iii)** | No image formed | — | — | — |
+| 5 | Converging | $\lt$f | $\gt$f | Upright | Larger | **(iv)** |
+| 6 | Diverging | Any position | $\lt$f | Upright | **(v)** | Virtual |
+   Correct Answer: None
+
+--- PHYSICS 2015 THEORY Q0 ---
+**$\mathrm{(a)}$** A double wall glass vessel prevents heat loss through:
+- (i) Vacuum between the walls to prevent heat loss by convection
+- (ii) The interior wall is silver coated to prevent heat loss by radiation
+- (iii) The base of the walls is supported by insulating cork to prevent heat loss by conduction
+
+**(b)**
+- (i) State the Zeroth law of thermodynamics. A steel rod has a length of 30m at 0°C. Calculate the length of the rod after it has been heated to 40°C, given that the linear expansion coefficient is 11 \times 10^{-6}$/°C. **[2 Marks]**
+- (ii) A 0.050 kg steel mass, heated to 200.0°C is dropped into a beaker containing 0.400 kg of water. The initial temperature of the water is 20.0°C and the final temperature of the steel and the water is 22.4°C. The beaker has negligible heat capacity. Specific heat capacity of water = 4186 J/kgC. Calculate the specific heat capacity of the steel. **[3 Marks]**
+   Correct Answer: None
+
+--- PHYSICS 2015 THEORY Q0 ---
+**$\mathrm{(a)}$** Define radioactivity. **[1 Mark]**
+
+**(b)** Calculate the total binding energy of an alpha particle. The masses of the neutron, proton and alpha particles are respectively 1.008665u, 1.007825u and 4.002603u. (1u = 931.5 MeV/c²). **[3 Marks]**
+
+**(c)**
+- (i) Show that λ = ln2/T½ **[2 Marks]**
+- (ii) A radioactive material has an initial activity of 7000 counts per second and an activity of 875 counts per second after 6 hrs. What is the half-life of the material? **[3 Marks]**
+- (iii) Differentiate between scalar and vector quantities and give two examples in each case. **[3 Marks]**
+   Correct Answer: None
+
+--- PHYSICS 2015 THEORY Q0 ---
+**$\mathrm{(a)}$**
+- (i) Write down, without proof, de Broglie's relation. **[1 Mark]**
+- (ii) A body of mass 20g is moving with a speed of 300ms⁻¹. Calculate the de Broglie wavelength of the bullet. **[3 Marks]**
+
+**(b)**
+- (i) Explain the term wave-particle duality. **[1 Mark]**
+- (ii) m = 20g = 0.02kg; V = 300ms⁻¹. Calculate the de Broglie wavelength. **[2 Marks]**
+
+**(c)** Define the following: Photoelectric effect and work function. **[3 Marks]**
+
+**(d)** The threshold frequency for a metal surface is 3 \times 10^{14}$Hz. If the metal is illuminated with a radiation of 7.88eV, what is the kinetic energy of the electrons emitted from the metal surface? (Planck constant h = 6.6 \times 10^{-34}$Js, 1eV = 1.602 \times 10^{-19}$J). **[3 Marks]**
+   Correct Answer: None
+
+--- PHYSICS 2015 THEORY Q0 ---
+**$\mathrm{(a)}$**
+- (i) Explain what is meant by a field of force. **[1 Mark]**
+- (ii) State Coulomb's Law. **[1 Mark]**
+
+A negative charge of 6.0 \times 10^{-6}$C exerts an attractive force of 65N on a second charge that is 0.050m away. What is the magnitude of the second charge? **[3 Marks]**
+
+**(b)** Find the currents I₁, I₂ and I₃ in the circuit below. **[5 Marks]**
+   Correct Answer: None
+
+--- PHYSICS 2015 THEORY Q0 ---
+**$\mathrm{(a)}$** Differentiate between scalar and vector quantities and give two examples in each case. **[3 Marks]**
+
+**(b)**
+- (i) At a stage in the launch of a satellite the force due to thrust is equal to the gravitational force. Determine the rate of change of the satellite's momentum at that instant. **[2 Marks]**
+- (ii) A truck accelerates uniformly from rest at 2ms⁻² for 10s, maintains a steady velocity for 30s, and is then brought to rest in 5s under uniform retardation. Calculate the total distance travelled by the truck. **[2 Marks]**
+
+**(c)** A projectile is launched with an initial velocity of 35 m/s at an angle of 40° to the horizontal. Find:
+- (i) Maximum height attained
+- (ii) Total time of flight
+- (iii) Range **[3 Marks]**
+   Correct Answer: None
+
+--- PHYSICS 2015 OBJECTIVE Q1 ---
+A particle with rest mass m moves with speed 0.6c. What is its kinetic energy?
+   A. 0.18mc2
+   B. 0.22mc2
+   C. 0.25mc2
+   D. mc2
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q2 ---
+Which of the following particles is stable?
+   A. Neutron
+   B. Proton
+   C. Pion
+   D. Muon
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q3 ---
+To travel at a constant speed, a car engine provides $24\text{ kW}$ of useful power. At what speed does the car travel if the force on the car is $600\text{ N}$?
+   A. $2.5\text{ m s}^{-1}$
+   B. $4.0\text{ m s}^{-1}$
+   C. $25\text{ m s}^{-1}$
+   D. $40\text{ m s}^{-1}$
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q4 ---
+A pure semiconductor at room temperature has which of the following properties?
+   A. More electrons/m$^3$ in its valence bond than a typical metal
+   B. More electrons/m$^3$ in its conduction band than holes/m$^3$ in its valence bond
+   C. More electrons/m$^3$ in its conduction band than a typical metal
+   D. More electrons/m$^3$ in its valence bond than holes/m$^3$ in its conduction band
+   Correct Answer: D
+
+--- PHYSICS 2015 OBJECTIVE Q5 ---
+The proper time between two events is measured by clocks at rest in a reference frame in which the two events occur. Where do the two events occur?
+   A. Occur at the same time
+   B. Occur at the same coordinates
+   C. Occur at separate times and separate coordinates
+   D. Occur at separate times and separate coordinates in a reference frame in which the two events is measured by clocks at rest
+   Correct Answer: D
+
+--- PHYSICS 2015 OBJECTIVE Q6 ---
+A handbag weighing 162N is carried by two students each holding the handle of the bag at 60 to the next to him. If each handle is inclined at 60 to the vertical, find the force on each student's arm.
+   A. 324N
+   B. 162N
+   C. 121N
+   D. 81N
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q7 ---
+A rope is being used to pull a mass of 10kg vertically upward. Determine the tension on the rope if starting from rest, the mass acquires a velocity of 4ms-1 in 8s (g=10ms-2).
+   A. 105N
+   B. 95N
+   C. 50N
+   D. 55N
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q8 ---
+A boy observes a piece of stone at the bottom of a river 6.0m deep. If he looks vertically from the surface of the river, how far does the stone appear to be from him? (Refractive index of water = 34)
+   A. 80m
+   B. 45m
+   C. 6.0m
+   D. 5.5m
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q9 ---
+A cell has an internal resistance of 0.01ohm. An instrument that can measure the resistance accurately is?
+   A. Ohm-meter
+   B. Potentiometer
+   C. Electroscope
+   D. Oscilloscope
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q10 ---
+A conductor of length 2m carries a current of 4A while kept in a magnetic field of magnitude 0.5T. The maximum force acting on it is?
+   A. 16.2N
+   B. 8.0N
+   C. 3.2N
+   D. 0.8N
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q11 ---
+The bond that forms a semiconductor is?
+   A. Covalent
+   B. Electrostatic
+   C. Metallic
+   D. Electrostatic
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q12 ---
+The particle nature of light is demonstrated by?
+   A. Photoelectric effect
+   B. Speed of light
+   C. Colours of light
+   D. Duffraction of light
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q13 ---
+The law states that at constant pressure, the volume of a given mass of gas is directly proportional to the absolute temperature?
+   A. Charles's
+   B. Gay Lussac's
+   C. Boyle's
+   D. Pascal's
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q14 ---
+Which of the following dimensional analysis to determine which of the following equations is certain wrong?
+   A. F=vt
+   B. F=m/a
+   C. F=mv/t
+   D. F=mv2/2g
+   Correct Answer: C
+
+--- PHYSICS 2015 OBJECTIVE Q15 ---
+An animal that can hear sound as high as 100,000 Hz?
+   A. Cat
+   B. Bat
+   C. Dog
+   D. Goat
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q16 ---
+For an electron to be ejected from the surface of a metal, the radiation energy must be?
+   A. A semiconductor, the radiation energy must be greater than the work function of the metal
+   B. Less than the work function of the metal3
+   C. Equal to the work function of the metal
+   D. Greater than the rest mass energy of the electron
+   Correct Answer: D
+
+--- PHYSICS 2015 OBJECTIVE Q17 ---
+Which is the only natural satellite of the earth?
+   A. Stars
+   B. Sun
+   C. Mercury
+   D. Moon
+   Correct Answer: D
+
+--- PHYSICS 2015 OBJECTIVE Q18 ---
+A 2-kilogram block rests at the edge of a platform 5 metres above level ground. The block is launched horizontally from the edge of the platform with an initial speed of 3ms-1. Air resistance is negligible. The time it will take for the block to reach the ground is approximately?
+   A. 0.3s
+   B. 1.0s
+   C. 1.4s
+   D. 2.0s
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q19 ---
+A diver initially moving horizontally with speed $v$ dives off the edge of a vertical cliff and lands in the water a distance $d$ from the base of the cliff. How far from the base of the cliff would the diver have landed if the diver initially had been moving horizontally with speed $2v$?
+   A. d
+   B. 3d
+   C. 2d
+   D. 4d
+   Correct Answer: C
+
+--- PHYSICS 2015 OBJECTIVE Q20 ---
+A truck traveled 400 meters north in 80 seconds, and then it traveled 300 meters east in 70 seconds. What is the magnitude of the average velocity of the truck?
+   A. 1.2 m/s
+   B. 3.3 m/s
+   C. 4.6 m/s
+   D. 6.6 m/s
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q21 ---
+The field intensity at a point close to a charged plane conductor situated in air is $3.5 \times 10^6 \text{ V m}^{-1}$. What is the surface density of charge? (Take the permittivity of free space as $8.85 \times 10^{-12} \text{ F/m}$)
+   A. $2.53 \text{ microC m}^{-2}$
+   B. $26.55 \times 10^{-12} \text{ C m}^{-2}$
+   C. $31.0 \times 10^{-12} \text{ microC m}^{-2}$
+   D. $31.0 \text{ microC m}^{-2}$
+   Correct Answer: C
+
+--- PHYSICS 2015 OBJECTIVE Q22 ---
+Two parallel horizontal metal plates are 25mm apart and a potential difference of 1000V is applied across the plates. What is the field intensity between the plates?
+   A. 40 Vm-1
+   B. 25000 Vm-1
+   C. 40 kV m-1
+   D. 2.5 kVm-1
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q23 ---
+Which of the following defines the Heisenberg uncertainty principle for position and momentum?
+   A.  ΔxΔp ≤ ℏ/2 
+   B. ΔxΔp = ℏ/2 
+   C. ΔxΔp ≥ ℏ/2
+   D.  ΔxΔp ≥ 2ℏ
+   Correct Answer: C
+
+--- PHYSICS 2015 OBJECTIVE Q24 ---
+What results from the ejection of an alpha particle from a nucleus?
+   A. An increase in the atomic number by one
+   B. An increase in the atomic mass by four
+   C. A decrease in the atomic number by two
+   D. None of the above
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q25 ---
+Hydrogen-3 is a radioactive isotope of hydrogen. Which type of radiation would you expect an atom of this isotope to emit?
+   A. (i) only
+   B. (ii) only
+   C. (i) and (iii)
+   D. (i), (ii) and (iii)
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q26 ---
+Which of the following are derived units?
+   A. I and III only
+   B. II and V only
+   C. II, IV and V only
+   D. I, II, III and IV
+   Correct Answer: C
+
+--- PHYSICS 2015 OBJECTIVE Q27 ---
+What is the dimension of power?
+   A. ML2T-3
+   B. MLT-2
+   C. ML2T-2
+   D. ML-2T3
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q28 ---
+What is the unit of force?
+   A. Force x acceleration
+   B. Force x velocity
+   C. Force x distance
+   D. Force x time
+   Correct Answer: N
+   Explanation: TEST by batch script
+
+--- PHYSICS 2015 OBJECTIVE Q29 ---
+An elastic string of length 20cm extends to 24cm when it supports a weight of 50N. What is the energy stored in the string?
+   A. 1J
+   B. 2J
+   C. 5J
+   D. 10J
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q30 ---
+Which of the following radiations will pass through a sheet of paper?
+   A. I only
+   B. I and III only
+   C. I, II and III only
+   D. II and III only
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q31 ---
+A metal having a work function of 5.76eV is illuminated with a radiation of 7.88eV. What is the kinetic energy of the electrons emitted from the metal surface?
+   A. 2.12eV
+   B. 1.37eV
+   C. 45.39eV
+   D. 13.64eV
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q32 ---
+What is the energy associated with an X-ray of wavelength 9x10-10m? (Planck's constant = 6.6x10-34Js and velocity of light 3x108m/s)
+   A. 7.5 x 1014J
+   B. 2.20 x 10-16J
+   C. 7.5 x 105J
+   D. 1.3 x 10-15J
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q33 ---
+Two football players with masses 75kg and 100kg run directly toward each other with speeds of 6m/s and 8m/s respectively. If they grab each other as they collide, what is the combined speed of the two players just after the collision?
+   A. 2m/s
+   B. 3.4 m/s
+   C. 4.6 m/s
+   D. 7.1 m/s
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q34 ---
+The velocity of sound in a gas is given by vs = (Pp) where the symbols have their usual meanings. For a particular gas under certain conditions, vs is found to be 400ms-1. What is the new value of vs if the pressure were reduced by 5%?
+   A. 89.4 ms-1
+   B. 20 ms-1
+   C. 100 ms-1
+   D. 390 ms-1
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q35 ---
+Which of the following statements is/are true of superposition of two or more waves?
+   A. I and III only
+   B. I and IV only
+   C. I, II and III only
+   D. I, III and V only
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q36 ---
+Resistance of a material depends on which of the following except?
+   A. Temperature
+   B. Length and cross-section area of the material
+   C. Nature of the material
+   D. Shape of the material
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q37 ---
+An X-ray tube takes a current of 7.0mA and operates at a potential difference of 80kV. What power is dissipated?
+   A. 460W
+   B. 560W
+   C. 660W
+   D. 760W
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q38 ---
+Which of the following describes what occurs in the fission process?
+   A. A heavy nucleus is fragmented into lighter ones
+   B. A neutron is split into a neutron and proton
+   C. Two light nuclei are combined into a heavier one
+   D. A proton is split into three quarks
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q39 ---
+What is the stopping potential for electrons ejected by 6.8x1014Hz electromagnetic radiation incident on a certain sample is 1.8V. What are the kinetic energy of the most energetic electrons ejected and the work function of the sample respectively?
+   A. 0.75s
+   B. 1.3s
+   C. 5.3s
+   D. 7.3s
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q40 ---
+What is the maximum efficiency of a heat engine which operates between the measured temperatures of 227C and 727C?
+   A. 50%
+   B. 20%
+   C. 30%
+   D. 40%
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q41 ---
+When a kaon decays via the strong interaction, what must the products include?
+   A. 1.8eV, 1.0eV
+   B. 1.8eV, 2.8eV
+   C. 1.8eV, 4.6eV
+   D. 2.8eV, 1.0eV
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q42 ---
+When a kaon decays via the strong interaction, the products must include?
+   A. Baryon
+   B. Lepton
+   C. Strange particle
+   D. Electron
+   Correct Answer: C
+
+--- PHYSICS 2015 OBJECTIVE Q43 ---
+A particle with spin angular momentum is called?
+   A. Lepton
+   B. Hadron
+   C. Fermion
+   D. Boson
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q44 ---
+Which of the following consists entirely of vector quantities?
+   A. Velocity, magnetic flux and reaction
+   B. Tension, magnetic flux and mass
+   C. Displacement, impulse and power
+   D. Work, pressure and moment
+   Correct Answer: D
+
+--- PHYSICS 2015 OBJECTIVE Q45 ---
+Two forces each of 10N act on a body, one towards the north and the other towards the east. What are the magnitude and direction of the resultant force?
+   A. 10N, 45E
+   B. 20N, 45W
+   C. 10 2N, 45E
+   D. 10 2N, 45E
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q46 ---
+What is the main reason for making the cover of a vacuum flask air tight?
+   A. Conduction
+   B. Evaporation
+   C. Radiation
+   D. Convection
+   Correct Answer: C
+
+--- PHYSICS 2015 OBJECTIVE Q47 ---
+A cell can supply currents of 0.4A and 0.2A through a 4.0ohm and 10.0ohm resistors respectively. What is the internal resistance of the cell?
+   A. 0.5ohm
+   B. 1.0ohm
+   C. 1.5ohm
+   D. 2.0ohm
+   Correct Answer: A
+
+--- PHYSICS 2015 OBJECTIVE Q48 ---
+A working electric motor takes a current of 1.5A when the p.d. across it is 250V. If its efficiency is 80%, what is the power output?
+   A. 562.0W
+   B. 469.0W
+   C. 300.0W
+   D. 133.0W
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q49 ---
+At what frequency would a capacitor of 2.5microF used in radio circuit have a reactance of 250ohm?
+   A. 200pi Hz
+   B. 800pi Hz
+   C. pi800 Hz
+   D. 8000pi Hz
+   Correct Answer: B
+
+--- PHYSICS 2015 OBJECTIVE Q50 ---
+A certain radioactive source emits radiations that were found to be deflected by both magnetic and electric fields. What are the radiations?
+   A. Ultra-violet rays
+   B. Gamma rays
+   C. Alpha rays
+   D. Beta rays
+   Correct Answer: C
+
+
+CHEMISTRY 2015
+----------------------------------------------------------------------
+
+--- CHEMISTRY 2015 THEORY Q0 ---
+Describe the trend in the thermal stabilities of the carbonates of the Group II elements down the group.
+(ii). Give the equation for the thermal decomposition of magnesium carbonate [3 Marks]
+
+**(b).** The elements in Group II show a variety of trends in the reactivity.
+(i). Explain the trend in reactivity of magnesium, calcium and barium with water. [3 Marks]
+(ii). Suggest the equation for the reaction of magnesium with steam [4 Marks]
+
+**(c).** Give four (4) structural differences between diamond and graphite. [3 Marks]
+   Correct Answer: None
+
+--- CHEMISTRY 2015 THEORY Q0 ---
+$\mathrm{(a)}$** Explain the condition of chemical equilibrium using the hypothetical equilibrium equation;
+aA + bB ⇌ cC + dD [3 Marks]
+
+**(b)** Write the equilibrium constant, Kc expressions for the following reactions
+i). 3$\ce{C2H_{2}}$(g) ⇌ $\ce{C6H_{6}}$(g) [1 Mark]
+ii). 2NOCl$\mathrm{(g)}$ ⇌ 2NO$\mathrm{(g)}$ + Cl₂$\mathrm{(g)}$ [1 Mark]
+iii). $\ce{N2O_{4}}$(g) ⇌ 2N$\ce{$\ce{O2}$}$(g) [1 Mark]
+
+**(c)** A mixture of 0.003 mol of $\ce{$\ce{H2}$}$ and 0.002 mole of I₂ were reacted to attain equilibrium in a 2-L container at 400°C. Analysis of the equilibrium mixtures shows that the concentration of HI is 0.0022 M. Calculate Kc for the reaction at 400°C. [4 Marks]
+
+---
+   Correct Answer: None
+
+--- CHEMISTRY 2015 THEORY Q0 ---
+Hydrocarbon with molecular formula $\ce{C5H_{10}}$, may be branched chain, straight chain or cyclic.
+(i). Draw a displayed formula of $\ce{C5H_{10}}$ as a branched chain hydrocarbon with formula $\ce{C5H_{10}}$ and it exhibits chain isomerism. [1 Mk]
+(ii). Pent-2-ene is a straight chain hydrocarbon with formula $\ce{C5H_{10}}$ and it exhibits cis-trans isomerism. Draw and name the structural formulae of the two cis-trans isomers of pent-2-ene. [2 Marks]
+
+---
+
+---
+   Correct Answer: None
+
+--- CHEMISTRY 2015 THEORY Q0 ---
+Crude oil is the principal source of hydrocarbons. The following are examples of such hydrocarbons: Ethane, Propene, Cyclohexene.
+
+(a). Give the structural formulae of the organic products in the following reactions.
+(i) The reaction of ethane with bromine in the presence of uv light. [1 Mark]
+(ii) The reaction of HBr with propene [1 Mark]
+(iii) The reaction of cyclohexene with hydrogen bromide. [1 Mark]
+
+---
+
+**(iii).** Draw the structural formulae of two alcohols which would each produced pent-2-ene on dehydration. [2 Marks]
+
+**(iv).** One of these alcohols exhibits optical isomerism. Draw the structural formulae of the two isomers of this alcohol. Your structure should clearly indicate the three-dimensional nature of the structure. [1 Mark]
+
+**(v).** Pent-2-ene can be polymerized. Draw the structure of the polymer chain produced showing two repeat units. [1 Mark]
+
+**(b).** Proteins are formed by the polymerization of amino acids. State the type of chemical reaction used to form these polymer chains. [1 Mark]
+
+**(c).** The amino acids serine and valine can combine together to form a dipeptide. [2 Marks]
+   Correct Answer: None
+
+--- CHEMISTRY 2015 THEORY Q0 ---
+Define the term complex ion, ligand and coordination number:
+
+**(b).** Name the following complex ions:
+(i). [Cr($\ce{H2O}$)₆]³⁺ (ii). [Cu(NH₃)₄]²⁺ (iii). [CuCl₄]²⁻ (iv). K₄[Fe(CN)₆] [4 Marks]
+
+**(c).** Name three greenhouse gases and mention a source of each of the gases. [3 Marks]
+
+---
+   Correct Answer: None
+
+--- CHEMISTRY 2015 THEORY Q0 ---
+A flask with a volume of 100 cm³ was first weighed with air filling the flask, and then with another gas, Y, filling the flask. The results, measured at 26°C and 1.00 \times 10^{5}$ Pa are shown:
+Mass of flask containing air = 47.930 g
+Mass of flask containing Y = 47.982 g
+Density of air = 0.00118 gcm⁻³
+
+Calculate the relative molecular mass of Y. [3 Marks]
+
+(ii). Calculate the molar mass of a solute given that 85.0 g of the solute in 1.00 dm³ water has an osmotic pressure of 5.15 \times 10^{5}$ Nm⁻² at 20°C. [3 Marks]
+
+**(b).** The temperature of an ideal gas in a sealed container falls. State, with reason, what happens to the:
+(i). root mean speed of the gas molecules [2 Marks]
+(ii). Pressure of the gas [2 Marks]
+
+---
+   Correct Answer: None
+
+--- CHEMISTRY 2015 OBJECTIVE Q1 ---
+A normal body temperature is $37^{\circ}\text{C}$, $K_{\text{w}} = 2.4 \times 10^{-14}$. Calculate $[\text{H}_3\text{O}^+]$ and $[\text{OH}^-]$ for the body fluid at this temperature
+   A. $[\text{H}_3\text{O}^+] = [\text{OH}^-] = 2.5 \times 10^{-7}$
+   B. $[\text{H}_3\text{O}^+] = [\text{H}^-] = 1.5 \times 10^{-8}$
+   C. $[\text{H}_3\text{O}^+] = [\text{H}^-] = 1 \times 10^{-6}$
+   D. $[\text{H}_3\text{O}^+] = [\text{OH}^-] = 1.5 \times 10^{-7}$
+   Correct Answer: D
+   Explanation: For a neutral solution, $[\text{H}_3\text{O}^+] = [\text{OH}^-]$. Since $K_{\text{w}} = [\text{H}_3\text{O}^+][\text{OH}^-]$, we have $[\text{H}_3\text{O}^+] = \sqrt{K_{\text{w}}} = \sqrt{2.4 \times 10^{-14}} \approx 1.55 \times 10^{-7}$ M. This matches option D.
+
+--- CHEMISTRY 2015 OBJECTIVE Q2 ---
+Atoms of elements in a group on the Periodic Table have similar chemical properties. This similarity is most closely related to the atoms.
+   A. number of principal energy levels
+   B. number of valence electrons
+   C. atomic numbers
+   D. atomic masses
+   Correct Answer: B
+   Explanation: Elements in the same group of the periodic table possess the same number of valence electrons. Since chemical properties are determined by the arrangement and reactivity of electrons in the outermost shell, atoms with the same valence electron count exhibit similar chemical behaviors.
+
+--- CHEMISTRY 2015 OBJECTIVE Q3 ---
+How many atoms of $\text{Cu}$ are present in $35.4\text{ g}$ of $\text{Cu}$? [$\text{Cu} = 63.5\text{ g mol}^{-1}$]
+   A. $1.08 \times 10^{23}$ atoms of $\textLots{Cu}$
+   B. $3.27 \times 10^{23}$ atoms of $	ext{Cu}$
+   C. $6.02 \times 10^{23}$ atoms of $	ext{Cu}$
+   D. $1.20 \times 10^{22}$ atoms of $	ext{Cu}$
+   Correct Answer: B
+   Explanation: Calculate moles: $n = \text{mass} / \text{molar mass} = 35.4 / 63.5 \approx 0.557$ moles. Multiply by Avogadro's constant: $0.557 \times 6.02 \times 10^{23} = 3.35 \times 10^{23}$ atoms (Option B is the closest match).
+
+--- CHEMISTRY 2015 OBJECTIVE Q4 ---
+How would you prepare $250\text{ cm}^3$ of $0.25\text{ M}$ aqueous solution of $\text{NaCl}$? [$\text{Na} = 23\text{ g mol}^{-1}$; $\text{Cl} = 35.5\text{ g mol}^{-1}$]
+   A. Add $3.66\text{ g}$ $\text{NaCl}$ to $250\text{ cm}^3$ of distilled water
+   B. Weigh 3.66𝑔 𝑁𝑎𝐶𝑙 𝑖𝑛𝑡𝑜 250𝑚𝑙 flask and add distilled water up to the mark
+   C. Add $14.60\text{ g}$ $NaCl$ to 250${ cm}^3$ of distilled water $ { g}$ ${NaCl}$ to  250 cm³ of distilled water
+   D. Weigh 14.60𝑔 𝑁𝑎𝐶𝑙 𝑖𝑛𝑡𝑜 250𝑚𝑙 flask and add distilled water up to the mark
+   Correct Answer: B
+   Explanation: To prepare the solution, first calculate the mass of NaCl: $m = M \times V \text{ (in L)} \times 	{Molar Mass} = 0.25 \times 0.25 \times 58.5 = 3.65625\text{ g}$. To ensure an accurate molarity, the solute is weighed and dissolved in a volumetric flask up to the mark, rather than simply adding it to a fixed volume of water.
+
+--- CHEMISTRY 2015 OBJECTIVE Q5 ---
+What is the shape of $PCl_3$?
+   A. Trigonal planar
+   B. Trigonal pyramidal
+   C. Tetrahedral
+   D. V-shaped (bent)
+   Correct Answer: B
+   Explanation: Phosphorus has 5 valence electrons, and in $PCl_3$, it forms three single bonds with Chlorine atoms and has one lone pair of electrons on the central atom. According to VSEPR theory, the presence of one lone pair results in a lone pair-bond pair repulsion that that pushes the bond angles down, resulting in a trigonal pyramidal shape.
+
+--- CHEMISTRY 2015 OBJECTIVE Q6 ---
+𝑈𝑟𝑎𝑛𝑖𝑢𝑚 −233 (𝑈92 233)𝑑𝑒𝑐𝑎𝑦𝑠 𝑏𝑦 𝛼 – 𝑒𝑚𝑖𝑠𝑠𝑖𝑜𝑛. What is the decay product?
+   A. 𝑇ℎ90 229
+   B. 𝑇ℎ90 231
+   C. 𝐴𝑐91 231
+   D. 𝐴𝑐91 233
+   Correct Answer: A
+
+--- CHEMISTRY 2015 OBJECTIVE Q7 ---
+Arrange the following ions in order of decreasing charge density: $\text{Ca}^{2+}$, $\text{Mg}^{2+}$, $\text{Al}^{3+}$ and $\text{Ba}^{2+}$
+   A. $ \text{Al}^{3+} > \text{Mg}^{2+} > \text{Ca}^{2+} > \text{Ba}^{2+}$
+   B. $ \text{Ba}^{2+} > \text{Ca}^{2+} > \text{Mg}^{2+} > \text{Al}^{3+}$
+   C. Al³+ < Mg²+ < Ca²+ < Ba²+
+   D. $ \text{Mg}^{2+} > \text{Al}^{3+} > \text{Ba}^{2+} > \text{Ca}^{2+}$
+   Correct Answer: A
+   Explanation: Charge density is proportional to the ratio of ionic charge to ionic radius ($	{charge}/	{radius}$). $\text{Al}^{3+}$ has the highest charge and smallest radius among the given ions, while $\text{Ba}^{2+}$ has the lowest charge and largest radius, resulting in the correct order of decreasing charge density: $\text{Al}^{3+} > 	{Mg}^{2+} > 	{Ca}^{2+} > 	{Ba}^{2+}$.
+
+--- CHEMISTRY 2015 OBJECTIVE Q8 ---
+Which of the following statements explain why caesium has a lower melting point than sodium?
+   A. Sodium is a more electropositive metal
+   B. Sodium has higher ionization energy
+   C. Sodium has a stronger metallic bond
+   D. Caesium has a larger atomic radius
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q9 ---
+Transition metals can form complex ions because
+   A. They have paired electrons in the d subshell
+   B. They have unpaired electrons in the d subshell
+   C. They have empty d orbitals
+   D. They have small charge/size ratio
+   Correct Answer: C
+   Explanation: Transition metals form complex ions by using their vacant or empty d-orbitals to accept electron pairs from ligands. This ability to allow ligands to donate their lone pairs into these empty orbitals is the key to coordination chemistry. Option B is incorrect because while unpaired electrons allow for magnetism, it is the empty orbitals that facilitate bonding.
+
+--- CHEMISTRY 2015 OBJECTIVE Q10 ---
+$sp^2$-hybridized carbon
+   A. Four
+   B. Two
+   C. Three
+   D. One
+   Correct Answer: C
+   Explanation: In $sp^2$ hybridization, one s-orbital and two p-orbitals mix to combine to form three equivalent hybrid orbitals. These three hybrid orbitals are used to form sigma ($\sigma$) bonds, and one unhybridized p-orbital remains to form pi ($\pi$) bonds.
+
+--- CHEMISTRY 2015 OBJECTIVE Q11 ---
+When common names are used for acids, the underlined carbon atom in the molecule shown would be designated as the $-\text{C atom}$. $\text{CH}_3\text{CH}_2\text{CH}_2-\text{O}\parallel\text{C}-\text{OH}$
+   A. Gamma
+   B. Alpha
+   C. Deltа
+   D. Beta
+   Correct Answer: B
+   Explanation: In organic carboxylic acids, the carbon atom in the carboxyl group ($-\text{COOH}$) is designated as the alpha ($\alpha$) carbon. Subsequent carbons in the chain are labeled as beta ($\beta$), gamma ($\gamma$), and delta ($\delta$) based on their distance from the carboxyl group.
+
+--- CHEMISTRY 2015 OBJECTIVE Q12 ---
+Purification of a strip of impure copper metal in aqueous CuSO$_4$ was carried out using a steady current. Which graph shows the change in mass of the cathode with time?
+   A. A straightline graph with a positive slope
+   B. A straightline graph with a negative slope
+   C. A curved graph 
+   D. Data line graph with a positive slope
+   Correct Answer: A
+   Explanation: During the electrolytic purification of copper, copper ions ($Cu^{2+}$) from the solution are reduced at the cathode, resulting in a deposition of pure copper metal. Since the current is steady, the rate of mass deposition is constant, meaning the mass of the cathode increases linearly with time. Therefore, the graph should show a straight line with a positive slope.
+
+--- CHEMISTRY 2015 OBJECTIVE Q13 ---
+Which gas closely approaches ideal behaviour at room temperature and pressure?
+   A. Helium
+   B. Carbon dioxide
+   C. Ammonia
+   D. Oxygen
+   Correct Answer: A
+   Explanation: An ideal gas follows the ideal gas law perfectly, assuming no intermolecular forces and negligible volume of particles. Helium is a small, non-polar, monoatomic gas with very weak van der Waals forces, allowing it to behave most like an ideal gas at room temperature and pressure. In contrast, larger or moreor polar molecules like CO$_2$, NH$_3$, and O$_2$ have stronger intermolecular attractions that cause deviations from ideality.
+
+--- CHEMISTRY 2015 OBJECTIVE Q14 ---
+A sample of a brown gas, a major air pollutant, is found to contain $2.34\text{ g } N$ and $5.34\text{ g } O$. Determine the empirical formula for this substance. $[N = 14, O = 16]$
+   A. $NO_2$
+   B. $NO$
+   C. $N_2O$
+   D. $N_2O_3$
+   Correct Answer: A
+   Explanation: First, calculate the moles of nitrogen and oxygen: $n(N) = 2.34 / 14 \approx 0.167$ and $n(O) = 5.34 / 16 \approx 0.334$. Dividing both by the smallest mole value (0.167), we get a ratio of $1:2$, which gives the empirical formula $NO_2$.
+
+--- CHEMISTRY 2015 OBJECTIVE Q15 ---
+Why does the rate of a gaseous reaction increase when the pressure is increased at a constant temperature?
+   A. More particles have energy that exceeds the activation energy.
+   B. The particles have more space in which to move
+   C. The particles move faster.
+   D. There are more frequent collisions between particles.
+   Correct Answer: D
+   Explanation: Increasing the pressure of a gas at constant temperature increases the concentration of the particles, leading to more frequent collisions per unit time.
+
+--- CHEMISTRY 2015 OBJECTIVE Q16 ---
+Why is gaseous nitrogen less reactive than gaseous fluorine?
+   A. The boiling point of nitrogen is lower than that of fluorine
+   B. The relative molecular mass of nitrogen is lower than that of fluorine
+   C. The atomic radius of nitrogen is greater than that of fluorine
+   D. The bond strength in the molecule is greater in nitrogen than in fluorine
+   Correct Answer: D
+   Explanation: Nitrogen exists as a diatomic molecule ($	{N}_2$) with a very strong triple bond, which requires a significant amount of energy to break. In contrast, fluorine ($	{F}_2$) has a single bond that is much weaker and more easily broken, making fluorine much more reactive. Therefore, the high bond enthalpy of the nitrogen triple bond is the reason for its low reactivity.
+
+--- CHEMISTRY 2015 OBJECTIVE Q17 ---
+The first stage in the manufacture of nitric acid is the oxidation of ammonia by oxygen. 𝑤𝑁𝐻3(𝑔) + 𝑥𝑂2(𝑔) → 𝑦𝑁𝑂(𝑔) + 𝑧𝐻2𝑂(𝑔) What values for 𝑤, 𝑥, 𝑦 𝑎𝑛𝑑 𝑧 are needed to balance the equation?
+   A. 4, 5, 4 𝑎𝑛𝑑 6
+   B. 4, 6, 4 𝑎𝑛𝑑 5
+   C. 5, 6, 5 𝑎𝑛𝑑 4
+   D. 6, 5, 6 𝑎𝑛𝑑 4
+   Correct Answer: A
+
+--- CHEMISTRY 2015 OBJECTIVE Q18 ---
+The reaction of chlorine with methane is carried out in the presence of light. What is the function of the light?
+   A. to break the 𝐶 – 𝐻 bonds in methane
+   B. to break up the chlorine molecules into atoms
+   C. to break up the chlorine molecules into ions
+   D. to heat up the mixture
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q19 ---
+In the Solvay process, $\text{NaCl}(aq) + \text{NH}_3(g) + \text{H}_2\text{O}(l) + \text{CO}_2(g) \rightarrow \text{NaHCO}_3(s) + \text{NH}_4\text{Cl}(aq)$. What volume of carbon dioxide (at s.t.p) is required to produce $1.00\text{ kg}$ of $\text{sodium hydrogen carbonate}$? ($1\text{ mole}$ of gas at s.t.p occupies $22.4\text{ dm}^3$) [$\text{Na} = 23, \text{Cl} = 35.5, \text{C} = 12, \text{O} = 16, \text{H} = 1, \text{N} = 14$].
+   A. $250\text{ dm}^3$
+   B. $762\text{ dm}^3$
+   C. $267\text{ dm}^3$
+   D. $\text{462 dm}^3$
+   D. $462\text{ dm}^3$
+   Correct Answer: B
+   Explanation: First, calculate the molar mass of $\text{NaHCO}_3$ ($84\text{ g/mol}$). Convert $1.00\text{ kg}$ ($1000\text{ g}$) to moles ($1000/84 \approx 11.905\text{ moles}$). From the stoichiometry, 1 mole of $\text{CO}_2$ produces 1 mole of $\{ext\text{NaHCO}_3\}$, so $11.905\text{ moles}$ of $\text{CO}_2$ are needed. Volume of $\text{CO}_2 = 11.905 \times 22.4 = 266.67\text{ dm}^3$, which is approximately $267\text{ dm}^3$. The stated answer B is incorrect; the correct option is C.
+
+--- CHEMISTRY 2015 OBJECTIVE Q20 ---
+Which group of particles is in order of increasing size?
+   A. $N, O, F$
+   B. $N^{3-}, O^{2-}, F^{-}$
+   C. $Na^{+}, Mg^{2+}, Al^{3+}$
+   D. $Na^{+}, Ne, F^{-}$
+   Correct Answer: D
+   Explanation: Option D represents an isoelectronic series where all species have 10 electrons; size decreases as the proton number increases from Na+ to F-.
+
+--- CHEMISTRY 2015 OBJECTIVE Q21 ---
+River water in a chalky agricultural area may contain 𝐶𝑎2+, 𝑀𝑔2+, 𝐶𝑂3 2−, 𝐻𝐶𝑂3−, 𝐶𝑙−, 𝑁𝑂3− 𝑖𝑜𝑛𝑠. In a waterworks, such water is treated by adding a calculated quantity of calcium hydroxide. What will be precipitated following the addition of calcium hydroxide?
+   A. 𝐶𝑎𝐶𝑙2
+   B. 𝐶𝑎𝐶𝑂3
+   C. 𝐶𝑎(𝑁𝑂3)2
+   D. 𝑀𝑔(𝑁𝑂3)2
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q22 ---
+The electronic configuration of the 𝐹𝑒3+ is
+   A. 1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑4
+   B. 1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑5
+   C. 1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑3
+   D. 1𝑠22𝑠22𝑝63𝑠23𝑝63𝑑6
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q23 ---
+An element with an atomic number of 35 is --------- block element.
+   A. S – block
+   B. P – block
+   C. D – block
+   D. F – block
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q24 ---
+Iodine trichloride, 𝐼𝐶𝑙3 is made by reacting iodine with chlorine. 𝐼2(𝑠) + 𝐶𝑙2(𝑔) → 2𝐼𝐶𝑙(𝑠); 𝛥𝐻 = +14𝑘𝐽𝑚𝑜𝑙−1 𝐼𝐶𝑙(𝑠) + 𝐶𝑙2(𝑔) → 𝐼𝐶𝑙3(𝑠); 𝛥𝐻𝜃= – 88𝑘𝐽𝑚𝑜𝑙−1 By using the data above, what is the enthalpy change of the formation for solid iodine trichloride? a reactant, A. how many times does the rate increase a [A] increases by a factor of 2?
+   A. −162𝑘𝐽𝑚𝑜𝑙−1
+   B. −81𝑘𝐽𝑚𝑜𝑙−1
+   C. −74𝑘𝐽𝑚𝑜𝑙−1
+   D. −60𝑘𝐽𝑚𝑜𝑙−1
+   Correct Answer: D
+
+--- CHEMISTRY 2015 OBJECTIVE Q25 ---
+The standard enthalpy changes of formation of $\text{TiO}_2(s)$ and $\text{CO}(g)$ are $-940\text{ kJ mol}^{-1}$ and $-110\text{ kJ mol}^{-1}$ respectively. $\text{TiO}_2(s) + 2\text{C}(s) \to \text{Ti}(s) + 2\text{CO}(g)$. What is the standard enthalpy change of this reaction?
+   A. $-830\text{ kJ mol}^{-1}$
+   B. $-720\text{ kJ mol}^{-1}$
+   C. $+720\text{ kJ mol}^{-1}$
+   D. $+830\text{ kJ mol}^{-1}$
+   Correct Answer: C
+   Explanation: Using Hess's Law, the enthalpy change of reaction is calculated as the sum of enthalpies of formation of products minus the sum of enthalpies of formation of reactants. $\Delta H^\circ_r = [\text{Ti}(s) + 2\text{CO}(g)] - [\text{TiO}_2(s) + 2\text{C}(s)] = [0 + 2(-110)] - [-940 + 0] = -220 + 940 = +720\text{ kJ mol}^{-1}$.
+
+--- CHEMISTRY 2015 OBJECTIVE Q26 ---
+The standard enthalpy changes of formation of 𝐻𝐶𝑙 𝑎𝑛𝑑 𝐻𝐼 𝑎𝑟𝑒 – 93𝑘𝐽𝑚𝑜𝑙−1 𝑎𝑛𝑑 + 25𝑘𝐽𝑚𝑜𝑙−1 respectively. Which statement is most important in explaining this difference?
+   A. The bond energy of 𝐶𝑙2 is smaller than the bond energy of 𝐼2.
+   B. The activation energy for the 𝐻2 / 𝐶𝑙2 reaction is much less than that for the 𝐻2 / 𝐼2 reaction.
+   C. The bond energy of 𝐼2 is smaller than the bond energy of 𝐶𝑙2.
+   D. The bond energy of 𝐻𝐼 is smaller than the bond energy of 𝐻𝐶𝑙.
+   Correct Answer: C
+
+--- CHEMISTRY 2015 OBJECTIVE Q27 ---
+What is the catalyst used in the contact process?
+   A. Pd
+   B. Pt
+   C. Fe$_2$O$_3$
+   D. V$_2$O$_5$
+   Correct Answer: D
+   Explanation: The contact process is used for the industrial production of sulfuric acid. Vanadium(V) oxide (V$_2$O$_5$) is used as a catalyst to speed up the oxidation of sulfur dioxide to sulfur trioxide. This increases the rate of reaction at a rate that is economically viable for industrial scale.
+
+--- CHEMISTRY 2015 OBJECTIVE Q28 ---
+The main purpose of adding cryolite to the ore (bauxite) during the preparation of Aluminium metal by electrolysis is?
+   A. minimizes the release of oxygen at the graphite anode
+   B. reduce the melting point of the bauxite
+   C. increase the melting point of the bauxite
+   D. enables the aluminum discharge at the anode
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q29 ---
+What type of bond needs to be broken for magnesium oxide to melt?
+   A. Co-ordinate
+   B. Covalent
+   C. Ionic
+   D. Metallic
+   Correct Answer: C
+   Explanation: Magnesium oxide (MgO) is an ionic compound formed by the metal magnesium and the non-metal oxygen. Melting an ionic solid involves overcoming the strong electrostatic forces of attraction between oppositely charged ions, which is the ionic bond.
+
+--- CHEMISTRY 2015 OBJECTIVE Q30 ---
+A substance which contains the following elements by mass: 𝐶, 17.8%; 𝐻, 1.5%; 𝐶𝑙, 52.6%; 𝐹, 28.1% has molecular mass of 135. Determine the molecular formula
+   A. 𝐶2𝐻2𝐹𝐶𝑙
+   B. 𝐶2𝐻2𝐹2𝐶𝑙
+   C. 𝐶2𝐻2𝐹2𝐶𝑙2
+   D. 𝐶2𝐻2𝐹𝐶𝑙3
+   Correct Answer: C
+
+--- CHEMISTRY 2015 OBJECTIVE Q31 ---
+How many chiral centres does the compound below possess? 𝐶𝐻2𝐶𝑂2𝐻 | 𝐶(𝑂𝐻)𝐶𝑂2𝐻 | 𝐶𝐻2𝐶𝑂2𝐻
+   A. 0
+   B. 1
+   C. 2
+   D. 3
+   Correct Answer: C
+
+--- CHEMISTRY 2015 OBJECTIVE Q32 ---
+0.200 $mol$ of a hydrocarbon undergo complete combustion to give 35.2 g of $\text{CO}_2$ and 14.4 g of $\text{H}_2\text{O}$ as the only products. What is the molecular formula of the hydrocarbon?
+   A. $C_2H_4$
+   B. $C_2H_6$
+   C. $C_4H_4$
+   D. $C_4H_8$
+   Correct Answer: D
+   Explanation: First, calculate the moles of $CO_2$ ($35.2/44 = 0.8$) and $H_2O$ ($14.4/18 = 0.8$). Since the hydrocarbon has 0.2 mol, the ratio of C to H atoms in the formula is $0.8/0.2=4$ for Carbon and $2 	imes 0.8/0.2=8$ for Hydrogen. Thus, the molecular formula is $C_4H_8$.
+
+--- CHEMISTRY 2015 OBJECTIVE Q33 ---
+One of the original postulates of Dalton’s Atomic Theory is:
+   A. An atom reacts to attain electronic configuration of the noble gas closest to it.
+   B. When atoms of different elements react to form chemical compound, the atoms are combined in simple whole number ratio.
+   C. The isotopes of an element are in whole number ratio.
+   D. Atoms of different elements differ in terms of number of protons in their nuclei.
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q34 ---
+The ions in a mass spectrophotometer are separated based on their mass: charge ratio by the
+   A. Ion source
+   B. Mass analyzer
+   C. Deflector
+   D. Detector
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q35 ---
+Which of the following terms accurately describes the energy associated with the process? $\text{Li}(g) \longrightarrow \text{Li}^+(g) + e^-$
+   A. Electron affinity
+   B. Binding energy
+   C. Ionization energy
+   D. Electronegativity
+   Correct Answer: C
+   Explanation: Ionization energy is defined as the energy required to remove one mole of electrons from one mole of gaseous atoms to form one mole of gaseous ions. The process shown, where a neutral lithium atom in the gas phase is converted to a positive lithium ion and a free electron, is a characteristic example of first ionization energy.
+
+--- CHEMISTRY 2015 OBJECTIVE Q36 ---
+If the activation energy in the forward direction of an elementary step is 52𝑘𝐽 and the activation energy in the reverse direction is 74𝑘𝐽, what is the energy of reaction 𝐸 for this step?
+   A. +22𝑘𝐽
+   B. −22𝑘𝐽
+   C. +52𝑘𝐽
+   D. −52𝑘𝐽
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q37 ---
+$Na_2O_2(s) + 2H_2O(l) \longrightarrow NaOH(aq) + H_2O(l)$ The $pH$ of the solution after reaction will be
+   A. 7-8
+   B. 6-7
+   A. 7-8
+   B. 6-7
+   C. < 2
+   D. > 10
+   Correct Answer: D
+   Explanation: Sodium peroxide ($Na_2O_2$) reacts with water to produce sodium hydroxide ($NaOH$), which is a strong base. Since $NaOH$ is a strong base, the resulting solution will have a high $pH$ value, typically greater than 10.
+
+--- CHEMISTRY 2015 OBJECTIVE Q38 ---
+Gunpowder is a mixture of saltpeter, Sulphur and wood charcoal in the ratio of 6: 1: 1 by mass. The mixture burns with explosion because it produces a large volume of gases. Saltpeter in the mixture acts as
+   A. Modifier
+   B. Reducing agent
+   C. Oxidizing agent
+   D. Fuel
+   Correct Answer: C
+   Explanation: In the gunpowder mixture, wood charcoal and sulphur are the fuels that undergo oxidation. Saltpeter (potassium nitrate, KNO$_3$) acts as an oxidizing agent because it provides the oxygen required for the rapid combustion of the fuel components.
+
+--- CHEMISTRY 2015 OBJECTIVE Q39 ---
+The oxidation state of $\text{Au}$ in $\text{K[Au(OH)}_4\text{]}$ is:
+   A. +1
+   B. +2
+   C. +3
+   D. +4
+   Correct Answer: C
+   Explanation: The sum of oxidation states in a neutral compound or complex ion is zero or its charge. Here, K is +1 and OH is -1. Let x be the oxidation state of Au. +1 + x + 4(-1) = 0, which gives x = +3. Therefore, the oxidation state of Au is +3.
+
+--- CHEMISTRY 2015 OBJECTIVE Q40 ---
+The most common type of chemical reaction which alkanes undergo is
+   A. Substitution
+   B. Addition
+   C. Condensation
+   D. Elimination
+   Correct Answer: A
+   Explanation: Alkanes are saturated hydrocarbons, meaning they contain only single bonds between carbon atoms. Because they lack double or triple bonds, they cannot undergo addition reactions; instead, they primarily undergo substitution reactions, such as halogenation, where a hydrogen atom is replaced by another atom or group.
+
+--- CHEMISTRY 2015 OBJECTIVE Q41 ---
+The boiling point of water is higher than that of methanol because
+   A. Water is oxide while methanol is an alcohol
+   B. Inter molecular forces in water are stronger than those in methanol
+   C. Water is an inorganic compound while methanol is organic
+   D. Water is an ionic compound while methanol is covalent
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q42 ---
+In the Rutherford scattering experiment, Rutherford bombarded a thin piece of gold foil with a beam of
+   A. Electrons
+   B. Neutrons
+   C. Protons
+   D. Alpha particles
+   Correct Answer: D
+
+--- CHEMISTRY 2015 OBJECTIVE Q43 ---
+When azimuthal quantum number ($l = 2$), what set of orbitals is designated?
+   A. P
+   B. D
+   C. F
+   D. G
+   Correct Answer: B
+   Explanation: The azimuthal quantum number ($l$) describes the shape of the orbital. For $l = 0$, the orbital is s; for $l = 1$, it is p; for $l = 2$, it is d; and for $l = 3$, it is f. Therefore, $l = 2$ corresponds to the d-orbitals.
+
+--- CHEMISTRY 2015 OBJECTIVE Q44 ---
+Sodium hydroxide is an Arrhenius base because it contains
+   A. 𝑁𝑎+
+   B. 𝑂𝐻−
+   C. 𝑁𝑎𝑂𝐻
+   D. 𝑁𝑎
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q45 ---
+The standard state of an element or compound is determined at a pressure of________ and a temperature of _______
+   A. 760𝑚𝑚𝐻𝑔, 0℃
+   B. 1 𝑎𝑡𝑚, 273℃
+   C. 760𝑚𝑚𝐻𝑔, 0𝐾
+   D. 1 𝑎𝑡𝑚, 298𝐾
+   Correct Answer: D
+
+--- CHEMISTRY 2015 OBJECTIVE Q46 ---
+Which of the following is a state function?
+   A. Enthalpy
+   B. Work
+   C. Heat
+   D. Power
+   Correct Answer: A
+
+--- CHEMISTRY 2015 OBJECTIVE Q47 ---
+The method that cannot be used for removing permanent hardness of water is
+   A. Adding sodium carbonate
+   B. Boiling
+   C. Adding caustic soda
+   D. Adding slaked lime
+   Correct Answer: B
+   Explanation: Boiling is effective for removing temporary hardness caused by dissolved bicarbonate ions, but it cannot remove permanent hardness caused by sulfate or chloride salts of calcium and magnesium. Sodium carbonate, caustic soda, and slaked lime are chemical methods used to react with and precipitate out the ions causing permanent hardness.
+
+--- CHEMISTRY 2015 OBJECTIVE Q48 ---
+Identify 𝑃 In which of the following characteristics does hydrogen resemble halogens?
+   A. Hydrogen is the lightest
+   B. Hydrogen forms ionic hydrides with alkali metals
+   C. Hydrogen atom contains one electron each
+   D. Hydrogen has three isotopes
+   Correct Answer: B
+
+--- CHEMISTRY 2015 OBJECTIVE Q49 ---
+Which alkali metal reacts directly with Nitrogen to form nitride?
+   A. Na
+   B. K
+   C. R{b
+   D. Li
+   Correct Answer: D
+   Explanation: Lithium (Li) is the only alkali metal that reacts directly with atmospheric nitrogen at room temperature or moderate heating to form a nitride (Li$_3$N). Other alkali metals form hydroxides or oxides when exposed to air, but do not react directly with nitrogen.
+
+--- CHEMISTRY 2015 OBJECTIVE Q50 ---
+The isomerism which exists between 𝐶𝐻3𝐶𝐻𝐶𝐼2 and 𝐶𝐻2𝐶𝐼. 𝐶𝐻2𝐶𝐼 is
+   A. Chain isomerism
+   B. Functional group isomerism
+   C. Positional isomerism
+   D. metamerism
+   Correct Answer: C

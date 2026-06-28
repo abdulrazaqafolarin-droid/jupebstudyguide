@@ -1,0 +1,163 @@
+=== src/data/new-questions/biology/2015.json (8 theory/practical) ===
+--- bio-2015-import-theory-1 ---
+Questions in all; One from each Course
+
+--- bio-2015-import-theory-2 ---
+1.
+(a). State 6 differences between sexual and asexual reproduction [6 marks]
+(b). Write short notes on any 2 of the following:
+i. Haplontic life cycle
+ii. Diplontic life cycle
+iii. Haplodiplontic life cycle [4 marks]
+
+--- bio-2015-import-theory-3 ---
+2.
+(a). Define the following terms
+i. Genotype
+ii. Phenotype
+iii. Hybrid
+iv. Dominant character. [4 marks]
+(b). State clearly Mendel’s first and second laws of inheritance [2 marks]
+(c). If a pure breeding brown coloured rat BB is crossed with a pure breeding White rat bb, using diagrams only, show the genotype of the offspring up to the second filial generation. [4 marks]3. Describe the formation of two molecules of pyruvate during respiration [10 marks]:
+
+--- bio-2015-import-theory-4 ---
+4.
+(a). Define the following terms
+i. Aseptic Technique
+ii. Antigens
+iii. Antibodies
+iv. Immunity [4 marks]
+(b). List 6 rules that must be observed for any aseptic technique [6 marks]
+
+--- bio-2015-import-theory-5 ---
+5.
+(a). How does water in the soil enter the root hair of a plant? [6 marks]
+(b) Name the tissue that conducts water from the root to the stem and leaves in a flowering Plant? [4 marks]
+
+--- bio-2015-import-theory-6 ---
+6.
+(a). State five functions of testosterone [5 marks]
+(b). With aid of diagram only, describe mature spermatozoon [5 marks]
+
+--- bio-2015-import-theory-7 ---
+7.
+(a). What is a tissue? [1 mark]
+(b). How are plant tissue formed [3 marks]
+(c). Describe the structure and function of two vascular tissues [6 marks]
+
+--- bio-2015-import-theory-8 ---
+8.
+(a). List any 6 characteristics of the phylum mullusca [6 marks]
+(b).Give 4 economic importance of the sub- class pulmonata [4 marks]
+
+=== src/data/new-questions/biology/2021.json (6 theory/practical) ===
+--- bio-2021-import-theory-1 ---
+: 
+  Answer   FOUR   questions;   ONE   question from each course . Ensure you read and follow all the Instructions on the cover page of the Answer Booklet.  JSC 604   Turn Over
+
+=== PAGE 2 ===
+2  SECTION A: MULTIPLE CHOICE QUESTIONS. Answer ALL Questions.  1.   The process of a white blood cell engulfing a bacterium is known as A. endocytosis. B. exocytosis. C. osmosis. D. diffusion. 2.   Each of the following is a water plant EXCEPT A. Hycinth. B. Lilly. C. Cactus. D. Letuce. 3.   In plants ce
+
+--- bio-2021-import-theory-2 ---
+1.
+(a) What is gaseous exchange? [1 mark]
+(b) What is respiratory surface? [1 mark]
+(c) State FOUR properties required for a cell to be an effective respiratory surface. [4 marks]
+(d) Give FOUR examples of respiratory surfaces [4 marks]
+
+--- bio-2021-import-theory-3 ---
+2.
+(a) Define the following Ecological terms: [4 marks]
+i. Niche
+ii. Microhabitat
+iii. Ecosystem
+iv. Population
+(b) Give TWO reasons why a small population can easily go into extinction. [2 marks]
+(c) Give TWO explanations each on how the population growth of an organism can be affected by density dependent and density independent factors. [4 marks]3
+(a) i.) Mention TEN macro-elements (excluding phosphorus) which are required by plants for healthy
+
+--- bio-2021-import-theory-4 ---
+4.
+(a) Mention FOUR roles of cytokinin in plant growth [4 marks]
+(b) Define the following terms:
+i. Hypogeal germination
+ii. Meristem
+iii. Epigeal germination
+iv. Geotropism [4 marks]
+(c) List TWO conditions necessary for growth. [1 mark]
+(d) State ONE feature possessed by a seed or fruit dispersed by wind [1 mark]
+
+--- bio-2021-import-theory-5 ---
+5.
+(a) Enumerate TWO major historical issues/challenges / events that contributed to the historical development of Microbiology. [2 marks]
+(b) Describe the FOUR major groups of fungi based on the spores produced. [4 marks]
+(c) Give FOUR differences between bacteria and viruses. [4 marks]
+
+--- bio-2021-import-theory-6 ---
+6.
+(a) State FOUR differences between mutational and plasmids mediated drug resistance. [4 marks]
+(b) What is bacteriophage? [1 mark]
+(c) Describe the life cycle of E. Coli. [4 marks]
+(d) Define intermediate host. [1 mark]7
+(a) Enumerate FIVE reasons why Monotremes and Marsupials are special categories of mammals. [2½ marks]
+(b) List FIVE biological advancements of Amphibians over Fishes. [2½ marks]
+(c) Explain ultrafiltration. [5 marks]
+
+=== src/data/new-questions/chemistry/2018.json (1 theory/practical) ===
+--- che-2018-import-theory-1 ---
+a What are acid-base indicators? (1 𝑚𝑎𝑟𝑘) 1.b A 550𝑚𝑔 tablet containing vitamin C, 𝐶 6 𝐻 8 𝑂 6, was dissolved in water and reacted with bromine (𝐶 6 𝐻 8 𝑂 6, + 𝐵𝑟 2 → 𝐶 6 𝐻 6 𝑂 6 + 2𝐻𝐵𝑟). The resulting solution was titrated with 40𝑐𝑚 3 𝑜𝑓 0.145𝑀 𝑁𝑎𝑂𝐻 (𝐻𝐵𝑟 + 𝑁𝑎𝑂𝐻 → 𝑁𝑎𝐵𝑟 + 𝐻 2 𝑂) [𝐶 = 12, 𝑁𝑎 = 23, 𝑂 = 16, 𝐻 = 1, 𝐵𝑟 = 79] i)
+
+=== src/data/new-questions/chemistry/2021.json (5 theory/practical) ===
+--- che-2021-import-theory-1 ---
+: 
+  Answer   FOUR   questions;   ONE   question from each course . Ensure you read and follow all the Instructions on the cover page of the Answer Booklet.  JSC 606   Turn Over
+
+=== PAGE 2 ===
+2  SECTION A: MULTIPLE CHOICE QUESTIONS Answer All Questions.  1.   The reproducibility or repeatability of a measurement is termed A.   Accuracy B.   Precision C.   Range D.   Confidence Interval 2.   The alpha (α-) scattering experiment is synonymous with A.   J. J. Thomson B.   Ernest Rutherford C.   J
+
+--- che-2021-import-theory-2 ---
+2.
+(a) A compound X is known to contain carbon, hydrogen and oxygen only. When it is burnt completely in excess oxygen, carbon dioxide and water are given out as the only products. It is found that 0.46g of X gives 0.88g carbon dioxide and 0.54g water. Find the empirical formula of compound X (R.A. M: H=1.0, C=12.0, O=16.0) [4 marks]
+(b)
+(i) Differentiate between extensive and intensive property
+(ii) Give one example each of extensive and intensive property [2 marks]
+(c) (i) State one
+
+--- che-2021-import-theory-3 ---
+3.
+(a)
+(i) Write the van der Waals equation and state all the parameters. [2 marks]
+(ii) If sulfur
+(iv) oxide were an ideal gas, the pressure at 0.0 ℃ exerted by 1.0 mole occupying 22.4 L would be 1.0 atm (22.4 L is the molar volume of an ideal gas at (STP). Use the Van der Waals equation to estimate the pressure of this volume of 1.0 mol. 𝑆𝑂 2 at 0.0 ℃. (Take 𝑎 = 6.865 𝐿 2. 𝑎𝑡𝑚/𝑚𝑜𝑙 2, b = 0.05679 L/mol.) [2 marks]
+(b) Briefly account for the following observa
+
+--- che-2021-import-theory-4 ---
+4.
+(a)
+(i) State the law of mass action.
+(ii) Using relevant illustrative reaction, distinguish between the reaction quotient
+(q) and the equilibrium constant
+(k). [3 marks]
+(b) 70 g of ethanol and 30 g of methanol were mixed to form a solution. If the vapour pressure of ethanol is 75 mmHg and methanol is 22 mmHg at 20 o C (C=12; O =16; H = 1)
+(i) Calculate the mole fraction of ethanol and methanol in the solution
+(ii) Calculate pressure of each component and total vapour pressure of the so
+
+--- che-2021-import-theory-5 ---
+6.
+(a)
+(i) Write balanced equations for the reactions of sodium and phosphorus with oxygen and chlorine respectively.
+(ii) Write chemical equations to illustrate what happens when each oxide in
+(i) is in contact with water
+(iii) Using Chemical equations only, describe what happens when water is added to the chlorides of the elements in
+(a)
+(i). [4 marks]
+(b) Consider the coordination compound [Co(NH 3) 6 ]Cl 3.
+(i) State the primary valency of the central metal ion.
+(ii) State the secondar
+
+=== src/data/new-questions/math/2015.json (1 theory/practical) ===
+--- mat-2015-import-theory-1 ---
+(a). Given A = {-5, -3, -1, 0, 1, 2, 3}, B = {-4, -3, 0, 3, 5, 8}. MAT001 Find A Δ B. [2 marks]
+(b) If A, B, and C are any sets, show that A ∪ (B ∪ C) = (A ∪ B) ∪ C [3 marks]
+(c) In an election involving three parties for the chairmanship and gubernatorial election of Lagos State, voters cast their votes as follows: 190 voted for party A, 200 for party B and 250 for party C. 80 voted for A and B, 60 voted for A and C, 100 voted for B and C and 40 voted for B al
+

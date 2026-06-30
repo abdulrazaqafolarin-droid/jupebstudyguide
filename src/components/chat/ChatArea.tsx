@@ -631,10 +631,6 @@ export function ChatArea({
   }, [onTyping]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (!e.shiftKey || e.ctrlKey)) {
-      e.preventDefault();
-      handleSend();
-    }
     if (e.key === 'Escape') {
       setEditingMessage(null);
       setReplyTo(null);
@@ -643,7 +639,7 @@ export function ChatArea({
       setShowSearch(false);
       setSearchQuery('');
     }
-  }, [handleSend]);
+  }, []);
 
   const insertEmoji = useCallback((emoji: string) => {
     setInput(prev => prev + emoji);
@@ -1008,7 +1004,7 @@ export function ChatArea({
         <div className="w-20 h-20 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
           <MessageCircle className="w-10 h-10 opacity-40" />
         </div>
-        <p className="text-lg font-medium">JUPEB Chat</p>
+        <p className="text-lg font-medium">Rutex Chat</p>
         <p className="text-sm mt-1 opacity-60">Select a conversation or find someone to chat with</p>
       </div>
     );
@@ -1140,7 +1136,7 @@ export function ChatArea({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 relative overflow-hidden">
+      <div data-tour="chat-messages" className="flex-1 relative overflow-hidden">
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
@@ -1883,7 +1879,7 @@ export function ChatArea({
             onLock={handleVnLock}
           />
         ) : (
-        <div className="px-3 py-2.5">
+        <div data-tour="chat-input" className="px-3 py-2.5">
           {!canSend && (
             <div className="text-[11px] text-muted-foreground text-center pb-2">
               Only admins can send messages in this group

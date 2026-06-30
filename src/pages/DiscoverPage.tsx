@@ -104,7 +104,7 @@ export default function DiscoverPage() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* Search */}
-        <div className="relative">
+        <div data-tour="discover-search" className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             value={searchQuery}
@@ -205,7 +205,7 @@ export default function DiscoverPage() {
             )}
 
             {/* All Users */}
-            <section className="space-y-3">
+            <section data-tour="discover-list" className="space-y-3">
               <h2 className="text-sm font-semibold flex items-center gap-2">
                 <Users className="w-4 h-4 text-primary" />
                 {searchQuery ? `Search Results (${filtered.length})` : 'All Members'}

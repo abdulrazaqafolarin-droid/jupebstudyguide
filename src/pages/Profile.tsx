@@ -308,7 +308,7 @@ export default function ProfilePage() {
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         {/* Avatar section */}
-        <section className="animate-in-up stagger-1">
+        <section data-tour="profile-stats" className="animate-in-up stagger-1">
           <div className="bg-card rounded-2xl border border-border p-8 chalk-texture relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
             <div className="relative flex flex-col items-center gap-4">
@@ -344,7 +344,7 @@ export default function ProfilePage() {
         </section>
 
         {/* Display name */}
-        <section className="animate-in-up stagger-2">
+        <section data-tour="profile-settings" className="animate-in-up stagger-2">
           <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
             <Label htmlFor="name" className="text-sm font-semibold">Display name</Label>
             <Input
@@ -472,11 +472,11 @@ export default function ProfilePage() {
                   <Mail className="w-4 h-4 shrink-0 text-accent" />
                   {ADMIN_EMAIL}
                 </a>
-                <a href="https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50">
+                <a href="https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20Rutex%20Jupeb%20Master%20activation%20code" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50">
                   <MessageCircle className="w-4 h-4 shrink-0 text-accent" />
                   08124504552 (WhatsApp)
                 </a>
-                <a href="https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50">
+                <a href="https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20Rutex%20Jupeb%20Master%20activation%20code" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 bg-background/60 hover:bg-background/80 rounded-xl px-4 py-3 transition-all border border-border/50">
                   <MessageCircle className="w-4 h-4 shrink-0 text-accent" />
                   07043353166 (WhatsApp)
                 </a>

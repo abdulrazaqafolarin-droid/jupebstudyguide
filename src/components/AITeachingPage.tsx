@@ -12,7 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat, stripThinking } from '@/lib/ai-service';
+import { streamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, SYLLABUS_TEACHING_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -131,7 +131,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
     await streamChat(systemPrompt, newMessages, {
       onDelta: (text) => {
         acc += text;
-        const stripped = stripThinking(acc);
+        const stripped = acc;
         setMessages(prev => {
           const newArr = [...prev];
           if (newArr.length > 0 && newArr[newArr.length - 1].role === 'assistant') {
@@ -373,12 +373,6 @@ Please teach me this topic thoroughly, step by step. Start from the fundamentals
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
-              }}
               placeholder={attachment ? "Describe what you need help with..." : "Ask a question, request clarification, or say 'I understand, continue'..."}
               className="min-h-[40px] max-h-[80px] resize-none text-sm flex-1 bg-white/5 border-white/10 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 rounded-xl placeholder:text-muted-foreground/50"
               rows={1}

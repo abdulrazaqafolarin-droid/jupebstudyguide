@@ -66,7 +66,7 @@ export function StudyTimer({
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-5 rounded-2xl bg-card border">
+    <div data-tour="pq-timer" className="flex flex-col items-center gap-4 p-5 rounded-2xl bg-card border">
       <div className="relative flex items-center justify-center">
         <svg width="100" height="100" className="transform -rotate-90">
           <circle

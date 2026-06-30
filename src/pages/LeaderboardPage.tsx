@@ -106,7 +106,7 @@ export default function LeaderboardPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div data-tour="leaderboard-your-rank" className="grid gap-4 md:grid-cols-2">
           <div className="bg-card rounded-xl border border-border/50 p-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Timer className="w-4 h-4" />
@@ -129,9 +129,9 @@ export default function LeaderboardPage() {
                 </div>
                 <button
                   onClick={() => {
-                    const text = `🏆 I'm ranked #${myRank.rank} on the JUPEB Study Guide leaderboard with ${myRank.score.toLocaleString()} points!`;
+                    const text = `🏆 I'm ranked #${myRank.rank} on the Rutex Jupeb Master leaderboard with ${myRank.score.toLocaleString()} points!`;
                     if (navigator.share) {
-                      navigator.share({ title: 'JUPEB Leaderboard', text }).catch(() => {});
+                      navigator.share({ title: 'Rutex Jupeb Master Leaderboard', text }).catch(() => {});
                     } else {
                       navigator.clipboard.writeText(text).then(() => toast('Leaderboard rank copied!')).catch(() => {});
                     }
@@ -219,7 +219,7 @@ export default function LeaderboardPage() {
           </div>
         )}
 
-        <div>
+        <div data-tour="leaderboard-list">
           <h2 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
             <Star className="w-4 h-4 text-primary" />
             This Week's Rankings ({rows.length} participant{rows.length !== 1 ? "s" : ""})

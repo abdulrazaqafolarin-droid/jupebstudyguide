@@ -26,7 +26,7 @@ interface YearAccordionProps {
 
 export function YearAccordion({ years, counts, categoryCounts, selectedYear, onSelectYear, onAnalyzeYear, isAdmin }: YearAccordionProps) {
   return (
-    <div className="space-y-1.5">
+    <div data-tour="pq-year-list" className="space-y-1.5">
       {years.map((year, i) => {
         const isOpen = selectedYear === year;
         const count = counts[year] ?? 0;

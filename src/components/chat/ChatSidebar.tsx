@@ -142,7 +142,7 @@ export function ChatSidebar({
   });
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div data-tour="chat-conversations" className="flex-1 flex flex-col overflow-hidden">
       {/* Search bar */}
       <div className="p-3 pb-1 space-y-2 shrink-0">
         <div className="flex gap-2">

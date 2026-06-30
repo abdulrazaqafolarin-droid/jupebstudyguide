@@ -81,7 +81,7 @@ export default function AchievementsPage() {
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Stats header */}
-        <div className="bg-card rounded-xl border border-border p-5 space-y-4">
+        <div data-tour="achievements-progress" className="bg-card rounded-xl border border-border p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <span className="text-2xl font-bold">{stats.unlocked}</span>
@@ -140,7 +140,7 @@ export default function AchievementsPage() {
         </div>
 
         {/* Achievements grid */}
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div data-tour="achievements-grid" className="grid gap-3 sm:grid-cols-2">
           {filtered.map((achievement, i) => (
             <div
               key={achievement.id}

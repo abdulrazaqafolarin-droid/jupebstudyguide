@@ -14,6 +14,7 @@ import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
 import InstallPrompt from "./components/InstallPrompt";
+import FeatureTourProvider from "./components/FeatureTour";
 import { FloatingAITutor } from "./components/FloatingAITutor";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
@@ -298,10 +299,12 @@ const App = () => {
             <Sonner />
             <InstallPrompt />
             <BrowserRouter>
+              <FeatureTourProvider>
               <AnimatedRoutes />
               <ErrorBoundary>
               <FloatingAITutor />
               </ErrorBoundary>
+              </FeatureTourProvider>
             </BrowserRouter>
           </ProfilePhotoViewerProvider>
         </ChatUnreadProvider>

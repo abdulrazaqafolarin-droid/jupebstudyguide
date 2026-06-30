@@ -2,45 +2,6 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat-proxy`;
 import { supabase } from '@/integrations/supabase/client';
 
-export interface ParsedThinkBlock {
-  thinking: string;
-  answer: string;
-}
-
-export function parseThinkResponse(fullText: string): ParsedThinkBlock {
-  const closeIdx = fullText.indexOf('</think>');
-  if (closeIdx !== -1) {
-    let thinking = fullText.slice(0, closeIdx).trim();
-    const openIdx = thinking.indexOf('<think>');
-    if (openIdx !== -1) {
-      thinking = thinking.slice(openIdx + 7).trim();
-    }
-    return { thinking, answer: fullText.slice(closeIdx + 8).trim() };
-  }
-  const openIdx = fullText.indexOf('<think>');
-  if (openIdx !== -1) {
-    return { thinking: fullText.slice(openIdx + 7).trim(), answer: '' };
-  }
-  return { thinking: fullText.trim(), answer: '' };
-}
-
-export function stripThinking(text: string): string {
-  let result = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-  const leakPatterns = [
-    /^[\s\S]*?(?=\bDraft\b|\bFinal(?:\s+Answer)?\b)/i,
-    /^(?:.*?(?:check\.|✓|→|No\s+\w+\?|Self-[Cc]orrection).*\n)+/gm,
-  ];
-  for (const pattern of leakPatterns) {
-    const cleaned = result.replace(pattern, '').trim();
-    if (cleaned.length > 50) result = cleaned;
-  }
-  const draftSplit = result.split(/\bDraft\b/i);
-  if (draftSplit.length > 1) {
-    result = draftSplit[draftSplit.length - 1].trim();
-  }
-  return result;
-}
-
 export interface AIChatMessage {
   role: "system" | "user" | "assistant";
   content: string;

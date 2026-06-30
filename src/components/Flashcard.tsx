@@ -5,7 +5,7 @@ import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, ImageOff, L
 import { Button } from './ui/button';
 import { AITutor } from './AITutor';
 import MathRenderer from './MathRenderer';
-import { streamChat, stripThinking } from "@/lib/ai-service";
+import { streamChat } from "@/lib/ai-service";
 import type { AIChatMessage } from "@/lib/ai-service";
 
 const AI_ANSWER_SYSTEM_PROMPT = `You are a JUPEB exam expert. Given a theory question, provide a concise, accurate model answer that would receive full marks. Keep it brief (2-4 sentences). Use LaTeX for math if applicable.`;
@@ -38,7 +38,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
       await streamChat(AI_ANSWER_SYSTEM_PROMPT, messages, {
         onDelta: (text) => {
           aiAccumRef.current += text;
-          setAiTheoryAnswer(stripThinking(aiAccumRef.current));
+          setAiTheoryAnswer(aiAccumRef.current);
         },
         onDone: () => {
           setAiTheoryLoading(false);

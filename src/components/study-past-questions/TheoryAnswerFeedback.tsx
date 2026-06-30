@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Sparkles, X, RefreshCw, ChevronDown, Loader2, Check, Send, User, ImagePlus } from 'lucide-react';
 import { MathRenderer } from '@/components/MathRenderer';
-import { streamChat, parseThinkResponse, stripThinking, type AIChatMessage } from '@/lib/ai-service';
+import { streamChat, type AIChatMessage } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
 import { cn } from '@/lib/utils';
 import type { StudyQuestion } from '@/types/study-questions';
@@ -34,102 +34,6 @@ function TypingDots() {
       <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '150ms' }} />
       <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '300ms' }} />
     </span>
-  );
-}
-
-function ThinkingDots() {
-  return (
-    <>
-      <style>{`
-        @keyframes dotPulse {
-          0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-          40% { opacity: 1; transform: scale(1.1); }
-        }
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-      `}</style>
-      <span className="inline-flex gap-1 items-center ml-1.5">
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className="w-[5px] h-[5px] rounded-full inline-block"
-            style={{
-              background: 'hsl(var(--primary))',
-              animation: `dotPulse 1.4s ease-in-out ${i * 0.2}s infinite`,
-            }}
-          />
-        ))}
-      </span>
-    </>
-  );
-}
-
-function ThinkingBlock({ content, isStreaming }: { content: string; isStreaming: boolean }) {
-  const [open, setOpen] = useState(true);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isStreaming && open && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [content, isStreaming, open]);
-
-  return (
-    <>
-      <style>{`
-        .think-scroll::-webkit-scrollbar { width: 3px; }
-        .think-scroll::-webkit-scrollbar-track { background: transparent; }
-        .think-scroll::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 4px; }
-      `}</style>
-      <div className="border border-border rounded-xl mb-2.5 overflow-hidden bg-card shadow-sm">
-        <button
-          onClick={() => setOpen(o => !o)}
-          className="w-full flex items-center gap-2 px-3 py-2.5 cursor-pointer text-primary text-[11px] font-mono tracking-[0.08em] uppercase select-none"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary shrink-0">
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
-          <span className="flex-1 text-left">
-            {isStreaming ? "Thinking" : "Thought process"}
-            {isStreaming && <ThinkingDots />}
-          </span>
-          {!isStreaming && content && (
-            <span className="text-[10px] text-muted-foreground/60 font-mono">
-              {Math.round(content.trim().split(/\s+/).filter(Boolean).length * 1.3)} tokens
-            </span>
-          )}
-          <svg
-            width="12" height="12" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" strokeWidth="2"
-            className="text-muted-foreground/50 shrink-0"
-            style={{
-              transform: open ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s",
-            }}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-        {open && (
-          <div
-            ref={scrollRef}
-            className="think-scroll border-t border-border px-3 py-2.5 max-h-[200px] overflow-y-auto font-mono text-[11.5px] leading-relaxed text-muted-foreground whitespace-pre-wrap"
-          >
-            {content || " "}
-            {isStreaming && (
-              <span
-                className="inline-block w-[2px] h-[1em] bg-accent align-text-bottom ml-0.5"
-                style={{ animation: "blink 1s step-end infinite" }}
-              />
-            )}
-          </div>
-        )}
-      </div>
-    </>
   );
 }
 
@@ -211,8 +115,6 @@ export function TheoryAnswerFeedback({
     role: 'user' | 'assistant';
     content: string;
     attachments?: { base64: string; mimeType: string; name: string }[];
-    thinking?: string;
-    isThinking?: boolean;
   };
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
@@ -323,7 +225,7 @@ export function TheoryAnswerFeedback({
       },
       onDone: () => {
         const { display, data } = parseScoreBlock(fullText);
-        const clean = stripThinking(display);
+        const clean = display;
         contentRef.current = clean;
         setContent(clean);
         evalRef.current = data;
@@ -427,15 +329,11 @@ export function TheoryAnswerFeedback({
     const apiMessages = updatedHistory;
 
     const updateChatDisplay = (text: string) => {
-      const hasCloseTag = text.includes('</think>');
-      const parsed = parseThinkResponse(text);
       setChatMessages(prev => {
         const arr = [...prev];
         arr[aiIndex + allNewMsgs.length] = {
           role: 'assistant',
-          content: parsed.answer,
-          thinking: parsed.thinking || undefined,
-          isThinking: !hasCloseTag,
+          content: text,
         };
         return arr;
       });
@@ -448,10 +346,9 @@ export function TheoryAnswerFeedback({
       },
       onDone: () => {
         setIsChatLoading(false);
-        const parsed = parseThinkResponse(botText);
         chatHistoryRef.current = [
           ...updatedHistory,
-          { role: 'assistant', content: parsed.answer },
+          { role: 'assistant', content: botText },
         ] as AIChatMessage[];
       },
       onError: () => {
@@ -567,16 +464,15 @@ export function TheoryAnswerFeedback({
                       })}
                     </div>
                   )}
-                  {msg.role === 'assistant' && msg.thinking !== undefined && (
-                    <ThinkingBlock content={msg.thinking} isStreaming={!!msg.isThinking} />
+                  {msg.role === 'assistant' && (
+                    <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere] prose-p:my-0.5 prose-li:my-0 prose-ul:my-0.5">
+                      {msg.content ? (
+                        <MathRenderer content={msg.content} className="text-xs leading-relaxed" />
+                      ) : (
+                        <TypingDots />
+                      )}
+                    </div>
                   )}
-                  <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere] prose-p:my-0.5 prose-li:my-0 prose-ul:my-0.5">
-                    {msg.content ? (
-                      <MathRenderer content={msg.content} className="text-xs leading-relaxed" />
-                    ) : msg.isThinking ? null : (
-                      <TypingDots />
-                    )}
-                  </div>
                 </div>
               </div>
             ))}
@@ -640,7 +536,6 @@ export function TheoryAnswerFeedback({
                 <input
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); } }}
                   placeholder="Ask a follow-up question..."
                   disabled={isChatLoading}
                   className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/30 disabled:opacity-40"

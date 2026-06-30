@@ -16,7 +16,7 @@ interface StudyCategoryTabsProps {
 
 export function StudyCategoryTabs({ value, onChange, counts }: StudyCategoryTabsProps) {
   return (
-    <div className="relative inline-flex items-center rounded-xl bg-muted p-1 w-full sm:w-auto overflow-x-auto">
+    <div data-tour="pq-category-tabs" className="relative inline-flex items-center rounded-xl bg-muted p-1 w-full sm:w-auto overflow-x-auto">
       {TABS.map(({ key, label, Icon }) => {
         const isActive = value === key;
         const count = counts?.[key];

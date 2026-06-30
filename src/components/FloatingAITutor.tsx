@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat as aiStreamChat, stripThinking } from '@/lib/ai-service';
+import { streamChat as aiStreamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -407,8 +407,7 @@ export const FloatingAITutor = () => {
           setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
         }
         acc += text;
-        const stripped = stripThinking(acc);
-        assistantContentRef.current = stripped;
+        assistantContentRef.current = acc;
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length && arr[arr.length - 1].role === 'assistant') {
@@ -474,6 +473,7 @@ export const FloatingAITutor = () => {
           <motion.div
             key="fab"
             ref={fabRef}
+            data-tour="tutor-fab"
             drag
             dragMomentum={false}
             dragElastic={0}
@@ -546,6 +546,7 @@ export const FloatingAITutor = () => {
         ) : (
           <motion.div
             key="panel"
+            data-tour="tutor-chat"
             custom={originPct}
             initial={{ opacity: 0, scale: 0.06 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -684,6 +685,7 @@ export const FloatingAITutor = () => {
                               Ask questions, get study tips, or attach documents
                             </p>
                             <motion.div
+                              data-tour="tutor-quick-prompts"
                               className="grid grid-cols-2 gap-2 w-full"
                               variants={staggerContainer}
                               initial="initial"
@@ -874,12 +876,6 @@ export const FloatingAITutor = () => {
                               ref={inputRef}
                               value={input}
                               onChange={(e) => setInput(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault();
-                                  handleSubmit(e);
-                                }
-                              }}
                               placeholder={attachment ? "Describe what you need help with..." : "Ask me anything..."}
                               className="min-h-[40px] max-h-[80px] resize-none text-sm flex-1 min-w-0 bg-white/5 border-white/10 focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all"
                               rows={1}

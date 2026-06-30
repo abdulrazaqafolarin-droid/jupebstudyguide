@@ -494,7 +494,7 @@ const Index = () => {
       />
       
       {/* Hero Section */}
-      <header className="relative overflow-hidden min-h-[60vh] flex items-center">
+      <header data-tour="home-header" className="relative overflow-hidden min-h-[60vh] flex items-center">
         {/* Animated mesh gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background to-accent/10 animate-mesh bg-[length:200%_200%]" style={{ willChange: 'transform' }} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/20" />
@@ -525,7 +525,7 @@ const Index = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 animate-in-up stagger-2">
               <GraduationCap className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-primary">JUPEB Past Questions</span>
+              <span className="text-sm font-medium text-primary">Rutex Jupeb Master</span>
             </div>
             
             {/* Heading */}
@@ -618,19 +618,21 @@ const Index = () => {
         </section>
         
         {/* Streak & Achievements Row */}
-        <section className="mb-12 grid gap-4 md:grid-cols-2 animate-in-up stagger-2">
+        <section data-tour="streak-display" className="mb-12 grid gap-4 md:grid-cols-2 animate-in-up stagger-2">
           <StreakDisplay 
             currentStreak={currentStreak}
             longestStreak={longestStreak}
             totalDaysStudied={totalDaysStudied}
             hasStudiedToday={hasStudiedToday()}
           />
-          <AchievementsPanel 
-            unlockedAchievements={unlockedAchievements}
-            lockedAchievements={lockedAchievements}
-            totalCount={achievementTotalCount}
-            stats={achievementStats}
-          />
+          <div data-tour="achievements-panel">
+            <AchievementsPanel 
+              unlockedAchievements={unlockedAchievements}
+              lockedAchievements={lockedAchievements}
+              totalCount={achievementTotalCount}
+              stats={achievementStats}
+            />
+          </div>
         </section>
 
         {/* Live Leaderboard */}
@@ -639,7 +641,7 @@ const Index = () => {
         </section>
 
         {/* Subject Cards */}
-        <section className="animate-in-up stagger-4">
+        <section data-tour="subject-cards" className="animate-in-up stagger-4">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Subjects</h2>
             <div className="flex items-center gap-4">
@@ -684,7 +686,7 @@ const Index = () => {
         </section>
 
         {/* Quick Actions */}
-        <section className="mt-12">
+        <section data-tour="quick-actions" className="mt-12">
           <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
           <motion.div
             className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
@@ -763,7 +765,7 @@ const Index = () => {
         <div className="flex flex-col items-center gap-3">
           <img src={rutexLogo} alt="Rutex Logo" className="w-10 h-10 rounded-lg object-cover" />
           <p className="text-xs text-muted-foreground">Built by <span className="font-semibold text-foreground">Rutex</span></p>
-              <p className="text-xs text-muted-foreground">JUPEB Past Questions • 2014–2025</p>
+              <p className="text-xs text-muted-foreground">Rutex Jupeb Master • 2014–2025</p>
         </div>
       </footer>
     </div>

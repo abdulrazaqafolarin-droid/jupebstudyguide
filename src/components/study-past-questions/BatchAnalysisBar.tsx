@@ -18,7 +18,7 @@ export function BatchAnalysisBar() {
   const doneQuestions = queue.reduce((sum, i) => sum + i.current, 0);
 
   return (
-    <div className={cn(
+    <div data-tour="pq-batch-analysis" className={cn(
       "fixed bottom-0 left-0 right-0 z-50 transition-all duration-300",
       isMinimized ? "translate-y-[calc(100%-40px)]" : "translate-y-0"
     )}>

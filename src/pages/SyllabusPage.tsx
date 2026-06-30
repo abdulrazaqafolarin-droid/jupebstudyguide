@@ -101,7 +101,7 @@ export default function SyllabusPage() {
         className="max-w-4xl mx-auto px-4 py-6 space-y-6"
       >
         {/* Search */}
-        <div className="relative">
+        <div data-tour="syllabus-search" className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             value={search}
@@ -112,7 +112,7 @@ export default function SyllabusPage() {
         </div>
 
         {/* Subjects */}
-        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-4">
+        <motion.div data-tour="syllabus-subjects" variants={stagger} initial="hidden" animate="show" className="space-y-4">
           {filteredSubjects.map((subject) => {
             const meta = SUBJECT_META[subject];
             const topics = SYLLABUSES[subject];
@@ -165,7 +165,7 @@ export default function SyllabusPage() {
                       transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="mt-2 space-y-2 pl-4">
+                      <div data-tour="syllabus-topics" className="mt-2 space-y-2 pl-4">
                         {topics.map((topic, idx) => {
                           const topicOpen = expandedTopics.has(topic.id);
                           return (

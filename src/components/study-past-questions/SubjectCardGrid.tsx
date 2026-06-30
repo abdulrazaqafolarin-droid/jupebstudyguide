@@ -32,6 +32,7 @@ export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
 
   return (
     <motion.div
+      data-tour="pq-subject-tabs"
       variants={container}
       initial="hidden"
       animate="show"

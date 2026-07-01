@@ -30,7 +30,6 @@ export default function FeatureTourProvider({
   });
 
   const [spotlightRect, setSpotlightRect] = useState<DOMRect | null>(null);
-  const [showWelcome, setShowWelcome] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
   const hasTriggeredWelcome = useRef(false);
   const retryCount = useRef(0);
@@ -38,10 +37,10 @@ export default function FeatureTourProvider({
   useEffect(() => {
     if (tour.isNewUser && !hasTriggeredWelcome.current) {
       hasTriggeredWelcome.current = true;
-      const timer = setTimeout(() => setShowWelcome(true), 600);
+      const timer = setTimeout(() => tour.startTour(), 800);
       return () => clearTimeout(timer);
     }
-  }, [tour.isNewUser]);
+  }, [tour.isNewUser, tour]);
 
   const stepId = tour.currentStep?.id ?? null;
 
@@ -110,26 +109,9 @@ export default function FeatureTourProvider({
     if (result === "complete") setShowComplete(true);
   }, [tour]);
 
-  const handleStart = useCallback(() => {
-    setShowWelcome(false);
-    tour.startTour();
-  }, [tour]);
-
   return (
     <>
       {children}
-
-      <AnimatePresence>
-        {showWelcome && (
-          <WelcomeOverlay
-            onStart={handleStart}
-            onDismiss={() => {
-              setShowWelcome(false);
-              tour.resetTour();
-            }}
-          />
-        )}
-      </AnimatePresence>
 
       <AnimatePresence>
         {showComplete && (
@@ -166,12 +148,7 @@ export default function FeatureTourProvider({
         )}
       </AnimatePresence>
 
-      <TourFAB
-        onActivate={() => {
-          if (showWelcome) return;
-          tour.startTour();
-        }}
-      />
+      <TourFAB onActivate={tour.startTour} />
     </>
   );
 }
@@ -202,77 +179,6 @@ function PageLoadingOverlay({ page }: { page: string }) {
       >
         <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
         <p className="text-sm text-muted-foreground">Loading {label}...</p>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function WelcomeOverlay({
-  onStart,
-  onDismiss,
-}: {
-  onStart: () => void;
-  onDismiss: () => void;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/65 backdrop-blur-sm p-4"
-    >
-      <motion.div
-        initial={{ scale: 0.9, y: 24, opacity: 0 }}
-        animate={{ scale: 1, y: 0, opacity: 1 }}
-        exit={{ scale: 0.9, y: 24, opacity: 0 }}
-        transition={springBouncy}
-        className="bg-card border border-border rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl"
-      >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.08 }}
-          className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4"
-        >
-          <Compass className="w-8 h-8 text-white" />
-        </motion.div>
-        <motion.h2
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.12 }}
-          className="text-xl font-bold mb-2"
-        >
-          Welcome to Rutex Jupeb Master!
-        </motion.h2>
-        <motion.p
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.16 }}
-          className="text-sm text-muted-foreground mb-6 leading-relaxed"
-        >
-          Let us show you around. In just 90 seconds, you will know exactly how to use
-          every feature — from past questions and the AI tutor to your study streak and
-          leaderboard.
-        </motion.p>
-        <motion.div
-          initial={{ y: 8, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-col gap-2"
-        >
-          <Button onClick={onStart} className="w-full group">
-            Take the Tour
-            <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={onDismiss}
-            className="text-muted-foreground text-sm"
-          >
-            Skip, I will explore on my own
-          </Button>
-        </motion.div>
       </motion.div>
     </motion.div>
   );

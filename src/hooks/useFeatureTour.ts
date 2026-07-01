@@ -1,14 +1,24 @@
-import { useState, useCallback, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useCallback } from "react";
 import type { TourPage, TourPageConfig, TourStep } from "@/types/feature-tour";
 import { TOUR_CONFIGS } from "@/data/tour-steps";
 
-const STORAGE_KEY = "jupeb-feature-tour";
+const STORAGE_KEY = "rutex-feature-tour";
+
+export const TOUR_PAGE_ORDER: TourPage[] = [
+  "home",
+  "past-questions",
+  "syllabus",
+  "chat",
+  "leaderboard",
+  "achievements",
+  "discover",
+  "ai-tutor",
+  "profile",
+];
 
 interface StoredState {
   completedPages: string[];
   dismissed: boolean;
-  dismissedPages: string[];
 }
 
 function loadState(): StoredState {
@@ -16,7 +26,7 @@ function loadState(): StoredState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { completedPages: [], dismissed: false, dismissedPages: [] };
+  return { completedPages: [], dismissed: false };
 }
 
 function saveState(state: StoredState) {
@@ -25,136 +35,120 @@ function saveState(state: StoredState) {
   } catch {}
 }
 
-export function useFeatureTour() {
-  const location = useLocation();
+const PAGE_TOTAL = TOUR_PAGE_ORDER.length;
+
+export function useFeatureTour(onNavigate?: (route: string) => void) {
   const [state, setState] = useState<StoredState>(loadState);
   const [active, setActive] = useState(false);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [currentPageConfig, setCurrentPageConfig] = useState<TourPageConfig | null>(null);
+  const [queueIdx, setQueueIdx] = useState(0);
+  const [stepIdx, setStepIdx] = useState(0);
 
-  const currentPage = getPageForRoute(location.pathname);
+  const currentPage = TOUR_PAGE_ORDER[queueIdx];
+  const currentPageConfig = TOUR_CONFIGS.find((c) => c.page === currentPage) ?? null;
+  const currentStep = currentPageConfig?.steps[stepIdx] ?? null;
+  const totalSteps = currentPageConfig?.steps.length ?? 0;
+  const isLastPage = queueIdx >= PAGE_TOTAL - 1;
+  const pagesCompleted = state.completedPages.length;
 
-  useEffect(() => {
-    if (!active) return;
-    const config = TOUR_CONFIGS.find((c) => c.page === currentPage);
-    if (config && !state.dismissedPages.includes(config.page)) {
-      setCurrentPageConfig(config);
-      setCurrentStepIndex(0);
-    } else {
-      setActive(false);
-    }
-  }, [location.pathname, active, state.dismissedPages, currentPage]);
+  const overallProgress = Math.round(
+    ((queueIdx * 100 + (stepIdx / Math.max(totalSteps, 1)) * 100) / PAGE_TOTAL)
+  );
+
+  const markPageComplete = useCallback((page: string) => {
+    setState((prev) => {
+      const next = {
+        ...prev,
+        completedPages: [...new Set([...prev.completedPages, page])],
+      };
+      saveState(next);
+      return next;
+    });
+  }, []);
 
   const startTour = useCallback(() => {
     setActive(true);
-    setCurrentStepIndex(0);
-    const config = TOUR_CONFIGS.find((c) => c.page === currentPage);
-    setCurrentPageConfig(config ?? null);
-  }, [currentPage]);
+    setQueueIdx(0);
+    setStepIdx(0);
+    const first = TOUR_CONFIGS[0];
+    if (first && onNavigate) onNavigate(first.route);
+  }, [onNavigate]);
 
   const stopTour = useCallback(() => {
     setActive(false);
-    setCurrentStepIndex(0);
-    setCurrentPageConfig(null);
+    setQueueIdx(0);
+    setStepIdx(0);
   }, []);
 
-  const nextStep = useCallback(() => {
+  function syncQueueAndNavigate(targetQueueIdx: number) {
+    const page = TOUR_PAGE_ORDER[targetQueueIdx];
+    const config = TOUR_CONFIGS.find((c) => c.page === page);
+    setQueueIdx(targetQueueIdx);
+    setStepIdx(0);
+    if (config && onNavigate) onNavigate(config.route);
+  }
+
+  const nextStep = useCallback((): "step" | "page" | "complete" | undefined => {
     if (!currentPageConfig) return;
-    if (currentStepIndex < currentPageConfig.steps.length - 1) {
-      setCurrentStepIndex((i) => i + 1);
-      scrollToStep(currentPageConfig.steps[currentStepIndex + 1]);
-    } else {
-      completePage(currentPageConfig.page);
+    if (stepIdx < currentPageConfig.steps.length - 1) {
+      setStepIdx((i) => i + 1);
+      return "step";
     }
-  }, [currentPageConfig, currentStepIndex, currentPage]);
+    markPageComplete(currentPage);
+    if (!isLastPage) {
+      syncQueueAndNavigate(queueIdx + 1);
+      return "page";
+    } else {
+      stopTour();
+      return "complete";
+    }
+  }, [currentPageConfig, stepIdx, currentPage, isLastPage, queueIdx, markPageComplete, stopTour]);
 
   const prevStep = useCallback(() => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex((i) => i - 1);
+    if (stepIdx > 0) {
+      setStepIdx((i) => i - 1);
+    } else if (queueIdx > 0) {
+      const prevIdx = queueIdx - 1;
+      const prevPage = TOUR_PAGE_ORDER[prevIdx];
+      const prevConfig = TOUR_CONFIGS.find((c) => c.page === prevPage);
+      setQueueIdx(prevIdx);
+      setStepIdx(prevConfig ? prevConfig.steps.length - 1 : 0);
+      if (prevConfig && onNavigate) onNavigate(prevConfig.route);
     }
-  }, [currentStepIndex]);
+  }, [stepIdx, queueIdx, onNavigate]);
 
-  const skipPage = useCallback(() => {
-    if (!currentPageConfig) return;
-    const newState = {
-      ...state,
-      dismissedPages: [...new Set([...state.dismissedPages, currentPageConfig.page])],
-    };
-    setState(newState);
-    saveState(newState);
-    setActive(false);
-    setCurrentStepIndex(0);
-    setCurrentPageConfig(null);
-  }, [currentPageConfig, state]);
-
-  const completePage = useCallback(
-    (page: TourPage) => {
-      const newCompleted = [...new Set([...state.completedPages, page])];
-      const newState = {
-        ...state,
-        completedPages: newCompleted,
-        dismissedPages: [...new Set([...state.dismissedPages, page])],
-      };
-      setState(newState);
-      saveState(newState);
-      setActive(false);
-      setCurrentStepIndex(0);
-      setCurrentPageConfig(null);
-    },
-    [state],
-  );
+  const skipTour = useCallback(() => {
+    const nextState = { ...state, dismissed: true };
+    setState(nextState);
+    saveState(nextState);
+    stopTour();
+  }, [state, stopTour]);
 
   const resetTour = useCallback(() => {
-    const newState: StoredState = { completedPages: [], dismissed: false, dismissedPages: [] };
-    setState(newState);
-    saveState(newState);
-    setActive(false);
+    const nextState: StoredState = { completedPages: [], dismissed: false };
+    setState(nextState);
+    saveState(nextState);
   }, []);
-
-  const currentStep: TourStep | null =
-    currentPageConfig?.steps[currentStepIndex] ?? null;
-
-  const totalSteps = currentPageConfig?.steps.length ?? 0;
 
   const isNewUser = state.completedPages.length === 0 && !state.dismissed;
 
   return {
     active,
     currentStep,
-    currentStepIndex,
+    stepIdx,
     totalSteps,
     currentPage,
     currentPageConfig,
     isNewUser,
+    pagesCompleted,
+    overallProgress,
+    isLastPage,
+    queueIdx,
     startTour,
     stopTour,
     nextStep,
     prevStep,
-    skipPage,
-    completePage,
+    skipTour,
     resetTour,
     completedPages: state.completedPages,
-    hasPageBeenSeen: (page: TourPage) =>
-      state.completedPages.includes(page) || state.dismissedPages.includes(page),
   };
-}
-
-function getPageForRoute(pathname: string): TourPage {
-  if (pathname === "/") return "home";
-  if (pathname.startsWith("/past-questions")) return "past-questions";
-  if (pathname.startsWith("/syllabus")) return "syllabus";
-  if (pathname.startsWith("/chat")) return "chat";
-  if (pathname.startsWith("/leaderboard")) return "leaderboard";
-  if (pathname.startsWith("/achievements")) return "achievements";
-  if (pathname.startsWith("/discover")) return "discover";
-  if (pathname.startsWith("/profile")) return "profile";
-  return "home";
-}
-
-function scrollToStep(step: TourStep) {
-  if (step.placement === "center") return;
-  const el = document.querySelector(step.selector);
-  if (el) {
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
 }

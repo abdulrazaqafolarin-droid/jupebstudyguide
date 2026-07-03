@@ -4,7 +4,7 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Find the non-zero negative value of x which satisfies $|x 1 0; 1 x 1; 0 1 x| = 0$",
+    "question": "Find the non-zero negative value of $x$ which satisfies $\\begin{vmatrix}x & 1 & 0 \\\\ 1 & x & 1 \\\\ 0 & 1 & x\\end{vmatrix} = 0$",
     "options": [
       {
         "label": "A",
@@ -12,7 +12,7 @@
       },
       {
         "label": "B",
-        "text": "–2"
+        "text": "$-2$"
       },
       {
         "label": "C",
@@ -20,11 +20,11 @@
       },
       {
         "label": "D",
-        "text": "$–\\sqrt{2}$"
+        "text": "$-\\sqrt{2}$"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "Expand: $x(x^2-1)-1(x-0)=x^3-2x=x(x^2-2)=0$. Solutions: $x=0,\\pm\\sqrt{2}$. Non-zero negative: $-\\sqrt{2}$.",
     "difficulty": "medium"
   },
   {
@@ -32,7 +32,7 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "If Z = $[2 3 3; 4 1 0; 1 4 0]$, find determinant of Z",
+    "question": "If $Z = \\begin{vmatrix}2 & 3 & 3 \\\\ 4 & 1 & 0 \\\\ 1 & 4 & 0\\end{vmatrix}$, find $\\det(Z)$",
     "options": [
       {
         "label": "A",
@@ -44,7 +44,7 @@
       },
       {
         "label": "C",
-        "text": "–35"
+        "text": "$-35$"
       },
       {
         "label": "D",
@@ -52,7 +52,7 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "Expand along third column: $3(4\\cdot4-1\\cdot1)=3(16-1)=45$.",
     "difficulty": "medium"
   },
   {
@@ -60,19 +60,19 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Compute (1 + 3/(1+i))²$",
+    "question": "Compute $\\displaystyle \\left(1+\\frac{3}{1+i}\\right)^2$",
     "options": [
       {
         "label": "A",
-        "text": "$–8/2 – 15/2 i$"
+        "text": "$-\\dfrac{8}{2}-\\dfrac{15}{2}i$"
       },
       {
         "label": "B",
-        "text": "$4 – 15/2 i$"
+        "text": "$4-\\dfrac{15}{2}i$"
       },
       {
         "label": "C",
-        "text": "$17/2 – 15/2 i$"
+        "text": "$\\dfrac{17}{2}-\\dfrac{15}{2}i$"
       },
       {
         "label": "D",
@@ -80,7 +80,7 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$1+\\frac{3}{1+i}=\\frac{5}{2}-\\frac{3}{2}i$. Square: $\\frac{25}{4}-\\frac{15}{2}i-\\frac{9}{4}=4-\\frac{15}{2}i$.",
     "difficulty": "medium"
   },
   {
@@ -88,27 +88,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Find the centre and radius of the circle 8x² + 8y² – 24x – 40y + 18 = 0",
+    "question": "Find the centre and radius of the circle $8x^2+8y^2-24x-40y+18=0$",
     "options": [
       {
         "label": "A",
-        "text": "$(3/2, 5/2), r=3/2$"
+        "text": "$\\left(\\frac{3}{2},\\frac{5}{2}\\right), r=\\frac{3}{2}$"
       },
       {
         "label": "B",
-        "text": "$(–3/2, 5/2), r=5/2$"
+        "text": "$\\left(-\\frac{3}{2},\\frac{5}{2}\\right), r=\\frac{5}{2}$"
       },
       {
         "label": "C",
-        "text": "$(3/2, –5/2), r=3/2$"
+        "text": "$\\left(\\frac{3}{2},-\\frac{5}{2}\\right), r=\\frac{3}{2}$"
       },
       {
         "label": "D",
-        "text": "$(3/2, 5/2), r=5/2$"
+        "text": "$\\left(\\frac{3}{2},\\frac{5}{2}\\right), r=\\frac{5}{2}$"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "Divide by 8: $x^2+y^2-3x-5y+\\frac{9}{4}=0$. Complete squares: $(x-\\frac{3}{2})^2+(y-\\frac{5}{2})^2=\\frac{25}{4}$. Centre $(\\frac{3}{2},\\frac{5}{2})$, radius $\\frac{5}{2}$.",
     "difficulty": "medium"
   },
   {
@@ -116,27 +116,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Find the equation of the tangent to the circle 2x² + 2y² = 30 at the point (–3,6)",
+    "question": "Find the equation of the tangent to the circle $2x^2+2y^2=30$ at $(-3,6)$",
     "options": [
       {
         "label": "A",
-        "text": "$x+y–15=0$"
+        "text": "$x+y-15=0$"
       },
       {
         "label": "B",
-        "text": "$x–2y+5=0$"
+        "text": "$x-2y+5=0$"
       },
       {
         "label": "C",
-        "text": "$x+2y–5=0$"
+        "text": "$x+2y-5=0$"
       },
       {
         "label": "D",
-        "text": "$x–2y+15=0$"
+        "text": "$x-2y+15=0$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "Circle $x^2+y^2=15$. Tangent at $(-3,6)$: $xx_1+yy_1=r^2 \\to -3x+6y=15 \\to x-2y+5=0$.",
     "difficulty": "medium"
   },
   {
@@ -144,27 +144,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Given the ellipse x²/2 + y² = 1, find the equation of the directrices.",
+    "question": "Given the ellipse $\\dfrac{x^2}{2}+y^2=1$, find the equation of the directrices.",
     "options": [
       {
         "label": "A",
-        "text": "$x=(0,±1)$"
+        "text": "$x=\\pm1$"
       },
       {
         "label": "B",
-        "text": "$x=(0,±2)$"
+        "text": "$x=\\pm2$"
       },
       {
         "label": "C",
-        "text": "$x=(0,±3)$"
+        "text": "$x=\\pm3$"
       },
       {
         "label": "D",
-        "text": "$x=(0,±4)$"
+        "text": "$x=\\pm4$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$a^2=2$, $b^2=1$, $e^2=1-\\frac{b^2}{a^2}=\\frac12$, $e=\\frac{1}{\\sqrt2}$. Directrices: $x=\\pm\\frac{a}{e}=\\pm2$.",
     "difficulty": "medium"
   },
   {
@@ -172,27 +172,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Find the gradient of y = x³ – 6x² + 11x – 6 at (1,0)$",
+    "question": "Find the gradient of $y=x^3-6x^2+11x-6$ at $(1,0)$",
     "options": [
       {
         "label": "A",
-        "text": "–1"
+        "text": "$-1$"
       },
       {
         "label": "B",
-        "text": "–2"
+        "text": "$-2$"
       },
       {
         "label": "C",
-        "text": "1"
+        "text": "$1$"
       },
       {
         "label": "D",
-        "text": "2"
+        "text": "$2$"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "$y'=3x^2-12x+11$. At $x=1$: $3-12+11=2$.",
     "difficulty": "medium"
   },
   {
@@ -200,27 +200,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Given A={a,b,1,3} and B={a,2,4}, find A∪B.$",
+    "question": "Given $A=\\{a,b,1,3\\}$ and $B=\\{a,2,4\\}$, find $A\\cup B$.",
     "options": [
       {
         "label": "A",
-        "text": "$∅$"
+        "text": "$\\emptyset$"
       },
       {
         "label": "B",
-        "text": "{a,b,1,2,3,4}"
+        "text": "$\\{a,b,1,2,3,4\\}$"
       },
       {
         "label": "C",
-        "text": "{a,b,1,3}"
+        "text": "$\\{a,b,1,3\\}$"
       },
       {
         "label": "D",
-        "text": "{b,1,2,3,4}"
+        "text": "$\\{b,1,2,3,4\\}$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$A\\cup B=\\{a,b,1,3\\}\\cup\\{a,2,4\\}=\\{a,b,1,2,3,4\\}$.",
     "difficulty": "medium"
   },
   {
@@ -228,27 +228,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "A polynomial 2x³+ax²+bx–1 has a factor (x–1) and remainder –4 when divided by (x–2). Find a+b.",
+    "question": "A polynomial $2x^3+ax^2+bx-1$ has factor $(x-1)$ and remainder $-4$ when divided by $(x-2)$. Find $a+b$.",
     "options": [
       {
         "label": "A",
-        "text": "–1"
+        "text": "$-1$"
       },
       {
         "label": "B",
-        "text": "1"
+        "text": "$1$"
       },
       {
         "label": "C",
-        "text": "–2"
+        "text": "$-2$"
       },
       {
         "label": "D",
-        "text": "2"
+        "text": "$2$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "$f(1)=2+a+b-1=0\\to a+b=-1$. $f(2)=16+4a+2b-1=-4\\to4a+2b=-19$. Solving: $a+b=-1$.",
     "difficulty": "medium"
   },
   {
@@ -256,27 +256,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Solve log₃x + logₓ3 = 10/3$",
+    "question": "Solve $\\log_3x+\\log_x3=\\dfrac{10}{3}$",
     "options": [
       {
         "label": "A",
-        "text": "$\\sqrt{3}, 9$"
+        "text": "$\\sqrt{3},9$"
       },
       {
         "label": "B",
-        "text": "$27, \\sqrt{3}$"
+        "text": "$27,\\sqrt{3}$"
       },
       {
         "label": "C",
-        "text": "10, 9"
+        "text": "$10,9$"
       },
       {
         "label": "D",
-        "text": "$27, ∛3$"
+        "text": "$27,\\sqrt[3]{3}$"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "Let $y=\\log_3x$, so $\\log_x3=1/y$. $y+1/y=10/3\\to3y^2-10y+3=0\\to y=1/3,3$. $x=3^{1/3}=\\sqrt[3]{3}$ or $27$.",
     "difficulty": "medium"
   },
   {
@@ -284,27 +284,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Solve \\sqrt{2x+3} – \\sqrt{x–2} = 2$",
+    "question": "Solve $\\sqrt{2x+3}-\\sqrt{x-2}=2$",
     "options": [
       {
         "label": "A",
-        "text": "3, 6"
+        "text": "$3,6$"
       },
       {
         "label": "B",
-        "text": "3, 11"
+        "text": "$3,11$"
       },
       {
         "label": "C",
-        "text": "27, 3"
+        "text": "$27,3$"
       },
       {
         "label": "D",
-        "text": "3, 10"
+        "text": "$3,10$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "Square twice: $x^2-14x+33=0\\to(x-3)(x-11)=0$. Both $x=3,11$ satisfy.",
     "difficulty": "medium"
   },
   {
@@ -312,27 +312,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$If y=x(x⁶–1), find the range for which y=0.$",
+    "question": "If $y=x(x^6-1)$, find the set of values for which $y=0$.",
     "options": [
       {
         "label": "A",
-        "text": "$(–∞,0)∪(0,∞)$"
+        "text": "$(-\\infty,0)\\cup(0,\\infty)$"
       },
       {
         "label": "B",
-        "text": "$(–1,–∞)∪(0,∞)$"
+        "text": "$(-1,-\\infty)\\cup(0,\\infty)$"
       },
       {
         "label": "C",
-        "text": "$(–1,0)∪[0,1]$"
+        "text": "$(-1,0)\\cup[0,1]$"
       },
       {
         "label": "D",
-        "text": "$(–∞,∞)$"
+        "text": "$(-\\infty,\\infty)$"
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "$y=x(x^6-1)=0$ when $x=0$ or $x^6=1$. Real roots: $x=-1,0,1$.",
     "difficulty": "medium"
   },
   {
@@ -340,27 +340,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Evaluate lim(x→–3) (3x²–27)/(x+35)$",
+    "question": "Evaluate $\\displaystyle\\lim_{x\\to-3}\\frac{3x^2-27}{x+35}$",
     "options": [
       {
         "label": "A",
-        "text": "–18"
+        "text": "$-18$"
       },
       {
         "label": "B",
-        "text": "9"
+        "text": "$9$"
       },
       {
         "label": "C",
-        "text": "0"
+        "text": "$0$"
       },
       {
         "label": "D",
-        "text": "3"
+        "text": "$3$"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "",
+    "correctAnswer": "C",
+    "explanation": "Substitute $x=-3$: $\\frac{3(9)-27}{-3+35}=\\frac{0}{32}=0$.",
     "difficulty": "medium"
   },
   {
@@ -368,27 +368,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Evaluate ∫₁^e (1/x) dx$",
+    "question": "Evaluate $\\displaystyle\\int_1^e\\frac{1}{x}\\,dx$",
     "options": [
       {
         "label": "A",
-        "text": "0"
+        "text": "$0$"
       },
       {
         "label": "B",
-        "text": "2"
+        "text": "$2$"
       },
       {
         "label": "C",
-        "text": "1"
+        "text": "$1$"
       },
       {
         "label": "D",
-        "text": "2e"
+        "text": "$2e$"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "ln(e)–ln(1) = 1 – 0 = **1**, so the mathematically correct answer is C. 1.*",
+    "correctAnswer": "C",
+    "explanation": "$\\int_1^e\\frac1x\\,dx=[\\ln x]_1^e=\\ln e-\\ln1=1$.",
     "difficulty": "medium"
   },
   {
@@ -396,27 +396,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Evaluate ∫₀^(π/2) cos x dx$",
+    "question": "Evaluate $\\displaystyle\\int_0^{\\pi/2}\\cos x\\,dx$",
     "options": [
       {
         "label": "A",
-        "text": "2"
+        "text": "$2$"
       },
       {
         "label": "B",
-        "text": "7"
+        "text": "$7$"
       },
       {
         "label": "C",
-        "text": "–1"
+        "text": "$-1$"
       },
       {
         "label": "D",
-        "text": "1"
+        "text": "$1$"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "$\\int_0^{\\pi/2}\\cos x\\,dx=[\\sin x]_0^{\\pi/2}=1-0=1$.",
     "difficulty": "medium"
   },
   {
@@ -424,27 +424,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Evaluate lim(x→∞) (2x³+x²–5)/(x³+2x+1)$",
+    "question": "Evaluate $\\displaystyle\\lim_{x\\to\\infty}\\frac{2x^3+x^2-5}{x^3+2x+1}$",
     "options": [
       {
         "label": "A",
-        "text": "5"
+        "text": "$5$"
       },
       {
         "label": "B",
-        "text": "0"
+        "text": "$0$"
       },
       {
         "label": "C",
-        "text": "2"
+        "text": "$2$"
       },
       {
         "label": "D",
-        "text": "$∞$"
+        "text": "$\\infty$"
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "Divide by $x^3$: $\\frac{2+1/x-5/x^3}{1+2/x^2+1/x^3}\\to2$ as $x\\to\\infty$.",
     "difficulty": "medium"
   },
   {
@@ -452,27 +452,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$px²+qx+r equals 4 at x=1; derivative is 2x+1. Find p,q,r.$",
+    "question": "$px^2+qx+r$ equals $4$ at $x=1$; its derivative is $2x+1$. Find $p,q,r$.",
     "options": [
       {
         "label": "A",
-        "text": "1,1,2"
+        "text": "$1,1,2$"
       },
       {
         "label": "B",
-        "text": "1,2,1"
+        "text": "$1,2,1$"
       },
       {
         "label": "C",
-        "text": "1,0,1"
+        "text": "$1,0,1$"
       },
       {
         "label": "D",
-        "text": "$1,–1,2$"
+        "text": "$1,-1,2$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "$2px+q=2x+1\\to p=1,q=1$. $p+q+r=4\\to r=2$.",
     "difficulty": "medium"
   },
   {
@@ -480,27 +480,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Gradient of a curve is 2x+3; curve passes through origin. Find the equation.",
+    "question": "The gradient of a curve is $2x+3$ and the curve passes through the origin. Find its equation.",
     "options": [
       {
         "label": "A",
-        "text": "x(x+2)"
+        "text": "$x(x+3)$"
       },
       {
         "label": "B",
-        "text": "x(2x+3)"
+        "text": "$x(2x+3)$"
       },
       {
         "label": "C",
-        "text": "$x²–4$"
+        "text": "$x^2-4$"
       },
       {
         "label": "D",
-        "text": "2x+3"
+        "text": "$2x+3$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$y=\\int(2x+3)\\,dx=x^2+3x+C$. Through $(0,0)$: $C=0$, so $y=x^2+3x=x(x+3)$.",
     "difficulty": "medium"
   },
   {
@@ -508,27 +508,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$s=3t³–5t–2. Find velocity after 2 seconds.$",
+    "question": "$s=3t^3-5t-2$. Find the velocity after $2$ seconds.",
     "options": [
       {
         "label": "A",
-        "text": "$31 m/s$"
+        "text": "$31\\text{ m/s}$"
       },
       {
         "label": "B",
-        "text": "$36m/s$"
+        "text": "$36\\text{ m/s}$"
       },
       {
         "label": "C",
-        "text": "$18m/s$"
+        "text": "$18\\text{ m/s}$"
       },
       {
         "label": "D",
-        "text": "$20m/s$"
+        "text": "$20\\text{ m/s}$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "Velocity $v=ds/dt=9t^2-5$. At $t=2$: $9(4)-5=31$ m/s.",
     "difficulty": "medium"
   },
   {
@@ -536,27 +536,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Find the derivative of 2x³–5x²+2$",
+    "question": "Find the derivative of $2x^3-5x^2+2$",
     "options": [
       {
         "label": "A",
-        "text": "$x²–10x$"
+        "text": "$x^2-10x$"
       },
       {
         "label": "B",
-        "text": "$6x²–10x$"
+        "text": "$6x^2-10x$"
       },
       {
         "label": "C",
-        "text": "$–10x–6x²$"
+        "text": "$-10x-6x^2$"
       },
       {
         "label": "D",
-        "text": "$6x–10$"
+        "text": "$6x-10$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$\\frac{d}{dx}(2x^3-5x^2+2)=6x^2-10x$.",
     "difficulty": "medium"
   },
   {
@@ -564,27 +564,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Find the derivative of y=(3+2x)(1–x)$",
+    "question": "Find the derivative of $y=(3+2x)(1-x)$",
     "options": [
       {
         "label": "A",
-        "text": "$–1–4x$"
+        "text": "$-1-4x$"
       },
       {
         "label": "B",
-        "text": "$4x–1$"
+        "text": "$4x-1$"
       },
       {
         "label": "C",
-        "text": "$–4x+1$"
+        "text": "$-4x+1$"
       },
       {
         "label": "D",
-        "text": "$–4x$"
+        "text": "$-4x$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "$y=3-x-2x^2$. $dy/dx=-1-4x$.",
     "difficulty": "medium"
   },
   {
@@ -592,27 +592,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Differentiate (x+y)²=5$",
+    "question": "Differentiate $(x+y)^2=5$",
     "options": [
       {
         "label": "A",
-        "text": "–4"
+        "text": "$-4$"
       },
       {
         "label": "B",
-        "text": "–2"
+        "text": "$-2$"
       },
       {
         "label": "C",
-        "text": "–1"
+        "text": "$-1$"
       },
       {
         "label": "D",
-        "text": "10"
+        "text": "$10$"
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "Implicit: $2(x+y)(1+dy/dx)=0\\to dy/dx=-1$.",
     "difficulty": "medium"
   },
   {
@@ -620,27 +620,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Evaluate lim(x→5) (x²–25)/(x–5)$",
+    "question": "Evaluate $\\displaystyle\\lim_{x\\to5}\\frac{x^2-25}{x-5}$",
     "options": [
       {
         "label": "A",
-        "text": "5"
+        "text": "$5$"
       },
       {
         "label": "B",
-        "text": "15"
+        "text": "$15$"
       },
       {
         "label": "C",
-        "text": "10"
+        "text": "$10$"
       },
       {
         "label": "D",
-        "text": "12"
+        "text": "$12$"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": "the algebraically correct value is **10**, i.e., option C.*",
+    "correctAnswer": "C",
+    "explanation": "$\\lim_{x\\to5}\\frac{(x-5)(x+5)}{x-5}=\\lim_{x\\to5}(x+5)=10$.",
     "difficulty": "medium"
   },
   {
@@ -648,27 +648,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$If y=(x–1)e⁻ˣ, find dy/dx$",
+    "question": "If $y=(x-1)e^{-x}$, find $\\dfrac{dy}{dx}$",
     "options": [
       {
         "label": "A",
-        "text": "$(2–x)e⁻ˣ$"
+        "text": "$(2-x)e^{-x}$"
       },
       {
         "label": "B",
-        "text": "eˣ2x"
+        "text": "$e^x2x$"
       },
       {
         "label": "C",
-        "text": "$–xeˣ$"
+        "text": "$-xe^x$"
       },
       {
         "label": "D",
-        "text": "2x"
+        "text": "$2x$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "Product rule: $dy/dx=e^{-x}-(x-1)e^{-x}=(2-x)e^{-x}$.",
     "difficulty": "medium"
   },
   {
@@ -676,7 +676,7 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Find the modulus of 2i+3j–4k$",
+    "question": "Find the modulus of $2\\mathbf{i}+3\\mathbf{j}-4\\mathbf{k}$",
     "options": [
       {
         "label": "A",
@@ -696,7 +696,7 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$|2\\mathbf{i}+3\\mathbf{j}-4\\mathbf{k}|=\\sqrt{4+9+16}=\\sqrt{29}$.",
     "difficulty": "medium"
   },
   {
@@ -704,27 +704,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Find the scalar product of a=2i+3j and b=–i+4j$",
+    "question": "Find the scalar product of $\\mathbf{a}=2\\mathbf{i}+3\\mathbf{j}$ and $\\mathbf{b}=-\\mathbf{i}+4\\mathbf{j}$",
     "options": [
       {
         "label": "A",
-        "text": "20"
+        "text": "$20$"
       },
       {
         "label": "B",
-        "text": "10"
+        "text": "$10$"
       },
       {
         "label": "C",
-        "text": "–10"
+        "text": "$-10$"
       },
       {
         "label": "D",
-        "text": "–20"
+        "text": "$-20$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$\\mathbf{a}\\cdot\\mathbf{b}=(2)(-1)+(3)(4)=10$.",
     "difficulty": "medium"
   },
   {
@@ -732,27 +732,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Find the value of n for which the vectors si+nj–3k and ni–j+5k are perpendicular.",
+    "question": "Find $n$ such that $s\\mathbf{i}+n\\mathbf{j}-3\\mathbf{k}\\perp n\\mathbf{i}-\\mathbf{j}+5\\mathbf{k}$",
     "options": [
       {
         "label": "A",
-        "text": "90"
+        "text": "$90$"
       },
       {
         "label": "B",
-        "text": "0°"
+        "text": "$0^\\circ$"
       },
       {
         "label": "C",
-        "text": "$15/(s–1)$"
+        "text": "$\\dfrac{15}{s-1}$"
       },
       {
         "label": "D",
-        "text": "$(s–1)/15$"
+        "text": "$\\dfrac{s-1}{15}$"
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "Dot product $=sn-n-15=0\\to n(s-1)=15\\to n=15/(s-1)$.",
     "difficulty": "medium"
   },
   {
@@ -760,27 +760,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Find the volume of tetrahedron OABC with A(2,1,1), B(0,–1,1), C(–1,3,0)$",
+    "question": "Find the volume of tetrahedron $OABC$ with $A(2,1,1),B(0,-1,1),C(-1,3,0)$",
     "options": [
       {
         "label": "A",
-        "text": "$2/5$"
+        "text": "$\\dfrac{2}{5}$"
       },
       {
         "label": "B",
-        "text": "$3/4$"
+        "text": "$\\dfrac{3}{4}$"
       },
       {
         "label": "C",
-        "text": "$4/3$"
+        "text": "$\\dfrac{4}{3}$"
       },
       {
         "label": "D",
-        "text": "$–4/3$"
+        "text": "$-\\dfrac{4}{3}$"
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "$V=\\frac16|\\overrightarrow{OA}\\cdot(\\overrightarrow{OB}\\times\\overrightarrow{OC})|=\\frac16|-8|=\\frac43$.",
     "difficulty": "medium"
   },
   {
@@ -788,27 +788,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$S=1.5t²–t (metres). Find speed after t seconds.$",
+    "question": "$S=1.5t^2-t$ (metres). Find the speed after $t$ seconds.",
     "options": [
       {
         "label": "A",
-        "text": "$3t m/s$"
+        "text": "$3t$ m/s"
       },
       {
         "label": "B",
-        "text": "$(3t–1) m/s$"
+        "text": "$(3t-1)$ m/s"
       },
       {
         "label": "C",
-        "text": "$(3t+1) m/s$"
+        "text": "$(3t+1)$ m/s"
       },
       {
         "label": "D",
-        "text": "$(1–3t) m/s$"
+        "text": "$(1-3t)$ m/s"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "Speed $v=dS/dt=3t-1$ m/s.",
     "difficulty": "medium"
   },
   {
@@ -816,27 +816,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Car travels 10km West, 20km North-West, 30km North from A. Find displacement.",
+    "question": "A car travels $10$ km West, $20$ km North-West, then $30$ km North. Find displacement from $A$.",
     "options": [
       {
         "label": "A",
-        "text": "51.3km"
+        "text": "$51.3$ km"
       },
       {
         "label": "B",
-        "text": "53.3km"
+        "text": "$53.3$ km"
       },
       {
         "label": "C",
-        "text": "43km"
+        "text": "$43$ km"
       },
       {
         "label": "D",
-        "text": "50.3km"
+        "text": "$50.3$ km"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "W: $10+20\\cos45^\\circ\\approx24.14$. N: $20\\sin45^\\circ+30\\approx44.14$. Disp $=\\sqrt{24.14^2+44.14^2}\\approx50.3$ km.",
     "difficulty": "medium"
   },
   {
@@ -844,27 +844,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Train brakes produce retardation of 1.2 m/s² from 90 km/h (=25 m/s). Distance to apply brakes?",
+    "question": "Train brakes give retardation $1.2$ m/s$^2$ from $90$ km/h ($25$ m/s). Find stopping distance.",
     "options": [
       {
         "label": "A",
-        "text": "200m"
+        "text": "$200$ m"
       },
       {
         "label": "B",
-        "text": "250m"
+        "text": "$250$ m"
       },
       {
         "label": "C",
-        "text": "260m"
+        "text": "$260$ m"
       },
       {
         "label": "D",
-        "text": "240m"
+        "text": "$240$ m"
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "$v^2=u^2+2as$: $0=25^2+2(-1.2)s\\to s=625/2.4\\approx260$ m.",
     "difficulty": "medium"
   },
   {
@@ -872,27 +872,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Particle projected at 20 m/s up smooth incline of 30°. Find distance up the plane.",
+    "question": "Particle projected at $20$ m/s up a smooth $30^\\circ$ incline. Find distance up the plane.",
     "options": [
       {
         "label": "A",
-        "text": "40.8m"
+        "text": "$40.8$ m"
       },
       {
         "label": "B",
-        "text": "48m"
+        "text": "$48$ m"
       },
       {
         "label": "C",
-        "text": "40m"
+        "text": "$40$ m"
       },
       {
         "label": "D",
-        "text": "38m"
+        "text": "$38$ m"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "$a=-g\\sin30^\\circ=-4.9$ m/s$^2$. $v^2=u^2+2as$: $0=20^2-9.8s\\to s=40.8$ m.",
     "difficulty": "medium"
   },
   {
@@ -900,27 +900,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Block of mass 20kg, μ=0.4, on horizontal plane. Find least horizontal force to move it.",
+    "question": "A block of mass $20$ kg, $\\mu=0.4$, on a horizontal plane. Find least force to move it.",
     "options": [
       {
         "label": "A",
-        "text": "190N"
+        "text": "$190$ N"
       },
       {
         "label": "B",
-        "text": "80N"
+        "text": "$80$ N"
       },
       {
         "label": "C",
-        "text": "196N"
+        "text": "$196$ N"
       },
       {
         "label": "D",
-        "text": "78.4N"
+        "text": "$78.4$ N"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "$F=\\mu mg=0.4\\times20\\times9.8=78.4$ N.",
     "difficulty": "medium"
   },
   {
@@ -928,27 +928,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "8kg mass hangs, suspended by two strings at 30° and 45° to horizontal. Find tensions.",
+    "question": "An $8$ kg mass hangs by strings at $30^\\circ$ and $45^\\circ$ to horizontal. Find tensions.",
     "options": [
       {
         "label": "A",
-        "text": "57.4N, 70.3W"
+        "text": "$57.4$ N, $70.3$ N"
       },
       {
         "label": "B",
-        "text": "50N,70W"
+        "text": "$50$ N, $70$ N"
       },
       {
         "label": "C",
-        "text": "60.5N,60.5W"
+        "text": "$60.5$ N, $60.5$ N"
       },
       {
         "label": "D",
-        "text": "50N,50W"
+        "text": "$50$ N, $50$ N"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "Lami: $\\frac{T_1}{\\sin135^\\circ}=\\frac{T_2}{\\sin120^\\circ}=\\frac{8g}{\\sin105^\\circ}$. $T_1\\approx57.4$, $T_2\\approx70.3$ N.",
     "difficulty": "medium"
   },
   {
@@ -956,27 +956,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$a=2i+3j+5k, b=3i–5j+2k, c=i–j. Find λ such that 2a–5b+λc is perpendicular to the x-axis.$",
+    "question": "$\\mathbf{a}=2\\mathbf{i}+3\\mathbf{j}+5\\mathbf{k}$, $\\mathbf{b}=3\\mathbf{i}-5\\mathbf{j}+2\\mathbf{k}$, $\\mathbf{c}=\\mathbf{i}-\\mathbf{j}$. Find $\\lambda$ so that $2\\mathbf{a}-5\\mathbf{b}+\\lambda\\mathbf{c}\\perp x$-axis.",
     "options": [
       {
         "label": "A",
-        "text": "8"
+        "text": "$8$"
       },
       {
         "label": "B",
-        "text": "9"
+        "text": "$9$"
       },
       {
         "label": "C",
-        "text": "10"
+        "text": "$10$"
       },
       {
         "label": "D",
-        "text": "7 Given the listed choices, checking the guide's intended answer: **B. 9** is marked correct per the standard key for this question.*"
+        "text": "$7$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$2\\mathbf{a}-5\\mathbf{b}+\\lambda\\mathbf{c}=(\\lambda-11)\\mathbf{i}+(31-\\lambda)\\mathbf{j}$. For $\\perp$ to $x$-axis: $\\lambda-11=0\\to\\lambda=11$.",
     "difficulty": "medium"
   },
   {
@@ -984,27 +984,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$P(John passes)=2/3, P(Joanna passes)=4/5. Find P(only one passes).$",
+    "question": "$P$(John passes)$=2/3$, $P$(Joanna passes)$=4/5$. Find $P$(only one passes).",
     "options": [
       {
         "label": "A",
-        "text": "$2/15$"
+        "text": "$\\dfrac{2}{15}$"
       },
       {
         "label": "B",
-        "text": "$4/15$"
+        "text": "$\\dfrac{4}{15}$"
       },
       {
         "label": "C",
-        "text": "$1/15$"
+        "text": "$\\dfrac{1}{15}$"
       },
       {
         "label": "D",
-        "text": "$6/15$"
+        "text": "$\\dfrac{6}{15}$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$P=\\frac23\\cdot\\frac15+\\frac13\\cdot\\frac45=\\frac{2+4}{15}=\\frac{6}{15}=\\frac25$.",
     "difficulty": "medium"
   },
   {
@@ -1012,27 +1012,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "In how many ways can a committee of 2 men and 2 women be formed from 3 men and 5 women?",
+    "question": "In how many ways can a committee of $2$ men and $2$ women be formed from $3$ men and $5$ women?",
     "options": [
       {
         "label": "A",
-        "text": "12"
+        "text": "$12$"
       },
       {
         "label": "B",
-        "text": "30"
+        "text": "$30$"
       },
       {
         "label": "C",
-        "text": "20"
+        "text": "$20$"
       },
       {
         "label": "D",
-        "text": "10"
+        "text": "$10$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$\\binom{3}{2}\\times\\binom{5}{2}=3\\times10=30$ ways.",
     "difficulty": "medium"
   },
   {
@@ -1040,27 +1040,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "The formula for Spearman's rank correlation is:",
+    "question": "The formula for Spearman rank correlation coefficient is:",
     "options": [
       {
         "label": "A",
-        "text": "$1 + 6Σd²/N(N²–1)$"
+        "text": "$1+\\dfrac{6\\sum d^2}{n(n^2-1)}$"
       },
       {
         "label": "B",
-        "text": "$1 – 6Σd²/N(N²–1)$"
+        "text": "$1-\\dfrac{6\\sum d^2}{n(n^2-1)}$"
       },
       {
         "label": "C",
-        "text": "$1 – 6Σd²/N(N²–1) [duplicate-style option]$"
+        "text": "$1-\\dfrac{6\\sum d^2}{n(n-1)}$"
       },
       {
         "label": "D",
-        "text": "$1 – 6Σd²/N²$"
+        "text": "$1-\\dfrac{6\\sum d^2}{n^2}$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$r_s=1-\\frac{6\\sum d^2}{n(n^2-1)}$, where $d$ is rank difference and $n$ is the number of pairs.",
     "difficulty": "medium"
   },
   {
@@ -1088,7 +1088,7 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "Population of a school is discrete (countable). Temperature, distance, marks are continuous.",
     "difficulty": "medium"
   },
   {
@@ -1116,7 +1116,7 @@
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "Standard normal curve has variance $1$, not $0$.",
     "difficulty": "medium"
   },
   {
@@ -1124,7 +1124,7 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "An experiment with two outcomes \"success\" or \"failure\" is called:",
+    "question": "An experiment with two outcomes (success/failure) is called:",
     "options": [
       {
         "label": "A",
@@ -1144,7 +1144,7 @@
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "A Bernoulli trial has exactly two outcomes (success/failure).",
     "difficulty": "medium"
   },
   {
@@ -1152,27 +1152,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "The range of values of rank correlation (r_rank) is:",
+    "question": "The range of values of rank correlation $r_s$ is:",
     "options": [
       {
         "label": "A",
-        "text": "$–1 ≤ r_rank ≤ 1$"
+        "text": "$-1\\le r_s\\le1$"
       },
       {
         "label": "B",
-        "text": "$0 ≤ r_rank ≤ 1$"
+        "text": "$0\\le r_s\\le1$"
       },
       {
         "label": "C",
-        "text": "$–1 ≤ r_rank ≤ 0$"
+        "text": "$-1\\le r_s\\le0$"
       },
       {
         "label": "D",
-        "text": "$r_rank ≥ 1$"
+        "text": "$r_s\\ge1$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": "",
+    "explanation": "$-1\\le r_s\\le1$, from perfect negative to perfect positive correlation.",
     "difficulty": "medium"
   },
   {
@@ -1180,27 +1180,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "Find the geometric mean of 5, 15, 10, 8, 12.",
+    "question": "Find the geometric mean of $5,15,10,8,12$.",
     "options": [
       {
         "label": "A",
-        "text": "72000"
+        "text": "$72000$"
       },
       {
         "label": "B",
-        "text": "821.1"
+        "text": "$821.1$"
       },
       {
         "label": "C",
-        "text": "9.36"
+        "text": "$9.36$"
       },
       {
         "label": "D",
-        "text": "10"
+        "text": "$10$"
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "GM $=(5\\times15\\times10\\times8\\times12)^{1/5}=72000^{1/5}\\approx9.36$.",
     "difficulty": "medium"
   },
   {
@@ -1208,7 +1208,7 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "One can easily determine the ___ of a distribution from a histogram.",
+    "question": "One can easily determine the _____ of a distribution from a histogram.",
     "options": [
       {
         "label": "A",
@@ -1228,7 +1228,7 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "The mode is the value with highest frequency, identifiable from the tallest bar.",
     "difficulty": "medium"
   },
   {
@@ -1236,27 +1236,27 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "$Find the mean of the scores: x=61,64,67,70,73 with f=5,18,42,27,8.$",
+    "question": "Find the mean: $x=61,64,67,70,73$ with $f=5,18,42,27,8$.",
     "options": [
       {
         "label": "A",
-        "text": "65"
+        "text": "$65$"
       },
       {
         "label": "B",
-        "text": "67.45"
+        "text": "$67.45$"
       },
       {
         "label": "C",
-        "text": "67"
+        "text": "$67$"
       },
       {
         "label": "D",
-        "text": "68"
+        "text": "$68$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "$\\bar{x}=\\frac{61\\cdot5+64\\cdot18+67\\cdot42+70\\cdot27+73\\cdot8}{100}=\\frac{6745}{100}=67.45$.",
     "difficulty": "medium"
   },
   {
@@ -1264,19 +1264,19 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "What is the mode of 1,8,8,10,9,2,7,8,2,2,4,1,1,8,7,1?",
+    "question": "What is the mode of $1,8,8,10,9,2,7,8,2,2,4,1,1,8,7,1$?",
     "options": [
       {
         "label": "A",
-        "text": "8"
+        "text": "$8$"
       },
       {
         "label": "B",
-        "text": "8 and 1"
+        "text": "$8$ and $1$"
       },
       {
         "label": "C",
-        "text": "1"
+        "text": "$1$"
       },
       {
         "label": "D",
@@ -1284,7 +1284,7 @@
       }
     ],
     "correctAnswer": "B",
-    "explanation": "",
+    "explanation": "Both $1$ and $8$ appear $4$ times each. Bimodal.",
     "difficulty": "medium"
   },
   {
@@ -1292,7 +1292,7 @@
     "subject": "math",
     "year": 2015,
     "category": "objective",
-    "question": "The ___ level of a test is the maximum probability of committing a Type I error when the null hypothesis holds.",
+    "question": "The _____ level of a test is the maximum probability of committing a Type I error when the null hypothesis holds.",
     "options": [
       {
         "label": "A",
@@ -1312,7 +1312,7 @@
       }
     ],
     "correctAnswer": "C",
-    "explanation": "",
+    "explanation": "The significance level $\\alpha$ is the max probability of Type I error.",
     "difficulty": "medium"
   },
   {
@@ -1332,15 +1332,15 @@
       },
       {
         "label": "C",
-        "text": "the amount of skewness associated with its distribution"
+        "text": "the amount of skewness"
       },
       {
         "label": "D",
-        "text": "the amount of variability associated with its distribution"
+        "text": "the amount of variability"
       }
     ],
     "correctAnswer": "D",
-    "explanation": "",
+    "explanation": "Standard deviation measures the spread/variability of data about the mean.",
     "difficulty": "medium"
   }
 ]

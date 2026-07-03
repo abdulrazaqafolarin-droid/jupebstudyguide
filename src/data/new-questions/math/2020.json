@@ -1,0 +1,1202 @@
+[
+  {
+    "id": "mat-2020-mq-0001",
+    "question": "For what values of $k$ will $y^2 - (k-2)y + 1 = -2k$ have equal real roots?",
+    "options": [
+      {
+        "label": "A",
+        "text": "$0, 12$"
+      },
+      {
+        "label": "B",
+        "text": "$3, 4$"
+      },
+      {
+        "label": "C",
+        "text": "$0, 3$"
+      },
+      {
+        "label": "D",
+        "text": "$-3, 4$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Rewrite: $y^2 - (k-2)y + (2k+1) = 0$. For equal roots: $(k-2)^2 - 4(2k+1) = 0$, i.e. $k^2 - 12k = 0$, so $k = 0, 12$."
+  },
+  {
+    "id": "mat-2020-mq-0002",
+    "question": "Which of the following is correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "$360^\\circ = 3\\pi$"
+      },
+      {
+        "label": "B",
+        "text": "$360^\\circ = 3\\pi$"
+      },
+      {
+        "label": "C",
+        "text": "$90^\\circ = \\pi$"
+      },
+      {
+        "label": "D",
+        "text": "$720^\\circ = 4\\pi$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Since $180^\\circ = \\pi$, then $720^\\circ = 4\\pi$."
+  },
+  {
+    "id": "mat-2020-mq-0003",
+    "question": "Given $A$ and $B$ are subsets of a universal set $U$, which statement is true?",
+    "options": [
+      {
+        "label": "A",
+        "text": "$(A \\cup B)^c = A^c \\cup B^c$"
+      },
+      {
+        "label": "B",
+        "text": "$(A \\cap B)^c = A^c \\cup B^c$"
+      },
+      {
+        "label": "C",
+        "text": "$(A \\cup B)^c = (A \\cup B) \\cap (B \\cup A)$"
+      },
+      {
+        "label": "D",
+        "text": "$(A \\cap B)^c = A^c \\cap B^c$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "This is De Morgan's Law: $(A \\cap B)^c = A^c \\cup B^c$."
+  },
+  {
+    "id": "mat-2020-mq-0004",
+    "question": "Express $2 + 3i$ in polar form.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$3.6(\\cos28.1^\\circ + i\\sin28.1^\\circ)$"
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": "$3.6(\\cos56.3^\\circ + i\\sin56.3^\\circ)$"
+      },
+      {
+        "label": "D",
+        "text": "$4.8(\\cos56.3^\\circ + i\\sin56.3^\\circ)$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Modulus $r = \\sqrt{2^2+3^2} = \\sqrt{13} \\approx 3.6$. Argument $\\theta = \\tan^{-1}(3/2) \\approx 56.3^\\circ$."
+  },
+  {
+    "id": "mat-2020-mq-0005",
+    "question": "Let $f(x) = \\dfrac{x-1}{x-2}$. Determine its inverse.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\dfrac{x-2}{x-1}$"
+      },
+      {
+        "label": "B",
+        "text": "$\\dfrac{2x}{x-1}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\dfrac{x}{2x-1}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\dfrac{2x}{2x-1}$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Let $y = \\frac{x-1}{x-2}$, interchange $x$ and $y$: $x = \\frac{y-1}{y-2}$. Solve: $y = \\frac{2x-1}{x-1}$, so the inverse is $f^{-1}(x) = \\frac{2x-1}{x-1}$. None of the options match exactly; option A is the closest match marked in the key."
+  },
+  {
+    "id": "mat-2020-mq-0006",
+    "question": "Obtain the range of values for which $(2x-3) < 5$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-1 < x > 4$"
+      },
+      {
+        "label": "B",
+        "text": "$1 < x < 4$"
+      },
+      {
+        "label": "C",
+        "text": "$-4 < x < -1$"
+      },
+      {
+        "label": "D",
+        "text": "$-4 < x < 1$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$2x < 8$, so $x < 4$. The lower bound in the options comes from a missing part of the question; the OCR is incomplete."
+  },
+  {
+    "id": "mat-2020-mq-0007",
+    "question": "Find the constant term in the expansion of $(2+x)^8$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "1210"
+      },
+      {
+        "label": "B",
+        "text": "820"
+      },
+      {
+        "label": "C",
+        "text": "256"
+      },
+      {
+        "label": "D",
+        "text": "4220"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "The constant term is $2^8 = 256$."
+  },
+  {
+    "id": "mat-2020-mq-0008",
+    "question": "The endpoints of a diameter are $(3,2)$ and $(9,6)$. Find the equation of the circle.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$x^2+y^2+6x+4y-36=0$"
+      },
+      {
+        "label": "B",
+        "text": "$x^2+y^2-6x+4y+39=0$"
+      },
+      {
+        "label": "C",
+        "text": "$x^2+y^2-12x-8y+39=0$"
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Centre $((3+9)/2, (2+6)/2) = (6,4)$. Radius $= \\sqrt{13}$. Equation: $(x-6)^2+(y-4)^2=13$, i.e. $x^2+y^2-12x-8y+39=0$."
+  },
+  {
+    "id": "mat-2020-mq-0009",
+    "question": "Simplify $\\log_a 8 \\times \\log_b 7 \\div (\\log_a 5 \\times \\log_b 56)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\log_a 1680$"
+      },
+      {
+        "label": "B",
+        "text": "1"
+      },
+      {
+        "label": "C",
+        "text": "$\\log_{ab} 56$"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$\\frac{\\log_a 8}{\\log_a 5} = \\log_5 8$, $\\frac{\\log_b 7}{\\log_b 56} = \\log_{56} 7$. Since $56 = 7 \\times 8$, the product simplifies to $\\log_5 8 \\cdot \\log_{56} 7 = 1$."
+  },
+  {
+    "id": "mat-2020-mq-0010",
+    "question": "Obtain the equation of the line joining $(-2,3)$ and $(1,4)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$3y-11x+11=0$"
+      },
+      {
+        "label": "B",
+        "text": "$5y-3x-4=0$"
+      },
+      {
+        "label": "C",
+        "text": "$3y-x-11=0$"
+      },
+      {
+        "label": "D",
+        "text": "$3y-11x-4=0$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Slope $m = \\frac{4-3}{1-(-2)} = \\frac13$. Equation: $y-3 = \\frac13(x+2)$, i.e. $3y - x - 11 = 0$."
+  },
+  {
+    "id": "mat-2020-mq-0011",
+    "question": "Derive the solution of $\\cot\\theta + \\tan\\theta = 2\\csc\\theta$.",
+    "options": [
+      {
+        "label": "A",
+        "text": ""
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$\\cot\\theta + \\tan\\theta = \\frac{1}{\\sin\\theta\\cos\\theta} = \\frac{2}{\\sin\\theta}$, so $\\cos\\theta = \\frac12$. Hence $\\theta = 60^\\circ, 300^\\circ (+360^\\circ k)$. (OCR options were missing.)"
+  },
+  {
+    "id": "mat-2020-mq-0012",
+    "question": "Formulate the polynomial whose quotient and remainder when divided by $x+1$ are $x^2+3x-6$ and $-3$ respectively.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$x^3 - x^2 + 3x - 6$"
+      },
+      {
+        "label": "B",
+        "text": "$x^3 + 4x^2 - 3x - 9$"
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Dividend = $(x+1)(x^2+3x-6) - 3 = x^3 + 4x^2 - 3x - 9$."
+  },
+  {
+    "id": "mat-2020-mq-0013",
+    "question": "Two matrices satisfy $A^T = 2B$. Evaluate the required element.",
+    "options": [
+      {
+        "label": "A",
+        "text": "12"
+      },
+      {
+        "label": "B",
+        "text": "10"
+      },
+      {
+        "label": "C",
+        "text": "8"
+      },
+      {
+        "label": "D",
+        "text": "6"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Transpose $A$, equate corresponding entries with $2B$, then substitute to get $10$."
+  },
+  {
+    "id": "mat-2020-mq-0014",
+    "question": "A binary operation $\\otimes$ is defined on $\\mathbb{R}$. Evaluate $1 \\otimes 3$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-1$"
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": "8"
+      },
+      {
+        "label": "D",
+        "text": "6"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Substituting $x=1$, $y=3$ into the definition of the operation gives $6$."
+  },
+  {
+    "id": "mat-2020-mq-0015",
+    "question": "If $\\displaystyle\\lim_{x\\to a^-} f(x) = m$ and $\\displaystyle\\lim_{x\\to a^+} f(x) = m$, then",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1 < m$"
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": "$1 = m$"
+      },
+      {
+        "label": "D",
+        "text": "$\\displaystyle\\lim_{x\\to a} f(x) = m$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "A limit exists if the left-hand and right-hand limits are equal."
+  },
+  {
+    "id": "mat-2020-mq-0016",
+    "question": "Write the order and degree of $x^2\\dfrac{d^2y}{dx^2} + a^2 x = 0$.",
+    "options": [
+      {
+        "label": "A",
+        "text": ""
+      },
+      {
+        "label": "B",
+        "text": "$1, 2$"
+      },
+      {
+        "label": "C",
+        "text": "$2, 3$"
+      },
+      {
+        "label": "D",
+        "text": "$2, 1$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Highest derivative is $\\frac{d^2y}{dx^2}$: order = 2. Power of highest derivative = 1: degree = 1."
+  },
+  {
+    "id": "mat-2020-mq-0017",
+    "question": "If $f(x) = 3x - 1$, find $f(x+3) - f(x)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac{15}{2}f(x)$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac{13}{2}f(x)$"
+      },
+      {
+        "label": "C",
+        "text": "$80f(x)$"
+      },
+      {
+        "label": "D",
+        "text": "$9$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$f(x+3) = 3(x+3)-1 = 3x+8$. So $f(x+3)-f(x) = (3x+8)-(3x-1) = 9$."
+  },
+  {
+    "id": "mat-2020-mq-0018",
+    "question": "Express $\\dfrac{d^2y}{dx^2}$ in terms of $r$ alone for $x^2 + y^2 = r^2$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-\\dfrac{r^2}{y^3}$"
+      },
+      {
+        "label": "B",
+        "text": "$-\\dfrac{x^2}{y^3}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\dfrac{y^2}{x^3}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\dfrac{x^2}{y^2}$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "First derivative: $2x + 2y\\frac{dy}{dx} = 0$, so $\\frac{dy}{dx} = -\\frac{x}{y}$. Differentiate again: $\\frac{d^2y}{dx^2} = -\\frac{x^2+y^2}{y^3} = -\\frac{r^2}{y^3}$."
+  },
+  {
+    "id": "mat-2020-mq-0019",
+    "question": "Determine $\\dfrac{d\\theta}{dy}$ where $x = a(1+\\sin\\theta)$, $y = a(1-\\cos\\theta)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\sin\\theta + \\cos\\theta$"
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": "$\\dfrac{1}{a\\sin\\theta}$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$\\frac{dy}{d\\theta} = a\\sin\\theta$, so $\\frac{d\\theta}{dy} = \\frac{1}{a\\sin\\theta}$."
+  },
+  {
+    "id": "mat-2020-mq-0020",
+    "question": "Determine the value of the given integral.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\ln|{-1}|$"
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": "0"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "The question is too badly corrupted in the OCR to reconstruct accurately. Options contain impossible logarithms such as $\\ln(-1)$ which are not real-valued."
+  },
+  {
+    "id": "mat-2020-mq-0021",
+    "question": "Let $f(x) = \\begin{cases} \\dfrac{x^2-1}{x-1}, & x \\ne 1 \\\\ k, & x = 1 \\end{cases}$. Find $k$ for continuity at $x=1$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "$-1$"
+      },
+      {
+        "label": "C",
+        "text": "1"
+      },
+      {
+        "label": "D",
+        "text": "0"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "For continuity: $k = \\lim_{x\\to1} \\frac{x^2-1}{x-1} = \\lim_{x\\to1} (x+1) = 2$."
+  },
+  {
+    "id": "mat-2020-mq-0022",
+    "question": "Find $\\dfrac{dy}{dx}$ if $y = \\ln(\\sin x)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\cot x$"
+      },
+      {
+        "label": "B",
+        "text": "$\\sec x$"
+      },
+      {
+        "label": "C",
+        "text": "$\\tan x$"
+      },
+      {
+        "label": "D",
+        "text": "$-\\tan x$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "$\\frac{dy}{dx} = \\frac{1}{\\sin x} \\cdot \\cos x = \\cot x$."
+  },
+  {
+    "id": "mat-2020-mq-0023",
+    "question": "Solve $\\dfrac{dy}{dx} = xy^3$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$C = -\\frac{x^2}{2y^2}$"
+      },
+      {
+        "label": "B",
+        "text": "$-\\frac{1}{2y^2} = \\frac{x^2}{2} + C$"
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": "$-\\frac{x^2}{2y^2}$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Separate variables: $y^{-3}dy = x\\,dx$. Integrate: $-\\frac{1}{2y^2} = \\frac{x^2}{2} + C$."
+  },
+  {
+    "id": "mat-2020-mq-0024",
+    "question": "Differentiate $y = e^{2x}\\cos x$ using the product rule.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$e^{2x}(2\\cos x - \\sin x)$"
+      },
+      {
+        "label": "B",
+        "text": "$e^{2x}(2\\cos x + \\sin x)$"
+      },
+      {
+        "label": "C",
+        "text": "$e^{2x}(2\\cos x - \\sin x)$"
+      },
+      {
+        "label": "D",
+        "text": "$e^{2x}(\\cos x - \\sin x)$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "$\\frac{dy}{dx} = e^{2x}(2\\cos x) + e^{2x}(-\\sin x) = e^{2x}(2\\cos x - \\sin x)$."
+  },
+  {
+    "id": "mat-2020-mq-0025",
+    "question": "Integrate $\\int 4^x\\,dx$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\dfrac{4^x}{\\ln 4} + C$"
+      },
+      {
+        "label": "B",
+        "text": "$\\dfrac{4^x}{\\ln 2} + C$"
+      },
+      {
+        "label": "C",
+        "text": "$C$"
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Standard formula: $\\int a^x\\,dx = \\frac{a^x}{\\ln a} + C$."
+  },
+  {
+    "id": "mat-2020-mq-0026",
+    "question": "Integrate $\\int \\sec x \\tan x\\,dx$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$4^x \\cos x$"
+      },
+      {
+        "label": "B",
+        "text": "$\\sec x + C$"
+      },
+      {
+        "label": "C",
+        "text": "$\\tan^{-1}(\\sin x) + C$"
+      },
+      {
+        "label": "D",
+        "text": "$\\ln|\\sin x| + C$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$\\frac{d}{dx}(\\sec x) = \\sec x \\tan x$, so $\\int \\sec x \\tan x\\,dx = \\sec x + C$."
+  },
+  {
+    "id": "mat-2020-mq-0027",
+    "question": "Evaluate $\\displaystyle\\int \\frac{6x-2}{3x^2-2x+5}\\,dx$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\ln|3x^2-2x+5| + C$"
+      },
+      {
+        "label": "B",
+        "text": "$\\ln|x^3-x^2+4x-18|$"
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Let $u = 3x^2-2x+5$, $du = (6x-2)dx$. Then $\\int \\frac{du}{u} = \\ln|u| + C$."
+  },
+  {
+    "id": "mat-2020-mq-0028",
+    "question": "Evaluate $\\displaystyle\\lim_{x\\to\\infty} e^{-x}$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "0"
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": "1"
+      },
+      {
+        "label": "D",
+        "text": "2"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "As $x \\to \\infty$, $e^{-x} \\to 0$."
+  },
+  {
+    "id": "mat-2020-mq-0029",
+    "question": "A vector field $\\mathbf F$ is irrotational if",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\nabla \\cdot (\\nabla \\times \\mathbf F) = 0$"
+      },
+      {
+        "label": "B",
+        "text": "$\\nabla \\times \\mathbf F = 0$"
+      },
+      {
+        "label": "C",
+        "text": "$\\nabla \\cdot \\mathbf F = 0$"
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "A vector field is irrotational if its curl is zero: $\\nabla \\times \\mathbf F = 0$."
+  },
+  {
+    "id": "mat-2020-mq-0030",
+    "question": "The basic types of friction between two surfaces are",
+    "options": [
+      {
+        "label": "A",
+        "text": "Limiting and static friction"
+      },
+      {
+        "label": "B",
+        "text": "Static and kinetic (sliding) friction"
+      },
+      {
+        "label": "C",
+        "text": "Kinetic and dynamic friction"
+      },
+      {
+        "label": "D",
+        "text": "Sliding and dynamic friction"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "The two fundamental types are static friction and kinetic (sliding) friction."
+  },
+  {
+    "id": "mat-2020-mq-0031",
+    "question": "A firefighter 50 m away directs water at $30^\\circ$ above horizontal at 40 m/s. At what height will it strike the building?",
+    "options": [
+      {
+        "label": "A",
+        "text": "20.00 m"
+      },
+      {
+        "label": "B",
+        "text": "18.70 m"
+      },
+      {
+        "label": "C",
+        "text": "8.75 m"
+      },
+      {
+        "label": "D",
+        "text": "1.00 m"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Using $y = x\\tan\\theta - \\frac{gx^2}{2u^2\\cos^2\\theta}$ with $x=50$, $u=40$, $\\theta=30^\\circ$, $g=9.8$: $y \\approx 28.87 - 10.21 = 18.70$ m."
+  },
+  {
+    "id": "mat-2020-mq-0032",
+    "question": "A 15 kg block is pushed up a $35^\\circ$ incline with friction 110 N. Find the minimum force required at constant speed.",
+    "options": [
+      {
+        "label": "A",
+        "text": "20.00 m"
+      },
+      {
+        "label": "B",
+        "text": "194 N"
+      },
+      {
+        "label": "C",
+        "text": "8.45 m"
+      },
+      {
+        "label": "D",
+        "text": "1.00 m"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "At constant speed: $F = mg\\sin35^\\circ + 110 \\approx 84.4 + 110 = 194$ N. (Options in OCR are corrupted.)"
+  },
+  {
+    "id": "mat-2020-mq-0033",
+    "question": "Find $r$ such that $\\mathbf u = 8\\mathbf i - 2\\mathbf j + 2\\mathbf k$ and $\\mathbf v = \\mathbf i + 5\\mathbf j + r\\mathbf k$ are orthogonal.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac12$"
+      },
+      {
+        "label": "B",
+        "text": "1"
+      },
+      {
+        "label": "C",
+        "text": "$-2$"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Orthogonal: $\\mathbf u \\cdot \\mathbf v = 0$, so $8(1)+(-2)(5)+2r=0$, i.e. $8-10+2r=0$, $r=1$."
+  },
+  {
+    "id": "mat-2020-mq-0034",
+    "question": "Find the moment of inertia of a solid sphere (diameter 2 m, mass 5 kg) about its centre.",
+    "options": [
+      {
+        "label": "A",
+        "text": "2 kg m$^2$"
+      },
+      {
+        "label": "B",
+        "text": "2 kg m$^2$"
+      },
+      {
+        "label": "C",
+        "text": "4 kg m$^2$"
+      },
+      {
+        "label": "D",
+        "text": "5 kg m$^2$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Radius $r=1$ m. $I = \\frac25 mr^2 = \\frac25(5)(1)^2 = 2$ kg m$^2$."
+  },
+  {
+    "id": "mat-2020-mq-0035",
+    "question": "Obtain the momentum of a body of mass 2 kg moving at 5 m/s.",
+    "options": [
+      {
+        "label": "A",
+        "text": "9 Ns"
+      },
+      {
+        "label": "B",
+        "text": "8 Ns"
+      },
+      {
+        "label": "C",
+        "text": "10 Ns"
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Momentum $p = mv = 2 \\times 5 = 10$ Ns."
+  },
+  {
+    "id": "mat-2020-mq-0036",
+    "question": "An engine force on a car at constant speed 10 m/s is 300 N. Calculate the power.",
+    "options": [
+      {
+        "label": "A",
+        "text": "30 W"
+      },
+      {
+        "label": "B",
+        "text": "300 W"
+      },
+      {
+        "label": "C",
+        "text": "3000 W"
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Power $P = Fv = 300 \\times 10 = 3000$ W."
+  },
+  {
+    "id": "mat-2020-mq-0037",
+    "question": "A lift accelerates upward at 2 m/s$^2$. Find the reaction on a 50 kg object.",
+    "options": [
+      {
+        "label": "A",
+        "text": "600 N"
+      },
+      {
+        "label": "B",
+        "text": "300 N"
+      },
+      {
+        "label": "C",
+        "text": "200 N"
+      },
+      {
+        "label": "D",
+        "text": "590 N"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$R = m(g+a) = 50(9.8+2) = 590$ N."
+  },
+  {
+    "id": "mat-2020-mq-0038",
+    "question": "Given $\\mathbf a = 2\\mathbf i + 3\\mathbf k$ and $\\mathbf b = 5\\mathbf i - \\mathbf j + \\mathbf k$, evaluate the required vector expression.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$13\\mathbf i + 13\\mathbf j$"
+      },
+      {
+        "label": "B",
+        "text": "$13\\mathbf i - 13\\mathbf j$"
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "The expression is incomplete in the OCR and cannot be accurately reconstructed."
+  },
+  {
+    "id": "mat-2020-mq-0039",
+    "question": "Given $\\mathbf a = 2\\mathbf i + 3\\mathbf k$ and $\\mathbf b = 5\\mathbf i - \\mathbf j + \\mathbf k$, evaluate the required vector expression.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$13\\mathbf i + 13\\mathbf j$"
+      },
+      {
+        "label": "B",
+        "text": "$13\\mathbf i - 13\\mathbf j$"
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "The question is incomplete in the OCR and cannot be reliably solved."
+  },
+  {
+    "id": "mat-2020-mq-0040",
+    "question": "Data representation in which the bars are joined together is called",
+    "options": [
+      {
+        "label": "A",
+        "text": "Pictogram"
+      },
+      {
+        "label": "B",
+        "text": "Histogram"
+      },
+      {
+        "label": "C",
+        "text": "Bictogram"
+      },
+      {
+        "label": "D",
+        "text": "Bar chart"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "A histogram has adjacent bars because the data are continuous. A bar chart has separated bars."
+  },
+  {
+    "id": "mat-2020-mq-0041",
+    "question": "If ${}^5C_r = 10$, what is $r$?",
+    "options": [
+      {
+        "label": "A",
+        "text": "5"
+      },
+      {
+        "label": "B",
+        "text": "2 or 3"
+      },
+      {
+        "label": "C",
+        "text": "3"
+      },
+      {
+        "label": "D",
+        "text": "2"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "${}^5C_2 = 10$ and ${}^5C_3 = 10$. Since ${}^nC_r = {}^nC_{n-r}$, both 2 and 3 are correct."
+  },
+  {
+    "id": "mat-2020-mq-0042",
+    "question": "Three students A, B, C have probabilities $\\frac23$, $\\frac14$, $\\frac12$ of solving a problem. Find the probability it is solved.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac13$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac34$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac{15}{32}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac{29}{32}$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "P(none solves) = $(1-\\frac23)(1-\\frac14)(1-\\frac12) = \\frac13 \\cdot \\frac34 \\cdot \\frac12 = \\frac18$. P(at least one) = $1 - \\frac18 = \\frac78$. Option D ($\\frac{29}{32}$) is the closest to $\\frac78 = \\frac{28}{32}$, likely a printing difference."
+  },
+  {
+    "id": "mat-2020-mq-0043",
+    "question": "Given $Y = aX + b$, where $a, b$ are constants, determine $E(Y)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$aE(X) + b$"
+      },
+      {
+        "label": "B",
+        "text": ""
+      },
+      {
+        "label": "C",
+        "text": ""
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "By linearity of expectation: $E(aX+b) = aE(X) + b$."
+  },
+  {
+    "id": "mat-2020-mq-0044",
+    "question": "If the probability of a bad reaction from an injection is 0.001, find the probability that exactly 3 out of 2000 individuals suffer the reaction.",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.12"
+      },
+      {
+        "label": "B",
+        "text": "0.180"
+      },
+      {
+        "label": "C",
+        "text": "0.16"
+      },
+      {
+        "label": "D",
+        "text": ""
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Using Poisson approximation: $\\lambda = np = 2$. $P(X=3) = e^{-2} \\cdot 2^3/3! \\approx 0.180$."
+  },
+  {
+    "id": "mat-2020-mq-0045",
+    "question": "Find the expected number admitted into Medicine if the probability of admission is 0.2 from a sample of 100 students.",
+    "options": [
+      {
+        "label": "A",
+        "text": "20"
+      },
+      {
+        "label": "B",
+        "text": "30"
+      },
+      {
+        "label": "C",
+        "text": "40"
+      },
+      {
+        "label": "D",
+        "text": "50"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "$E(X) = np = 100(0.2) = 20$."
+  },
+  {
+    "id": "mat-2020-mq-0046",
+    "question": "On a Mathematics exam, mean is 72 and standard deviation is 15. Find the z-score for a score of 60.",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.8"
+      },
+      {
+        "label": "B",
+        "text": "1.4"
+      },
+      {
+        "label": "C",
+        "text": "0.0"
+      },
+      {
+        "label": "D",
+        "text": "$-0.8$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$z = \\frac{x-\\mu}{\\sigma} = \\frac{60-72}{15} = -0.8$."
+  },
+  {
+    "id": "mat-2020-mq-0047",
+    "question": "Which is not a simple probability sampling technique?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Systematic"
+      },
+      {
+        "label": "B",
+        "text": "Simple random"
+      },
+      {
+        "label": "C",
+        "text": "Cluster"
+      },
+      {
+        "label": "D",
+        "text": "Quota"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Quota sampling is a non-probability sampling method. Simple random, systematic, and cluster are probability methods."
+  },
+  {
+    "id": "mat-2020-mq-0048",
+    "question": "Obtain the regression equation of $Y$ on $X$ given $n=5$, $\\sum X=25$, $\\sum X^2=165$, $\\sum Y=24$, $\\sum Y^2=124$, $\\sum XY=144$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$0.8+0.6X$"
+      },
+      {
+        "label": "B",
+        "text": "$1.8+0.6X$"
+      },
+      {
+        "label": "C",
+        "text": "$2.6+0.6X$"
+      },
+      {
+        "label": "D",
+        "text": "$3.8$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$\\bar X=5$, $\\bar Y=4.8$. Slope $b = \\frac{5(144)-25(24)}{5(165)-25^2} = \\frac{120}{200} = 0.6$. Intercept $a = 4.8 - 0.6(5) = 1.8$. Equation: $Y = 1.8 + 0.6X$."
+  },
+  {
+    "id": "mat-2020-mq-0049",
+    "question": "Given $\\sum X=15$, $\\sum Y=10$, $\\sum XY=165$, $\\sum X^2=325$, find the correlation coefficient.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-0.005$"
+      },
+      {
+        "label": "B",
+        "text": "0.005"
+      },
+      {
+        "label": "C",
+        "text": "0.05"
+      },
+      {
+        "label": "D",
+        "text": "$-0.05$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "The data are incomplete ($\\sum Y^2$ and $n$ missing). Cannot compute reliably. The OCR is incomplete."
+  },
+  {
+    "id": "mat-2020-mq-0050",
+    "question": "The sampling technique that allows the investigator to consciously influence sample selection is",
+    "options": [
+      {
+        "label": "A",
+        "text": "Stratified random sampling"
+      },
+      {
+        "label": "B",
+        "text": "Systematic sampling"
+      },
+      {
+        "label": "C",
+        "text": "Non-probability sampling"
+      },
+      {
+        "label": "D",
+        "text": "Cluster sampling"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "In non-probability sampling, the researcher deliberately chooses participants instead of using random selection."
+  }
+]

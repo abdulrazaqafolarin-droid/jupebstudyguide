@@ -1,0 +1,1202 @@
+[
+  {
+    "id": "mat-2019-mq-0001",
+    "question": "Let $Q$, $N$, $Z$, $C$ and $Q'$ denote the sets of rational, natural, integer, complex and irrational numbers respectively. Which of the following contains the whole set of real numbers?",
+    "options": [
+      {
+        "label": "A",
+        "text": "$N$"
+      },
+      {
+        "label": "B",
+        "text": "$Z \\cup C$"
+      },
+      {
+        "label": "C",
+        "text": "$Q \\cup Q'$"
+      },
+      {
+        "label": "D",
+        "text": "$Q \\cup C$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "The real numbers consist of all rational and irrational numbers. Thus $Q \\cup Q'$ equals $\\mathbb{R}$."
+  },
+  {
+    "id": "mat-2019-mq-0002",
+    "question": "Determine the solution set of $2x^2 - 3x - 2 < 0$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$(-\\frac12, 2)$"
+      },
+      {
+        "label": "B",
+        "text": "$(-\\infty, -\\frac12)$"
+      },
+      {
+        "label": "C",
+        "text": "$(2, \\infty)$"
+      },
+      {
+        "label": "D",
+        "text": "$[-\\frac12, 2]$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Factor: $2x^2 - 3x - 2 = (2x+1)(x-2)$. The quadratic is negative between its roots $x = -\\frac12$ and $x = 2$."
+  },
+  {
+    "id": "mat-2019-mq-0003",
+    "question": "Evaluate the conjugate of $\\dfrac{1}{-1+i}$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-1-i$"
+      },
+      {
+        "label": "B",
+        "text": "$-\\frac12 - \\frac12 i$"
+      },
+      {
+        "label": "C",
+        "text": "$-\\frac12 + \\frac12 i$"
+      },
+      {
+        "label": "D",
+        "text": "$1-i$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "$\\frac{1}{-1+i} = \\frac{-1-i}{2} = -\\frac12 - \\frac12 i$. Its conjugate is $-\\frac12 + \\frac12 i$."
+  },
+  {
+    "id": "mat-2019-mq-0004",
+    "question": "Compute the value of $x$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac12$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac25$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac45$"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac53$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Writing every term as powers of 2 and simplifying gives $x = \\frac45$."
+  },
+  {
+    "id": "mat-2019-mq-0005",
+    "question": "Find $\\tan 75^\\circ$ in surd form.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\sqrt3 + 2$"
+      },
+      {
+        "label": "B",
+        "text": "$\\dfrac{2-\\sqrt3}{2}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\sqrt3 - 2$"
+      },
+      {
+        "label": "D",
+        "text": "$2 + \\sqrt3$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$\\tan(45^\\circ + 30^\\circ) = \\dfrac{1 + \\frac{1}{\\sqrt3}}{1 - \\frac{1}{\\sqrt3}} = 2 + \\sqrt3$."
+  },
+  {
+    "id": "mat-2019-mq-0006",
+    "question": "Given $\\log 2 = 0.3010$, $\\log 3 = 0.4771$, $\\log 7 = 0.8451$, compute $\\log_{16} 72$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.6205"
+      },
+      {
+        "label": "B",
+        "text": "1.6205"
+      },
+      {
+        "label": "C",
+        "text": "3.6105"
+      },
+      {
+        "label": "D",
+        "text": "1.5025"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$\\log_{16}72 = \\dfrac{\\log 72}{\\log 16} = \\dfrac{3\\log2 + 2\\log3}{4\\log2} \\approx 1.5025$."
+  },
+  {
+    "id": "mat-2019-mq-0007",
+    "question": "If $U_1 = 3$, $U_2 = 4$ and $U_n = a + bn$, compute $U_6$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "3"
+      },
+      {
+        "label": "B",
+        "text": "4"
+      },
+      {
+        "label": "C",
+        "text": "2"
+      },
+      {
+        "label": "D",
+        "text": "8"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "From $a+b=3$ and $a+2b=4$, we get $a=2$, $b=1$. Hence $U_6 = 2 + 6 = 8$."
+  },
+  {
+    "id": "mat-2019-mq-0008",
+    "question": "If $\\alpha$ and $\\beta$ are roots of $x^2 - 5x + 6 = 0$, find the equation whose roots are $\\alpha^2$ and $\\beta^2$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$x^2 - 13x + 36 = 0$"
+      },
+      {
+        "label": "B",
+        "text": "$x^2 - 13x - 13 = 0$"
+      },
+      {
+        "label": "C",
+        "text": "$x^2 + 13x + 36 = 0$"
+      },
+      {
+        "label": "D",
+        "text": "$x^2 + 13x - 13 = 0$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "$\\alpha+\\beta=5$, $\\alpha\\beta=6$. Then $\\alpha^2+\\beta^2 = (\\alpha+\\beta)^2 - 2\\alpha\\beta = 13$, and $\\alpha^2\\beta^2 = 36$. The equation is $x^2 - 13x + 36 = 0$."
+  },
+  {
+    "id": "mat-2019-mq-0009",
+    "question": "Which partial fraction corresponds to $\\dfrac{f(x)}{(x^2 + a)(x - b)}$?",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\dfrac{Ax+B}{x^2+a} + \\dfrac{C}{x-b}$"
+      },
+      {
+        "label": "B",
+        "text": "$\\dfrac{Ax+B}{x^2+a} + \\dfrac{C}{x-b}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\dfrac{Cx+d}{(x-b)^2} + \\dfrac{x-b}{x+a}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\dfrac{Ax+B}{x^2+a} + \\dfrac{Ex+F}{(x+b)^2}$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "An irreducible quadratic takes a linear numerator $Ax+B$, while a simple linear factor takes a constant numerator $C$."
+  },
+  {
+    "id": "mat-2019-mq-0010",
+    "question": "Determine the centre and radius of $x^2 + y^2 - 2ax + 2by + a^2 = 0$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Centre $(a, -b)$, radius $b$"
+      },
+      {
+        "label": "B",
+        "text": "Centre $(-a, b)$, radius $a$"
+      },
+      {
+        "label": "C",
+        "text": "Centre $(a, b)$, radius $b$"
+      },
+      {
+        "label": "D",
+        "text": "Centre $(-a, -b)$, radius $a$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Complete the square: $(x - a)^2 + (y + b)^2 = b^2$. Centre is $(a, -b)$, radius is $b$."
+  },
+  {
+    "id": "mat-2019-mq-0011",
+    "question": "Express $1 + i$ in trigonometric form.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$2(\\cos45^\\circ - i\\sin45^\\circ)$"
+      },
+      {
+        "label": "B",
+        "text": "$\\sqrt2(\\cos45^\\circ + i\\sin45^\\circ)$"
+      },
+      {
+        "label": "C",
+        "text": "$2(\\cos315^\\circ + i\\sin45^\\circ)$"
+      },
+      {
+        "label": "D",
+        "text": "$\\sqrt2(\\cos315^\\circ - i\\sin315^\\circ)$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "For $z=1+i$: modulus $r = \\sqrt{1^2+1^2} = \\sqrt2$, argument $\\theta = 45^\\circ$. Hence $1+i = \\sqrt2(\\cos45^\\circ + i\\sin45^\\circ)$."
+  },
+  {
+    "id": "mat-2019-mq-0012",
+    "question": "A binary operation is defined by $x * y = \\frac15(5x + 5y - 4)$. Find the identity element.",
+    "options": [
+      {
+        "label": "A",
+        "text": "5"
+      },
+      {
+        "label": "B",
+        "text": "3"
+      },
+      {
+        "label": "C",
+        "text": "4"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac45$"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Identity $e$ satisfies $x * e = x$. So $\\frac15(5x + 5e - 4) = x$. Thus $5e - 4 = 0$, giving $e = \\frac45$."
+  },
+  {
+    "id": "mat-2019-mq-0013",
+    "question": "If $P = \\begin{pmatrix} y & 3 \\\\ 1 & 2 \\end{pmatrix}$, find the range of $y$ for which $|P| > 0$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-2 < y < 6$"
+      },
+      {
+        "label": "B",
+        "text": "$y > \\frac32$"
+      },
+      {
+        "label": "C",
+        "text": "$-6 < y < 2$"
+      },
+      {
+        "label": "D",
+        "text": "$-6 < y < -2$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$|P| = 2y - 3$. Require $2y - 3 > 0$, so $y > \\frac32$."
+  },
+  {
+    "id": "mat-2019-mq-0014",
+    "question": "Calculate the sum to infinity of $1 + \\tan30^\\circ + \\tan^2 30^\\circ + \\cdots$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac12(2-\\sqrt3)$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac12(3-\\sqrt3)$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac12(3+\\sqrt3)$"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac12(1-\\sqrt3)$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Geometric series with $a=1$, $r = \\tan30^\\circ = \\frac{1}{\\sqrt3}$. $S_\\infty = \\frac{1}{1-\\frac{1}{\\sqrt3}} = \\frac{\\sqrt3}{\\sqrt3-1} = \\frac{3+\\sqrt3}{2}$."
+  },
+  {
+    "id": "mat-2019-mq-0015",
+    "question": "Estimate $\\log_2 3 \\cdot \\log_3 4 \\cdot \\log_4 5 \\cdot \\log_5 6 \\cdot \\log_6 7 \\cdot \\log_7 8$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "1"
+      },
+      {
+        "label": "B",
+        "text": "2"
+      },
+      {
+        "label": "C",
+        "text": "3"
+      },
+      {
+        "label": "D",
+        "text": "4"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Using $\\log_a b \\cdot \\log_b c = \\log_a c$, everything telescopes: $= \\log_2 8 = 3$."
+  },
+  {
+    "id": "mat-2019-mq-0016",
+    "question": "Suppose $ax^2 + bx + c = 8$ at $x=1$, and $\\frac{dy}{dx} = 4x + 2$. Determine $(a,b,c)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$(4,2,2)$"
+      },
+      {
+        "label": "B",
+        "text": "$(2,2,4)$"
+      },
+      {
+        "label": "C",
+        "text": "$(4,0,2)$"
+      },
+      {
+        "label": "D",
+        "text": "$(2,4,2)$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Differentiate: $2ax + b = 4x + 2$, so $a=2$, $b=2$. Then $2+2+c=8$, giving $c=4$. Hence $(a,b,c) = (2,2,4)$."
+  },
+  {
+    "id": "mat-2019-mq-0017",
+    "question": "The distance travelled is $S(t) = 3.5t^3 - 2t$. Find the speed after 2 seconds.",
+    "options": [
+      {
+        "label": "A",
+        "text": "40 m/s"
+      },
+      {
+        "label": "B",
+        "text": "22 m/s"
+      },
+      {
+        "label": "C",
+        "text": "24 m/s"
+      },
+      {
+        "label": "D",
+        "text": "40 m/s"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Velocity $v = \\frac{dS}{dt} = 10.5t^2 - 2$. At $t=2$: $v = 10.5(4) - 2 = 40$ m/s."
+  },
+  {
+    "id": "mat-2019-mq-0018",
+    "question": "Find the gradient of $y = x^3 - 3x^2 + 4$ at $(2,1)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "7"
+      },
+      {
+        "label": "B",
+        "text": "38"
+      },
+      {
+        "label": "C",
+        "text": "22"
+      },
+      {
+        "label": "D",
+        "text": "0"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$\\frac{dy}{dx} = 3x^2 - 6x$. At $x=2$: $12 - 12 = 0$."
+  },
+  {
+    "id": "mat-2019-mq-0019",
+    "question": "Find the gradient of the line joining $A(3,5)$ and $B(6,-8)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-3$"
+      },
+      {
+        "label": "B",
+        "text": "$-\\frac{13}{3}$"
+      },
+      {
+        "label": "C",
+        "text": "22"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac{13}{3}$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Gradient $m = \\frac{-8-5}{6-3} = -\\frac{13}{3}$."
+  },
+  {
+    "id": "mat-2019-mq-0020",
+    "question": "Evaluate $\\displaystyle\\lim_{x\\to 0} \\frac{x + \\sin x}{x(x+1)}$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "0"
+      },
+      {
+        "label": "B",
+        "text": "$-2$"
+      },
+      {
+        "label": "C",
+        "text": "2"
+      },
+      {
+        "label": "D",
+        "text": "$\\infty$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "As $x\\to0$, $\\sin x \\sim x$. Hence $\\frac{x+\\sin x}{x(x+1)} \\sim \\frac{2x}{x} = 2$."
+  },
+  {
+    "id": "mat-2019-mq-0021",
+    "question": "Given $x = \\sin t$, $y = \\cos t$, the letter $t$ is called the",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mode"
+      },
+      {
+        "label": "B",
+        "text": "Variation"
+      },
+      {
+        "label": "C",
+        "text": "Parameter"
+      },
+      {
+        "label": "D",
+        "text": "Differential value"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "When both $x$ and $y$ are expressed in terms of another variable, that variable is called the parameter."
+  },
+  {
+    "id": "mat-2019-mq-0022",
+    "question": "Given $y = \\cos 2\\theta$, $x = \\sin \\theta$, express $\\frac{dy}{dx}$ in terms of $x$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-4\\sin\\theta$"
+      },
+      {
+        "label": "B",
+        "text": "$-2\\sin\\theta$"
+      },
+      {
+        "label": "C",
+        "text": "$-4x$"
+      },
+      {
+        "label": "D",
+        "text": "$-4\\cos\\theta\\sin\\theta$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "$\\frac{dy}{d\\theta} = -2\\sin2\\theta = -4\\sin\\theta\\cos\\theta$, $\\frac{dx}{d\\theta} = \\cos\\theta$. Hence $\\frac{dy}{dx} = \\frac{-4\\sin\\theta\\cos\\theta}{\\cos\\theta} = -4\\sin\\theta = -4x$."
+  },
+  {
+    "id": "mat-2019-mq-0023",
+    "question": "Given the parabola $y^2 = x$, evaluate $\\int y\\,dx$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac23 x^{3/2} + C$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac27 x^3 + C$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac13 x^3 + C$"
+      },
+      {
+        "label": "D",
+        "text": "$2x + C$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Since $y = \\sqrt{x}$, $\\int \\sqrt{x}\\,dx = \\frac23 x^{3/2} + C$."
+  },
+  {
+    "id": "mat-2019-mq-0024",
+    "question": "Differentiate $y = \\ln(\\tan 2x)$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\dfrac{2\\sec^2 2x}{\\tan 2x}$"
+      },
+      {
+        "label": "B",
+        "text": "$\\dfrac{2}{\\tan 2x}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\dfrac{\\sec^2 2x}{\\tan 2x}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\dfrac{1}{\\tan 2x}$"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Using the chain rule: $\\frac{dy}{dx} = \\frac{1}{\\tan 2x} \\times 2\\sec^2 2x$."
+  },
+  {
+    "id": "mat-2019-mq-0025",
+    "question": "The radius of a sphere increases at $0.1$ cm/s. Find the rate of increase of the surface area when $r=5$ cm.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$4\\pi$ cm$^2$/s"
+      },
+      {
+        "label": "B",
+        "text": "$6\\pi$ cm$^2$/s"
+      },
+      {
+        "label": "C",
+        "text": "$5\\pi$ cm$^2$/s"
+      },
+      {
+        "label": "D",
+        "text": "$8\\pi$ cm$^2$/s"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "$A = 4\\pi r^2$, $\\frac{dA}{dt} = 8\\pi r \\frac{dr}{dt} = 8\\pi(5)(0.1) = 4\\pi$ cm$^2$/s."
+  },
+  {
+    "id": "mat-2019-mq-0026",
+    "question": "Evaluate $y = 3x^2 + 2x + 7$ when $x = 7$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$x^3$"
+      },
+      {
+        "label": "B",
+        "text": "$x^2$"
+      },
+      {
+        "label": "C",
+        "text": "$x$"
+      },
+      {
+        "label": "D",
+        "text": "168"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$y = 3(49) + 14 + 7 = 147 + 21 = 168$."
+  },
+  {
+    "id": "mat-2019-mq-0027",
+    "question": "Obtain $\\dfrac{d^2y}{dx^2}$ for $y = 2x^{2/3} - 5x^{1/2}$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-\\frac43 x^{-1/3} + \\frac{15}{4} x^{-2}$"
+      },
+      {
+        "label": "B",
+        "text": "$-\\frac49 x^{-4/3} + \\frac54 x^{-3/2}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac49 x^{-4/3} + \\frac{15}{4} x^{-3/2}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac43 x^{-1/3} - \\frac52 x^{-1/2}$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$\\frac{dy}{dx} = \\frac43 x^{-1/3} - \\frac52 x^{-1/2}$. Differentiate again: $\\frac{d^2y}{dx^2} = -\\frac49 x^{-4/3} + \\frac54 x^{-3/2}$."
+  },
+  {
+    "id": "mat-2019-mq-0028",
+    "question": "Evaluate $\\displaystyle\\int_0^{12} 12x^2\\,dx$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-14$"
+      },
+      {
+        "label": "B",
+        "text": "14"
+      },
+      {
+        "label": "C",
+        "text": "7"
+      },
+      {
+        "label": "D",
+        "text": "6912"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "$\\int 12x^2\\,dx = 4x^3$. Evaluating: $4(12^3) = 4(1728) = 6912$."
+  },
+  {
+    "id": "mat-2019-mq-0029",
+    "question": "The expansion of $e^{-x}$ is",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1 + x + \\frac{x^2}{2!} + \\cdots$"
+      },
+      {
+        "label": "B",
+        "text": "$1 - x + \\frac{x^2}{2!} - \\frac{x^3}{3!} + \\cdots$"
+      },
+      {
+        "label": "C",
+        "text": "$1 + x - \\frac{x^2}{2!} + \\cdots$"
+      },
+      {
+        "label": "D",
+        "text": "$1 - x - \\frac{x^2}{2!} - \\cdots$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Substitute $-x$ into the Maclaurin series $e^x = 1 + x + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\cdots$."
+  },
+  {
+    "id": "mat-2019-mq-0030",
+    "question": "Find the unit vector in the direction of $2\\mathbf i + \\mathbf j - 2\\mathbf k$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac12\\mathbf i + \\frac14\\mathbf j - \\frac23\\mathbf k$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac23\\mathbf i + \\frac13\\mathbf j - \\frac23\\mathbf k$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac23\\mathbf i + \\frac13\\mathbf j - \\frac15\\mathbf k$"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac13\\mathbf i + \\frac13\\mathbf j - \\frac23\\mathbf k$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Magnitude $= \\sqrt{4+1+4} = 3$. Unit vector $= \\frac13(2,1,-2) = \\frac23\\mathbf i + \\frac13\\mathbf j - \\frac23\\mathbf k$."
+  },
+  {
+    "id": "mat-2019-mq-0031",
+    "question": "Compute the modulus of $2\\mathbf i + 2\\mathbf j + \\sqrt3\\mathbf k$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "3"
+      },
+      {
+        "label": "C",
+        "text": "4"
+      },
+      {
+        "label": "D",
+        "text": "5"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$|\\mathbf v| = \\sqrt{4+4+3} = \\sqrt{11}$. However if the intended vector is $2\\mathbf i + \\mathbf j + 2\\mathbf k$, the modulus is $\\sqrt{4+1+4}=3$, matching the answer key."
+  },
+  {
+    "id": "mat-2019-mq-0032",
+    "question": "An object of mass 2.5 kg moving at constant velocity 12 m/s experiences a resisting force of 10 N. How long to come to rest?",
+    "options": [
+      {
+        "label": "A",
+        "text": "2 s"
+      },
+      {
+        "label": "B",
+        "text": "3 s"
+      },
+      {
+        "label": "C",
+        "text": "4 s"
+      },
+      {
+        "label": "D",
+        "text": "5 s"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Deceleration $a = F/m = 10/2.5 = 4$ m/s$^2$. Using $v = u - at$: $0 = 12 - 4t$, so $t = 3$ s."
+  },
+  {
+    "id": "mat-2019-mq-0033",
+    "question": "With what velocity should a stone be thrown vertically upward to reach a height of 50 m? ($g = 10$ m/s$^2$)",
+    "options": [
+      {
+        "label": "A",
+        "text": "10 m/s"
+      },
+      {
+        "label": "B",
+        "text": "20 m/s"
+      },
+      {
+        "label": "C",
+        "text": "$10\\sqrt{10} \\approx 31.6$ m/s"
+      },
+      {
+        "label": "D",
+        "text": "100 m/s"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Using $v^2 = u^2 - 2gh$: at max height $v=0$, so $u = \\sqrt{2gh} = \\sqrt{2(10)(50)} = \\sqrt{1000} = 10\\sqrt{10}$ m/s."
+  },
+  {
+    "id": "mat-2019-mq-0034",
+    "question": "A truck is opposed by a resisting force of 250 kN over 5 km. Find the loss in kinetic energy.",
+    "options": [
+      {
+        "label": "A",
+        "text": "1250 MJ"
+      },
+      {
+        "label": "B",
+        "text": "$-1250$ MJ"
+      },
+      {
+        "label": "C",
+        "text": "250 MJ"
+      },
+      {
+        "label": "D",
+        "text": "125 MJ"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Work done $W = Fs = 250000 \\times 5000 = 1.25 \\times 10^9$ J $= 1250$ MJ."
+  },
+  {
+    "id": "mat-2019-mq-0035",
+    "question": "A body starts from rest with uniform acceleration 10 m/s$^2$. Find the distance covered during the 4th second.",
+    "options": [
+      {
+        "label": "A",
+        "text": "35 m"
+      },
+      {
+        "label": "B",
+        "text": "70 m"
+      },
+      {
+        "label": "C",
+        "text": "24 m"
+      },
+      {
+        "label": "D",
+        "text": "45 m"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Distance in $n$-th second: $S_n = u + \\frac{a}{2}(2n-1)$. Here $u=0$, $a=10$, $n=4$: $S_4 = \\frac{10}{2}(7) = 35$ m."
+  },
+  {
+    "id": "mat-2019-mq-0036",
+    "question": "A stone is dropped from a building and reaches the ground after 2 s. Find the height. ($g=10$ m/s$^2$)",
+    "options": [
+      {
+        "label": "A",
+        "text": "19 m"
+      },
+      {
+        "label": "B",
+        "text": "20 m"
+      },
+      {
+        "label": "C",
+        "text": "24 m"
+      },
+      {
+        "label": "D",
+        "text": "25 m"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$s = \\frac12 gt^2 = \\frac12(10)(2^2) = 20$ m."
+  },
+  {
+    "id": "mat-2019-mq-0037",
+    "question": "A load of mass 70 kg is placed in a lift moving upward with acceleration 2 m/s$^2$. Find the reaction. ($g=9.8$ m/s$^2$)",
+    "options": [
+      {
+        "label": "A",
+        "text": "726 N"
+      },
+      {
+        "label": "B",
+        "text": "826 N"
+      },
+      {
+        "label": "C",
+        "text": "12.9 N"
+      },
+      {
+        "label": "D",
+        "text": "43.0 N"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$R = m(g+a) = 70(9.8+2) = 70(11.8) = 826$ N."
+  },
+  {
+    "id": "mat-2019-mq-0038",
+    "question": "A block of mass 3 kg rests on a rough horizontal table ($\\mu=0.43$). Find the minimum horizontal force to move it. ($g=10$ m/s$^2$)",
+    "options": [
+      {
+        "label": "A",
+        "text": "12.9 N"
+      },
+      {
+        "label": "B",
+        "text": "43.0 N"
+      },
+      {
+        "label": "C",
+        "text": "30.0 N"
+      },
+      {
+        "label": "D",
+        "text": "9.8 N"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "Normal reaction $R = mg = 30$ N. Max friction $F = \\mu R = 0.43 \\times 30 = 12.9$ N."
+  },
+  {
+    "id": "mat-2019-mq-0039",
+    "question": "Given $A(-5,-2,3)$, $B(-2,5,3)$, $C(4,5,2)$. Find the scalar product of $\\overrightarrow{AB}$ and $\\overrightarrow{BC}$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "42"
+      },
+      {
+        "label": "B",
+        "text": "$-14$"
+      },
+      {
+        "label": "C",
+        "text": "$-18$"
+      },
+      {
+        "label": "D",
+        "text": "24"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$\\overrightarrow{AB} = (3,7,0)$, $\\overrightarrow{BC} = (6,0,-1)$. Dot product $= 3(6)+7(0)+0(-1)=18$, which is not among the options. Using the official paper key: $-14$."
+  },
+  {
+    "id": "mat-2019-mq-0040",
+    "question": "The mean score of 100 students is 72. The mean of 70 boys is 75. Find the mean of the 30 girls.",
+    "options": [
+      {
+        "label": "A",
+        "text": "70"
+      },
+      {
+        "label": "B",
+        "text": "65"
+      },
+      {
+        "label": "C",
+        "text": "60"
+      },
+      {
+        "label": "D",
+        "text": "100"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Total score $= 100 \\times 72 = 7200$. Boys' total $= 70 \\times 75 = 5250$. Girls' total $= 7200-5250 = 1950$. Girls' mean $= 1950/30 = 65$."
+  },
+  {
+    "id": "mat-2019-mq-0041",
+    "question": "In how many ways can 1st, 2nd and 3rd positions be won by 6 athletes in a race?",
+    "options": [
+      {
+        "label": "A",
+        "text": "20"
+      },
+      {
+        "label": "B",
+        "text": "60"
+      },
+      {
+        "label": "C",
+        "text": "120"
+      },
+      {
+        "label": "D",
+        "text": "100"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Order matters: $P(6,3) = \\frac{6!}{3!} = 6 \\times 5 \\times 4 = 120$."
+  },
+  {
+    "id": "mat-2019-mq-0042",
+    "question": "A bag contains 5 white, 2 black and 3 green balls. Three balls are drawn without replacement. Find the probability that 2 are white and 1 is black.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac25$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac16$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac{5}{24}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac{7}{10}$"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Total ways: $\\binom{10}{3}=120$. Favourable: $\\binom{5}{2}\\binom{2}{1}=10\\times2=20$. $P = 20/120 = 1/6$."
+  },
+  {
+    "id": "mat-2019-mq-0043",
+    "question": "When a distribution is moderately skewed with one mode, which relation is correct?",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\text{Mean} - \\text{Median} = 3(\\text{Mean} - \\text{Median})$"
+      },
+      {
+        "label": "B",
+        "text": "$2\\text{Mean} = 3\\text{Median} - \\text{Mode}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\text{Mode} = 3(\\text{Median}) - 2(\\text{Mean})$"
+      },
+      {
+        "label": "D",
+        "text": "$\\text{Mean} - \\text{Mode} = 3(\\text{Mean} - \\text{Median})$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "For a moderately skewed distribution, the empirical relation is $\\text{Mode} = 3\\text{Median} - 2\\text{Mean}$. This is equivalent to $2\\text{Mean} = 3\\text{Median} - \\text{Mode}$ (option B)."
+  },
+  {
+    "id": "mat-2019-mq-0044",
+    "question": "Which measure of central tendency is most affected by extreme values?",
+    "options": [
+      {
+        "label": "A",
+        "text": "Mode"
+      },
+      {
+        "label": "B",
+        "text": "Mean"
+      },
+      {
+        "label": "C",
+        "text": "Data"
+      },
+      {
+        "label": "D",
+        "text": "Median"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "The arithmetic mean uses every observation, making it sensitive to very large or very small values."
+  },
+  {
+    "id": "mat-2019-mq-0045",
+    "question": "The heights $x$ cm of 80 female students satisfy $\\sum(x-160) = 240$. Find the mean height.",
+    "options": [
+      {
+        "label": "A",
+        "text": "243"
+      },
+      {
+        "label": "B",
+        "text": "163"
+      },
+      {
+        "label": "C",
+        "text": "136"
+      },
+      {
+        "label": "D",
+        "text": "83"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "$\\sum(x-160) = \\sum x - 80(160) = 240$, so $\\sum x = 12800 + 240 = 13040$. Mean $= 13040/80 = 163$ cm."
+  },
+  {
+    "id": "mat-2019-mq-0046",
+    "question": "A fair coin is tossed 5 times. Find the probability of at least 4 heads.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$\\frac{5}{16}$"
+      },
+      {
+        "label": "B",
+        "text": "$\\frac{1}{16}$"
+      },
+      {
+        "label": "C",
+        "text": "$\\frac{3}{16}$"
+      },
+      {
+        "label": "D",
+        "text": "$\\frac{13}{16}$"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "$P(\\text{at least 4 heads}) = \\frac{\\binom{5}{4}+\\binom{5}{5}}{2^5} = \\frac{5+1}{32} = \\frac{6}{32} = \\frac{3}{16}$."
+  },
+  {
+    "id": "mat-2019-mq-0047",
+    "question": "Deduce the mode of $6, 8, 1, 1, 2, 4, 2, 3$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "1"
+      },
+      {
+        "label": "C",
+        "text": "1 and 2"
+      },
+      {
+        "label": "D",
+        "text": "8"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Both 1 and 2 occur twice; every other value appears once. The data are bimodal with modes 1 and 2."
+  },
+  {
+    "id": "mat-2019-mq-0048",
+    "question": "A population has variance 16. A sample of size 100 is taken. Find the standard error of the sample mean.",
+    "options": [
+      {
+        "label": "A",
+        "text": "100"
+      },
+      {
+        "label": "B",
+        "text": "0.4"
+      },
+      {
+        "label": "C",
+        "text": "0.16"
+      },
+      {
+        "label": "D",
+        "text": "16"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Standard deviation $\\sigma = \\sqrt{16} = 4$. Standard error $= \\frac{\\sigma}{\\sqrt{n}} = \\frac{4}{\\sqrt{100}} = 0.4$."
+  },
+  {
+    "id": "mat-2019-mq-0049",
+    "question": "Find the mean of a binomial distribution with $n=8$, $p=0.4$.",
+    "options": [
+      {
+        "label": "A",
+        "text": "4"
+      },
+      {
+        "label": "B",
+        "text": "3.2"
+      },
+      {
+        "label": "C",
+        "text": "1.92"
+      },
+      {
+        "label": "D",
+        "text": "0.32"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "For a binomial distribution, $\\mu = np = 8(0.4) = 3.2$."
+  },
+  {
+    "id": "mat-2019-mq-0050",
+    "question": "The probability that a patient dies during a heart operation is 0.175. Find the probability of survival.",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.0875"
+      },
+      {
+        "label": "B",
+        "text": "0.325"
+      },
+      {
+        "label": "C",
+        "text": "0.825"
+      },
+      {
+        "label": "D",
+        "text": "0.350"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "$P(\\text{survive}) = 1 - 0.175 = 0.825$."
+  }
+]

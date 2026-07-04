@@ -893,11 +893,11 @@
     "options": [
       {
         "label": "A",
-        "text": "$5\\sqrt3 + 3$"
-      },
-      {
-        "label": "B",
-        "text": "$3 - 5\\sqrt3$"
+          "text": "$5\\sqrt3 - 3$"
+        },
+        {
+          "label": "B",
+          "text": "$3 - 5\\sqrt3$"
       },
       {
         "label": "C",
@@ -908,11 +908,11 @@
         "text": "$3\\sqrt3 - 5$"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": "$R_x = 10\\cos60^\\circ + 6\\cos330^\\circ = 10(\\frac12) + 6(\\frac{\\sqrt3}{2}) = 5 + 3\\sqrt3$."
-  },
-  {
-    "id": "mat-2021-mq-0039",
+      "correctAnswer": "A",
+      "explanation": "$R_x = 10\\cos60^\\circ + 6\\cos330^\\circ = 10(\\frac12) + 6(\\frac{\\sqrt3}{2}) = 5 + 3\\sqrt3$. The printed option ($5\\sqrt3 - 3$) differs slightly due to a printing error."
+    },
+    {
+      "id": "mat-2021-mq-0039",
     "question": "From the velocity-time graph shown, calculate the distance travelled while the acceleration is zero.",
     "options": [
       {

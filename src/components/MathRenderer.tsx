@@ -428,6 +428,36 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content, className =
       }
     );
 
+    // --- Pattern: Matrix/determinant notation with ; or / row separators ---
+    // Handles: [1 -2 3; 2 2 6; 4 1 4] → $\begin{bmatrix}...\end{bmatrix}$
+    //          |1 2 3; 4 5 6; 7 8 9| → $\begin{vmatrix}...\end{vmatrix}$
+    //          (1 2; 3 4) → $\begin{pmatrix}...\end{pmatrix}$
+    processedContent = processedContent.replace(
+      /[[(|]([\s\S]*?)[\]|)]/g,
+      (match) => {
+        if (hasPH(match)) return match;
+        const open = match[0];
+        const close = match[match.length - 1];
+        if ((open === '[' && close !== ']') || (open === '(' && close !== ')') || (open === '|' && close !== '|')) return match;
+        let inner = match.slice(1, -1).trim();
+        if (!/[;\/]/.test(inner)) return match;
+        if (/\b(and|or|the|for|this|that|with|from|into|which|what|when|where|there|their|these|each|both|more|some|such|only|just|can|has|have|been|were|will|would|could)\b/i.test(inner)) return match;
+        const rows = inner.split(/[;\/]/).map(r => {
+          const trimmed = r.trim();
+          if (!trimmed) return null;
+          return trimmed.split(/\s+/).filter(Boolean);
+        }).filter((r): r is string[] => r !== null);
+        if (rows.length < 2) return match;
+        const colCount = rows[0].length;
+        if (colCount < 2) return match;
+        if (!rows.every(r => r.length === colCount)) return match;
+        if (rows.some(r => r.some(c => /^[a-zA-Z]{4,}$/.test(c) && c !== 'frac'))) return match;
+        const env = open === '|' ? 'vmatrix' : open === '(' ? 'pmatrix' : 'bmatrix';
+        const latexRows = rows.map(r => r.join(' & '));
+        return `$\\begin{${env}} ${latexRows.join(' \\\\ ')} \\end{${env}}$`;
+      }
+    );
+
     // ============================================================
     // STEP 3: Restore protected math blocks
     // ============================================================

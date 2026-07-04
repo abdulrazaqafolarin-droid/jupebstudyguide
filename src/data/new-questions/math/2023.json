@@ -31,7 +31,7 @@
     "options": [
       {
         "label": "A",
-        "text": "$-3 < x < ½$"
+        "text": "$-3 < x < \\frac{1}{2}$"
       },
       {
         "label": "B",
@@ -39,11 +39,11 @@
       },
       {
         "label": "C",
-        "text": "$½ < x < 2$"
+        "text": "$\\frac{1}{2} < x < 2$"
       },
       {
         "label": "D",
-        "text": "$-1/2 < x < 3$"
+        "text": "$-\\frac{1}{2} < x < 3$"
       }
     ],
     "correct_answer": "D",
@@ -56,7 +56,7 @@
     "options": [
       {
         "label": "A",
-        "text": "$a * b = a + b – 3ab$"
+        "text": "$a * b = a + b - 3ab$"
       },
       {
         "label": "B",
@@ -64,11 +64,11 @@
       },
       {
         "label": "C",
-        "text": "$a * b = a – b + 3ab$"
+        "text": "$a * b = a - b + 3ab$"
       },
       {
         "label": "D",
-        "text": "$a * b = 2a + 2b – ab$"
+        "text": "$a * b = 2a + 2b - ab$"
       }
     ],
     "correct_answer": "C",
@@ -81,19 +81,19 @@
     "options": [
       {
         "label": "A",
-        "text": "$9/2$"
+        "text": "$\\frac{9}{2}$"
       },
       {
         "label": "B",
-        "text": "$-5/2$"
+        "text": "$-\\frac{5}{2}$"
       },
       {
         "label": "C",
-        "text": "$-7/2$"
+        "text": "$-\\frac{7}{2}$"
       },
       {
         "label": "D",
-        "text": "$7/2$"
+        "text": "$\\frac{7}{2}$"
       }
     ],
     "correct_answer": "D",
@@ -131,19 +131,19 @@
     "options": [
       {
         "label": "A",
-        "text": "$-5, 2/3$"
+        "text": "$-5, \\frac{2}{3}$"
       },
       {
         "label": "B",
-        "text": "$2/3, -1$"
+        "text": "$\\frac{2}{3}, -1$"
       },
       {
         "label": "C",
-        "text": "$½, 3/2$"
+        "text": "$\\frac{1}{2}, \\frac{3}{2}$"
       },
       {
         "label": "D",
-        "text": "$5, -3/2$"
+        "text": "$5, -\\frac{3}{2}$"
       }
     ],
     "correct_answer": "D",
@@ -200,33 +200,8 @@
     "explanation": ""
   },
   {
-    "id": "mat-2023-mq-0009",
-    "number": 9,
-    "question": "Evaluate ∫(x³ + 1/x²)dx.",
-    "options": [
-      {
-        "label": "A",
-        "text": "$x³ + x⁻²/(-2) + c$"
-      },
-      {
-        "label": "B",
-        "text": "$x²/4 + x⁻²/(-2) + c$"
-      },
-      {
-        "label": "C",
-        "text": "$x⁴ + 4x + c$"
-      },
-      {
-        "label": "D",
-        "text": "$x + x⁻² – 2 + C$"
-      }
-    ],
-    "correct_answer": "B",
-    "explanation": ""
-  },
-  {
     "id": "mat-2023-mq-0010",
-    "number": 10,
+    "number": 9,
     "question": "If f(x – 3) = x² + 2x + 3, find f(1).",
     "options": [
       {
@@ -250,33 +225,8 @@
     "explanation": ""
   },
   {
-    "id": "mat-2023-mq-0011",
-    "number": 11,
-    "question": "Determine the area bounded by y = x² – 2x + 3, the axis and ordinates x = -1 and x = 3",
-    "options": [
-      {
-        "label": "A",
-        "text": "$13⅓$"
-      },
-      {
-        "label": "B",
-        "text": "9 units"
-      },
-      {
-        "label": "C",
-        "text": "4⅔ units"
-      },
-      {
-        "label": "D",
-        "text": "5⅓ units"
-      }
-    ],
-    "correct_answer": "A",
-    "explanation": ""
-  },
-  {
     "id": "mat-2023-mq-0012",
-    "number": 12,
+    "number": 10,
     "question": "Compute dy/dx if y = t² and x = t³",
     "options": [
       {
@@ -289,7 +239,7 @@
       },
       {
         "label": "C",
-        "text": "$2/3t$"
+        "text": "$\\frac{2}{3}t$"
       },
       {
         "label": "D",
@@ -301,7 +251,7 @@
   },
   {
     "id": "mat-2023-mq-0013",
-    "number": 13,
+    "number": 11,
     "question": "if y = sin⁻¹x, deduce dy/dx at x = -1",
     "options": [
       {
@@ -310,7 +260,7 @@
       },
       {
         "label": "B",
-        "text": "$½$"
+        "text": "$\\frac{1}{2}$"
       },
       {
         "label": "C",
@@ -326,24 +276,24 @@
   },
   {
     "id": "mat-2023-mq-0014",
-    "number": 14,
-    "question": "Differentiate sin⁻¹(x²).",
+    "number": 12,
+    "question": "Differentiate $\\sin^{-1}(x^{2})$ .",
     "options": [
       {
         "label": "A",
-        "text": "$2x/(1–x)$"
+        "text": "$2x/(1-x)$"
       },
       {
         "label": "B",
-        "text": "$2x/√(1+x²)$"
+        "text": "$2x/√(1+x^{2})$"
       },
       {
         "label": "C",
-        "text": "$2x/√(x⁴–1)$"
+        "text": "$2x/√(x^{4}-1)$"
       },
       {
         "label": "D",
-        "text": "$2x/√(1–x⁴)$"
+        "text": "$2x/√(1-x^{4})$"
       }
     ],
     "correct_answer": "D",
@@ -351,24 +301,24 @@
   },
   {
     "id": "mat-2023-mq-0015",
-    "number": 15,
+    "number": 13,
     "question": "Find the 5th term of the harmonic progression 1, 1/3, 1/5, …",
     "options": [
       {
         "label": "A",
-        "text": "$1/11$"
+        "text": "$\\frac{1}{11}$"
       },
       {
         "label": "B",
-        "text": "$1/9$"
+        "text": "$\\frac{1}{9}$"
       },
       {
         "label": "C",
-        "text": "$1/7$"
+        "text": "$\\frac{1}{7}$"
       },
       {
         "label": "D",
-        "text": "$1/5$"
+        "text": "$\\frac{1}{5}$"
       }
     ],
     "correct_answer": "B",
@@ -376,20 +326,20 @@
   },
   {
     "id": "mat-2023-mq-0016",
-    "number": 16,
+    "number": 14,
     "question": "if α and β are the roots of 4x² – 5x – 3 = 0, evaluate α²+β²",
     "options": [
       {
         "label": "A",
-        "text": "$21/7$"
+        "text": "$\\frac{21}{7}$"
       },
       {
         "label": "B",
-        "text": "$25/16$"
+        "text": "$\\frac{25}{16}$"
       },
       {
         "label": "C",
-        "text": "$49/16$"
+        "text": "$\\frac{49}{16}$"
       },
       {
         "label": "D",
@@ -401,7 +351,7 @@
   },
   {
     "id": "mat-2023-mq-0017",
-    "number": 17,
+    "number": 15,
     "question": "Find the remainder when the polynomial x⁴ – 3x³ + 4x – 8 is divided by 2x + 1",
     "options": [
       {
@@ -410,15 +360,15 @@
       },
       {
         "label": "B",
-        "text": "$167/16$"
+        "text": "$\\frac{167}{16}$"
       },
       {
         "label": "C",
-        "text": "$-1/3$"
+        "text": "$-\\frac{1}{3}$"
       },
       {
         "label": "D",
-        "text": "$112/5$"
+        "text": "$\\frac{112}{5}$"
       }
     ],
     "correct_answer": "B",
@@ -426,24 +376,24 @@
   },
   {
     "id": "mat-2023-mq-0018",
-    "number": 18,
+    "number": 16,
     "question": "Resolve the function x/((x–3)(x+5)) into partial fractions.",
     "options": [
       {
         "label": "A",
-        "text": "$⅛{5/(x+5) – 3/(x–3)}$"
+        "text": "$\\frac{1}{8}{5/(x+5) - 3/(x-3)}$"
       },
       {
         "label": "B",
-        "text": "$⅓{8/(x+5) – 5/(x+5)}$"
+        "text": "$\\frac{1}{3}{8/(x+5) - 5/(x+5)}$"
       },
       {
         "label": "C",
-        "text": "$⅕{3/(x+3) – 5/(x+5)}$"
+        "text": "$\\frac{1}{5}{3/(x+3) - 5/(x+5)}$"
       },
       {
         "label": "D",
-        "text": "$⅛{3/(x–3) – 5/(x+5)}$"
+        "text": "$\\frac{1}{8}{3/(x-3) - 5/(x+5)}$"
       }
     ],
     "correct_answer": "D",
@@ -451,24 +401,24 @@
   },
   {
     "id": "mat-2023-mq-0019",
-    "number": 19,
+    "number": 17,
     "question": "Obtain the equation whose product and sum of roots are -5/2 and ¾ respectively",
     "options": [
       {
         "label": "A",
-        "text": "$2x² – 3x – 5 = 0$"
+        "text": "$2x^{2} - 3x - 5 = 0$"
       },
       {
         "label": "B",
-        "text": "$2x² + 3x + 5 = 0$"
+        "text": "$2x^{2} + 3x + 5 = 0$"
       },
       {
         "label": "C",
-        "text": "$4x² – 3x – 10 = 0$"
+        "text": "$4x^{2} - 3x - 10 = 0$"
       },
       {
         "label": "D",
-        "text": "$4x² – 3x – 5 = 0$"
+        "text": "$4x^{2} - 3x - 5 = 0$"
       }
     ],
     "correct_answer": "C",
@@ -476,7 +426,7 @@
   },
   {
     "id": "mat-2023-mq-0020",
-    "number": 20,
+    "number": 18,
     "question": "Given that 8^(x/4) = log₃81, determine the value of x.",
     "options": [
       {
@@ -485,7 +435,7 @@
       },
       {
         "label": "B",
-        "text": "$8/3$"
+        "text": "$\\frac{8}{3}$"
       },
       {
         "label": "C",
@@ -501,7 +451,7 @@
   },
   {
     "id": "mat-2023-mq-0021",
-    "number": 21,
+    "number": 19,
     "question": "Given that: x → 3x – 8, x is a member of real numbers R, compute f⁻¹(-2).",
     "options": [
       {
@@ -526,7 +476,7 @@
   },
   {
     "id": "mat-2023-mq-0022",
-    "number": 22,
+    "number": 20,
     "question": "Given that f(x) = 1 – 2x and g(x) = 1 + 2x, x is a member of real numbers, find {fog(x) – gof(x)}.",
     "options": [
       {
@@ -551,24 +501,24 @@
   },
   {
     "id": "mat-2023-mq-0023",
-    "number": 23,
+    "number": 21,
     "question": "Solve the differential equation y'' + 3y' – 4y = 0",
     "options": [
       {
         "label": "A",
-        "text": "Peˣ + Qe⁴ˣ"
+        "text": "$Pe^{x} + Qe^{4x}$"
       },
       {
         "label": "B",
-        "text": "Pe⁻ˣ + Qe⁴ˣ"
+        "text": "$Pe^{-x} + Qe^{4x}$"
       },
       {
         "label": "C",
-        "text": "Peˣ + Qe⁻⁴ˣ"
+        "text": "$Pe^{x} + Qe^{-4x}$"
       },
       {
         "label": "D",
-        "text": "Peˣ + Qe⁻⁴ˣ"
+        "text": "$Pe^{x} + Qe^{-4x}$"
       }
     ],
     "correct_answer": "C",
@@ -576,7 +526,7 @@
   },
   {
     "id": "mat-2023-mq-0024",
-    "number": 24,
+    "number": 22,
     "question": "Let f(x) = sinx/x then evaluate lim(x→0) f(x).",
     "options": [
       {
@@ -589,7 +539,7 @@
       },
       {
         "label": "C",
-        "text": "$∞$"
+        "text": "$\\infty$"
       },
       {
         "label": "D",
@@ -601,7 +551,7 @@
   },
   {
     "id": "mat-2023-mq-0025",
-    "number": 25,
+    "number": 23,
     "question": "Calculate the Spearman's rank correlation for the following pairs of numbers (40,27), (50,60), (60,75), (70,80), (80,67), (90,58).",
     "options": [
       {
@@ -626,7 +576,7 @@
   },
   {
     "id": "mat-2023-mq-0026",
-    "number": 26,
+    "number": 24,
     "question": "A statistical hypothesis can be",
     "options": [
       {
@@ -651,24 +601,24 @@
   },
   {
     "id": "mat-2023-mq-0027",
-    "number": 27,
+    "number": 25,
     "question": "Four coins are tossed together. Determine the probability that they will show the same face.",
     "options": [
       {
         "label": "A",
-        "text": "$1/16$"
+        "text": "$\\frac{1}{16}$"
       },
       {
         "label": "B",
-        "text": "$1/8$"
+        "text": "$\\frac{1}{8}$"
       },
       {
         "label": "C",
-        "text": "$¼$"
+        "text": "$\\frac{1}{4}$"
       },
       {
         "label": "D",
-        "text": "$½$"
+        "text": "$\\frac{1}{2}$"
       }
     ],
     "correct_answer": "B",
@@ -676,7 +626,7 @@
   },
   {
     "id": "mat-2023-mq-0028",
-    "number": 28,
+    "number": 26,
     "question": "Given the table:\n\n| x | 0 | 1 | 2 |\n|---|---|---|---|\n| f(x) | 1/6 | ¼ | 1/3 |\n\n*(insufficient quest",
     "options": [],
     "correct_answer": "A",
@@ -684,7 +634,7 @@
   },
   {
     "id": "mat-2023-mq-0029",
-    "number": 29,
+    "number": 27,
     "question": "Evaluate the mean of the set of data 97,91,94,90,85",
     "options": [
       {
@@ -709,24 +659,24 @@
   },
   {
     "id": "mat-2023-mq-0030",
-    "number": 30,
+    "number": 28,
     "question": "If two fair dice are tossed, determine the probability that total score that shows up is 8.",
     "options": [
       {
         "label": "A",
-        "text": "$3/12$"
+        "text": "$\\frac{3}{12}$"
       },
       {
         "label": "B",
-        "text": "$5/36$"
+        "text": "$\\frac{5}{36}$"
       },
       {
         "label": "C",
-        "text": "$1/36$"
+        "text": "$\\frac{1}{36}$"
       },
       {
         "label": "D",
-        "text": "$19/36$"
+        "text": "$\\frac{19}{36}$"
       }
     ],
     "correct_answer": "B",
@@ -734,7 +684,7 @@
   },
   {
     "id": "mat-2023-mq-0031",
-    "number": 31,
+    "number": 29,
     "question": "Determine the number of different arrangements of the letters of the word OGBOMOSO.",
     "options": [
       {
@@ -759,49 +709,24 @@
   },
   {
     "id": "mat-2023-mq-0032",
-    "number": 32,
+    "number": 30,
     "question": "Evaluate ∫₂³ x/(1+x²) dx.",
     "options": [
       {
         "label": "A",
-        "text": "$π/4$"
+        "text": "$\\pi/4$"
       },
       {
         "label": "B",
-        "text": "$2π/5$"
+        "text": "$2\\pi/5$"
       },
       {
         "label": "C",
-        "text": "$π$"
+        "text": "$\\pi$"
       },
       {
         "label": "D",
-        "text": "$π/2$"
-      }
-    ],
-    "correct_answer": "A",
-    "explanation": ""
-  },
-  {
-    "id": "mat-2023-mq-0033",
-    "number": 33,
-    "question": "If y = ln (x + 2ˣ), find dy/dx.",
-    "options": [
-      {
-        "label": "A",
-        "text": "$(1+2ˣln2)/(x+2ˣ)$"
-      },
-      {
-        "label": "B",
-        "text": "$(1–2ˣln2)/(x+2ˣ)$"
-      },
-      {
-        "label": "C",
-        "text": "$(2ˣln2–1)/(x+2ˣ)$"
-      },
-      {
-        "label": "D",
-        "text": "$2ˣ/(x+2ˣ)$"
+        "text": "$\\pi/2$"
       }
     ],
     "correct_answer": "A",
@@ -809,7 +734,7 @@
   },
   {
     "id": "mat-2023-mq-0034",
-    "number": 34,
+    "number": 31,
     "question": "What is the derivative of y = cos²x + sin²x",
     "options": [
       {
@@ -822,11 +747,11 @@
       },
       {
         "label": "C",
-        "text": "$2sin2x$"
+        "text": "$2\\sin 2x$"
       },
       {
         "label": "D",
-        "text": "-2cosx+2sinx"
+        "text": "$-\\cos x + \\sin x$"
       }
     ],
     "correct_answer": "A",
@@ -834,7 +759,7 @@
   },
   {
     "id": "mat-2023-mq-0035",
-    "number": 35,
+    "number": 32,
     "question": "Deduce the coefficient of variation of this population data: 7, 10, 11, 12",
     "options": [
       {
@@ -859,7 +784,7 @@
   },
   {
     "id": "mat-2023-mq-0036",
-    "number": 36,
+    "number": 33,
     "question": "What is the derivative of y = cos2x + sin2x",
     "options": [
       {
@@ -872,11 +797,11 @@
       },
       {
         "label": "C",
-        "text": "$2sin2x$"
+        "text": "$2\\sin 2x$"
       },
       {
         "label": "D",
-        "text": "-2cosx + 2sinx"
+        "text": "$-\\cos x + \\sin x$"
       }
     ],
     "correct_answer": "A",
@@ -884,7 +809,7 @@
   },
   {
     "id": "mat-2023-mq-0037",
-    "number": 37,
+    "number": 34,
     "question": "Deduce the coefficient of variation of this population data: 7, 10, 11, 12",
     "options": [
       {
@@ -909,7 +834,7 @@
   },
   {
     "id": "mat-2023-mq-0038",
-    "number": 38,
+    "number": 35,
     "question": "A random distribution that measures rare events in space and time that has its mean and variance the same is expressed as",
     "options": [
       {
@@ -934,7 +859,7 @@
   },
   {
     "id": "mat-2023-mq-0039",
-    "number": 39,
+    "number": 36,
     "question": "Determine the number of complete permutations of the letters of the word MISSISSIPPI",
     "options": [
       {
@@ -959,7 +884,7 @@
   },
   {
     "id": "mat-2023-mq-0040",
-    "number": 40,
+    "number": 37,
     "question": "The sampling technique that does not involve the use of random sampling is identified as",
     "options": [
       {
@@ -984,7 +909,7 @@
   },
   {
     "id": "mat-2023-mq-0041",
-    "number": 41,
+    "number": 38,
     "question": "A loan N1000 is given at 15% for 8 months. Find the maturity of the loan.",
     "options": [
       {
@@ -1009,7 +934,7 @@
   },
   {
     "id": "mat-2023-mq-0042",
-    "number": 42,
+    "number": 39,
     "question": "What is an amount established so that maturity value equals a specific amount at regular intervals?",
     "options": [
       {
@@ -1034,7 +959,7 @@
   },
   {
     "id": "mat-2023-mq-0043",
-    "number": 43,
+    "number": 40,
     "question": "The two essential factors of production in the Cobb-Douglas production formula are",
     "options": [
       {
@@ -1059,7 +984,7 @@
   },
   {
     "id": "mat-2023-mq-0044",
-    "number": 44,
+    "number": 41,
     "question": "Which of these relations best describe the total cost of production?",
     "options": [
       {
@@ -1084,7 +1009,7 @@
   },
   {
     "id": "mat-2023-mq-0045",
-    "number": 45,
+    "number": 42,
     "question": "Which of the following best describe elasticity (e) of demand",
     "options": [
       {
@@ -1109,7 +1034,7 @@
   },
   {
     "id": "mat-2023-mq-0046",
-    "number": 46,
+    "number": 43,
     "question": "Calculate the first payment made by Mr. Iyanda after borrowing N1000 yearly instalment and repays N50 at 8% per annum.",
     "options": [
       {
@@ -1133,33 +1058,8 @@
     "explanation": ""
   },
   {
-    "id": "mat-2023-mq-0047",
-    "number": 47,
-    "question": "The production function of a company is given Q = 2x½y⅔. Find the marginal productivity of labour",
-    "options": [
-      {
-        "label": "A",
-        "text": "$2x⁻½y⅔** *(∂Q/∂x = x⁻½y⅔)* — **A$"
-      },
-      {
-        "label": "B",
-        "text": "$4x½y⅔$"
-      },
-      {
-        "label": "C",
-        "text": "$3x½y⅔$"
-      },
-      {
-        "label": "D",
-        "text": "$x⅔y⅔$"
-      }
-    ],
-    "correct_answer": "A",
-    "explanation": ""
-  },
-  {
     "id": "mat-2023-mq-0048",
-    "number": 48,
+    "number": 44,
     "question": "The consumption function for a commodity is C = 200 + 0.25I. What is the Marginal Propensity to Save? MPC=0.25 → MPS=1-0.25=0.75",
     "options": [
       {
@@ -1184,7 +1084,7 @@
   },
   {
     "id": "mat-2023-mq-0049",
-    "number": 49,
+    "number": 45,
     "question": "Which of the following gives the revenue of a company?",
     "options": [
       {
@@ -1209,7 +1109,7 @@
   },
   {
     "id": "mat-2023-mq-0050",
-    "number": 50,
+    "number": 46,
     "question": "Consider the linear programming problem Z=15x+10y subject to 2x+3y≤15, 5x+7y≤30. The inequalities in equation (2) are called",
     "options": [
       {
@@ -1230,6 +1130,106 @@
       }
     ],
     "correct_answer": "B",
+    "explanation": ""
+  },
+  {
+    "id": "mat-2023-mq-0009",
+    "number": 47,
+    "question": "Evaluate ∫(x³ + 1/x²)dx.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$x^{3} + x^{-2}/(-2) + c$"
+      },
+      {
+        "label": "B",
+        "text": "$x^{2}/4 + x^{-2}/(-2) + c$"
+      },
+      {
+        "label": "C",
+        "text": "$x^{4} + 4x + c$"
+      },
+      {
+        "label": "D",
+        "text": "$x + x^{-2} - 2 + C$"
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": ""
+  },
+  {
+    "id": "mat-2023-mq-0011",
+    "number": 48,
+    "question": "Determine the area bounded by y = x² �� 2x + 3, the axis and ordinates x = -1 and x = 3",
+    "options": [
+      {
+        "label": "A",
+        "text": "$13\\frac{1}{3}$"
+      },
+      {
+        "label": "B",
+        "text": "$9$ units"
+      },
+      {
+        "label": "C",
+        "text": "$4\\frac{2}{3}$ units"
+      },
+      {
+        "label": "D",
+        "text": "$5\\frac{1}{3}$ units"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": ""
+  },
+  {
+    "id": "mat-2023-mq-0033",
+    "number": 49,
+    "question": "If y = ln (x + 2ˣ), find dy/dx.",
+    "options": [
+      {
+        "label": "A",
+        "text": "$(1+2^{x}ln2)/(x+2^{x})$"
+      },
+      {
+        "label": "B",
+        "text": "$(1-2^{x}ln2)/(x+2^{x})$"
+      },
+      {
+        "label": "C",
+        "text": "$(2^{x}ln2-1)/(x+2^{x})$"
+      },
+      {
+        "label": "D",
+        "text": "$2^{x}/(x+2^{x})$"
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": ""
+  },
+  {
+    "id": "mat-2023-mq-0047",
+    "number": 50,
+    "question": "The production function of a company is given $Q = 2x^{\\frac{1}{2}}y^{\\frac{2}{3}}$. Find the marginal productivity of labour",
+    "options": [
+      {
+        "label": "A",
+        "text": "$x^{-\\frac{1}{2}}y^{\\frac{2}{3}}$"
+      },
+      {
+        "label": "B",
+        "text": "$4x^{\\frac{1}{2}}y^{\\frac{2}{3}}$"
+      },
+      {
+        "label": "C",
+        "text": "$3x^{\\frac{1}{2}}y^{\\frac{2}{3}}$"
+      },
+      {
+        "label": "D",
+        "text": "$x^{\\frac{2}{3}}y^{\\frac{2}{3}}$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   }
 ]

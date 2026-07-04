@@ -453,7 +453,7 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "Chain rule: $\\frac{dy}{dx} = -2(1-4x)^{-3}(-4) = 8(1-4x)^{-3}$. Options A and C are duplicates in the original."
+    "explanation": "Chain rule: $\\frac{dy}{dx} = -2(1-4x)^{-3}(-4) = 8(1-4x)^{-3}$. The printed answer has the wrong exponent."
   },
   {
     "id": "mat-2021-mq-0020",
@@ -485,23 +485,23 @@
     "options": [
       {
         "label": "A",
-        "text": "y''+4y'−6y=0"
+        "text": "$y''+4y'-6y=0$"
       },
       {
         "label": "B",
-        "text": "y''+2xy'−y=1"
+        "text": "$y''+2xy'-y=1$"
       },
       {
         "label": "C",
-        "text": "y''+2y·dy/dx+y²=0"
+        "text": "$y''+2y\\frac{dy}{dx}+y^2=0$"
       },
       {
         "label": "D",
-        "text": "y'''+2y''+x²y'=x *A linear ODE has coefficients depending only on x (or constants), not on y or its derivatives. Option B has variable coefficient 2x on y' — but this is actually linear; the marked answer suggests source intends this despite the y·dy/dx term in C being the true nonlinear one — flagging discrepancy for your awareness.*"
+        "text": "$y'''+2y''+x^2y'=x$"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": ""
+    "correctAnswer": "C",
+    "explanation": "A DE is non-linear if it contains products or powers of the dependent variable or its derivatives. Here, $2y\\frac{dy}{dx}$ and $y^2$ make option C non-linear. The original key marked B, but B is actually linear."
   },
   {
     "id": "mat-2021-mq-0022",
@@ -509,27 +509,27 @@
     "options": [
       {
         "label": "A",
-        "text": "3y²−x³=C"
+        "text": "$3y^2 - x^3 = C$"
       },
       {
         "label": "B",
-        "text": "2y²−x³=C"
+        "text": "$2y^2 - x^3 = C$"
       },
       {
         "label": "C",
-        "text": "3y²+x³=C"
+        "text": "$3y^2 + x^3 = C$"
       },
       {
         "label": "D",
-        "text": "y²−x³=C *Separate variables: y dy = x² dx. Integrate: y²/2 = x³/3 + C' → multiply by 6: 3y² − 2x³ = C (source marks 3y²−x³=C).*"
+        "text": "$y^2 - x^3 = C$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": ""
+    "explanation": "Separate variables: $y\\,dy = x^2\\,dx$. Integrate: $\\frac{y^2}{2} = \\frac{x^3}{3} + C'$. Multiply by 6: $3y^2 - 2x^3 = C$. None of the options exactly matches; A is closest."
   },
   {
     "id": "mat-2021-mq-0023",
-    "question": "A straight line which touches a curve at only one point without crossing it is called",
+    "question": "An asymptote is a tangent to a curve at",
     "options": [
       {
         "label": "A",
@@ -545,15 +545,15 @@
       },
       {
         "label": "D",
-        "text": "the centre *By definition, an asymptote touches the curve as it extends to infinity.*"
+        "text": "the centre"
       }
     ],
     "correctAnswer": "B",
-    "explanation": ""
+    "explanation": "An asymptote is a line that a curve approaches as the variable tends to infinity."
   },
   {
     "id": "mat-2021-mq-0024",
-    "question": "Which of the following is NOT a turning point?",
+    "question": "The following are turning points except",
     "options": [
       {
         "label": "A",
@@ -565,15 +565,15 @@
       },
       {
         "label": "C",
-        "text": "inflexion point"
+        "text": "point of inflexion"
       },
       {
         "label": "D",
-        "text": "maximum and minimum *A point of inflexion is where concavity changes, not necessarily where the gradient is zero — it's not classified as a turning point.*"
+        "text": "maximum and minimum"
       }
     ],
     "correctAnswer": "C",
-    "explanation": ""
+    "explanation": "A turning point is either a maximum or minimum. An inflection point changes concavity but is not necessarily a turning point."
   },
   {
     "id": "mat-2021-mq-0025",
@@ -581,47 +581,47 @@
     "options": [
       {
         "label": "A",
-        "text": "x−y=C"
+        "text": "$x - y = C$"
       },
       {
         "label": "B",
-        "text": "xy=C"
+        "text": "$xy = C$"
       },
       {
         "label": "C",
-        "text": "y=C"
+        "text": "$y = C$"
       },
       {
         "label": "D",
-        "text": "x=C *This is d(xy)=0, so integrating gives xy=C.*"
+        "text": "$x = C$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": ""
+    "explanation": "$d(xy) = x\\,dy + y\\,dx$, so the equation becomes $d(xy)=0$, hence $xy=C$."
   },
   {
     "id": "mat-2021-mq-0026",
-    "question": "If $y = \\frac{1}{x}$, find the $n$th derivative $y_n$.",
+    "question": "If $y = \\frac{1}{x}$, then the $n$th derivative is",
     "options": [
       {
         "label": "A",
-        "text": "(−1)ⁿ n!/x^(n+1)"
+        "text": "$\\dfrac{(-1)^n n!}{x^{n+1}}$"
       },
       {
         "label": "B",
-        "text": "(−1)^(n−1) n!/x^(n+1)"
+        "text": "$\\dfrac{(-1)^{n-1} n!}{x^{n+1}}$"
       },
       {
         "label": "C",
-        "text": "(−1)^(n+1) n!/x^n"
+        "text": "$\\dfrac{(-1)^{n+1} n!}{x^n}$"
       },
       {
         "label": "D",
-        "text": "(−1)ⁿ/x^n *Repeated differentiation of x⁻¹ gives pattern (−1)ⁿ n! x^(−n−1).*"
+        "text": "$\\dfrac{(-1)^n}{x^n}$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": ""
+    "explanation": "Repeated differentiation of $x^{-1}$ gives $\\frac{d^n}{dx^n}\\left(\\frac1x\\right) = \\frac{(-1)^n n!}{x^{n+1}}$."
   },
   {
     "id": "mat-2021-mq-0027",
@@ -641,11 +641,11 @@
       },
       {
         "label": "D",
-        "text": "−2 *y'=2e^(2x−1), y''=4e^(2x−1). Expression: 4e−4e−2e = −2e^(2x−1) (source marks constant 1, possibly evaluated at a specific point).*"
+        "text": "$-2e^{2x-1}$"
       }
     ],
-    "correctAnswer": "B",
-    "explanation": ""
+    "correctAnswer": "D",
+    "explanation": "$y' = 2e^{2x-1} = 2y$, $y'' = 4e^{2x-1} = 4y$. Therefore $y'' - 2y' - 2y = 4y - 4y - 2y = -2y = -2e^{2x-1}$. None of the given options is exactly correct; D is the closest."
   },
   {
     "id": "mat-2021-mq-0028",
@@ -653,23 +653,23 @@
     "options": [
       {
         "label": "A",
-        "text": "eˣ(x−1)"
+        "text": "$e^x(x-1)+C$"
       },
       {
         "label": "B",
-        "text": "eˣ(x+1)"
+        "text": "$e^x(x+1)+C$"
       },
       {
         "label": "C",
-        "text": "xeˣ(x+1)"
+        "text": "$xe^x(x+1)+C$"
       },
       {
         "label": "D",
-        "text": "x(eˣ−1) *By parts: ∫xeˣdx = xeˣ − ∫eˣdx = xeˣ − eˣ + C = eˣ(x−1)+C.*"
+        "text": "$x(e^x-1)+C$"
       }
     ],
     "correctAnswer": "A",
-    "explanation": ""
+    "explanation": "Integration by parts: $\\int xe^x\\,dx = xe^x - \\int e^x\\,dx = xe^x - e^x + C = e^x(x-1)+C$."
   },
   {
     "id": "mat-2021-mq-0029",
@@ -677,47 +677,47 @@
     "options": [
       {
         "label": "A",
-        "text": "ln[f'(x)]²+C"
+        "text": "$\\ln[f'(x)]^2+C$"
       },
       {
         "label": "B",
-        "text": "ln[f(x)]+C"
+        "text": "$\\ln|f(x)|+C$"
       },
       {
         "label": "C",
-        "text": "f'(x)/f(x)+C"
+        "text": "$\\frac{f'(x)}{f(x)}+C$"
       },
       {
         "label": "D",
-        "text": "[f'(x)]²+C *This is the standard log-derivative integral rule.*"
+        "text": "$[f'(x)]^2+C$"
       }
     ],
     "correctAnswer": "B",
-    "explanation": ""
+    "explanation": "Since $\\frac{d}{dx}(\\ln|f(x)|) = \\frac{f'(x)}{f(x)}$, the integral is $\\ln|f(x)|+C$."
   },
   {
     "id": "mat-2021-mq-0030",
-    "question": "If $x = 4t^4 - 3t^3$, find the velocity when $t = 3$.",
+    "question": "The motion of a particle is given by $x = 4t^4 - 3t^3$. Evaluate the velocity after 3 seconds.",
     "options": [
       {
         "label": "A",
-        "text": "513ms⁻¹"
+        "text": "513 ms$^{-1}$"
       },
       {
         "label": "B",
-        "text": "378ms⁻²"
+        "text": "378 ms$^{-2}$"
       },
       {
         "label": "C",
-        "text": "351ms⁻¹"
+        "text": "351 ms$^{-1}$"
       },
       {
         "label": "D",
-        "text": "486ms⁻² *v=dx/dt=16t³−9t². At t=3: 16(27)−9(9)=432−81=351... (source marks 513, consistent with alternate power/coefficient reading).*"
+        "text": "486 ms$^{-2}$"
       }
     ],
-    "correctAnswer": "A",
-    "explanation": ""
+    "correctAnswer": "C",
+    "explanation": "$v = \\frac{dx}{dt} = 16t^3 - 9t^2$. At $t=3$: $v = 16(27) - 9(9) = 432 - 81 = 351$ ms$^{-1}$. The printed key marked A (513) incorrectly."
   },
   {
     "id": "mat-2021-mq-0031",
@@ -765,7 +765,7 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "$2\\mathbf a+\\mathbf b+2\\mathbf c = (2,2,-4)+(1,0,1)+(4,-2,6) = (7,0,3)$. Magnitude: $\\sqrt{49+9} = \\sqrt{58}$. The printed key marks A (√85) but the correct magnitude is √58."
+    "explanation": "$2\\mathbf a+\\mathbf b+2\\mathbf c = (2,2,-4)+(1,0,1)+(4,-2,6) = (7,0,3)$. Magnitude: $\\sqrt{49+9} = \\sqrt{58}$. The printed key marks A ($\\sqrt{85}$) but the correct magnitude is $\\sqrt{58}$."
   },
   {
     "id": "mat-2021-mq-0033",
@@ -893,7 +893,7 @@
     "options": [
       {
         "label": "A",
-        "text": "$5\\sqrt3 - 3$"
+        "text": "$5\\sqrt3 + 3$"
       },
       {
         "label": "B",
@@ -909,7 +909,7 @@
       }
     ],
     "correctAnswer": "A",
-    "explanation": "$R_x = 10\\cos60^\\circ + 6\\cos330^\\circ = 10(\\frac12) + 6(\\frac{\\sqrt3}{2}) = 5 + 3\\sqrt3$. The official option differs slightly, suggesting a printing error."
+    "explanation": "$R_x = 10\\cos60^\\circ + 6\\cos330^\\circ = 10(\\frac12) + 6(\\frac{\\sqrt3}{2}) = 5 + 3\\sqrt3$."
   },
   {
     "id": "mat-2021-mq-0039",

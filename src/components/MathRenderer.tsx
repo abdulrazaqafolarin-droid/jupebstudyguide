@@ -377,7 +377,54 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content, className =
       /(?<!\$)(\d+)\s*\/\s*(\d+)(?!\$)/g,
       (match, num, den) => {
         if (hasPH(match)) return match;
+        // Avoid wrapping if part of a date (e.g., "2024/2025 session")
+        if (num.length >= 4 && den.length >= 4) return match;
         return `$\\frac{${num}}{${den}}$`;
+      }
+    );
+
+    // ============================================================
+    // STEP 2.5: Math-specific auto-detection patterns
+    // These extend auto-detection for math subjects (JUPEB, etc.)
+    // ============================================================
+
+    // --- Pattern: Variable with Unicode superscript (x² → $x^{2}$, y³ → $y^{3}$) ---
+    // Handles: x², 2x², -2x², x³, y³, etc. Does NOT handle (x+y)².
+    // The leading `-?\d*` captures the numeric coefficient + variable together
+    // (e.g., "-2x²" matches fully), then splits into coefficient + variable.
+    // Must NOT match if preceded by a letter (English word) or followed by a letter.
+    // The entire match is wrapped in $...$ to avoid digit-before-$ regex issues.
+    processedContent = processedContent.replace(
+      /(-?\d*[a-zA-Z])([\u00B2\u00B3\u00B9])/g,
+      (match, expr, sup, offset, full) => {
+        if (hasPH(match)) return match;
+        // Skip if preceded by a letter (inside an English word like "expression²")
+        if (offset > 0 && /[a-zA-Z]/.test(full[offset - 1])) return match;
+        // Skip if followed by a letter (inside a word like "x²pression")
+        const nextOffset = offset + match.length;
+        if (nextOffset < full.length && /[a-zA-Z]/.test(full[nextOffset])) return match;
+        const digit = UNICODE_SUP_TO_DIGIT[sup] ?? sup;
+        return `$${expr}^{${digit}}$`;
+      }
+    );
+
+    // --- Pattern: Simple equation or inequality with variable ---
+    // Wraps single-line expressions containing =, <, or > with a variable letter
+    // AND no English prose words. Handles: "2x + 3 = 5", "x² > 0", "-1/2 < x < 3", "f(x) = x² - 7"
+    // The expression must start and end with math-like content (digit, variable, paren, bracket).
+    // NOTE: The character classes include ] and } by positioning them first or escaping them.
+    processedContent = processedContent.replace(
+      /(^|[\s(,;:])(-?[0-9a-zA-Z\u00B2\u00B3\u00B9_({[]+[^,\n;]*?[=<>≤≥][^,\n;]*?[\]0-9a-zA-Z)}]+)/gm,
+      (match, before, expr) => {
+        if (hasPH(match)) return match;
+        const trimmed = expr.trim();
+        if (trimmed.length < 3 || trimmed.length > 150) return match;
+        if (!/[a-zA-Z]/.test(trimmed)) return match;
+        if (/\b(and|the|for|that|this|with|which|what|equation|function|value|values|range|find|determine|solve|evaluate|calculate|obtain|express|given|using|hence|note|where|when|from|into|also|than|then|there|their|these|those|each|both|more|some|such|only|just|can|has|have|been|were|will|would|could)\b/i.test(trimmed)) return match;
+        const words = trimmed.split(/\s+/);
+        if (words.filter(w => w.length > 8).length > 1) return match;
+        if (/^[A-Z]{3,5}\s*\d{3}/.test(trimmed)) return match;
+        return before + `$${trimmed}$`;
       }
     );
 

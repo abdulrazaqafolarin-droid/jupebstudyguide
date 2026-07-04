@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Subject, SUBJECT_INFO } from '@/types/question';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Check, Target, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, Target, Sparkles, Clock } from 'lucide-react';
 
 export interface QuizPlan {
   /** Per-subject question counts. Subject is omitted when count is 0. */
@@ -16,14 +16,16 @@ interface QuizSetupProps {
   available: Record<Subject, number>;
   onStart: (plan: QuizPlan) => void;
   onBack: () => void;
+  lockedSubjects?: Subject[];
+  lockTimeLeft?: string;
 }
 
 const COUNT_PRESETS = [15, 30, 50] as const;
 const ALL_SUBJECTS: Subject[] = ['physics', 'chemistry', 'biology', 'math'];
 
-export const QuizSetup = ({ available, onStart, onBack }: QuizSetupProps) => {
+export const QuizSetup = ({ available, onStart, onBack, lockedSubjects, lockTimeLeft }: QuizSetupProps) => {
   const [selected, setSelected] = useState<Set<Subject>>(
-    new Set(ALL_SUBJECTS.filter(s => available[s] > 0)),
+    new Set(ALL_SUBJECTS.filter(s => available[s] > 0 && !lockedSubjects?.includes(s))),
   );
   const [mode, setMode] = useState<'uniform' | 'custom'>('uniform');
   const [uniformCount, setUniformCount] = useState<number>(15);
@@ -36,6 +38,7 @@ export const QuizSetup = ({ available, onStart, onBack }: QuizSetupProps) => {
 
   const toggleSubject = (s: Subject) => {
     if (available[s] === 0) return;
+    if (lockedSubjects?.includes(s)) return;
     setSelected(prev => {
       const next = new Set(prev);
       if (next.has(s)) next.delete(s); else next.add(s);
@@ -89,19 +92,26 @@ export const QuizSetup = ({ available, onStart, onBack }: QuizSetupProps) => {
               const count = available[subject];
               const isSelected = selected.has(subject);
               const disabled = count === 0;
+              const locked = lockedSubjects?.includes(subject) ?? false;
               return (
                 <button
                   key={subject}
                   onClick={() => toggleSubject(subject)}
-                  disabled={disabled}
+                  disabled={disabled || locked}
                   className={cn(
                     'relative p-4 rounded-xl border-2 text-left transition-all',
                     'flex items-center gap-3',
-                    disabled && 'opacity-40 cursor-not-allowed',
-                    !disabled && isSelected && 'border-primary bg-primary/10',
-                    !disabled && !isSelected && 'border-border hover:border-primary/50 bg-secondary/30',
+                    (disabled || locked) && 'opacity-40 cursor-not-allowed',
+                    !disabled && !locked && isSelected && 'border-primary bg-primary/10',
+                    !disabled && !locked && !isSelected && 'border-border hover:border-primary/50 bg-secondary/30',
                   )}
                 >
+                  {locked && (
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl bg-black/10 dark:bg-black/30 backdrop-blur-[1px]">
+                      <Clock className="h-4 w-4 text-yellow-400 mb-0.5" />
+                      <p className="text-[10px] font-mono font-bold text-yellow-400 tabular-nums">{lockTimeLeft}</p>
+                    </div>
+                  )}
                   <span className="text-2xl">{info.icon}</span>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{info.name}</p>

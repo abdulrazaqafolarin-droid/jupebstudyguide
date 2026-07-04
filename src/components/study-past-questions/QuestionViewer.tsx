@@ -378,6 +378,7 @@ export function QuestionViewer({
           </button>
           {onToggleBookmark && (
             <button
+              data-tour="pq-bookmark"
               onClick={() => onToggleBookmark(question.id)}
               className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
             >
@@ -389,6 +390,7 @@ export function QuestionViewer({
             </button>
           )}
           <button
+            data-tour="pq-ai-tutor"
             onClick={() => setShowAITutor(true)}
             className="flex-shrink-0 p-2 rounded-lg hover:bg-accent transition-colors active:scale-[0.97]"
             aria-label="Ask AI Tutor"
@@ -462,7 +464,7 @@ export function QuestionViewer({
                   })}
                 </div>
               ) : category === "objective" ? (
-                <div className="space-y-3">
+                <div data-tour="pq-mcq-options" className="space-y-3">
                   {renderQuestionMedia(question)}
                   <div className="space-y-2">
                     {(question.options ?? []).map((opt) => {
@@ -539,7 +541,7 @@ export function QuestionViewer({
                     )}
                   </div>
                 ) : (
-                <div className="space-y-3">
+                <div data-tour="pq-theory-input" className="space-y-3">
                   {renderQuestionMedia(question)}
                   {submittedTheory.has(question.id) ? (
                     <div className="space-y-3">

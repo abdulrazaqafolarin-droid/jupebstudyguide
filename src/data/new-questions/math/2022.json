@@ -1,0 +1,1402 @@
+[
+  {
+    "id": "mat-2022-obj-0001",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "When the polynomial (f(x)=x^3+3x^2+ax-2) is divided by (x-3), the remainder is 100. Determine the value of (a).",
+    "options": [
+      {
+        "label": "A",
+        "text": "16"
+      },
+      {
+        "label": "B",
+        "text": "8"
+      },
+      {
+        "label": "C",
+        "text": "−3"
+      },
+      {
+        "label": "D",
+        "text": "−3"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0002",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "If (\\alpha) and (\\beta) are the roots of the quadratic equation (2x^2+3x-2=0), evaluate**\n\n[\n\\frac1\\alpha+\\frac1\\beta.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\dfrac23)"
+      },
+      {
+        "label": "B",
+        "text": "(\\dfrac3{12})"
+      },
+      {
+        "label": "C",
+        "text": "(\\dfrac21-3)"
+      },
+      {
+        "label": "D",
+        "text": "(\\dfrac31-2)"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0003",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Obtain the coefficient of ((ab)^4) in the expansion of**\n\n[\n\\left(a+\\frac b2\\right)^8.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "30"
+      },
+      {
+        "label": "B",
+        "text": "(\\dfrac{35}{8})"
+      },
+      {
+        "label": "C",
+        "text": "35"
+      },
+      {
+        "label": "D",
+        "text": "(\\dfrac18)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0004",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate the determinant of the matrix**\n\n[\n\\begin{vmatrix}\n1 & -2 & 3\\\n2 & 2 & 6\\\n4 & 1 & 4\n\\end{vmatrix}\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "38"
+      },
+      {
+        "label": "B",
+        "text": "−48"
+      },
+      {
+        "label": "C",
+        "text": "28"
+      },
+      {
+        "label": "D",
+        "text": "−38"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0005",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Which of the following curves is NOT a circle?",
+    "options": [
+      {
+        "label": "A",
+        "text": "(x^2+y^2-2x+y=0)"
+      },
+      {
+        "label": "B",
+        "text": "(x^2+y^2-x=2)"
+      },
+      {
+        "label": "C",
+        "text": "(3x^2+y^2+4x-8y=0)"
+      },
+      {
+        "label": "D",
+        "text": "(x^2+y^2-4x-6y-3=0)"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0006",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate the equation of the directrix of the parabola**\n\n[\ny^2=36x.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(x=4)"
+      },
+      {
+        "label": "B",
+        "text": "(x=-9)"
+      },
+      {
+        "label": "C",
+        "text": "(x=-4)"
+      },
+      {
+        "label": "D",
+        "text": "(x=9)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0007",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Obtain the values of (x) and (y) in the matrix equation**\n\n[\n\\begin{pmatrix}\n2 & x\\\ny & -3\n\\end{pmatrix}\n\\begin{pmatrix}\n1 & 3\\\n2 & 5\n\\end{pmatrix}\n=============\n\n\\begin{pmatrix}\n6 & 16\\\n4 & 15\n\\end{pmatrix}.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(x=2,;y=10)"
+      },
+      {
+        "label": "B",
+        "text": "(x=3,;y=2)"
+      },
+      {
+        "label": "C",
+        "text": "(x=10,;y=2)"
+      },
+      {
+        "label": "D",
+        "text": "(x=2,;y=5)"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0008",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "A line is perpendicular to**\n\n[\n3x-y+11=0\n]\n\n**and passes through the point ((1,-5)). Determine its equation.",
+    "options": [
+      {
+        "label": "A",
+        "text": "(3y-x-14=0)"
+      },
+      {
+        "label": "B",
+        "text": "(3x+y+1=0)"
+      },
+      {
+        "label": "C",
+        "text": "(3y+x+14=0)"
+      },
+      {
+        "label": "D",
+        "text": "(3y+x+1=0)"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0009",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Deduce the quotient when**\n\n[\n2x^3+3x+1\n]\n\n**is divided by**\n\n[\nx^2+x-2.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(2x+1)"
+      },
+      {
+        "label": "B",
+        "text": "(2x-1)"
+      },
+      {
+        "label": "C",
+        "text": "(x-2)"
+      },
+      {
+        "label": "D",
+        "text": "(2x-2)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0010",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Find the 5th term of the harmonic progression**\n\n[\n\\frac29,;\\frac4{17},;\\frac14,\\ldots\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\frac35)"
+      },
+      {
+        "label": "B",
+        "text": "(\\frac25)"
+      },
+      {
+        "label": "C",
+        "text": "(\\frac34)"
+      },
+      {
+        "label": "D",
+        "text": "(\\frac27)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0011",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Given** (S={x:0<x\\le10,\\ x) is an integer(}) **as the universal set. Let**\n\n* **A = {multiples of 3}**\n* **B = {x : 3 ≤ x < 8, x is an integer}**\n\n**Find** (A\\cap B).",
+    "options": [
+      {
+        "label": "A",
+        "text": "{3, 6}"
+      },
+      {
+        "label": "B",
+        "text": "{6, 9}"
+      },
+      {
+        "label": "C",
+        "text": "{9}"
+      },
+      {
+        "label": "D",
+        "text": "{5, 6}"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "The universal set is: [ S={1,2,3,4,5,6,7,8,9,10} ] Multiples of 3 are: [ A={3,6,9} ] Numbers satisfying (3\\le x<8) are: [ B={3,4,5,6,7} ] The intersection contains elements common to both sets: [ A\\cap B={3,6} ]  Correct Answer: A. {3, 6}",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0012",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Solve**\n\n[\n\\log_x3+\\log_x9=2\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\sqrt8)"
+      },
+      {
+        "label": "B",
+        "text": "(\\sqrt7)"
+      },
+      {
+        "label": "C",
+        "text": "(3\\sqrt3)"
+      },
+      {
+        "label": "D",
+        "text": "14"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Use the law of logarithms: [ \\log_x9=\\log_x3^2=2\\log_x3 ] Therefore, [ \\log_x3+2\\log_x3=2 ] [ 3\\log_x3=2 ] [ \\log_x3=\\frac23 ] Convert to exponential form: [ x^{2/3}=3 ] Raise both sides to power (3/2): [ x=3^{3/2} ] [ x=3\\sqrt3 ]  Correct Answer: C. (3\\sqrt3)",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0013",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Binomial series for**\n\n[\n(1+x)^n\n]\n\n**is valid only when",
+    "options": [
+      {
+        "label": "A",
+        "text": "(x<1)"
+      },
+      {
+        "label": "B",
+        "text": "(x<-1)"
+      },
+      {
+        "label": "C",
+        "text": "(|x|<1)"
+      },
+      {
+        "label": "D",
+        "text": "(n<1)"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "For the infinite binomial expansion, [ (1+x)^n ] the series converges only when [ |x|<1 ] This means [ -1<x<1. ] Outside this interval, the expansion generally does not converge.  Correct Answer: C. (|x|<1)",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0014",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "The distance between points**\n\n[\nA(x,-8)\\quad\\text{and}\\quad B(2,-5)\n]\n\n**is 5 units. Deduce the value(s) of (x).",
+    "options": [
+      {
+        "label": "A",
+        "text": "6"
+      },
+      {
+        "label": "B",
+        "text": "3"
+      },
+      {
+        "label": "C",
+        "text": "4"
+      },
+      {
+        "label": "D",
+        "text": "2"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Use the distance formula: [ \\sqrt{(x-2)^2+(-8+5)^2}=5 ] Since [ (-8+5)^2=9, ] we get [ (x-2)^2+9=25 ] [ (x-2)^2=16 ] [ x-2=\\pm4 ] Hence, [ x=6\\quad\\text{or}\\quad x=-2. ] Among the options, only 6 appears. (The provided key marks 4, but mathematically that is incorrect.) ⚠ Mathematically Correct Answer: A. 6",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0015",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "The 4th and 6th terms of an arithmetic (linear) sequence are 8 and 14 respectively. Compute the first term and common difference.",
+    "options": [
+      {
+        "label": "A",
+        "text": "0, 3"
+      },
+      {
+        "label": "B",
+        "text": "−1, 2"
+      },
+      {
+        "label": "C",
+        "text": "0, 2"
+      },
+      {
+        "label": "D",
+        "text": "−1, 3"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "For an arithmetic sequence, [ T_n=a+(n-1)d ] Fourth term: [ a+3d=8 ] Sixth term: [ a+5d=14 ] Subtract: [ 2d=6 ] [ d=3 ] Substitute back: [ a+9=8 ] [ a=-1 ] So,  First term = −1  Common difference = 3 ⚠ The official key marks A, but the correct answer is (−1, 3). Mathematically Correct Answer: D",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0016",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Determine**\n\n[\n\\lim_{x\\to\\infty}\\frac{5x^2-x+2}{4x^2-4}\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "−3"
+      },
+      {
+        "label": "B",
+        "text": "4"
+      },
+      {
+        "label": "C",
+        "text": "(\\frac54)"
+      },
+      {
+        "label": "D",
+        "text": "0"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Divide both numerator and denominator by (x^2): [ \\frac{5-\\frac1x+\\frac2{x^2}} {4-\\frac4{x^2}} ] As (x\\to\\infty), [ \\frac1x\\to0,\\qquad \\frac1{x^2}\\to0. ] Therefore, [ \\frac54. ]  Correct Answer: C. (\\frac54)",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0017",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Find the volume generated when the area bounded by the curve**\n\n[\ny=x^2\n]\n\n**and the line**\n\n[\ny=1\n]\n\n**is rotated through one complete revolution about the x-axis between (x=0) and (x=1).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\frac{6\\pi}{7})"
+      },
+      {
+        "label": "B",
+        "text": "(\\frac{4\\pi}{5})"
+      },
+      {
+        "label": "C",
+        "text": "(\\frac{3\\pi}{4})"
+      },
+      {
+        "label": "D",
+        "text": "(\\frac{\\pi}{2})"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Using the washer method, Outer radius = 1 Inner radius = (x^2) [ V=\\pi\\int_0^1(1^2-(x^2)^2),dx ] [ =\\pi\\int_0^1(1-x^4),dx ] [ =\\pi\\left[x-\\frac{x^5}{5}\\right]_0^1 ] [ =\\pi\\left(1-\\frac15\\right) =\\frac{4\\pi}{5} ] ⚠ The official key gives C, but the correct mathematical answer is B. (\\frac{4\\pi}{5}).",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0018",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate**\n\n[\n\\int\\frac{f'(x)}{f(x)},dx\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\ln f(x))"
+      },
+      {
+        "label": "B",
+        "text": "(\\ln f'(x))"
+      },
+      {
+        "label": "C",
+        "text": "(\\ln f(x^2))"
+      },
+      {
+        "label": "D",
+        "text": "((\\ln f(x))^2)"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "This is a standard logarithmic integral. If [ u=f(x), ] then [ du=f'(x),dx. ] Hence, [ \\int\\frac{f'(x)}{f(x)}dx =\\int\\frac{du}{u} =\\ln|u|+C =\\ln|f(x)|+C. ]  Correct Answer: A. (\\ln f(x))",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0019",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate**\n\n[\n\\lim_{x\\to2^-}\\frac{|x-2|}{x-2}\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "0"
+      },
+      {
+        "label": "C",
+        "text": "3"
+      },
+      {
+        "label": "D",
+        "text": "−1"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Approaching from the left means [ x<2. ] Therefore, [ x-2<0. ] So, [ |x-2|=-(x-2). ] Substitute: [ \\frac{|x-2|}{x-2} ================= \\frac{-(x-2)}{x-2} =-1. ]  Correct Answer: D. −1",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0020",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Differentiate**\n\n[\ne^{x\\cos x}\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(e^{x\\cos x}(\\cos x-x\\sin x))"
+      },
+      {
+        "label": "B",
+        "text": "(e^{x(\\cos x-x\\sin x)})"
+      },
+      {
+        "label": "C",
+        "text": "(e^{x\\cos x}\\sin x)"
+      },
+      {
+        "label": "D",
+        "text": "(e^{x\\cos x}\\cos x)"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Let [ y=e^{x\\cos x}. ] Use the chain rule: [ \\frac{dy}{dx} =e^{x\\cos x}\\cdot\\frac{d}{dx}(x\\cos x). ] Differentiate (x\\cos x) using the product rule: [ \\frac{d}{dx}(x\\cos x)=\\cos x-x\\sin x. ] Therefore, [ \\boxed{\\frac{dy}{dx}=e^{x\\cos x}(\\cos x-x\\sin x)}. ]  Correct Answer: A. (e^{x\\cos x}(\\cos x-x\\sin x)) \\frac{17}{4}-\\frac92 =\\frac{17-18}{4} =-\\frac14, ] and [ 4-\\frac{17}{4} =-\\frac14. ] So the AP is [ \\frac92,;\\frac{17}{4},;4,;\\frac{15}{4},;\\frac72. ] The reciprocal of the 5th AP term is [ \\frac{2}{7}. ] Thus, the 5th term of the HP is [ \\boxed{\\frac27.} ]",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0021",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Find the maximum and minimum values of the function**\n\n[\ny=x(x-1)^2\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\left(\\frac12,1\\right)*{\\max},\\ (0,2)*{\\min})"
+      },
+      {
+        "label": "B",
+        "text": "((0,3)*{\\max},\\ (1,2)*{\\min})"
+      },
+      {
+        "label": "C",
+        "text": "(\\left(\\frac13,\\frac4{27}\\right)*{\\max},\\ (1,0)*{\\min})"
+      },
+      {
+        "label": "D",
+        "text": "(\\left(\\frac13,1\\right)*{\\max},\\ \\left(0,\\frac12\\right)*{\\min})"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "First expand the function: [ y=x(x-1)^2=x(x^2-2x+1)=x^3-2x^2+x ] Differentiate: [ \\frac{dy}{dx}=3x^2-4x+1 ] Set the derivative equal to zero to find the turning points: [ 3x^2-4x+1=0 ] Factorising gives [ (3x-1)(x-1)=0 ] Hence, [ x=\\frac13 \\quad\\text{or}\\quad x=1. ] Differentiate again: [ \\frac{d^2y}{dx^2}=6x-4. ] At (x=\\frac13), [ 6\\left(\\frac13\\right)-4=-2<0, ] so this point is a maximum. Its y-coordinate is [ y=\\frac13\\left(-\\frac23\\right)^2=\\frac4{27}. ] At (x=1), [ 6(1)-4=2>0, ] so this point is a minimum. [ y=1(1-1)^2=0. ]  Correct Answer: C",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0022",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate**\n\n[\n\\int_{0}^{\\pi/2}\\cos x,dx.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "0"
+      },
+      {
+        "label": "B",
+        "text": "2"
+      },
+      {
+        "label": "C",
+        "text": "3"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "The integral of cosine is sine: [ \\int\\cos x,dx=\\sin x. ] Apply the limits: [ \\sin\\frac{\\pi}{2}-\\sin0 =1-0 =1. ]  Correct Answer: D",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0023",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Solve the differential equation**\n\n[\nx\\frac{dy}{dx}=5x^3+4.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\dfrac{5x^2}{2}+4\\ln x+C)"
+      },
+      {
+        "label": "B",
+        "text": "(\\dfrac{5x^3}{3}+4\\ln x+C)"
+      },
+      {
+        "label": "C",
+        "text": "(\\dfrac{3x^2}{2}+4\\ln x+C)"
+      },
+      {
+        "label": "D",
+        "text": "(\\dfrac{3x^3}{5}+4\\ln x+C)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Divide both sides by (x): [ \\frac{dy}{dx}=5x^2+\\frac4x. ] Now integrate each term: [ y=\\int5x^2dx+\\int\\frac4x,dx. ] This gives [ y=\\frac53x^3+4\\ln|x|+C. ] This corresponds to Option B (although the coefficient is not clearly printed in the question).  Correct Answer: B",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0024",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Given that**\n\n[\ny=e^{4x},\n]\n\n**obtain the fourth derivative of (y).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(4e^{4x})"
+      },
+      {
+        "label": "B",
+        "text": "(64e^{4x})"
+      },
+      {
+        "label": "C",
+        "text": "(128e^{4x})"
+      },
+      {
+        "label": "D",
+        "text": "(256e^{4x})"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Each differentiation of (e^{4x}) introduces another factor of 4. First derivative: [ 4e^{4x} ] Second derivative: [ 16e^{4x} ] Third derivative: [ 64e^{4x} ] Fourth derivative: [ 256e^{4x}. ]  Correct Answer: D",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0025",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Differentiate the function**\n\n[\n\\left(\\sqrt[3]{x^2+2x-1}\\right)^5.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(5\\left(\\sqrt[3]{x^2+2x-1}\\right)^4)"
+      },
+      {
+        "label": "B",
+        "text": "(\\dfrac53(2x+2)(x^2+2x-1)^{3/2})"
+      },
+      {
+        "label": "C",
+        "text": "(\\dfrac{10}{3}(x+1)(x^2+2x-1)^{2/3})"
+      },
+      {
+        "label": "D",
+        "text": "(5\\left(\\sqrt[3]{x^2+2x-1}\\right)^{-4})"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Rewrite the function: [ y=(x^2+2x-1)^{5/3}. ] Apply the chain rule: [ \\frac{dy}{dx} =\\frac53(x^2+2x-1)^{2/3}(2x+2). ] Since [ 2x+2=2(x+1), ] the derivative becomes [ \\frac{10}{3}(x+1)(x^2+2x-1)^{2/3}. ]  Correct Answer: C",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0026",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate**\n\n[\n\\int_{1}^{2}\\frac{1+x^2}{x},dx.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\ln x+\\dfrac{x^2}{2})"
+      },
+      {
+        "label": "B",
+        "text": "(1+\\ln2)"
+      },
+      {
+        "label": "C",
+        "text": "(1+(\\ln1-\\ln2))"
+      },
+      {
+        "label": "D",
+        "text": "(\\dfrac32+(\\ln2-\\ln1))"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "First simplify the integrand: [ \\frac{1+x^2}{x}=x+\\frac1x. ] Integrate: [ \\int\\left(x+\\frac1x\\right)dx =\\frac{x^2}{2}+\\ln|x|. ] Now substitute the limits: [ \\left(\\frac{4}{2}+\\ln2\\right)-\\left(\\frac12+\\ln1\\right). ] Since [ \\ln1=0, ] we obtain [ 2+\\ln2-\\frac12 =\\frac32+\\ln2. ] ⚠ Note: The official answer key marks Option B, but the correct mathematical answer is Option D.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0027",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate**\n\n[\n\\int\\cos x\\cos2x,dx.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\dfrac{\\cos4x}{6}+C)"
+      },
+      {
+        "label": "B",
+        "text": "(\\dfrac{\\sin3x}{6}+\\dfrac{\\sin x}{2}+C)"
+      },
+      {
+        "label": "C",
+        "text": "(\\dfrac{\\sin^3x}{3}-\\dfrac{\\sin x}{2}+C)"
+      },
+      {
+        "label": "D",
+        "text": "(\\dfrac{\\sin5x}{7}-\\dfrac{\\sin2x}{5}+C)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Use the product-to-sum identity: [ \\cos A\\cos B =\\frac12[\\cos(A-B)+\\cos(A+B)]. ] Therefore, [ \\cos x\\cos2x =\\frac12(\\cos x+\\cos3x). ] Integrate: [ \\frac12\\sin x+\\frac16\\sin3x+C. ] Hence, [ \\boxed{\\frac{\\sin3x}{6}+\\frac{\\sin x}{2}+C.} ]  Correct Answer: B",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0028",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "If**\n\n[\ny=e^x\\sin x,\n]\n\n**find**\n\n[\n\\frac{d^4y}{dx^4}+4y.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(4x-1)"
+      },
+      {
+        "label": "B",
+        "text": "(2x-2)"
+      },
+      {
+        "label": "C",
+        "text": "0"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Differentiate the function four times. A known result is [ \\frac{d^4}{dx^4}(e^x\\sin x) =-4e^x\\sin x. ] Since [ y=e^x\\sin x, ] then [ y^{(4)}=-4y. ] Therefore, [ y^{(4)}+4y =-4y+4y =0. ]  Correct Answer: C",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0029",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate**\n\n[\n\\int\\frac{1}{(1+x)\\left(2+\\log(1+x)\\right)},dx.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\ln[2-\\log(1+x)])"
+      },
+      {
+        "label": "B",
+        "text": "(\\ln[2+\\log(1+x)])"
+      },
+      {
+        "label": "C",
+        "text": "(\\ln[2+\\log(1-x)])"
+      },
+      {
+        "label": "D",
+        "text": "(\\ln[2+\\log(1+x)])"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "Let [ u=2+\\log(1+x). ] Then [ du=\\frac{dx}{1+x}. ] The integral becomes [ \\int\\frac1u,du =\\ln|u|+C. ] Substitute back: [ \\boxed{\\ln|2+\\log(1+x)|+C.} ]  Correct Answer: B",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0030",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "One of the following measures of location is NOT affected by extreme values.",
+    "options": [
+      {
+        "label": "A",
+        "text": "Harmonic mean"
+      },
+      {
+        "label": "B",
+        "text": "Arithmetic mean"
+      },
+      {
+        "label": "C",
+        "text": "Geometric mean"
+      },
+      {
+        "label": "D",
+        "text": "Median"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Extreme values (outliers) have a strong effect on most averages, especially the arithmetic mean. The median is simply the middle value when the data are arranged in order. Since it depends only on the position of the middle observation, very large or very small values do not significantly affect it. For this reason, the median is the most appropriate measure of central tendency when data contain outliers.  Correct Answer: D. Median # JUPEB Mathematics 2022 – Questions 31–40 (Full Questions with Explanations)",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0031",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "The following marks were obtained during an examination:**\n\n[\n5,;5,;8,;4,;7,;6,;5,;3,;9.\n]\n\n**Compute the mean, median and mode respectively.",
+    "options": [
+      {
+        "label": "A",
+        "text": "4, 5, 4"
+      },
+      {
+        "label": "B",
+        "text": "5.43, 5, 5"
+      },
+      {
+        "label": "C",
+        "text": "5.78, 5, 5"
+      },
+      {
+        "label": "D",
+        "text": "6, 5, 5"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "Arrange the data in ascending order: [ 3,;4,;5,;5,;5,;6,;7,;8,;9 ] ### Step 1: Mean Add all the values: [ 3+4+5+5+5+6+7+8+9=52 ] There are 9 observations. [ \\text{Mean}=\\frac{52}{9}=5.78 ] ### Step 2: Median Since there are 9 observations, the median is the 5th value. [ \\boxed{5} ] ### Step 3: Mode The value occurring most frequently is 5. Hence,  Mean = 5.78  Median = 5  Mode = 5  Correct Answer: C. 5.78, 5, 5",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0032",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "A die is tossed once. Find the probability that the number which appeared is an even or an odd number.",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\frac12)"
+      },
+      {
+        "label": "B",
+        "text": "(\\frac13)"
+      },
+      {
+        "label": "C",
+        "text": "(\\frac16)"
+      },
+      {
+        "label": "D",
+        "text": "1"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "Every number on a die is either even or odd. Sample space: [ {1,2,3,4,5,6} ] Even numbers: [ {2,4,6} ] Odd numbers: [ {1,3,5} ] Since every possible outcome is included, [ P(\\text{even or odd})=\\frac66=1. ]  Correct Answer: D. 1",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0033",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "An estimate of a population parameter given by a single number is called",
+    "options": [
+      {
+        "label": "A",
+        "text": "Estimator"
+      },
+      {
+        "label": "B",
+        "text": "An interval estimate"
+      },
+      {
+        "label": "C",
+        "text": "Confidence interval"
+      },
+      {
+        "label": "D",
+        "text": "Point estimate"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "A point estimate is a single numerical value used to estimate an unknown population parameter. Examples include:  Sample mean estimating the population mean.  Sample proportion estimating the population proportion. An interval estimate gives a range of values rather than a single value. Therefore, the correct term is point estimate.  Correct Answer: D. Point estimate",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0034",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "An unbiased six-sided die has the score 2 engraved on two sides, the score 4 on three sides and the score 6 on the remaining one side. The die is thrown once. Compute the probability of obtaining a score of 4 or less.",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\frac36)"
+      },
+      {
+        "label": "B",
+        "text": "(\\frac26)"
+      },
+      {
+        "label": "C",
+        "text": "(\\frac56)"
+      },
+      {
+        "label": "D",
+        "text": "(\\frac46)"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "The six faces are: [ 2,;2,;4,;4,;4,;6 ] Scores 4 or less are: [ 2,;2,;4,;4,;4 ] There are 5 favourable outcomes out of 6 possible outcomes. Therefore, [ P(\\text{score}\\le4)=\\frac56. ]  Correct Answer: C. (\\frac56)",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0035",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate (P(X=5)) when (X\\sim Bi(9,0.3)).",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.975"
+      },
+      {
+        "label": "B",
+        "text": "0.901"
+      },
+      {
+        "label": "C",
+        "text": "0.740"
+      },
+      {
+        "label": "D",
+        "text": "0.074"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "For a binomial distribution, [ P(X=r)=\\binom{n}{r}p^r(1-p)^{n-r}. ] Here,  (n=9)  (r=5)  (p=0.3) So, [ P(X=5)=\\binom95(0.3)^5(0.7)^4. ] Now, [ \\binom95=126. ] Hence, [ 126(0.3)^5(0.7)^4 \\approx0.0735 \\approx0.074. ]  Correct Answer: D. 0.074",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0036",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Let (Z\\sim N(0,1)). If (P(Z<a)=0.975), determine the value of (a).",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.975"
+      },
+      {
+        "label": "B",
+        "text": "0.025"
+      },
+      {
+        "label": "C",
+        "text": "1.96"
+      },
+      {
+        "label": "D",
+        "text": "−1.96"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "For the standard normal distribution, the cumulative probability [ P(Z<1.96)=0.975. ] This is a standard value found in every normal distribution table. Therefore, [ a=1.96. ]  Correct Answer: C. 1.96",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0037",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Calculate the variance of the data:**\n\n[\n5,;6,;4,;5.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.5"
+      },
+      {
+        "label": "B",
+        "text": "2.0"
+      },
+      {
+        "label": "C",
+        "text": "1.5"
+      },
+      {
+        "label": "D",
+        "text": "2.2"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "### Step 1: Calculate the mean [ \\bar x=\\frac{5+6+4+5}{4}=5. ] ### Step 2: Find deviations | x | x−5 | (x−5)² | | - | --- | ------ | | 5 | 0   | 0      | | 6 | 1   | 1      | | 4 | -1  | 1      | | 5 | 0   | 0      | Sum of squared deviations: [ 0+1+1+0=2. ] Variance [ =\\frac24=0.5. ]  Correct Answer: A. 0.5",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0038",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "When is a distribution said to be symmetric?**\n\n**I. Mean = Mode = Median**\n\n**II. Mean − Mode = 3(Mean − Median)",
+    "options": [
+      {
+        "label": "A",
+        "text": "I only"
+      },
+      {
+        "label": "B",
+        "text": "I and II"
+      },
+      {
+        "label": "C",
+        "text": "II only"
+      },
+      {
+        "label": "D",
+        "text": "I or II"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "For a perfectly symmetric distribution, [ \\boxed{\\text{Mean}=\\text{Median}=\\text{Mode}}. ] Also, Pearson's empirical relation [ \\text{Mean}-\\text{Mode}=3(\\text{Mean}-\\text{Median}) ] becomes [ 0=3(0), ] which is also true. Therefore, both statements are correct.  Correct Answer: B. I and II",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0039",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "The normal distribution is given by the probability density function**\n\n[\nf(x)=\\frac1{\\sigma\\sqrt{2\\pi}}\ne^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}.\n]\n\n**Determine the range of (x).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(0\\le x\\le\\infty)"
+      },
+      {
+        "label": "B",
+        "text": "(-\\infty\\le x\\le0)"
+      },
+      {
+        "label": "C",
+        "text": "(-\\infty<x<+\\infty)"
+      },
+      {
+        "label": "D",
+        "text": "(a\\le x\\le b)"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "A normal distribution is defined for all real numbers. Its curve extends indefinitely in both directions. Therefore, [ -\\infty<x<+\\infty. ]  Correct Answer: C. (-\\infty<x<+\\infty)",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0040",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Given that (Y\\sim Po(2.4)), evaluate**\n\n[\nP(5\\le Y\\le6).\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.024"
+      },
+      {
+        "label": "B",
+        "text": "0.988"
+      },
+      {
+        "label": "C",
+        "text": "0.840"
+      },
+      {
+        "label": "D",
+        "text": "0.084"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "For a Poisson distribution, [ P(X=r)=\\frac{e^{-\\lambda}\\lambda^r}{r!}, ] where [ \\lambda=2.4. ] Calculate: [ P(5)=\\frac{e^{-2.4}(2.4)^5}{5!}, ] and [ P(6)=\\frac{e^{-2.4}(2.4)^6}{6!}. ] Then, [ P(5\\le Y\\le6)=P(5)+P(6)\\approx0.084. ]  Correct Answer: D. 0.084 # JUPEB Mathematics 2022 — Questions 40–50 (Full Questions, Correct Answers & Brief Explanations)",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0041",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "A particle moving at a velocity of 30 m/s is brought to rest after 5 seconds. Find its deceleration.",
+    "options": [
+      {
+        "label": "A",
+        "text": "−9 m/s²"
+      },
+      {
+        "label": "B",
+        "text": "−8 m/s²"
+      },
+      {
+        "label": "C",
+        "text": "−6 m/s²"
+      },
+      {
+        "label": "D",
+        "text": "−7 m/s²"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0042",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Given that vector (a=3\\mathbf{i}+\\mathbf{j}) is normal to line (\\ell) and (\\ell) passes through the point ((-1,4)), obtain the Cartesian equation of (\\ell).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(3x+y=4)"
+      },
+      {
+        "label": "B",
+        "text": "(3x+y=-1)"
+      },
+      {
+        "label": "C",
+        "text": "(3x+y=1)"
+      },
+      {
+        "label": "D",
+        "text": "(3x-y=4)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0043",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Find the angle (B) of triangle (ABC) where the position vectors of (A), (B), and (C) are respectively (2\\mathbf{i}+4\\mathbf{k}), (3\\mathbf{i}-2\\mathbf{j}+4\\mathbf{k}), and (2\\mathbf{i}-\\mathbf{j}+\\mathbf{k}).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\cos^{-1}\\left(\\frac3{\\sqrt{55}}\\right))"
+      },
+      {
+        "label": "B",
+        "text": "(\\sin^{-1}\\left(-\\frac{\\sqrt{55}}3\\right))"
+      },
+      {
+        "label": "C",
+        "text": "(\\cos^{-1}\\left(-\\frac3{\\sqrt{55}}\\right)"
+      },
+      {
+        "label": "D",
+        "text": "(\\sin^{-1}\\left(\\frac3{\\sqrt{55}}\\right))"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0044",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Obtain the vector equation for the line whose Cartesian equations are**\n\n[\n\\frac{x-1}{2}\n=============\n\n# \\frac{y+1}{3}\n\n\\frac{z-4}{1}.\n]",
+    "options": [
+      {
+        "label": "A",
+        "text": "(\\mathbf{i}-\\mathbf{j}+4\\mathbf{k}=\\lambda(2\\mathbf{i}+3\\mathbf{j}+\\mathbf{k}))"
+      },
+      {
+        "label": "B",
+        "text": "(\\mathbf{i}+\\mathbf{j}-4\\mathbf{k}=\\lambda(2\\mathbf{i}-3\\mathbf{j}+\\mathbf{k}))"
+      },
+      {
+        "label": "C",
+        "text": "(\\mathbf{i}-\\mathbf{j}-\\mathbf{k}=\\lambda(\\mathbf{i}-3\\mathbf{j}-\\mathbf{k}))"
+      },
+      {
+        "label": "D",
+        "text": "(\\mathbf{i}-\\mathbf{j}-\\mathbf{k}=\\lambda(\\mathbf{i}-\\mathbf{j}-\\mathbf{k}))"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0045",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Evaluate the modulus of the vector ((a+b)) given that (a=3\\mathbf{i}+2\\mathbf{j}) and (b=4\\mathbf{i}-\\mathbf{j}).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(5\\sqrt2)"
+      },
+      {
+        "label": "B",
+        "text": "(\\sqrt5)"
+      },
+      {
+        "label": "C",
+        "text": "(\\sqrt2)"
+      },
+      {
+        "label": "D",
+        "text": "(2\\sqrt5)"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0046",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Obtain the scalar product of the vectors (a=2\\mathbf{i}+3\\mathbf{j}-4\\mathbf{k}) and (b=\\mathbf{i}-2\\mathbf{j}+\\mathbf{k}).",
+    "options": [
+      {
+        "label": "A",
+        "text": "5"
+      },
+      {
+        "label": "B",
+        "text": "−6"
+      },
+      {
+        "label": "C",
+        "text": "−8"
+      },
+      {
+        "label": "D",
+        "text": "−10"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0047",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Find the sum of the vectors (AB), (BC), (2CD), and (DC).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(CD)"
+      },
+      {
+        "label": "B",
+        "text": "(AD)"
+      },
+      {
+        "label": "C",
+        "text": "(AB)"
+      },
+      {
+        "label": "D",
+        "text": "(AC)"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0048",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "An object of mass 4 kg hangs from a fixed point by a light inextensible string and is pulled by a horizontal force (F) and rests in equilibrium with the string inclined at (60^\\circ). Find the force (F).",
+    "options": [
+      {
+        "label": "A",
+        "text": "(60\\sqrt3) N"
+      },
+      {
+        "label": "B",
+        "text": "(40\\sqrt3) N"
+      },
+      {
+        "label": "C",
+        "text": "(20\\sqrt3) N"
+      },
+      {
+        "label": "D",
+        "text": "(40\\sqrt2) N"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0049",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "An object of mass 5 kg travelling at 6 m/s is acted upon by a force of 100 N for 0.4 s in the direction of motion. Compute the final velocity of the object.",
+    "options": [
+      {
+        "label": "A",
+        "text": "14 m/s"
+      },
+      {
+        "label": "B",
+        "text": "7 m/s"
+      },
+      {
+        "label": "C",
+        "text": "6 m/s"
+      },
+      {
+        "label": "D",
+        "text": "40 m/s"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2022-obj-0050",
+    "subject": "math",
+    "year": 2022,
+    "category": "objective",
+    "question": "Calculate the work done when an object of mass 4.5 kg is lifted through a vertical distance of 10 m. (Take (g=10\\text{ m/s}^2)).",
+    "options": [
+      {
+        "label": "A",
+        "text": "75 J"
+      },
+      {
+        "label": "B",
+        "text": "240 J"
+      },
+      {
+        "label": "C",
+        "text": "450 J"
+      },
+      {
+        "label": "D",
+        "text": "400 J"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

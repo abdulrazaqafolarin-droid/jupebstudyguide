@@ -13,6 +13,7 @@ export interface TourStep {
   id: string;
   title: string;
   description: string;
+  benefit: string;
   selector: string;
   placement: "top" | "bottom" | "left" | "right" | "center";
   route?: string;

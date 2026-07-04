@@ -1,0 +1,1351 @@
+[
+  {
+    "id": "mat-2023-mq-0001",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "P={x:3<x<15, prime}={5,7,11,13}; Q={x:2<x<14, odd}={3,5,7,9,11,13}. Find n(P∩Q)+n(P∪Q)",
+    "options": [
+      {
+        "label": "A",
+        "text": "35"
+      },
+      {
+        "label": "B",
+        "text": "26"
+      },
+      {
+        "label": "C",
+        "text": "12"
+      },
+      {
+        "label": "D",
+        "text": "10 *P∩Q={5,7,11,13} (4 elements); P∪Q={3,5,7,9,11,13} (6 elements). 4+6=10.*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0002",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Range of x for −2x²+5x+3>0",
+    "options": [
+      {
+        "label": "A",
+        "text": "−3<x<½"
+      },
+      {
+        "label": "B",
+        "text": "−2<x<3"
+      },
+      {
+        "label": "C",
+        "text": "½<x<2"
+      },
+      {
+        "label": "D",
+        "text": "−½<x<3 *Multiply by −1 (flip inequality): 2x²−5x−3<0 → (2x+1)(x−3)<0 → roots −½, 3; solution lies between them.*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0003",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Which operation is NOT commutative?",
+    "options": [
+      {
+        "label": "A",
+        "text": "a*b=a+b−3ab"
+      },
+      {
+        "label": "B",
+        "text": "a*b=5/a+5/b"
+      },
+      {
+        "label": "C",
+        "text": "a*b=a−b+3ab"
+      },
+      {
+        "label": "D",
+        "text": "a*b=2a+2b−ab *Swapping a,b in C gives b−a+3ab ≠ a−b+3ab, so it fails commutativity.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0004",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Solve (0.25)^(x+1)=32",
+    "options": [
+      {
+        "label": "A",
+        "text": "9/2"
+      },
+      {
+        "label": "B",
+        "text": "−5/2"
+      },
+      {
+        "label": "C",
+        "text": "−7/2"
+      },
+      {
+        "label": "D",
+        "text": "7/2 *0.25=2⁻², 32=2⁵. So −2(x+1)=5 → x=−7/2.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0005",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "log₂(x−1)=log₂(x²−2)−1",
+    "options": [
+      {
+        "label": "A",
+        "text": "0 or −2"
+      },
+      {
+        "label": "B",
+        "text": "0 or 2"
+      },
+      {
+        "label": "C",
+        "text": "2 or −2"
+      },
+      {
+        "label": "D",
+        "text": "1 or 2 *Rearrange: log₂[2(x−1)]=log₂(x²−2) → 2x−2=x²−2 → x²−2x=0 → x=0 or 2 (domain check favours x=2).*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0006",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "f(x)=x²−7x, find t where f(2t)=30",
+    "options": [
+      {
+        "label": "A",
+        "text": "−5, 2/3"
+      },
+      {
+        "label": "B",
+        "text": "2/3, −1"
+      },
+      {
+        "label": "C",
+        "text": "½, 3/2"
+      },
+      {
+        "label": "D",
+        "text": "5, −3/2 *4t²−14t−30=0 → 2t²−7t−15=0 → t=(7±13)/4 → t=5 or −3/2.*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0007",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "AP: a=2, d=3; sum of first 11 terms",
+    "options": [
+      {
+        "label": "A",
+        "text": "157"
+      },
+      {
+        "label": "B",
+        "text": "187"
+      },
+      {
+        "label": "C",
+        "text": "197"
+      },
+      {
+        "label": "D",
+        "text": "200 *Sₙ=n/2[2a+(n−1)d] = 11/2[4+30] = 187.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0008",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "f(x)=(5−x²)/(5x−x²); continuity",
+    "options": [
+      {
+        "label": "A",
+        "text": "discontinuous at only x=0"
+      },
+      {
+        "label": "B",
+        "text": "discontinuous at exactly two points"
+      },
+      {
+        "label": "C",
+        "text": "discontinuous nowhere"
+      },
+      {
+        "label": "D",
+        "text": "discontinuous at only x=5 *Denominator = x(5−x) = 0 at x=0 and x=5.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0009",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "∫(x³ + 1/x²)dx",
+    "options": [
+      {
+        "label": "A",
+        "text": "x³ + x⁻²/(−2) + c"
+      },
+      {
+        "label": "B",
+        "text": "x²/4 + x⁻²/(−2) + c"
+      },
+      {
+        "label": "C",
+        "text": "x⁴/4 − x⁻¹ + c ✓ (corrected)"
+      },
+      {
+        "label": "D",
+        "text": "x + x⁻² − 2 + C *∫x³dx = x⁴/4; ∫x⁻²dx = −x⁻¹. None of the original options matched, so option C was replaced.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0010",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "f(x−3)=x²+2x+3, find f(1)",
+    "options": [
+      {
+        "label": "A",
+        "text": "27"
+      },
+      {
+        "label": "B",
+        "text": "11"
+      },
+      {
+        "label": "C",
+        "text": "16"
+      },
+      {
+        "label": "D",
+        "text": "8 *Set x−3=1 → x=4. f(1)=16+8+3=27.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0011",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Area bounded by y=x²−2x+3, axis, x=−1 to x=3",
+    "options": [
+      {
+        "label": "A",
+        "text": "13⅓"
+      },
+      {
+        "label": "B",
+        "text": "9 units"
+      },
+      {
+        "label": "C",
+        "text": "4⅔ units"
+      },
+      {
+        "label": "D",
+        "text": "5⅓ units *∫₋₁³(x²−2x+3)dx = [x³/3−x²+3x] = 9−(−13/3) = 40/3 = 13⅓.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0012",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "y=t², x=t³; find dy/dx",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/t"
+      },
+      {
+        "label": "B",
+        "text": "t"
+      },
+      {
+        "label": "C",
+        "text": "2/3t"
+      },
+      {
+        "label": "D",
+        "text": "2t/3 *dy/dt=2t, dx/dt=3t². dy/dx = 2t/3t² = 2/(3t).*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0013",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "y=sin⁻¹x; dy/dx at x=−1",
+    "options": [
+      {
+        "label": "A",
+        "text": "Undefined"
+      },
+      {
+        "label": "B",
+        "text": "½"
+      },
+      {
+        "label": "C",
+        "text": "1/√2"
+      },
+      {
+        "label": "D",
+        "text": "√2 *dy/dx=1/√(1−x²), which is 1/0 at x=−1 — undefined.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0014",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Differentiate sin⁻¹(x²)",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x/(1−x)"
+      },
+      {
+        "label": "B",
+        "text": "2x/√(1+x²)"
+      },
+      {
+        "label": "C",
+        "text": "2x/√(x⁴−1)"
+      },
+      {
+        "label": "D",
+        "text": "2x/√(1−x⁴) *d/dx[sin⁻¹u]=u'/√(1−u²), u=x²: derivative = 2x/√(1−x⁴).*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0015",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "5th term of HP: 1, 1/3, 1/5, ...",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/11"
+      },
+      {
+        "label": "B",
+        "text": "1/9"
+      },
+      {
+        "label": "C",
+        "text": "1/7"
+      },
+      {
+        "label": "D",
+        "text": "1/5 *Reciprocals form AP 1,3,5,... (d=2). 5th term = 1+4(2)=9. HP 5th term = 1/9.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0016",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "α,β roots of 4x²−5x−3=0; find α²+β²",
+    "options": [
+      {
+        "label": "A",
+        "text": "21/7"
+      },
+      {
+        "label": "B",
+        "text": "25/16"
+      },
+      {
+        "label": "C",
+        "text": "49/16"
+      },
+      {
+        "label": "D",
+        "text": "1 *α+β=5/4, αβ=−3/4. α²+β²=(5/4)²−2(−3/4) = 25/16+24/16 = 49/16.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0017",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Remainder when x⁴−3x³+4x−8 divided by 2x+1",
+    "options": [
+      {
+        "label": "A",
+        "text": "16"
+      },
+      {
+        "label": "B",
+        "text": "−153/16 ✓ (corrected)"
+      },
+      {
+        "label": "C",
+        "text": "−1/3"
+      },
+      {
+        "label": "D",
+        "text": "112/5 *Remainder Theorem at x=−1/2: f(−1/2)=1/16+6/16−32/16−128/16 = −153/16.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0018",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Partial fractions of x/[(x−3)(x+5)]",
+    "options": [
+      {
+        "label": "A",
+        "text": "⅛{5/(x+5) − 3/(x−3)}"
+      },
+      {
+        "label": "B",
+        "text": "⅓{8/(x+5) − 5/(x+5)}"
+      },
+      {
+        "label": "C",
+        "text": "⅕{3/(x+3) − 5/(x+5)}"
+      },
+      {
+        "label": "D",
+        "text": "⅛{3/(x−3) + 5/(x+5)} ✓ (sign corrected) *A=3/8, B=5/8 → ⅛[3/(x−3)+5/(x+5)]; original D had a minus sign, corrected to plus.*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0019",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Equation with sum=¾, product=−5/2",
+    "options": [
+      {
+        "label": "A",
+        "text": "2x²−3x−5=0"
+      },
+      {
+        "label": "B",
+        "text": "2x²+3x+5=0"
+      },
+      {
+        "label": "C",
+        "text": "4x²−3x−10=0"
+      },
+      {
+        "label": "D",
+        "text": "4x²−3x−5=0 *x²−¾x−5/2=0; ×4: 4x²−3x−10=0.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0020",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "8^(x/4)=log₃81; find x",
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "8/3"
+      },
+      {
+        "label": "C",
+        "text": "6"
+      },
+      {
+        "label": "D",
+        "text": "5 *log₃81=4. 2^(3x/4)=2² → 3x/4=2 → x=8/3.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0021",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "f(x)=3x−8; find f⁻¹(−2)",
+    "options": [
+      {
+        "label": "A",
+        "text": "6"
+      },
+      {
+        "label": "B",
+        "text": "−8"
+      },
+      {
+        "label": "C",
+        "text": "2"
+      },
+      {
+        "label": "D",
+        "text": "0 *f⁻¹(y)=(y+8)/3. f⁻¹(−2)=6/3=2.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0022",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "f(x)=1−2x, g(x)=1+2x; find fog(x)−gof(x)",
+    "options": [
+      {
+        "label": "A",
+        "text": "5"
+      },
+      {
+        "label": "B",
+        "text": "2"
+      },
+      {
+        "label": "C",
+        "text": "−4"
+      },
+      {
+        "label": "D",
+        "text": "6x *fog(x)=−1−4x. gof(x)=3−4x. Difference = −4.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0023",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Solve y''+3y'−4y=0",
+    "options": [
+      {
+        "label": "A",
+        "text": "Peˣ+Qe⁴ˣ"
+      },
+      {
+        "label": "B",
+        "text": "Pe⁻ˣ+Qe⁴ˣ"
+      },
+      {
+        "label": "C",
+        "text": "Peˣ+Qe⁻⁴ˣ"
+      },
+      {
+        "label": "D",
+        "text": "Peˣ+Qe⁻⁴ˣ (duplicate) *(m−1)(m+4)=0 → m=1, −4 → y=Peˣ+Qe⁻⁴ˣ.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0024",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "lim(x→0) sinx/x",
+    "options": [
+      {
+        "label": "A",
+        "text": "1"
+      },
+      {
+        "label": "B",
+        "text": "0"
+      },
+      {
+        "label": "C",
+        "text": "∞"
+      },
+      {
+        "label": "D",
+        "text": "−1 *Standard limit: sinx/x → 1 as x→0.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0025",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Spearman's rank correlation for (40,27),(50,60),(60,75),(70,80),(80,67),(90,58)",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.257"
+      },
+      {
+        "label": "B",
+        "text": "0.743"
+      },
+      {
+        "label": "C",
+        "text": "0.876"
+      },
+      {
+        "label": "D",
+        "text": "0.1 *y-ranks: 1,3,5,6,4,2; d values: 0,−1,−2,−2,1,4; Σd²=26. ρ=1−6(26)/(6×35)≈0.257.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0026",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "A statistical hypothesis can be",
+    "options": [
+      {
+        "label": "A",
+        "text": "null/exact"
+      },
+      {
+        "label": "B",
+        "text": "null/simple"
+      },
+      {
+        "label": "C",
+        "text": "simple/composite"
+      },
+      {
+        "label": "D",
+        "text": "exact/composite *Standard classification: simple vs composite hypothesis.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0027",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Four coins tossed; P(all same face)",
+    "options": [
+      {
+        "label": "A",
+        "text": "1/16"
+      },
+      {
+        "label": "B",
+        "text": "1/8"
+      },
+      {
+        "label": "C",
+        "text": "¼"
+      },
+      {
+        "label": "D",
+        "text": "½ *P(all heads)+P(all tails) = 1/16+1/16 = 1/8.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0028",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "[Table x:0,1,2, f(x):1/6,¼,1/3 — question text missing] *Cannot answer; the actual question (e.g. \"verify valid distribution\" or \"find P(X≤1)\") wasn't included in your source, only the table. Note the values sum to ¾, not 1, so as a probability distribution it's incomplete as given.*",
+    "options": [],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0029",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Mean of 97,91,94,90,85",
+    "options": [
+      {
+        "label": "A",
+        "text": "91"
+      },
+      {
+        "label": "B",
+        "text": "92"
+      },
+      {
+        "label": "C",
+        "text": "94"
+      },
+      {
+        "label": "D",
+        "text": "95 *Sum=457, n=5, mean=91.4≈91.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0030",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Two dice tossed; P(sum=8)",
+    "options": [
+      {
+        "label": "A",
+        "text": "3/12"
+      },
+      {
+        "label": "B",
+        "text": "5/36"
+      },
+      {
+        "label": "C",
+        "text": "1/36"
+      },
+      {
+        "label": "D",
+        "text": "19/36 *Outcomes: (2,6),(3,5),(4,4),(5,3),(6,2) = 5/36.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0031",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Arrangements of letters of OGBOMOSO",
+    "options": [
+      {
+        "label": "A",
+        "text": "2400"
+      },
+      {
+        "label": "B",
+        "text": "1280"
+      },
+      {
+        "label": "C",
+        "text": "1500"
+      },
+      {
+        "label": "D",
+        "text": "1680 *8 letters, O repeats 4×: 8!/4! = 1680.*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0032",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "∫₂³ x/(1+x²) dx",
+    "options": [
+      {
+        "label": "A",
+        "text": "½ln2 (≈0.347) ✓ (corrected)"
+      },
+      {
+        "label": "B",
+        "text": "2π/5"
+      },
+      {
+        "label": "C",
+        "text": "π"
+      },
+      {
+        "label": "D",
+        "text": "π/2 *u=1+x²: ½ln(1+x²) from 2 to 3 = ½(ln10−ln5) = ½ln2.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0033",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "y=ln(x+2ˣ); find dy/dx",
+    "options": [
+      {
+        "label": "A",
+        "text": "(1+2ˣln2)/(x+2ˣ)"
+      },
+      {
+        "label": "B",
+        "text": "(1−2ˣln2)/(x+2ˣ)"
+      },
+      {
+        "label": "C",
+        "text": "(2ˣln2−1)/(x+2ˣ)"
+      },
+      {
+        "label": "D",
+        "text": "2ˣ/(x+2ˣ) *Derivative of denominator (x+2ˣ) is (1+2ˣln2), divided by (x+2ˣ).*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0034",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "y=cos²x+sin²x; derivative",
+    "options": [
+      {
+        "label": "A",
+        "text": "0"
+      },
+      {
+        "label": "B",
+        "text": "1"
+      },
+      {
+        "label": "C",
+        "text": "2sin2x"
+      },
+      {
+        "label": "D",
+        "text": "−2cosx+2sinx *By the Pythagorean identity, y=1, so dy/dx=0.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0035",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Coefficient of variation of 7,10,11,12",
+    "options": [
+      {
+        "label": "A",
+        "text": "1.87"
+      },
+      {
+        "label": "B",
+        "text": "0.187"
+      },
+      {
+        "label": "C",
+        "text": "3.5"
+      },
+      {
+        "label": "D",
+        "text": "0.35 *Mean=10; variance=14/4=3.5; SD≈1.871; CV=SD/mean≈0.187.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0036",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "[Duplicate of Q34] → A. 0 ✓ *Same reasoning as Q34.*",
+    "options": [],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0037",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "[Duplicate of Q35] → B. 0.187 ✓ *Same reasoning as Q35.*",
+    "options": [],
+    "correctAnswer": "",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0038",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Distribution measuring rare events in space/time, mean=variance",
+    "options": [
+      {
+        "label": "A",
+        "text": "Beta Distribution"
+      },
+      {
+        "label": "B",
+        "text": "Gamma Distribution"
+      },
+      {
+        "label": "C",
+        "text": "Hypergeometric Distribution"
+      },
+      {
+        "label": "D",
+        "text": "Poisson Distribution *Poisson uniquely has mean equal to variance and models rare events.*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0039",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Permutations of MISSISSIPPI",
+    "options": [
+      {
+        "label": "A",
+        "text": "34650"
+      },
+      {
+        "label": "B",
+        "text": "12967"
+      },
+      {
+        "label": "C",
+        "text": "6750"
+      },
+      {
+        "label": "D",
+        "text": "35550 *11 letters, M(1),I(4),S(4),P(2): 11!/(4!4!2!) = 34650.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0040",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Sampling technique NOT involving random sampling",
+    "options": [
+      {
+        "label": "A",
+        "text": "Quota"
+      },
+      {
+        "label": "B",
+        "text": "Stratified"
+      },
+      {
+        "label": "C",
+        "text": "Systematic"
+      },
+      {
+        "label": "D",
+        "text": "Multi-stage *Quota sampling uses judgment/quotas, not randomization.* **MAT 004A: Applied Mathematics (41–50)**"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0041",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "sinθ=5/13 on verge of slipping; find μ",
+    "options": [
+      {
+        "label": "A",
+        "text": "5/12"
+      },
+      {
+        "label": "B",
+        "text": "5/13"
+      },
+      {
+        "label": "C",
+        "text": "5/8"
+      },
+      {
+        "label": "D",
+        "text": "12/13 *5-12-13 triangle: cosθ=12/13. μ=tanθ=5/12.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0042",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Body dragged at uniform speed, force=40N; find resisting force",
+    "options": [
+      {
+        "label": "A",
+        "text": "110N"
+      },
+      {
+        "label": "B",
+        "text": "40N"
+      },
+      {
+        "label": "C",
+        "text": "80N"
+      },
+      {
+        "label": "D",
+        "text": "290N *Zero acceleration → net force=0 → resisting force = applied force = 40N.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0043",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Mass 75kg, lift accelerates at 4m/s² (g=10); find R₁−R₂",
+    "options": [
+      {
+        "label": "A",
+        "text": "1150N"
+      },
+      {
+        "label": "B",
+        "text": "450N"
+      },
+      {
+        "label": "C",
+        "text": "600N"
+      },
+      {
+        "label": "D",
+        "text": "1050N *R₁=75(14)=1050N; R₂=75(6)=450N. Difference=600N.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0044",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Resultant of 8N and 10N at 120°",
+    "options": [
+      {
+        "label": "A",
+        "text": "2√61N"
+      },
+      {
+        "label": "B",
+        "text": "2√51N"
+      },
+      {
+        "label": "C",
+        "text": "2√31N"
+      },
+      {
+        "label": "D",
+        "text": "2√21N *R²=64+100+2(80)cos120°=164−80=84. R=√84=2√21.*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0045",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Mass 2kg moves 4m from rest in 3s; find force P",
+    "options": [
+      {
+        "label": "A",
+        "text": "16/9 N (≈1.78N) ✓ (corrected)"
+      },
+      {
+        "label": "B",
+        "text": "16N"
+      },
+      {
+        "label": "C",
+        "text": "15N"
+      },
+      {
+        "label": "D",
+        "text": "9N *s=½at² → 4=4.5a → a=8/9. F=ma=2(8/9)=16/9N.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0046",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Mass 5kg on smooth slope, sinθ=1/40; find acceleration",
+    "options": [
+      {
+        "label": "A",
+        "text": "2/100 m/s²"
+      },
+      {
+        "label": "B",
+        "text": "5/8 m/s²"
+      },
+      {
+        "label": "C",
+        "text": "1¼ m/s²"
+      },
+      {
+        "label": "D",
+        "text": "¼ m/s² *a=g sinθ = 10×(1/40) = 0.25 m/s².*"
+      }
+    ],
+    "correctAnswer": "D",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0047",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Load 5.89N, strings at 20° and 35° to vertical; find tensions",
+    "options": [
+      {
+        "label": "A",
+        "text": "2.22N, 4.22N"
+      },
+      {
+        "label": "B",
+        "text": "2.46N, 3.11N"
+      },
+      {
+        "label": "C",
+        "text": "2.46N, 4.12N"
+      },
+      {
+        "label": "D",
+        "text": "3.11N, 1.22N *Simultaneous horizontal/vertical equilibrium equations give T≈2.46N and 4.12N.*"
+      }
+    ],
+    "correctAnswer": "C",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0048",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Forces P(60N,0°), Q(20N,90°), R(50N,180°), S(30N,270°); find resultant direction",
+    "options": [
+      {
+        "label": "A",
+        "text": "45° below x-axis ✓ (corrected)"
+      },
+      {
+        "label": "B",
+        "text": "60°"
+      },
+      {
+        "label": "C",
+        "text": "36.9°"
+      },
+      {
+        "label": "D",
+        "text": "30° *x-component=60−50=10; y-component=20−30=−10. Angle=arctan(−10/10)=−45°.*"
+      }
+    ],
+    "correctAnswer": "A",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0049",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "Loan N1000 at 15% for 8 months; find maturity value",
+    "options": [
+      {
+        "label": "A",
+        "text": "N1300"
+      },
+      {
+        "label": "B",
+        "text": "N1100"
+      },
+      {
+        "label": "C",
+        "text": "N1200"
+      },
+      {
+        "label": "D",
+        "text": "N1050 *I=1000×0.15×(8/12)=100. Maturity=N1100.*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  },
+  {
+    "id": "mat-2023-mq-0050",
+    "subject": "math",
+    "year": 2023,
+    "category": "objective",
+    "question": "S=⅔t³−(17/2)t²+21t; find acceleration when momentarily at rest",
+    "options": [
+      {
+        "label": "A",
+        "text": "45ms⁻²"
+      },
+      {
+        "label": "B",
+        "text": "11ms⁻²"
+      },
+      {
+        "label": "C",
+        "text": "−9ms⁻²"
+      },
+      {
+        "label": "D",
+        "text": "4ms⁻² *v=2t²−17t+21=0 → t=7 or 1.5. a=4t−17. At t=7: a=11 m/s².*"
+      }
+    ],
+    "correctAnswer": "B",
+    "explanation": "",
+    "difficulty": "medium"
+  }
+]

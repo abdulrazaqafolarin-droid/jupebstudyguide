@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.jupeb.master',
-  appName: 'JUPEB Master',
+  appId: 'com.rutex.jupeb.master',
+  appName: 'Rutex Jupeb Master',
   webDir: 'dist',
   server: {
     url: 'https://jupebstudyguide-main.vercel.app',

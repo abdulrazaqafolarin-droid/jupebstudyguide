@@ -1,11 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useActivation } from "@/hooks/useActivation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, MessageCircle, DollarSign } from "lucide-react";
+import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, MessageCircle, DollarSign, Clock } from "lucide-react";
 import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
 
@@ -13,9 +13,39 @@ interface ActivationGateProps {
   children: React.ReactNode;
 }
 
+function getTrialExpiry(userId: string): number {
+  const key = `u:${userId}:trial-expires-at`;
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (typeof parsed === "number" && parsed > Date.now()) return parsed;
+    }
+  } catch {}
+  const end = Date.now() + 24 * 60 * 60 * 1000;
+  try { localStorage.setItem(key, JSON.stringify(end)); } catch {}
+  return end;
+}
+
+function formatTrialTimeLeft(ms: number): string {
+  if (ms <= 0) return "0h 0m";
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  return `${h}h ${m}m`;
+}
+
 export const ActivationGate = ({ children }: ActivationGateProps) => {
   const { status } = useActivation();
   const { user, signOut } = useAuth();
+
+  const trialExpiry = useMemo(() => {
+    if (!user?.id) return 0;
+    return getTrialExpiry(user.id);
+  }, [user?.id]);
+
+  const trialActive = trialExpiry > Date.now();
+  const trialTimeLeft = trialExpiry - Date.now();
 
   if (status.checking) {
     return (
@@ -28,16 +58,12 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.is_activated || status.is_admin) {
-    return <>{children}</>;
-  }
-
-  return <ActivationScreen email={user?.email || ""} onSignOut={signOut} />;
+  return <>{children}</>;
 };
 
 const ADMIN_WHATSAPP = ["2348124504552", "2347043353166"];
 
-const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => {
+const ActivationScreen = ({ email, onSignOut, trialExpired }: { email: string; onSignOut: () => void; trialExpired?: boolean }) => {
   const [code, setCode] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [planType, setPlanType] = useState("");
@@ -101,7 +127,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
         <CardHeader className="text-center pb-4">
           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mx-auto mb-4">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">JUPEB Master</span>
+            <span className="text-sm font-medium text-primary">Rutex Jupeb Master</span>
           </div>
           <CardTitle className="text-2xl font-bold">Activate Your Account</CardTitle>
           <CardDescription>
@@ -110,6 +136,12 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {trialExpired && (
+            <div className="bg-destructive/10 rounded-lg p-3 flex items-center gap-2 border border-destructive/20">
+              <Clock className="w-4 h-4 text-destructive shrink-0" />
+              <p className="text-xs text-destructive font-medium">Your free trial has ended. Enter an activation code to continue.</p>
+            </div>
+          )}
           <div className="bg-secondary/30 rounded-lg p-4 flex items-center gap-3">
             <Mail className="w-5 h-5 text-muted-foreground shrink-0" />
             <span className="text-sm text-muted-foreground truncate">{email}</span>
@@ -195,7 +227,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
                   {ADMIN_EMAIL}
                 </a>
                 <a
-                  href={`https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code`}
+                  href={`https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20Rutex%20Jupeb%20Master%20activation%20code`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-xs text-primary hover:underline bg-secondary/30 rounded-lg px-3 py-2"
@@ -204,7 +236,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
                   08124504552 (WhatsApp)
                 </a>
                 <a
-                  href={`https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code`}
+                  href={`https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20Rutex%20Jupeb%20Master%20activation%20code`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-xs text-primary hover:underline bg-secondary/30 rounded-lg px-3 py-2"

@@ -1,0 +1,1017 @@
+===============================================================================
+ JUPEB 2019 — PHYSICS OBJECTIVE (Q1-Q50)
+===============================================================================
+
+Q1.
+When the word 'specific' is used in thermal physics it refers to:
+  A. Unit temperature
+  B. Unit mass
+  C. Unit heat
+  D. Unit time
+
+Q2.
+Given three vectors, A = 3i  j + 3k, B = i + 2j  k and C = 3i + 5j  3k. Find (A + B).C
+  A. -7
+  B. -8
+  C. -10
+  D. --
+
+Q3.
+Neglecting air resistance, a feather and a stone dropped at the same time from the same vertical height above ground level will land to the ground at the same time because:
+  A. II only
+  B. III only
+  C. II and III only
+  D. I, II and III
+
+Q4.
+A compact disc acceleration uniformly from rest to an angular speed of 300rpm in 2s. Calculate the angular acceleration of the disc.
+  A. Compact disc acceleration uniformly from rest
+  B. 7.8 rad/s2
+  C. 15.7 rad/s2
+  D. 2.5 rad/s2
+
+Q5.
+If the net force applied in the direction of motion to a certain object on a horizontal frictionless surface is doubled, the acceleration of the object is:
+  A. Halved
+  B. Doubled
+  C. Unchanged
+  D. Quadrupled
+
+Q6.
+A 20kg box is pulled along the level go round by a rope inclined at an angle of 30 above the horizontal. The coefficient of friction between the box and the ground is 0.20. How large is the pulling force if the box is moving with an acceleration of 0.40m/s2?
+  A. 8N
+  B. 200N
+  C. 208N
+  D. 50N
+
+Q7.
+It is not possible to determine exactly and simultaneously the position and momentum of a particle. This statement is known as:
+  A. Compton effect
+  B. de Broglie's law
+  C. Heisenberg's uncertainty principle
+  D. Wave-particle paradox
+
+Q8.
+A body moves a distance of r = 2i  5j  2k(in metres) under the action of a force F = 2i  2j  k (in newtons). Find the work done by the force.
+  A. 8J
+  B. 11J
+  C. 16J
+  D. 18J
+
+Q9.
+Which of the following factors do the period of a simple pendulum depend? I. The mass of the pendulum II. The length of the pendulum III. The amplitude
+  A. The mass of the pendulum
+  B. The length of the pendulum
+  C. The amplitude
+  D. --
+
+Q10.
+A compact disc acceleration uniformly from rest to an angular speed of 300rpm in 2s. Calculate the instantaneous velocity after 4s.
+  A. 7.8 rad/s2
+  B. 2.5 rad/s2
+  C. 15.7 rad/s2
+  D. --
+
+Q11.
+The acceleration 'a' of a simple harmonic oscillator is related to its displacement 'x' by the equation a = 100x. What is the frequency of the oscillation?
+  A. 0.63Hz
+  B. 1.6Hz
+  C. 100Hz
+  D. 63Hz
+
+Q12.
+When a mass m is hung on a spring, the spring stretches by 8.0cm. Determine its period of vibration if it is slightly pulled and released.
+  A. 0.3s
+  B. 0.6s
+  C. 0.8s
+  D. 1.2s
+
+Q13.
+If petrol flows at 4m/s through a hose of 10mm diameter. What nozzle diameter will dispense it at the rate of 16m/s?
+  A. 5.0mm
+  B. 2.5mm
+  C. 20.0mm
+  D. 40.0mm
+
+Q14.
+A hydraulic lift has a narrow cylinder of diameter 4cm and wide cylinder of diameter 30cm. Calculate the force that must be applied to the liquid in the small cylinder to life a 1500kg car.
+  A. 298.6N
+  B. 266.7N
+  C. 843.8N
+  D. 587.2N
+
+Q15.
+An image which can be formed on a screen is said to be:
+  A. Virtual
+  B. Blurred
+  C. Inverted
+  D. Real
+
+Q16.
+Equal volumes of gas at the same condition of temperature and pressure:
+  A. Contain the same number of molecules
+  B. Have the same number of molecules
+  C. Have the same density
+  D. Have the same mass
+
+Q17.
+The temperature of a liquid that is boiling does not increase even though heat is being continuously supplied because:
+  A. The temperature of a liquid that is boiling does not increase even though heat is being continuously supplied because heat supplied is used to break the molecular bonds in the liquid
+  B. There are impurities in the liquid
+  C. The latent heat of fusion of the liquid is greater than the latent heat of vapourization
+  D. The atmospheric pressure is high
+
+Q18.
+At what temperature are the numerical values of the Fahrenheit and Celsius scales equal?
+  A. -0C
+  B. -40C
+  C. 40C
+  D. 180C
+
+Q19.
+What is most likely to happen to both the density and volume during anomalous expansion of water?
+  A. Volume decreases and density decreases
+  B. Volume increases and density decreases
+  C. Volume decreases and density increases
+  D. Volume increases and density increases
+
+Q20.
+An electric current of 3A flowing through an electric heating element of resistance 20ohm embedded in 1000g of an oil, raise the temperature of the oil by 10C in 10 seconds. Then the specific heat capacity of the oil is:
+  A. 1.8Jg-1
+  B. 0.6 Jg-1
+  C. 0.18 Jg-1C-1
+  D. 1.8 Jg-1C-1
+
+Q21.
+A thermodynamic process that does not allow heat to enter or leave the system is:
+  A. Isobaric
+  B. Adiabatic
+  C. Isothermal
+  D. Isochoric
+
+Q22.
+An ideal gas is maintained at constant pressure. If the temperature of the gas is increased from 200k to 600k, what will happen to the rms speed of the molecules?
+  A. It increases by a factor of 3
+  B. It remains the same
+  C. It is one third the original speed
+  D. It is 3 times the original speed
+
+Q23.
+The electromagnetic waves are arranged in which of the following order of increasing wavelength?
+  A. Infra-red, radio, gamma, x-ray
+  B. Gamma rays, x-rays, infra-red, radio
+  C. Radio, x-ray, gamma ray, infra-red
+  D. Gamma ray, infra-red, x-ray, radio
+
+Q24.
+All properties of image formed by a plane mirror except:
+  A. It is laterally inverted
+  B. It is erect
+  C. It is magnified
+  D. It is virtual
+
+Q25.
+An object is placed 20cm in form to a concave mirror of radius of curvature 30cm. Calculate the position and nature of the image formed.
+  A. 60cm, real
+  B. 30cm, real
+  C. 60cm, virtual
+  D. 30cm, virtual
+
+Q26.
+For the correction of hypermetropia defect in the human eye, we require:
+  A. A concave lens
+  B. A convex lens
+  C. A prism
+  D. A combination of concave and convex lens
+
+Q27.
+An astronomical telescope has an objective lens of focal length 0.5m and an eyepiece of focal length 2cm. What is the separation of the lenses when the telescope is in normal adjustment views a distant object?
+  A. 52cm
+  B. 26cm
+  C. 6cm
+  D. 5cm
+
+Q28.
+The equation of a progressive sinusoidal wave is given as y = 25sin(120t  4x), where x is in metres and t in seconds. Find the wave number.
+  A. 25m-1
+  B. 57 m-1
+  C. 4 m-1
+  D. 19.1 m-1
+
+Q29.
+All these are methods of polarizing an unpolarized light wave except:
+  A. Double refraction
+  B. Diffraction
+  C. Reflection
+  D. By pile of plates
+
+Q30.
+Two sound sources emit sound of wavelength 1.00m and 1.01m respectively producing 10 beats in 3.0s in a gas. What is the speed of sound in the gas?
+  A. 331ms-1
+  B. 333 ms-1
+  C. 337 ms-1
+  D. 321 ms-1
+
+Q31.
+Which of those laws would be most applicable in estimating the magnitude of the force between two static charges?
+  A. Gauss's law
+  B. Coulomb's law
+  C. Faraday's law
+  D. Maxwell's law
+
+Q32.
+Find the force of repulsion between each pair of protons of 1.6 x 10-19C if the distance between them is 5.3 x 10-11m.
+  A. 8.2 x 10-8N
+  B. 4.3 x 10-18N
+  C. 7.8 x 10-2N
+  D. 5.12 x 10-5N
+
+Q33.
+Three capacitors of 4microF, 8microF and 12microF are concerned in parallel and a potential difference of 6V is maintained across each capacitor. Find the total energy stored in the system.
+  A. 4.32 x 10-4J
+  B. 7.2 x 10-5J
+  C. 1.44 x 10-4J
+  D. 5.8 x 10-5J
+
+Q34.
+A cell of e.m.f of 1.5V connected in series with a resistor of resistance 3ohm. A high resistance voltmeter connected across the cell registers only 0.9V. Calculate the resistance of the cell.
+  A. 5.0ohm
+  B. 4.5ohm
+  C. 2.4ohm
+  D. 2.0ohm
+
+Q35.
+The effective resistance in a parallel arrangement is:
+  A. Less than the smallest resistance in the network
+  B. More than the smallest resistance in the network
+  C. Same as the highest resistance in the network
+  D. Twice the smallest resistance in the network
+
+Q36.
+An electron moves perpendicular to a uniform magnetic field. The electron has a velocity of 106m/s. Find the magnitude of the uniform field.
+  A. Ohm's law
+  B. Faraday's law
+  C. Lenz's law
+  D. Ampere's law
+
+Q37.
+Two parallel current carrying conductors attract each other when the current in them flow in opposite direction; this is a statement of:
+  A. Two parallel current carrying conductors attract each other when the current in them flow in opposite direction
+  B. --
+  C. --
+  D. --
+
+Q38.
+A wire of 50mm long carries a 25A current. If it is placed in a magnetic field B = 0.2T, what is the force on the wire?
+  A. 1.20N
+  B. 2.50N
+  C. 0.25N
+  D. 0.20N
+
+Q39.
+A 20ohm load is connected to the secondary coil of a transformer which has Np/Ns ratio of . Calculate the maximum current through the load if the input Vrms is 120V.
+  A. 34V
+  B. 24V
+  C. --
+  D. --
+
+Q40.
+An inductor is capable of dissipating 50W of power when a current 0.8A flows through it at a certain frequency when a certain frequency the inductor is 50ohm. Calculate its impedance when the reactance is 50ohm.
+  A. 480V
+  B. 4802A
+  C. 62.5ohm
+  D. 1.0ohm
+
+Q41.
+Which of the following is/are true about the oil drop falling under gravity in the absence of electric field? I. Over time, terminal velocity is attained II. The net force acting on the oil drop is zero at terminal velocity III. At terminal velocity, the drop no longer accelerates IV. Fe = Fg
+  A. I and II only
+  B. II and III only
+  C. I, II and III only
+  D. IV only
+
+Q42.
+Light of frequency 1.00 x 1015Hz illuminates a metal surface. The ejected photoelectrons are found to have a maximum kinetic energy of 1.78eV. Find the threshold frequency for this metal.
+  A. 5.70 x 1014Hz
+  B. 4.52 x 1014Hz
+  C. 0.56 x 1014Hz
+  D. 1.27 x 10Hz
+
+Q43.
+X-ray is sometimes called:
+  A. Laue ray
+  B. Bragg ray
+  C. Roentgen ray
+  D. Compton ray
+
+Q44.
+What is the smallest Bragg angle for x-rays of wavelength 30pm to reflect from reflecting plane spaced 0.30nm apart in a calcite crystal?
+  A. 4.20
+  B. 3.13
+  C. 3.11
+  D. 2.9
+
+Q45.
+Evaluate the de Broglie wavelength of electron waves passing through a potential difference of 200V.
+  A. 19.3 x 10-9m
+  B. 3.20 x 10-9m
+  C. 6.19 x 10-9m
+  D. 9.8 x 10-9m
+
+Q46.
+Which of the following is correct order of the strength for alpha, beta and gamma in a magnetic field?
+  A. Alpha > beta > gamma
+  B. Alpha > gamma > beta
+  C. Beta > alpha > gamma
+  D. --
+
+Q47.
+What is the decay constant of Uranium-235 that has a half-life of 15 days?
+  A. 0.04628s
+  B. 5.347 x 10-7s-1
+  C. 235.67s-1
+  D. 0.0462s
+
+Q48.
+Pure silicon can be converted to a p-type material by adding a controlled amount of:
+  A. Trivalent atoms
+  B. Tetravalent atoms
+  C. Pentavalent atoms
+  D. Hexavalent atoms
+
+Q49.
+In a semi-conductor junction diode, as the depletion of barrier layer is forward biased, the layer:
+  A. Widens
+  B. Narrows
+  C. Remains constant
+  D. Widens then narrows
+
+Q50.
+The loss of power as a signal passes along a wire is known as:
+  A. Reduction
+  B. Attenuation
+  C. Depreciation
+  D. Disappearance
+
+===============================================================================
+ JUPEB 2019 — PHYSICS THEORY
+===============================================================================
+
+Q1.
+**2. $\mathrm{(a)}$ State Pascal's principle**
+
+**(b) State two applications of:**
+**(i) surface tension**
+**(ii) Viscosity**
+
+**(iii) S = E?H, defined as ? = 10.10i + 0.20j + 0.60k and H? = 0.40i + 9.80j + 0.10k, where E and H are the electric and magnetic fields respectively. Calculate S?**
+
+Q2.
+**1. $\mathrm{(a)}$ State the units and dimension of the following quantities:**
+**(i) Surface tension**
+**(ii) Frequency**
+
+**(iii) Show that the expression V? = V?? + 2as is dimensionally correct, where V and V? represent the final and initial velocities, a is acceleration and S is the displacement**
+
+**(b) A race car moves such that its position at t = 4.0s is given as x = 0.75t? + 5.0t + 1, find:**
+**(i) the position at t = 4.0s**
+
+**(ii) the instantaneous velocity of the car at t = 4.0s**
+
+**(iii) the average velocity for the time interval t = 2.00s to 7.00s**
+
+Q3.
+**8. $\mathrm{(a)}$i) State four (4) properties of X-rays**
+
+**(ii) State two (2) applications of the following radiations: ?-rays, ?-rays and ?-rays**
+
+**(b)(i) Calculate the minimum wavelength of X-rays that can be produced by an electron accelerated through a potential difference of 20,000V [e=1.6 \times 10^{-19}$C, h=6.63 \times 10^{-34}$Js, c=3 \times 10^{8}$m/s]**
+
+**(ii) Write down the mathematical term from Bragg's law and explain the term between the electrodes**
+*(i.e., define d, ?, ?, n in Bragg's law)*
+
+**(iii) Determine the wavelength of the X-ray that was Bragg-diffracted by a cobalt crystal of interatomic spacing 4.07 \times 10^{-10}$m, if the first order scattering angle is 24?**
+
+Q4.
+**5. (a) Define electromotive force**
+
+**(b) A cell of e.m.f E and internal resistance r was connected in series with two external resistors A (8?) and B (2?). When a voltmeter was connected across A, it read 8V. When another resistor C was connected in parallel to A, the voltmeter read 6V. Find:**
+**(i) Draw arrangement**
+**(ii) Calculate the internal resistance of the cell**
+
+**(iii) Calculate the e.m.f of the cell**
+
+Q5.
+**7. (a) Calculate the total binding energy per nucleon of an alpha particle. The masses of the neutron, proton and alpha particle are respectively 1.008665u, 1.007825u and 4.004603u**
+
+**(b)(i) Radium has an atomic mass of 226, and has a half-life of 800 years. For 0.5g of radium, calculate the number of decays per second**
+
+Q6.
+**4. $\mathrm{(a)}$i) State the principle of superposition of waves**
+
+**(ii) Briefly describe Huygens' principle with the aid of appropriate diagram**
+
+**(b) The manufacturer's manual of a violin shows that the heaviest and lightest strings have linear densities of 6.0 and 0.58kg/m respectively. Assuming that the strings are of the same material, determine the ratio of their radii**
+
+**(c) The voltage from an electromagnetic wave travelling on a transmission line is given by V(x,t) = 10e^(??x) sin(4??10?t ? 30?x), where x is the distance in metres from the transmitter:**
+**(i) Find the frequency, wavelength and phase velocity of the wave**
+
+**(ii) Find the voltage at x = 2.1 \times 10^{-2}$cm and t = 0.32s**
+
+**(iii) If the amplitude of the wave is measured to be 2V, find ?**
+
+Q7.
+**6. $\mathrm{(a)}$ What is electrostatics?**
+
+**(b) Explain, with the aid of diagram, how you can charge a gold leaf electroscope positively, using the method of charging by induction**
+
+**(c)(i) Explain electrostatic induction and mention one method of producing electrostatic charges**
+
+**(ii) [Charges problem]** *Given three charges q? = 2 \times 10^{-9}$C, q? = 3 \times 10^{-9}$C, q? = 5 \times 10^{-9}$C arranged on a line, find the resultant force on q?*
+
+Q8.
+**3. $\mathrm{(a)}$ State any three assumptions of the kinetic theory of gases**
+
+**(b) What is the pressure of 3 moles of an ideal gas at a temperature of 27?C, having a volume of 5 litres?**
+
+**(c) A piece of copper of mass 0.04kg at 160?C is transferred into a copper calorimeter of mass 0.06kg containing 0.05kg of water at 20?C, what will be the final temperature? [specific heat capacity of copper/calorimeter = 400J/kg/K and water = 4200J/kg/K respectively] (neglecting heat losses to the surroundings)**
+
+===============================================================================
+ JUPEB 2019 — CHEMISTRY OBJECTIVE (Q1-Q50)
+===============================================================================
+
+Q1.
+A normal body temperature is 37?, ?? =  2.4 ? 10?14. ????????? [?3?+] ??? [???] for the body fluid at this temperature
+  A. [?3?+] = [???] =  2.5 ? 10?7
+  B. [?3?+] = [???] =  1.5 ? 10?8
+  C. [?3?+] = [???] =  1.5 ? 10?6
+  D. [?3?+] = [???] =  1.5 ? 10?7
+
+Q2.
+Atoms of elements in a group on the Periodic Table have similar chemical properties. This similarity is most closely related to the atoms.
+  A. number of principal energy levels
+  B. number of valence electrons
+  C. atomic numbers
+  D. atomic masses
+
+Q3.
+How many atoms of ?? are present in 35.4 ? ?? ??? [?? =  63.5?????1]
+  A. 1.08 ? 1024 ????? ?? ??
+  B. 3.27 ? 1023 ????? ?? ??
+  C. 6.02 ? 1023 ????? ?? ??
+  D. 1.20 ? 1022 ????? ?? ??
+
+Q4.
+How would you prepare 250??3 ?? 0.25? aqueous solution of ????? [??=  23?????1;  ?? =  35.5?????1] 2
+  A. Add 3.66? ???? ?? 250??3 of distilled water
+  B. Weigh 3.66? ???? ???? 250?? flask and add distilled water up to the mark
+  C. Add 14.60? ???? ?? 250??3 of distilled water
+  D. Weigh 14.60? ???? ???? 250?? flask and add distilled water up to the mark
+
+Q5.
+What is the shape of ???3?
+  A. Trigonal planar
+  B. Trigonal pyramidal
+  C. Tetrahedral
+  D. V-shaped (bent)
+
+Q6.
+??????? ?233 (?92 233)?????? ?? ? ?  ????????. What is the decay product? 229 231 231 233
+  A. ??90
+  B. ??90
+  C. ??91
+  D. ??91
+
+Q7.
+Arrange the following ions in order of decreasing charge density; ??2+, ??2+, ??3+ ??? ??2+
+  A. ??3+ > ??2+ > ??2+ > ??2+
+  B. ??2+ > ??2+  > ??2+  > ??3+
+  C. ??3+  < ??2+ < ??2+  < ??2+
+  D. ??2+  >  ??3+  > ??2+  > ??2+
+
+Q8.
+Which of the following statements explain why caesium has a lower melting point than sodium?
+  A. Sodium is a more electropositive metal
+  B. Sodium has higher ionization energy
+  C. Sodium has a stronger metallic bond
+  D. Caesium has a larger atomic radius
+
+Q9.
+Transition metals can form complex ions because 3
+  A. They have paired electrons in the d subshell
+  B. They have unpaired electrons in the d subshell
+  C. They have empty d orbitals
+  D. They have small charge/size ratio
+
+Q10.
+How many equivalent hybrid orbitals are there in ??2  ? ?????????? ???????
+  A. Four
+  B. Two
+  C. Three
+  D. One
+
+Q11.
+When common names are used for acids, the underlined carbon atom in the molecule shown would be designated as the ? ? ????. ??3??2??2 ? ? ? ????
+  A. Gamma
+  B. Alpha
+  C. Delta
+  D. Beta
+
+Q12.
+Purification of a strip of impure copper metal in aqueous CuSO4 was carried out using a steady current. Which graph shows the change in mass of the cathode with time? 4
+
+Q13.
+Which gas closely approaches ideal behaviour at room temperature and pressure?
+  A. Helium
+  B. Carbon dioxide
+  C. Ammonia
+  D. Oxygen
+
+Q14.
+A sample of a brown gas, a major air pollutant, is found to contain 2.34? ? and 5.34? ?. Determine the empirical formula for this substance. [? =  14, ? =  16]
+  A. ??2
+  B. ??
+  C. ?2?
+  D. ?2?3
+
+Q15.
+Why does the rate of a gaseous reaction increase when the pressure is increased at a constant temperature? 5
+  A. More particles have energy that exceeds the activation energy.
+  B. The particles have more space in which to move
+  C. The particles move faster.
+  D. There are more frequent collisions between particles.
+
+Q16.
+Why is gaseous nitrogen less reactive than gaseous fluorine?
+  A. The boiling point of nitrogen is lower than that of fluorine
+  B. The relative molecular mass of nitrogen is lower than that of fluorine
+  C. The atomic radius of nitrogen is greater than that of fluorine
+  D. The bond strength in the molecule is greater in nitrogen than in fluorine
+
+Q17.
+The first stage in the manufacture of nitric acid is the oxidation of ammonia by oxygen. ???3(?)  +  ??2(?)  ? ???(?)  +  ??2?(?) What values for ?, ?, ? ??? ? are needed to balance the equation?
+  A. 4, 5, 4 ??? 6
+  B. 4, 6, 4 ??? 5
+  C. 5, 6, 5 ??? 4
+  D. 6, 5, 6 ??? 4
+
+Q18.
+The reaction of chlorine with methane is carried out in the presence of light. What is the function of the light?
+  A. to break the ? ?  ? bonds in methane
+  B. to break up the chlorine molecules into atoms
+  C. to break up the chlorine molecules into ions
+  D. to heat up the mixture
+
+Q19.
+In the Solvay process, ????(??)  +  ??3(?)  + ?2?(?)  +  ??2(?)  ? ?????3(?)  +  ??44??(??). What volume of carbon dioxide (at s.t.p) is required to produce 1.00 ?? ?? ?????? ???????? ?????????? (? ???? ?? ??? ?? ?. ?. ? ???????? 22.4??3) [?? =  23, ?? =  35.5, ? =  12, ? =  16, ? =  1, ? =  14]. 6
+  A. 250??3
+  B. 762??3
+  C. 267??3
+  D. 462??3
+
+Q20.
+Which group of particles is in order of increasing size?
+  A. ?, ?, ?
+  B. ?3?, ?2?, ??
+  C. ??+, ??2+, ??3+
+  D. ??+, ??, ??
+
+Q21.
+River water in a chalky agricultural area may contain ??2+,  ??2+, ??3 2?, ???3?, ???, ??3? ????. In a waterworks, such water is treated by adding a calculated quantity of calcium hydroxide. What will be precipitated following the addition of calcium hydroxide?
+  A. ????2
+  B. ????3
+  C. ??(??3)2
+  D. ??(??3)2
+
+Q22.
+The electronic configuration of the ??3+ is
+  A. 1?22?22?63?23?63?4
+  B. 1?22?22?63?23?63?5
+  C. 1?22?22?63?23?63?3
+  D. 1?22?22?63?23?63?6
+
+Q23.
+An element with an atomic number of 35 is --------- block element. 7
+  A. S ? block
+  B. P ? block
+  C. D ? block
+  D. F ? block
+
+Q24.
+Iodine trichloride, ???3 is made by reacting iodine with chlorine. ?2(?)  + ??2(?)  ? 2???(?); ?? = +14??????1 ???(?) +  ??2(?)  ? ???3(?);  ???= ? 88??????1 By using the data above, what is the enthalpy change of the formation for solid iodine trichloride? a reactant, A. how many times does the rate increase a [A] increases by a factor of 2?
+  A. ?162??????1
+  B. ?81??????1
+  C. ?74??????1
+  D. ?60??????1
+
+Q25.
+The standard enthalpy changes of formation of ???2(?) ??? ??(?) ??? ?  940??????1 ??? ?110??????1 respectively. ???2(?)  +  2?(?)  ? ??(?)  +  2??(?) What is the standard enthalpy change of this reaction?
+  A. ?830??????1
+  B. ?720??????1
+  C. +720??????1
+  D. +830??????1
+
+Q26.
+The standard enthalpy changes of formation of ??? ??? ?? ??? ? 93??????1 ??? + 25??????1 respectively. Which statement is most important in explaining this difference? ?2 /  ?2 reaction.
+  A. The bond energy of ??2 is smaller than the bond energy of ?2.
+  B. The activation energy for the ?2 / ??2 reaction is much less than that for the
+  C. The bond energy of ?2 is smaller than the bond energy of ??2.
+  D. The bond energy of ?? is smaller than the bond energy of ???.
+
+Q27.
+What is the catalyst used in the contact process? 8
+  A. ??
+  B. ??
+  C. ??2?3
+  D. ?2?5
+
+Q28.
+The main purpose of adding cryolite to the ore (bauxite) during the preparation of Aluminium metal by electrolysis is?
+  A. minimizes the release of oxygen at the graphite anode
+  B. reduce the melting point of the bauxite
+  C. increase the melting point of the bauxite
+  D. enables the aluminum discharge at the anode
+
+Q29.
+What type of bond needs to be broken for magnesium oxide to melt?
+  A. Co-ordinate
+  B. Covalent
+  C. Ionic
+  D. Metallic
+
+Q30.
+A substance which contains the following elements by mass: ?, 17.8%;  ?, 1.5%;  ??, 52.6%;  ?, 28.1% has molecular mass of 135. Determine the molecular formula
+  A. ?2?2???
+  B. ?2?2?2??
+  C. ?2?2?2??2
+  D. ?2?2???3
+
+Q31.
+How many chiral centres does the compound below possess? ??2??2? | ?(??)??2? | ??2??2? 9
+  A. 0
+  B. 1
+  C. 2
+  D. 3
+
+Q32.
+0.200 ??? of a hydrocarbon undergo complete combustion to give 35.2? of Carbondioxide and 14.4? of water as the only products. What is the molecular formula of the hydrocarbon?
+  A. ?2H4
+  B. ?2H6
+  C. ?4H4
+  D. ?4H8
+
+Q33.
+One of the original postulates of Dalton?s Atomic Theory is: combined in simple whole number ratio.
+  A. An atom reacts to attain electronic configuration of the noble gas closest to it.
+  B. When atoms of different elements react to form chemical compound, the atoms are
+  C. The isotopes of an element are in whole number ratio.
+  D. Atoms of different elements differ in terms of number of protons in their nuclei.
+
+Q34.
+The ions in a mass spectrophotometer are separated based on their mass: charge ratio by the
+  A. Ion source
+  B. Mass analyzer
+  C. Deflector
+  D. Detector
+
+Q35.
+Which of the following terms accurately describes the energy associated with the process? ??(?) ? ??(?) + +  ?? 10
+  A. Electron affinity
+  B. Binding energy
+  C. Ionization energy
+  D. Electronegativity
+
+Q36.
+If the activation energy in the forward direction of an elementary step is 52?? and the activation energy in the reverse direction is 74??, what is the energy of reaction ? for this step?
+  A. +22??
+  B. ?22??
+  C. +52??
+  D. ?52??
+
+Q37.
+Sodium peroxide dissolves in water in accordance with the following reaction: ??2?2(?)  +  2?2?(?) ?????(??) + ?2?(?) The ?? of the solution after reaction will be
+  A. 7 ?8
+  B. 6 ?7
+  C. < 2
+  D. > 10
+
+Q38.
+Gunpowder is a mixture of saltpeter, Sulphur and wood charcoal in the ratio of 6: 1: 1 by mass. The mixture burns with explosion because it produces a large volume of gases. Saltpeter in the mixture acts as
+  A. Modifier
+  B. Reducing agent
+  C. Oxidizing agent
+  D. Fuel
+
+Q39.
+The oxidation state of ?? ?? ?[??(??)4] is: 11
+  A. +1
+  B. +2
+  C. +3
+  D. +4
+
+Q40.
+The most common type of chemical reaction which alkanes undergo is
+  A. Substitution
+  B. Addition
+  C. Condensation
+  D. Elimination
+
+Q41.
+The boiling point of water is higher than that of methanol because
+  A. Water is oxide while methanol is an alcohol
+  B. Inter molecular forces in water are stronger than those in methanol
+  C. Water is an inorganic compound while methanol is organic
+  D. Water is an ionic compound while methanol is covalent
+
+Q42.
+In the Rutherford scattering experiment, Rutherford bombarded a thin piece of gold foil with a beam of
+  A. Electrons
+  B. Neutrons
+  C. Protons
+  D. Alpha particles
+
+Q43.
+When azimuthal quantum number (l = 2), what set of orbitals is designated?
+  A. P
+  B. D
+  C. F
+  D. G
+
+Q44.
+Sodium hydroxide is an Arrhenius base because it contains 12
+  A. ??+
+  B. ???
+  C. ????
+  D. ??
+
+Q45.
+The standard state of an element or compound is determined at a pressure of________ and a temperature of _______
+  A. 760????, 0?
+  B. 1 ???, 273?
+  C. 760????, 0?
+  D. 1 ???, 298?
+
+Q46.
+Which of the following is a state function?
+  A. Enthalpy
+  B. Work
+  C. Heat
+  D. Power
+
+Q47.
+The method that cannot be used for removing permanent hardness of water is
+  A. Adding sodium carbonate
+  B. Boiling
+  C. Adding caustic soda
+  D. Adding slaked lime
+
+Q48.
+Identify ? In which of the following characteristics does hydrogen resemble halogens?
+  A. Hydrogen is the lightest
+  B. Hydrogen forms ionic hydrides with alkali metals
+  C. Hydrogen atom contains one electron each
+  D. Hydrogen has three isotopes
+
+Q49.
+Which alkali metal reacts directly with Nitrogen to form nitride? 13
+  A. Na
+  B. K
+  C. Rb
+  D. Li
+
+Q50.
+The isomerism which exists between ??3????2 and ??2??. ??2?? is
+  A. Chain isomerism
+  B. Functional group isomerism
+  C. Positional isomerism
+  D. metamerism
+
+===============================================================================
+ JUPEB 2019 — CHEMISTRY THEORY
+===============================================================================
+
+Q1.
+Define the term allotropy. [1 Mark]
+
+**(ii).** Name two allotropes each of carbon and tin. [2 Marks]
+
+**(iii).** What is the difference between allotropy exhibited by carbon and other members of the group tin? [1 Mark]
+
+**(b).** Give reason(s) for the following observations:
+(i). Fluorine exhibits only -1 oxidation state while other members of the group exhibit -1 as well as other oxidation states.
+(ii). Hydrogen chloride is a stronger acid than hydrogen fluoride.
+(iii). Beryllium does not react with water, even on heating. [3 Marks]
+
+**(c).** Using suitable reaction equations, outline three (3) methods of laboratory syntheses of hydrogen gas from suitable metals. [1? Marks]
+
+**(d).** State three (3) properties of transition metals. [1? Marks]
+
+Q2.
+The molecular formula of coordination compounds A and B are:
+A = [Cr(NH?)?Cl?]Br
+B = [Cr(NH?)?(Cl)(Br)]Cl
+
+(i). Give the IUPAC name of the compounds A and B. [2 Marks]
+
+(ii). State the oxidation number of the metal ion in both compounds. [1 Mark]
+
+(iii). Which of these compounds would give a precipitate with silver nitrate solution? [? Mark]
+
+**(b).** Using a statement and appropriate equation$\mathrm{(s)}$ where necessary, distinguish between synthesis gas and water gas. [2 Marks]
+
+**(c).** Using reaction equation only, show how Li, Na, and K react when heated in excess oxygen. [3 Marks]
+
+**(d).** Describe, using chemical equations where applicable, how aluminium is extracted from its ore. [3 Marks]
+
+---
+
+### CHM 004: ORGANIC CHEMISTRY
+
+Q3.
+Define biotechnology. [1 Mark]
+
+**(ii).** List two advantages in the use of biotechnology. [1? Marks]
+
+**(b).** Explain the following terms: (i). Inductive effect [1? Marks]
+(ii). Electromeric effect [1? Marks]
+(iii). Homolytic cleavage [1? Marks]
+
+**(c).** Classify each of the following carbohydrates as monosaccharides, disaccharides, or polysaccharides. (I). Cellulose (II). Fructose (III). Glucose (IV). Maltose (V). Sucrose [2? Marks]
+
+**(di).** Write the structures of all the isomeric alcohols with molecular formula $\ce{C4H_{10}}$O. [1? Marks]
+
+**(ii).** Classify them as primary, secondary and tertiary alcohols. [1? Marks]
+
+**(iii).** Arrange the alcohols according to their increasing boiling points. [1 Mark]
+
+---
+
+Q4.
+Define the term ionization energy. [1 Mark]
+
+**(ii).** State two factors that affect ionization energy of an atom.
+
+**(b).** 500 mg of iron (II) complex, ferrous bisglycinate hydrochloride was dissolved in dilute $\ce{H2S}$O? and titrated with 0.0200 moldm?? KMn$\ce{$\ce{O4}$}$. 18.10 cm? of KMn$\ce{$\ce{O4}$}$ solution were required to reach the end point.
+
+5Fe?? + Mn$\ce{$\ce{O4}$}$? + 8H? ? 5Fe?? + Mn?? + 4$\ce{H2O}$
+
+Calculate:
+(i). number of moles of Fe?? in the capsule.
+(ii). Mass of iron in the capsule.
+(iii). Molar mass of the iron (II) complex, assuming 1 mole of the complex contains 1 mole of iron. [Fe = 55.9 gmol??] [3? Marks]
+
+**(c).** Identify each of the following reactions as precipitation, neutralization, decomposition or combination.
+(i). Ba(OH)?(aq) + 2HI(aq) ? BaI?(aq) + 2$\ce{H2O}$(l)
+(ii). 2Al$\mathrm{(s)}$ + 3Cl?$\mathrm{(g)}$ ? 2AlCl?$\mathrm{(s)}$
+(iii). Pd(NO?)?(aq) + $\ce{H2S}$(g) ? PdS$\mathrm{(s)}$ + 2HN$\ce{$\ce{O3}$}$(aq)
+(iv). Cu(NO?)?(aq) ? CuO$\mathrm{(s)}$ + N$\ce{$\ce{O2}$}$(g) + ?$\ce{$\ce{O2}$}$(g)
+(v). FeCl?(aq) + 2NaOH(aq) ? Fe(OH)?(aq) + 2NaCl(aq) [2? Marks]
+
+**(d).** The following results were obtained from a replicate analysis of blood sample for its lead content: 0.752, 0.756, 0.752, 0.769 ppm lead. Explain the precision of the results. [2 Marks]
+
+---
+
+### CHM 002: PHYSICAL CHEMISTRY
+
+Q5.
+CHECK JUPEB 2025; Option $\ce{D041}$; $\ce{Q2}$(bii) [1? Marks]
+
+**(ii).** Calculate the wavelength (nm) of the spectral line of hydrogen atom for which n? = 3 and n? = 6. [R = 1.09678 \times 10^{7}$ m??] [2 Marks]
+
+**(b).** State the type of chemical bonds in each of the following: (i). $\ce{Na2O}$ (ii). BeCl? (iii). $\ce{F3B}$N$\ce{$\ce{H3}$}$ (iv). C$\ce{$\ce{O2}$}$ (v). N$\ce{$\ce{H4}$}$? (vi). NaCl [3 Marks]
+
+**(c).** The isotopic masses of two isotopes are 34.969 and 36.9689 amu respectively. Estimate the relative atomic mass of the element if the percentage abundance of the heavier isotope is 24.47%. [2 Marks]
+
+**(di).** Write the electronic configuration of strontium, ??Sr. [1? Marks]
+
+**(ii).** What block does it belong? [1 Mark]
+
+Q6.
+State the two factors that affect solubility of a solid in a liquid. [1 Mark]
+
+**(ii).** A saturated solution of AgCl was found to have a concentration of 1.3 \times 10^{-5}$ moldm??. What is the solubility product of AgCl? [1? Marks]
+
+**(b).** Define the term: (i). entropy and (ii). enthalpy. [2 Marks]
+
+**(c).** The equation for the reaction between sulphur trioxide and CuO is:
+
+CuO$\mathrm{(s)}$ + S$\ce{$\ce{O3}$}$(g) ? CuS$\ce{$\ce{O4}$}$(s)
+
+Given the following data:
+
+| Substance | ?H? (kJmol??) | S? (Jmol??) |
+|---|---|---|
+| S$\ce{$\ce{O3}$}$ | -157 | 42.63 |
+| CuO | -395.2 | 256.2 |
+| CuS$\ce{$\ce{O4}$}$ | -771.36 | 109 |
+
+(i). Calculate the standard free energy for this reaction at 37?C. [3 Mks]
+
+(ii). Comment on the spontaneity of the reaction based on the value in (i).
+
+**(d).** If the same volume of N$\ce{$\ce{H3}$}$ and an unknown gas X effuse at a rate of 2.25 and 1.40 cm? s?? respectively under the same experimental conditions, what is the molecular mass of X? Suggest a possible identity for X. [2? Marks]
+
+Q7.
+Calculate ?H for the reaction: 4HI + $\ce{$\ce{O2}$}$ ? 2I? + 2$\ce{H2O}$, given the following:
+(i). $\ce{$\ce{H2}$}$ + I? ? 2HI    ?H = +52 kJ
+(ii). 2$\ce{$\ce{H2}$}$ + $\ce{$\ce{O2}$}$ ? 2$\ce{H2O}$    ?H = -480 kJ [3 Marks]
+
+**(b).** Determine the equilibrium constant for the following reaction at 45?C;
+
+Sn??(aq) + Cu??(aq) ? Sn??(aq) + Cu$\mathrm{(s)}$
+
+Given that: E?Cu??/Cu = +0.337 V; E?Sn??/Sn?? = +0.5 V; R = 8.314 Jmol?$\ce{^1K}$?? [3? Marks]
+
+**(c).** State three (3) factors that affect the rate of a chemical reaction. [1? Marks]
+
+**(d).** Consider the reaction represented by the equation below:
+
+C$\ce{H3C}$OOH + $\ce{C2H_{5}}$OH ? C$\ce{H3C}$OO$\ce{C2H_{5}}$ + $\ce{H2O}$
+
+Explain the effect on the position of equilibrium on addition of:
+(i). C$\ce{H3C}$OO$\ce{C2H_{5}}$
+(ii). $\ce{C2H_{5}}$OH [2 Marks]
+
+---
+
+### CHM 003: INORGANIC CHEMISTRY
+
+Q8.
+Define the term hybridization. [1 Mark]
+
+**(ii).** Indicate the hybridization of the carbon atom labelled $\mathrm{(a)}$ ? (e) in the structure below:
+
+*(structure: a ? benzene ring ? b (cyclohexane ring) ? C$\ce{$\ce{H2}$}$ ? c?d (C?CH), with e pointing to the cyclohexane ring carbon attached to CH?)*
+
+[2? Marks]
+
+**(b).** The scheme below represents the various reactions of propanone. Give the formula of each of the product represented by letters A to E.
+
+*(Scheme: C$\ce{H3C}$OC$\ce{$\ce{H3}$}$ with: Zn/Conc. HCl ? A; C$\ce{H3C}$OC$\ce{$\ce{H3}$}$/NaOH ? B; LiAl$\ce{$\ce{H4}$}$ ? C; C$\ce{H3Mg}$Br ? D; C$\ce{H3N}$H? ? E)*
+
+[2? Marks]
+
+**(c).** Draw the structure of the following compounds.
+(i). 2-bromo-3-chloro-4,4-dimethylpentanal [1 Mark]
+(ii). Butane-1,2,3-triol [1 Mark]
+(iii). 2,4,6-tribromophenol [1 Mark]
+[3 Marks]
+
+**(d).** A compound K, [$\ce{C7H_{16}}$O] is an alcohol which is oxidized by chromic acid to yield compound L [$\ce{C7H_{14}}$O]. L forms crystalline 2,4-dinitrophenylhydrazine compound and gives iodoform red precipitate with Fehling's reagent. With the given data, write possible structures of compounds K and L. [1? Marks]
+
+===============================================================================
+ JUPEB 2019 — CHEMISTRY PRACTICAL
+===============================================================================
+
+Q1.
+QUALITATIVE ANALYSIS
+
+**D** is a mixture of two inorganic salts. Carryout the following tests and identify any gas evolved. State the result of each test.
+
+your observations and identify any gas evolved. State the inference you draw from the result of each test.
+
+**$\mathrm{(a)}$.** Put D into a beaker and add about 15 cm? of distilled water. Stir the mixture and filter. Test the filtrate with litmus paper. Keep the residue and the filtrate.
+
+**(bi).** To about 2 cm? of the filtrate, add few drops of 2 M HN$\ce{$\ce{O3}$}$ followed by AgN$\ce{$\ce{O3}$}$?aq?.
+
+**(ii).** Add excess 2 M N$\ce{$\ce{H3}$}$ solution to the resulting mixture.
+
+**(c).** To about half of the residue from $\mathrm{(a)}$ above, add about 5 cm? of dilute HN$\ce{$\ce{O3}$}$ followed by 5 cm? of dilute HN$\ce{$\ce{O3}$}$ drops. Divide the resulting solution into two equal portions.
+
+Q2.
+QUANTITATIVE ANALYSIS
+
+You are provided with the following:
+
+**A** is a solution of HCl containing 3.25 g per 500 cm?.
+
+KOH containing 2.5 g per 500 cm? and **B** is a solution of impure KOH containing 3.25 g per 500 cm?.
+
+**$\mathrm{(a)}$.** Pipette 25 cm? of solution B into a conical flask and add 2 drops of methylorange indicator.
+
+**(i).** Titrate solution A against B and record the burette reading. Repeat the experiment at least twice more with fresh portions of B and tabulate your readings.
+
+Calculate the average volume of A used.
+
+**(ii).** Write a balanced equation for the reaction.
+
+**(b).** Determine the:
+
+**(i).** concentration of A in moldm??.
+
+**(ii).** moles of A in the average titre.
+
+**(iii).** concentration of B in moldm??.
+
+**(iv).** Concentration of B in gdm??.
+
+**(v).** percentage purity of KOH in B.
+
+**(c).** For a solution containing 0.5 M HCl in 200 cm?, how much distilled water must be added if the solution is to be diluted to 0.10 M?
+
+[10 Marks]
+
+---
+
+===============================================================================
+ END OF 2019 QUESTIONS
+===============================================================================

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Clock } from "lucide-react";
 
 import type { Subject } from "@/types/question";
 import { STUDY_SUBJECT_INFO } from "@/types/study-questions";
@@ -6,6 +7,9 @@ import { STUDY_SUBJECT_INFO } from "@/types/study-questions";
 interface SubjectCardGridProps {
   onSelect: (subject: Subject) => void;
   counts?: Record<Subject, number>;
+  lockedSubjects?: Subject[];
+  timeLeft?: string;
+  lockProgress?: number;
 }
 
 const container = {
@@ -27,8 +31,9 @@ const SUBJECT_COLORS: Record<Subject, { gradient: string; light: string; accent:
   math: { gradient: "from-purple-600/40 to-pink-400/40", light: "bg-purple-500/10", accent: "border-purple-500/30" },
 };
 
-export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
+export function SubjectCardGrid({ onSelect, counts, lockedSubjects, timeLeft, lockProgress }: SubjectCardGridProps) {
   const subjects = Object.keys(STUDY_SUBJECT_INFO) as Subject[];
+  const isLocked = (s: Subject) => lockedSubjects?.includes(s) ?? false;
 
   return (
     <motion.div
@@ -47,14 +52,27 @@ export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
           <motion.button
             key={subject}
             variants={item}
-            whileHover={{ y: -6, transition: { duration: 0.2 } }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => onSelect(subject)}
+            whileHover={isLocked(subject) ? {} : { y: -6, transition: { duration: 0.2 } }}
+            whileTap={isLocked(subject) ? {} : { scale: 0.97 }}
+            onClick={isLocked(subject) ? undefined : () => onSelect(subject)}
             className="relative group flex flex-col items-start p-5 rounded-2xl border border-border/60 bg-card text-left overflow-hidden"
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-20 group-hover:opacity-30 transition-opacity duration-500`} />
             <div className={`absolute inset-0 ${colors.light} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
             <div className={`absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r ${colors.gradient} scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`} />
+
+            {isLocked(subject) && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-black/20 dark:bg-black/40 backdrop-blur-[2px]">
+                <Clock className="h-6 w-6 text-yellow-400 mb-1" />
+                <p className="text-xs font-bold text-white drop-shadow-lg">Coming Soon</p>
+                <p className="text-lg font-mono font-bold text-yellow-400 tabular-nums drop-shadow-lg">
+                  {timeLeft}
+                </p>
+                <div className="mt-1 h-1 w-1/2 rounded-full bg-white/30 overflow-hidden">
+                  <div className="h-full rounded-full bg-yellow-400 transition-all duration-1000" style={{ width: `${(lockProgress ?? 1) * 100}%` }} />
+                </div>
+              </div>
+            )}
 
             <div className="relative z-10">
               <div className={`w-12 h-12 rounded-xl ${colors.light} flex items-center justify-center text-2xl mb-3 border ${colors.accent}`}>

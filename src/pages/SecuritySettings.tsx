@@ -45,7 +45,7 @@ export default function SecuritySettings() {
     setEnrolling(true);
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
-      issuer: 'JUPEB Study Guide',
+      issuer: 'Rutex Jupeb Master',
       friendlyName: 'Authenticator',
     });
     if (error || !data) {

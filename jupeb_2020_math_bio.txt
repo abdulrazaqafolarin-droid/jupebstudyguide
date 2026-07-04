@@ -1,0 +1,941 @@
+===============================================================================
+ JUPEB 2020 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+For what values of k will the equation y? ? (k?2)y + 1 = ?2k have real equal roots?
+  A. 0.12
+  B. 3, 4
+  C. 0, 3
+  D. ?3, 4
+
+Q2.
+Which of the following is correct?
+  A. 360? = 3? radians
+  B. 360? = 3? radians
+  C. 90? = ? radians
+  D. 720? = 4? radians
+
+Q3.
+Given that A and B are subsets of a universal set U, which of the following is true?
+  A. (A ? B)^c = A^c ? B^c
+  B. (A ? B)^c = A^c ? B^c
+  C. (A ? B)^c = (A ? B) ? (B ? A)
+  D. (A ? B)^c = A^c ? B^c
+
+Q4.
+Express the complex number 2 + 3i in polar form
+  A. 3.6(cos 28.1? + i sin 28.1?)
+  C. 3.6(cos 56.31? + i sin 56.3?)
+  D. 4.8(cos 56.3? + i sin 56.3?)
+
+Q5.
+Let f: x ? x^(?1)/(x?2) be a function defined on the set of real numbers excluding 2. Determine the inverse
+  A. x/(x?1)
+  B. 2x/(x?1)
+  C. x/(2x?1)
+  D. 2x/(2x?1)
+
+Q6.
+Obtain three range of values or which (2x?3) < 5
+  A. ?1 < x > 4
+  B. 1 < x < 4
+  C. ?4 < x < ?1
+  D. ?4 < x < 1
+
+Q7.
+Find the constant term in the binomial expansion of (2 + x)^8
+  A. 1210
+  B. 820
+  C. 1120
+  D. 4220
+
+Q8.
+The end coordinates of the diameter of a circle are (3,2) and (9, 6). Formulate the equation of the circle
+  A. x? + y? + 6x + 4y - 36 = 0
+  B. x? + y? - 6x + 4y + 39 = 0
+  C. x? + y? - 6x - 4y + 39 = 0
+
+Q9.
+Simplify log_a 8 ? log_b 7 ? log_a 5 ? log_b 56
+  A. log_a 1680
+  B. 1
+  C. log_ab 56
+  D. 2
+
+Q10.
+Obtain the equation of a straight-line joining points (?2, 3) and (1, 4)
+  A. 3y ? 11x + 11 = 0
+  B. 5y ? 3x ? 4 = 0
+  C. 3y ? 2x + 11 = 0
+  D. 3y ? 11x ? 4 = 0
+
+Q11.
+Derive the solution of the equation: Cot ? + tan ? = 2 cosec ?
+
+Q12.
+Formulate a polynomial whose quotient and remainder when divided by x + 1 are x? + 3x - 6 and -3 respectively
+  A. x? - x? + 3x - 6
+  B. x? - 2x? + 3x - 6
+  C. x? + 4x? -
+
+Q13.
+Two matrices are defined as
+x ? 5 [6 y / ?4 ?2 ?6 / 10 8 2] and B = [3 ?2 ?5 / ?2 ?1 ?6 / 1 ?3 1]. If A^T = 2B. Evaluate (2?3)
+  A. 12
+  B. 10
+  C. 8
+  D. 6
+
+Q14.
+A binary operation ? is defined on the set R of real numbers such that for x ? 0, y ? 0 ? R
+x?y = 3x^(5y). Evaluate (1?3)
+  A. ?1
+  B. ?
+  C. 8
+  D. 6
+
+Q15.
+If lim f(x) = m and lim f(x) = m, then A
+  A. 1 < m
+  C. 1 = m
+  D. 1 ? m
+
+Q16.
+Write the order and degree of the differential equation d?y/dx? ? x? + a?x = 0
+  B. 1, 2
+  C. 2, 3
+  D. 2, 1
+
+Q17.
+If f(x) = 3x?1, find f(x+3) ? f(x) in terms of f(x)
+  A. 15/2 ? f(x)
+  B. 13/2 ? f(x)
+  C. 80f(x)
+
+Q18.
+Express d?y/dx? in terms of r = constant alone in the equation x? + y? = r? where r = constant
+  A. y?/x?
+  B. ?x?/y?
+  C. y?/x?
+  D. x?/y?
+
+Q19.
+Determine d?/dy where x = a(1 + sin ?) and y = a(1 ? cos ?)
+  A. sin ? + cos ?
+  B. log_e(?1)
+  C. log(?2)
+  D. A_log
+
+Q20.
+Determine the value of the integral ?^(3/8)_(?2) dy where a = (1 ? cos?)
+  A. log(?1)
+  B. log_e^2
+  C. log(?1)?log(?2)
+  D. 0
+
+Q21.
+Let f(x) = (x? + k when x ? 1 / find the value of k for which f(x) is continuous at x = 1
+  A. 0
+  B. ?1
+  C. 1
+  D. 2
+
+Q22.
+Find d?/dx if y = log_e sin x
+  A. cot x
+  C. tan x
+  D. ?tan x
+
+Q23.
+Solve the differential equation d?y/dx? - xy? = 0
+  C. -x?/2y? -
+  D. -x?/(2y?)
+
+Q24.
+Differentiate y = e^(2x) cos x using product rule
+  A. e^(2x)(2cos x ? sin x)
+  B. e^(2x)(2cos x + sin x)
+  C. e^(2x)(2cos x ? sin x)
+  D. e^(2x)(cos x ? sin x)
+
+Q25.
+Integrate 4^x with respect to x
+  A. 4^x/ln4 + C
+  B. 4^x/7n2 + C
+  C. C
+  D. +C
+
+Q26.
+Integrate 4^x with respect to x
+  A. 4^x cos x
+  B. sin x tan x + C
+  C. tan??(sin x) + C
+  D. ln |sin x + C|
+
+Q27.
+Evaluate ? (18i + C) / (y??x?+4x??18dx)
+  A. ln|3x? ? x? + 4x ? 18|
+  B. ln|x? ? x? + 4x ? 18|
+  C. ln|3x? ? x? + 4x ? 18|
+  D. ln|3x? ? 18x + C|
+
+Q28.
+Evaluate lim(x??) e^(x?e?x)
+  A. 0
+  B. A
+  C. 1
+  D. 2
+
+Q29.
+A vector F is said to be irrotational if
+  A. div(curl F) = 0
+  B. curl F = 0
+  C. div F = 0
+  D. curl(div F) = 0
+
+Q30.
+The basic types of friction that exist between two surfaces in contact are
+  A. limiting and static friction
+  B. limiting and sliding friction
+  C. kinetic and dynamic friction
+  D. sliding and dynamic friction
+
+Q31.
+A fire fighter 50m away from a burning building directs a stream of water from a fire hose at an angle of 30? above the horizontal. If the velocity of the stream is 40m/s, at what height will the stream strike the building?
+  A. 20.00m
+  B. 18.70m
+  C. 8.45m
+  D. 1.00m
+
+Q32.
+A 15kg block is pushed up a 35? incline. A friction of 110N exists between the block and the incline. What minimum force F would be necessary to move the block up the incline at a constant speed
+  A. 20.00m
+  B. 18.70m
+  C. 8.45m
+  D. 1.00m
+
+Q33.
+Find r such that u = 8i ? 2j + 2k and b = 1 + 5j + rk are orthogonal vectors
+  A. ?
+  B. 1
+  C. ?2
+  D. 2
+
+Q34.
+Find the moment of inertia of a solid sphere 2n in diameter and of mass 5kg about an axis passing through the centre
+  A. 2kgm?
+  B. 3kgm?
+  C. 4kgm?
+  D. 5kgm?
+
+Q35.
+Obtain the momentum of a body with mass 2kg and velocity 5m/s
+  A. 9Ns
+  B. 8Ns
+  C. 10Ns
+
+Q36.
+The force generated from the engine of a car is 11Ns. when the car moves with constant speed of 10m/s found to be 300N, calculate the power developed
+  A. 30W
+  B. 300W
+  C. 3000W
+
+Q37.
+A lift moves with an acceleration of 2m/s?. estimate the reaction of the floor on an object of mass 50kg placed on the floor of the life when it moves up
+  A. 600NB
+  B. 300NC
+  C. 200ND
+  D. 100N
+
+Q38.
+Given that a = 2i + 3k, b = 5i ? j + k, c = 1 + j, evaluate (a, b)^c
+  A. 13i + 13j
+  B. 13i ? 13j
+  D. t + 13j
+
+Q39.
+Given that a = 2i + 3k, b = 5i - j + k, c = i + j, evaluate (a, b)^c
+  A. 13i + 13j
+  B. 13i - 13j
+
+Q40.
+Data representation in which the bars are joined together is called
+  A. pictogram
+  B. histogram
+  C. bictogram
+  D. bar chart
+
+Q41.
+If $\ce{^5C}$_r = 10, what is the value of r?
+  A. 5
+  B. 4
+  C. 3
+  D. 2
+
+Q42.
+A problem of statistics is given to three students A, B and C whose chances of solving it are 2/3, 1/4 and ? respectively. Determine the probability that the problem will be solved
+  A. 1/3
+  B. 23/32
+  C. 15/32
+  D. 29/32
+
+Q43.
+Given that Y = aX + b where X is a random variable and a and b are constants then E(Y) and
+  A. 3/32
+  B. 23/32
+  C. 15/32
+  D. 29/32
+
+Q44.
+If the probability that an individual suffers a bad reaction from a certain injection is 0.001, determine the probability that out of 2000 individuals, exactly 3 will suffer a bad reaction
+  A. 0.12
+  B. 0.18
+  C. 0.16
+
+Q45.
+Find the expected number of students admitted to study medicine and surgery in a random sample of 100 students if the probability of securing admission is 0.2
+  A. 20
+  B. 30
+  C. 40
+  D. 50
+
+Q46.
+On a final examination in mathematics, the mean was 72 and the standard deviation was 15. Determine the standard scores of students receiving grade 60
+  A. 0.8
+  B. 1.4
+  C. 0.0
+
+Q47.
+Which of the following is not a simple probability sampling technique?
+  A. systematic
+  C. cluster
+  D. quota
+
+Q48.
+Obtain a linear regression equation of Y on X using stratified sampling technique n = 5, ?X = 25, ?X? = 165, ?Y? = 24, ?Y? = 124 and ?XY = 144
+  A. 0.8
+  B. 1.8 + 0.6X
+  C. 2.6 + 0.6X
+  D. 3.8
+
+Q49.
+The following data regarding the heights (y) and the weights (x) of 5 college students are ?X = 15, ??Y = 10, ?XY = 165, ?X? = 325. Evaluate the correlation coefficient between the height and the weight
+  A. ?0.005
+  B. 0.005
+  C. 0.05
+  D. ?0.05
+
+Q50.
+The sampling technique that allows the investigator to consciously influence the sample selection process is identified as
+  A. stratified random sampling
+  B. systematic sampling
+  C. non probability sampling
+  D. cluster sampling
+
+===============================================================================
+ JUPEB 2020 -- MATH THEORY
+===============================================================================
+
+Q1.
+$\mathrm{(a)}$** Determine the initial value problem:
+$\frac{dy}{dx} = \frac{y-1}{x+3}, \quad y(-1) = 0, \quad y'(0) = 0, \quad y(0) = -1$
+**[5 Marks]**
+
+**(b)** Solve the initial value problem:
+$y'' + 2y' - y = 0; \quad y(0) = 0, \quad y'(0) = -1$
+**[5 Marks]**
+
+**(c)** Solve the differential equations:
+
+**i.** $(x^2 + 1)\dfrac{dy}{dx} + (y^2 - 1) = 0$
+**[2? Marks]**
+
+**ii.** $\dfrac{dy}{dx} = \dfrac{x^2 - y^2}{2x^2}$
+**[2? Marks]**
+
+**[TOTAL = 15 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** Find the area of the triangle whose two adjacent sides are given by vectors:
+$\vec{a} = 2\hat{i} - 3\hat{j} + \hat{k} \quad  \quad \vec{b} = 2\hat{i} + 3\hat{j} - 4\hat{k}$
+**[5 Marks]**
+
+**(b)** A body of mass 6kg has on a smooth plane inclined at an angle of 60? to the horizontal. This body is attached to another body of mass 10kg by a light inextensible string. Find:
+- **i.** the acceleration of the system. **[3 Marks]**
+- **ii.** the tension in the string (Take g = 10ms??). **[2 Marks]**
+
+**(c)** A car of mass 200kg moves forward on a road with an acceleration of 0.8ms?? and covers a distance of 200m. If the road has a resistance of 40N, calculate the driving power of the car if the trip lasted 20 seconds.
+**[5 Marks]**
+
+**[TOTAL = 15 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** Integrate the following functions with respect to x:
+
+**$\mathrm{(a)}$** $y = \dfrac{e^{3x} + 3}{e^{3x} + 9x + 2}$
+**[5 Marks]**
+
+**(b)** $y = \dfrac{8x\,dx}{(3 + 2x)^4}$
+**[5 Marks]**
+
+**(c)** $y = \dfrac{dx}{\sqrt{9 - 4x^2}}$
+**[5 Marks]** *(implied)*
+
+**[TOTAL = 15 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** For what values of x is |x ? 1| $\gt$ 2|x + 3|?
+**[5 Marks]**
+
+**(b) i.** Write 1 + i?3 and 1 ? i?3 in trigonometric form and simplify:
+$(1 + i\sqrt{3})^9 + (1 - i\sqrt{3})^9$
+in x + iy form.
+**[3 marks]**
+
+**ii.** Find tan $\frac{7\pi}{12}$ using the known values of tangent of $\frac{\pi}{3}$ and $\frac{\pi}{4}$
+**[3 marks]**
+
+**(c)** Prove by induction that:
+$1 + 3 + 5 + \ldots + (2n-1) = n^2$
+**[4 Marks]**
+
+**[TOTAL = 15 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$ i.** Consider two lines L? and L? that are perpendicular to each other. Show that the gradient:
+$m_2 = -\frac{1}{m_1} \quad  \quad m_1 = -\frac{1}{m_2}$
+**[3 marks]**
+
+**ii.** Find the equation of the straight line through (1, -2) which is perpendicular to 3x ? 2y = 6.
+**[3 marks]**
+
+**(b) i.** Find the centre and radius of the circle x? + y? + 3x ? 2y + 2 = 0
+**[3 marks]**
+
+**ii.** If the ends of a diameter of a circle have coordinates (5, 4) and (?3, 6), find the equation of the circle.
+**[3 marks]**
+
+**(c)** Find the equation of the tangent to the circle x? + y? + 2x ? 3y = ?1 at the point (3, 4).
+**[3 Marks]**
+
+**[TOTAL = 15 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** A man paddles a boat downstream a distance of 3km in 20 minutes, and rows back in 40 minutes. Find his average speed:
+- **i.** downstream **[1? Marks]**
+- **ii.** upstream **[1? Marks]**
+- **iii.** for the double journey **[1? Marks]**
+
+**(b)** A rifle bullet passes through two planks in succession, and the average resistance of the second plank is 50% more than that of the first. The initial velocity is 800m/s, and the bullet loses 160m/s in passing through each plank. Show that the ratio of the thickness of the planks is as 27:14.
+**[4? Marks]**
+
+**(c) i.** Find the constant c such that the vector $\vec{a} = i - j + 2k$ and $\vec{b} = i + 3j - ck$ are perpendicular to each other.
+**[2 Marks]**
+
+**ii.** Find the area of triangle ABC where the position vectors of A, B, C are $-j + 2k$, $i + 4j - 3k$, and $i - 3j + 2k$, respectively.
+**[4 Marks]**
+
+**[TOTAL = 15 Marks]**
+
+---
+
+Q1.
+(a)** The table below shows the distribution of heights (in cm) of some athletes. Using an assumed mean of 167cm, find:
+- **(i)** the mean **[4 Marks]**
+- **(ii)** standard deviation of the distribution **[4 Marks]**
+
+| Height (cm) | 150?154 | 155?159 | 160?164 | 165?169 | 170?174 | 175?179 | 180?184 |
+|-------------|---------|---------|---------|---------|---------|---------|---------|
+| No of Athletes | 4 | 14 | 26 | 32 | 21 | 10 | 3 |
+
+**[8 Marks]**
+
+**(b)** Find the coefficient of linear correlation between the variables X and Y presented in the table below.
+**[5 Marks]**
+
+| X | 1 | 2 | 3 | 6 | 8 |
+|---|---|---|---|---|---|
+| Y | 1 | 2 | 3 | 4 | 5 |
+
+**(c)** A random variable X has a PDF P(X=x) for x = 1, 2, 3:
+
+| x | 1 | 2 | 3 |
+|---|---|---|---|
+| P(X=x) | 0.2 | 0.5 | 0.3 |
+
+Calculate:
+- **(i)** E(6x) **[2 Marks]**
+- **(ii)** E(5x + 2) **[3 Marks]**
+
+**[TOTAL = 15 Marks]**
+
+---
+
+Q1.
+(a)** Define the following concepts associated with hypothesis testing:
+- **i.** Hypothesis **[1 Mark]**
+- **ii.** Null hypothesis **[1 Mark]**
+- **iii.** Alternative hypothesis **[1 Mark]**
+- **iv.** Level of significance of a test **[1 Mark]**
+- **v.** Critical region of a test **[1 Mark]**
+
+**(b)** The Director of Admissions at a City university advises parents of incoming students about the cost of textbooks during a typical semester. A sample of 100 students enrolled in the university indicates a sample mean cost of 315.40, with a sample standard deviation of 43.20.
+- **i.** Using a 1% level of significance, is there evidence that the population average is above 300? **[2? Marks]**
+- **ii.** What is your answer in 7b(i) if the standard deviation is 75 and a 5% level of significance is used? **[2? Marks]**
+
+---
+
+===============================================================================
+ JUPEB 2020 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+Antonie van Leeuwenhoek first observed microorganisms in 1674 and called them
+  A. microbes.
+  B. cells.
+  C. bacteria.
+  D. animalcules.
+
+Q2.
+The name 'Enterobacteriaceae' denotes a bacterial
+  A. Class.
+  B. Division.
+  C. Order.
+  D. Family.
+
+Q3.
+Choose the option below that is INCORRECT about fungal groups.
+  A. Deuteromycetes are fungal groups that form asexual spores.
+  B. Oomycetes are fungal groups that form asexual spores.
+  C. Basidiomycetes are fungal groups that form asexual spores.
+  D. Zygomycetes are fungal groups that form asexual spores.
+
+Q4.
+In which part of the leaves does photosynthesis take place?
+  A. Stomata.
+  B. Chloroplast.
+  C. Mesophyll.
+  D. Vascular bundle.
+
+Q5.
+The by-product of light-dependent reaction of photosynthesis is
+  A. H?O
+  B. CO?
+  C. O?.
+  D. ATP.
+
+Q6.
+The internal changes that seeds pass through before they start germinating is known as
+  A. after-ripening.
+  B. dormancy.
+  C. sprouting.
+  D. fertilization.
+
+Q7.
+Which of the following statements is CORRECT about Bryophytes and Pteridophytes?
+  A. The organ of anchorage are rhizoids and roots respectively.
+  B. Bryophytes are terrestrial while Pteridophytes are amphibious.
+  C. Bryophytes have complex body structures while Pteridophytes have simpler body structures.
+  D. Bryophytes and Pteridophytes possess rhizolds.
+
+Q8.
+One of the importance of mosses is that they
+  A. initiate soil erosion.
+  B. reduce soil quality.
+  C. initiate soil formation.
+  D. serve as source of income.
+
+Q9.
+A cell that has thin cell walls, dense cytoplasm, small sized vacuoles and capable of dividing is likely to be a
+  A. meristematic cell.
+  B. secondary cell.
+  C. lateral cell.
+  D. differentiated cell.
+
+Q10.
+The floral leaves of a typical flower are divided into four parts where the sepals form the
+  A. corolla.
+  B. calyx.
+  C. androecium.
+  D. gynoecium.
+
+Q11.
+When the sepals of a flowering plant are separated from each other, such plant is referred to as a
+  A. gamosepalous plant.
+  B. monosepalous plant.
+  C. heterosepalous plant.
+  D. polysepalous plant.
+
+Q12.
+The mass flow of sap through sieve elements is described as an active process because
+  A. sucrose moves out of the phloem into area of cell multiplication.
+  B. phloem sap is capable of moving in the sieve elements against the force of gravity.
+  C. sucrose is loaded into a sieve element against the concentration gradient.
+  D. water moves along with the sucrose down the concentration gradient.
+
+Q13.
+The rate of diffusion is inversely proportional to the size of diffusing molecules and
+  A. concentration gradient.
+  B. surface area of the cell involved.
+  C. density of the diffusing molecules.
+  D. temperature in the cell involved.
+
+Q14.
+When the filaments of stamens are attached to the petal, the flower is referred to as
+  A. epipetalous.
+  B. gamopetalous.
+  C. polypetalous.
+  D. monopetalous.
+
+Q15.
+In seed vascular plants, the first fertilization occurs
+  A. when two nuclei fuse together to form a zygote.
+  B. when one nucleus fuses with the ovum to form a diploid cell.
+  C. when one nucleus fuses with the ovum to form a zygote.
+  D. when two nuclei fuse together to form a diploid cell.
+
+Q16.
+Body segmentation is pronounced in the following groups of animals EXCEPT
+  A. Arthropoda.
+  B. Chordata.
+  C. Annelida.
+  D. Coelenterata.
+
+Q17.
+The Sarcodinea are very unique with the presence of
+  A. ciliated body.
+  B. long flagella.
+  C. amorphous body structure.
+  D. binucleated cytoplasm.
+
+Q18.
+Which of the listed phyla is referred to as a dead end phylum?
+  A. Coelentrata.
+  B. Annelida.
+  C. Porifera.
+  D. Arthropoda.
+
+Q19.
+Sexual maturity of animal parasites is attained in the
+  A. reservoir host.
+  B. definitive host.
+  C. primary host.
+  D. intermediate host.
+
+Q20.
+A mantle and mantle cavity are present in the class
+  A. Oligochaete.
+  B. Bivalvia.
+  C. Polychaeta.
+  D. hiruclinea.
+
+Q21.
+The believe that certain living things arose from vital forces present in non-living or decomposing matter is known as
+  A. initial generation.
+  B. biogenesis.
+  C. spontaneous generation.
+  D. induced generation.
+
+Q22.
+The part labeled II is the
+  A. nucleus.
+  B. eyespot.
+  C. basal granule.
+  D. contractile vacuole.
+
+Q23.
+Which of these cell structures can be seen only with an electron microscope?
+  A. Cell surface membrane.
+  B. Chromosome.
+  C. Nucleolus.
+  D. Vacuole.
+
+Q24.
+Which of the following are found in both eukaryotic and prokaiyotic cells?
+  A. I, II and III.
+  B. I, II and IV.
+  C. I, III and IV.
+  D. II, III and IV.
+
+Q25.
+Which of the following listed organisms is a multicellular organism?
+  A. Rhizopus.
+  B. Euglena.
+  C. Paramecium.
+  D. Chlorella.
+
+Q26.
+Birds and mammals have certain shared characteristics. Which of these is NOT a shared characteristic?
+  A. Ossified endoskeleton.
+  B. Breathing using lungs.
+  C. Viviparity.
+  D. Warm blooded.
+
+Q27.
+Choose the option that is associated with an open vascular system.
+  A. Man.
+  B. Fish.
+  C. Prawn.
+  D. Snakes.
+
+Q28.
+Choose the option that is associated with the measuring of the pulse beat.
+  A. Artery.
+  B. Vein.
+  C. Capillary.
+  D. Nerves.
+
+Q29.
+Study the options carefully and identify the organism that excretes uric acid as its main nitrogenous waste.
+  A. Frog.
+  B. Birds.
+  C. Fishes.
+  D. Man.
+
+Q30.
+Study the options A?D carefully. Identify the cells which secrete the male sex hormone, testosterone.
+  A. Isthmus.
+  B. Cryptic cells.
+  C. Lieberklihn.
+  D. Leydig's cells.
+
+Q31.
+Which of the options below best describes an electron microscope in comparison with a light microscope?
+  A. (Option A ? Higher magnification, Higher resolution)
+  B. (Option B ? Higher magnification, Lower resolution)
+  C. (Option C ? Lower magnification, Higher resolution)
+  D. (Option D ? Lower magnification, Lower resolution)
+
+Q33.
+Which of these is the intermediate host of Fasciola?
+  A. Pig globosa.
+  B. Lymnaea truncatula.
+  C. Lamellidens marginalis.
+  D. Achatina achiatina.
+
+Q36.
+Students in a biology class were asked to use the following information to draw a bar chart to show number of babies born in twelve villages on a certain day:
+  A. Graph of number of babies against number of villages.
+  B. Graph of number of villages against number of babies.
+  C. Bar chart showing number of villages against number of babies.
+  D. Bar chart showing number of babies against number of villages.
+
+Q37.
+What is the ecological definition of the term community?
+  A. All the food web in an ecosystem.
+  B. All the individuals of one species in an area.
+  C. All the organisms in an area.
+  D. All the biotic and abiotic components in an ecosystem.
+
+Q39.
+Identify the option that is not an anti sera used in blood grouping.
+  A. Anti sera A.
+  B. Anti sera B.
+  C. Anti sera C.
+  D. Anti sera D.
+
+Q40.
+Identify the odd ecological instrument from the options given below.
+  A. Anemometer.
+  B. Ecological meter.
+  C. Ecological meter.
+  D. (Refer to options in book)
+
+Q43.
+Which of these is a xerophyte?
+  A. Cactus.
+  B. Moss.
+  C. Fern.
+
+Q44.
+Which of the following is NOT true of Bryophytes?
+  A. Possession of rhizoids.
+  B. Production of spores.
+  C. Alternation of generation.
+  D. Xerophytic life cycle.
+
+Q45.
+One of the following is not a causative organism of human malaria.
+  A. Plasmodium falciparum.
+  B. Plasmodium ovale.
+  C. Plasmodium vivax.
+  D. Plasmodium berghei.
+
+Q46.
+Choose the option that best describes the lag phase. It is the period when the
+  A. bacteria are adjusting to the environment.
+  B. environment is adjusting to the bacteria.
+  C. bacteria records the highest growth rate.
+  D. environment slows down the bacteria growth.
+
+Q47.
+Identify the option which is not caused by a pathogen.
+  A. Malaria.
+  B. Cancer.
+  C. Measles.
+  D. Tuberculosis.
+
+Q48.
+A pharmaceutical company involved in the
+  A. Bacteria.
+  B. Protozoa.
+  C. Fungi.
+  D. Virus.
+
+Q49.
+A person who consumes mouldy bread is most likely
+  A. Aspergillus sp.
+  B. Plorutus sp.
+  C. Mycelium sp.
+  D. Mouldellum sp.
+
+Q50.
+A piece of yam fell into a solution of unknown
+  A. hypotonic.
+  B. hypertonic.
+  C. isotonic.
+  D. hydrotonic.
+
+===============================================================================
+ JUPEB 2020 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+1(a) State ONE function of the following cell organelles:
+i.   Nucleus
+ii.  Plasma membrane
+iii. Ribosome
+iv.  Chloroplast
+v.   Ribosomal Endoplasmic Reticulum
+vi.  Golgi apparatus
+vii. Mitochondria
+viii.Cell wall
+ix.  Lysosome
+x.   Vacuoles.          [5 Marks]
+
+(b) Mention THREE similarities between a prokaryotic
+and an eukaryotic cell. [3 Marks]
+
+(c) Mention TWO differences between a prokaryotic
+and an eukaryotic cell. [2 Marks]
+
+Q2.
+2. A breed of dog is said to have genes for hair colour and leg length. Allele 'A' is dominant and gives brown hair. Allele 'a' is recessive and gives black hair. Allele 'L' is dominant and gives long legs, and allele 'l' is recessive and gives short legs.
+
+(a) Present in tabular form, the various types of genotypes and phenotypes that the dogs may have. [5 Marks]
+
+(b) Construct a genetic table to show the offspring a breeder would expect between two dogs that are heterozygote for both genes using Punnet square.
+[4 Marks]
+
+(c) State the phenotypic ratio of the cross.
+
+Q3.
+3(a) What is conservation? [2 Marks]
+
+(b)  Differentiate between in-situ and ex-situ
+conservation. [2 Marks]
+
+(c)  Outline the merits and demerits of each of
+in-situ and ex-situ conservation. [6 Marks]
+
+Q4.
+4(a) With the aid of a labelled diagram alone, show the
+general sexual life cycle of fungi.
+
+(b)  Outline the general characteristics of
+Basidiomycetes.
+
+Q5.
+5(a) Name THREE major constituents of plant tissues
+decomposed by fungi.
+
+(b)  Write TWO importance of fungi to the soil.
+
+(c)  List FIVE general characteristics of fungi.
+
+Q6.
+6(a) In a tabular form, name SIX microorganisms
+causing infectious diseases in animals, indicating
+the diseases caused and their common sources.
+
+(b)  Briefly describe yeast reproduction.
+
+Q7.
+7(a) Define the term: 'tissue'.
+
+(b)  State the FOUR main types of tissue found in
+animals.
+
+(c)  Write short notes on each of the various types of
+epithelial tissues, indicating their structures,
+locations and functions.
+
+Q8.
+8(a) Describe sexual reproduction in Hydra.
+
+(b)  Briefly describe nutrition in Hydra.
+
+===============================================================================
+ JUPEB 2020 -- BIOLOGY PRACTICAL
+===============================================================================
+
+Q1.
+(a) You have been provided with two (2) samples
+labelled specimen N and specimen K. Use iodine,
+Benedict's solution, Fehling's solution A and B to
+test the samples for:
+i.  Starch.
+ii. Reducing sugar.
+Record your findings for (i) and (ii) in a tabular
+form.
+
+(b)
+i.  Add four drops of Millon's reagent to 5ml of
+specimen J in a test-tube and heat.
+
+ii. Add 10 drops of specimen K to 5ml of Benedict's
+solution and boil for 2 minutes. Allow the mixture
+to cool. Report your findings using the format
+shown below.
+
+| SPECIMEN | TEST | OBSERVATION | INFERENCE |
+|----------|------|-------------|-----------|
+|    J     |      |             |           |
+|    K     |      |             |           |
+
+Q2.
+You have been provided with the specimens P, Q, R
+and S.
+
+(a) Identify specimens P, Q, R and S stating their
+Genus without reasons.
+
+(b) What classes do specimens P, Q, R, and S belong?
+
+(c) Construct a food chain using specimens P, Q, R
+and S.
+
+(d) What is the trophic level of specimen R?
+
+(e) State four (4) adaptive features of specimen P.
+
+(f) What are the four (4) observable (external)
+differences between specimens R and S?
+
+(g) Draw a labelled diagram of the lateral view of
+specimen R.
+
+===============================================================================
+ END OF 2020 QUESTIONS
+===============================================================================

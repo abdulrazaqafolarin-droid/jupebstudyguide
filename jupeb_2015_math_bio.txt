@@ -1,0 +1,873 @@
+===============================================================================
+ JUPEB 2015 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+Find the non-zero negative value of $x$ which satisfies the equation: $\begin{vmatrix} x & 1 & 0 \\ 1 & x & 1 \\ 0 & 1 & x \end{vmatrix} = 0$
+  A. $2$
+  B. $-2$
+  C. $\sqrt{2}$
+  D. $-\sqrt{2}$
+
+Q2.
+If $Z = \begin{pmatrix} 2 & 3 & 3 \\ 4 & 1 & 0 \\ 1 & 4 & 0 \end{pmatrix}$, find the determinant of $Z$.
+  A. 35
+  B. 45
+  C. $-35$
+  D. 48
+
+Q3.
+Compute $\left(1 + \frac{3}{1+i}\right)^3$
+  A. $-4 - \frac{15}{2}i$
+  B. $4 - \frac{15}{2}i$
+  C. $\frac{17}{2} - \frac{15}{2}i$
+
+Q4.
+Find the centre and radius of the circle $8x^2 + 8y^2 - 24x - 40y + 18 = 0$
+  A. $\left(\dfrac{3}{2}, \dfrac{5}{2}\right)$, $r = \dfrac{3}{2}$
+  B. $\left(\dfrac{-3}{2}, \dfrac{5}{2}\right)$, $r = \dfrac{5}{2}$
+  C. $\left(\dfrac{3}{2}, \dfrac{-5}{2}\right)$, $r = \dfrac{3}{2}$
+  D. $\left(\dfrac{3}{2}, \dfrac{5}{2}\right)$, $r = \dfrac{5}{2}$
+
+Q5.
+Find the equation of the tangent to the circle $2x^{2} + 2y^{2} = 30$ at the point $(-3, 6)$.
+  A. $x + y - 15 = 0$
+  B. $x - 2y + 5 = 0$
+  C. $x + 2y - 5 = 0$
+  D. $x - 2y + 15 = 0$
+
+Q6.
+Given the equation of the ellipse $\frac{x^{2}}{2} + y^{2} = 1$, find the equation of the directrices.
+  A. $x = (0, \pm 1)$
+  B. $x = (0, \pm 2)$
+  C. $x = (0, \pm 3)$
+  D. $x = (0, \pm 4)$
+
+Q7.
+Find the gradient of the curve $y = x^{3} - 6x^{2} + 11x - 6$ at the point $(1, 0)$.
+  A. $-1$
+  B. $-2$
+  C. $1$
+  D. $2$
+
+Q8.
+Given sets $A = \{a, b, 1, 3\}$ and $B = \{a, 2, 4\}$, find $A \cup B$.
+  A. $\emptyset$
+  B. $\{a, b, 1, 2, 3, 4\}$
+  C. $\{a, b, 1, 3\}$
+  D. $\{b, 1, 2, 3, 4\}$
+
+Q9.
+(Question not visible in image)
+
+Q10.
+A polynomial $2x^3 + ax^2 + bx - 1$ has a factor $(x - 1)$ and the remainder when it is divided by $(x - 2)$ is $-4$. Find $a + b$.
+  A. ?1
+  B. 1
+  C. ?2
+  D. 2
+
+Q11.
+Solve the equation $\log_{3} x + \log_{x} 3 = \frac{10}{3}$
+  A. $\sqrt{3}, \ 9$
+  B. $27, \ \sqrt[3]{3}$
+  C. $10, \ 9$
+  D. $27, \ \sqrt{3}$
+
+Q12.
+Solve the equation $\sqrt{2x + 3} - \sqrt{x - 2} = 2$
+  A. 3, 6
+  B. 3, 11
+  C. 27, 3
+  D. 3, 10
+
+Q13.
+If $y = x(x^6 - 1)$, find the range for which $y = 0$.
+  A. $(-\infty, 0) \cup (0, \infty)$
+  B. $(-1, -\infty) \cup (0, \infty)$
+  C. $(-1, 0) \cup [0, 1]$
+  D. $(-\infty, \infty)$
+
+Q14.
+Evaluate $\displaystyle\lim_{x \to -3} \left(\frac{3x^{2} - 27}{x + 35}\right)$
+  A. $-18$
+  B. $9$
+  C. $0$
+  D. $3$
+
+Q15.
+Evaluate $\displaystyle\int_1^e \dfrac{1}{x}\, dx$
+  A. 0
+  B. 2
+  C. 1
+  D. 2e
+
+Q16.
+Evaluate $\displaystyle\int_0^{\frac{\pi}{2}} \cos x\, dx$
+  A. 2
+  B. 7
+  C. ?1
+  D. 1
+
+Q17.
+Evaluate $\displaystyle\lim_{x \to \infty} \left(\frac{2x^{3} + x^{2} - 5}{x^{3} + 2x + 1}\right)$
+  A. 5
+  B. 0
+  C. 2
+  D. \infty
+
+Q18.
+The expression $px^2 + qx + r$ equals $4$ at $x = 1$. If the derivative is $2x + 1$, what are the values of $p$, $q$ and $r$ respectively?
+  A. 1, 1, 2
+  B. 1, 2, 1
+  C. 1, 0, 1
+  D. 1, ?1, 2
+
+Q19.
+The gradient of a curve at any point $(x, y)$ is given by $2x + 3$. If the curve passes through the origin, find the equation of the curve.
+  A. $x(x + 2)$
+  B. $x(2x + 3)$
+  C. $x^2 - 4$
+  D. $2x + 3$
+
+Q20.
+The position of an object in motion at any time $t$ is given by $s = 3t^3 - 5t - 2$. Obtain the velocity of the object after 2 seconds.
+  A. 31 m/s
+  B. 36 m/s
+  C. 18 m/s
+  D. 20 m/s
+
+Q21.
+Find the derivative of $2x^{3} - 5x^{2} + 2$.
+  A. $x^{2} - 10x$
+  B. $6x^{2} - 10x$
+  C. $-10x - 6x^{2}$
+  D. $6x - 10$
+
+Q22.
+Find the derivative of $y = (3 + 2x)(1 - x)$.
+  A. $-1 - 4x$
+  B. $4x - 1$
+  C. $-4x + 1$
+  D. $-4x$
+
+Q23.
+Differentiate $(x + y)^2 = 5$.
+  A. ?4
+  B. ?2
+  C. ?1
+  D. 10
+
+Q24.
+Evaluate $\displaystyle\lim_{x \to 3} \dfrac{x^{-25}}{x - 3}$
+  A. 5
+  B. 15
+  B. 10
+  C. 12
+
+Q25.
+If $f(x) = (2 - x)e^{x}$, find $f'(x)$.
+  A. $(2-x)e^{-x}$
+  B. $e^{2x}$
+  C. $-xe^{x}$
+  D. $(1-x)e^{x}$
+
+Q26.
+Find the modulus of $2\mathbf{i} + 3\mathbf{j} - 4\mathbf{k}$.
+  A. $\sqrt{22}$
+  B. $\sqrt{29}$
+  C. $2x$
+  D. $\sqrt{28}$
+
+Q27.
+Find the scalar product of $\mathbf{a} = 2\mathbf{i} + 3\mathbf{j}$ and $\mathbf{b} = 2\mathbf{i} + 3\mathbf{j} - 4\mathbf{k}$.
+  A. $\sqrt{3}$
+  B. $\sqrt{72}$
+  C. 13
+  D. $\sqrt{26}$
+
+Q28.
+Find the value of $n$ for which the vector $s\mathbf{i} + n\mathbf{j}$ and $3k\mathbf{i} + n\mathbf{j} - \mathbf{j} + 5\mathbf{k}$ are perpendicular.
+  A. 20
+  B. 10
+  C. ?10
+  D. ?20
+
+Q29.
+Obtain the projection of vector $\mathbf{a} = (3, -1, 5)$ on the vector $\mathbf{b} = (2, 1, -3)$.
+  A. $-\dfrac{5\sqrt{14}}{7}$
+  B. $-\dfrac{10}{\sqrt{14}}$
+  C. $\dfrac{10}{\sqrt{14}}$
+  D. $\dfrac{5\sqrt{14}}{7}$
+
+Q30.
+Find the volume of the tetrahedron $OABC$ with point $A(2,1,1)$, $B(0,-1,-1)$ and $C(-1,3,0)$.
+  A. 1
+  B. $\sqrt{35}$
+  C. $\sqrt{14}$
+  D. $\dfrac{\sqrt{35}}{6}$
+
+Q31.
+The distance $S$ in metres moved by a particle in time $t$ seconds is given by $S = 1.5t^2 - t$. Find its speed after $t$ seconds.
+  A. $\dfrac{3}{2}t$
+  B. $(3t + 1)$ m/s
+  C. $(3t - 1)$ m/s
+  D. $1.5t$
+
+Q32.
+A car starts from $A$ and travels $10$ km due West, $20$ km North-West and $30$ km due North. Find the displacement from $A$.
+  A. 51.3 km
+  B. 50.3 km
+  C. 53.3 km
+  D. 43 km
+
+Q33.
+The brakes of a train are able to produce a retardation of $1.2\ ^2$. If the train is travelling at $90\ $, at what distance from a station should the brakes be applied?
+  A. 200 m
+  B. 250 m
+  C. 260 m
+  D. 240 m
+
+Q34.
+A particle is projected with a velocity of $20\ $ up a smooth inclined plane of inclination $30?$. Find the distance described up the plane.
+  A. 40 m
+  B. 48 m
+  C. 46 m
+  D. 38 m
+
+Q35.
+A block of mass $20\ $ rests on a horizontal plane whose coefficient of friction is $0.4$. Find the force required to move the block if it acts horizontally.
+  A. 190 N
+  B. 80 N
+  C. 196 N
+  D. 784 N
+
+Q36.
+A mass of $8\ $ hangs in equilibrium, suspended by two light inelastic strings making angles $30?$ and $45?$ with the horizontal. Calculate the tensions in the two strings.
+  A. 57.4 N, 70.3 N
+  B. 50 N, 70 N
+  C. 50 N, 60.5 N
+  D. 50 N, 50 N
+
+Q37.
+If $\mathbf{a} = 2\mathbf{i} + 3\mathbf{j} + 5\mathbf{k}$, $\mathbf{b} = 3\mathbf{i} - 5\mathbf{j} + 2\mathbf{k}$, $\mathbf{c} = 1\mathbf{i} - \mathbf{j}$, calculate $\lambda$ such that $2\mathbf{a} - 5\mathbf{b} + \lambda\mathbf{c}$ is perpendicular to the $x$-axis.
+  A. 8
+  B. 9
+  C. 10
+  D. 7
+
+Q38.
+The probabilities that John and Joanna will pass an examination are $\dfrac{2}{3}$ and $\dfrac{4}{5}$ respectively. Find the probability that only one of them will pass.
+  A. $\dfrac{2}{5}$
+  B. $\dfrac{4}{15}$
+  C. $\dfrac{1}{15}$
+  D. $\dfrac{6}{15}$
+
+Q39.
+In how many ways can a committee of 2 men and 2 women be formed from 3 men and 5 women?
+  A. 20
+  B. 30
+  C. 12
+  D. 10
+
+Q40.
+The formula for Spearman's rank correlation is: $r_{rank} = 1 - \dfrac{6\sum d^2}{n(n^2 - 1)}$ What does each term represent?
+  A. $r = 1 - \dfrac{6\sum d^2}{n(n^2-1)}$
+  B. $r = 1 - \dfrac{6\sum d^2}{n^3 - n}$
+  C. $r = \dfrac{6\sum d^2}{n(n^2-1)}$
+  D. $r = 1 + \dfrac{6\sum d^2}{n(n^2-1)}$
+
+Q41.
+The following are features of continuous random variables **except**?
+  A. Area under curve is 1
+  B. It is bell-shaped
+  C. It is symmetric about the mean
+  D. The variance is zero
+
+Q42.
+The marks obtained by a group of students ? which of the following are features of a standard normal distribution?
+  A. The temperature of an object
+  B. The distance between two points
+  C. The population of a school
+  D. The marks obtained by a group of students
+
+Q43.
+An experiment in which the outcomes are two possibilities: "Success" or "Failure" is said to be a \_\_\_\_ distribution.
+  A. Binomial
+  B. Normal
+  C. Geometric
+  D. Bernoulli
+
+Q44.
+The range of values of rank correlation $(r_{rank})$ is?
+  A. $-1 \leq r_{rank} \leq 1$
+  B. $0 \leq r_{rank} \leq 1$
+  C. $r_{rank} \leq 1$
+  D. $r_{rank} \geq 1$
+
+Q45.
+Find the geometric mean of the data: $5, 15, 10, 8, 12$.
+  A. 72000
+  B. 821.1
+  C. 9.36
+  D. 10
+
+Q46.
+One can easily determine the \_\_\_\_ of a distribution from a histogram.
+  A. Mean
+  B. Mode
+  C. Median
+  D. Standard deviation
+
+Q47.
+Find the mean of the following scores:
+
+| Scores $(x)$ | 61 | 64 | 67 | 70 | 73 |
+|---|---|---|---|---|---|
+| Freq. $(f)$ | 5 | 18 | 42 | 27 | 8 |
+  A. 65
+  B. 67.45
+  C. 67
+  D. 68
+
+Q48.
+What is the mode of the following numbers: $1, 8, 8, 10, 9, 2, 7, 8, 2, 4, 1, 1, 8, 7, 1$?
+  A. 8
+  B. 8 and 1
+  C. 1
+  D. None of the above
+
+Q49.
+The \_\_\_\_ level of a test is the maximum probability of committing a Type I error when the null hypothesis holds.
+  A. Acceptance
+  B. Rejection
+  C. Significance
+  D. Significant
+
+Q50.
+The standard deviation of a statistic describes?
+  A. The shape of its distribution
+  B. The centre of its distribution
+  C. The amount of skewness associated with its distribution
+  D. The amount of variability associated with its distribution
+
+===============================================================================
+ JUPEB 2015 -- MATH THEORY
+===============================================================================
+
+Q1.
+.** In the study of motion of rigid bodies, explain the following concepts:
+
+**(a) i.** Moment of inertia of the system
+**ii.** Radius of gyration of the system
+
+**(b)** Find the moment of inertia and radius of gyration of a uniform thin rod of length 2a, density ? about an axis passing through one end of the rod perpendicular to its length.
+
+Q1.
+$\mathrm{(a)}$ i.** Evaluate the determinant A, where
+
+A = $\begin{pmatrix}1 & 2 & 3\\4 & 5 & 6\\7 & 8 & 9\end{pmatrix}$ (3 Marks)
+
+**ii.** What do you conclude from 2a(i)? (1 Mark)
+
+**iii.** Resolve x??1 / [(x+3)(x+1)?] in partial fractions. Hence, obtain its Binomial expansion up to terms x?. (4 Marks)
+
+**(b)** If cos(x + ?) = sin(x + ?), find tan x in terms of ? and ?. (3 Marks)
+
+**(c)** If sin A = 4/5 and cos B = 12/13, where A is obtuse and B is acute, find without using tables the values of:
+**i.** sin(A + B)  **ii.** tan(A ? B). (4 Marks)
+
+---
+
+Q1.
+$\mathrm{(a)}$** State the Newton's law of cooling and write out the differential equation describing the temperature of the body. (4 Marks)
+
+**(b)** A beaker of water initially at 100?C is allowed to cool in a room maintained at 15?C. After two minutes, the water temperature is 85?C. Find the time taken for the water to reach 40?C. (Hint: use Newton's law of cooling 6$\mathrm{(a)}$ above). (5 Marks)
+
+**(c)** If the position vectors of points A, B and C are
+? = i + 3j ? 7k, b = 7i + 6j + 5k and c = 9i + 7j + ?k, respectively. Find
+
+**i.** |a + b| (3 Marks)
+
+**ii.** the value of ? if A, B and C are Collinear. (3 Marks)
+
+
+Here is **MAT 004: STATISTICS** (Questions 7?8), continuing the theory section:
+
+Q1.
+(a) i.** Find the coefficient of linear correlation between the variables A and B in the below table (3 Marks)
+
+| A | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| B | 1 | 2 | 3 | 6 | 8 |
+
+**ii.** Five students were ranked according to their scores in Mathematics and Physics thus:
+
+| Student | A | B | C | D | E |
+|---|---|---|---|---|---|
+| Mathematics | 1 | 3 | 5 | 2 | 4 |
+| Physics | 2 | 1 | 3 | 4 | 5 |
+
+Calculate the Spearman's rank correlation coefficient. (3 Marks)
+
+**(b)** Differentiate between discrete and continuous random variable. (2 Marks)
+
+**(c)** A company that manufactures computer chips finds that 5% of the chips they produce are defective. If 8 chips are selected at random, find the probability that:
+
+**i.** 2 chips will be defect (2 Marks)
+
+**ii.** at least 2 chips will be defective. (2 Marks)
+
+**iii.** Calculate for (i) and (ii) above, the expected number of defective chips and variance in a sample of 2,000 chips. (5 Marks)
+
+Q1.
+(a)** The following data represent scores of 50 students in a Statistics test:
+
+72, 93, 70, 59, 78, 74, 65, 73, 80, 57, 67, 72, 57, 83, 76, 74, 56, 68, 67, 74, 76, 79, 72, 61, 72, 73, 76, 67, 49, 71, 53, 67, 65, 100, 83, 69, 61, 72, 68, 65, 51, 75, 68, 75, 66, 77, 61, 64, 74, 72.
+
+By using a class interval of five (45 ? 49, 50 ? 54, etc):
+
+**i.** Prepare the frequency distribution table. (4 Marks)
+
+**ii.** What is the coefficient of variation? (4 Marks)
+
+**iii.** Does the data represent a sample or a population? (1 Mark)
+
+**(b)** Discuss briefly the measures of location associated with frequencies hence; explain mean, mode, and median. (6 Marks)
+
+Q1.
+(a).** Given A = {-5, -3, -1, 0, 1, 2, 3}, B = {-4, -3, 0, 3, 5, 8}.
+Find A ? B. (2 Marks)
+
+**(b)** If A, B, and C are any sets, show that A ? (B ? C) = (A ? B) ? C (3 Marks)
+
+**(c)** In an election involving three parties for the chairmanship and gubernatorial election of Lagos State, voters cast their votes as follows: 190 voted for party A, 200 for party B and 250 for party C. 80 voted for A and B, 60 voted for A and C, 100 voted for B and C and 40 voted for B alone. If 500 people voted during the election, find:
+
+**i.** The number of voters who voted for all the three parties. (3 Marks)
+
+**ii.** The number of voters who voted for A and B but not C. (3 Marks)
+
+**iii.** The number of voters who did not vote for any party. (4 Marks)
+
+Q1.
+$\mathrm{(a)}$** Evaluate lim(x?0) (1/x ? cscx). (3 Marks)
+
+**(b)** By Taylor's theorem, show that
+
+log?(1 + x) = x ? x?/2 + x?/3 ? x?/4 + ? + x?/n,
+
+and hence evaluate log?(1.1) to four decimal places. (8 Marks)
+
+**(c)** Using the trapezoidal rule with ordinates x = 1.0, 1.4, 1.8, 2.2, 2.6, 3.0; evaluate ??? 1/(x+1) dx (4 Marks)
+
+---
+
+Q1.
+$\mathrm{(a)}$** By using the reduction formula for ? sec? x dx, evaluate the definite integral ??^(?/4) sec?x dx (10 Marks)
+
+**(b)** Find the area enclosed by the curve y = x? and the x-axis between x? = 0 and x? = 2 (5 Marks)
+
+===============================================================================
+ JUPEB 2015 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+Which of the following diseases could be exclusively associated with a river basin?
+  A. Malaria
+  B. Syphilis
+  C. Onchocerciasis
+  D. Cholera
+
+Q2.
+In mammals, the function of the sebaceous gland is to ___
+  A. Produce sweat
+  B. Secrete sodium
+  C. Secrete water
+  D. Produce sebum
+
+Q3.
+Osteoporosis is a disease of the ___
+  A. Lungs
+  B. Skin
+  C. Bones
+  D. Eyes
+
+Q4.
+The type of reproduction that is common to both Hydra and Yeast is ___
+  A. Grafting
+  B. Budding
+  C. Conjugation
+  D. Binary fission
+
+Q5.
+The difference between the largest and the smallest data values is the ___
+  A. Variance
+  B. Interquartile range
+  C. Range
+  D. Coefficient of variation
+
+Q6.
+The function of ribosomes in cells is ___ **
+  A. Protein synthesis
+  B. Starch synthesis
+  C. Transport of materials
+  D. Lipid storage
+
+Q7.
+Which statement correctly describes homologous chromosomes?
+  A. They are found during meiosis
+  B. They are held together by centromeres
+  C. They are identical
+  D. They carry the same gene loci
+
+Q8.
+Which one of the following is a correct outline of the main events in photosynthesis?
+  A. Oxygen reacts with carbohydrate to produce water and carbon-dioxide in the presence of light
+  B. Light join carbon-dioxide to an acceptor compound which is then reduced by hydrogen obtained by water
+  C. Light splits water and the resulting hydroxyl group combines with a compound which has incorporated carbon-dioxide
+  D. Carbon-dioxide combines with an acceptor compound and this is reduced by hydrogen split from water by light.
+
+Q9.
+Breathing movement in mammals is accomplished by regular movement of the diaphragm and the ___ **
+  A. Intercostal muscles
+  B. Vertebral column
+  C. Clavicle
+  D. Pleural cavity
+
+Q10.
+Organisms that require oxygen to grow are called ___
+  A. Psychrophilic organisms
+  B. Thermophilic organisms
+  C. Aerobes
+  D. Hyperthermophilies
+
+Q11.
+Organisms that retain the blue/purple colour in their cell wall in gram staining technique are ___
+  A. Micro-aerophile
+  B. Viable cell
+  C. Gram positive organisms
+  D. Grams negative organisms
+
+Q12.
+Which of the following nitrogenous base is found in RNA but not in DNA?
+  A. Adenine
+  B. Thymine
+  C. Uracil
+  D. Guanine
+
+Q13.
+The study of group of organisms is called ___
+  A. Ecology
+  B. Autecology
+  C. Gynecology
+  D. Synecology
+
+Q14.
+Genetic rearrangement between nonsister chromatids is known as ___ **
+  A. Cross over
+  B. Synapsis
+  C. Random fertilization
+  D. Character
+
+Q15.
+One of the following is not a type of dormancy.
+  A. Induced
+  B. Inmate
+  C. Enforced
+  D. Applied
+
+Q16.
+The terrestrial species of class Gastropoda prevent water loss by means of ___
+  A. Apiphragm
+  B. Nephridia
+  C. Radula
+  D. Epiphragm
+
+Q17.
+The first forms of life on Earth were thought to be ___
+  A. Single-celled plants
+  B. Prokaryotes
+  C. Insects
+  D. Large animal such as dinosaurs
+
+Q18.
+Which polysaccharides is usually found in the cell walls of fungi?
+  A. Starch
+  B. Glycogen
+  C. Chitin
+  D. Cellulose
+
+Q19.
+What adaptation do seed plants have in addition to the seed that is not found in seedless plants?
+  A. Gametophytes
+  B. Vascular tissue
+  C. Pollen
+  D. Chlorophyll
+
+Q20.
+Prokaryotes stain as Gram-positive or Gram-negative because of differences in the ___ **
+  A. Cell wall
+  B. Cytoplasm
+  C. Nucleus
+  D. Chromosomes
+
+Q21.
+External fertilization occurs in ___ type of environment? **
+  A. Aquatic
+  B. Savanna
+  C. Forested
+  D. Steppe
+
+Q22.
+What kind of ecosystem are exotic species especially threatening to?
+  A. Deserts
+  B. Marine ecosystems
+  C. Islands
+  D. Tropical forest
+
+Q23.
+Each neurone contains ___ **
+  A. Soma, dendrite and axon
+  B. Sensory, motor and hypothalamus
+  C. Cerebrum, cerebellum and hypothalamus
+  D. Afferent, efferent and mixed
+
+Q24.
+One of the statement is not true about Berry and Drupe
+  A. They both have thin epicarp
+  B. They both have fleshy succulent mesocarp
+  C. Their endocarp is edible
+  D. They both have seed.
+
+Q25.
+Antibodies discovery was done by the Scottish bacteriologist ___
+  A. Alexander penicillius
+  B. Alexander Fleming
+  C. Alexandes Fleming
+  D. Alexandes Penicillius
+
+Q26.
+The type of cell division which forms the basis of Mendel's law of segregation is ___
+  A. Mitosis
+  B. Meiosis
+  C. Somatic
+  D. Synoptic
+
+Q27.
+Archaebacteria is simply ___
+  A. A prokaryotes without cell wall
+  B. An eukaryotes without cell wall
+  C. A prokaryote without a peptidoglycan cell wall
+  D. An eukaryotes without a peptidoglycan cell wall
+
+Q28.
+Leucosolenia belongs to class ___
+  A. Calcispongiae
+  B. Hexactinellida
+  C. Demospongiae
+  D. Porifera
+
+Q29.
+A pseudopodia that is threadlike, branched and interconnected is known as ___
+  A. Lobopodia
+  B. Actinopodia
+  C. Filopodia
+  D. Reticulopodia
+
+Q30.
+Photosynthesis microphylls are found in ___ **
+  A. division Psilophyta
+  B. division Lycophyta
+  C. Division Sphenophyta
+  D. Division pterophyta
+
+Q31.
+Polio myelitis is an infectious disease caused by ___ **
+  A. Virus
+  B. Protozoan
+  C. bacterium
+  D. fungus
+
+Q32.
+Which of these is a trace element? **
+  A. Iron
+  B. Calcium
+  C. Sulphur
+  D. Copper
+
+Q33.
+Which of these diseases cannot be prevented by immunization?
+  A. Polio myelitis
+  B. Tuberculosis
+  C. Cholera
+  D. Onchocerciasis
+
+Q34.
+Hydra removes undigested food by ___
+  A. passing it through the anus
+  B. passing it through the mouth
+  C. means of contractile vacuole
+  D. Digesting it through the body surface
+
+Q35.
+Which of the following is INCORRECT? The prothallus of a fern ___
+  A. is a flattened heart shaped structure
+  B. is a green because its cells contain chloroplast
+  C. is the dominant plant
+  D. bears the sexual organs
+
+Q36.
+The science of taxonomy has two branches namely ___ and ___
+  A. Biology naming and biochemistry
+  B. Nomenclature and Classification
+  C. Botany and systematic
+  D. Microbiology and systematic
+
+Q37.
+To complement biotic analysis in measuring environmental factors, the following are studied except
+  A. Soil
+  B. Water
+  C. Topography
+  D. Geography
+
+Q38.
+The period between inoculation of bacteria in culture medium and the beginning of multiplication is known as ___
+  A. log phase
+  B. lag phase
+  C. stationary phase
+  D. decline phase
+
+Q39.
+Small proteinaceous infectious particles that do not contain nucleic acid genome that codes for their progeny are ___
+  A. bacteria
+  B. viruses
+  C. HIV
+  D. prion
+
+Q40.
+Example of all-purpose media used in cultivation of bacteria by a bacteriologist is ___
+  A. selenite Agar
+  B. blood agar
+  C. nutrient agar
+  D. tryptone soy agar
+
+Q41.
+Which of the following is not a characteristic feature of the phylum Cnidaria?
+  A. Polymorphism
+  B. Cephalisation
+  C. Body of two-germ layers
+  D. Nematocysts
+
+Q42.
+Which of the following groups of plants are not considered as lower plants?
+  A. pteridophytes
+  B. Bryophytes
+  C. Crytogams
+  D. Spermatophytes
+
+Q43.
+Non-living bodies in the cells includes one of these,___ **
+  A. Starch grains
+  B. Chloroplast
+  C. Ribosomes
+  D. cell wall
+
+Q44.
+Alternation of generation in plants involves which of the following? **
+  A. processes in two sexual pathways
+  B. processes in one single sexual pathway
+  C. Spores dispersal alone
+  D. Processes in homogamy alone
+
+Q45.
+Which of these is not a form of respiration in Amphibians?
+  A. Cuteneous
+  B. Tubular
+  C. Pulmunary
+  D. Buccal-pharyngeal
+
+Q46.
+The factor that least affects food shortage in sub-saharan Africa is ___
+  A. flooding
+  B. pests
+  C. mixed cropping
+  D. drought
+
+Q47.
+Which of the following factors may not directly affect population density of organisms? **
+  A. Edaphic
+  B. Nutritional
+  C. Mortality
+  D. Emmigration
+
+Q48.
+One of the major causes of laboratory acquired infection is inhalation of ___
+  A. air
+  B. water
+  C. particles
+  D. infectious aerosol
+
+Q49.
+The major cell type of the specific immune system are ___
+  A. bone marrow cells
+  B. erythrocytes
+  C. lymphocytes
+  D. monocytes
+
+Q50.
+The normal microbacteria of the stomach include all of the following except:
+  A. Streptococcus
+  B. Staphylococcus
+  C. Lactobacillus
+  D. Diphtheriods
+
+===============================================================================
+ JUPEB 2015 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+State 6 differences between sexual and asexual reproduction **[6 marks]**
+**(b)** Write short notes on any 2 of the following:
+- i. Haplontic life cycle
+- ii. Diplontic life cycle
+- iii. Haplodiplontic life cycle **[4 marks]**
+
+Q2.
+Define the following terms:
+- i. Genotype
+- ii. Phenotype
+- iii. hybrid
+- iv. Dominant character **[4 marks]**
+**(b)** State clearly Mendel's first and second laws of inheritance. **[2 marks]**
+**(c)** If a pure breeding brown coloured rat BB is crossed with a pure breeding white rat bb, using diagrams only, show the genotype of the offspring up to the second filial generation. **[4 marks]**
+
+Q3.
+Describe the formation of two molecules of pyruvate during respiration **[10 marks]**
+
+Q4.
+Define the following terms:
+- i. Aseptic technique
+- ii. Antigens
+- iii. Antibodies **[4 marks]**
+**(b)** List 6 rules that must be observed for any aseptic technique **[6 marks]**
+
+Q5.
+How does water in the soil enter the root hair of the plant? **[6 marks]**
+**(b)** Name the tissue that conducts water from the root to the stem and leaves in a flowering plant. **[4 marks]**
+
+Q6.
+State five functions of testosterone **[5 marks]**
+**(b)** With aid of diagram only, describe mature spermatozoon **[5 marks]**
+
+Q7.
+What is a tissue? **[1 mark]**
+**(b)** How are plant tissues formed? **[3 marks]**
+**(c)** Describe the structure and function of two vascular tissues **[6 marks]**
+
+Q8.
+List any 6 characteristics of the phylum mollusca **[6 marks]**
+**(b)** Give 4 economic importance of the sub-class pulmonata. **[4 marks]**
+
+===============================================================================
+ END OF 2015 QUESTIONS
+===============================================================================

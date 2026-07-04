@@ -2,6 +2,10 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat-proxy`;
 import { supabase } from '@/integrations/supabase/client';
 
+export function stripThinkBlocks(content: string): string {
+  return content.replace(/<(?:scratchpad|think)>[\s\S]*?<\/(?:scratchpad|think)>/gi, '').trim();
+}
+
 export interface AIChatMessage {
   role: "system" | "user" | "assistant";
   content: string;

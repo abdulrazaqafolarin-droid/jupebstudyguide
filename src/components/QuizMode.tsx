@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { MathRenderer } from './MathRenderer';
 
 interface QuizModeProps {
   questions: Question[];
@@ -348,7 +349,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
         {/* Question */}
         <h3 className="text-lg font-medium mb-6 leading-relaxed">
-          {currentQuestion.question}
+          <MathRenderer content={currentQuestion.question} />
         </h3>
 
         {/* Options */}
@@ -384,7 +385,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
                    option.label}
                 </span>
                 <span className="font-mono text-sm leading-relaxed pt-1">
-                  {option.text}
+                  <MathRenderer content={option.text} />
                 </span>
               </button>
             );
@@ -403,7 +404,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
               <strong className={hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
                 {hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? '✓ Correct!' : !hasRealAnswer(currentQuestion) ? 'Answer recorded' : '✗ Incorrect'}
               </strong>
-              {' '}{currentQuestion.explanation}
+              {' '}<MathRenderer content={currentQuestion.explanation} />
             </p>
           </div>
         )}

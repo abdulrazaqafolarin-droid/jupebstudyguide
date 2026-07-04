@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat as aiStreamChat } from '@/lib/ai-service';
+import { streamChat as aiStreamChat, stripThinkBlocks } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -408,6 +408,7 @@ export const FloatingAITutor = () => {
         }
         acc += text;
         assistantContentRef.current = acc;
+        const stripped = stripThinkBlocks(assistantContentRef.current);
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length && arr[arr.length - 1].role === 'assistant') {
@@ -442,6 +443,13 @@ export const FloatingAITutor = () => {
     e.preventDefault();
     if ((!input.trim() && !attachment) || isLoading) return;
     handleStreamChat(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
+    if (user?.id) {
+      try {
+        const key = `u:${user.id}:ai-chat-count`;
+        const cur = JSON.parse(localStorage.getItem(key) || '0');
+        localStorage.setItem(key, JSON.stringify(cur + 1));
+      } catch {}
+    }
   };
 
   const handleQuickPrompt = (prompt: string) => {

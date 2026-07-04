@@ -1,0 +1,1026 @@
+===============================================================================
+ JUPEB 2023 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+If P = {x: 3 < x < 15, x is prime} and Q = {x : 2 < x < 14, x is odd}, evaluate n(P ? Q) + n(P ? Q)
+  A. 35
+  B. 26
+  C. 12
+  D. 10
+
+Q2.
+Determine the range of values of x for which -2x? + 5x + 3 $\gt$ 0
+  A. -3 < x < ?
+  B. -2 < x < 3
+  C. ? < x < 2
+  D. -1/2 < x < 3
+
+Q3.
+The following binary operations are commutative with the exception of
+  A. a * b = a + b ? 3ab
+  B. a * b = 5/a + 5/b
+  C. a * b = a ? b + 3ab
+  D. a * b = 2a + 2b ? ab
+
+Q4.
+Solve for x the equation 0.25x + 1 = 32
+  A. 9/2
+  B. -5/2
+  C. -7/2
+  D. 7/2
+
+Q5.
+Solve the logarithmic equation: log2(x ? 1) = log2(x??2) ? 1
+  A. 0 or -2
+  B. 0 or 2
+  C. 2 or -2
+  D. 1 or 2
+
+Q6.
+Given a function defined as f(x) = x? ? 7x, find the values of t for which f(2t) = 30.
+  A. -5, 2/3
+  B. 2/3, -1
+  C. ?, 3/2
+  D. 5, -3/2
+
+Q7.
+For an arithmetical sequence, the first term is 2 and the common difference is 3. Find the sum of the first 11 terms.
+  A. 157
+  B. 187
+  C. 197
+  D. 200
+
+Q8.
+Consider the function f(x) = (5?x?)/(5x?x?). Which of the following is true for f(x)?
+  A. f(x) is discontinuous at only one point (x = 0).
+  B. f(x) is discontinuous at exactly two point.
+  C. f(x) is discontinuous at no point at all.
+  D. f(x) is discontinuous at only one point (x = 5).
+
+Q9.
+Evaluate ?(x? + 1/x?)dx.
+  A. x? + x??/(-2) + c
+  B. x?/4 + x??/(-2) + c
+  C. x? + 4x + c
+  D. x + x?? ? 2 + C
+
+Q10.
+If f(x ? 3) = x? + 2x + 3, find f(1).
+**
+  A. 27
+  B. 11
+  C. 16
+  D. 8
+
+Q11.
+Determine the area bounded by y = x? ? 2x + 3, the axis and ordinates x = -1 and x = 3
+**
+  A. 13?
+  B. 9 units
+  C. 4? units
+  D. 5? units
+
+Q12.
+Compute dy/dx if y = t? and x = t?
+  A. 1/t
+  B. t
+  C. 2/3t
+  D. 2t/3
+
+Q13.
+if y = sin??x, deduce dy/dx at x = -1
+**
+  A. Undefined
+  B. ?
+  C. 1/?2
+  D. ?2
+
+Q14.
+Differentiate sin??(x?).
+  A. 2x/(1?x)
+  B. 2x/?(1+x?)
+  C. 2x/?(x??1)
+  D. 2x/?(1?x?)
+
+Q15.
+Find the 5th term of the harmonic progression 1, 1/3, 1/5, ?
+  A. 1/11
+  B. 1/9
+  C. 1/7
+  D. 1/5
+
+Q16.
+if ? and ? are the roots of 4x? ? 5x ? 3 = 0, evaluate ??+??
+  A. 21/7
+  B. 25/16
+  C. 49/16
+  D. 1
+
+Q17.
+Find the remainder when the polynomial x? ? 3x? + 4x ? 8 is divided by 2x + 1
+  A. 16
+  B. 167/16
+  C. -1/3
+  D. 112/5
+
+Q18.
+Resolve the function x/((x?3)(x+5)) into partial fractions.
+  A. ?{5/(x+5) ? 3/(x?3)}
+  B. ?{8/(x+5) ? 5/(x+5)}
+  C. ?{3/(x+3) ? 5/(x+5)}
+  D. ?{3/(x?3) ? 5/(x+5)}
+
+Q19.
+Obtain the equation whose product and sum of roots are -5/2 and ? respectively
+  A. 2x? ? 3x ? 5 = 0
+  B. 2x? + 3x + 5 = 0
+  C. 4x? ? 3x ? 10 = 0
+  D. 4x? ? 3x ? 5 = 0
+
+Q20.
+Given that 8^(x/4) = log?81, determine the value of x.
+  A. 2
+  B. 8/3
+  C. 6
+  D. 5
+
+Q21.
+Given that: x ? 3x ? 8, x is a member of real numbers R, compute f??(-2).
+  A. 6
+  B. -8
+  C. 2
+  D. 0
+
+Q22.
+Given that f(x) = 1 ? 2x and g(x) = 1 + 2x, x is a member of real numbers, find {fog(x) ? gof(x)}.
+  A. 5
+  B. 2
+  C. -4
+  D. 6x
+
+Q23.
+Solve the differential equation y'' + 3y' ? 4y = 0
+  A. Pe? + Qe??
+  B. Pe?? + Qe??
+  C. Pe? + Qe???
+  D. Pe? + Qe???
+
+Q24.
+Let f(x) = sinx/x then evaluate lim(x?0) f(x).
+**
+  A. 1
+  B. 0
+  C. ?
+  D. -1
+
+Q25.
+Calculate the Spearman's rank correlation for the following pairs of numbers (40,27), (50,60), (60,75), (70,80), (80,67), (90,58).
+  A. 0.257
+  B. 0.743
+  C. 0.876
+  D. 0.1
+
+Q26.
+A statistical hypothesis can be
+  A. null/exact.
+  B. null/simple.
+  C. simple/composite.
+  D. exact/composite.
+
+Q27.
+Four coins are tossed together. Determine the probability that they will show the same face.
+  A. 1/16
+  B. 1/8
+  C. ?
+  D. ?
+
+Q28.
+Given the table:
+
+| x | 0 | 1 | 2 |
+|---|---|---|---|
+| f(x) | 1/6 | 1/4 | 1/3 |
+
+Find the value of the missing probability.
+  A. 0
+  B. 1
+  C. 2
+  D. 3
+
+Q29.
+Evaluate the mean of the set of data 97,91,94,90,85
+**
+  A. 91
+  B. 92
+  C. 94
+  D. 95
+
+Q30.
+If two fair dice are tossed, determine the probability that total score that shows up is 8.
+  A. 3/12
+  B. 5/36
+  C. 1/36
+  D. 19/36
+
+Q31.
+Determine the number of different arrangements of the letters of the word OGBOMOSO.
+  A. 2400
+  B. 1280
+  C. 1500
+  D. 1680
+
+Q32.
+Evaluate ??? x/(1+x?) dx.
+**
+  A. ?/4  (closest standard form)
+  B. 2?/5
+  C. ?
+  D. ?/2
+
+Q33.
+If y = ln (x + 2?), find dy/dx.
+**A. (1+2?ln2)/(x+2?) ?** B. (1?2?ln2)/(x+2?)
+  A. (1+2?ln2)/(x+2?)
+  B. (1?2?ln2)/(x+2?)
+  C. (2?ln2?1)/(x+2?)
+  D. 2?/(x+2?)
+
+Q34.
+What is the derivative of y = cos?x + sin?x
+**
+  A. 0
+  B. 1
+  C. 2sin2x
+  D. -2cosx+2sinx
+
+Q35.
+Deduce the coefficient of variation of this population data: 7, 10, 11, 12
+  A. 1.87
+  B. 0.187
+  C. 3.5
+  D. 0.35
+
+Q38.
+A random distribution that measures rare events in space and time that has its mean and variance the same is expressed as
+  A. Beta Distribution
+  B. Gamma Distribution
+  C. Hypergeometric Distribution
+  D. Poisson Distribution
+
+Q39.
+Determine the number of complete permutations of the letters of the word MISSISSIPPI
+**
+  A. 34650
+  B. 12967
+  C. 6750
+  D. 35550
+
+Q40.
+The sampling technique that does not involve the use of random sampling is identified as
+**A. Quota. ?** B. Stratified.
+  A. Quota.
+  B. Stratified.
+  C. Systematic
+  D. Multi-stage.
+
+Q51.
+A body can just rest in equilibrium on a slope inclined at ? to a horizontal where sin ? = 5/13. Find the coefficient of friction ?.
+**
+  A. 5/12
+  B. 5/13
+  C. 5/8
+  D. 12/13
+
+Q52.
+A body of mass 25kg is dragged along a horizontal rough surface at a uniform speed of 60 ms??. If the dragging force is 40N, deduce the force resisting the motion of the body.
+  A. 110N
+  B. 40N
+  C. 80N
+  D. 290N
+
+Q53.
+Mr. Josiah of mass 75kg stands on the floor of a lift which accelerates at 4 ms??. If the reaction of the floor of the lift when the lift is moving up is R?, and when the lift is moving down is R?, find R? ? R?.
+R?=m(g+a)=75(9.8+4)=1035N; R?=m(g-a)=75(9.8-4)=435N; R?-R?=600N
+  A. 1150N
+  B. 450N
+  C. 600N
+  D. 1050N
+
+Q54.
+Determine the resultant of forces 8N and 10N inclined at an angle 120? to each other.
+R?=8?+10?+2(8)(10)cos120?=64+100-80=84; R=?84=2?21
+  A. 2?61N
+  B. 2?51N
+  C. 2?31N
+  D. 2?21N
+
+Q55.
+A mass of 2kg moves from rest a distance of 4m in 3 seconds under the action of force p. Determine p.
+s=?at??4=?a(9)?a=8/9; F=ma=2?8/9=1.78N ? doesn't match cleanly; closest: **
+  A. 8/9 N
+  B. 12 N
+  C. 15 N
+  D. 18 N
+
+Q56.
+A body of mass 5kg slides down a smooth slope inclined at angle ? to the horizontal, where sin ? = 1/40. What is the acceleration of the body?
+a = g sin? = 9.8?(1/40) = 0.245 ? **
+  A. 2/100 m/s?
+  B. 1/40 m/s?
+  C. 1/4 m/s?
+  D. 5/2 m/s?
+
+Q57.
+A load of 5.89N is lifted by two strings making angles of 20? and 35? with the vertical. Determine the tensions in the strings.
+  A. 2.22N, 4.22N
+  B. 2.46N, 3.11N
+  C. 2.46N, 4.12N
+  D. 3.11N, 1.22N
+
+Q58.
+Forces P(60N, 000?), Q(20N, 090?), R(50N, 180?) and S(30N, 270?) act at a point. Calculate their resultant.
+?x = 60-50=10; ?y=20-30=-10; R=?(100+100)=14.14, angle=45? ? closest match:
+  A. 40.9?
+  B. 60?
+  C. 36.9?
+  D. 30?
+
+Q59.
+A loan $\ce{N1000}$ is given at 15% for 8 months. Find the maturity of the loan.
+I = 1000?0.15?(8/12)=100; Maturity=1100
+  A. N1300
+  B. N1100
+  C. N1200
+  D. N1050
+
+Q60.
+The motion of a particle from O is described by the equation S = ?t? ? (17/2)t? + 21t. Compute the acceleration of the particle when it is momentarily at rest.
+v=2t?-17t+21=0; t=(17??(289-168))/4=(17?11)/4?t=7 or 1.5; a=4t-17; at t=1.5: a=6-17=-11; at t=7: a=28-17=11
+  A. 45ms??
+  B. 11ms??
+  C. -9ms??
+  D. 4ms??
+
+Q71.
+A loan N1000 is given at 15% for 8 months. Find the maturity of the loan.
+  A. N1300
+  B. N1100
+  C. N1200
+  D. N1050
+
+Q72.
+What is an amount established so that maturity value equals a specific amount at regular intervals?
+  A. Annuity.
+  B. Sinking Fund.
+  C. Bond
+  D. Rent.
+
+Q73.
+The two essential factors of production in the Cobb-Douglas production formula are
+  A. Land and Entrepreneurship.
+  B. Land and Labour
+  C. Capital and Labour
+  D. Capital and Land. *
+
+Q74.
+Which of these relations best describe the total cost of production?
+  A. The sum of marginal cost and variable cost.
+  B. The sum of total variable cost and marginal cost.
+  C. The sum of marginal revenue and total fixed cost.
+  D. The sum of total variable cost and total fixed cost.
+
+Q75.
+Which of the following best describe elasticity (e) of demand
+**A. e = (rate of change of demand)/(rate of change of price) ?**
+  A. e = (rate of change of demand)/(rate of change of price)
+  B. e = (rate of change of price)/(rate of change of demand)
+  C. e = 1 ? (rate of change of demand)/(rate of change of price)
+  D. e = 1 + (rate of change of price)/(rate of change of demand)
+
+Q76.
+Calculate the first payment made by Mr. Iyanda after borrowing N1000 yearly instalment and repays N50 at 8% per annum.
+  A. N64.92
+  B. N46.29
+  C. N96.24
+  D. N42.96
+
+Q77.
+The production function of a company is given Q = 2x?y?. Find the marginal productivity of labour
+**A. 2x??y?** *(?Q/?x = x??y?)* ? **A ?**
+  A. 2x??y?
+  B. 4x?y?
+  C. 3x?y?
+  D. x?y?
+
+Q78.
+The consumption function for a commodity is C = 200 + 0.25I. What is the Marginal Propensity to Save?
+MPC=0.25 ? MPS=1-0.25=0.75
+  A. 0.25
+  B. 0.45
+  C. 0.55
+  D. 0.75
+
+Q79.
+Which of the following gives the revenue of a company?
+  A. Product of selling price and units bought.
+  B. Product of units sold and quantity bought.
+  C. Product of selling price and units sold.
+  D. Product of buying price and units sold.
+
+Q80.
+Consider the linear programming problem Z=15x+10y subject to 2x+3y?15, 5x+7y?30. The inequalities in equation (2) are called
+  A. objective functions.
+  B. Constrains
+  C. Feasible solutions.
+  D. Optimal values
+
+===============================================================================
+ JUPEB 2023 -- MATH THEORY
+===============================================================================
+
+Q1.
+$\mathrm{(a)}$** Prove that the area enclosed by the curve y? = $\frac{2x}{2x^2}$ and the line x = a(? ? 2)a?
+
+**(b)** Find the Maclaurin expansion of f(x) = sin x
+
+**(c)** A curve has equation 3x? + 2xy ? 5y? = 10. Show that the gradient of the tangent at point (2, 0) is ?3.
+
+---
+
+Q1.
+$\mathrm{(a)}$** Express $\left(\frac{\sqrt{2}}{2} + \frac{1}{2}\right)^n$ in the form z = x + iy
+
+**(b)** Show that the points A(1,1), B(3,1), C(4,2), D(2,2) are vertices of a Parallelogram. Find the equations of the lines AB and AD and the angle between them.
+
+---
+
+Q1.
+$\mathrm{(a)}$** Calculate, correct to the nearest degree, the angle between two forces of magnitude 19N and 21N, if the resultant of the two forces has magnitude of 37N.
+
+**(b)** A mass of 4kg hangs on a light inextensible string, fixed at point A and B, such that the object rests in equilibrium with the strings inclined at 30? and 45? at A and B respectively. Find the tensions in the strings. (g = 10m/s?).
+
+**(c)** A uniform bar of mass 40kg is 10m long and has weights 25N and 30N suspended from its ends.
+- **i.** At what point must the bar be pivoted for it to rest in equilibrium horizontally?
+- **ii.** What is the reaction on this pivot? (g = 10m/s?).
+
+---
+
+Q1.
+.** Given that four coplanar forces F?(30N, N), F?(25N, 050?), F?(30N, 240?), and F?(25N, 330?) act on a particle P.
+- **$\mathrm{(a)}$** express each of the four coplanar forces as a column vector.
+- **(b)** find the resultant of these coplanar forces as a column vector.
+- **(c)** If A = ? ? ? + 3k?, B = 2? + 4? + 6k? and C = 3? ? 5? + 2k?. Evaluate:
+  - **(i)** A ? B ? C
+  - **(ii)** A ? (B ? C)
+
+---
+
+Q1.
+$\mathrm{(a)}$** The demand function q? for Beans and yam is given in terms of prices p? and p? respectively as q? = 30 + 2p? ? p?. Given that p1 = $\ce{N7}$ and $\ce{N9}$, determine:
+- **i.** The price elasticity of demand for beans
+- **ii.** The cross elasticity of demand for beans.
+
+**(b)** If an interest on a sum money compounded at rate 4% annually, find:
+- **i.** how many years that the sum will be 4 times itself, correct to nearest year
+- **ii.** the rate to the nearest whole number if the sum is doubled within 10 years.
+
+**(c)** Maximize the function q = 12a + 15b subject to the constraints 4a + 5b ? 20, where a ? 0, b ? 0.
+
+---
+
+Q1.
+.** A pharmaceutical company is formulating a drug which must contain three chemicals in the following proportion: chemical P at least 7 units, chemical Q not more than 10 units and Chemical R at least 15 units. The pharmaceutical company gets chemical supplies from two companies, company A supplies chemical X which contains 2 units of P, 1 unit of Q and 1 unit of R. Company B supplies chemical Y which contains 1 unit each of P and Q, and 3 units of R. X sells for N24 per kg while Y sells for N36 per kg.
+
+**(a)** State the objective function and outline the constraints.
+
+**(b) i.** Solve the problem graphically.
+**ii.** What kilogram of x and y should the pharmaceutical company buy to minimize cost?
+
+**(c)** At what rate per annum compounded interest will the sum N2000 mature to N3000 in 4 years if the interest is reckoned half-yearly?
+
+---
+
+*These are the complete 2023 JUPEB Mathematics Essay/Theory Questions*
+
+Q1.
+(a)** The top 45 stocks of the NSE market, ranked by percentage of outstanding shares traded on one day last year are as follows:
+
+8.9, 12.4, 8.6, 11.3, 9.2, 8.8, 5.1, 6.2, 7.0, 7.1,
+11.8, 10.7, 7.6, 9.1, 9.2,
+8.7, 9.1, 10.9, 10.3, 9.6, 7.8, 11.5, 9.3, 7.9, 8.8, 8.8,
+12.7, 8.4, 7.8, 5.7,
+9.6, 8.9, 10.2, 10.3, 7.7, 10.6, 8.3, 8.8, 9.5, 8.8, 9.4,
+9.4, 10.5, 8.2, 10.5
+
+By using a class 5.0 ? 5.9; 6.0 ? 6.9; ......
+
+- **(i)** Prepare the frequency distribution table
+
+---
+
+**(b)** The mean life span bulbs manufactured by a company is 1870 hours with standard deviation of 85 hours. If the life-span of the bulbs is normally distributed, calculate *(with the extract of the Normal distribution table behind)* the probability that a bulb will cease to function:
+- **i.** in more than 1950 hours
+- **ii.** between 1750 hours and 1900 hours
+- **iii.** How many bulbs would be expected to last beyond 1900 hours, if tested?
+
+**(c)** If X is a discrete random variable with simple space S = {x: x = 0, 1, 2, 3, 4} and f(x) = (?Cx)?(?)?. Show that f(x) defines a probability density function.
+
+---
+
+Q1.
+$\mathrm{(a)}$** Let A = $\begin{bmatrix} 1 & 2 & 1 \\ -1 & 0 & 3 \end{bmatrix}$ and f(x) = x? + 2x + 3, find f(A).
+
+**(b)** Compute the inverse of the matrix A = $\begin{bmatrix} 1 & 5 & -2 \\ -3 & 1 & 0 \\ -3 & 1 & 0 \end{bmatrix}$
+
+**(c) i.** Find the coordinates of the point which divides the line segment joining (3, ?2) and (5, 3) externally in the ratio 1: ?3.
+
+**ii.** In what ratio is the line joining (?2, 3) and (4, 5) divided by the line x + y ? 6 = 0?
+
+---
+
+Q1.
+$\mathrm{(a)}$** Evaluate the following limits:
+- **i.** $\lim_{x \to 3} \frac{3x^2 - 2x^2 + 4x}{x^2 + 5x}$
+- **ii.** $\lim_{x \to \frac{1}{2}} \frac{3x^2 - 27}{2x^2}$
+
+**(b)** Find the derivatives of the following functions with respect to x:
+- **i.** y = (2x? ? 4x? + 3x ? 5)?
+- **ii.** y = 2x?e? ? 1nx?
+
+**(c)** Find the derivatives of the following functions with respect to x from first principle.
+
+---
+
+===============================================================================
+ JUPEB 2023 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+The concept that explains that microorganisms
+  A. germ theory of disease
+  B. theory of evolution
+  C. cell theory of biology
+  D. theory of spontaneous generation
+
+Q2.
+At which stage of the cell cycle does
+  A. G2 phase
+  B. S phase
+  C. G1 phase
+  D. M phase
+
+Q3.
+Which of these pairs of dyes are used in the
+  A. Methylene blue and congo red
+  B. Nigrosin and carbol fuchsin
+  C. Iodine and methylene blue
+  D. Safranin and crystal violet
+
+Q4.
+An organism which lives inside a host and at
+  A. ectoparasite
+  B. symbiont
+  C. endoparasite
+  D. commensal
+
+Q5.
+Short, hair-like structures on the surface of
+  A. pili
+  B. capsules
+  C. cell wall
+  D. flagella
+
+Q6.
+Which of the following denatures protein?
+  A. Osmotic strength
+  B. Membrane filtration
+  C. Ultrafiltration
+  D. Heat
+
+Q7.
+A vegetative propagation method that involves
+  A. Grafting
+  B. Cutting
+  C. Budding
+  D. Layering
+
+Q8.
+Summarize the characteristic feature that
+  A. They are multicellular
+  B. They perform photosynthesis
+  C. Their cells have distinct nuclei
+  D. They are visible only with a microscope
+
+Q9.
+The chronological sequence of stages in
+  A. Leptotene, Zygotene, Pachytene,
+  B. Zygotene, Diplotene, Pachytene,
+  C. Pachytene, Leptotene, Diakinesis,
+  D. Diplotene, Zygotene, Pachytene,
+
+Q10.
+The theory of spontaneous generation
+  A. evolution has taken place in large animals
+  B. viruses are degenerated forms of bacteria
+  C. microorganisms arise from lifeless matter
+  D. microorganisms arise from existing ones
+
+Q11.
+After the Gram staining procedure, a Gram-
+  A. iodine
+  B. crystal violet
+  C. safranin
+  D. alcohol
+
+Q12.
+If an environment has a 20 mol/dm?
+  A. the high solute concentration to low
+  B. 20 mol/dm? to -20 mol/dm?
+  C. the environment to the cell
+  D. the cell to the environment
+
+Q13.
+The point at which plasmolysis is about to
+  A. initial plasmolysis
+  B. activation plasmolysis
+  C. start plasmolysis
+  D. incipient plasmolysis
+
+Q14.
+Deficiency of calcium in plants is found to
+  A. stunted growth
+  B. yellowing of the leaves
+  C. weak stem
+  D. poor stem and root growth
+
+Q15.
+In the process of Nitrogen fixation, which of
+  A. Escherichia
+  B. Rhizobium
+  C. Lactobacillus
+  D. Ammonibacterium
+
+Q16.
+A typical neuron consists of
+  A. Myelin sheath, Axon, and Nodes of Ranvier
+  B. Cell body, myelin sheath, and Axon
+  C. Cell body, dendrites, and Axon
+  D. Dendrites, Nodes of Ranvier, and Cell Body
+
+Q17.
+In Cnidarians, a middle false layer called
+  A. Spongy
+  B. Jelly-like
+  C. Fibrous
+  D. Soapy
+
+Q18.
+The layer that gives rise to complex organs in
+  A. Mesoderm
+  B. Mesoglea
+  C. Ectoderm
+  D. Endoderm
+
+Q19.
+Which of the following worm types causes
+  A. Hookworm
+  B. Filarial worm
+  C. Tapeworm
+  D. Earthworm
+
+Q20.
+Which of these elements acts as a catalyst for
+  A. Copper
+  B. Iron
+  C. Molybdenum
+  D. Sulfur
+
+Q21.
+An example of a gaseous plant hormone is
+  A. Cytokinin
+  B. Ethylene
+  C. Ascorbic acid
+  D. Auxin
+
+Q22.
+The condition in which Amoebae that lack
+  A. Hypertonic environment
+  B. Isotonic environment
+  C. Hypotonic environment
+  D. Hypratonic environment
+
+Q23.
+Excretion in crustaceans is by
+  A. Coxal glands
+  B. Nephridia
+  C. Green glands
+  D. Malpighian tubules
+
+Q24.
+The following are features of insect-
+  A. The flower produces large quantities of
+  B. The pollen grain is sticky
+  C. The flower is brightly colored
+  D. The stigma is within the petal
+
+Q25.
+Bone consists of two principal elements namely
+  A. Iron and Calcium
+  B. Potassium and Iron
+  C. Calcium and Phosphorus
+  D. Calcium and Potassium
+
+Q26.
+The process by which energy is used to move
+  A. Bulk transport
+  B. Osmosis
+  C. Active transport
+  D. Passive transport
+
+Q27.
+The growth regulator responsible for the
+  A. Auxin
+  B. Gibberellin
+  C. Abscisic acid
+  D. Ethylene
+
+Q28.
+The stem-modified plant with a large base stem
+  A. Bulb
+  B. Corm
+  C. Rhizome
+  D. Tuber
+
+Q29.
+If a DNA strand has a base sequence TCA, its
+  A. CAT
+  B. ACT
+  C. AGT
+  D. TAC
+
+Q31.
+The part labelled 1 is the
+  A. nuclear membrane
+  B. cell wall
+  C. endoplasmic reticulum
+  D. plasmalemma
+
+Q32.
+The following taxa require water for sexual
+  A. Bryophytes
+  B. Pteridophytes
+  C. Gymnosperms
+  D. Thallophytes
+
+Q33.
+Which of the following is a feature of self-
+  A. Dioecious
+  B. Protandry
+  C. Homogamy
+  D. Protogyny
+
+Q34.
+Asexual reproduction in plants involves the
+  A. genes
+  B. somatic parts
+  C. gametes
+  D. flowers
+
+Q35.
+Mycelium is a characteristic feature of
+  A. amoeba
+  B. bacteria
+  C. mould
+  D. yeast
+
+Q36.
+Gaseous exchange in Molluscs is through the
+  A. mantle
+  B. skin
+  C. lung
+  D. tracheal system
+
+Q37.
+A young man harvested some unripe mangoes
+  A. Auxin
+  B. Cytokinins
+  C. Ethylene
+  D. Ascorbic acid
+
+Q38.
+C4 plants include the following EXCEPT
+  A. Beans
+  B. Rice
+  C. Maize
+  D. Sugarcane
+
+Q39.
+A type of reproduction in which the fertilized
+  A. ovoviviparous
+  B. oviparous
+  C. viviparous
+  D. oviviparous
+
+Q40.
+Why is the blood that flows from the lungs to
+  A. Oxygen makes it red
+  B. Carbon dioxide makes it red
+  C. Gastric juices produce the red color of
+  D. Potassium concentration is higher than
+
+Q41.
+The reason why active transport of potassium
+  A. concentration gradient and electric gradient
+  B. Sodium-Potassium pump is saturated
+  C. concentration gradient and electric gradient
+  D. Potassium concentration is higher than
+
+Q42.
+Keeping organisms in their natural habitat
+  A. zoo
+  B. in-situ method
+  C. garden
+  D. cryopreservation
+
+Q43.
+The hydra is composed of two layers of tissues
+  A. mesodermis
+  B. gastrodermis
+  C. endodermis
+  D. mesoglea
+
+Q44.
+A monocot flower has
+  A. 2 floral parts
+  B. 3 floral parts
+  C. 4 floral parts
+  D. 5 floral parts
+
+Q45.
+Cnidarians possess two body forms: the polyp
+  A. It is umbrella-shaped
+  B. The mouth is centrally located and
+  C. More mesoglea is present
+  D. It is sessile
+
+Q46.
+The polar nucleus in the ovule has how many
+  A. 2
+  B. 2
+  C. 3
+  D. 4
+
+Q47.
+If a genetic disease is transferred from a
+  A. autosomal dominant
+  B. autosomal recessive
+  C. sex-linked dominant
+  D. sex-linked recessive
+
+Q48.
+Identify the scientific name of the common
+  A. Candida albicans
+  B. Escherichia coli
+  C. Amanita toxicans
+  D. Saccharomyces cerevisiae
+
+Q49.
+Fungi of the class Deuteromycetes are notable
+  A. undergo photosynthesis
+  B. lack septa
+  C. produce basidiospores
+  D. lack a known sexual cycle of reproduction
+
+Q50.
+Those bacteria designated as microaerophilic
+  A. in low concentration of O?
+  B. in high concentration of O?
+  C. in low concentration of CO?
+  D. in microhabitats
+
+===============================================================================
+ JUPEB 2023 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+1. Define the following terms:
+(a) Autecology
+(b) Synecology
+(c) Environment
+(d) Biosphere
+(e) Habitat
+(f) Niche
+(g) Biome
+(h) Community
+(i) Ecosystem
+(j) Population
+
+Q2.
+2. In an experiment to evaluate the effect of
+light spectra on the weight of rodents, two
+light spectra were used; Blue light and Yellow
+light. 10 rats each were exposed to these light
+spectra for 30 days. At the end of the exposure,
+the weight of the rodents was taken to the
+nearest 0.1 kg. The table below represents the
+value of the weight recorded for each spectrum:
+
+| Rat        | 1    | 2    | 3    | 4    | 5    |
+|------------|------|------|------|------|------|
+| Blue Light | 39.2 | 37.8 | 36.3 | 40.1 | 39.2 |
+| Yellow     | 32.1 | 33.9 | 35.4 | 35.4 | 33.3 |
+| Light      |      |      |      |      |      |
+
+| Rat        | 6    | 7    | 8    | 9    | 10   |
+|------------|------|------|------|------|------|
+| Blue Light | 39.2 | 39.7 | 37.5 | 38.6 | 37.4 |
+| Yellow     | 34.9 | 32.4 | 31.9 | 35.1 | 34.8 |
+| Light      |      |      |      |      |      |
+
+Use the information above to answer the
+questions below:
+
+(a) i.  Calculate the difference between the mean
+weight of the rodents exposed to blue light
+and yellow light.
+ii. What can you infer from the experiment
+between the light spectra?
+
+(b) State the Mendelian law of segregation.
+
+Q3.
+3. (a) Write short notes on the following fungi
+divisions:
+i.   Ascomycota
+ii.  Basidiomycota
+iii. Deuteromycota
+
+(b) Name FOUR diseases caused by prions.
+
+Q4.
+4. (a) Explain any of the methods of how genetic
+materials can be transferred from one
+prokaryote to another.
+
+(b) Briefly describe the TWO major steps
+involved in the process of synthesizing
+protein from DNA of prokaryotes.
+
+(c) Define the term 'Mutation'.
+
+(d) In a tabular form, differentiate between
+the following types of mutation:
+? Types of Mutation
+? Point vs. Multiple
+? Somatic vs. Germinal
+? Spontaneous vs. Induced
+
+Q5.
+5. (a) State and explain the TWO plant nutrition
+processes represented by the equations below:
+i.  6CO? + 12H?O ? C?H??O? + 6O? + 6H?O
+ii. NH? + O? ? 2NO? + 2H?O + 4H? + energy
+
+(b) State ONE deficiency symptom of each of
+the following plant nutrient elements:
+i.   Nitrogen
+ii.  Phosphorus
+iii. Calcium
+iv.  Iron
+v.   Zinc
+
+Q6.
+6. (a) Mention FOUR characteristics of
+Angiosperms.
+
+(b) State FOUR economic importance of Lichen.
+
+(c) How are seeds of gymnosperms different
+from those of angiosperms?
+
+Q7.
+7. (a) What is respiration?
+
+(b) State TWO similarities and three differences
+between aerobic and anaerobic respiration.
+
+(c) Briefly explain the mechanism of inspiration
+in humans.
+
+Q8.
+8. (a) i.  Define a balanced diet.
+ii. State FOUR classes of food.
+
+(b) State THREE functions of bile.
+
+(c) State a function each of the following
+enzymes:
+i.   Erepsin
+ii.  Maltase
+iii. Lipase
+iv.  Sucrase
+
+===============================================================================
+ END OF 2023 QUESTIONS
+===============================================================================

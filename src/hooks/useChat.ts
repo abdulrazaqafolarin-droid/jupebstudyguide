@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { sendPush } from '@/lib/sendPush';
 
 const DEBUG = import.meta.env.DEV;
 
@@ -609,6 +610,14 @@ export function useChat() {
                     ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg as Message }
                     : c
                 ));
+                if (user) {
+                  const hidden = typeof document !== 'undefined' && document.hidden;
+                  if (hidden) {
+                    const conv = conversationsRef.current.find(c => c.id === newMsg.conversation_id);
+                    const senderName = conv?.other_user?.display_name || 'Someone';
+                    sendPush(user.id, senderName, newMsg.content || 'Sent an image');
+                  }
+                }
               }
             }
           });
@@ -632,6 +641,14 @@ export function useChat() {
               ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg as Message }
               : c
           ));
+          if (user) {
+            const hidden = typeof document !== 'undefined' && document.hidden;
+            if (hidden) {
+              const conv = conversationsRef.current.find(c => c.id === newMsg.conversation_id);
+              const senderName = conv?.other_user?.display_name || 'Someone';
+              sendPush(user.id, senderName, newMsg.content || 'Sent an image');
+            }
+          }
         }
       })
       .subscribe((status) => {

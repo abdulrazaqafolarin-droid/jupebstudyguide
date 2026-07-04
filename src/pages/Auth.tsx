@@ -73,21 +73,40 @@ const Auth = () => {
 
     try {
       if (mode === 'login') {
-        const { error, needsMfa } = await signIn(email, password);
-        if (error) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const { error, needsMfa } = await signIn(email, password);
+          if (!error) {
+            if (needsMfa) {
+              setMode('mfa');
+            } else {
+              toast({
+                title: "Welcome back!",
+                description: "You've successfully logged in.",
+              });
+              navigate('/');
+            }
+            return;
+          }
+          if (error.message?.includes('signal is aborted') || error.message?.includes('AbortError')) {
+            if (attempt === 0) {
+              try {
+                const sbKeys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                  const k = localStorage.key(i);
+                  if (k && (k.includes('supabase') || k.includes('sb-'))) sbKeys.push(k);
+                }
+                sbKeys.forEach(k => localStorage.removeItem(k));
+              } catch {}
+              continue;
+            }
+          }
           toast({
             title: "Login failed",
-            description: error.message,
+            description: attempt > 0 ? "Connection issue. Please check your network and try again." : error.message,
             variant: "destructive",
           });
-        } else if (needsMfa) {
-          setMode('mfa');
-        } else {
-          toast({
-            title: "Welcome back!",
-            description: "You've successfully logged in.",
-          });
-          navigate('/');
+          setLoading(false);
+          return;
         }
       } else {
         const { error } = await signUp(email, password);
@@ -150,7 +169,7 @@ const Auth = () => {
         <CardHeader className="text-center pb-6">
           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mx-auto mb-4">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">JUPEB Study Guide</span>
+            <span className="text-sm font-medium text-primary">Rutex Jupeb Master</span>
           </div>
           <AnimatePresence mode="wait">
             {isMfa ? (
@@ -369,9 +388,20 @@ const Auth = () => {
             </div>
           )}
 
-          <div className="mt-8 pt-4 border-t border-border flex flex-col items-center gap-2">
-            <img src={rutexLogo} alt="Rutex Logo" className="w-8 h-8 rounded-lg object-cover" />
-            <p className="text-xs text-muted-foreground">Built by <span className="font-semibold text-foreground">Rutex</span></p>
+          <div className="mt-8 pt-4 border-t border-border flex flex-col items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-2"
+              onClick={() => navigate('/download')}
+            >
+              <Smartphone className="w-4 h-4" />
+              Download App
+            </Button>
+            <div className="flex flex-col items-center gap-2">
+              <img src={rutexLogo} alt="Rutex Logo" className="w-8 h-8 rounded-lg object-cover" />
+              <p className="text-xs text-muted-foreground">Built by <span className="font-semibold text-foreground">Rutex</span></p>
+            </div>
           </div>
         </CardContent>
       </Card>

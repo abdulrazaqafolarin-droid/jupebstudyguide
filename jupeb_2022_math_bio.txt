@@ -1,0 +1,1043 @@
+===============================================================================
+ JUPEB 2022 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+When the polynomial f(x) = x? + 3x? + ax ? 2 is divided by x ? 3, the remainder is 100. Determine the value of a.
+  A. 16
+  B. 8
+  C. ?3
+  D. ?3
+
+Q2.
+If ? and ? are the roots of 2x? + 3x ? 2 = 0, evaluate 1/? + 1/?
+  A. 2/3
+  B. 3/12
+  C. 2/1 ? 3
+  D. 3/1 ? 2
+
+Q3.
+Obtain the coefficient of (ab)? in the expansion of (a + b/2)?
+  A. 30
+  B. 35/8
+  C. 35
+  D. 1/8
+
+Q4.
+Evaluate the determinant of matrix [1 ?2 3 / 2 2 6 / 4 1 4]
+  A. 38
+  B. ?48
+  C. 28
+  D. ?38
+
+Q5.
+The following curves are circle EXCEPT
+  A. x? + y? ? 2x + y = 0
+  B. x? + y? ? x = 2
+  C. 3x? + y? + 4x ? 8y = 0
+  D. x? + y? ? 4x ? 6y ? 3 = 0
+
+Q6.
+Evaluate the equation of the directrix to parabola y? = 36x
+  A. x = 4
+  B. x = ?9
+  C. x = ?4
+  D. x = 9
+
+Q7.
+Obtain the values of x and y in the matrix equation (2 x / y ?3) ? (1 3 / 2 5) = (6 16 / 4 15)
+  A. x = 2, y = 10
+  B. x = 3, y = 2
+  C. x = 10, y = 2
+  D. x = 2, y = 5
+
+Q8.
+A line is perpendicular to 3x ? y + 11 = 0 and passes through the point (1, ?5). Determine its equation
+  A. 3y ? x ? 14 = 0
+  B. 3x + y + 1 = 0
+  C. 3y + x + 14 = 0
+  D. 3y + x + 1 = 0
+
+Q9.
+Deduce the quotient when 2x? + 3x + 1 is divided by x? + x ? 2
+  A. 2x + 1
+  B. 2x ? 1
+  C. x ? 2
+  D. 2x ? 2
+
+Q10.
+Find the 5th term of the harmonic progression 2/9, 4/17, 1/4, ...
+  A. 3/5
+  B. 2/5
+  C. 3/4
+  D. 2/7
+
+Q11.
+Given S = {x: 0 $\lt$ x ? 10, x an integer} as the universal set and set A = {multiples of 3} and B = {x: 3 ? x $\lt$ 8, x an integer}. Find A ? B
+  A. {3, 6}
+  B. {6, 9}
+  C. {9}
+  D. {5, 6}
+
+Q12.
+Solve log_x 3 + log_x 9 = 2
+  A. ?8
+  B. ?7
+  C. 3?3
+  D. 14
+
+Q13.
+Binomial series for (1 + x)? is valid only when
+  A. x < 1
+  B. x < ?1
+  C. |x| < 1
+  D. n < 1
+
+Q14.
+The distance between points A(x, ?8) and B(2, ?5) is 5 units. Deduce the values of x
+  A. 6
+  B. 3
+  C. 4
+  D. 2
+
+Q15.
+The 4th and 6th terms of a linear sequence are 8 and 14 respectively. Compute the first term and common difference
+  A. 0, 3
+  B. ?1, 2
+  C. 0, 2
+  D. ?1, 3
+
+Q16.
+Determine lim(x??) (5x? ? x + 2)/(4x? ? 4)
+  A. ?3
+  B. 4
+  C. 5/4
+  D. 0
+
+Q17.
+Find the volume generated when the area bounded by the curve y = x? under the line y = 1 rotated through 1 revolution between x = 0 and x = 1 about the x-axis
+  A. 6?/7
+  B. 4?/5
+  C. 3?/4
+  D. ?/2
+
+Q18.
+The Integral ?f'(x)/f(x) equals
+  A. ln f(x)
+  B. ln f'(x)
+  C. ln f(x?)
+  D. (ln f(x))?
+
+Q19.
+Evaluate lim(x?2?) |x?2|/(x?2)
+  A. 2
+  B. 0
+  C. 3
+  D. ?1
+
+Q20.
+Differentiate e^(x cos x)
+  A. e^(x cos x)[cos x ? x sin x]
+  B. e^(x(cos x ? x sin x))
+  C. e^(x cos x) sin x
+  D. e^(x cos x) cos x
+
+Q21.
+Find the maximum and minimum values of y = x(x?1)?
+  A. (?, 1)_max, (0, 2)_min
+  B. (0, 3)_max, (1, 2)_min
+  C. (1/3, 4/27)_max, (1, 0)_min
+  D. (1/3, 1)_max, (0, ?)_min
+
+Q22.
+Evaluate ??^(?/2) cos x dx
+  A. 0
+  B. 2
+  C. 3
+  D. 1
+
+Q23.
+Solve the equation x dy/dx = 5x? + 4
+  A. 5x?/2 + 4 ln x + C
+  B. 5x?/3 + 4 ln x + C
+  C. 3x?/2 + 4 ln x + C
+  D. 3x?/5 + 4 ln x + C
+
+Q24.
+Given y = e^(4x), obtain the fourth derivative of y
+  A. 4e^(4x)
+  B. 64e^(4x)
+  C. 128e^(4x)
+  D. 256e^(4x)
+
+Q25.
+Differentiate the function (?(x? + 2x ? 1))?
+  A. 5(?(x? + 2x ? 1))?
+  B. 5/3(2x + 2)(x? + 2x ? 1)^(3/2)
+  C. 10/3(x + 1)(x? + 2x ? 1)^(2/3)
+  D. 5(?(x? + 2x ? 1))^(?4)
+
+Q26.
+Evaluate ???((1 + x?)/x) dx
+  A. ln x + x?/2
+  B. 1 + ln 2
+  C. 1 + (ln 1 ? ln 2)
+  D. 3/2 + (ln 2 ? ln 1)
+
+Q27.
+Evaluate ?cos x cos 2x dx
+  A. cos4x/6 + C
+  B. sin 3x/6 + sin x/2 + C
+  C. sin?x/3 ? sin x/2 + C
+  D. sin 5x/7 ? sin 2x/5 + C
+
+Q28.
+If y = e^x sin x, find d?y/dx? + 4y
+  A. 4x ? 1
+  B. 2x ? 2
+  C. 0
+  D. 1
+
+Q29.
+Solve ?1/((1+x)(2+log(1+x))) dx
+  A. ln[2 ? log(1 + x)]
+  B. ln[2 + log(1 + x)]
+  C. ln[2 + log(1 ? x)]
+  D. ln[2 + log(1 + x)]
+
+Q30.
+One of the following measures of location is not affected by extreme values
+  A. Harmonic mean
+  B. Arithmetic mean
+  C. Geometric mean
+  D. Median
+
+Q31.
+The following marks were obtained during an examination 5, 5, 8, 4, 7, 6, 5, 3, 9. Compute the mean, median and mode
+  A. 4, 5, 4
+  B. 5.43, 5, 5
+  C. 5.78, 5, 5
+  D. 6, 5, 5
+
+Q32.
+A die is tossed once. Find the probability that the number which appeared is an even or an odd number
+  A. ?
+  B. 1/3
+  C. 1/6
+  D. 1
+
+Q33.
+An estimate of a population parameter given by a single number is called
+  A. estimator
+  B. an interval estimate
+  C. confidence interval
+  D. point estimate
+
+Q34.
+An unbiased six sided die has the score 2 engraved on two sides, the score 4 on three sides and score 6 on the remaining one side. The die is thrown once. Compute the probability of obtaining a score of 4 or less
+  A. 3/6
+  B. 2/6
+  C. 5/6
+  D. 4/6
+
+Q35.
+Evaluate P(X = 5) when X ~ Bi(9, 0.3)
+  A. 0.975
+  B. 0.901
+  C. 0.74
+  D. 0.074
+
+Q36.
+Let Z ~ N(0, 1). If P(z < a) = 0.975 then the value of a is
+  A. 0.975
+  B. 0.025
+  C. 1.96
+  D. ?1.96
+
+Q37.
+Calculate the variance of the data: 5, 6, 4, 5
+  A. 0.5
+  B. 2.0
+  C. 1.5
+  D. 2.2
+
+Q38.
+When is a distribution said to be symmetric?
+I. Mean = Mode = Median
+II. Mean ? Mode = 3(Mean ? Median)
+  A. I only
+  B. I and II
+  C. II only
+  D. I or II
+
+Q39.
+The normal distribution is given by the probability density function f(x) = (1/??2?)e^(?(x??)?/2??). Determine the range of x
+  A. 0 ? x ? ?
+  B. ?? ? x ? 0
+  C. ?? < x < +?
+  D. a ? x ? b
+
+Q40.
+Given that Y ~ Po(2, 4), evaluate P(5 ? Y ? 6)
+  A. 0.024
+  B. 0.988
+  C. 0.84
+  D. 0.084
+
+Q41.
+A particle moving at the velocity 30m/s is brought to rest after 5 seconds. Find its deceleration
+  A. ?9 m/s?
+  B. ?8 m/s?
+  C. ?6 m/s?
+  D. ?7 m/s?
+
+Q42.
+Given that vector a = 3i + j is normal to line ? and ? passes through (?1, 4), obtain the Cartesian equation for ?
+  A. 3x + y = 4
+  B. 3x + y = ?1
+  C. 3x + y = 1
+  D. 3x ? y = 4
+
+Q43.
+Find the angle B of triangle ABC where the position vectors of A, B, C are respectively 2i + 4k, 3i ? 2j + 4k, 2i ? j + k
+  A. cos??(3/?55)
+  B. sin??(??55/3)
+  C. cos??(?3/?55)
+  D. sin??(3/?55)
+
+Q44.
+Obtain the vector equation for the line whose Cartesian equations are (x?1)/2 = (y+1)/3 = (z?4)/1
+  A. i ? j + 4k = ?(2i + 3j + k)
+  B. i + j ? 4k = ?(2i ? 3j + k)
+  C. i ? j ? k = ?(i ? 3j ? k)
+  D. i ? j ? k = ?(i ? j ? k)
+
+Q45.
+Evaluate the modulus of the vector (a + b) given that a = 3i + 2j and b = 4i ? j
+  A. 5?2
+  B. ?5
+  C. ?2
+  D. 2?5
+
+Q46.
+Obtain the scalar product of the vectors a = 2i + 3j ? 4k and b = i ? 2j + k
+  A. 5
+  B. ?6
+  C. ?8
+  D. ?10
+
+Q47.
+Find the sum of the vectors AB, BC, 2CD and DC
+  A. CD
+  B. AD
+  C. AB
+  D. AC
+
+Q48.
+An object of mass 4kg hangs from a fixed point by a light inextensible string and then pulled by a force FN and rest in equilibrium with the string inclined at 60?. Find the force F
+  A. 60?3N
+  B. 40?3N
+  C. 20?3N
+  D. 40?2N
+
+Q49.
+An object of mass 5kg, travelling at 6m/s is acted upon by a force of 100N for 0.4s in the direction of motion. Compute the final velocity of the object
+  A. 14m/s
+  B. 7m/s
+  C. 6m/s
+  D. 40m/s
+
+Q50.
+Calculate the work done when an object of mass 4.5kg is lifted through a vertical distance of 10m (g = 10ms??)
+  A. 75J
+  B. 240J
+  C. 450J
+  D. 400J
+
+===============================================================================
+ JUPEB 2022 -- MATH THEORY
+===============================================================================
+
+Q1.
+$\mathrm{(a)}$** A uniform ladder of length 4m long and of mass 40kg rests with one end against a rough vertical wall and the other end a rough horizontal ground. The coefficient of friction at each point of contact is 0.5. If the ladder is on the point of slipping, calculate the frictional force:
+- **(i)** of the wall and of the ground **[5 Marks]**
+- **(ii)** on the wall **[5 Marks]**
+
+**(b)** If $\vec{A} = 8t^3\hat{i} - 2t^2\hat{j} + 5t\hat{k}$ and $B = \sin 2t\hat{i} + \cos 2t\hat{j}$. Find $\dfrac{d}{dt}(\vec{A} \times \vec{B})$.
+**[5 Marks]**
+
+---
+
+Q1.
+(a)** Differentiate between goodness-of-fit test and the analysis of contingency table.
+**[2 Marks]**
+
+**(b)** A die is rolled 420 times with the following outcomes 63, 67, 66, 73, 72, 79. Based on these data, test whether the die is fair at the ? = 0.05 level of significance.
+**[6 Marks]**
+
+**(c)** The table shows the way in which a randomly chosen group intends to vote in the next election.
+
+| Age of Voters | 18 to 34 | 35 to 59 | 60 and above |
+|---------------|----------|----------|--------------|
+| Party A | 85 | 95 | 131 |
+| Party B | 168 | 197 | 173 |
+
+Test at a 5% level whether there is any association between the age of voters and the party they wish to vote for.
+**[7 Marks]**
+
+---
+
+Q1.
+(a)** The demand and supply curves for a product are respectively given by D(q) = 31 ? 5q and S(q) = 10 + 2q. Obtain the:
+- **(i)** equilibrium price and quantity **[3 Marks]**
+- **(ii)** consumer's surplus **[5 Marks]**
+
+**(b)** An amount of money was invested at 8% simple interest and after 9 months, an equal amount was invested at 10% simple interest.
+- **(i)** Find the period in which the amount in each case becomes ?52,000. **[5 Marks]**
+- **(ii)** How much money is invested in either case? **[2 Marks]**
+
+---
+
+Q1.
+(a)** One out of a thousand people reacted to a newly manufactured vaccine against an endemic disease. If 3000 people were treated with this vaccine, find the probability that at most two people reacted to the vaccine.
+**[3 Marks]**
+
+**(b)** Find the probability of getting between 40 and 60 heads inclusive in 100 tosses of a fair coin.
+**[6 Marks]**
+
+**(c)** Find the probability that in a family of 4 children, there will be at least 1 boy.
+**[6 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** Given the ellipse $\dfrac{x^2}{16} + \dfrac{y^2}{9} = 1$. Obtain the:
+- **i.** eccentricity **[3 Marks]**
+- **ii.** coordinates of the foci **[2 Marks]**
+
+**(b)** If the equation of the parabola y? = ?16x, determine the coordinates of the focus.
+**[2 Marks]**
+
+**(c)** If ? and ? are the roots of the equation 2x? ? 5x + 3 = 0, find:
+- **i.** $\dfrac{1}{\alpha} + \dfrac{1}{\beta}$ **[2 Marks]**
+- **ii.** $\dfrac{\alpha}{\beta} + \dfrac{\beta}{\alpha}$ **[2 Marks]**
+
+**(d)** Solve the equation 2Sin?x = 2 + Cos2x giving all solutions within the range 0? ? x ? 360?
+**[4 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** Let ? = {x : 0 $\lt$ x ? 10, x ? ?} be the universal set and the sets P = {1, 2, 3, 4, 5},
+Q = {x : 3 ? x $\lt$ 8, x ? ?} and R = {multiples of 2}
+- **i.** Find P ? (Q' ? R')' **[2 Marks]**
+- **ii.** Show that P ? (Q ? R) = (P ? Q) ? (P ? R) **[3 Marks]**
+
+**(b)** Simplify the following:
+- **i.** $\log_a b^2 - 2\log_a C - 2$ **[2 Marks]**
+- **ii.** $\dfrac{\sqrt{5} + \sqrt{2}}{7\sqrt{5} - 5\sqrt{2}}$ **[3 Marks]**
+
+**(c)** Find the range of values of P for which the roots of the equation:
+$(P^2 + 10P + 2)x^2 + (3P + 1)x + 1 = 0$
+are **NOT** real. **[5 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** Find and classify the stationary points of the curve y = x? ? 3x? ? 9x + 2.
+**[5 Marks]**
+
+**(b)** 120m of fencing is to be used to form three sides of a rectangular enclosure, the fourth side being an existing wall. Find the maximum possible area of the enclosure.
+**[5 Marks]**
+
+**(c)** Find the volume of the solid generated if the area enclosed by y = x? is rotated about the line y = x + 2.
+**[5 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** Evaluate the following integrals:
+- **i.** $\int_{-1}^{3}(2x^3 + 5x - 6)\,dx$ **[2 Marks]**
+- **ii.** $\int x^2 \sin x\,dx$ **[2 Marks]**
+- **iii.** $\int \dfrac{dx}{\sqrt[4]{3x+2}}$ **[2 Marks]**
+
+**(b)** A particle which moves along a straight line is initially at a displacement of 3m from a fixed point O and has an initial velocity of 6m/s. The acceleration of the particle after t seconds is (2t ? 5) ms??. Find the:
+- **i.** times at which the particle is instantaneously at rest. **[2? Marks]**
+- **ii.** distance travelled in the first second. **[2? Marks]**
+
+**(c)** Given that f(x) = $\dfrac{x-1}{x+1}$; obtain f'(x) and f''(x). Hence show that
+$(x + 1)f''(x) + 2f'(x) = 0$. **[4 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** If the cost of producing 200 balls is ?1500 and the cost increases to ?2100 when 275 balls were produced:
+- **(i)** obtain the linear relationship between the cost and the units produced. **[4 Marks]**
+- **(ii)** find the profit function if the price of each unit of ball is ?30. **[4 Marks]**
+
+**(b)** Solve the following optimization problem graphically.
+
+Maximize Z = 5x + 10y
+
+Subject to:
+$2x + y \leq 100$
+$x + 2y \leq 72$
+$x, y \geq 0$
+**[5 Marks]**
+
+**(c)** Simple interest on a certain sum at a certain rate is $\dfrac{16}{25}$ of the sum. If the number representing the rate and time are equal, find the time.
+**[2 Marks]**
+
+---
+
+Q1.
+$\mathrm{(a)}$** A particle is projected with a velocity of 100m/s at an angle of 30? to the horizontal. Find the:
+- **(i)** greatest height attained **[2? Marks]**
+- **(ii)** range of the horizontal plane **[2? Marks]**
+
+**(b)** A block of mass 3.5kg rests on a rough plane which is inclined at an angle of 42? to the horizontal. If the coefficient of friction between the block and the plane is 0.75, what is the least force P parallel to the plane required to start the block moving up the plane? (g = 9.8m/s).
+**[5 Marks]**
+
+**(c)** Simple interest on a certain sum at a certain rate is $\dfrac{16}{25}$ of the sum. If the number representing the rate and time are equal, find the time.
+**[5 Marks]**
+
+---
+
+===============================================================================
+ JUPEB 2022 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+The figure above is a typical internal structure
+  A. monocotyledons stem
+  B. dicotyledonous stem
+  C. monocotyledonous root
+  D. dicotyledonous root
+
+Q2.
+The parts labeled II and III are together known
+  A. piliferous layer
+  B. endodermis
+  C. vascular bundle
+  D. pericycle region
+
+Q3.
+Which part of a plant is usually referred to as
+  A. leaf
+  B. root
+  C. stem
+  D. branch
+
+Q4.
+The part labeled II is called
+  A. region of maturation
+  B. region of elongation
+  C. region of cell division
+  D. root cap
+
+Q5.
+Which of the parts contains dense mass of
+  A. I
+  B. II
+  C. III
+  D. IV
+
+Q6.
+The part labeled II is called
+  A. region of maturation
+  B. region of elongation
+  C. root cap
+  D. region of cell division
+
+Q7.
+Which of the parts contains dense mass of
+  A. cytokinins
+  B. Gibberellins
+  C. abscisic acid
+  D. ethylene
+
+Q8.
+Snapdragon plant has three genotypes RR, Rr
+  A. polygenic inheritance
+  B. incomplete dominance
+  C. codominance
+  D. multiple alleles
+
+Q9.
+Which of these could be the reason why water is
+  A. increase in solute potential in the leaves and
+  B. high solute potential in the leaves and high
+  C. low solute potential in the leaves and low
+  D. high solute potential in the leaves and low
+
+Q10.
+Which of these modified leaves is for defense
+  A. leaf tendrils
+  B. leaf spines
+  C. phyllocodes
+  D. leaf scales
+
+Q11.
+Microorganisms that cause diseases are known as
+  A. disease microbes
+  B. pathogens
+  C. parasites
+  D. pathogerns
+
+Q12.
+The marine bacterium, pyrodictium, which has an
+  A. thermophile
+  B. mesophile
+  C. psychrophile
+  D. psychrotroph
+
+Q13.
+The pigments phycocyanin and phycoerythrin are
+  A. chlorophyta
+  B. chrysophyta
+  C. Rhodophyta
+  D. chaecophyta
+
+Q14.
+Which of these is inversely proportional to action
+  A. cytokinins
+  B. Rhodophyta
+  C. chrysphyta
+  D. chaecophyta
+
+Q15.
+Vegetative propagation using natural methods
+  A. corn
+  B. bulb
+  C. rhizome
+  D. budding
+
+Q16.
+A vegetable seller will use one of these hormones
+  A. abscisic acid
+  B. cytokinins
+  C. auxin
+  D. gibberellins
+
+Q17.
+The aspect of zoology that deals with the behavior
+  A. behavioural science
+  B. ethology
+  C. malacology
+  D. herpetology
+
+Q18.
+The middle layer of the layer of the body wall in
+  A. mesoderm
+  B. ectoderm
+  C. mesoglea
+  D. endoderm
+
+Q19.
+Birds and bats are both flying animals of different
+  A. divergent evolutionary adaptive features
+  B. convergent evolutionary adaptive features
+  C. parallel evolutionary adaptive features
+  D. unification of features
+
+Q20.
+The process by which an organism survives in its
+  A. evolution
+  B. adaption
+  C. ecology
+  D. aestivation
+
+Q21.
+Which of the following is not a means of malaria
+  A. control the population and reproduction of
+  B. control the reproduction of plasmodium sp in
+  C. remove stagnant water around human habitat
+  D. eating balanced diet and improving immune
+
+Q22.
+The longest, heaviest and strongest bone in the
+  A. humerus
+  B. tibla
+  C. skull
+  D. femur
+
+Q23.
+Which of these hormones is responsible for water
+  A. oxytocin
+  B. vasopressin
+  C. somatotropin
+  D. prolactin
+
+Q24.
+Which of the following is a viral disease?
+  A. cholera
+  B. measles
+  C. typhoid fever
+  D. tetanus
+
+Q25.
+The organelle responsible for the breakdown of old
+  A. ribosome
+  B. nucleus
+  C. mitochondria
+  D. lysosome
+
+Q26.
+If 3 Na? leave a plant cell into extracellular
+  A. 3.5
+  B. 3.0
+  C. 7.5
+  D. 7.0
+
+Q27.
+Which of these statements is true about a plant
+  A. gains water from its environment
+  B. has high solute potential
+  C. has high pressure potential
+  D. loses solute to its environment
+
+Q28.
+Ovary, style and the stigma of a flower are found
+  A. androecium
+  B. gynoecium
+  C. calyx
+  D. corolla
+
+Q29.
+The type of flowers that attach singly to either
+  A. inflorescence
+  B. solitary flower
+  C. imperfect flower
+  D. complete flower
+
+Q30.
+A flower that is usually large and conspicuous can
+  A. wind
+  B. insects
+  C. rodents
+  D. water
+
+Q31.
+Which of the following is not a feature common to
+  A. development into a fixed body plan
+  B. asexual reproduction
+  C. specialized tissues
+  D. heterotrophic nutrient sourcing
+
+Q32.
+Which of these listed fishes is a member of the
+  A. tilapia
+  B. skate
+  C. shark
+  D. ray
+
+Q33.
+An example of acellular microorganism is
+  A. virus
+  B. bacterium
+  C. fungus
+  D. archaes
+
+Q34.
+The process in which bacterial DNA is moved from
+  A. transformation
+  B. transduction
+  C. conjugation
+  D. transportation
+
+Q35.
+The gaps in the sheath between successive
+  A. Myelin sheath
+  B. Axons
+  C. Node of Ranvier
+  D. dendrites
+
+Q36.
+A fertilized matured ovary in plant is referred
+  A. leaf
+  B. fruit
+  C. root
+  D. stem
+
+Q37.
+Which polysaccharides are branched and which are
+  A. Amylose ? Cellulose
+  B. Amylopectin ? Cellulose
+  C. Cellulose ? Amylose
+  D. Cellulose ? Amylopectin
+
+Q38.
+Immediately after which stage in mitosis in an
+  A. anaphase
+  B. metaphase
+  C. prophase
+  D. telophase
+
+Q39.
+Each of the following events takes place during
+  A. I ? II ? IV ? V ? III
+  B. III ? I ? II ? IV
+  C. V ? III ? I ? II ? IV
+  D. IV ? V ? III ? I ? II
+
+Q40.
+Centromere is important for
+  A. movement of chromosomes toward the pole
+  B. replication of DNA
+  C. cytoplasmic cleavage
+  D. mis-segregation of chromosome
+
+Q41.
+One of the following is correct about the use of $\text{barometer}$:
+  A. to measure relative humidity
+  B. to measure transparency and light absorption
+  C. to measurement of atmospheric pressure
+  D. to measure the slope of an area of land
+
+Q42.
+Which of the following is NOT a method of
+  A. quadrat sampling method
+  B. transect sampling method
+  C. capture and recapture method
+  D. capture and label method
+
+Q43.
+People with sickle cell anaemia have haemoglobin
+  A. S and are homozygous recessive
+  B. A and are heterozygous recessive
+  C. S and are heterozygous recessive
+  D. A and are homozygous recessive
+
+Q44.
+Down's syndrome is as a result of chromosomal
+  A. 12
+  B. 21
+  C. 13
+  D. 8
+
+Q45.
+Protists and bacteria are grouped into different
+  A. protists have a membrane bounded nucleus,
+  B. bacteria are not made of cells
+  C. protists eat bacteria
+  D. bacteria decompose protists
+
+Q46.
+The term viviparity means
+  A. ability of animals to give birth to young ones
+  B. ability to lay eggs
+  C. ability of animals to derive food from plant
+  D. ability for parental
+
+Q47.
+The organism that has a hydrostatic skeleton is
+  A. tilapia
+  B. hydra
+  C. planaria
+  D. lumbricus
+
+Q48.
+A feature that makes locomotion easy for fish is
+  A. scaly body
+  B. slimy body
+  C. streamlined body
+  D. lateral line
+
+Q49.
+Select the correct option that indicates the
+  A. Circular | Present | Absent | Large
+  B. Circular | Absent | Present | Small
+  C. Linear | Absent | Present | Small
+  D. Linear | Present | Absent | Large
+
+Q50.
+A ten year old boy was taken to an optician based
+  A. nyctalopia
+  B. myopia
+  C. hypermetropia
+  D. astigmatism
+
+===============================================================================
+ JUPEB 2022 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+1(a) Define the following:
+i.    Genes
+i.    Alleles
+iii.  Homozygous organism
+iv.   Heterozygous organism
+v.    Dominant allele
+vi.   Recessive allele
+vii.  Test cross
+viii. Sex linked genes
+ix.   Rhesus
+x.    Albinism
+
+(b)  The following set of data represents the length
+in millimeters of 20 maize fruits harvested and
+measured by students during a biology session.
+Study the data carefully and use it to answer
+the
+following questions:
+
+Length (mm) of maize fruits:
+100  120  125  140  140
+110  100  150  140  130
+135  125  140  120  130
+120  130  155  140  150
+
+Arrange the set of data from lowest to highest values. Calculate the:
+i.   mean
+ii.  Median
+iii. Mode
+iv.  Range
+
+(c) Define genetic variation
+
+Q2.
+2(a) A recent ecological study in a commodity, put
+the mass of organisms found as follow:
+Rats 2000g/m?, Man 600g/m?, locust 3500g/m?.
+Represent this information using a pyramid of
+biomass.
+
+(b)  What is trophic level of each organism?
+
+(c)  It is said that only about 10% of the energy in
+one trophic level is transferred to the next trophic
+level in an ecosystem, the grass contained
+6000Kg worth of energy with varying quantities
+in grasshopper, Man, lizard and Bird.
+Use the above information to construct a pyramid
+of energy.
+
+Q3.
+3(a) Distinguish between natural active immunity
+and artificial active immunity.
+
+(b)  Describe the process of binary fission in
+prokaryotic cells.
+
+(c)  Define and provide example of cases of
+pandemic and epidermis disease.
+
+(d)  Outline the steps of the Koch's postulate and
+state how it can be applied in medical
+microbiology.
+
+Q4.
+4(a) Using a table, outline three differences
+between primary immune response and
+secondary immune response.
+
+(b)  List four differences between bacteriophage
+and bacteria.
+
+(c)  Copy and complete the table below:
+
+| Nutritional Type          | Energy | Electron | Carbon |
+|                           | Source | Source   | Source |
+|---------------------------|--------|----------|--------|
+| Photolitho autotrophs     |        |          |        |
+| Chemoorgano heterotrophs  |        |          |        |
+
+Q5.
+5(a) Write briefly two points on each of the
+following plant hormones:
+i.   gibberellins
+ii.  auxin
+iii. cytokinin
+iv.  ethylene
+
+(b)  Outline the steps involved in the development
+of the pollen grains in angiosperms.
+
+(c)  State the function of each of the following
+plant tissues:
+- Xylem
+- Phloem
+- Sclerenchyma
+- Chlorenchyma
+
+Q6.
+6(a) Define fertilization.
+
+(b)  Differentiate between seeds and fruits of
+plants in a tabular form.
+
+(c)  Describe the process of fertilization in plants.
+
+Q7.
+7(a) Give six characteristics of the sub kingdom
+protozoa.
+
+(b)  Complete the table below by showing one
+example of each class of protozoa:
+
+| Groups                    | Free living | Parasitic |
+|                           | examples    | forms     |
+|                           |             | examples  |
+|---------------------------|-------------|-----------|
+| Sarcodina                 |             |           |
+| Mastigophora (flagellates)|             |           |
+| Ciliophora (Ciliates)     |             |           |
+| Apicomplexa (sporozoans)  |             |           |
+
+(c)  Differentiate between paramecium and
+amoeba.
+
+===============================================================================
+ JUPEB 2022 -- BIOLOGY PRACTICAL
+===============================================================================
+
+Q1.
+(a) Summarize the characteristic feature that
+applies to all microorganisms:
+A. They are multicellular
+B. They perform photosynthesis
+C. Their cells have distinct nuclei
+D. They are visible only with a microscope
+
+Q2.
+Use the diagram below to answer questions 3 and 4
+
+1. In a cell, glycolysis and Kreb's cycle takes
+place respectively in the
+A. mitochondria cytoplasm
+B. cytoplasm, mitochondria ?
+C. cytoplasm, protoplasm
+D. mitochondria, protoplasm
+
+2. Plants produce oxygen as a by product during
+photosynthesis and this oxygen comes from
+A. the splitting of water molecule ?
+B. the chlorophyll in the chloroplast
+C. the electrons transport chain
+D. ATP and NADPH synthesis
+
+Q3.
+Use the diagram below to answer questions 3 and 4:
+
+3. The chronological sequence of stages in
+Meiosis I Prophase is
+A. Leptotene, Zygotene, Pachytene,
+Diplotene, Diakinesis ?
+B. Zygotene, Diplotene, Pachytene,
+Leptotene, Diakinesis
+C. Pachytene, Leptotene, Diakinesis,
+Diplotene, Diakinesis
+D. Diplotene, Zygotene, Pachytene,
+Leptotene, Diakinesis
+
+4. The theory of spontaneous generation
+predicts that
+A. evolution has taken place in large animals
+B. viruses are degenerated forms of bacteria
+C. microorganisms arise from lifeless matter ?
+D. microorganisms arise from existing ones
+by reproduction
+
+===============================================================================
+ END OF 2022 QUESTIONS
+===============================================================================

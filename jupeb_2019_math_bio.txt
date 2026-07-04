@@ -1,0 +1,884 @@
+===============================================================================
+ JUPEB 2019 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+Let Q, N, Z and Q' denote the set of rational, natural, integer, complex and irrational numbers respectively. Which of the following set contains the whole set of real number?
+  A. N
+  B. Z ? C
+  C. Q ? Q' {0}
+  D. Q ? C
+
+Q2.
+Determine the solution set of the inequality 3x ? 2 < 0
+  A. (??, 2)
+  B. (??, ??)
+  C. (2, ?)
+  D. [??, 2]
+
+Q3.
+Evaluate the conjugate of the complex number Z = ?1/(?1+i)
+  A. ?1?i
+  B. ?? ? ?i
+  C. 1+i
+  D. 1?i
+
+Q4.
+Compute the value of x if 4^(?x?32^(x+1)+5x) = 16^(x+1)/3
+  A. ?
+  B. 2/5
+  C. 4/5
+  D. 5/3
+
+Q5.
+Find tan 75? in surd form
+  A. (?3+2)
+  B. (2??3)/2
+  C. (?3?2)
+  D. 2+?3
+
+Q6.
+Given that log?? 2 = 0.3010, log?? 3 = 0.4771 and log?? 7 = 0.8451, compute log?? 72
+  A. 1.6205
+  B. 1.6205
+  C. 3.6105
+  D. 1.5025
+
+Q7.
+If U? = 3, U? = 4, and U? = a + bn, compute U?
+  A. 3
+  B. 4
+  C. 2
+  D. 8
+
+Q8.
+Let ? and ? be the roots of the equation x? ? 5x + 6 = 0. Deduce the equation whose roots are ?? and ??
+  A. x? ? 13x + 36 = 0
+  B. x? ? 13x ? 13 = 0
+  C. x? + 13x + 36 = 0
+  D. x? + 13x ? 13 = 0
+
+Q9.
+Which form of partial fraction is equivalent to the algebraic fraction f(x)/[(x?+1)(x?b)]?
+  A. (Ax+B)/(x?+a) + C/(x?b)
+  B. Ax+B/(x?+a) + C/(x?b)
+  C. (Cx+d)/(x?b)? + (x?b)/(x+a)
+  D. Ax+B/(x?+a) + (Ex+F)/(x+b)?
+
+Q10.
+Determine the centre and the radius of the circle x? + y? ? 2ax + 2yb + a? = 0 in terms of a and b
+  A. Centre (a, ?b), radius = b
+  B. Centre (?a, b), radius = a
+  C. Centre (a, b), radius = b
+  D. Centre (?a, ?b), radius = a
+
+Q11.
+Express 1 + i in the conjugate of ?2(cos 315? ? i sin 315?)
+  A. 2(cos 45? ? i sin 45?)
+  B. ?2(cos 315? ? i sin 315?)
+  C. 2(cos 315? + i sin 45?)
+  D. ?2(cos 45? + i sin 45?)
+
+Q12.
+A binary operation * is defined on the set of real numbers R by: x * y = (1/5)(5x + 5y ? 4) for any two real numbers x, y ? R. Calculate the identity element
+  A. 5
+  B. 3
+  C. 4
+  D. 0
+
+Q13.
+If P = [y 3 / 1 2 / 1 y], what is the range of values of y for which |P| > 0?
+  A. ?2 < y < 6
+  B. 2 < y < 6
+  C. ?6 < y < 2
+  D. ?6 < y < ?2
+
+Q14.
+Calculate the sum of infinity of 1 + tan 30? + tan?30? + tan?30? + ...
+  A. ?(2 ? ?3)
+  B. ?(3 ? ?3)
+  C. ?(2 + ?3)
+  D. ?(1 ? ?3)
+
+Q15.
+Estimate the value of the product of log?3 ? log?4 ? log?5 ? log?6 ? log?7 ? log?8
+  A. 1
+  B. 2
+  C. 3
+  D. 4
+
+Q16.
+Let the expression ax? + bx + c = 8 at x = 1, if the derivative is 4x + 2, determine the values of a, b and c respectively
+  A. 4, 2, 2
+  B. 2, 4, 2
+  C. 4, 0, 2
+  D. 2, 2, 4
+
+Q17.
+The distance S in metres moved by a particle in time t seconds is given by S(t) = 3.5t? ? 2t. Evaluate its speed after 2 seconds
+  A. 40 ms??
+  B. 22 ms??
+  C. 24 ms??
+  D. 28 ms??
+
+Q18.
+Calculate the gradient of the curve y = x? ? 3x? + 4 at the point (2, 1)
+  A. 7
+  B. 38
+  C. 22
+  D. 0
+
+Q19.
+Find the derivative of the line joining the point A(3, 5) to B(6, ?8)
+  A. ?3
+  B. ?13/3
+  C. 22
+  D. 13/3
+
+Q20.
+Evaluate lim(x?0) (x + sin x)/(x(x+1))
+  A. 0
+  B. ?2
+  C. 2
+  D. ?
+
+Q21.
+Given that x = sin(t) and y = cos(t), then the letter t is simply called the
+  A. mode
+  B. variation
+  C. parameter
+  D. differential value
+
+Q22.
+Given that y = cos 2?, x = sin ?. Express dy/dx in terms of x
+  A. ?4 sin ?
+  B. ?2 sin ?
+  C. ?4x
+  D. ?4 cos ? sin ?
+
+Q23.
+Let the given curve of a parabola be y? = x. Estimate the area of the curve in terms of x
+  A. 2x?/3 + c
+  B. 2x?/7 + c
+  C. x?/3 + c
+  D. 2x + c
+
+Q24.
+Find the derivative of the function y = log_e tan 2x
+  A. 2sec?2x/tan 2x
+  B. 2/tan 2x
+  C. sec?2x/tan 2x
+  D. 1/tan 2x
+
+Q25.
+The radius of a sphere is increasing at the rate of 0.1cm/s, determine the rate at which the surface area is increasing when the radius is 5cm
+  A. 8?cm?/s
+  B. 6?cm?/s
+  C. 5?cm?/s
+  D. 4?cm?/s
+
+Q26.
+Evaluate y in terms of x when x = 7, y = 3x? + 2x + 7
+  A. y = x?
+  B. y = x?
+  C. y = x
+  D. y = x? ? 3x? + 2x + 5
+
+Q27.
+Obtain d?y/dx? for the function y = 2x?/? ? 5x?/?
+  A. ?4x/3 + 15/4?x??
+  B. ?4/9?x??/? ? 15/4?x??/?
+  C. 4/9?x??/? + 15/4?x??/?
+  D. 4/3?x??/? ? 5/2?x??/?
+
+Q28.
+Evaluate ???? 12x?dx = 1372 to get the value of z
+  A. ?14
+  B. 14
+  C. 7
+  D. 8
+
+Q29.
+The expression for e?? is given as
+  A. 1 + x + x?/2! + x?/3! + ...
+  B. 1 ? x + x?/2! ? x?/3! + ...
+  C. 1 + x ? x?/2! + x?/3! ? ...
+  D. 1 ? x ? x?/2! ? x?/3! ? ...
+
+Q30.
+Describe the unit vector in the direction of 2i + j ? 2k
+  A. ?i + ?j ? ???k
+  B. ???i + ???j ? ???k
+  C. ???i + ???j ? ???k
+  D. ???i + ???j ? ???k
+
+Q31.
+Compute the modulus of the vector 2i + ?j + ?3k
+  A. 2
+  B. 3
+  C. 4
+  D. 5
+
+Q32.
+An object of mass 2.5kg moving at a constant velocity of 12ms?? comes in contact with a resistance of 10N, how long does it take the body to come to rest?
+  A. 2s
+  B. 3s
+  C. 4s
+  D. 5s
+
+Q33.
+With that velocity should a stone be thrown vertically upwards to reach the top of a hill 50m high? [take g = 10 ms??]
+  A. 10 ms??
+  B. 20 ms??
+  C. 31.62 ms??
+  D. 100 ms??
+
+Q34.
+A truck travelling on level ground is subject to a resisting force of 250kN for a distance of 5km. How much kinetic energy does the train lose?
+  A. 1250MJ
+  B. ?1250MJ
+  C. 1250MJ
+  D. 1250MJ
+
+Q35.
+A body start from rest and moves with a uniform acceleration of 10 ms??. Calculate the distance it covers in the 4th second
+  A. 35m
+  B. 80m
+  C. 24m
+  D. 45m
+
+Q36.
+A stone is dropped from the top of a building and reaches the ground after 2 seconds. Determine the height of the building [take g = 10ms??]
+  A. 19m
+  B. 20m
+  C. 24m
+  D. 25m
+
+Q37.
+A load of mass 70kg is placed in a lift. Calculate the reaction between the floor of the lift and the load when the lift moves upward with an acceleration of 2ms?? [take g = 9.8ms??]
+  A. 726N
+  B. 826N
+  C. 12.9N
+  D. 43.0N
+
+Q38.
+A block of mass 3kg rests on a rough horizontal table. If the coefficient of friction between the block and the table is 0.43, determine the minimum horizontal force that will make the block to slide on the table [take g = 10ms??]
+  A. 12.9N
+  B. 43.0N
+  C. 30.0N
+  D. 9.8N
+
+Q39.
+Three points A, B and C have spatial coordinates (?5, ?2, 3), (?2, 5, 3) and (4, 5, 2) respectively. Find the scalar product of displacement vectors AB and BC
+  A. 42.0
+  B. ?14.0
+  C. ?18.0
+  D. 24.0
+
+Q40.
+The mean score of 100 students in a class that took a statistics test is 72. If the mean score of the 70 boys in the class is 75. Calculate the mean score of the girls in the class
+  A. 70
+  B. 65
+  C. 60
+  D. 100
+
+Q41.
+In how many ways can the first, second and third positions be won by six athletes in a race of 100 metres?
+  A. 20
+  B. 60
+  C. 120
+  D. 100
+
+Q42.
+A bag contains 5 white, 2 black and 3 green balls. If three balls are drawn at random without replacement, what is the probability that two are white and one is black?
+  A. 2/5
+  B. 1/6
+  C. 3/10
+  D. 7/10
+
+Q43.
+When a distribution is moderately skewed with one mode, which of the following relation is correct?
+  A. mean ? median = 3(mean ? median)
+  B. 2mean = 3mean ? mode
+  C. mean ? mode = 3(mean ? median)
+  D. Mean ? mode = 3(mean ? median)
+
+Q44.
+Which of the measures of central tendency is often affected by extreme values?
+  A. mode
+  B. mean
+  C. data
+  D. median
+
+Q45.
+The heights, xcm of a sample of 80 female students are summarized by the equation ?(x ? 160) = 240. Compute the mean height of a female student
+  A. 243
+  B. 163
+  C. 136
+  D. 83
+
+Q46.
+A fair coin is tossed 5 times. Find the probability of obtaining at least 4 heads
+  A. 5/16
+  B. 1/16
+  C. 3/16
+  D. 13/16
+
+Q47.
+Deduce the mode of 6, 8, 1, 1, 2, 4, 2, 3
+  A. 2
+  B. 2
+  C. 6
+  D. 8
+
+Q48.
+A population with variance 16 has unknown mean ?. Let X? be the mean of a random sample of 100 from this population. If X? is used to estimate ?, determine the standard error of X?
+  A. 100.00
+  B. 0.40
+  C. 0.16
+  D. 16.00
+
+Q49.
+What is the mean value of a binomial variate whose number of repeated trails (n) equals to 8 and probability of success (p) equals 0.4?
+  A. 4
+  B. 3.2
+  C. 1.92
+  D. 1.92
+
+Q50.
+The probability that a patient will die undergoing a delicate heart operation is 0.175, what is the probability of the patient surviving from the operation?
+  A. 0.0875
+  B. 0.325
+  C. 0.825
+  D. 0.350
+
+===============================================================================
+ JUPEB 2019 -- MATH THEORY
+===============================================================================
+
+Q1.
+(b)** Let R be the set of real numbers, if binary operation ? is defined on ? by a ? b = (a + 1)(b + 1) where a and b belongs to R. Solve the equation:
+$$(2 + 4n) \otimes (4 - n) = 5n \otimes n$$
+
+(c)** An A.P has a common difference of 2 and G.P has a common ratio of 3. The corresponding terms are added together to produce a new sequence. If the 1st term of the sequence is 8 and its third term is 52, find:
+
+Looking carefully at this page, here are the remaining **2019 JUPEB Essay Questions** continuing from where we stopped:
+
+---
+
+Q1.
+$\mathrm{(a)}$** A block of mass 3.5kg rests on a rough plane which is inclined at an angle of 42? to the horizontal. If the coefficient of friction between the block and the plane is 0.75, what is the least force P parallel to the plane required to:
+- (i) Start moving the block up the plane?
+- (ii) Prevent the block from sliding down the plane?
+
+(b)** A body of mass 100kg is placed in a lift. Find the reaction between the floor of the lift and the body when the lift moves upward with an acceleration (take g = 9.8ms??)
+
+Q1.
+$\mathrm{(a)}$** A vehicle starts from rest and its velocity is measured every seconds as follow:
+
+| Time $\mathrm{(s)}$ | 0 | 1 | 2 | 3 | |
+|----------|---|---|---|---|---|
+| Velocity (ms??) | 0 | 0.4 | 1.0 | 1.7 | |
+
+| Time | t4 | 5 | 6 | 7 | 8 |
+|------|-----|---|---|---|---|
+| Velocity | 2.9 | 4.1 | 6.2 | 8.0 | 9.4 |
+
+The distance traveled in 8 seconds is given by:
+$\int_0^8 v \, dt$
+
+Estimate this distance using **Simpson's rule**
+
+(b)** Evaluate:
+- (i) $\int \frac{x+1}{x-3x+2} dx$
+- (ii) Find the differential coefficient of y = 3x?sin 2x
+- (iii) Obtain the expansion of e? sin x in ascending power of x as far as the terms in x?
+
+Q1.
+$\mathrm{(a)}$** In a class of 100 students, 35 offer history, 43 offer geography and 50 offer economics, 14 student offer history and geography, 13 offer geography and economics and 11 offer history and economics. The number that offer none of the subjects is four times the number of those that offer three subjects.
+- (i) How many students offer three subjects
+- (ii) How many students offer none?
+- (iii) How many students offer only one of the subjects
+- (iv) How many students offer history and geography only?
+
+(b)** Consider the Venn diagram below. Find the following sets:
+- A ? B?
+- A? ? B
+
+(c)** Solve 2?(x + 5) ? ?(2x + 8) = 2
+
+---
+
+### **2$\mathrm{(a)}$** Prove by mathematical induction or otherwise that:
+$\sum_{k=1}^{n} k^2 = \frac{n(n+1)(2n+1)}{6}$
+
+Q1.
+.** Portion of relevant statistical tables are given behind the questions
+
+**$\mathrm{(a)}$** Suppose the probability function of a discrete random variable X is given by:
+$f(x) = \frac{4}{(3-x)x^{16}}, \quad x = 0, 1, 2, 3, 4 $
+
+- (i) Find P(X ? 3)
+- (ii) Obtain the distribution function of X
+- (iii) Find P(X $\gt$ 0)
+- (iv) Find the mean and variance of X
+
+**(b)** The following table lists the frequency distribution for 60 rolls of die:
+
+| Outcome | 1 | 2 | 3 | 4 | 5 | 6 |
+|---------|---|---|---|---|---|---|
+| Frequency | 7 | 12 | 8 | 15 | 11 | 7 |
+
+Test at the 5% significance level whether the null hypothesis that the given die is fair true.
+
+Q1.
+(a)**
+- (i) Past records distinguish between type I and type II errors
+- (ii) Accountancy students in business statistics is 56% with a standard deviation of 7%. A random sample of 45 year II students of this department was tested and the mean score was 52%. Verify at ? = 0.05 if the average score of the students in this course has changed
+
+**(b)** An accountancy students claim he is 90% sure of the postings he made in all transactions. Would you agree with the claim if in a given transaction, he makes 20 out of 25 postings correctly? Use ? = 0.05
+
+Q1.
+(i)** Three points A, B and C are uniquely oriented of 3.5ms?? [take g = 9.8ms??] and in space with coordinates (?, -1, 2) (5, 2, 4) and (14, ?, 10) respectively. Find the value of ? and ? such that the three points are collinear
+
+(ii)** A car of mass 160kg is placed on a rough horizontal road with coefficient of friction 0.5. Find the deriving force when the car moves with an acceleration of 5ms??. A uniform speed of 3ms??
+
+---
+
+Q1.
+(b)** Evaluate:
+- (i) $\int_0^{\frac{\pi}{2}} \cos x \, dx$
+- (ii) $\int_0^{\frac{\pi}{4}} (\sec^2 x + \tan^2 x) \, dx$
+
+---
+
+===============================================================================
+ JUPEB 2019 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+Protozoa that move by pseudopodia belong to class\_\_\_\_
+  A. Ciliophora.
+  B. Sarcodina.
+  C. Mastigophora.
+  D. Apicomplexa.
+
+Q2.
+The bonding between two complementary base in a nucleotide is\_\_\_\_
+  A. Van der waal's forces.
+  B. Covalent bond
+  C. Hydrogen bond.
+  D. Bi-polar forces.
+
+Q3.
+\_\_\_\_\_ is the basic unit of inheritance.
+  A. Allele.
+  B. Locus
+  C. Gene
+  D. Chromosome
+
+Q4.
+Which statement describes events during interphase of mitosis?
+  A. Chromosomes start to coil, becoming shorter and fatter.
+  B. Chromosome line up on the equator of the spindle.
+  C. Chromosomes are pulled apart by spindle fibres.
+  D. Chromosomes are replicated ready for next division.
+
+Q5.
+Which process occurs during prophase of the mitotic cell cycle in an animal cell?
+  A. Division of centromeres.
+  B. Formation of chromosomes.
+  C. Replication of DNA.
+  D. Separation of centrioles.
+
+Q6.
+The intermediate host of *Taeniasaginata* is\_\_\_\_
+  A. Pig.
+  B. Dog.
+  C. Cattle.
+  D. Horse.
+
+Q7.
+The formal system for organizing, classifying and naming living thing is known as\_\_\_\_
+  A. Nomenclature.
+  B. Classification.
+  C. Taxonomy.
+  D. Hierarchy.
+
+Q8.
+The group of insects that have mouth parts adapted for both piercing and sucking is\_\_\_\_
+  A. Cockroaches, aphids and mosquito.
+  B. Aphids, houseflies and moths.
+  C. Mosquitoes, tse-tse flies and aphids.
+  D. Aphids, bee and grasshoppers.
+
+Q9.
+Cells consist of a number of different components. Which row shows the components present in both a prokaryotic and a eukaryotic cell
+  A. Absent | Present | Absent | Present
+  B. Present | Present | Absent | Absent
+  C. Absent | Absent | Present | Present
+  D. Present | Absent | Present | Absent
+
+Q10.
+Four different juices A, B, C and D were tested with Benedict solution. A second sample of each juice was hydrolysed and tested with Benedict solution. The table below shows the masses of the precipitate formed. Which juice contains the greatest mass of non-reducing sugar?
+  A. 30 | 55
+  B. 55 | 55
+  C. 65 | 85
+  D. 70 | 80
+
+Q11.
+The gas exchange of CO2 and O2 in plants occurs through small regulated opening called\_\_\_\_
+  A. mesophyll
+  B. stomata
+  C. chloroplast
+  D. thylakoids
+
+Q12.
+Moss is an example of \_\_\_\_ plant.
+  A. Vascular
+  B. haplontic
+  C. diplontic
+  D. flowering
+
+Q13.
+Which of these options is an example of a pair of thallus liverwort.
+  A. *Pellia* and *Lophocolea*
+  B. *Pellia* and *Marchantia*
+  C. *Lophocolea* and *Marchantia*
+  D. *Lophocolea* and *Funaria*
+
+Q14.
+The base of ferns, is protected against drought or frost by\_\_\_\_
+  A. ramenta
+  B. strobili
+  C. sori
+  D. rhizome
+
+Q15.
+Which of these is true about protoplast at incipient plasmolysis?
+  A. It ceased to exert pressure against the cell membrane.
+  B. It ceased to exert pressure against the cell wall.
+  C. It adhered to the cell wall under high pressure.
+  D. It adhered to the cell membrane under high pressure.
+
+Q16.
+The main function of a companion cell in phloem tissue during translocation is\_\_\_\_
+  A. To provide cytoplasmic contact with the sieve tube for loading.
+  B. To provide structural support for the sieve tube.
+  C. To provide nucleus during cell division in the phloem.
+  D. To provide assimilates for storage of the transported sucrose.
+
+Q17.
+The fastest and simplest pathway of water in the root and leaf is the\_\_\_\_
+  A. Cell wall.
+  B. Cell membrane.
+  C. Cytoplasm.
+  D. Vacuole.
+
+Q18.
+The pollen grains in the pollen sacs of an anther consist of\_\_\_\_
+  A. Two coats, diploid generative nucleus and haploid nucleus.
+  B. Two coats, haploid generative nucleus and haploid nucleus.
+  C. One coat, diploid generative nucleus and diploid nucleus.
+  D. One coat, haploid generative nucleus and haploid nucleus.
+
+Q19.
+The use of neutral enemy to control a particular pest can be regarded as\_\_\_\_
+  A. Chemical control.
+  B. Physical control.
+  C. Biological control.
+  D. Natural control.
+
+Q20.
+The female reproductive organ of a typical flower is known as\_\_\_\_
+  A. Gynoecium.
+  B. Androecium.
+  C. Calyx.
+  D. Corolla.
+
+Q21.
+Ada wants to get her fruits ripened. Which plant hormone will you advice her to use for this purpose?
+  A. Giberlin.
+  B. Indole Acetic Acid.
+  C. Cytokinin.
+  D. Ethylene.
+
+Q22.
+Which statement about thylakoids in eukaryotes is true?
+  A. Thylakoids exist as a maze of folded membrane.
+  B. The space surrounding the thylakoids is called stroma.
+  C. Chlorophyll contains the folded thylakoid.
+  D. Thylakoids bring about the separation of water.
+
+Q23.
+What does A represent, and in what condition does this reaction occur in non-photosynthetic plants?
+  A. Cytochrome oxidase, aerobic.
+  B. Pyruvate decarboxylase, anaerobic.
+  C. Pyruvate dehydrogenase, aerobic.
+  D. NAD, anaerobic.
+
+Q24.
+What does B represent, and in what condition does this reaction occurs in animal cells?
+  A. Lactate dehydrogenase, anaerobic.
+  B. Cytochrome oxidase, aerobic.
+  C. NAD, aerobic.
+  D. Lactate decarboxylase, anaerobic.
+
+Q25.
+The transport of water from the root through the xylem vessels to the leaves is affected by environment factors. A decrease in one of the following environmental factors would lead to increase in water transport.
+  A. Wind direction.
+  B. Temperature.
+  C. Humidity.
+  D. Light intensity.
+
+Q26.
+Genetically Modified crops (GMCs) are important in combating food insecurity among the world ever increasing population however, their major challenge is\_\_\_\_
+  A. Pest resistance.
+  B. Adaptation.
+  C. Enabling law.
+  D. High cost of production.
+
+Q27.
+The scientist whose findings resolved the debate on spontaneous generation was\_\_\_\_
+  A. Louis Pasteur.
+  B. Rudolf Virchow.
+  C. LazzaroSpallanzani.
+  D. John Needham.
+
+Q28.
+Bacteria that require oxygen for growth are called\_\_\_\_
+  A. Aerobes.
+  B. Oxygenic Bacteria.
+  C. Anoxygenic Bacteria.
+  D. Anaerobes.
+
+Q29.
+Viruses have a core of either DNA or RNA surrounded by a\_\_\_\_
+  A. Lipid envelope.
+  B. Protein coat.
+  C. Cell wall.
+  D. Cell membrane.
+
+Q30.
+The parts labeled A, B, C are \_\_\_\_ respectively. *(referring to bacteriophage diagram)*
+  A. Head, Collar, Sheath.
+  B. Head, Neck and sheath.
+  C. Head, sheath and Neck.
+  D. Head, sheath and collar.
+
+Q31.
+What is the name of the diagram represented above?
+  A. Bacteriophage virus.
+  B. Sperm cell.
+  C. Stem cell.
+  D. Bacteria.
+
+Q32.
+Which of the following occurs at the part labeled DNA?
+  A. Replication.
+  B. Death.
+  C. Growth.
+  D. Development.
+
+Q33.
+The undifferentiated body of thallophyta is called\_\_\_\_
+  A. Thallus.
+  B. Thallophytes.
+  C. False stems.
+  D. False roots.
+
+Q34.
+Mr Tari is reported to have a swollen region and localized pains around his leg injury. What best describes this situation?
+  A. Infection leading to inflammation.
+  B. Immunity decline.
+  C. Reflex response.
+  D. Metabolic Internal process.
+
+Q35.
+\_\_\_\_ are organism which depend on other living organisms (plant and animals) for their nutritional requirements.
+  A. Parasites.
+  B. Symbionts.
+  C. Saprophytes.
+  D. Weeds.
+
+Q36.
+The stored carbonhydrate nutrient in animal is known as\_\_\_\_
+  A. Glycogen.
+  B. Chitin.
+  C. Starch.
+  D. Glucose.
+
+Q37.
+How many embryonic layers are present in Phylum Mollusca?
+  A. Two.
+  B. Three.
+  C. Four.
+  D. Five.
+
+Q38.
+The main function of the epithelial tissue is\_\_\_\_
+  A. Movement.
+  B. Protection and defense.
+  C. Covering.
+  D. Binding and support.
+
+Q39.
+Which of these is a connective tissue?
+  A. Blood.
+  B. Epidermis.
+  C. Falloplan tube.
+  D. Nervous tissue.
+
+Q40.
+Which of the following is not a member of phylum Chordata?
+  A. Lung fish.
+  B. Star fish.
+  C. Frog.
+  D. Parrot.
+
+Q41.
+Some unicellular animals have developed different organelles for locomotion. Which of the combination indicated below provides a corresponding pair?
+  A. Sarcodina and cilia.
+  B. Mastigophora and flagella.
+  C. Mastigophora and cilia.
+  D. Mastigophora, three membranest membranes to be reckoned with are \_\_\_\_ membranes.
+
+Q42.
+In embryology, three membranest membranes to be reckoned with are \_\_\_\_ membranes.
+  A. Plasma, chorion and embryonic
+  B. Chorion, amnion and yolk sac
+  C. Plasma, chorion and embryonic
+  D. Chorion, amnion and umbilical
+
+Q43.
+Protozoology is the study of____
+  A. Algae.
+  B. Nematodes.
+  C. Viruses.
+  D. Protozoa.
+
+Q44.
+The conversion of a nutrient into a molecule in the body of a consumer is referred to as\_\_\_\_
+  A. Digestion.
+  B. Assimilation.
+  C. Inhibition.
+  D. Absorption.
+
+Q45.
+Which of these best explains why arthropods are successful?
+  A. They possess muscular appendages which may be adapted for crawling.
+  B. Their bodies are divided into segments called sepa.
+  C. Their exoskeletons protect them from predators and water loss.
+  D. The produce silk from abdominal glands to spin webs from trapping their prey.
+
+Q46.
+Determine the major difference between the skeleton of earthworm and arthropods.
+  A. Earthworms possess exoskeleton while arthropods possess skeletons made up of non-living materials
+  B. Earthworms possess skeletons made up of living materials while arthropods possess hydrostatic skeletons
+  C. Earthworms possess hydrostatic skeletons while arthropods possess exoskeleton
+  D. Earthworms possess skeletons of non-living materials while arthropods possess living materials
+
+Q47.
+The method of fertilization among vertebrates in which fertilized eggs are retained in the body of the female until when matured and then hatched out is\_\_\_\_
+  A. Oviparity.
+  B. Ovoviviparity.
+  C. Viviparity.
+  D. Bird.
+
+Q48.
+From the adaptive features below, choose the class of organism it best describes.
+  A. Reptilian.
+  B. Amphibian.
+  C. Aves.
+  D. Pisces.
+
+Q49.
+The presence of endoskeleton, gill slits and well developed central nervous system are characteristics of which of the following?
+  A. Pisces.
+  B. Mammalia and Arachnida.
+  C. Myriapoda and Amphibian.
+  D. Insects and Reptilia.
+
+Q50.
+*Paramecium* moves about by\_\_\_\_
+  A. Floating.
+  B. Looping.
+  C. Crawling.
+  D. Beating of cilia.
+
+===============================================================================
+ JUPEB 2019 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+(a) A breeder had rabbits with normal skin and hair colouring had six (6) children, of whom three (3) were albino. Albino people have no colouring in their skin or hair due to having an inactive form of the enzyme tyrosinase. Tyrosinase is essential for the formation of the brown pigment melanin.
+? The normal allele of the tyrosinase gene is 'A', and the allele that produces faulty tyrosinase gene is 'a'. State the genotype of the parents and their albino children.
+(b) Briefly write on the structure that prokaryotes use for attachment.
+(c) With illustration, describe the events in each stage of a microbial growth curve of a batch culture.
+
+Q2.
+As the team leader of an environmental study team, you have been commissioned to undergo a field study to determine the population density and population size of given species in a habitat.
+(a) Design a *pro-forma* that would guide your team to success.
+(b) Mention any four (4) materials would be required.
+(c) If the population size of grasshopper is 700 in a sample plot of 100m?, what is the population density of grasshopper in the plot?
+
+Q3.
+(a) Using six (6) points each describe the following:
+i. Biological control
+ii. Chemical control.
+(b) Enumerate four (4) impacts of climate change on plants.
+
+Q4.
+(a) Outline eight (8) general characteristic of ferns.
+(b) With the aid of diagram only, describe the life cycle of $Selaginella$.
+
+Q5.
+(a) State the characteristics of the Archaea using the following guidelines:
+i. Mesophiles.
+ii. Halophiles.
+iii. Acidophiles.
+iv. Alkaliphiles.
+v. Thermophiles.
+(b) Highlight five (5) biotechnological or beneficial uses of micro-organisms.
+
+Q6.
+(a) List two (2) media that are used for the growth of micro-organism in the laboratory
+(b) Briefly write on the structure that prokaryotes use for attachment.
+(c) With illustration, describe the events in each stage of a microbial growth curve of a batch culture.
+
+Q7.
+(a) Describe the life cycle of *Plasmodium* in man.
+(b) Mention four (4) economic importance of Plasmodium.
+
+Q8.
+(a) List ten (10) characteristics of the Class Reptilia.
+(b) Itemize five (5) adaptation of animal in transition from water to land
+
+===============================================================================
+ JUPEB 2019 -- BIOLOGY PRACTICAL
+===============================================================================
+
+Q1.
+You have been provided with specimens V and X.
+a. Identify specimens V and X without reasons. [1/2 mark]
+b. Classify specimens X based on the following taxa: Phylum, Class, Order and Genus. [1 mark]
+c. Mention two (2) important adaptive features for each specimens V and X. [1 mark]
+d. State two (2) similarity in their external features. [1 mark]
+e. In a tabular form, state one observable characteristic difference between specimens V and X. [1/2 mark]
+f. Make labeled drawings of specimens V and X. [5 marks]
+g. Examine the mouthparts of specimens V and X using a hand lens. State the components of their mouthparts, indicating their functions. [1 mark]
+
+Q2.
+a. Identify specimens L, M, N and O without reasons. [2 marks]
+b. Classify the specimens L, M, N and O under the following:
+(i) Berry
+(ii) Drupe
+(iii) Samara [2 marks]
+(iv) Capsule
+c. Draw a well labeled diagram of longitudinal section of specimens O. [4 marks]
+d. Outline any two (2) differences between specimen L and O. [1 mark]
+e. State one (1) method of dispersal for specimens L, M, N and O. [1 mark]
+
+===============================================================================
+ END OF 2019 QUESTIONS
+===============================================================================

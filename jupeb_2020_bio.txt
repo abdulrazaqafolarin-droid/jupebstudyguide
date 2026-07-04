@@ -1,0 +1,443 @@
+===============================================================================
+ JUPEB 2020 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+Antonie van Leeuwenhoek first observed microorganisms in 1674 and called them
+  A. microbes.
+  B. cells.
+  C. bacteria.
+  D. animalcules.
+
+Q2.
+The name 'Enterobacteriaceae' denotes a bacterial
+  A. Class.
+  B. Division.
+  C. Order.
+  D. Family.
+
+Q3.
+Choose the option below that is INCORRECT about fungal groups.
+  A. Deuteromycetes are fungal groups that form asexual spores.
+  B. Oomycetes are fungal groups that form asexual spores.
+  C. Basidiomycetes are fungal groups that form asexual spores.
+  D. Zygomycetes are fungal groups that form asexual spores.
+
+Q4.
+In which part of the leaves does photosynthesis take place?
+  A. Stomata.
+  B. Chloroplast.
+  C. Mesophyll.
+  D. Vascular bundle.
+
+Q5.
+The by-product of light-dependent reaction of photosynthesis is
+  A. H?O
+  B. CO?
+  C. O?.
+  D. ATP.
+
+Q6.
+The internal changes that seeds pass through before they start germinating is known as
+  A. after-ripening.
+  B. dormancy.
+  C. sprouting.
+  D. fertilization.
+
+Q7.
+Which of the following statements is CORRECT about Bryophytes and Pteridophytes?
+  A. The organ of anchorage are rhizoids and roots respectively.
+  B. Bryophytes are terrestrial while Pteridophytes are amphibious.
+  C. Bryophytes have complex body structures while Pteridophytes have simpler body structures.
+  D. Bryophytes and Pteridophytes possess rhizolds.
+
+Q8.
+One of the importance of mosses is that they
+  A. initiate soil erosion.
+  B. reduce soil quality.
+  C. initiate soil formation.
+  D. serve as source of income.
+
+Q9.
+A cell that has thin cell walls, dense cytoplasm, small sized vacuoles and capable of dividing is likely to be a
+  A. meristematic cell.
+  B. secondary cell.
+  C. lateral cell.
+  D. differentiated cell.
+
+Q10.
+The floral leaves of a typical flower are divided into four parts where the sepals form the
+  A. corolla.
+  B. calyx.
+  C. androecium.
+  D. gynoecium.
+
+Q11.
+When the sepals of a flowering plant are separated from each other, such plant is referred to as a
+  A. gamosepalous plant.
+  B. monosepalous plant.
+  C. heterosepalous plant.
+  D. polysepalous plant.
+
+Q12.
+The mass flow of sap through sieve elements is described as an active process because
+  A. sucrose moves out of the phloem into area of cell multiplication.
+  B. phloem sap is capable of moving in the sieve elements against the force of gravity.
+  C. sucrose is loaded into a sieve element against the concentration gradient.
+  D. water moves along with the sucrose down the concentration gradient.
+
+Q13.
+The rate of diffusion is inversely proportional to the size of diffusing molecules and
+  A. concentration gradient.
+  B. surface area of the cell involved.
+  C. density of the diffusing molecules.
+  D. temperature in the cell involved.
+
+Q14.
+When the filaments of stamens are attached to the petal, the flower is referred to as
+  A. epipetalous.
+  B. gamopetalous.
+  C. polypetalous.
+  D. monopetalous.
+
+Q15.
+In seed vascular plants, the first fertilization occurs
+  A. when two nuclei fuse together to form a zygote.
+  B. when one nucleus fuses with the ovum to form a diploid cell.
+  C. when one nucleus fuses with the ovum to form a zygote.
+  D. when two nuclei fuse together to form a diploid cell.
+
+Q16.
+Body segmentation is pronounced in the following groups of animals EXCEPT
+  A. Arthropoda.
+  B. Chordata.
+  C. Annelida.
+  D. Coelenterata.
+
+Q17.
+The Sarcodinea are very unique with the presence of
+  A. ciliated body.
+  B. long flagella.
+  C. amorphous body structure.
+  D. binucleated cytoplasm.
+
+Q18.
+Which of the listed phyla is referred to as a dead end phylum?
+  A. Coelentrata.
+  B. Annelida.
+  C. Porifera.
+  D. Arthropoda.
+
+Q19.
+Sexual maturity of animal parasites is attained in the
+  A. reservoir host.
+  B. definitive host.
+  C. primary host.
+  D. intermediate host.
+
+Q20.
+A mantle and mantle cavity are present in the class
+  A. Oligochaete.
+  B. Bivalvia.
+  C. Polychaeta.
+  D. hiruclinea.
+
+Q21.
+The believe that certain living things arose from vital forces present in non-living or decomposing matter is known as
+  A. initial generation.
+  B. biogenesis.
+  C. spontaneous generation.
+  D. induced generation.
+
+Q22.
+The part labeled II is the
+  A. nucleus.
+  B. eyespot.
+  C. basal granule.
+  D. contractile vacuole.
+
+Q23.
+Which of these cell structures can be seen only with an electron microscope?
+  A. Cell surface membrane.
+  B. Chromosome.
+  C. Nucleolus.
+  D. Vacuole.
+
+Q24.
+Which of the following are found in both eukaryotic and prokaiyotic cells?
+  A. I, II and III.
+  B. I, II and IV.
+  C. I, III and IV.
+  D. II, III and IV.
+
+Q25.
+Which of the following listed organisms is a multicellular organism?
+  A. Rhizopus.
+  B. Euglena.
+  C. Paramecium.
+  D. Chlorella.
+
+Q26.
+Birds and mammals have certain shared characteristics. Which of these is NOT a shared characteristic?
+  A. Ossified endoskeleton.
+  B. Breathing using lungs.
+  C. Viviparity.
+  D. Warm blooded.
+
+Q27.
+Choose the option that is associated with an open vascular system.
+  A. Man.
+  B. Fish.
+  C. Prawn.
+  D. Snakes.
+
+Q28.
+Choose the option that is associated with the measuring of the pulse beat.
+  A. Artery.
+  B. Vein.
+  C. Capillary.
+  D. Nerves.
+
+Q29.
+Study the options carefully and identify the organism that excretes uric acid as its main nitrogenous waste.
+  A. Frog.
+  B. Birds.
+  C. Fishes.
+  D. Man.
+
+Q30.
+Study the options A?D carefully. Identify the cells which secrete the male sex hormone, testosterone.
+  A. Isthmus.
+  B. Cryptic cells.
+  C. Lieberklihn.
+  D. Leydig's cells.
+
+Q31.
+Which of the options below best describes an electron microscope in comparison with a light microscope?
+  A. (Option A ? Higher magnification, Higher resolution)
+  B. (Option B ? Higher magnification, Lower resolution)
+  C. (Option C ? Lower magnification, Higher resolution)
+  D. (Option D ? Lower magnification, Lower resolution)
+
+Q33.
+Which of these is the intermediate host of Fasciola?
+  A. Pig globosa.
+  B. Lymnaea truncatula.
+  C. Lamellidens marginalis.
+  D. Achatina achiatina.
+
+Q36.
+Students in a biology class were asked to use the following information to draw a bar chart to show number of babies born in twelve villages on a certain day:
+  A. Graph of number of babies against number of villages.
+  B. Graph of number of villages against number of babies.
+  C. Bar chart showing number of villages against number of babies.
+  D. Bar chart showing number of babies against number of villages.
+
+Q37.
+What is the ecological definition of the term community?
+  A. All the food web in an ecosystem.
+  B. All the individuals of one species in an area.
+  C. All the organisms in an area.
+  D. All the biotic and abiotic components in an ecosystem.
+
+Q39.
+Identify the option that is not an anti sera used in blood grouping.
+  A. Anti sera A.
+  B. Anti sera B.
+  C. Anti sera C.
+  D. Anti sera D.
+
+Q40.
+Identify the odd ecological instrument from the options given below.
+  A. Anemometer.
+  B. Ecological meter.
+  C. Ecological meter.
+  D. (Refer to options in book)
+
+Q43.
+Which of these is a xerophyte?
+  A. Cactus.
+  B. Moss.
+  C. Fern.
+
+Q44.
+Which of the following is NOT true of Bryophytes?
+  A. Possession of rhizoids.
+  B. Production of spores.
+  C. Alternation of generation.
+  D. Xerophytic life cycle.
+
+Q45.
+One of the following is not a causative organism of human malaria.
+  A. Plasmodium falciparum.
+  B. Plasmodium ovale.
+  C. Plasmodium vivax.
+  D. Plasmodium berghei.
+
+Q46.
+Choose the option that best describes the lag phase. It is the period when the
+  A. bacteria are adjusting to the environment.
+  B. environment is adjusting to the bacteria.
+  C. bacteria records the highest growth rate.
+  D. environment slows down the bacteria growth.
+
+Q47.
+Identify the option which is not caused by a pathogen.
+  A. Malaria.
+  B. Cancer.
+  C. Measles.
+  D. Tuberculosis.
+
+Q48.
+A pharmaceutical company involved in the
+  A. Bacteria.
+  B. Protozoa.
+  C. Fungi.
+  D. Virus.
+
+Q49.
+A person who consumes mouldy bread is most likely
+  A. Aspergillus sp.
+  B. Plorutus sp.
+  C. Mycelium sp.
+  D. Mouldellum sp.
+
+Q50.
+A piece of yam fell into a solution of unknown
+  A. hypotonic.
+  B. hypertonic.
+  C. isotonic.
+  D. hydrotonic.
+
+===============================================================================
+ JUPEB 2020 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+1(a) State ONE function of the following cell organelles:
+i.   Nucleus
+ii.  Plasma membrane
+iii. Ribosome
+iv.  Chloroplast
+v.   Ribosomal Endoplasmic Reticulum
+vi.  Golgi apparatus
+vii. Mitochondria
+viii.Cell wall
+ix.  Lysosome
+x.   Vacuoles.          [5 Marks]
+
+(b) Mention THREE similarities between a prokaryotic
+and an eukaryotic cell. [3 Marks]
+
+(c) Mention TWO differences between a prokaryotic
+and an eukaryotic cell. [2 Marks]
+
+Q2.
+2. A breed of dog is said to have genes for hair colour and leg length. Allele 'A' is dominant and gives brown hair. Allele 'a' is recessive and gives black hair. Allele 'L' is dominant and gives long legs, and allele 'l' is recessive and gives short legs.
+
+(a) Present in tabular form, the various types of genotypes and phenotypes that the dogs may have. [5 Marks]
+
+(b) Construct a genetic table to show the offspring a breeder would expect between two dogs that are heterozygote for both genes using Punnet square.
+[4 Marks]
+
+(c) State the phenotypic ratio of the cross.
+
+Q3.
+3(a) What is conservation? [2 Marks]
+
+(b)  Differentiate between in-situ and ex-situ
+conservation. [2 Marks]
+
+(c)  Outline the merits and demerits of each of
+in-situ and ex-situ conservation. [6 Marks]
+
+Q4.
+4(a) With the aid of a labelled diagram alone, show the
+general sexual life cycle of fungi.
+
+(b)  Outline the general characteristics of
+Basidiomycetes.
+
+Q5.
+5(a) Name THREE major constituents of plant tissues
+decomposed by fungi.
+
+(b)  Write TWO importance of fungi to the soil.
+
+(c)  List FIVE general characteristics of fungi.
+
+Q6.
+6(a) In a tabular form, name SIX microorganisms
+causing infectious diseases in animals, indicating
+the diseases caused and their common sources.
+
+(b)  Briefly describe yeast reproduction.
+
+Q7.
+7(a) Define the term: 'tissue'.
+
+(b)  State the FOUR main types of tissue found in
+animals.
+
+(c)  Write short notes on each of the various types of
+epithelial tissues, indicating their structures,
+locations and functions.
+
+Q8.
+8(a) Describe sexual reproduction in Hydra.
+
+(b)  Briefly describe nutrition in Hydra.
+
+===============================================================================
+ JUPEB 2020 -- BIOLOGY PRACTICAL
+===============================================================================
+
+Q1.
+(a) You have been provided with two (2) samples
+labelled specimen N and specimen K. Use iodine,
+Benedict's solution, Fehling's solution A and B to
+test the samples for:
+i.  Starch.
+ii. Reducing sugar.
+Record your findings for (i) and (ii) in a tabular
+form.
+
+(b)
+i.  Add four drops of Millon's reagent to 5ml of
+specimen J in a test-tube and heat.
+
+ii. Add 10 drops of specimen K to 5ml of Benedict's
+solution and boil for 2 minutes. Allow the mixture
+to cool. Report your findings using the format
+shown below.
+
+| SPECIMEN | TEST | OBSERVATION | INFERENCE |
+|----------|------|-------------|-----------|
+|    J     |      |             |           |
+|    K     |      |             |           |
+
+Q2.
+You have been provided with the specimens P, Q, R
+and S.
+
+(a) Identify specimens P, Q, R and S stating their
+Genus without reasons.
+
+(b) What classes do specimens P, Q, R, and S belong?
+
+(c) Construct a food chain using specimens P, Q, R
+and S.
+
+(d) What is the trophic level of specimen R?
+
+(e) State four (4) adaptive features of specimen P.
+
+(f) What are the four (4) observable (external)
+differences between specimens R and S?
+
+(g) Draw a labelled diagram of the lateral view of
+specimen R.
+
+===============================================================================
+ END OF 2020 QUESTIONS
+===============================================================================

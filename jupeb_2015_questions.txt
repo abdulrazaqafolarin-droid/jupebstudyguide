@@ -59,7 +59,8 @@ PHYSICS 2015
 
 **(b)**
 - (i) State the Zeroth law of thermodynamics. A steel rod has a length of 30m at 0°C. Calculate the length of the rod after it has been heated to 40°C, given that the linear expansion coefficient is 11 \times 10^{-6}$/°C. **[2 Marks]**
-- (ii) A 0.050 kg steel mass, heated to 200.0°C is dropped into a beaker containing 0.400 kg of water. The initial temperature of the water is 20.0°C and the final temperature of the steel and the water is 22.4°C. The beaker has negligible heat capacity. Specific heat capacity of water = 4186 J/kgC. Calculate the specific heat capacity of the steel. **[3 Marks]**
+- (ii) A 0.050 kg steel mass, heated to 200.0°C is dropped into a beaker containing 0.400 kg of water. The initial temperature of the water is 20.0°C and the final temperature of the steel and the water is 22.4°C. The beaker has negligible heat capacity. Specific heat capacity of water = 4186 J/kgC. Calculate the specific heat capaci
+ty of the steel. **[3 Marks]**
    Correct Answer: None
 
 --- PHYSICS 2015 THEORY Q0 ---

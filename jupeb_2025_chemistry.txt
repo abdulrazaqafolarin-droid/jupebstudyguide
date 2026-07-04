@@ -1,0 +1,639 @@
+===============================================================================
+ JUPEB 2025 -- CHEMISTRY OBJECTIVE
+===============================================================================
+
+Q1.
+The ratio of the absolute error in measurement to the expected true value defines the
+  A. relative error
+  B. mean error
+  C. absolute error
+  D. random error
+
+Q2.
+Which element of group 16 cannot form a compound of the formula XF$_6$?
+  A. Selenium
+  B. Sulphur
+  C. Oxygen
+  D. Tellurium
+
+Q3.
+The gas heavier than air is
+  A. pure $N_{2}$
+  B. pure $Cl_{2}$
+  C. moist air
+  D. moist $H_{2}$
+
+Q4.
+What is the atomic mass of a triatomic elementary gas with a vapour density of 48?
+  A. 48
+  B. 96
+  C. 32
+  D. 16
+
+Q5.
+In the equation: $x\text{NH}_3 + y\text{H}_2\text{O} \rightarrow z\text{NO} + w\text{H}_2\text{O}$. If $x$ is 2, then $y$, $z$ and $w$ are
+  A. 5/2, 4, 6
+  B. 5/2, 2, 3
+  C. 3, 2, 4
+  D. 2, 4, 6
+
+Q6.
+Which of the following characteristics shows that hydrogen resembles halogens?
+  A. Zn in the presence of alcohol
+  B. H atom contains one electron
+  C. H forms ionic hydrides with alkali metals
+  D. Hydrogen has three allotropes
+
+Q7.
+What type of reaction can convert alkyl halide into an alcohol?
+  A. Addition
+  B. Elimination
+  C. Substitution
+  D. Hydrolysis
+
+Q8.
+A well-stoppered thermos flask contains some ice cubes. This is an example of
+  A. a closed system
+  B. an open system
+  C. an isolated system
+  D. a non-thermodynamic system
+
+Q9.
+Which of the following ionic compounds is insoluble in water?
+
+Q10.
+When lead acid battery is discharged
+  A. SO$_2$ gas is evolved
+  B. lead sulphate is consumed
+  C. lead is formed
+  D. sulphuric acid is used up
+
+Q11.
+The rate constant does not depend on
+  A. temperature
+  B. concentration
+  C. presence of catalyst
+  D. nature of reactants
+
+Q12.
+Identify the option which contains the highest number of atoms
+  A. temperature
+  B. concentration
+  C. 127 g of iodine
+  D. 4 g of hydrogen
+
+Q13.
+If 2.5 L of a sample of a gas at 27 ?C and 1 bar pressure is compressed to a volume of 500 mL at constant temperature, what is the percentage increase in pressure?
+  A. 100%
+  B. 400%
+  C. 500%
+  D. 80%
+
+Q14.
+The formula for washing soda is
+  A. $Na_{2}CO_{3}$
+  B. $Na_{2}CO_{3}$.10H2O
+  C. $Na_{2}CO_{3}$.3H2O
+  D. $Na_{2}CO_{3}$.7H2O
+
+Q15.
+Synthesis gas is a mixture of
+  A. steam and CO
+  B. CO and $N_{2}$
+  C. $H_{2}$ and CO
+  D. $H_{2}$ and CH$_4$
+
+Q16.
+The destructive action of hydrogen bombs is based on
+  A. natural radioactivity
+  B. nuclear fission
+  C. nuclear fusion
+  D. natural reaction
+
+Q17.
+If the half-life of a radioactive nuclide is $24$ hours, what time will be required for $12.5\%$ of its original amount to remain?
+  A. 1 day
+  B. 2 days
+  C. 3 days
+  D. 4 days
+
+Q18.
+For exothermic reactions to be spontaneous, the temperature should be
+  A. 1 day
+  B. 0?C
+  C. low
+  D. 373 K
+
+Q19.
+What is the correct order of melting points of B, Al, and Ga?
+  A. B > Al > Ga
+  B. B > Al > B > Ga
+  C. Ga > B > Al
+  D. B > Ga > Al
+
+Q20.
+The mixing of atomic orbitals at different energy levels to form hybrid orbitals is known as
+  A. isomerization
+  B. hybridization
+  C. delocalization
+  D. cyclization
+
+Q21.
+An organic reaction in which bond fission results in formation of free radicals is
+  A. homolytic
+  B. ozonolysis
+  C. rearrangement
+  D. elimination
+
+Q22.
+Grignard reagent is prepared by the reaction between an alkyl halide and
+  A. Zn in the presence of alcohol
+  B. Mg in the presence of alcohol
+  C. Mg in the presence of moist ether
+  D. Mg in the presence of dry ether
+
+Q23.
+Which of the following is the most stable hydroxides?
+  A. Mg(OH)2
+  B. Ca(OH)2
+  C. Sr(OH)2
+  D. Ba(OH)2
+
+Q24.
+In the esterification of carboxylic acid with alcohol, which bond of the carboxylic acid undergoes cleavage?
+  A. C?C
+  B. C=O
+  C. C?C
+  D. O?H
+
+Q25.
+What is the hybrid state of boron in boric acid?
+  A. C?C
+  B. sp2
+  C. sp3
+  D. sp3d
+
+Q26.
+An example of a zwitterion is
+  A. alanine
+  B. methyl acetate
+  C. HFO
+  D. BrOH
+
+Q27.
+The acid with the highest Ka value is
+  A. HIO
+  B. HFO
+  C. HClO
+  D. BrOH
+
+Q28.
+The force of attraction between neighbouring peptide chains is
+  A. Van der Waal's forces
+  B. covalent bond
+  C. hydrogen bond
+  D. peptide bond
+
+Q29.
+What is the same in various hydrides of chalcogens?
+  A. metal
+  B. Molecular shape
+  C. Central bond angle
+  D. Magnitude of inter-particle forces
+
+Q30.
+Synthesis gas is a mixture of
+  A. steam and CO
+  B. $H_{2}$ and CH4
+  C. $H_{2}$ and CO
+  D. CO and $N_{2}$
+
+Q31.
+The reaction $\ce{^234Pa}$ ? $\ce{^234Pa}$ occurs with the emission of
+  A. ?-particle
+  B. ?-particle
+  C. p-particle
+  D. positron
+
+Q32.
+Tautomeric product of propenol is
+  A. ?-particle
+  B. ?-particle
+  C. p-particle
+  D. positron
+
+Q33.
+Give the empirical formula of a compound containing 92.26% C and H
+  A. CH
+  B. CH2
+  C. $C_{2}H_{3}$
+  D. $C_{2}H_{5}$
+
+Q34.
+The mass spectrum of an atom shows two peaks with masses 80 and 100. If the isotopic ratio of the isotopes is 6:5 respectively, determine the average atomic mass of the atom
+  A. 98.0
+  B. 90.2
+  C. 89.1
+  D. 72.7
+
+Q35.
+The element whose electronic configuration is $$1s^{2}$$ $$2s^{2}$$ $$2p^{6}$$ $$3s^{2}$$ $$3p^{6}$$ $$4s^{2}$$ $3d??$ is
+  A. metal
+  B. non-metal
+  C. noble gas
+  D. metalloid
+
+Q36.
+Identify the elements that have the smallest first ionization energy
+  A. ??P
+  B. ??K
+  C. ?C
+  D. ??Mg
+
+Q37.
+The total mass of protons and neutrons of an isotope are not equal to the actual mass of the nuclide because of
+  A. radioactivity
+  B. binding energy
+  C. dative/covalent
+  D. metallic/dative
+
+Q38.
+The process of preparing hydrogen from red-hot coke and steam is generally called
+  A. Lane's process
+  B. Reforming gas
+  C. Linde's process
+  D. Bosch process
+
+Q39.
+The kind of bonding in NH4? is
+  A. ionic/dative
+  B. ionic/covalent
+  C. dative/covalent
+  D. metallic/dative
+
+Q40.
+If a radioactive element is placed in an evacuated container, its rate of disintegration
+  A. will be increased
+  B. will be decreased
+  C. will change very slightly
+  D. will remain unchanged
+
+Q41.
+How does a catalyst alter the rate of a reaction?
+  A. By changing the reaction conditions
+  B. By lowering the activation energy
+  C. By reversing the order
+  D. By changing the order
+
+Q42.
+The 3d metal ions are generally paramagnetic in nature because
+  A. they form coloured salts
+  B. they have one or more unpaired electrons
+  C. they have one or more paired s-electrons
+  D. they are reducing agents
+
+Q43.
+Which of the following oxides is neutral but toxic?
+  A. CO2
+  B. CO
+  C. SnO
+  D. $H_{2}O$
+
+Q44.
+Which of the following is the main structural feature of proteins?
+  A. Peptide linkage
+  B. Glycoside linkage
+  C. Ether linkage
+  D. ester linkage
+
+Q45.
+Which of the following compounds can be used as a refrigerant?
+  A. CCl4
+  B. CH2Cl2
+  C. CF4
+  D. CF2Cl2
+
+Q46.
+An element with high electronegativity has
+  A. high ionization energy and high electron affinity
+  B. high ionization energy and low electron affinity
+  C. low ionization energy and high electron affinity
+  D. low ionization energy and low electron affinity
+
+Q47.
+Calculate the volume of 0.200 M $Na_{2}CO_{3}$ solution which contains 53.0 g of $Na_{2}CO_{3}$?
+  A. 0.20 L
+  B. 1.60 L
+  C. 2.50 L
+  D. 0.50 L
+
+Q48.
+The substance that adsorbs and activates reactants to form products which cannot break away is
+  A. catalyst
+  B. metal
+  C. adsorbate
+  D. precipitate
+
+Q49.
+The Scientist who discovered neutron is
+  A. J.J. Thomson
+  B. Rutherford
+  C. James Chadwick
+  D. G.T. Seabury
+
+Q50.
+The product of the polymerization of styrene is
+  A. polyethylene
+  B. polypropylene
+  C. polystyrene
+  D. toluene
+
+===============================================================================
+ JUPEB 2025 -- CHEMISTRY THEORY
+===============================================================================
+
+Q1.
+$\mathrm{(a)}$. Write the electronic configurations of the elements with the following atomic numbers. (i). 35 (ii). 26 [1 Mark]
+
+(b). Write the designation for the orbital occupied by an electron described by the following quantum numbers:
+(i). n = 3, l = 1 (ii). n = 4, l = 0 (iii). n = 3, l = 2 (iv). n = 3, l = 0 [2 Marks]
+
+(c). 20 g of a hydrocarbon produced 62.85 g of C$\ce{$\ce{O2}$}$ and 25.57 g of $\ce{H2O}$ when completely combusted in air.
+(i). Determine the empirical formula of the hydrocarbon.
+(ii). If the molecular mass of the compound is 252 $g/mol$, determine the molecular formula of the hydrocarbon. [4 Marks]
+
+(d). Five persons measure the length of a room and obtained the following results: 10.325 m, 10.320 m, 10.315 m and 10.327 m. Determine the:
+(i). mean deviation (ii). standard deviation. [3 Marks]
+**Total = 10 Marks**
+
+Q1.
+HCN reacts with propanal (C$\ce{H3C}$$\ce{H2C}$HO) to form compound F.
+(i). Give the name and structure of the organic product F.
+(ii). State the type of reaction involved.
+(iii). Write the formula and name of the product obtained when compound F is hydrolysed in acid ($\ce{H2O}$/H?). [3 Marks]
+
+(b). The table below is obtained in the fractions obtained from crude petroleum. Fill in the missing components. [3 Marks]
+
+| Temp. of separation (?C) | No. of C | Fraction | Use |
+|---|---|---|---|
+| Under 30 | 2-4 | Petroleum gas | |
+| 30?180 | 4-9 | | Motor fuel |
+| 160?230 | 8?16 | Kerosene | Heat, jet fuel |
+| 200?320 | | Diesel | Motor fuel |
+| 300?450 | 16?30 | | Heating lubricant |
+| $\gt$300 Vacuum | $\gt$25 | Petroleum jelly/paraffin wax | |
+| Residue | | Asphalt | In construction |
+
+(c). Write equations to illustrate the following reactions:
+(i). Nitration of bromobenzene. (ii). Bromination of nitrobenzene. [2 Marks]
+
+(di). Write the open chain structures of D-glucose and D-fructose. [1 Mark]
+
+(ii). Explain why Fehling's solution is reduced by glucose and not by fructose. [1 Mark]
+**Total = 10 Marks**
+
+Q1.
+Give a reason for the following:
+(i). Zn, Cd and Hg are not considered as true transition metals. [1 Mark]
+(ii). Zn?? salts are white, while Cu?? salts are blue. [1 Mark]
+
+(b). Write the electronic configuration of the following atoms/ions and indicate the magnetic property: (i). V?? (ii). Fe?? (iii). Ti (iv). Cr? [4 Marks]
+
+(c). The melting points of some oxides of Group IV elements are given below:
+
+| Oxide | C$\ce{$\ce{O2}$}$ | Si$\ce{$\ce{O2}$}$ | Sn$\ce{$\ce{O2}$}$ |
+|---|---|---|---|
+| Melting Point (?C) | -78 | 1610 | 1630 |
+
+Describe the bonding and its relation to the melting points of the following oxides: (i). C$\ce{$\ce{O2}$}$ (ii). Si$\ce{$\ce{O2}$}$ (iii). Sn$\ce{$\ce{O2}$}$ [3 Marks]
+
+(d). Deduce the hybrid orbitals involved in the bonding molecules of C$\ce{$\ce{H4}$}$ and BCl?. [1 Mark]
+**Total = 10 Marks**
+
+Q1.
+Arrange the hydroxides and the sulphates of alkaline earth metals in increasing order of solubilities. [2 Marks]
+
+(b). Write the classification of nanostructured materials based on their dimensionality. [2 Marks]
+
+(ci). $\ce{Na2O}$, $\ce{Al2O_{3}}$, and $\ce{P4O_{10}}$ are oxides of period 3. Explain using balanced equations, what is observed when each compound is reacted with: (I). an alkali (II). an acid
+
+(ii). Which oxide$\mathrm{(s)}$ in (ci) above will give a solution whose pH is higher than 7 in water? [5 Marks]
+
+(d). Justify the placement of hydrogen into groups I and VII of the periodic table. [1 Mark]
+**Total = 10 Marks**
+
+---
+
+## CHM 004: ORGANIC CHEMISTRY (OPTION $\ce{A011}$)
+
+Q1.
+Define nuclear binding energy. [1 Mark]
+
+(ii). A compound is used in an experiment 6.5 days after it was prepared. If the sample originally contained 0.35 g of phosphorus-32 with a half-life of 15 days. How many grams was used in the experiment? [2 Marks]
+
+(b). Consider the reaction for the combustion of iron: 4Fe$\mathrm{(s)}$ + 3$\ce{$\ce{O2}$}$(g) ? 2$\ce{Fe2O_{3}}$(s). An equilibrium mixture contains 0.2 mole of Fe, 0.3 mole of $\ce{$\ce{O2}$}$ and 0.4 mole of $\ce{Fe2O_{3}}$ all in 200 mL reaction vessel.
+(i). Write the equilibrium constant expression for the reaction.
+(ii). Calculate the values of Kc and Kp for the reaction. [1+3 Marks]
+
+(c). Balance the redox equation in basic medium: Mn$\ce{$\ce{O4}$}$? + $\ce{C2O_{4}}$?? ? Mn$\ce{$\ce{O2}$}$ + C$\ce{$\ce{O2}$}$ [2 Marks]
+
+(di). Write an expression for the Ksp of magnesium hydroxide, stating its unit. [1 Mark]
+
+(ii). Given that the numerical value of the Ksp of magnesium hydroxide is 2.0 \times 10^{-11}$, calculate the concentration of Mg(OH)? in a saturated solution. [2 Marks]
+**Total = 10 Marks**
+
+---
+
+## CHM 003: INORGANIC CHEMISTRY (OPTION $\ce{A011}$)
+
+Q1.
+State Hess's law of heat summation. [1 Mark]
+
+(ii). Given the following data:
+$\ce{$\ce{H2}$}$(g) + ?$\ce{$\ce{O2}$}$(g) ? $\ce{H2O}$(l) ?H = -285.8 kJ
+$\ce{N2O_{5}}$(g) + $\ce{H2O}$(l) ? 2HN$\ce{$\ce{O3}$}$(l) ?H = -76.6 kJ
+?$\ce{$\ce{N2}$}$(g) + 3/2$\ce{$\ce{O2}$}$(g) + ?$\ce{$\ce{H2}$}$(g) ? HN$\ce{$\ce{O3}$}$(l) ?H = -174.1 kJ
+
+Calculate the standard enthalpy change, ?H, for the reaction:
+2$\ce{$\ce{N2}$}$(g) + 5$\ce{$\ce{O2}$}$(g) ? 2$\ce{N2O_{5}}$(g) [3 Marks]
+
+(b). Calculate the e.m.f of the cell at 25 ?C for the following electrochemical cell: Cr/Cr??(0.1 M)//Fe??(0.01 M)/Fe
+
+Given the following standard reduction potentials:
+E_Cr??/Cr = -0.74V; E_Fe??/Fe = -0.44V. [4 Marks]
+
+(c). Decomposition of COCl? is a reversible process written as: COCl?$\mathrm{(g)}$ ? CO$\mathrm{(g)}$ + Cl?$\mathrm{(g)}$. When the reaction is at equilibrium, what will be the effect of:
+(i). adding more of COCl? (ii). adding more of Cl? [2 Marks]
+**Total = 10 Marks**
+
+Q1.
+What is ionization of atom? [1 Mark]
+
+(ii). An electron for a hydrogen atom is at an infinite excitation and the maximum wavelength of electromagnetic radiation that can completely remove (ionize) the electron from H atom is 1460 nm, what is the initial state of the electron? [3 Marks]
+
+(b). The following equation shows the reaction of phsophine (PH?) with a hydrogen ion, H?: P$\ce{$\ce{H3}$}$ + H? ? P$\ce{$\ce{H4}$}$?.
+(i). Predict the shape and bond angle of phosphine.
+(ii). State the type of bonds present in P$\ce{$\ce{H4}$}$?.
+(iii). Briefly explain how a mass spectrometer works.
+(d). Define with a balanced chemical equation, the term "displacement reaction". [1+1+2+2 Marks]
+**Total = 10 Marks**
+
+---
+
+## CHM 002: PHYSICAL CHEMISTRY (OPTION $\ce{A011}$)
+
+Q1.
+Give the name and structure of the product formed from the reaction of butene and hydrogen bromide in the presence of peroxide. [2 Marks]
+
+(ii). Write three differences between inductive & mesomeric effects. [1? Marks]
+
+(b). Show how the compound formed between atoms X and Y (i.e X-Y) can be subjected to: (i). homolytic fission (ii). heterolytic fission. State the condition(s) that may lead to each type of fission. [2 Marks]
+
+(c). State three uses of polymers. [1? Marks]
+
+Q1.
+### CHM 001: GENERAL CHEMISTRY\n**Question 1$\mathrm{(a)}$.** Write the electronic configurations of the elements with the following atomic numbers:\n(i). n=3, l=1 (ii). n=4, l=2 (iii). n=3, l=0 (iv). n=3, l=1\nWrite the designation for the orbital occupied by an electron described by the following quantum numbers:\n(i). n=3, l=1 (ii). 26 [1 Mark]\n**(c).** 20 g of a hydrocarbon produced 62.85 g of CO2 and 25.57 g of $\ce{H2O}$ when completely combusted in air.\n(i). Determine the empirical formula of the hydrocarbon.\n(ii). If the molecular mass of the compound is 252 $g/mol$, determine the molecular formula of the hydrocarbon. [4 Marks]\n**(d).** Five persons measure the length of a room and obtained the following results: 10.325 m, 10.320 m, 10.315 m and 10.327 m. Determine the:\n(i). mean deviation\n(ii). standard deviation [3 Marks]\n**Question 2(ai).** What is ionization of atom? [1 Mark]\n**(ii).** An electron for a hydrogen atom is at an infinite excitation and the maximum wavelength of electromagnetic radiation that can completely remove (ionize) the electron from H atom is 1460 nm, what is the initial state of the electron? [3 Marks]\n**(b).** The following equation shows the reaction of phosphine (PH3) with a hydrogen ion, H?: PH3 + H? ? PH4?\n(i). Predict the shape and bond angle of phosphine.\n(ii). State the type of bonds present in PH4?.\n(iii). Briefly explain how a mass spectrometer works.\n(iv). Define with a balanced chemical equation, the term \"displacement reaction\". [1+1+1+2 Marks]\n---\n\n---\n\n### CHM 001: GENERAL CHEMISTRY\n**Question 1$\mathrm{(a)}$.** For each of the following pairs, indicate which one of the two species is larger:\n(i). N?? and F? (ii). Fe?? and Fe??\n**(bi).** List two (2) ways of controlling determinate error.\n**(ii).** Balance the half reaction below in acidic medium:\nCr2O7?? ? Cr??\n**(c).** Consider the following ions: Al??, Mg??, Na?, S??, Cl?\n(i). Write down all possible formula of ionic compounds formed between each of the oppositely charged ions of these compounds.\n(ii). Among the ones with metal to non-metal ratio of 1:1, which of the compounds do you expect to have the highest melting point?\n**(d).** A sample of naturally occurring strontium, atomic number 38, has four isotopes: Sr-84 accounts for 0.56%, Sr-87 (7.00%) and Sr-88 (82.58%). Given that the observed atomic mass of strontium is 87.62 amu, calculate the percentage of Sr-86 in nature. Give your answer to three significant figures.\n**(iii).** Arrange the elements in the increasing order of ionization energy. [2 Mk]\n**Question 2$\mathrm{(a)}$.** Two compounds X and Y have the following elemental composition and vapour densities: X: Phosphorus ? 56.3%; Oxygen ? 43.7%; Vapour density-110\nY: Phosphorus ? 43.6%; Oxygen ? 56.4%; Vapour density-142\nDetermine the empirical and molecular formula of the two compounds. [4 Marks]\n**(b).** State two postulates of the Neils Bohr's model of the atom.\n(ii). Enumerate two limitations of the Bohr's model of the atom.\n(iii). Determine the quantum number, n, of the initial state of the Balmer series that has wave number 24372.796 cm??, given that the experimental Rydberg constant is 109677.581 cm??. [4 Marks]\n**(c).** Explain why the first ionization energies decrease down the group. [2 Mk]\n\n---\n\n### CHM 001: GENERAL CHEMISTRY (OPTION $\ce{B021}$)\n**Question 1(ai).** An oxygen atom has a total of eight electrons. Write the four quantum numbers for each of the eight electrons.\n**(ii).** Differentiate between determinate error and indeterminate error. [4 Mks]\n**(b).** A sample of nickel was analysed in a mass spectrometer. Three peaks were observed with the properties shown in the following table:\n| m/z | 58 | 60 | 62 |\n|---|---|---|---|\n| Relative abundance (%) | 69 | 27 | 4 |\nDetermine the relative atomic mass of Ni. [2 Marks]\n**(ci).** $\ce{Na2O2}$(aq) + $\ce{H2O}$(l) ? 2NaOH(aq) + ?$\ce{O2}$(g) [1 Mark]\n(ii). Molar mass of $\ce{Na2O2}$ = 78 gmol??. Find amount of caustic soda formed from 45 g of $\ce{Na2O2}$.\n(iii). Determine volume of oxygen liberated from 10 g of $\ce{Na2O2}$ at STP. [4 Marks]\n**Question 2(ai).** Find the wavelength associated with a particle of dust of mass 2.30 \times 10^{-4}$ g propelled by wind at 20 km/hr.\n**(ii).** State Aufbau's and Pauli Exclusion Principles.\n**(b).** Classify the following equations as disproportionation, precipitation, displacement and decomposition reactions:\n(i). Mg(OH)2$\mathrm{(s)}$ + 2HCl(aq) ? MgCl2(aq) + 2H2O$\mathrm{(l)}$\n(ii). FeCl3$\mathrm{(s)}$ + 3NaOH(aq) ? Fe(OH)3(aq) + 3HCl(aq)\n(iii). CaCO3$\mathrm{(s)}$ ? CaO$\mathrm{(s)}$ + CO2$\mathrm{(s)}$\n(iv). 2NO2$\mathrm{(g)}$ + $\ce{H2O}$(l) ? HNO3(aq) + HNO2(aq)\n**(ci).** State the Heisenberg uncertainty principle.\n**(ii).** State two of the Dalton's atomic theory and their modifications. [2 Marks]
+
+Q2.
+### CHM 002: PHYSICAL CHEMISTRY (OPTION $\ce{A011}$)\n**Question 3(ai).** State Hess's law of heat summation.\n**(ii).** Given the following data:\nH2$\mathrm{(g)}$ + ?$\ce{O2}$(g) ? $\ce{H2O}$(l) ?H = ?285.8 kJ\nN2O5$\mathrm{(g)}$ + ?$\ce{O2}$(g) ? 2HNO3$\mathrm{(l)}$ ?H = ?76.6 kJ\nCalculate the standard enthalpy change, ?H, for the reaction:\n2N2$\mathrm{(g)}$ + 5O2$\mathrm{(g)}$ ? 2N2O5$\mathrm{(g)}$ [3 Marks]\n**(b).** Calculate the e.m.f of the cell at 25?C for the following electrochemical cell: Cr/Cr??(0.1M)//Fe??(0.01M)/Fe\nGiven the following standard reduction potentials:\nECr??/Cr = ?0.74V; EFe??/Fe = ?0.44V [4 Marks]\n**(c).** Decomposition of COCl2 is a reversible process written as:\nCOCl2$\mathrm{(g)}$ ? CO$\mathrm{(g)}$ + $\ce{Cl2}$(g)\nWhen the reaction is at equilibrium, what will be the effect of:\n(i). adding more of COCl2\n(ii). adding more of $\ce{Cl2}$ [2 Marks]\n**Question 4(ai).** Define nuclear binding energy. [1 Mark]\n**(ii).** A compound is used in an experiment 6.5 days after it was prepared. If the sample originally contained 0.35 g of phosphorus-32 with a half-life of 15 days. How many grams was used in the experiment? [2 Marks]\n**(b).** Consider the reaction for the combustion of iron:\n4Fe$\mathrm{(s)}$ + 3O2$\mathrm{(g)}$ ? 2Fe2O3$\mathrm{(s)}$\nAn equilibrium mixture contains 0.3 mole of $\ce{O2}$ and 0.4 mole of $\ce{Fe2O3}$ all in 200 mL reaction vessel.\n(i). Write the equilibrium constant expression for the reaction.\n(ii). Calculate the values of Kc and Kp for the reaction. [3 Marks]\n**(c).** Balance the redox equation in basic medium:\nMnO4? + $\ce{C2O4}$?? ? MnO2 + CO2 [2 Marks]\n**(di).** Write an expression for the Ksp of magnesium hydroxide, stating its unit. [1 Mark]\n**(ii).** Given that the numerical value of the Ksp of magnesium hydroxide is 2.0 \times 10^{-11}$, calculate the concentration of Mg(OH)2 in a saturated solution. [2 Marks]\n---\n\n---\n\n### CHM 002: PHYSICAL CHEMISTRY (OPTION $\ce{D041}$)\n**Question 3(ai).** State the Le Chatelier's principle and mention four (4) factors that affect chemical equilibrium.\n**(ii).** If a certain mass of gas collected over water at 5?C and 754 mmHg has a volume of 40 cm?, calculate the volume when it is dry at STP.\n[Take SVP of water at 5?C = 9 mmHg; volume of the gas at STP = 39 cm?]\n**(b).** If 320 cm? of nitrogen gas diffuses in 40 seconds, how long will it take for 480 cm? of a gas X whose vapour density is 28 to diffuse under the same pressure?\n**(ci).** Define isotopy.\n**(ii).** Chlorine has two isotopes, Cl-35 and Cl-37. If the relative atomic mass of chlorine is 35.5, calculate the percentage abundance of each isotope. [3 Mks]\n**(d).** Balance the redox equation in acidic medium:\nMnO4? + $\ce{C2O4}$?? ? MnO2 + CO2\n**Question 4(ai).** State Faraday's first law of electrolysis.\n**(ii).** Calculate the electrochemical equivalent of a metal M, if a current of 5 A is passed for 1 hour and 2 g of M deposited. [2? Marks]\n**(bi).** A non-volatile nonelectrolyte unknown solution was prepared by dissolving 0.350 g of the substance in 40 g of CCl4. The boiling point of the resultant solution was 0.357?C higher than that of the pure solvent. Calculate the molar mass of the pure solute. [Kb = 5.02?C/kg]\n**(ii).** What is an adiabatic process?\n**(iii).** List four (4) examples of a state function.\n**(iv).** Define Raoult's law. [3 Marks]\n\n---\n\n### CHM 002: PHYSICAL CHEMISTRY (OPTION $\ce{B021}$)\n**Question 3(ai).** State any four (4) assumptions of kinetic theory of gases.\n**(ii).** 8.5 g of ammonia was contained in a 5 L flask at 28?C. Calculate the pressure of the gas assuming ideal gas behaviour. Compare this to the pressure.\n**(bi).** A non-volatile nonelectrolyte solution was prepared by dissolving 0.350 g of the substance in 40 g of CCl4. The boiling point of the resultant solution was 0.357?C higher than that of the pure solvent. Calculate the molar mass of pure solute. [Kb = 5.02?C/kg]\n**(ii).** Calculate the electrochemical equivalent of a metal M, if a current of 5A is passed for 1 hour and 2 g of M deposited. [2? Marks]\n**Question 4(ai).** Provide the equilibrium expression for the following reaction:\nCH3NH2(aq) + $\ce{H2O}$(l) ? CH3NH3?(aq) + HO?(aq)\n**(ii).** Identify the acid, base, conjugate acid and base in the following aqueous reaction: Al($\ce{H2O}$)6?? + $\ce{H2O}$ ? $\ce{H3O}$? + Al($\ce{H2O}$)5(OH)?? [2 Marks]\n**(c).** Define the following terms and give an example of each of:\n(i). Lewis acid (ii). Bronsted-Lowry base [3 Marks]\n**(b).** Consider the reaction: 2NO2$\mathrm{(g)}$ + $\ce{F2}$(g) ? 2NO2F2$\mathrm{(g)}$. Given that the experimental rate law is Rate = k[NO2]?[$\ce{F2}$]. Determine the order of the reaction with respect to each reactant and the overall order.\n**(ii).** If 25 g of each of the reactants is the limiting reactant? [N=14, O=16, F=19]\nUsing kinetic data in the table above for the reaction: 2NO + $\ce{H2}$ ? $\ce{N2}$ + 2H2O at 700?C\n| Experiment | Initial conc. (mol L??) | | Initial rate (mol L??) |\n|---|---|---|---|\n| | NO | $\ce{H2}$ | |\n| 1 | 0.0250 | 0.010 | 2.4 \times 10^{-6}$ |\n| 2 | 0.0250 | 0.005 | 2.1 \times 10^{-6}$ |\n| 3 | 0.0125 | 0.010 | 0.6 \times 10^{-6}$ |\n(i). Deduce the order of reaction with respect to hydrogen and nitrogen oxide.\n(ii). Calculate the oxidation potential of a hydrogen electrode at pH of 10 and pH2 of 1 atm. [4 Marks]\n**(ci).** List the four (4) steps of a contact catalyst (heterogeneous catalyst) during catalysis.\n**(ii).** Give the empirical rate law for the reaction.
+
+Q3.
+### CHM 003: INORGANIC CHEMISTRY (OPTION $\ce{A011}$)
+**Question 5$\mathrm{(a)}$.**
+(i). Give a reason why $\ce{Zn}$, $\ce{Cd}$ and $\ce{Hg}$ are not considered as true transition metals. [1 Mark]
+(ii). Give a reason why $\ce{Zn^{2+}}$ salts are white, while $\ce{Cu^{2+}}$ salts are blue. [1 Mark]
+**(b).** Write the electronic configuration of the following atoms/ions and indicate the magnetic property:
+(i). $\ce{V^{3+}}$ (ii). $\ce{Fe^{3+}}$ (iii). $\Ti$ (iv). $\ce{Cr^{+}}$ [4 Marks]
+**(c).** The melting points of some oxides of Group IV elements are given below:
+| Oxide | $\ce{CO2}$ | $\ce{SiO2}$ | $\ce{SnO2}$ |
+|---|---|---|---|
+| Melting Point ($^{\circ}\text{C}$) | $-78$ | $1610$ | $1630$ |
+**Describe the bonding and its relation to the melting points of the following oxides:**
+(i). $\ce{CO2}$ (ii). $\ce{SiO2}$ (iii). $\ce{SnO2}$ [3 Marks]
+**(d).** Deduce the hybrid orbitals involved in the bonding molecules of $\ce{CH4}$ and $\BCl3$. [1 Mark]
+**Question 6$\mathrm{(a)}$.** Arrange the hydroxides and the sulphates of alkaline earth metals in increasing order of solubilities. [2 Marks]
+**(b).** Write the classification of nanostructured materials based on their dimensionality. [2 Marks]
+**(ci).** $\ce{Na2O}$, $\ce{Al2O3}$, and $\ce{P4O10}$ are oxides of period 3. Explain using balanced equations, what is observed when each compound is reacted with:
+(I). an alkali (II). an acid
+**(ii).** Which oxide$\mathrm{(s)}$ in (ci) above will give a solution whose pH is higher than 7 in water? [5 Marks]
+**(d).** Justify the placement of hydrogen into groups I and VII of the periodic table. [1 Mark]
+---
+
+---
+
+### CHM 003: INORGANIC CHEMISTRY (OPTION $\ce{D041}$)
+**Question 5$\mathrm{(a)}$.** State the contributions of the following scientists in the elucidation of the structure of the atom:
+(i). James Chadwick (ii). John Dalton [2 Marks]
+**(bi).** How is the properties of lithium different from that of the other group members?
+**(ii).** Highlight four (4) diagonal relationships of $\Li$ with $\Mg$. [3 Marks]
+**(ci).** State two (2) industrial applications of oxygen.
+**(ii).** State the equation$\mathrm{(s)}$ for the laboratory preparation of oxygen from hydrogen peroxide. [3 Marks]
+**Question 6$\mathrm{(a)}$.** A gas X was passed through lime water and the limewater turned milky due to the formation of a substance Y. When excess of X was passed through the solution, the solution turns colourless due to the formation of substance Z. Write the chemical equation for the reaction that led to the formation of Y and Z.
+**(bi).** An element X has the configuration $1s^{2} 2s^{2} 2p^{6} 3s^{2} 3p^{5}$ while element Y has configuration $1s^{2} 2s^{2} 2p^{6} 3s^{2} 3p^{4}$. X and Y can combine chemically. Write a chemical equation for the formation of Y.
+(i). Identify X, Y and Z. (ii). Write the chemical equation for the reaction that led to the formation of Y and Z.
+**(ii).** What is the major role of ozone layer? [2$rac{1}{2}$ Marks]
+**(ci).** $\ce{S}$ can be identified by its physical properties. Give at least four (4) of such physical properties.
+**(ii).** Suggest why $\ce{SiO2}$ is an acidic oxide even though it is insoluble in water. [2$rac{1}{2}$ Marks]
+**(di).** Give the reasons for the following observations:
+$\mathrm{(a)}$. Hydrogen is not used in filling balloon;
+(b). Hydrogen is said to be a reducing agent.
+**(ii).** Given the following ions: $\ce{F^{-}}$, $\ce{Ca^{2+}}$, $\ce{Fe^{2+}}$, and $\ce{S^{2-}}$, identify the ion with an unpaired electron and explain your answer. [2$rac{1}{2}$ Marks]
+---
+## ESSAY QUESTIONS (2025) ? OPTION $\ce{D041}$ (CHM 004)
+
+---
+
+### CHM 003: INORGANIC CHEMISTRY (OPTION $\ce{B021}$)
+**Question 5(ai).** List ferromagnetic metals.
+**(ii).** State three (3) properties that make carbon different from other members of the group.
+**(b).** Hydrogen forms compounds with elements W, X, Y and Z having atomic numbers 9, 11, 12 and 17 respectively.
+(i). Classify the................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................\n(i). Classify the compounds as displacement and decomposition reactions.
+(ii). Explain briefly the general trend in ionization energy of the group. [4 Marks]
+**(ci).** Using chemical equations only, describe the production of hydrogen from red hot coke and steam and name the product formed when combined. [3 Mks]
+**Question 6(ai).** Global warming is the increase in the earth's surface temperature due to human activities such as burning of fossils.
+**(ii).** Photodissociation of $\ce{O2}$: $\ce{O2} + hv \rightarrow 2\ce{O}$ [$rac{1}{2}$ Mark]
+Formation of ozone layer: $\ce{O} + \ce{O2} + M \rightarrow \ce{O3} + M$ [$rac{1}{2}$ Mark]
+**(bi).** Hydrogen is a safe fuel for electricity generation because its combustion produces heat and water with zero greenhouse gas emissions. [1 Mark]
+**(ii).** Argon is used in arc welding because: [1 Mark]
+**(iii).** Because iodine sublimes (undergoes sublimation) when heated, changing directly from solid to gas and deposited as pure iodine when cooled. [1 Mark]
+**(ci).** $^{19}\ce{X} = 1s^{2} 2s^{2} 2p^{6} 3s^{2} 3p^{6} 4s^{1}$ [1]
+**(ii).** $^{52}\ce{Y} = 1s^{2} 2s^{2} 2p^{6} 3s^{2} 2p^{6} 3s^{2} 2p^{6} 4s^{1} 3d^{10}$ [1]
+**(iii).** $^{63}\ce{Z} = 1s^{2} 2s^{2} 2p^{6} 3s^{2} 2p^{6} 3s^{2} 2p^{6} 4s^{2} 4p^{6} 4d^{10} 4f^{7}$ [1]
+**(iv).** $\ce{[Fe(OH)(NH3)2Cl3]^{2-}}$ [1]
+**(ii).** $\ce{[Fe(CN)3(NH3)3]}$ [1]
+
+Q4.
+### CHM 004: ORGANIC CHEMISTRY (OPTION $\ce{A011}$)\n**Question 7$\mathrm{(a)}$.** HCN reacts with propanal (CH3CH2CHO) to form compound F.\n(i). Give the name and structure of the organic product F.\n(ii). State the type of reaction involved.\n(iii). Write the formula and name of the product obtained when compound F is hydrolysed in acid ($\ce{H2O}$/H?). [3 Marks]\n**(b).** The table below is obtained in the fractions obtained from crude petroleum. Fill in the missing components: [3 Marks]\n| Temp. of separation (?C) | No. of C | Fraction | Use |\n|---|---|---|---|\n| Under 30 | 2?4 | Petroleum gas | |\n| 30?180 | 4?9 | | Motor fuel |\n| 160?230 | 8?16 | Kerosene | Heat, jet fuel |\n| 200?320 | | Diesel | Motor fuel |\n| 300?450 | 16?30 | | Heating lubricant |\n| $\gt$300 Vacuum | $\gt$25 | Petroleum jelly/paraffin wax | |\n| Residue | | Asphalt | In construction |\n**(c).** Write equations to illustrate the following reactions:\n(i). Nitration of bromobenzene.\n(ii). Bromination of nitrobenzene. [2 Marks]\n**(di).** Write the open chain structures of D-glucose and D-fructose. [1 Mark]\n**(ii).** Explain why Fehling's solution is reduced by glucose and not by fructose. [1 Mark]\n**Question 8(ai).** Give the name and structure of the product formed from the reaction of butene and hydrogen bromide in the presence of peroxide. [2 Marks]\n**(ii).** Write three differences between inductive and mesomeric effects. [1? Marks]\n**(b).** Show how the compound formed between atoms X and Y (i.e. X?Y) can be subjected to:\n(i). homolytic fission (ii). heterolytic fission.\nState the condition$\mathrm{(s)}$ that may lead to each type of fission. [2 Marks]\n**(c).** State three uses of polymers. [1? Marks]\n**(d).** Give two examples of each of the following:\n(i). a free radical (ii). an electrophile (iii). a nucleophile [3 Marks]\n---\n## ESSAY QUESTIONS (2025) ? OPTION $\ce{D041}$\n\n---\n\n### CHM 004: ORGANIC CHEMISTRY (OPTION $\ce{D041}$)\n**Question 7(ai).** List three (3) uses of polymers.\n**(ii).** Provide a structure for the polymer formed between ethane-1,2-diol and parabenzene dioic acid.\n**(b).** Give two examples of each of the following:\n(i). a free radical (ii). an electrophile (iii). a nucleophile\n**(c).** Write the electronic configuration of the following atoms:\n(i). ??X (ii). ??Y (iii). ??Z\n**(di).** Write the the formula of the complexes formed by Fe?? with the following ligands: (i). one hydroxyl ion, two ammonia molecules and three chloride ions (ii). three cyanide ions and three ammonia molecules. [2 Marks]\n**(ii).** Write the electronic configuration of the following atoms. [3 Marks]\n**Question 7$\mathrm{(a)}$ ? CHM 004 (continued).**\nGive the IUPAC name for the following compounds with the following formula:\n(i). (CH3)2CHCH(CH3)2\n(ii). (CH3)2CHCH(CH3)2\n(iii). CH3CH=CH?CH2CH3\n(iv). CH3CH2CH(CH3)2\n**(b).** During the cracking of petroleum, there was abundance production of a compound whose molecular formula is $\ce{C5H10}$. The compound has six isomeric structures A, B, C, D, E and F. Isomer A forms the most stable carbocation. B can be hydrogenated to n-pentane. C can be hydrolysed to an optical isomer. A, B and C.\n**Question 8$\mathrm{(a)}$.** List three (3) uses of polymers. [1 Mark]\n(i). What is the IUPAC name of each of the isomers?\n(ii). Write complete reaction equation each for the preparation of compounds A and B from the compound below. [1 Mark]\n**(ci).** Define the term homologous series. [1 Mark]\n**(ii).** A compound X with a molecular formula of $\ce{C3H6O}$ exhibits functional isomerism. Provide the structure and name for any two. [2 Marks]\n**(iii).** Propan-2-one reacting with methylamine. [1 Mark]\n**(iv).** Benzene reacting with conc. nitric acid in sulphuric acid. [1 Mark]\n**Question 8(b) $\ce{D041}$ alternative:**\n(i). Draw the structure of penatin-2-one and show the reaction of the product of isomerism with 2,4-diphenylhydrazine.\n(ii). Give the structures of geometric isomers of but-2-ene. [1 Mark]\n---\n## ESSAY QUESTIONS (2025; $\ce{B021}$) ? OPTION $\ce{B021}$\n\n---\n\n### CHM 004: ORGANIC CHEMISTRY (OPTION $\ce{B021}$)\n**Question 7(ai).** List three (3) uses of polymers. [1 Mark]\n**(ii).** Provide a structure for the polymer formed between ethane-1,2-diol and parabenzene dioic acid.\n**(b).** Give the IUPAC name for the following compounds:\n(i). (CH3)2CHCH(CH3)2 ? 2,3-dimethylbutane\n(ii). CH3CH=CH?CH2CH3 ? 2-pentene\n(iii). 2,3-dimethylbutane\n(iv). 4,4-dimethyl pentanal\n**Question 8(ai).** Give three (3) reasons for the following observations:\n(i). carboxylic acids are stronger acids in boiling points than alkanes and alcohols.\n(ii). esters are intermediates in boiling points between alkanes and alcohols.\n(iii). alkynes burn with a sooty flame.\n**(b).** Compounds A and B are structural isomers:\nStructure A:\n\n    CH3\n     |\nCH3-C=CHCH3\n\nStructure B:\n\n        CH3\n         |\nCH2=CH-CHCH3\n\nStructure C:\n\nCH2=CHCH2CH2CH3\n\n**(ci).** Reducing sugars are carbohydrates containing aldehyde functional group and undergo oxidation by reducing oxidizing agents in acidic or alkaline medium.\n**(ii).** Order of bromobutane reactivity toward SN2: 2-bromo-2-methylpropane, 2-bromobutane, 1-bromobutane. [2 Marks]\n**(di).** X?Y ? X? + Y? (Free radicals) ? Homolytic fission\nX?Y ? X? + Y? (electrophile \& nucleophile) ? Heterolytic fission\nHomolytic fission ? when X and Y have the same or similar electronegativity values.\nHeterolytic fission ? when X and Y have different electronegativity values. [? Mark each]\n---
+
+===============================================================================
+ JUPEB 2025 -- CHEMISTRY PRACTICAL
+===============================================================================
+
+Q1.
+QUALITATIVE ANALYSIS
+
+**X** is an inorganic salt.
+
+**Y** is a Zn dust.
+
+Carryout the following exercises on **X** and **Y**. Record your observations and identify any gas evolved, and make necessary inference for each test.
+
+**(ai).** Put a spatula full of **X** in a test tube and heat strongly.
+
+**(ii).** Check for any gas evolved using moist litmus paper.
+
+**(iii).** Leave the test tube to cool and record your observation after 10 minutes.
+
+**(Note: continue with other experiments while waiting to record your observation).**
+
+**(b).** Make an aqueous solution of about 10 cm? of another spatula full of **X** in a boiling tube and divide it into four (4) portions in four different test tubes.
+
+**(i).** To the first portion, add NaOH solution in drops and then in excess.
+
+**(ii).** Heat the mixture.
+
+**(iii).** To the second portion, add aqueous ammonia in drops and then in excess; followed by few drops of HCl (2 M).
+
+**(iv).** To the third portion, add few drops of BaCl?, and then dilute HCl.
+
+[Total = 10 Marks]s
+
+Q1.
+QUANTITATIVE ANALYSIS
+
+You are provided with the following solutions:
+
+**(i).** Solution A contains 1.5 g of a weak acid, HX (Ka = 1.84 \times 10^{-5}$) in 250 cm? of solution.
+
+**(ii).** Solution B contains 4 g of sodium hydroxide, NaOH in 1000 cm? of solution.
+
+**$\mathrm{(a)}$ Procedure:**
+
+**(i).** Pipette 25 cm? portion of solution B into a clean conical flask. Add 2 drops of phenolphthalein indicator and titrate against solution A from the burette to a colourless end point.
+
+**(ii).** Repeat the above experiment three times using a fresh portion of solution B.
+
+**(iii).** Calculate the average titre.
+
+**(iv).** Write a balanced chemical equation for the reaction.
+
+**(b). Calculate:**
+
+**(i).** Amount (moldm??) of NaOH in solution B;
+
+**(ii).** Number of moles of NaOH titrated;
+
+**(iii).** Number of moles of HX in the average titre;
+
+**(iv).** Amount (moldm??) of HX in solution A.
+
+[Total = 10 Marks]
+
+---
+
+Q1.
+## PRACTICAL QUESTIONS (2025)\n\n### QUANTITATIVE ANALYSIS ? Question SET 1\n\nYou are provided with the following solutions:\n- Solution B contains 4 g of sodium hydroxide, NaOH in 1000 cm? of solution.\n- Solution A contains 1.5 g of a weak acid, HX (Ka = 1.84 \times 10^{-5}$) in 250 cm? of solution.\n\n**Procedure:**\n$\mathrm{(a)}$. Pipette 25 cm? portion of solution B into a clean conical flask. Add 2 drops of phenolphthalein indicator and titrate against solution A from the burette to a colourless end point.\n(b). Repeat the above experiment three times using a fresh portion of solution B.\n(c). Tabulate your readings.\n\nQuestions:\n(i). Amount (moldm??) of HX in the average titre;\n(ii). Amount (moldm??) of NaOH titrated;\n(iii). Number of moles of NaOH in the average titre;\n(iv). Amount (moldm??) of HX in solution A. [Total = 10 Marks]\n\n### QUALITATIVE ANALYSIS ? Question SET 2\n\nX is an inorganic salt. Y is a Zn dust.\n\nCarry out the following exercises on X and Y. Record your observations and identify any gas evolved, and make necessary inference for each test.\n\n**(ai).** Put a spatula full of X in a test tube and heat strongly.\n**(ii).** Check for any gas evolved using moist litmus paper.\n**(iii).** Leave the test tube to cool and record your observation after 10 minutes. (Note: continue with other experiments while waiting to record your observation.)\n\n**(b).** Make an aqueous solution of about 10 cm? of another spatula full of X in a boiling tube and divide it into four (4) portions in four different test tubes.\n(i). To the first portion, add NaOH solution in drops and then in excess.\n(ii). To the second portion, add aqueous ammonia in drops and then in excess; followed by few drops of BaCl2 and then dilute HCl.\n(iii). To the third portion, add few drops of BaCl2 (2M). [Total = 10 Marks]\n\n---
+
+===============================================================================
+ END OF 2025 CHEMISTRY
+===============================================================================

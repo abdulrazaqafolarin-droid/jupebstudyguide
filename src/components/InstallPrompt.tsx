@@ -94,7 +94,7 @@ const InstallPrompt: React.FC = () => {
             {/* Content */}
             <div className="p-4">
               <p className="text-sm text-muted-foreground mb-4">
-                Install JUPEB Master for offline access, faster loading, and a better study experience!
+                Install Rutex Jupeb Master for offline access, faster loading, and a better study experience!
               </p>
 
               {isIOS ? (

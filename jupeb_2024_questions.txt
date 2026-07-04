@@ -1,0 +1,1012 @@
+===============================================================================
+ JUPEB 2024 -- PHYSICS OBJECTIVE
+===============================================================================
+
+Q3.
+Newton's law of universal gravitation is expressed as F = Gm?m?/r?. Where F is the force of attraction between two bodies of masses m? and m? separated by a distance r. If G is the gravitational constant, derive the fundamental S.I unit of G.
+  A. m12kgs-3
+  B. m3kg-'s-2
+  C. m2kg-2s-2
+  D. mkg3s
+
+Q4.
+Two vectors A and B are given by A = 4i ? 3i + 3j + 2k and B = i + 2i ? k. Calculate A.(AxB.)
+  A. 16
+  B. -18
+  C. -22
+  D. 24
+
+Q5.
+Which of the following is a set of scalar quantities?
+  A. Mass, distance, displacement
+  B. Mass, electric current, impulse
+  C. Time, length, electric field
+  D. length, temperature, luminous intensity
+
+Q6.
+Two masses 40 g and 60 g respectively are attached firmly to the ends of a light metre rule.
+  A. the mid-point of the metre rule
+  B. 40 cm from the 40 g mass
+  C. text{ 40 cm from the 60 g mass}
+  D. 60 cm from the 64 g mass
+
+Q7.
+From the top of a tower 160m high, a rubber ball and a piece of iron rod were dropped to the ground. Which of the following statement is true? (Neglect air resistance).
+  A. the iron rod will first reach the ground
+  B. the rubber ball will first reach the ground
+  C. both objects will reach the ground at the same time
+  D. under high temperature condition, the iron rod will first reach the ground
+
+Q8.
+A body of mass 100g moving with a velocity of 10.0m/s collides with a wall. If after collision it moves with a velocity of 2.0m/s in the opposite direction. Calculate the change in momentum.
+  A. 0.8Ns
+  B. 1.2Ns
+  C. 12.0Ns
+  D. 1.8Ns
+
+Q9.
+...states that the rate of change of flux is directly proportional to the induced e.m.f and acts in the direction producing it.
+  A. Resistance 
+  B. Eddy current
+  C. Inductance 
+  D. Resonance 
+
+Q10.
+All objects or bodies irrespective of mass, size or shape fall towards the earth with:
+  A. the same momentum
+  B. the same acceleration
+  C. the same speed
+  D. the same displacement
+
+Q11.
+A constant force F = 3i + 2j ? 5k moves a particle from positions r1 = i ? 2j + 3k to position r2 = 2i + 4j. Calculate the work done by the force.
+  A. 29J
+  B. 25J
+  C. 22J
+  D. 45J
+
+Q12.
+Which of the following assumptions is TRUE about a simple pendulum experiment?
+  A. suspended string is inextensible
+  B. bob has finite size
+  C. bob has a definite mass
+  D. initial angle of oscillations must be large
+
+Q13.
+Which of the following types of motion are oscillatory? I. Diving board when used by a diver II. The motion of a balanced wheel of a wrist watch III. The motion of a turn-table of a record player IV. The motion of the needle of a D.C ammeter in which a low A.C current is passed
+  A. I and II only
+  B. I, II and III only
+  C. II, III and IV only
+  D. I, II and IV only
+
+Q14.
+A wire of length 4m and radius 1.0mm is extended by 2.5 \times 10^{-3}$m by a load of 300N. Calculate the energy stored in the wire.
+  A. 0.38J
+  B. 0.72J
+  C. 1.23J
+  D. 1.52J
+
+Q15.
+In an experiment to determine Young modulus of wire, several loads were attached to the wire and the corresponding extensions measured. The tensile stress in each case depend on the:
+  A. load and extension
+  B. load and the radius of the wire
+  C. radius of the wire and the extension
+  D. extension and the original length of wire
+
+Q16.
+Find the mass of air inside a hall measuring $10\text{ m} \times 2\text{ m} \times 5\text{ m}$, if the density of the air is $1.30\text{ kg m}^{-3}$.
+  A. $100.0\text{ kg}$
+  B. $125.0\text{ kg}$
+  C. $130.0\text{ kg}$
+  D. $145.0\text{ kg}$
+
+Q17.
+The surface tension of a soap solution is given as 2.5 \times 10^{-2}$N/m. Calculate the excess pressure inside the bubble of the liquid of radius 1.0cm.
+  A. 0.5Pa
+  B. 1.0Pa
+  C. 5.0Pa
+  D. 10.0Pa
+
+Q18.
+Find the force of attraction between two masses of copper 104kg and iron 105kg separated by a distance of 1m. (Take G = 6.67 \times 10^{-11}$Nm?kg??)
+  A. 7.2x10-4N
+  B. 7.02x10-2N
+  C. 6.67x10-2N
+  D. 6.67x10-4N
+
+Q19.
+A certain mass of gas at ?100?C occupies a volume of 10m? under 4 \times 10^{5}$N/m. If the gas occupies a volume of 20m? at 173?C, its pressure is:
+  A. 4x105 N/$\ce{M2}$
+  B. 8x10sN/M
+  C. 2x105 N/M
+  D. 1x105 N/M
+
+Q20.
+A copper rod is 30cm longer than aluminum rod. How long should the copper rod be if the difference in their lengths is to be independence of temperature? (? = 1.70 \times 10^{-5}$?C, ? = 2.20 ? 0???C??)
+  A. 0.88m
+  B. 1.32m
+  C. 2.64m
+  D. 3.00m
+
+Q21.
+What is the internal energy of 2.0~mole of an ideal monoatomic gas at 0\,K? ($R = 8.31\,J/(mol\cdot K)$)
+  A. $6.6 \times 10^3\,J$
+  B. $6.8 \times 10^3\,J$
+  C. $6.9 \times 10^3\,J$
+  D. $6.7 \times 10^3\,J$
+
+Q22.
+A 13g bullet moving at 120m/s enters a bag of sand and stops. By what amount does the temperature of the bullet change if all its KE because thermal energy that is added to the bullet? (Cbullet = 128 $$J/kg$$ K)
+  A. 20.75degC
+  B. 32.50degC
+  C. 56.25degC
+  D. 74.00degC
+
+Q23.
+The heat taken in when a moles of a gas expands isothermally from v1 to v2 is:
+  A. nRTIn[v2]
+  B. nRTIn[v]
+  C. nRTIn[$P_{1}$-$P_{2}$]
+  D. nRTIn[p1]
+
+Q24.
+Radio waves emitted from an antenna are picked up by a radar after reflection from an air craft in 4 \times 10^{-3}$s. How far is the air craft from the antenna? (Take speed of light, v = 3 \times 10^{3}$m/s)
+  A. 2.6x103km
+  B. 1.6x103km
+  C. 6.0x102km
+  D. 3.0x102km
+
+Q25.
+The intensity pattern in the diagram (Fig. 1) is due to:
+  A. double slits
+  B. a single slit
+  C. a circular aperture
+  D. a rectangular aperture
+
+Q26.
+A crown glass of refractive index 1.52 is immersed in water of refractive index 1.33. Find the critical angle for the total internal reflection of the crown glass.
+  A. 61.0deg
+  B. 35.2deg
+  C. 42.3deg
+  D. 45.7deg
+
+Q27.
+Which of the following decisions will enhance the resolution of a microscope? I. Increase the diameter of the lenses II. Decrease the diameter of the lenses III. Increase the wavelength of the light IV. Decrease the wavelength of the light
+  A. I and III
+  B. I and IV
+  C. II and III
+  D. II and IV
+
+Q28.
+A certain transverse wave is described by y(x,t) = 6.50mm sin 2?(x/15cm ? t/0.035). Determine the wave's frequency.
+  A. 33.33 Hz
+  B. 41.20 Hz
+  C. 61.50 Hz
+  D. 72.00 Hz
+
+Q29.
+Which one of the following types of waves cannot travel through a vacuum?
+  A. sound waves
+  B. light waves
+  C. infra-red waves
+  D. x-rays
+
+Q30.
+______ states that the radiation field on the far side of the aperture is the same as would be produced by identical sources distributed uniformly over the area of the aperture and oscillating coherently in phase.
+  A. Young's double slit fringes
+  B. Huygen's principle
+  C. Fraunhofer diffraction principle
+  D. Wave-particle nature of light
+
+Q31.
+Two tuning forks produce one beat every 0.7s when sounded simultaneously. Compute the difference in their frequencies.
+  A. 1.2Hz
+  B. 1.4Hz
+  C. 1.7Hz
+  D. 2.4Hz
+
+Q32.
+A fisherman yelling out to a fellow fisherman heard his voice reflected by a cliff 4s later. Calculate the velocity of the sound in air if the cliff is 680m away.
+  A. 135m/s
+  B. 174m/s
+  C. 260m/s
+  D. 340m/s
+
+Q33.
+A photographer reduces the aperture on a camera. Which of the following best explains the outcome?
+  A. the depth of field is reduced and longer exposure time is required
+  B. the depth of field is reduced and shorter exposure time is required
+  C. the depth of field is increased and longer exposure time is required
+  D. the depth of field is increased and shorter exposure time is required
+
+Q34.
+A charge exerts a force of 4.0 \times 10^{-4}$N on a second charge which is 9.5m apart and has a value of 2?C. Determine the magnitude of the charge.
+  A. 1uC
+  B. 2uC
+  C. 3uC
+  D. 4uC
+
+Q35.
+What charge is stored in a 180?f capacitor when 120V is applied to it?
+  A. 21.6mC
+  B. 21.6uf
+  C. 30.6nC
+  D. 30.6mC
+
+Q36.
+Two 40?f parallel plate capacitors are connected in series. The combined capacitor is then connected across a 100V battery. Calculate the charge on each plate of the capacitor.
+  A. 1.0x10-3C
+  B. 2.0x10-3C
+  C. 2.5x10-3C
+  D. 3.0x10-3C
+
+Q37.
+Kirchhoff's junction rule is based on law of conservation of:
+  A. energy
+  B. mass
+  C. charge
+  D. momentum
+
+Q38.
+If the cost of running electricity is $N_{1}$.20 per KWh, what is the cost of running a 1A lamp for 0 hours from a sources of 220V?
+  A. $N_{6}$.60
+  B. $N_{11}$.00
+  C. $N_{13}$.20
+  D. $N_{26}$.40
+
+Q39.
+A long straight wire carries a current of 30A. At what distance from the wire will the magnetic be 0.03T?
+  A. 2.0x10-4m
+  B. 3.2x10-4m
+  C. 2.4x10-4m
+  D. 1.8x10-4m
+
+Q40.
+The back e.m.f induced in a current carrying coil causes:
+  A. resistance
+  B. eddy current
+  C. inductance
+  D. resonance
+
+Q41.
+The ratio of turns in a primary to secondary coil in a transformer is 2:5. If the voltage across the primary coil is 10kV, what is the voltage across the secondary coil?
+  A. 4kV
+  B. 25kV
+  C. 5kV
+  D. 50kV
+
+Q42.
+In an AC circuit containing a resistor, capacitor, and inductor in series; resonance will occur when the frequency of the sources is such that the reactance of the capacitor is:
+  A. equal to the resistance in the circuit
+  B. greater than the resistance in the circuit
+  C. greater than the inductive reactance
+  D. equal to the inductive reactance
+
+Q43.
+An electric heater is labelled 240V a.c, 1600W. Calculate the peak current in the heater when connected to a 240V a.c. supply.
+  A. 8.42A
+  B. 9.43A
+  C. 11.67A
+  D. 12.24A
+
+Q44.
+The atoms of a gas are excited to produce a discharge which is examined with a spectrometer. The examination reveals:
+  A. an absorption spectrum
+  B. an emission spectrum
+  C. no observable pattern
+  D. totally dark background
+
+Q45.
+Calculate the minimum wavelength of x-rays obtained when fast moving electrons hit a tungsten target, under an accelerating voltage of 40kV.
+  A. 3.11x10-11m
+  B. 1.01x10-10m
+  C. 4.11x10-9m
+  D. 3.21x10-12m
+
+Q46.
+Which of the following options reports where the production of x-rays in an x-rays tube begins?
+  A. photoelectric emission
+  B. field emission of electrons
+  C. thermionic emission
+  D. collision of electrons
+
+Q47.
+Which of the following defines the Heisenberg uncertainty principle for positions and momentum?
+  A. deltaxdeltap ?2
+  B. deltaxdeltap = h/2
+  C. deltaxdeltap ? 2h
+  D. deltaxdeltap ? 2h
+
+Q48.
+The de Broglie wavelength of a 3 vehicle cruising at a velocity of 72km/h is most nearly:
+  A. 1.1 x 10-48m
+  B. 1.1 x 10-32m
+  C. 2.2 x 10-38m
+  D. 1.1 x 10-30m
+
+Q49.
+The nuclear notation for cobalt-59 is $\ce{^59Co}$. Deduce the number of neutrons it possesses.
+  A. 27
+  B. 59
+  C. 32
+  D. 86
+
+Q50.
+Particle/rays are emitted from a radioactive substance without altering either the nucleon number or the proton number of the substance. The particles/rays are called:
+  A. Gamma rays
+  B. Alpha particles
+  C. Beta particles
+  D. Neutrons
+
+Q51.
+Identify the reason why the wave theory of light does not explain photo electricity.
+  A. there is a threshold wavelength for electrons emission
+  B. process of purifying the semiconductor materials
+  C. addition of impurity to the semiconductor crystal
+  D. process of forming a p-n junction
+
+Q52.
+? (question partially visible)
+
+Q53.
+Which of the following analyzed properly, gives the use of ultrasound?
+  A. it is used to send a radio signal
+  B. it is used to amplify the modulated carrier wave
+  C. it is used to study the development of the foetus
+  D. it is used to investigate the structure of crystals
+
+Q57.
+https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/question-images/phy-2024-mq-a7adpz9d.jpg
+  A. Thank you!!
+  B. Thank you!!!
+
+===============================================================================
+ JUPEB 2024 -- PHYSICS THEORY
+===============================================================================
+
+Q1.
+$\mathrm{(a)}$ (i) Three point charges $\ce{Q1}$=3.0uC, $\ce{Q2}$=-3.0uC and $\ce{Q3}$=2.0uC are located at -0.3i,0.3i and 0.4j, respectively. Find the resultant force on charge $\ce{Q3}$. [5 Marks]
+
+(ii) Write down the mathematical expressions of Biot-Savart law. [1 Marks]
+
+(b) (i) Calculate the induced e.m.f of a coil of 15 loops at the time t=5s if the magnetic flux through each loop is(1.8t-2.2t3)x10-2 T.m? [2 Marks]
+(ii) Describe how to charge a neutral rod positively by induction.[2 Marks]
+
+(c) (i) Why are electric dielectric materials needed in the fabrications of capacitors?
+
+(ii) A copper wire has a diameter of 0.2 mm; if current of 6 ?A flows through it at the rate of 1.56 \times 10^{8}$m/s,how many electrons are involved in the flow through each loop is(1.8t-2.2t3)x10-2 T.m? and the electron density. [3 marks]
+
+(iii) State Kirchhoff's junction and lop rules.[4/2 marks]
+
+(c) An electric motor is connected to 5 A, 110 V source. Determine the power input and the energy consumed by the motor in 1 hr. [2 marks]
+
+Q1.
+$\mathrm{(a)}$ (i) Define the 'coefficient of performances of a refrigerator. [1 marks]
+(ii) On a hot day, an oil truck was loaded with 33000 L of diesel. A cold weather was encountered where the diesel was to be delivered which lowered the temperature by 28.3 K. Determine the amount of diesel delivered (B diesel=9.50 \times 10^{-4}$?C??) [3 marks]
+
+(b) (i) Define 'Doppler effect's as applicable to sound waves. [2 marks]
+(ii) What distinguishes a sound wave from a light wave? [1 marks]
+
+(c)(i) State Huygens's principle. [2 marks]
+(ii) What is a diffraction grating? [1 mark]
+
+Q1.
+(a) List at least two uses of the following:
+(i) Ultrasound
+(ii) Nuclear Magnetic Resonance
+(iii) X-rays [3 marks]
+
+(b) Calculate the wavelength of light when a hydrogen atom makes a transition from n=6 to the n=2 energy level according to the Bohr model.
+(c) State Moseley's law as applicable to X-rays. [5 marks]
+[2 marks]
+
+Q1.
+X-rays of wavelength 3.0 \times 10^{-10}$ m are reflected off a crystal. When the angle between the x-rays...
+
+Q1.
+(a)(i) Distinguish between static and dynamic friction. [2 marks]
+(ii) Give one example each of a contact force and force field. [1 marks]
+
+(b) Sketch a graph showing how the kinetic energy and potential energy of a mass-spring system varies with displacement. Label your graph to show the amplitude, region of minimum and maximum kinetic and potential energies with any two relevant assumptions stated. [4marks]
+
+(c) A spinning wheel initially has an angular velocity of 60 rad/s cast; 20s later its angular velocity is 80 rad/s west. If the angular acceleration is constant; calculate:
+(i) The magnitude and direction of the angular acceleration
+(ii) The angular displacement over 20 s. [3 marks]
+
+Q1.
+$\mathrm{(a)}$ Define the following terms:
+(i) Hooke's law
+(ii) Elastic limit [2 marks]
+
+(b) The position of a particle moving along an x-axis given by 12t?-2t?, where x is in metre and t is in seconds. Determine:
+(i) The position, velocity and acceleration of the particles at t=3.0 s.
+(ii) Determine the average velocity of the particle between t=2s and t=5s [5 marks]
+
+(c) (i) State the principles of conservation of angular momentum [1mark]
+(ii) List 2 factors affecting pressure in fluid. [2 marks]
+
+### PHY 002: HEAT, WAVES AND OPTICS
+
+Q1.
+Given a circuit with two 2?F capacitors connected to a 120 V supply (diagram shown):
+
+(a) Using the diagram above, calculate:
+(i) The amount of charge stored by the 2?F capacitors.
+(ii) The potential difference across each of the 2?f capacitor.
+(iii) The effective energy stored by the 2?f capacitor.
+(ii) The effective energy stored by the system. [3 1/2 marks]
+
+### PHY 004: MODERN PHYSICS
+
+Q1.
+$\mathrm{(a)}$ Define the following terms:
+(i) Laeral inversion
+(ii) Critical angle
+(iii) Total internal reflection [3 Marks]
+
+(b) (i) Differentiate between Myopia and Hyperopia. [2 Marks]
+(ii) A film of oil of refractive index 1.25 lies on liquid of refractive index 1.33. If the ray of light is incident at an angle of 60? in the oil on the liquid boundary. Calculate the angle of refraction in the liquid. [2 marks]
+
+(c) A copper calorimeter of mass 0.20 kg contains 0.40 kg of water. The calorimeter and water were initially at 25?C. A 3.0 kg block of metal was heated to 95?C and placed in the water in the calorimeter. If the final steady temperature of the mixture is 60?C. Calculate the specific heat capacity of the metal. (Specific heat capacity of water, c = 4200J/kgK, specific heat capacity of copper, cu = 400J/kgK). [3 marks]
+
+### PHY 003: ELECTRICITY AND MAGNETISM
+
+===============================================================================
+ JUPEB 2024 -- CHEMISTRY OBJECTIVE
+===============================================================================
+
+Q1.
+1. Identify the correct trend of decrease in electronegativity on the periodic table.
+  A. Right to left, top to bottom
+  B. Right to left, bottom to top
+  C. Left to right, top to bottom
+  D. Left to right, bottom to top
+
+Q2.
+2. If the mass of electron is 9.11 \times 10^{-31}$ kg, what is the de Broglie wavelength of an electron traveling at two-thirds the speed of light? (c = 3.0 \times 10^{8}$ ms??; h = 6.626 \times 10^{-34}$ Js)
+  A. 3.75 pm
+  B. 36.4 pm
+  C. 3.64 pm
+  D. 1.62 pm
+
+Q3.
+If a bottle of concentrated $\ce{HCl}$ solution has label reading $37.8\%$ $\ce{HCl}$ by mass. Calculate the molarity of this solution if the density of $\ce{HCl}$ is $1.1917\text{ g cm}^{-3}$.
+  A. 11.3 M
+  B. 14.5 M
+  C. 12.0 M
+  D. 12.3 M
+
+Q4.
+The maximum number of electrons that can be accommodated in a sub-level for which $l = 3$ is:
+  A. 2
+  B. 14
+  C. 10
+  D. 6
+
+Q5.
+5. The atom's nucleus is made up of:
+  A. proton and radical
+  B. electron and radical
+  C. proton and ion
+  D. neutron and proton
+
+Q6.
+6. Which of the following statements is correct about the radii of atoms and their ions?
+  A. Both cations and anions are larger than their atoms
+  B. Both anions and cations are smaller than their atoms
+  C. Anions are larger and cations are smaller than their atoms
+  D. Cations are larger and anions are smaller than their atoms
+
+Q7.
+7. A covalent bond is formed when:
+  A. a metal and non-metal share electrons
+  B. Non-metals shared electrons
+  D. an electron is transferred from a metal to a non-metal
+  C. electrons are transferred from a metal to a non-metal
+
+Q8.
+8. The net ionic equation is an equation that shows:
+  A. all the compounds in their respective states
+  B. all charged species in the reaction
+  C. only the ionic reactants and solid products
+  D. only the oxidation states of the species
+
+Q9.
+9. Which of the following has only one possible oxidation state?
+  A. O
+  B. Br
+  C. N
+  D. F
+
+Q10.
+Calculate the volume occupied by $1.73$ moles of $\ce{N_2}$ gas at $0.992$ atm pressure and a temperature of $75$ $^\circ$C.
+  A. $10.7$ dm$^3$
+  B. $33.8$ dm$^3$
+  C. $49.8$ dm$^3$
+  D. $52.2$ dm$^3$
+
+Q11.
+11. What does X represent in the following reaction?
+?????U + ??n ? ????Kr + ?????Ba + X
+  A. X = ??n
+  B. X = ??H
+  C. X = ???
+  D. X = ???n
+
+Q12.
+12. What is the equilibrium constant for the cell formed at 25 ?C by the two electrodes?
+A?? + 2e? ? A, E? = +0.050 v
+B? + e? ? B, E? = +0.011 v
+  A. 40
+  B. 35
+  C. 21
+  D. 14
+
+Q13.
+13. What will be standard enthalpy change for the Haber process, if the standard enthalpy of formation of ammonia gas is -11 kcal/mol?
+  A. 22 kcal/mol
+  B. -22 kcal/mol
+  C. 20 kcal/mol
+  D. -20 kcal/mol
+
+Q14.
+14. Determine the order of reaction if the rate of chemical reaction is expressed as: rate = k[x]?[y]?
+  A. 3
+  B. 2
+  C. 1
+  D. 0
+
+Q15.
+15. Which of the following statements is NOT true? The conjugate base of a weak acid is a strong base.
+  A. a weak acid is a strong base
+  B. an acid is formed from a base
+  C. an acid is formed from a proton loss
+  D. a weak acid is a salt
+
+Q16.
+16. The equilibrium constant $K_{c}$ for a reaction is $55.78$ at $291	ext{ K}$. Which of the following statements is correct, when more reactants are added to the reaction?
+  A. equilibrium constant value will decrease
+  B. equilibrium constant value will decrease
+  D. reaction rate will increase
+
+Q17.
+17. Why does nitrogen form a stable trihalides but not pentahalides?
+  A. The most stable oxidation state of nitrogen is +3
+  B. Electronegativity of nitrogen is comparable with those of halides
+  C. Lone pair of electrons on nitrogen
+  D. It has no available d-orbitals
+
+Q18.
+18. Why is CO2 a gas whereas SiO2 is a solid?
+  A. Graphite allotrope of carbon is involved in the formation of CO2
+  B. SiO2 exists in a 3-dimensional structure leading to a stronger bond compared to the linear structure of CO2
+  C. Metallic character of carbon is higher than that of silicon
+  D. Metallic character of silicon is higher than that of carbon
+
+Q19.
+19. Which of the following sets of statements are correct about paramagnetism in transition metals?
+I. The presence of paired electrons
+II. They are repelled by a magnet
+III. They are attracted by a magnet
+IV. They increase in the number of unpaired electrons
+V. The magnetic moment increases with increase in the number of unpaired electrons
+  A. I, III and IV
+  B. I, IV and V
+  C. I, IV and V
+  D. I, III and V
+
+Q20.
+Which of the following chlorides will have the highest melting point?
+  A. AlCl$_3$
+  B. MgCl$_2$
+  C. NaCl
+  D. SiCl$_4$
+
+Q21.
+21. What is the magnetic moment of a certain transition metal ion in four unpaired electrons?
+  A. 3.8 BM
+  B. 4.0 BM
+  C. 4.9 BM
+  D. 3.7 BM
+
+Q22.
+22. Which of the following elements will violently react with cold water to give hydrogen gas?
+  A. Na
+  B. Mg
+  C. Al
+  D. Ca
+
+Q23.
+23. The unexpectedly high boiling point of HF is due to:
+  A. dipole-dipole forces
+  B. covalent bond
+  C. hydrogen bond
+  D. Van der Waal's forces
+
+Q24.
+The oxidation number of Cu in Cu($H_{2}O$)$_4$Cl$_2$ is:
+  A. +2
+  B. +3
+  C. +1
+  D. +4
+
+Q25.
+2,3-dibromobutanoic acid
+  A. 2
+  B. 8
+  D. 4
+
+Q26.
+26. Organic compound contains carbon and one or more elements: (i). hydrogen (ii). oxygen (iii). nitrogen (iv). sulphur (v). chlorine (vi). bromine (vii). iodine. Which of these elements are detectable by test?
+  A. (i) & (ii) only
+  B. (iii), (iv), (v), (vi) & (vii) only
+  B. (iii), (iv), (v), (vi) & (vii) only
+  D. (v), (vi) & (vii) only
+
+Q27.
+Determine $x$, $y$ and $z$ respectively in the following equation:\n$\ce{C2H4O}$ + $x\text{O}_2$ $\rightarrow$ $y\text{CO}_2$ + $z\text{H}_2\text{O}$
+  A. 5, 2, 2
+  B. 5/2, 1, 1
+  C. 5/2, 2, 2
+  D. 5, 4, 4
+
+Q28.
+28. How many isomeric form$\mathrm{(s)}$ is/are there for the molecular formula $C_{3}H_{5}Br_{2}$?
+  A. 1
+  B. 2
+  C. 3
+  D. 4
+
+Q29.
+29. Which of the following is a constituent of petrol?
+  A. Heptane
+  B. Isopropane
+  C. Propane
+  D. Ethane
+
+Q30.
+30. Which of the following pairs of compounds are geometrical isomers?
+  A. (structure A)
+  B. (structure B)
+  C. boiling points
+  D. acidity
+
+Q31.
+31. Recrystallization is an analytical technique that is based on the difference in:
+  A. solubility
+  B. melting points
+  C. boiling points
+  D. acidity
+
+Q32.
+32. Arrange the following acids in descending order of acidity:
+CF3COOH, CH3COOH, FCH2COOH, $F_{2}CHCOOH$, $F_{3}CCOOH$, FCH2COOH > CF3COOH > $F_{2}CHCOOH$ > FCH2COOH > CH3COOH
+  A. CF3COOH > CH3COOH > $F_{2}CHCOOH$ > FCHCOOH
+  B. CF3COOH > $F_{2}CHCOOH$ > FCH2COOH > CH3COOH
+  C. CF3COOH > $F_{2}CHCOOH$ > FCH2COOH > CH3COOH
+  D. CH3COOH > FCH2COOH > $F_{2}CHCOOH$ > CF3COOH
+
+Q33.
+33. Which of the following compounds can be hydrolysed to give one simple sugar?
+  A. Maltose
+  B. Sucrose
+  C. Glucose
+  D. Lactose
+
+Q34.
+34. The substance with a bond angle of 107? is:
+  A. $\ce{H2O}$
+  B. $\ce{CH4}$
+  D. $\ce{NH3}$
+
+Q35.
+The excitation of an electron from its initial energy state to infinite energy state is:
+  A. Bohr radius
+  B. electron affinity
+  C. ionization
+  D. absorption energy
+
+Q36.
+36. In which of the following groups are the three species isoelectronics?
+  A. Sulphide ion, potassium ion, titanium ion, sodium ion
+  B. Scandium ion, titanium ion, sodium ion
+  C. Oxide ion, sulphide ion, chloride ion
+  D. Magnesium ion, calcium ion, strontium ion, chloride ion
+
+Q37.
+37. What is the precipitate formed on heating aqueous solutions of calcium chloride and sodium fluoride?
+  A. Sodium chloride
+  B. Calcium fluoride
+  C. No precipitate
+  D. Sodium chloro-fluoride complex
+
+Q38.
+Two students obtained the following results:\nChidi: 4.38, 4.37, 4.36; Bola: 3.98, 3.98, 3.39\nActual value = 4.37. Which is correct?
+  A. Chidi is accurate and precise
+  Ꮖ. Chidi is accurate but not precise
+  C. Bola is accurate but not precise
+  D. Bola is precise but not accurate
+
+Q39.
+39. Which of the following is not responsible for making chemical reactions proceed faster at higher temperatures?
+  A. Increase in kinetic energy of the reacting molecules
+  B. More molecules possessing energy greater or equal to activation energy
+  C. Increase in the number of reacting molecules
+  D. Increase in the number of collisions
+
+Q40.
+40. A thermodynamic system in which its temperature remains constant is called:
+  A. adiabatic
+  B. isolated
+  C. closed
+  D. isothermal
+
+Q41.
+41. The boiling point of a solution containing 40 g of an unknown substance dissolved in 100 g of water is 105.3 ?C. Calculate the molar mass of the compound. [Kb = 0.512 ?Ckg/mol]
+  A. 10.5
+  B. 38.6
+  C. 66.0
+  D. 98.0
+
+Q42.
+42. The amount of a fissionable substance that can remain a chain reaction with a constant rate is referred to as:
+  A. mass defect
+  B. mass excess
+  C. supercritical mass
+  D. critical mass
+
+Q43.
+43. The $F_{2}$ molecule has the shortest length and the least bond energy due to the:
+  A. inter-nuclear repulsion of the lone pair of electrons on the fluorine
+  B. strong bonds in the fluorine
+  C. multiple bonding in the fluorine molecule
+  D. hybridization in fluorine
+
+Q44.
+What is the formula of the hydroxide that can be used in medicine to treat stomach acidity?
+  A. Ba(OH)$_2$
+  B. NaOH
+  C. Ca(OH)$_2$
+  D. Mg(OH)$_2$
+
+Q45.
+45. Which of the following ions will give a white coloured salt?
+  A. Fe??
+  B. Co??
+  C. Cr??
+  D. Zn??
+
+Q46.
+46. Which of the following gases will turn a red litmus paper blue?
+  A. NH3
+  B. NO2
+  C. $N_{2}O$
+  D. $N_{2}O_{4}$
+
+Q47.
+47. Which of these properties are applicable to a nucleophile or a potential source of one? They are organic reagents which may be:
+I. positively charged
+II. negatively charged
+III. neutral but possess a central atom which is electron deficient
+IV. neutral but possess a central atom with lone pair$\mathrm{(s)}$ of electrons
+V. neutral but can polarize and attack a substrate with its positive end
+VI. neutral but can polarize and attack a substrate with its negative end
+  A. I and III only
+  B. II, IV and VI only
+  C. I, II and III
+  D. I, III and V
+
+Q48.
+48. The IUPAC name of the compound with structural formula CH3C(CH3)=CHCH3 is:
+  A. 2-methylbut-1-ene
+  B. 2-methylbut-2-ene
+  C. 2-ethylbut-1-ene
+  D. 2-ethylbut-2-ene
+
+Q49.
+49. Which of the following reactions will not give secondary alcohol as product?
+  A. Reaction of ketone with LiAlH$_4$
+  B. Reaction of Grignard reagent with ethanal
+  C. Reaction of Grignard reagent with methanol
+  D. label D: Acid catalysed hydration of propene
+
+Q50.
+50. The product of the reaction of acid chloride with aliphatic or aromatic hydrocarbons in the presence of a Lewis acid is:
+---
+  A. aldehyde
+  B. ketone
+  C. acid
+  D. alcohol
+
+===============================================================================
+ JUPEB 2024 -- CHEMISTRY THEORY
+===============================================================================
+
+Q1.
+Using appropriate chemical equations, show what happens when calcium is treated with: (i). nitrogen (ii). dilute tetraoxosulphate (VI) acid. [2 Marks]
+
+(b). What is the oxidation state of Co in the complex [Co(NH?)?(NO?)Cl][Au(CN)?]? [2 Marks]
+
+(c). Write the correct formula for the following compounds:
+(i). CrCl?.6$\ce{H2O}$ (violet, with three chloride ions/units in the formula).
+(ii). CrCl?.6$\ce{H2O}$ (light green, with two chloride ions/units in the formula).
+(iii). CrCl?.6$\ce{H2O}$ (dark green, with one chloride ions/units in the formula). [3 Marks]
+
+(b). Arrange the following complexes in order of increasing electrical conductivity:
+[Co(NH?)?Cl?], [Co(NH?)?Cl]Cl?, [Co(NH?)?]Cl?, [Co(NH?)?Cl?]Cl [2 Marks]
+
+(c). Hydrogen forms compounds with elements W, X, Y and Z having atomic numbers 9, 11, 12 and 17 respectively.
+(i). Write a balanced chemical equation for the formation of each of the compounds in (c) above. [3 Marks]
+(d). Write the formula of the complexes formed by Fe?? with the following ligands:
+(i). one hydroxyl ion, two ammonia molecules and three chloride ions
+(ii). three cyanide ions and three ammonia molecules. [2 Marks]
+
+---
+
+## CHM 004: ORGANIC CHEMISTRY
+
+Q1.
+Differentiate between the following sets of terms:
+(i). thermoplastics and thermosets. (ii). natural and synthetic polymers. [3 Marks]
+
+(b). List the characteristic reactions that alkyl halides undergo.
+
+(bi). Give one equation each for the reactions listed in (bi) above. [3? Marks]
+
+(iii). Write the equation to show the reaction of methyl iodide with aqueous potassium iodide.
+
+(c). Give the IUPAC nomenclature of the following compounds:
+(i). $\ce{C6H5COCl}$ + $\ce{LiAlH4}$ ? ? *(see note below)*
+(ii). $\ce{ClC(C6H5)COOH}$ (iii). $\ce{CH3CH2OOCCH2CH3}$ [1?]
+
+(d). Give reasons for the following observations:
+(i). alkynes generally have higher boiling points than corresponding alkenes.
+(ii). benzene readily undergo substitution reactions instead of addition reactions. [2 Marks]
+
+Q1.
+Sodium hydroxide solution was mixed in three different vessels A, B and C containing haloalkanes. The mixture was acidified with dilute nitric acid, followed by silver nitrate solution. The precipitate obtained in vessels A, B and C were yellow, white and pale yellow respectively.
+(i). Identify the halide ions present in each vessel. [2 Marks]
+(ii). Arrange the halide ions in their order of increasing reactivity. [2 Marks]
+
+(b). Consider the reaction below: C$\ce{H3C}$$\ce{H2C}$HClC$\ce{$\ce{H3}$}$ + KOH/$\ce{C2H_{5}}$OH ? A + B
+(i). Draw the structure and give the names of A and B. [3 Marks]
+(ii). What product will be formed if the reaction proceeds without the alcohol?
+
+(c). Calculate the specific activity of a 600 g sample of organic compound per litre of solution placed in a cell of 0.2 dm path length with observed rotation of +1.2? at sodium D-line. [2 Marks]
+
+(d). Give the major products of the following reactions: [3 Marks]
+(i). $\ce{C6H_{5}}$COCl + LiAl$\ce{$\ce{H4}$}$ ? ?
+(ii). $\ce{C2H_{5}}$CON$\ce{$\ce{H2}$}$ + NaOH ? ?
+(iii). C$\ce{H3C}$OC$\ce{$\ce{H3}$}$ + C$\ce{H3C}$OC$\ce{$\ce{H3}$}$ ? ?
+
+---
+
+Q1.
+Define the following terms and state their units in each case: [2 Marks]
+(i). molality
+(ii). molarity
+
+(b). What is the frequency and wavelength of a photon emitted during transition of hydrogen atom from the n? = 5 state to the n_f = 2 state? [R_a = 2.18 \times 10^{-18}$J; h = 6.626 \times 10^{-34}$ Js; c = 3.0 \times 10^{8}$ ms??] [3 Marks]
+
+(c). State whether a reaction will occur or not among the following pairs, and write the molecular, total ionic, net ionic equations where applicable:
+(i). Sodium sulphate ($\ce{Na2S}$O?) solution + strontium nitrate (Sr(NO?)?) solution.
+(ii). Ammonium perchlorate (N$\ce{H4Cl}$O?) solution and sodium bromide (NaBr) solution. [3 Marks]
+
+(d). Determine the oxidation number of zinc in the following compounds: [2 Marks]
+(i). Zn(NH?)?S$\ce{$\ce{O4}$}$
+(ii). [Zn(NH?)?Cl]??
+
+Q1.
+Give a reason for each of the following: [3 Marks]
+(i). electronegativity increases from left to right in the periodic table.
+(ii). Ionization enthalpy decreases in group from top to bottom.
+(iii). Helium has electronic configuration of $1s?$ but it is placed in p-block in group 18.
+
+(b). Account for why: [3 Marks]
+(i). the solution of alkali metals in ammonia is conducting in nature.
+(ii). the second ionization enthalpy of alkali metals is higher than that of alkaline earth metals.
+(iii). HF is the weakest acid among haloacids in spite of the fact that F is the most electronegative.
+
+Q1.
+State the expressions for the integrated law and the unit of the rate constant for: (i). zeroth-order reaction (ii). first-order reaction [3 Marks]
+
+(b). The enthalpy change for the reaction: $\ce{C2H_{4}}$ + Cl? ? $\ce{C2H_{4}}$Cl? is -129 kJmol??.
+
+Given the following bond energy values:
+
+| Bond | C?C | C=C | C?H | Cl?Cl |
+|---|---|---|---|---|
+| Bond Energy (kJ/mol) | +330 | +612 | +415 | +243 |
+
+Determine the bond energy for the C?Cl bond. [3 Marks]
+
+(c). The rate constant for the reaction A?$\mathrm{(g)}$ + B?$\mathrm{(g)}$ ? 2AB$\mathrm{(g)}$ are 4.2 dm? mol?? sec?? at 298 K and 12.64 dm? mol?? sec?? at 400 K. Calculate the activation energy E? for this reaction. [R = 8.314 J mol?? K??] [3 Marks]
+
+(d). What conditions often make non-ideal solutions to show positive deviation from the Raoult's law? [1 Mark]
+
+---
+
+## CHM 003: INORGANIC CHEMISTRY
+
+Q1.
+7.0 g of FeBr? were mixed with 3.2 g of $\ce{Na2S}$ in solution according to the following equation: 2FeBr?(aq) + 3$\ce{Na2S}$(aq) ? $\ce{Fe2S_{3}}$(s) + 6NaBr(aq)
+(i). Which reagent is limiting?
+(ii). How much in g of $\ce{Fe2S_{3}}$ would be formed?
+(iii). If the mass of $\ce{Fe2S_{3}}$ after washing and drying is 1.92 g, calculate its percentage yield. [Fe = 56, Br = 79.9, Na = 23, S = 32] [4 Marks]
+
+(b). What is meant by the term precipitation reaction? [1 Mark]
+
+---
+
+## CHM 002: PHYSICAL CHEMISTRY
+
+Q1.
+What is meant by the term half-life of a radioactive element? [1 Mark]
+
+(ii). Balance the redox reaction below in basic medium.
+$\ce{H2O_{2}}$ + Mn$\ce{$\ce{O4}$}$? ? $\ce{$\ce{O2}$}$ + Mn$\ce{$\ce{O2}$}$ [4 Marks]
+
+(b). Given that the half-life of cobalt-60 is 6.0 years, calculate the:
+(i). decay constant in per seconds.
+(ii). activity of a 1.0 mg sample of cobalt-60. [2? Marks]
+
+(c). Define the following thermodynamic terms:
+(i). entropy (ii). Gibb's free energy (iii). enthalpy [4? Marks]
+
+Q1.
+(i) Molality ? amount in mole of a substance contained in 1 kg of solution, measured in molkg??\n(ii) Molarity ? amount in mole of a substance contained in 1 dm? of solution, measured in molL?? or moldm??\n[Rn = 2.18 \times 10^{-18}$ J; h = 6.626 \times 10^{-34}$ Js; c = 3.0 \times 10^{8}$ ms??]\nWhen n = 5; $\ce{E5}$ = ?$\ce{E0}$/n? = ?0.0872 \times 10^{-18}$ J\nWhen n = 2; $\ce{E2}$ = ?1.09 \times 10^{-18}$ J\n?E = $\ce{E5}$ ? $\ce{E2}$ = [?0.0872 ? (?1.09)] ? 10??? = 1.0028 \times 10^{-18}$ J\nv = ?E/h = 1.0028 \times 10^{-18}$ / 6.626 \times 10^{-34}$ = 1.513 \times 10^{15}$ s??\n? = c/v = 3.0 \times 10^{8}$ / 1.513 \times 10^{15}$ = 1.9828 \times 10^{-7}$ m = 198.28 nm\n(i) Sodium sulphate ($\ce{Na2SO4}$) + strontium nitrate Sr(NO3)2:\nMolecular: $\ce{Na2SO4}$(aq) + Sr(NO3)2(aq) ? 2NaNO3(aq) + SrSO4$\mathrm{(s)}$\nTotal ionic: 2Na? + SO4??(aq) + Sr?? + 2NO3?(aq) ? 2Na? + NO3?(aq) + SrSO4$\mathrm{(s)}$\nNet ionic: SO4??(aq) + Sr?? ? SrSO4$\mathrm{(s)}$\n(ii) Ammonium perchlorate (NH4ClO4) + sodium bromide (NaBr): No reaction will occur.\n(i) Zn(NH3)4SO4: +2\n(ii) [Zn(NH3)3Cl]??: +3\n---\n2FeBr3(aq) + 3Na2S(aq) ? $\ce{Fe2S3}$(s) + 6NaBr(aq)\nMolar mass of $\ce{Na2S}$ = 2?23 + 32 = 78 gmol??\nMolar mass of FeBr3 = 56 + 3(79.9) = 295.5 gmol??\nMoles of $\ce{Na2S}$ = 3.2/78 = 0.041 mol\nMoles of FeBr3 = 7.0/295.5 = 0.024 mol\n0.024 mol FeBr3 requires (0.024?3)/2 = 0.036 mol $\ce{Na2S}$\nTherefore FeBr3 is the limiting reagent.\n(ii) From balanced equation: 2 mol FeBr3 ? 1 mol $\ce{Fe2S3}$\n0.024 mol FeBr3 ? 0.012 mol $\ce{Fe2S3}$\nMolar mass of $\ce{Fe2S3}$ = 2?56 + 3?32 = 208 gmol??\nMass of $\ce{Fe2S3}$ = 0.012 ? 208 = **2.50 g**\n(iii) % Yield = (1.92/2.50) ? 100 = **76.8%**\nPrecision is the degree of closeness or agreement of two or more measurements of a quantity on the same instrument.\nReduction half equation: MnO4? + 4H? + 3e? ? MnO2 + 2H2O\nMultiply oxidation by 3 and reduction by 2:\n3H2O2 ? 3O2 + 6H? + 6e?\n2MnO4? + 8H? + 6e? ? 2MnO2 + 4H2O\nOverall: 3H2O2 + 2MnO4? + 2H? ? 3O2 + 2MnO2 + 4H2O\n---
+
+Q2.
+(ii) Decay constant, proton/neutron ratio and half-life of the element.\n(bi) Half-life t? = 60 ? 60 ? 60 = 31,536,000 s = 31,536,000 s\nThe decay constant ? = 0.693/t? = 0.693/31,536,000 = 2.198 \times 10^{-8}$ s??\nActivity A = ? ? N = 2.198 \times 10^{-8}$ ? 1.0 \times 10^{19}$ = 2.198 \times 10^{11}$ decays/sec\n(ii) Number of radioactive atoms:\nN = 0.001g/60 gmol?? ? 6.023 \times 10^{23}$ atoms/mol = 1.00 \times 10^{19}$ atoms\n(ci) Entropy is a measure of the degree of randomness or disorderliness of a system.\n(ii) Gibb's free energy is a thermodynamic function that is used to measure the maximum amount of work done in a thermodynamic system at constant temperature and pressure.\n(iii) Enthalpy is the heat change that accompany a process at constant pressure.\n(ii) ln[A]t = ln[A]0 ? kt (first-order); unit of k = s??\nEnthalpy of product ?HP = H(C-C) + 2H(C?Cl) + 4H(C?H) = 330 + 2(196) + 415 = 745 + 2(196) = +1141 ? 745 = 396\n?HRxn = ?HP ? ?HR = 1141 ? 1270 = ?129\nTherefore bond dissociation enthalpy of C-Cl bond = 196 kJmol??\nln(12.64/4.2) = Ea/8.314 ? (1/298 ? 1/400)\nln 3.01 = 0.000103 Ea\n1.099 = 0.000103 Ea\nEa = 1.099/0.000103 = **1.067 kJmol??**\n---
+
+Q3.
+(i) Electronegativity increases from left to right in the periodic table ? effective nuclear charge increases across the period and an increase in the distance between the nuclear charge and the electrons outside it.\n(ii) Ionization energy decreases in group from top to bottom ? as group descends there is an increase in valence electrons, number of shells or energy level of electrons, force of attraction between the nuclear charge and the electrons outside decreases.\n(iii) Helium has electronic configuration of $1s?$ but it is placed in p-block ? Helium has a completely filled shell and has a stable electronic configuration (n-1)p?. It is placed in group 18 because it has a stable configuration. The electron$\mathrm{(s)}$ to be removed and the nuclear charge. For alkali metals (M?), ion of alkali metals has a stable electronic configuration (n-1)s? (n-1)p? (n-1)p? ns? and remaining electron will be from the fully filled p-subshell which requires high energy.\n(b)(i) The second ionization enthalpy of alkali metals is higher than that of alkaline earth metals ? after the first ionization, the ion of alkali metals (M?) has a stable electronic configuration. For alkali earth metals, their ions (M??) after undergoing first ionization has an unstable electron in their valence shells (n-1)s? (n-1)p? ns? and the remaining electron in single electron in their valence shells require lesser energy to be removed compared to alkali metal ions. Alkali metal solution in ammonia are conducting because the metals readily ionize in ammonia to form monopositive cations and both the cation and the electron are ammoniated by ammonia and conduct easily.\n(ii) HF is the weakest acid compared to HCl, HBr and HI because the higher electronegativity of fluorine makes it to form a strong covalent bond with hydrogen thereby hindering the ease of deprotonation. More so, F? ion is a strong conjugate base compared to nitrogen, an ionic compound, calcium nitride formed accordingly.\n(iii) When calcium is treated with tetraoxosulphate (VI) acid, hydrogen gas is liberated and calcium sulphate is formed.\nCa$\mathrm{(s)}$ + $\ce{H2SO4}$(aq) ? CaSO4$\mathrm{(s)}$ + $\ce{N2}$(g) ? $\ce{Ca3N2}$(s)\n(d) Oxidation state of NH3 = 0; oxidation state of CN = ?1; oxidation state of NO2 = ?1; oxidation number of Co = 0; oxidation number of Au = +2\n(i) nitrogen: 3Ca + $\ce{N2}$ ? $\ce{Ca3N2}$\n(ii) dilute tetraoxosulphate (VI) acid: Ca + $\ce{H2SO4}$ ? CaSO4 + $\ce{H2}$\n(c) Oxidation state of Co in [Co(NH3)5Cl][Au(CN)2]: +3\n(6a)(i) CrCl3.6H2O (violet): three chloride ions/units in formula\n(ii) CrCl3.6H2O (light green): two chloride ions/units\n(iii) CrCl3.6H2O (dark green): one chloride ion/units\n(b) Arrange in order of increasing electrical conductivity:\n[Co(NH3)5Cl]$\ce{Cl2}$, [Co(NH3)6]$\ce{Cl3}$, [Co(NH3)4Cl2]Cl, [Co(NH3)3Cl3]\n[Co(NH3)3Cl3] $\lt$ [Co(NH3)4Cl2]Cl $\lt$ [Co(NH3)5Cl]$\ce{Cl2}$ $\lt$ [Co(NH3)6]$\ce{Cl3}$\n(c) Hydrogen forms compounds with elements W, X, Y and Z having atomic numbers 9, 11, 12 and 17 respectively.\n(d) Write a balanced chemical equation for the formation of each of the compounds in (ci) above.\n(d) What type of hydride is each of the complexes formed by Fe?? with the following ligands:\n(i) one cyanide ions and three ammonia molecules\n(ii) three cyanide ions and three ammonia molecules\n---
+
+Q4.
+(i) Thermoplastics and thermosets ? Thermoplastics are polymers that soften on heating while thermosets are polymers that harden irreversibly when heated.\n(ii) Natural and synthetic polymers ? Natural polymers are polymers that exist in nature and are found in plants and animals, while synthetic polymers are man-made polymers synthesized in the laboratory.\n(b)(i) Differentiate between thermoplastics and thermosets.\n(ii) Addition and condensation reactions that alkyl halides undergo.\n(iii) Give one equation each for:\n(i) Hydrolysis: $\ce{C2H5Cl}$ + KOH ? KCl + $\ce{C2H5OH}$\n(ii) Dehydrohalogenation: CH3CH2Br ? CH2=CH2 + HCl\n(c) Write the equation to show the reaction of methyl iodide with aqueous potassium iodide.\n(d)(i) Give the IUPAC nomenclature of the following compounds:\n(i) CH3CHICONH2 ? (name required)\n(ii) Cl($\ce{C6H5}$)COOH\n(iii) CH3CH2COOCH2CH3\n(e) Give reasons for the following observations:\n(i) Alkynes generally have higher boiling points than corresponding alkenes ? alkynes are more polar than alkenes due to the presence of an additional pi-electron that is easily distorted thereby creating a stronger intermolecular attraction.\n(ii) Benzene readily undergoes substitution reactions instead of addition reactions ? Benzene does not undergo addition reactions easily due to resonance effect since the 6 carbon atoms are arranged in ring planar with each C-atom having sp? hybridization. Thus it undergoes substitution reactions easily.\nA gave yellow precipitate (AgI) ? iodide\nB gave white precipitate (AgCl) ? chloride\nC gave pale yellow precipitate (AgBr) ? bromide\n(b) Reactions:\n(i) $\ce{C6H5COCl}$ + LiAlH4 ? ?\nProduct: C6H5CH2OH (benzyl alcohol)\n(ii) C2H5CONH2 + NaOH ? ?\nProduct: C2H5COONa + NH3\n(c) Calculate the specific activity of a 600 g sample of organic compound per litre of solution placed in a cell of 0.2 dm path length with observed rotation of +1.2? at sodium D-line.\n[?]T = cx t/?; where ? is the specific rotation, T is temperature in ?C and ? is the wavelength.\n[?]T = ?/cxt = 0.6 ? 0.2/1.2 = 0.12/1.2 = +10?\nc = mass/volume = 600g/1000mL = 0.600 gmL??\na = +1.2?; l = 0.2 dm; c = 0.600 gmL??\n[?]T = 0.6 ? 0.2/1.2 = +10?\n---
+
+===============================================================================
+ JUPEB 2024 -- CHEMISTRY PRACTICAL
+===============================================================================
+
+Q1.
+QUANTITATIVE ANALYSIS
+
+You are provided with the following solutions:
+
+**A** is a solution containing 15.00 cm? concentrated acid, HX, in 1.0 dm? of solution (36% pure and 1.25 $g/cm$? density).
+
+**B** is a solution that contains 1.08 g of sodium trioxocarbonate (IV), $\ce{Na2C}$O? in 200 cm? of solution.
+
+**Procedure:**
+
+**$\mathrm{(a)}$.** Pipette 25 cm? portion of solution B into a clean conical flask, add 2 or 3 drops of methyl orange indicator and titrate against solution A from the burette.
+
+**(i).** Tabulate your readings and obtain the average value of acid used in the titration.
+
+**(ii).** Write a balanced chemical equation for the reaction.
+
+**(b).** From the information given and your titre value, determine:
+
+**(i).** Molar concentration of $\ce{Na2C}$O? in solution **B**;
+
+**(ii).** Mole of the acid, **HX** per dm? of solution **A**;
+
+**(iii).** Mass of **HX** in $g/dm$?;
+
+**(iv).** Relative atomic mass of X.
+
+**(v).** What will be the colour change at the end point if phenolphthalein is used for the titration?
+
+**(vi).** Assume that 1.2 g of impure $\ce{Na2C}$O? gave the same molarity, calculate the percentage purity of $\ce{Na2C}$O? in 1 dm? of solution **B**.
+
+**(c).** Anhydrous sodium trioxocarbonate (IV) is a primary standard. State any TWO of its properties that affirms this statement.
+
+[Total = 10 Marks]
+
+Q1.
+**Question 1: Quantitative Analysis**\n\nSolution A is a solution containing 15.00 cm? concentrated acid HX (36% pure and 1.25 $g/cm$? density).\nSolution B is a solution that contains 1.08 g of sodium trioxocarbonate (IV), $\ce{Na2CO3}$ in 200 cm? of solution.\n\nTitration with methyl orange indicator:\n\n| Burette readings | 1st Titration (cm?) | 2nd Titration (cm?) | 3rd Titration (cm?) |\n|---|---|---|---|\n| Final Reading | 14.00 | 27.80 | 41.60 |\n| Initial Reading | 0.00 | 14.00 | 27.80 |\n| Titre value | 14.00 | 13.80 | 13.80 |\n\nAverage titre = (13.80 + 13.80)/2 = **13.80 cm?**\n\nReaction: 2HX + $\ce{Na2CO3}$ ? 2NaCl + $\ce{H2O}$ + CO2\n\n(bi) 200 cm? of B contains 1.08 g of $\ce{Na2CO3}$\n1000 cm? contains (1.08 ? 1000)/200 = 5.40 gdm??\nMolar mass of $\ce{Na2CO3}$ = 2?23 + 12 + 3?16 = 106 gmol??\nConcentration of B = 5.40/106 = **0.0509 moldm??**\n\n(ii) 1000 cm? of B contains 0.0509 mol of $\ce{Na2CO3}$\n25 cm? of B contains (25 ? 0.0509)/1000 = 1.2725 \times 10^{-3}$ mol of $\ce{Na2CO3}$\nFrom the balanced equation: 1 mol $\ce{Na2CO3}$ reacts with 2 moles HX\n1.2725 \times 10^{-3}$ ? 2 = 2.545 \times 10^{-3}$ mol of HX in average titre\n\n13.80 cm? of A contains 0.002545 mol of HX\n1000 cm? of A contains (0.002545 ? 1000)/13.80 = **0.1844 moldm??**\n\n(iii) 1 cm? of A contains 1.25 g of impure HX\n36/100 ? 1.25 = 0.45 g of pure HX\n1000 cm? of A contains 450 g of pure HX\nC1 = 450 gdm??; $\ce{V1}$ = 15 cm?; $\ce{V2}$ = 1000 cm?\nC2 = $\ce{C1V1}$/$\ce{V2}$ = (450 ? 15)/1000 = 6750/1000 = **6.75 gdm??**\n\n(iv) Molar mass of HX = 6.75/0.1844 = **36.6 gmol??**\n1 + X = 36.6; X = 35.6\nTherefore relative atomic mass of X is 35.6 ? **X is Chlorine; HX is HCl**\n\n---\n\n**Question 2: Qualitative Analysis**\n\n**Sample P (first table):**\n\n| Test | Observation | Inference |\n|---|---|---|\n| P + heat | Colourless alkaline gas with choking smell; white fumes with HCl | Gas is NH3; NH4? ion present |\n| P + $\ce{H2O}$ | Sample dissolves completely | ? |\n| P solution + NaOH in drops and excess | Effervescence of colourless gas, turns red litmus blue | Gas is ammonia from NH4? |\n| P solution + dil. HCl + BaCl2(aq) | White precipitate formed | Precipitate of BaSO4; SO4?? confirmed |\n\nIons in sample P are NH4? and SO4??\n(NH4)2SO4(aq) + 2NaOH(aq) ? $\ce{Na2SO4}$(aq) + 2NH3$\mathrm{(g)}$ + $\ce{H2O}$(l)\n\n**Sample Q (second table):**\n\n| Test | Observation | Inference |\n|---|---|---|\n| Q + water | Q dissolves completely | ? |\n| Q solution + NaOH in drops and excess | Green precipitate, insoluble in excess NaOH | Precipitate of Fe(OH)2; Fe?? present |\n| P solution + NH3 in drops and excess | Green precipitate, insoluble in excess; turns brown on standing | Fe?? present; brown due to formation of ferric ion |\n| P solution + K4Fe(CN)6(aq) | Dark or Prussian blue | Precipitate of Fe[2Fe(CN)6]$\mathrm{(s)}$; Fe?? confirmed |\n\n**(c)** The formula of the compound formed is **Fe(NH4)2(SO4)2.6H2O**
+
+===============================================================================
+ END OF 2024 QUESTIONS
+===============================================================================

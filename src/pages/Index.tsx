@@ -24,14 +24,18 @@ import { useStudySessions } from '@/hooks/useStudySessions';
 import { useStatsSync } from '@/hooks/useStatsSync';
 import { useStudySessionSync } from '@/hooks/useStudySessionSync';
 import { useScoreAwarder } from '@/hooks/useScoreAwarder';
+import { sendPush } from '@/lib/sendPush';
 import LeaderboardPanel from '@/components/LeaderboardPanel';
 import { useAuth } from '@/contexts/AuthContext';
+import { useActivation } from '@/hooks/useActivation';
 import { useUserStorage } from '@/hooks/useUserStorage';
 import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, FileText, Library } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import rutexLogo from '@/assets/rutex-logo.jpg';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
+import { useSubjectLockTimer } from '@/hooks/useSubjectLockTimer';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 const springBounce = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
@@ -59,7 +63,9 @@ const Index = () => {
   const { getStats, updateProgress, progress } = useStudyProgress();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
+  const { status: activationStatus } = useActivation();
   const { profile, syncAchievements } = useProfile();
+  const { timeLeft: lockTimeLeft, progress: lockProgress, isExpired: lockExpired } = useSubjectLockTimer(activationStatus.is_admin);
   const { push: pushNotification } = useNotificationsContext();
   const { 
     currentStreak, 
@@ -139,6 +145,44 @@ const Index = () => {
     [sessionHours],
   );
 
+  // Track AI tutor conversations for achievements
+  const [aiChatCount, setAiChatCount] = useUserStorage<number>('ai-chat-count', 0);
+
+  // Track chat messages sent for achievements
+  const [chatMessagesSent, setChatMessagesSent] = useUserStorage<number>('chat-messages-sent', 0);
+
+  // Track perfect quiz scores for achievements
+  const [quizPerfectScore, setQuizPerfectScore] = useUserStorage<boolean>('quiz-perfect-score', false);
+
+  // Check if profile has avatar
+  const hasAvatar = !!profile?.avatar_url;
+
+  // Track tour completion
+  const [tourCompleted] = useUserStorage<boolean>('tour-completed', false);
+
+  // Friend count from friends list
+  const [friendCountState, setFriendCountState] = useState(0);
+  useEffect(() => {
+    supabase.from('friend_requests')
+      .select('id', { count: 'exact', head: true })
+      .or(`sender_id.eq.${user?.id},receiver_id.eq.${user?.id}`)
+      .eq('status', 'accepted')
+      .then(({ count }) => setFriendCountState(count ?? 0));
+  }, [user]);
+
+  // Total score for leaderboard achievements
+  const [totalScore, setTotalScore] = useState(0);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('score_events')
+      .select('amount')
+      .eq('user_id', user.id)
+      .then(({ data }) => {
+        const total = (data ?? []).reduce((sum, e) => sum + e.amount, 0);
+        setTotalScore(total);
+      });
+  }, [user]);
+
   // Study sessions (multi-session support)
   const {
     sessions,
@@ -194,6 +238,13 @@ const Index = () => {
     studiedAfterMidnight,
     studiedBefore6am,
     consecutiveCorrect,
+    aiChatCount,
+    chatMessagesSent,
+    friendCount: friendCountState,
+    totalScore,
+    hasAvatar,
+    tourCompleted,
+    quizPerfectScore,
   }, handleNewAchievement, profile?.achievements ?? []);
 
   // Sync unlocked achievements to profiles table
@@ -241,8 +292,11 @@ const Index = () => {
         body: a.description,
         dedupe: `ach:${a.id}`,
       });
+      if (user) {
+        sendPush(user.id, `🏆 ${a.name} unlocked!`, a.description);
+      }
     });
-  }, [newlyUnlocked, pushNotification]);
+  }, [newlyUnlocked, pushNotification, user]);
 
   // Emit when syllabus day count goes up.
   const lastSyllabusDays = useRef<number | null>(null);
@@ -278,6 +332,9 @@ const Index = () => {
         confetti({ particleCount: count, spread, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
         setTimeout(() => confetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.2 }, colors: ["#8b5cf6", "#a78bfa"] }), 150);
         setTimeout(() => confetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.8 }, colors: ["#8b5cf6", "#a78bfa"] }), 300);
+        if (user) {
+          sendPush(user.id, `🔥 ${currentStreak}-day streak!`, `You're on a ${currentStreak}-day study streak. Keep it up!`);
+        }
       }
     }
     prevStreakRef.current = currentStreak;
@@ -311,6 +368,7 @@ const Index = () => {
 
   const handleStartQuiz = (subject?: Subject) => {
     if (subject) {
+      if (!lockExpired && (subject === 'biology' || subject === 'math')) return;
       const pool = getAllQuestionsBySubject(subject).filter(q => q.type === "mcq");
       const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
       setSelectedSubject(subject);
@@ -342,6 +400,11 @@ const Index = () => {
       }
     });
     setConsecutiveCorrect(streak);
+
+    // Check for perfect score achievement
+    if (result.correctAnswers === result.totalQuestions && result.totalQuestions > 0) {
+      setQuizPerfectScore(true);
+    }
 
     // Record study session for streak
     recordStudySession(result.answeredQuestions.length);
@@ -401,33 +464,31 @@ const Index = () => {
       <div className="min-h-screen bg-background p-4 md:p-8">
         <QuizSetup
           available={initialAvailable}
-          onStart={(plan) => {
-            setQuizPlan(plan);
-            setCurrentView('quiz');
-          }}
+            onStart={(plan) => {
+              const allQuizQuestions = (Object.entries(plan.perSubject) as Array<[Subject, number]>)
+                .flatMap(([subject, count]) => {
+                  const pool = getAllQuestionsBySubject(subject).filter(q => q.type === "mcq");
+                  return [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+                })
+                .sort(() => Math.random() - 0.5);
+              setQuizPlan(plan);
+              setCurrentQuizQuestions(allQuizQuestions);
+              setCurrentView('quiz');
+            }}
           onBack={handleBack}
+          lockedSubjects={!lockExpired ? ['biology', 'math'] : []}
+          lockTimeLeft={lockTimeLeft}
         />
       </div>
     );
   }
 
   // Quiz view
-  if (currentView === 'quiz' && (currentQuizQuestions.length > 0 || quizPlan)) {
-    const quizQuestions = currentQuizQuestions.length > 0
-      ? currentQuizQuestions
-      : quizPlan
-        ? (Object.entries(quizPlan.perSubject) as Array<[Subject, number]>)
-            .flatMap(([subject, count]) => {
-              const pool = getAllQuestionsBySubject(subject).filter(q => q.type === "mcq");
-              return [...pool].sort(() => Math.random() - 0.5).slice(0, count);
-            })
-            .sort(() => Math.random() - 0.5)
-        : [];
-
+  if (currentView === 'quiz' && currentQuizQuestions.length > 0) {
     return (
       <div className="min-h-screen bg-background p-4 md:p-8">
         <QuizMode
-          questions={quizQuestions}
+          questions={currentQuizQuestions}
           subject={selectedSubject || undefined}
           onComplete={(result) => {
             setCurrentQuizQuestions([]);
@@ -636,7 +697,7 @@ const Index = () => {
         </section>
 
         {/* Live Leaderboard */}
-        <section className="mb-12 animate-in-up stagger-3">
+        <section data-tour="home-leaderboard" className="mb-12 animate-in-up stagger-3">
           <LeaderboardPanel stats={achievementStats} />
         </section>
 
@@ -679,6 +740,9 @@ const Index = () => {
                   studiedCount={stats.studied}
                   learnedCount={stats.learned}
                   onClick={() => handleSubjectClick(subject)}
+                  locked={!lockExpired && (subject === 'biology' || subject === 'math')}
+                  timeLeft={lockTimeLeft}
+                  progress={lockProgress}
                 />
               </motion.div>
             ))}
@@ -700,9 +764,9 @@ const Index = () => {
               return (
                 <motion.button
                   key={subject}
-                  onClick={() => handleStartQuiz(subject)}
+                  onClick={!lockExpired && (subject === 'biology' || subject === 'math') ? undefined : () => handleStartQuiz(subject)}
                   className={cn(
-                    'p-4 rounded-xl border transition-all duration-300',
+                    'p-4 rounded-xl border transition-all duration-300 relative',
                     'hover:-translate-y-1 hover:shadow-lg',
                     subject === 'physics' && 'border-physics/30 hover:border-physics hover:bg-physics/5',
                     subject === 'chemistry' && 'border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5',
@@ -710,9 +774,15 @@ const Index = () => {
                     subject === 'math' && 'border-math/30 hover:border-math hover:bg-math/5',
                   )}
                   variants={cardVariants}
-                  whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-                  whileTap={{ scale: 0.95, transition: fastSpring }}
+                  whileHover={!lockExpired && (subject === 'biology' || subject === 'math') ? {} : { scale: 1.05, y: -4, transition: fastSpring }}
+                  whileTap={!lockExpired && (subject === 'biology' || subject === 'math') ? {} : { scale: 0.95, transition: fastSpring }}
                 >
+                  {!lockExpired && (subject === 'biology' || subject === 'math') && (
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl bg-black/30 backdrop-blur-[1px]">
+                      <p className="text-xs font-mono font-bold text-yellow-400 tabular-nums">{lockTimeLeft}</p>
+                      <p className="text-[9px] text-white/70">Locked</p>
+                    </div>
+                  )}
                   <span className="text-2xl">{info.icon}</span>
                   <p className="font-medium mt-2">{info.name} Quiz</p>
                   <p className="text-xs text-muted-foreground">10 random questions</p>

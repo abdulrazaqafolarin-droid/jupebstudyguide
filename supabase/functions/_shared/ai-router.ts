@@ -4,6 +4,51 @@ import { getActiveGeminiKey, logKeyUsage, markKeyExhausted, type GeminiUsageMeta
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const NVIDIA_BASE = "https://integrate.api.nvidia.com/v1";
 
+// ============================================================
+// Scratchpad — strip internal reasoning from AI responses
+// ============================================================
+
+function stripScratchpad(text: string): string {
+  const cleaned = text.replace(/<scratchpad[\s\S]*?>[\s\S]*?<\/scratchpad>/gi, "").trim();
+  if (cleaned !== text) console.log(`[Router] Stripped scratchpad: ${text.length} → ${cleaned.length} chars`);
+  return cleaned;
+}
+
+let _spState: "before" | "inside" | "after" = "before";
+let _spBuf = "";
+
+function resetScratchpadState() {
+  _spState = "before";
+  _spBuf = "";
+}
+
+function applyScratchpadFilter(chunk: string): string | null {
+  if (_spState === "after") return chunk;
+  _spBuf += chunk;
+  if (_spState === "before") {
+    const idx = _spBuf.toLowerCase().indexOf("<scratchpad");
+    if (idx === -1) {
+      _spState = "after";
+      const result = _spBuf;
+      _spBuf = "";
+      return result;
+    }
+    _spState = "inside";
+    _spBuf = _spBuf.slice(idx);
+  }
+  if (_spState === "inside") {
+    const closeIdx = _spBuf.toLowerCase().indexOf("</scratchpad>");
+    if (closeIdx !== -1) {
+      _spState = "after";
+      const result = _spBuf.slice(closeIdx + "</scratchpad>".length);
+      _spBuf = "";
+      return result || null;
+    }
+    return null;
+  }
+  return chunk;
+}
+
 export interface RouterMessage {
   role: string;
   content: string;
@@ -88,8 +133,8 @@ async function geminiFetch(
   body: any, apiKey: string, stream: boolean
 ): Promise<Response> {
   const endpoint = stream
-    ? `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${apiKey}`
-    : `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:generateContent?key=${apiKey}`;
+    ? `${GEMINI_BASE}/models/gemma-4-31b-it:streamGenerateContent?alt=sse&key=${apiKey}`
+    : `${GEMINI_BASE}/models/gemma-4-31b-it:generateContent?key=${apiKey}`;
   return fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -110,7 +155,8 @@ async function geminiCall(
     }
     const data = await res.json();
     const parts = data.candidates?.[0]?.content?.parts || [];
-    const text = parts.filter((p: any) => !p.thought).map((p: any) => p.text).join("").trim() || null;
+    const rawText = parts.filter((p: any) => !p.thought).map((p: any) => p.text).join("").trim() || null;
+    const text = rawText ? stripScratchpad(rawText) : null;
     const usageMeta: GeminiUsageMeta | undefined = data.usageMetadata ? {
       promptTokenCount: data.usageMetadata.promptTokenCount,
       candidatesTokenCount: data.usageMetadata.candidatesTokenCount,
@@ -236,7 +282,8 @@ async function tryKimi(
       return { text: null, latency: ms };
     }
     const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || null;
+    const rawText = data.choices?.[0]?.message?.content || null;
+    const text = rawText ? stripScratchpad(rawText) : null;
     if (text) recordSuccess("Kimi", ms);
     return { text, latency: ms };
   } catch (err) {
@@ -274,7 +321,8 @@ async function tryGroq(
       return { text: null, latency: ms };
     }
     const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || null;
+    const rawText = data.choices?.[0]?.message?.content || null;
+    const text = rawText ? stripScratchpad(rawText) : null;
     if (text) recordSuccess("Groq", ms);
     return { text, latency: ms };
   } catch (err) {
@@ -433,7 +481,7 @@ async function tryGeminiStream(
     try {
       const body = buildGeminiBody(systemPrompt, messages, opts);
       const res = await fetch(
-        `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${fallbackKey}`,
+        `${GEMINI_BASE}/models/gemma-4-31b-it:streamGenerateContent?alt=sse&key=${fallbackKey}`,
         { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal }
       );
       return { stream: res.ok ? res.body : null };
@@ -458,7 +506,7 @@ async function tryGeminiStreamWithFailover(
   try {
     const body = buildGeminiBody(systemPrompt, messages, opts);
     const res = await fetch(
-      `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${activeKey.apiKey}`,
+      `${GEMINI_BASE}/models/gemma-4-31b-it:streamGenerateContent?alt=sse&key=${activeKey.apiKey}`,
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal }
     );
     if (!res.ok) {
@@ -537,13 +585,18 @@ function parseSSE(line: string): string | null {
   const trimmed = line.trim();
   if (!trimmed.startsWith("data: ")) return null;
   const data = trimmed.slice(6).trim();
-  if (data === "[DONE]") return null;
+  if (data === "[DONE]") {
+    const leaked = _spBuf.trim();
+    if (leaked) console.warn(`[Router] Stream ended with ${leaked.length} unclosed scratchpad chars dropped`);
+    return null;
+  }
   try {
     const parsed = JSON.parse(data);
     const delta = parsed.choices?.[0]?.delta?.content;
-    if (delta) return delta;
-    const geminiText = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (geminiText) return geminiText;
+    if (delta) return applyScratchpadFilter(delta);
+    const parts = parsed.candidates?.[0]?.content?.parts || [];
+    const geminiText = parts.filter((p: any) => !p.thought).map((p: any) => p.text).join("").trim();
+    if (geminiText) return applyScratchpadFilter(geminiText);
   } catch { /* ignore parse error */ }
   return null;
 }
@@ -570,6 +623,7 @@ export async function routerStream(
     if (geminiResult.stream) {
       return new ReadableStream({
         async start(controller) {
+          resetScratchpadState();
           try {
             const reader = geminiResult.stream!.getReader();
             const decoder = new TextDecoder();
@@ -619,6 +673,7 @@ export async function routerStream(
     });
     return new ReadableStream({
       async start(controller) {
+        resetScratchpadState();
         try {
           const entry = await electedFallback;
           for (const ac of abortControllers) { if (ac !== entry.controller) try { ac.abort(); } catch {} }
@@ -682,6 +737,7 @@ export async function routerStream(
 
   return new ReadableStream({
     async start(controller) {
+      resetScratchpadState();
       try {
         const entry = await elected;
         recordSuccess(entry.provider, 0);

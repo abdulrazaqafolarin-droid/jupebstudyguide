@@ -1,0 +1,991 @@
+===============================================================================
+ JUPEB 2021 — PHYSICS OBJECTIVE
+===============================================================================
+
+Q1.
+A rock is thrown straight upward with an initial velocity of 24.5 m/s where the downward acceleration due to gravity is 10.0m/s2. What is the rock's displacement after 1.0s?
+  A. 9.81m
+  B. 19.5m
+  C. 24.5m
+  D. 29.4m
+
+Q2.
+Which of the following is the best statement of Pascal's Law?
+  A. Pressure on a confined liquid is transmitted equally in all directions
+  B. The pressure of a given volume of gas is directly proportional to its temperature
+  C. The pressure at the top and bottom of a fluid are the same
+  D. The volume of a gas is directly related to its temperature
+
+Q3.
+The period of a string mass system undergoing simple harmonic motion is T. If the amplitude of the string-mass system's motion is doubled, the period will be:
+  A. T
+  B. T
+  C. T
+  D. 2T
+
+Q4.
+What is the average translational kinetic energy of nitrogen molecules at 1600K?
+  A. 1.3 x 10-20 J
+  B. 2.31 x 10-20 J
+  C. 3.31 x 10-20 J
+  D. 4.31 x 10-20 J
+
+Q5.
+What is the critical angle of light passing from a material of index of refraction 1.54 to a material of index of refraction n = 1.33?
+  A. 0
+  B. 59.7
+  C. 55.7
+  D. 90.0
+
+Q6.
+An object with a mass of 5kg displaces 350ml of water. Which of the following is true?
+  A. The weight of this object is 7N
+  B. The weight of this object is 50N
+  C. The buoyant force on this object is 3
+  D. The buoyant force on this object is 3N
+
+Q7.
+If the earth is considered as a sphere of radius r and density p, the gravitational intensity at the surface is given as g = kry where k is a constant. What is the dimension of k?
+  A. ML-1T-2
+  B. ML-1T-2
+  C. ML-3T-2
+  D. M-1L3T-2
+
+Q8.
+Water is flowing in pipe $P_{1}$ of radius r, length L. Under a pressure difference at the two ends. If the flow rate has to be maintained for a pipe $P_{2}$ of radius 2r, determine the length of pipe $P_{2}$.
+  A. 2L
+  B. 8L
+  C. 4L
+  D. 16L
+
+Q9.
+A projectile C is fired at an angle of 50 above the horizontal. A projectile D is fired with the same speed at an angle of 40 above the horizontal. Assuming air resistance is negligible, which of the following is true?
+  A. C will reach a greater height and have a greater range than D
+  B. C will reach a greater height and have the same range as D
+  C. C will reach a greater height and have a shorter range than D
+  D. C will reach the same height and have the same range as D
+
+Q10.
+If the earth is assumed to be a uniform sphere of radius 6.4 x 106m and mass 6.0 x 1024kg, calculate the gravitational field strength at a point on the surface.
+  A. 6.67 m/s2
+  B. 9.77 m/s2
+  C. 8.76 m/s2
+  D. 4.34 m/s2
+
+Q11.
+A boy of mass 4kg climbs a flight of stairs 20m in 30 seconds. Calculate the work done per second.
+  A. 26.67 Js-1
+  B. 53.33 Js-1
+  C. 46.67 Js-1
+  D. --
+
+Q12.
+The rate of change of momentum is directly proportional to the applied force and acts in the direction of the applied force. This is a statement of:
+  A. Newton's second law of motion
+  B. Newton's first law of motion
+  C. Gravitational law of attraction
+  D. Kepler's law of planetary motion
+
+Q13.
+A beaker is filled with water at 4C. At one time the temperature is increased by a few degrees above 4C and at another time it is decreased by a few degrees below 4C. Which of the following is correct?
+  A. The level of water remains constant in each case
+  B. In first case water overflows while in second case its level reduces
+  C. In second case water overflows while in first case its level reduces
+  D. Water overflows in both cases
+
+Q14.
+Standing waves are produced by the interference of two travelling sinusoidal waves, each of frequency 100Hz. The distance from the second node to the fifth node is 60cm. The wavelength of each of the two original waves is:
+  A. 0.95m
+  B. 0.400m
+  C. 9.50m
+  D. 950m
+
+Q15.
+The stopping potential Vs was plotted against the frequency of radiation f on a Cartesian plane. Determine the y-intercept.
+  A. e
+  B. $W_{0}$/e
+  C. --
+  D. E
+
+Q16.
+A rocket of mass 100kg was launched from the surface of the earth so that it escaped the gravitational attraction of the earth. Calculate its escape velocity.
+  A. 1.12 x 104 m/s
+  B. 1.11 x 104 m/s
+  C. 6.00 x 103 m/s
+  D. 3.384 x 104 m/s
+
+Q17.
+A body of mass 10kg is acted on by a constant force of 8N for 5 seconds. Calculate the kinetic energy gained by the body at the end of the time.
+  A. 40.0 J
+  B. 60.0 J
+  C. 70.0 J
+  D. 80.0 J
+
+Q18.
+A swinging pendulum has which of the following at the middle of its arc?
+  A. Maximum kinetic energy
+  B. Maximum potential energy
+  C. Minimum kinetic energy
+  D. Minimum mechanical energy
+
+Q19.
+Making a complete circle in 40s, what is the speed in a horizontal circle of radius 70m?
+  A. 28.0 m/s
+  B. 5.55 m/s
+  C. 11.0 m/s
+  D. 17.3 m/s
+
+Q20.
+The thermometer that depends on the electromotive force change with temperature of two metals joined together is:
+  A. Constant-volume gas
+  B. Resistance
+  C. Thermoelectric
+  D. Mercury in glass
+
+Q21.
+A JUPEB student stands 100cm from a mirror to look at his appearance before going to school. What is half his initial distance?
+  A. 150cm
+  B. 100cm
+  C. 50cm
+  D. 175cm
+
+Q22.
+Find the pressure of two moles of ideal gas at a temperature of 27C and volume 10-2m3.
+  A. 4.99 x 105 N/m2
+  B. 9.80 x 105 N/m2
+  C. 4.98 x 105 N/m2
+  D. 9.80 x 105 N/m2
+
+Q23.
+A near sighted student has a near point of 0.1m and a focal length of 5.0cm. What is the student's far point?
+  A. 0.200m
+  B. 8,000m
+  C. 0.125m
+  D. 2.100m
+
+Q24.
+The production of a pure spectrum could easily be achieved using a:
+  A. Triangular prism only
+  B. Triangular prism with two concave lenses
+  C. Glass prism with two convex lenses
+  D. Triangular prism with a pin
+
+Q25.
+The plane of a conducting loop is oriented parallel to the x-y plane. A magnetic field is directed in the z-direction. Which one of the following actions will NOT change the magnetic flux through the loop?
+  A. Decrease the strength of the magnetic field
+  B. Increase the area of the loop
+  C. Rotate the loop about an axis directed in the y-direction
+  D. Rotate the loop about an axis directed in the z-direction
+
+Q26.
+The attractive force exerted between two charges of equal magnitude is 4.0 x 10-5N. If the magnitude of each charge is 2.0microC, how far apart are the charges?
+  A. 0.95m
+  B. 0.400m
+  C. 9.50m
+  D. 950m
+
+Q27.
+B is the angle of the normal to the plane of the magnetic coil with respect to the magnetic field. According to Faraday's law, which of the following changes will produce an emf in the coil? I. A (area) is decreased II. B (field strength) is decreased III.  (flux) is decreased
+  A. I only
+  B. I and II only
+  C. II and III only
+  D. I, II and III
+
+Q28.
+What is the internal energy of 1.0 mol of an ideal monatomic gas at 273K?
+  A. 3.4 x 103 J
+  B. 3.4 x 10-3 J
+  C. 3.4 x 102 J
+  D. 3.4 x 10-2 J
+
+Q29.
+The ratio of electrostatic force F to gravitational force Fg between two protons each of charge e and mass m, at a distance d is:
+  A. e2/(4pi0m2)
+  B. e2Gm2
+  C. 4pi0Gm2/e2
+  D. e2/(4pi0Gm2)
+
+Q30.
+A circuit has a resistance of 200ohm. The resistance of the circuit can be reduced to 120ohm by adding which of the following to the circuit?
+  A. 80ohm resistor in series
+  B. 150ohm resistor in parallel
+  C. 240ohm resistor in parallel
+  D. 300ohm resistor in series
+
+Q31.
+The major function of a dielectric in a capacitor is to:
+  A. Increase the capacitance of the capacitor
+  B. Increase the charge of the capacitor
+  C. Decrease the capacitance of the capacitor
+  D. Decrease the charge of the capacitor
+
+Q32.
+If an ebonite rod is rubbed with fur, the rod and fur will respectively be:
+  A. Positively charged and negatively charged
+  B. Negatively charged and positively charged
+  C. Positively charged and positively charged
+  D. Negatively charged and negatively charged
+
+Q33.
+Two straight conductor wires of length 4m carry current of 1A each. What is the force on the wire if the wires are 50mm apart?
+  A. 1.6 x 10-4 N
+  B. 1.6 x 10-5 N
+  C. 1.6 x 10-4 N
+  D. 1.6 x 105 N
+
+Q34.
+A current of 0.5A flows through a resistor when connected to a 40V battery. How much energy is dissipated in 2 minutes?
+  A. 1200 J
+  B. 1500 J
+  C. 2400 J
+  D. 96000 J
+
+Q35.
+Determine the inductive reactance when a 30.0mH inductor with negligible resistance is connected to a 1.30 x 103Hz oscillator.
+  A. 39.0 ohm
+  B. 122.5 ohm
+  C. 245.0 ohm
+  D. 390000.0 ohm
+
+Q36.
+The estimated biological effect of absorbed ionizing radiation energy is measured in which of the following units?
+  A. Becquerel
+  B. Gray
+  C. Sieverts
+  D. Joule
+
+Q37.
+The velocity of electrons emitted from the surface of a metal of work function 4.92eV when irradiated is 2.084 x 107m/s. Determine the wavelength of the radiation.
+  A. 0.8nm
+  B. 1.0nm
+  C. 1.1nm
+  D. 1.2nm
+
+Q38.
+Which of the following statements is true regarding a radioactive isotope that decays by emitting a gamma ray?
+  A. The resulting isotope has a different Z value
+  B. The resulting isotope has the same A value and the same Z value
+  C. The resulting isotope has a different A value
+  D. Both A and Z are different
+
+Q39.
+An electron in the n = 5 energy level of hydrogen undergoes a transition to the n = 3 energy level. Determine the wavelength of the photon the atom emits in the process.
+  A. 1.28 x 10-6 m
+  B. 2.37 x 10-6 m
+  C. 4.22 x 10-7 m
+  D. 3.04 x 10-6 m
+
+Q40.
+Which of the following are true regarding forces between a proton and a neutron inside the nucleus? I. Attractive in nature II. Electrical in nature III. Extremely short range IV. Strongest forces in nature
+  A. I, II and IV
+  B. II and III
+  C. I, II and III
+  D. I, III and IV
+
+Q41.
+The ionization energy for a hydrogen atom in ground state is 13.6eV. A proton of energy 4.53eV strikes a hydrogen atom in ground state. The hydrogen atom will:
+  A. Not be excited to a higher energy level
+  B. Be excited to the first excited state
+  C. Be excited to the third excited state
+  D. Be ionized
+
+Q42.
+Which of the following is true regarding X-rays? I. X-rays do not consist of electrically charged particles II. X-rays are not deflected in an electric or magnetic field III. The wavelength of X-rays is longer than that of visible light
+  A. I and II only
+  B. I, II and III
+  C. I only
+  D. None
+
+Q43.
+What is the equivalent of 1.007277 amu in MeV?
+  A. 1.60 x 10-19
+  B. 6.02 x 1023
+  C. 931.48
+  D. 937.77
+
+Q44.
+The maximum kinetic energy of the photoelectrons emitted from a metal surface is 0.34eV. If the work function of the metal is 1.83eV, find the stopping potential.
+  A. 2.17V
+  B. 1.49V
+  C. 1.09V
+  D. 0.34V
+
+Q45.
+Natural radioactivity consists of which of the following emissions? I. alpha-particles II. beta-particles III. X-rays IV. gamma-rays
+  A. I and III only
+  B. I, II and III only
+  C. I and II only
+  D. I, II and IV only
+
+Q46.
+Microwave is an example of electromagnetic wave while radio wave is an example of wave. Which of the above phrases are true?
+  A. I, II and IV
+  B. II and III
+  C. I, II and III
+  D. None
+
+Q47.
+What occurs in curved mirrors when all the reflected rays do not pass through a single focus?
+  A. Lateral inversion
+  B. Rectilinear propagation
+  C. Spherical aberration
+  D. Diffused reflection
+
+Q48.
+A body of mass 5kg moving on a level frictionless surface with a velocity of 2m/s collides with another body of mass 3kg moving with the same velocity in the opposite direction. If the collision is completely inelastic, find the common velocity.
+  A. 5.0 m/s
+  B. 0.5 m/s
+  C. 0.05 m/s
+  D. 2.0 m/s
+
+Q49.
+A solid of weight 0.60N is totally immersed in oil and water respectively. If the upthrust in oil is 0.21N and the relative density of oil is 0.875, determine the upthrust experienced by the solid in water.
+  A. 0.24N
+  B. 24N
+  C. 240N
+  D. 0.81N
+
+Q50.
+A body of mass 5kg is executing simple harmonic motion with amplitude of 20mm. If it has a period of oscillation of 1.57s, what is its maximum velocity?
+  A. 0.32 m/s
+  B. 0.08 m/s
+  C. 4.0 m/s
+  D. 1.25 m/s
+
+===============================================================================
+ JUPEB 2021 — PHYSICS THEORY
+===============================================================================
+
+Q1.
+(a) Describe each of the following:
+i. A perfectly elastic collision
+ii. A perfectly inelastic collision
+
+(b) A cricket bat strikes a ball of mass 0.6kg travelling towards it. The ball initially hits the bat at a speed of 25m/s and returning along the same path with the same speed. The time of impact is 0.0030s.
+i. Determine the change in momentum of the cricket ball.
+ii. Calculate the force exerted by the bat on the cricket ball.
+iii. State whether the collision in elastic or inelastic and give reasons
+
+Q2.
+(a) Define the following and give an example each:
+i. Transverse wave
+ii. Longitudinal waves
+
+(b) State four characteristics of a wave
+
+(c) i. A carnot engine operates between two reservoirs at 450K and 600K. What is the coefficient of performance of the engine?
+ii. A carnot engine whose low temperature reservoir is at 200K has an efficiency of 45%. By how much must the temperature of the high temperature reservoir be raised if the efficiency is to be increased to 60%, the temperature reservoir being unchanged?
+
+Q3.
+(a) Briefly explain the term "LASER" and state four of its applications
+
+(b) Estimate the change in energy ?E of an electron that jumps from the L shell to the K shell of Molybdenum (Z = 42)
+
+(c) A beam of neutrons moving with a speed of 1450m/s is diffracted from a crystal of salt which has an interplanar spacing of 0.282nm.
+i. Compute the De Broglie's wavelength of the neutrons
+ii. Calculate the angle of the first interference minimum
+
+Q4.
+A stone projected horizontally with a velocity of 15ms?? from the top of building lands at a horizontal distance of 60m from the building. Calculate the height of the building
+
+### PHY 002: HEAT, WAVES AND OPTICS
+
+Q5.
+$\mathrm{(a)}$ Write an expression each for capacitive reactance and inductive reactance
+
+(b) The figure below shows a 12V power supply with negligible internal resistance connected to a uniform metal wire AB. The wire has length 1.00m and resistance 10?. Two resistors of resistance 4.0? and 2.0? are connected in series across the wire.
+
+Diagram
+
+Currents I?, I? and I? in the circuit are as shown in the circuit above.
+I. State a relationship between I?, I? and I?
+II. Calculate I?
+III. Calculate the ratio of power in the metal wire to the power in the series resistor.
+IV. Calculate the potential difference (p.d) between the points between the two series resistors.
+
+### PHY 004: MODERN PHYSICS
+
+Q6.
+A body of mass 5kg moving on a level frictionless surface with a velocity of 2m/s collides with another body of mas 3kg moving with the same velocity in opposite direction. If the collision is completely inelastic, find the common velocity
+
+Q7.
+(a) i. State Faraday's law of electromagnetic induction
+ii. A RLC circuit is used in a radio to tune into the radio FM station broadcasting at 94.4MHz. The resistance in the circuit is 12? and the inductance is 5.3?H. What capacitance should be used?
+
+(b) A step up transformer has 240V input which is transformed to 150kV output. The primary coil has 70 loops and draws a current of 20A when in use.
+(i) What is the number of loops in the secondary coil?
+(ii) Calculate the current output
+
+(c) How much energy is stored in a 0.008mH inductor when a 30.0A current flows through it?
+
+Q8.
+(a) i. Define the terms: work, energy and power
+ii. Calculate the power of a pump which lifts 100kg of water through a vertical distance of 15 meters in 3 seconds
+
+(b) i. Explain the term "coefficient of restitution"
+ii. A ball is dropped from a height above the tile floor and rebounds to a height of 0.65h. Find the coefficient of restitution between the ball and the floor.
+
+Q9.
+(a) i. State any four postulates of kinetic theory of gas
+ii. What is the average translational energy of an oxygen molecule for such a particle in air at 350K?
+
+(b) A plane progressive wave is represented by the equation y = 3.0 sin(300?t ? 0.3?x). If all the variable is in S.I units, calculate the:
+i. Amplitude
+ii. Frequency
+iii. Wavelength
+iv. Speed of the wave
+
+### PHY 003: ELECTRICITY AND MAGNETISM
+
+Q10.
+$\mathrm{(a)}$ i. What do you understand by the term "binding energy"
+ii. Calculate the binding energy per nucleon of the Helium nucleus ??He. (mass of proton = 1.0073u, mass of neutron = 1.0073u, mass of helium nucleus = 4.0015u)
+
+(b) What potential difference is required between the anode and cathode of a vacuum tube if the electrons are to reach a velocity of 5.0 \times 10^{6}$ms???
+ii. If the electron current in (b) I is 10.0mA, what is the power dissipated at the anode?
+(e/m = 1.76 \times 10^{11}$C kg??)
+
+(c) i. Draw the circuit symbol of p-n-p transistor
+ii. Explain the term full wave rectification
+
+===============================================================================
+ JUPEB 2021 — CHEMISTRY OBJECTIVE
+===============================================================================
+
+Q0.
+The reproducibility or repeatability of a measurement is termed ________.
+  A. accuracy
+  B. precision
+  C. range
+  D. confidence interval
+
+Q1.
+The alpha (?-) scattering experiment is synonymous with ________.
+  A. J.J. Thomson
+  B. Ernest Rutherford
+  C. James Chadwick
+  D. Henry Moseley
+
+Q2.
+According to Bronsted-Lowry, an acid is a/an ________.
+  A. proton acceptor
+  B. proton donor
+  C. electron acceptor
+  D. electron donor
+
+Q3.
+Isotopes of hydrogen differ from one another in ________.
+  A. atomic number
+  B. number of protons
+  C. number of electrons
+  D. number of neutrons
+
+Q4.
+A solution of known concentration is termed ________.
+  A. standard solution
+  B. unsaturated solution
+  C. saturated solution
+  D. supersaturated solution
+
+Q5.
+Which of the following is the reason why CCl? is non-polar?
+  A. The polar bonds cancel each other
+  B. The molecule is non-linear
+  C. The molecule is covalent
+  D. Small electronegativity difference between C and Cl
+
+Q6.
+In what period of the periodic table can the element with the electronic configuration $$1s^{2}$$ $$2s^{2}$$ $$2p^{6}$$ $$3s^{2}$$ $$3p^{6}$$ $$4s^{2}$$ $3d?$ be found?
+  A. 4
+  B. 3
+  C. 2
+  D. 1
+
+Q7.
+When a proton and an electron beam are subjected to the same strong electric field, the electron beam is deflected at a greater angle than the proton beam because ________.
+  A. Electron beam has a negative charge while proton beam has a positive charge
+  B. An electron is heavier than a proton
+  C. An electron is lighter than a proton
+  D. An electron has more electrical energy than a proton
+
+Q8.
+X?$\mathrm{(g)}$ ? X??$\mathrm{(g)}$ + e?. The energy utilized in the equation is typical of ________.
+  A. 1st electron affinity
+  B. 1st ionization energy
+  C. 2nd ionization energy
+  D. 2nd electron affinity
+
+Q9.
+Which of these electronic configurations belong to an element in period 3 of the periodic table?
+  A. [Ne]$3s?$
+  B. $$1s^{2}$$
+  C. [He]$$2s^{2}$2p?$
+  D. [Ar]$$4s^{2}3d^{3}$$
+
+Q10.
+0.200 mole of a hydrocarbon undergoes complete combustion to give 35.2 g of C$\ce{$\ce{$O_{2}$}$}$ and 14.4 g of $\ce{H2O}$ as the only products. What is the molecular formula of the hydrocarbon?
+  A. $\ce{C2H_{4}}$
+  B. $\ce{C2H_{6}}$
+  C. $\ce{C4H_{4}}$
+  D. $\ce{C4H_{8}}$
+
+Q11.
+Which of the following is the best evidence of the presence of an ionic bonding in an unknown substance? The substance conducts electricity ________.
+  A. in the solid state and in aqueous solution
+  B. when molten and in aqueous solution
+  C. in the solid and when molten
+  D. when molten but not in the solid state
+
+Q12.
+Decomposition reaction has a half-life that does not depend on the initial concentration of the reactant. What is the order of the reaction?
+  A. Zero order
+  B. First order
+  C. Second order
+  D. Pseudo-first order
+
+Q13.
+Fucoserratene, a hydrocarbon usually identified as a sexual pheromone of the brown seaweed Fucus serratus, has an empirical formula of $\ce{C2H_{3}}$. If the experimentally determined molecular weight of this substance is 108 g mol??, the molecular formula of fucoserratene is ________.
+  A. $\ce{C4H_{6}}$
+  B. $\ce{C6H_{9}}$
+  C. $\ce{C8H_{12}}$
+  D. $\ce{C10H_{15}}$
+
+Q14.
+Atoms of elements principally go into bonding in order to achieve ________.
+  A. stability
+  B. covalency
+  C. electrovalency
+  D. attraction
+
+Q15.
+In a chemical reaction, the heat change at constant pressure is referred to as ________.
+  A. entropy
+  B. enthalpy
+  C. free energy
+  D. bond energy
+
+Q16.
+In a given chemical reaction, the exponent$\mathrm{(s)}$ of the concentration terms with respect to the reactant species as determined experimentally is/are called ________.
+  A. molecularity
+  B. order of reaction
+  C. elementary step
+  D. rate law
+
+Q17.
+Which of the following is used as detector for radiations from nuclear processes?
+  A. Cyclotron
+  B. Particle accelerator
+  C. Geiger counter
+  D. Electron volt system
+
+Q18.
+The following represents a plot obtained from an experiment to graphically determine the activation energy of a reaction. Which of the following is a measure of the slope? (See the graph in the question.)
+
+Q19.
+Equal number of moles of He, Ar and Ne gases are placed in a glass vessel at room temperature. If the vessel has a pinhole-sized leak, which of the following will be true regarding the relative values of the partial pressures of the gases remaining in the vessel after some of the gas mixture has effused?
+  A. PHe > PNe > PAr
+  B. PAr > PNe > PHe
+  C. PNe > PAr > PHe
+  D. PAr > PHe > PNe
+
+Q20.
+Sodium is not suitable as a sacrificial anode to prevent corrosion of underground iron pipes because ________.
+  A. it would react with underground water quickly
+  B. it has less standard electrode potential than that of iron
+  C. it will form an oxide coating that prevents further corrosion
+  D. it is not a transition metal
+
+Q21.
+A solid which contain more than one type of bonding is ________.
+  A. ice
+  B. diamond
+  C. iron
+  D. calcium oxide
+
+Q22.
+What is the coordination number of the coordination compound ?
+  A. 3
+  B. 4
+  C. 6
+  D. 8
+
+Q23.
+All the following will exhibit common ion effect except addition of ________.
+  A. sodium acetate to solution of acetic acid
+  B. sodium chromate to a solution of lead chromate
+  C. hydrochloric acid to a saturated solution of silver chloride
+  D. hydrochloric acid to a saturated solution of silver nitrate
+
+Q24.
+White phosphorus burns in air; it produces phosphorus (V) oxide. What is ?H for the equation?
+$\ce{P4O_{10}}$$\mathrm{(s)}$ ? $\ce{$\ce{$P_{4}$}$}$$\mathrm{(s)}$ + 5$\ce{$\ce{O2}$}$(g)
+  A. +3010
+  B. -3010
+  C. +602
+  D. -602
+
+Q25.
+Water gas is a mixture of two gases namely ________.
+  A. CO and NO
+  B. C$\ce{$\ce{$O_{2}$}$}$ and $\ce{$\ce{$H_{2}$}$}$
+  C. CO and $\ce{$\ce{$H_{2}$}$}$
+  D. C$\ce{$\ce{$O_{2}$}$}$ and $\ce{H2O}$
+
+Q26.
+Which of the following is/are true of alkali metals?
+(I) They have the largest size in their respective period
+(II) They have weak metallic bonding
+(III) They are soft and they have low melting point
+  A. I only
+  B. II only
+  C. I, II and III
+  D. I and III only
+
+Q27.
+The following statements are properties of Group 17 elements except ________.
+  A. they have a valency of -1
+  B. they belong to the p-block of the periodic table
+  C. they are all non-metals
+  D. are reducing agents with fluorine having the highest reducing power
+
+Q28.
+Transition elements usually exhibit variable oxidation states because ________.
+  A. they are metals
+  B. they are employed as catalysts
+  C. their d-electrons are involved in bonding
+  D. they have high melting and boiling points
+
+Q29.
+The highest oxidation number of iodine is ________.
+  A. -1
+  B. 0
+  C. +5
+  D. +7
+
+Q30.
+Which of the following does not exhibit allotropy?
+  A. Sulphur
+  B. Phosphorus
+  C. Carbon
+  D. Nitrogen
+
+Q31.
+Which of the following interhalogen compounds does not exist?
+  A. ClBr?
+  B. IF?
+  C. ClF?
+  D. ICl?
+
+Q32.
+Why is the radius of a chloride ion larger than the radius of a sodium ion?
+  A. A chloride ion has one more occupied electron shell than a sodium ion
+  B. Chlorine has a higher proton number than sodium
+  C. Ionic radius increases regularly across the third period
+  D. Sodium is a metal, chloride is a non-metal
+
+Q33.
+Which group of particles is in order of increasing size?
+
+Q34.
+Diagonal relationship exists between the following pairs except ________.
+  A. Be and Al
+  B. B and Si
+  C. Li and Mg
+  D. Mg and Al
+
+Q35.
+Chlorine reacts with methane in the presence of sunlight through a process known as free radical reaction. Which equation represents the propagation step?
+  A. C$\ce{$\ce{$H_{4}$}$}$ + Cl? ? C$\ce{$\ce{$H_{3}$}$}$? + HCl
+  B. C$\ce{$\ce{$H_{3}$}$}$? + C$\ce{$\ce{$H_{3}$}$}$? ? $\ce{C2H_{6}}$
+  C. C$\ce{$\ce{$H_{3}$}$}$? + Cl? ? C$\ce{H3Cl}$
+  D. Cl? ? 2Cl?
+
+Q36.
+What is the product of the reaction between bromine and ethane gas?
+  A. 2-bromoethane
+  B. bromoethane
+  C. 1,2-dibromoethane
+  D. 1,1-dibromoethane
+
+Q37.
+The IUPAC name of the compound  is ________.
+  A. 1-pentyn-4-oic acid
+  B. pentyn-1-oic acid
+  C. 5-pentyn-1-oic acid
+  D. pent-4-yn-1-oic acid
+
+Q38.
+A family of organic compound which follows a regular structural pattern such that each successive member differs from the preceding one by a ?C$\ce{$\ce{$H_{2}$}$}$? group is termed ________.
+  A. homologue
+  B. organic series
+  C. homologous series
+  D. Isotopic series
+
+Q39.
+The hybridization of the carbon atom in ethyne is ________.
+  A. sp?
+  B. sp
+  C. sp?
+  D. sp?
+
+Q40.
+The following types of isomerism are found in aliphatic alkanes except ________ isomerism.
+  A. Geometric
+  B. Position
+  C. Chain
+  D. Structural
+
+Q41.
+How many isomers are possible for a hydrocarbon with the molecular formula ?
+  A. 2
+  B. 3
+  C. 4
+  D. 5
+
+Q42.
+What compounds are formed when sodium metal reacts with propanol?
+  A. Sodium propoxide and hydrogen
+  B. Sodium oxide and propene
+  C. Sodium hydroxide and propene
+  D. Sodium methoxide and water
+
+Q43.
+Which of the following equations represents the reaction of group 1 metal hydrides (MH) with water?
+  A. MH + $\ce{H2O}$ ? MO + 3H
+  B. MH + $\ce{H2O}$ ? MOH + $\ce{$\ce{$H_{2}$}$}$
+  C. MH + $\ce{H2O}$ ? MOH + 2H
+  D. MH + $\ce{H2O}$ ? M? + OH? + $\ce{$\ce{$H_{2}$}$}$
+
+Q44.
+What is the geometric shape and oxidation number of cobalt in the complex ion ?
+  A. Tetrahedral, +3
+  B. Octahedral, -3
+  C. Octahedral, +3
+  D. Tetrahedral, -3
+
+Q45.
+What type of reaction occurs between propene and hydrogen bromide solution to produce a mixture of 2-bromopropane and 1-bromopropane?
+  A. Addition
+  B. Substitution
+  C. Elimination
+  D. Displacement
+
+Q46.
+How many count ions are there in the coordination compound ?
+  A. 1
+  B. 2
+  C. 5
+  D. 6
+
+Q47.
+The product of oxidation of secondary alcohols with  is a/an ________.
+  A. carboxylic acid
+  B. ester
+  C. aldehyde
+  D. ketone
+
+Q48.
+The following are reducing sugars except ________.
+  A. fructose
+  B. sucrose
+  C. maltose
+  D. cellulose
+
+Q49.
+How many isomeric forms are there for the molecular formula ?
+  A. 4
+  B. 1
+  C. 2
+  D. 3
+
+===============================================================================
+ JUPEB 2021 — CHEMISTRY THEORY
+===============================================================================
+
+Q1.
+Using chemical equations only, show what happens when amphoteric behaviour of aluminium in Group 13. [2 Marks]
+
+(ii). Using chemical equations only, describe what happens when fluorine and bromine are separately added to water. Name the type of reaction that occurs. [3]
+
+(bi). What is meant by diagonal relationship?
+(ii). Give two properties of lithium that illustrates its diagonal relationship with magnesium.
+(ci). Mention two (2) consequences of ozone layer depletion [3 Marks]
+**[Total = 10 Marks]**
+
+Q2.
+Write the name and structures of the major organic product from each of the following reactions.
+(i). C$\ce{H3C}$ON$\ce{$\ce{H2}$}$ on heating with dilute HCl
+(ii). C$\ce{H3C}$$\ce{H2C}$$\ce{H2C}$ON$\ce{$\ce{H2}$}$ on heating with LiAl$\ce{$\ce{H4}$}$
+(iii). C$\ce{H3C}$$\ce{H2C}$OOH on refluxing with SOCl?
+(iv). C$\ce{H3C}$OOC$\ce{H2C}$H? on shaking with $\ce{H2N}$N$\ce{$\ce{H2}$}$
+
+(bi). Name four types of addition reactions an alkene would undergo. [4 Marks]
+
+(ii). Write the structures of the following compounds: butoxypropane and N-propylpropanamide. [4 Marks]
+
+(c). Potassium manganate (VII) solution (potassium permanganate) reacts with but-2-ene in the cold. Describe the colour change in the potassium permanganate (VII) solution under: (i). acidic conditions (ii). alkaline conditions [2 Marks]
+
+Q3.
+Give three characteristics of homologous series which form such series. [4 Marks]
+
+(ii). Name three classes of compounds which form such series.
+
+(iii). Define the term hybridization.
+
+(b). A saturated organic compound A containing two carbon atoms reacted with a sweet ethanoic acid in the presence of a mineral acid to form a compound B with a sweet smell.
+(i). Name the functional group present in A.
+(ii). Draw the structure of A.
+(iii). Write a chemical equation to show the formation of B.
+(iv). Name the compound B.
+(ci). Mention two types of bond scission organic compounds undergo.
+(ii). What type of organic reagents result from each scission? [2 Marks]
+
+Q4.
+Write balanced equations for the reactions of sodium oxide and phosphorus with oxygen and chlorine respectively. [4 Marks]
+
+(ii). Write chemical equations to illustrate what happens when each oxide in (ai) is in contact with water.
+(iii). Write chemical equations to illustrate what happens when water is added to the chlorides of the elements in (ai) above. [4 Marks]
+
+(b). Consider the coordination compound, [Co(NH?)?]Cl?.
+(i). State the primary valency of the central metal ion.
+(ii). State the secondary valency of the central metal ion.
+(iii). How many moles of silver chloride will be precipitated when 1 mole of the compound is dissolved in water? [4]
+
+(ci). Which ions would be formed when the compound is reacted with silver nitrate?
+(iv). Arrange the halogen hydrides in order of increasing acidic strength
+(ii). Account for the order in (ci) above. [2 Marks]
+
+---
+
+## CHM 004: ORGANIC CHEMISTRY
+
+Q5.
+Write the van der Waal's equation and state all the parameters. [2 Marks]
+
+(ii). If sulphur (IV) oxide were ideal gas, the pressure at 0.0 ?C occupying 22.4 L would be 1.0 atm (22.4 L is the molar volume of an ideal gas at STP). Use van der Waal's equation to estimate the pressure of this volume of 1.0 mole = S$\ce{$\ce{O2}$}$ at 0.0 ?C. [a = 6.865 L? atm.mol??; b = 0.05679 $L/mol$]. [2 Marks]
+
+(b). Briefly account for the following observation: when a solution of sodium iodide and potassium nitrate is substituted for potassium nitrate, a visible reaction is observed and a precipitate is formed.
+(ci). Differentiate between natural and induced radioactivity.
+(ii). The isotope $\ce{^90Sr}$?? is one of the extremely hazardous species in the fallout from a nuclear fission explosion. A 0.600 g sample diminishes to 0.395 g in ten years. Calculate the half-life. [4 Marks]
+**[Total = 10 Marks]**
+
+Q6.
+A compound X is known to contain C, H and O only. When it is burnt as the only products. It is given out as the only products. It is found that 0.46 g of X gives 0.88 g of carbon dioxide and 0.54 g of water. Find the empirical formula of X. [4 Marks]
+
+(bi). Differentiate between extensive and intensive properties.
+(ii). Give one example each of extensive and intensive properties. [2 Marks]
+
+(ci). State one information that each of the three quantum numbers n, l and m give about the atomic orbital.
+(ii). Identify the orbitals described by the following quantum numbers and arrange them in order of increasing energy.
+n = 4 l = 1 m = 0
+n = 3 l = 2 m = -1
+n = 4 l = 2 m = 2
+n = 3 l = 1 m = 0 [4 Marks]
+
+---
+
+## CHM 002: PHYSICAL CHEMISTRY
+
+Q7.
+Distinguish between ionization energy and electron affinity giving an example in each case. [2 Marks]
+
+(b). Briefly describe and give reasons for the observed trends for the following atomic properties in the periodic table.
+(i). Atomic size (ii). Ionization energy (iii). Electron affinity [3 Marks]
+
+(c). Balance the following oxidation-reduction reactions, which occurs in acidic solution, using half reaction method.
+$\ce{Cr2O_{7}}$??(aq) + Cl?(aq) ? Cr??(aq) + Cl?$\mathrm{(g)}$ [3 Marks]
+
+(d). Assign oxidation number to each atom in the following reactions and hence identify the oxidizing agent and reducing agent in each reaction.
+(i). 2Al$\mathrm{(s)}$ + 3$\ce{H2S}$O?(aq) ? Al?(SO?)?(aq) + 3$\ce{$\ce{H2}$}$(g)
+(ii). PbO$\mathrm{(s)}$ + CO$\mathrm{(g)}$ ? Pb$\mathrm{(s)}$ + C$\ce{$\ce{O2}$}$(g) [2 Marks]
+
+Q8.
+State the law of mass action. [3 Marks]
+
+(ii). Using relevant illustrative equation, distinguish between the reaction quotient (Q) and equilibrium constant (K).
+
+(b). 70 g of ethanol and 30 g of were mixed to form a solution. If the vapour pressure of ethanol is 75 mmHg and methanol is 22 mmHg at 20 ?C, calculate the (i) mole fraction of ethanol and methanol in the solution (ii). pressure of each component and total pressure of the solution. [4 Marks]
+
+(c). The table below contains standard electrode potential information which should be used, as appropriate, in answering the following questions:
+
+| Half-equation | E?/V |
+|---|---|
+| I?(aq) + 2e? ? 2I?(aq) | +0.54 |
+| Fe??(aq) + e? ? Fe??(aq) | +0.77 |
+| V$\ce{$\ce{O2}$}$?(aq) + 2H? + e? ? VO??(aq) + $\ce{H2O}$(l) | +1.00 |
+| Cl?$\mathrm{(g)}$ + 2e? ? 2Cl?(aq) | +1.36 |
+
+A reaction occurs when gaseous chlorine is passed into iron (II) sulphate solution.
+(i). Write half equations and the cell equation for the reaction.
+(ii). Calculate the value of the standard cell e.m.f for the reaction [3 Marks]
+**[Total = 10 Marks]**
+
+---
+
+## CHM 003: INORGANIC CHEMISTRY
+
+===============================================================================
+ JUPEB 2021 — CHEMISTRY PRACTICAL
+===============================================================================
+
+Q1.
+Quantitative Analysis
+
+You are provided with the following:
+
+**A** is a solution of HCl containing 0.25 mole in 500 cm? of solution.
+
+**B** is a solution containing a mixture of NaHC$\ce{$\ce{O3}$}$ and $\ce{Na2C}$O?.
+
+**$\mathrm{(a)}$.** Put **A** into the burette and titrate against 25 cm? portion of **B** using 2 to 3 drops of phenolphthalein indicator. Stop titration just at the point when there is a slight permanent colour change of phenolphthalein indicator used, and record the volume of **A** used with this indicator. Then, add 2 to 3 drops of methyl orange indicator to the same titration mixture in the conical flask and continue your titration until the end point is reached.
+
+Record the volume of **A** used at the end point of methyl orange indicator. Repeat the same titration procedure 3 times.
+
+**Determine:**
+
+**(i).** Average volume of acid used for neutralizing $\ce{Na2C}$O?.
+
+**(ii).** Average volume of acid used with NaHC$\ce{$\ce{O3}$}$.
+
+**Equations involved in the reactions are:**
+
+$\ce{Na2C}$O??aq? + HCl?aq? ? NaHC$\ce{$\ce{O3}$}$?aq? + NaCl?aq?
+
+NaHC$\ce{$\ce{O3}$}$?aq? + HCl?aq? ? NaCl?aq? + $\ce{H2O}$?l?
+
+**(b).** From the information provided in $\mathrm{(a)}$ and your results, calculate the:
+
+**(i).** concentration of $\ce{Na2C}$O? in moldm?? in solution **B**.
+
+**(ii).** concentration of $\ce{Na2C}$O? in gdm?? in solution **B**;
+
+**(iii).** mole of NaHC$\ce{$\ce{O3}$}$ in 25 cm? of solution used;
+
+**(iv).** amount in mole of NaHC$\ce{$\ce{O3}$}$ in 1 dm? of solution **B**;
+
+**(v).** amount in g of NaHC$\ce{$\ce{O3}$}$ in 1 dm? of solution **B**; and
+
+**(vi).** Percentage of $\ce{Na2C}$O? in 1 dm? of solution **B**, If 1 dm? of solution B contains 12 g of a mixture of $\ce{Na2C}$O? and NaHC$\ce{$\ce{O3}$}$.
+
+[10 Marks]
+
+---
+
+Q2.
+Qualitative Analysis
+
+You are provided with sample **C**, a mixture of 3 simple salts and are requested to perform the following experiments to identify the acidic radicals. Follow the instructions provided. Present your report in a tabular form with the headings: Test, Observation and Inference. Ensure your test tube is clean and dry.
+
+**Test 1:** Introduce C into the test tube provided, add 2 M HCl. Test the gas evolved with lime water.
+
+**Test 2:** Introduce C into the test tube provided, add conc. $\ce{H2S}$O?. Test the gas evolved with conc. Ammonia under fume cupboard. Thereafter, add minimum Mn$\ce{$\ce{O2}$}$ and heat.
+
+**Test 3:** Introduce C into the test tube provided, add conc. $\ce{H2S}$O?, introduce copper turnings and heat.
+
+For each test carried out, give a brief description of the chemical reactions involved showing equations where relevant.
+
+[10 Marks]
+
+===============================================================================
+ END OF 2021 QUESTIONS
+===============================================================================

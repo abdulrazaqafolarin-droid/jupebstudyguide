@@ -15,13 +15,12 @@ window.addEventListener('unhandledrejection', (e) => {
 
 (async () => {
   if ('serviceWorker' in navigator) {
-    const regs = await navigator.serviceWorker.getRegistrations();
-    for (const reg of regs) {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js');
       if (reg.waiting) {
         reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
-      await reg.unregister();
-    }
+    } catch {}
     if ('caches' in window) {
       for (const key of await caches.keys()) {
         if (key.startsWith('jupeb') || key.startsWith('workbox') || key.includes('precache')) {

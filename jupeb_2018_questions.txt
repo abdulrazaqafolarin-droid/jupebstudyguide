@@ -1,0 +1,1001 @@
+===============================================================================
+ JUPEB 2018 — PHYSICS OBJECTIVE (Q1-Q50)
+===============================================================================
+
+Q1.
+What are the dimensions of momentum and surface tension respectively?
+  A. ML$^{2}T$-?, ML$^{2}T$-?
+  B. MLT-?, MT-?
+  C. ML$^{2}T$-?, MLT-?
+  D. MLT-?, MLT-?
+
+Q2.
+Given three vectors A = 3i+3k, B = -1+2j+k and C = 3i+5j+3k, find (A+B).C
+  A. 5
+  B. -8
+  C. -10
+  D. -14
+
+Q3.
+When a box rests on the floor, what forces act upon it?
+  A. gravitational and centrifugal forces
+  B. gravitational and acceleration
+  C. gravitational and normal forces
+  D. gravitational and frictional forces
+
+Q4.
+If the net force applied in the direction of motion to a certain object on a horizontal frictionless surface is doubled, what happens to the acceleration?
+  A. halved
+  B. doubled
+  C. unchanged
+  D. quadrupled
+
+Q5.
+What is the average power expended by a student weighing 700N who climbs at constant speed to the top of an 8m vertical rope in 10s?
+  A. 875W
+  B. 560W
+  C. 600W
+  D. 400W
+
+Q6.
+A projectile launched at 45 with a velocity hits a target. What will be the velocity if the range is doubled?
+  A. 560m/s
+  B. 415m/s
+  C. 414m/s
+  D. 400.5m/s
+
+Q7.
+What is the instantaneous speed of a car moving according to the equation (2t3 + 4t2 + 11t) at time t = 4 secs?
+  A. 7.72s
+  B. 1.41s
+  C. 3.41s
+  D. 1.40s
+
+Q8.
+A mass of 10g is suspended from the end of a spring whose force constant is 0.2N/m. Calculate the period of the harmonic motion.
+  A. the hidden heat that changes the liquid to vapor at same temperature
+  B. heat that raises temperature to boiling point
+  C. heat that converts liquid at boiling point
+  D. heat that changes unit mass at boiling point
+
+Q9.
+What is the specific latent heat of evaporation of a liquid?
+  A. 450m/s
+  B. 239m/s
+  C. 409m/s
+  D. 298m/s
+
+Q10.
+A swimming pool is filled with water of refractive index 1.33. Calculate the depth of the pool if the difference between the apparent and real depth is 1.5m.
+  A. 1.5m
+  B. 3.0m
+  C. 4.5m
+  D. 6.0m
+
+Q11.
+A plane progressive wave is represented by y = 3 sin pi(200t + 7.5x). What are the wavelength and speed respectively?
+  A. 1.75m, 57m/s
+  B. 0.57m, 100m/s
+  C. 6.0m
+  D. 7.5m
+
+Q12.
+A student is sighted with a near point of 100cm. What power of lens will the student use to read a newspaper at a normal near point?
+  A. 0.27m, 27m/s
+  B. 0.175m, 100m/s
+  C. 3.0D
+  D. 0.33D
+
+Q13.
+The measurement of a thermodynamic quantity is properly known as which law of thermodynamics?
+  A. zeroth law of thermodynamics
+  B. second law of thermodynamics
+  C. first law of conservation of energy
+  D. law of conservation of thermodynamics
+
+Q14.
+A light ray from air to another medium has an angle of incidence of 30 while it was refracted at an angle of 22. What is the refractive index of the second medium?
+  A. 30
+  B. 22
+  C. 45
+  D. 60
+
+Q15.
+Calculate the mass of ice that would melt 2kg of copper at the boiling point of water is quickly transferred to a block of ice at 0C without heat loss.
+  A. 1.42
+  B. 1.52
+  C. 1.35
+  D. 1.33
+
+Q16.
+What is the force of repulsion between two point charges 5microC and 8microC at a distance of 0.02 apart?
+  A. 33/80 kg
+  B. 80/33 kg
+  C. 33 kg
+  D. 5 kg
+
+Q17.
+A battery of E.m.f of 24V and internal resistance 4ohm is connected to a resistor of 32ohm. What is the terminal potential?
+  A. 1800N
+  B. 900N
+  C. 300N
+  D. 450N
+
+Q18.
+Calculate the peak alternating current which can cause a power dissipation of 200W heating coil of 100ohm.
+  A. 0.41A
+  B. 0.63A
+  C. 10A
+  D. 1.0A
+
+Q19.
+The study of charge at rest as well as laws that govern them is known as?
+  A. electromagnetism
+  B. electrodynamics
+  C. electrostatics
+  D. electrophones
+
+Q20.
+Which of the following are true about electric line of force?
+  A. they terminate from positive charges
+  B. they terminate on negative charges
+  C. they intersect each other
+  D. they repel each other
+
+Q21.
+Which of the following statements is correct about the charges X and Y in the figure?
+  A. I, II and IV
+  B. I and II only
+  C. I, II and IV only
+  D. I and II only
+
+Q22.
+In which of the following processes is the knowledge of electrostatics applicable?
+  A. washing of fly ash emissions
+  B. reduction of fly ash emissions
+  C. driving of cars
+  D. knowledge of electrostatics
+
+Q23.
+The direction of force on a current carrying conductor placed in a magnetic field can be found using which rule?
+  A. cork screw rule
+  B. Fleming's left hand rule
+  C. Fleming's right hand rule
+  D. Using a compass
+
+Q24.
+A semiconductor diode is used in rectifying alternating current into direct current mainly because it?
+  A. allows current to flow in only one direction
+  B. is non linear
+  C. offers a high input resistance
+  D. allows current to flow in either direction
+
+Q25.
+If the bulk modulus of water is 8 x 1011N/m2, estimate the change in volume of 300cm3 of water subjected to a pressure of 35mPa.
+  A. 0.00013cm3
+  B. 0.0013cm3
+  C. 0.013cm3
+  D. 0.13cm3
+
+Q26.
+Which of the following is true for a perfectly inelastic collision?
+  A. I and II only
+  B. III and IV only
+  C. II only
+  D. IV only
+
+Q27.
+A laser beam is incident at an angle of 30 from the vertical onto a solution of corn syrup in water. If the beam is refracted to 19.24 from the vertical, what is the index of refraction of the syrup solution?
+  A. 1.52
+  B. 1.33
+  C. 1.44
+  D. 1.00
+
+Q28.
+What is the internal energy of 1.0mol of an ideal monatomic gas at 273K?
+  A. 3.2 x 103J
+  B. 3.3 x 103J
+  C. 3.4 x 103J
+  D. 3.5 x 103J
+
+Q29.
+The gravitational force between two masses m1 and m2 at a distance r apart is given by F = $Gm_{1}m$2/r2. What is the dimensional formula of the universal gravitational constant G?
+  A. M-1L3T-2
+  B. $M_{3}L$-1T-2
+  C. ML-1T-2
+  D. $M_{3}LT$-2
+
+Q30.
+A Carnot engine operates between temperature of 500K and 3K and accepts a heat input of 1200J. What is the work output?
+  A. 720J
+  B. 240J
+  C. 480J
+  D. 500J
+
+Q31.
+Two identical travelling waves y1 = ym sin(kx - wt) and y2 = ym sin(kx - wt + n) are combined. What is the resultant amplitude produced by the two waves destructive interference?
+  A. 0
+  B. ym
+  C. ym
+  D. 2ym
+
+Q32.
+What is the correct order of increasing frequency and decreasing wavelength of the electromagnetic spectrum?
+  A. radio wave  infra ray  visible light  ultraviolet  X-ray  gamma ray
+  B. gamma ray  x-ray  ultra violet  visible light  infra ray  radio wave
+  C. infra ray  ultra violet  x-ray  radio wave  visible light  gamma ray
+  D. visible light  gamma ray  infra ray  radio wave  x-ray  ultra violet
+
+Q33.
+What is an example of a non-contact force?
+  A. normal force
+  B. frictional force
+  C. magnetic force
+  D. tensional force
+
+Q34.
+A 20microF capacitor is connected to a 120V, 60Hz source. What is the capacitance reactance?
+  A. 132.6ohm
+  B. 177.6ohm
+  C. 265.5ohm
+  D. 123.5ohm
+
+Q35.
+What amount of energy is stored in an inductor of inductance 1.5H when a current of 1.5A flows through it?
+  A. 6.25J
+  B. 3.375J
+  C. 1.69J
+  D. 2.75J
+
+Q36.
+A radioactive material has a half-life of 24 days. What is its decay constant?
+  A. 2.88 x 10-2/day
+  B. 0.693/day
+  C. 1.44 x 10-2/day
+  D. 3.38 x 10-2/day
+
+Q37.
+A spaceship at 20,000m height is orbiting the moon. If its motion is only affected by the gravitational pull of the moon, find the time it takes for a single orbit (Mmoon = 7.34 x 1022kg and Rmoon = 1.738 x 106m).
+  A. 76mins
+  B. 96mins
+  C. 101mins
+  D. 10mins
+
+Q38.
+Which of the following is true of an equipotential surface?
+  A. it is always at right angle to the lines of equipotential surface
+  B. it is always parallel to the lines of force
+  C. it varies with the shape of the conductor
+  D. it can be drawn in the absence of an absence field
+
+Q39.
+Which of the following expressions is FALSE about photoelectric effect?
+  A. the maximum kinetic energy Emax of an ejected electron is given by Emax = hf
+  B. the maximum kinetic energy Emax of an ejected electron is thus Emax = h(f  f0)
+  C. the work function is given by  = hf0
+  D. the maximum kinetic energy Emax of an ejected electron is Emax = hf + f0
+
+Q40.
+Which of the following transitions in a hydrogen atom emits the photon of lowest frequency?
+  A. n1 = 4  n2 = 3
+  B. n1 = 3  n2 = 1
+  C. n1 = 4  n2 = 2
+  D. n1 = 2  n2 = 1
+
+Q41.
+Calculate the binding energy per nucleon for 185Si which has a mass number given that mass of proton is 27.9698amu and mass of neutron is 1.00782825amu.
+  A. 8.54MeV
+  B. 8.64MeV
+  C. 8.44MeV
+  D. 8.43MeV
+
+Q42.
+From Rutherford's experiment on the structure of the atom, which conclusion was made?
+  A. the atom is a sphere of positive charges embedded with negative charges
+  B. electrons constitute most of the mass of the atom
+  C. the atom's positive charges were concentrated in a tiny massive central core
+  D. the atom does not contain a nucleus
+
+Q43.
+Which of the following statements about Newton's laws of motion are correct?
+  A. I, II and III
+  B. II only
+  C. III only
+  D. II and III only
+
+Q44.
+Which of the following is a wrong assumption of the Galilean transformation?
+  A. length is the same in all frames
+  B. length is different when measured from another frame of reference
+  C. a frame can move with constant relative velocity to another
+  D. the Galilean transformation
+
+Q45.
+A sodium metal is illuminated by light of frequency 6.7 x 1014Hz. Calculate the energy of the scattered photon.
+  A. 1.42 x 10-19J
+  B. 3.00 x 10-19J
+  C. 4.42 x 10-19J
+  D. 7.42 x 10-19J
+
+Q46.
+What is the most stable state of an electron in an atom?
+  A. excited state
+  B. n = 0 state
+  C. ground state
+  D. n =  state
+
+Q47.
+The function of the x-rays in the Millikan's oil drop experiment can be achieved using?
+  A. electric field
+  B. magnetic field
+  C. Betatron
+  D. radioactive material
+
+Q48.
+Which of Newton's laws of motion can be expressed in terms of momentum?
+  A. I. in the absence of external forces, total momentum of given system remain constant
+  B. II. the rate of change of momentum is equal to the momentum is equal to the net applied force
+  C. III. Whenever two bodies exert forces on one another, the resulting changes on momentum are equal and opposite
+  D. I and II only
+
+Q49.
+What is the work done in transferring 5Mc of charge from point B to point A in an electric field if the potential difference between B and A is?
+  A. 1.5kV
+  B. 0.2kV
+  C. 3kV
+  D. 6kV
+
+Q50.
+Which gives the correct relationship between the intensity of light and its amplitude?
+  A. I alpha $A_{2}$
+  B. I alpha A
+  C. I alpha 1/A
+  D. I alpha 1/$A_{2}$
+
+===============================================================================
+ JUPEB 2018 — PHYSICS THEORY
+===============================================================================
+
+Q1.
+**1. (a) Give two examples each of derived and fundamental quantities**
+
+
+**(b) Obtain from the first principle of dimensions the following quantities: acceleration, power, momentum and pressure**
+
+
+**(c) The velocity of waves on an ocean of density ? is written as v = Ag^x ?^y ?^z, where A, x, y, Z are constants, g is the acceleration due to gravity, and ? the wavelength of the waves, using dimensional analysis, find the exact values of x, y and z**
+
+Q2.
+**2. $\mathrm{(a)}$i) Distinguish between the term turbulent and streamline flows**
+
+
+**(b) The hydraulic brake system of a car is such that its brake pedal is linked with the wheel's brake shoes by a suitable brake fluid, if the driver applies a force of 70N on a pedal which has an area of 2.00m? at its point of contact with the fluid, calculate the force on the brake shoes of area 6.00m?**
+
+
+**(c)(i) Differentiate between conservative and non-conservative forces**
+
+Q3.
+**6. $\mathrm{(a)}$ An electron accelerates in a uniform electric field of intensity 270.000N/C. Calculate:**
+
+**(i) the acceleration of the electron**
+
+
+**(b) An electron m_e = 9.1 \times 10^{-31}$kg is placed between two parallel plate conductors separated by a distance of 25cm. If the final velocity of the electron is 10?m/s, calculate:**
+
+**(i) The work done on the electron**
+
+Q4.
+**4. (a) The objective and eyepiece focal lengths of a compound microscope are 0.5cm and 12.5cm respectively. The objective lens forms a real image which is 15.0cm from the lens. Calculate the total magnification if the eye is held close to the eyepiece and views the virtual image at a distance of 25.0cm**
+
+
+**(b) The image obtained with a converging lens is erect and four times the length of the lens (object?). If the length of the lens is 200cm, calculate the image and object distances**
+
+
+**(c) What lens is required to correct the defect in a defective eye whose far point is 150.0cm? Also determine the near point of the person**
+
+Q5.
+**5. (a)(i) Electric potential at a point is defined as...**
+
+*(Question: define electric potential and electric field strength at a point in an electrostatic field)*
+
+
+**(b) A cell supplies a current of 0.8A through a 2? resistor and 0.3A through a 7? resistor. What is the E.m.f and internal resistance of the cell?**
+
+
+**(c) State Faraday's law of electromagnetic induction and list three factors that affect the magnitude of the induced e.m.f**
+
+Q6.
+**7. $\mathrm{(a)}$i) State Bragg's law mathematically**
+
+**(ii) X-rays are incident normally on a crystal lattice at 0.6nm, the first order reflection occurs at an angle 30?. What is the wavelength of X-rays used?**
+
+**(b) List four properties of X-rays**
+
+**(c)(i) What is an electron volt?**
+
+Q7.
+**3. $\mathrm{(a)}$i) Differentiate between constructive and destructive interferences**
+
+
+**(b) A 500g piece of a substance is healed to 100?C in boiling water and quickly dropped into 20g of water at 10?C contained in a calorimeter of mass 200kg. The final temperature of the mixture is 65.5?C. Calculate the specific heat capacity of the substance, neglecting heat lost to the surrounding [specific heat capacity of water = 4200Jkg?$\ce{^1K}$?? and specific heat capacity of calorimeter = 400KJg?$\ce{^1K}$??]**
+
+
+**(c) Briefly explain isothermal change and adiabatic change**
+
+Q8.
+**8. $\mathrm{(a)}$ What is the difference between Compton effect and photoelectric effect?**
+
+
+**(b) The radius of the sun is 6.96 \times 10^{8}$m, and its total power output is 3.85 \times 10^{26}$W. Assuming the sun's surface emits as a black body, calculate:**
+
+**(i) its surface temperature**
+
+
+**(c)(i) What does Einstein's special theory of relativity state about the laws of physics?**
+
+===============================================================================
+ JUPEB 2018 — CHEMISTRY OBJECTIVE (Q1-Q50)
+===============================================================================
+
+Q1.
+The electronic configuration for Cu is:
+  A. A. $1s^{2}$ $2s^{2}$ $2p^{6}$ $3s^{2}$ $3p^{6}$
+  B. B. $1s^{2}$ $2s^{2}$ $2p^{6}$ $3s^{2}$ $3p^{6}$ $4s^{2}$ $3d^{9}$
+  C. C. $1s^{2}$ $2s^{2}$ $2p^{6}$ $3s^{2}$ $3p^{6}$ 4s? 3d??
+  D. D. $1s^{2}$ $2s^{2}$ $3s^{2}$ $2p^{6}$ $4s^{2}$ $2p^{6}$
+
+Q2.
+What is the value of angular momentum quantum of a $3d$ orbital?
+  A. 3
+  B. 0
+  C. 1
+  D. 2
+
+Q3.
+The energy needed to remove an electron in the outermost shell of a gaseous atom is called?
+  A. Ionization energy
+  B. Electron affinity
+  C. Electrode potential
+  D. Photoelectronic energy
+
+Q4.
+Which of the following atomic properties generally increases down a group in the periodic table of elements?
+  A. Electronegativity
+  B. Atomic radius
+  C. Electron affinity
+  D. Ionization energy
+
+Q5.
+Substances that are electron pair acceptors are called
+  A. Arrhenius bases
+  B. Lewis acids
+  C. Bronsted Lowry acids
+  D. Lewis bases
+
+Q6.
+All the A shampoo solution at 25?? has a hydroxide-ion concentration of 1.5 ? 10?9??????3 . The solution is
+  A. Acidic
+  B. Neutral
+  C. Basic
+  D. Amphiprotic
+
+Q7.
+In a measurement, significant figures include
+  A. All digits except zero that are measured
+  B. All digits except zero that are not measured
+  C. All zeros at the beginning of a number
+  D. All digits in a number
+
+Q8.
+The degeneracy of orbitals with angular momentum quantum number $l = 2$ is
+  A. 2
+  B. 3
+  C. 5
+  D. 1
+
+Q9.
+What is the principle that allows the use of mass spectrometry in determination of the molecular weight of a compound?
+  A. Higher molecular weight compounds are less volatile
+  B. Higher molecular weight compounds are denser
+  C. A beam of higher molecular weight cations is deflected less by magnetic field
+  D. Ions with higher molecular weight absorb higher frequencies of light
+
+Q10.
+State What is the oxidation state of oxygen in ??2?
+  A. +2
+  B. ?2
+  C. ?1
+  D. +1
+
+Q11.
+Which of the following is not true about ionization energy?
+  A. Ionization energy increases across a period
+  B. Reversal in trend of ionization occurs in passing from beryllium to boron
+  C. Half-filled subshell makes ionization energy of ${O}$ lower than that of ${N}$
+  D. Ionization energy does not depend on nuclear charge
+
+Q12.
+In terms of Lewis concept, an acid and a base are a/an:
+  A. Proton donor and proton acceptor respectively
+  B. Electron donor and electron acceptor respectively
+  C. Proton acceptor and proton donor respectively
+  D. Electron acceptor and electron donor respectively
+
+Q13.
+Which of the following will affect the equilibrium position of the reaction?
+I?$\mathrm{(g)}$ + $H_{2}$(g) ? 2HI$\mathrm{(g)}$
+  A. Addition of a catalyst
+  B. Increase in pressure
+  C. Decrease in pressure
+  D. Addition of HI(g)
+
+Q14.
+Which of the following ions has the smallest size?
+  A. ? 2+
+  B. ??+
+  C. ??2+
+  D. ? ?
+
+Q15.
+A sodium pellet is dropped into warm water and 500??3 of hydrogen gas is liberated. What mass of sodium is involved in the reaction? [?? = 23; ?? = 22400??3 ]
+  A. 1.03?
+  B. 0.51?
+  C. 2.30?
+  D. 0.98?
+
+Q16.
+Calculate the percentage by mass of water of crystallization in ????4 . 7?2? [?? = 24, ? = 32,? = 16, ? = 1]
+  A. 51.2%
+  B. 56.7%
+  C. 50.12%
+  D. 52.55%
+
+Q17.
+What volume of 5 ??????3 ???????????????? (??) ???? is required to prepare 300??3 0? 0.5??????3 solutions?
+  A. 30??3
+  B. 50??3
+  C. 3??3
+  D. 30??3
+
+Q18.
+An iron complex with molecular formula ?34?32???4?4 , constitutes 6% of haemoglobin by mass. If a blood sample contains 0.75? haemoglobin, what mass of ?? is contributed by the complex? [? = 12, ? = 1, ?? = 56, ? = 14,? = 16]
+  A. 0.0041?
+  B. 0.0450?
+  C. 0.06000?
+  D. 0.0056?
+
+Q19.
+The temperature above which the liquid states of a substance no longer exist is called
+  A. Supercritical temperature
+  B. Critical pressure
+  C. Critical temperature
+  D. Critical point
+
+Q20.
+According to the collision theory and kinetic theory, increase in temperature does the following except
+  A. Increases the frequency of collision
+  B. Increases the number of particles with energy greater than the activation energy
+  C. Increases the activation energy
+  D. Increases the kinetic energy of the molecules
+
+Q21.
+The part of the universe that is of immediate interest in a reaction is termed
+  A. Universe
+  B. Surrounding
+  C. System
+  D. Environment
+
+Q22.
+An example of a natural radioactivity is
+  A. 14 7? + 2 4?? ? 17 8? + 1 1?
+  B. 214 83?? ? 214 84?? + ?1 0 ?
+  C. 238 92? + 2 4?? ? 17 8? + 1 1?
+  D. 12 6? ? 12 7? + ?1 1 ?
+
+Q23.
+The general gas equation can be used to calculate the molar mass, ?? value of a gas. For a sample of a gas of mass mg, which expression will give the value of ???
+  A. ?? = ???? ?
+  B. ?? = ??? ??
+  C. ?? = ??? ??
+  D. ?? = ?? ???
+
+Q24.
+Which of these bonds does not exist within a molecule of ammonium chloride?
+  A. Ionic
+  B. Covalent
+  C. Dative covalent
+  D. Van der waals
+
+Q25.
+The dissolution of a non-volatile solute in a volatile solvent
+  A. Increases its boiling point
+  B. Decreases its boiling point
+  C. Has no effect
+  D. Increases the vapour pressure
+
+Q26.
+Gaseous deviate from Charles? law at
+  A. High temperature
+  B. Low pressure
+  C. Low temperature
+  D. Moderate pressure
+
+Q27.
+The average distance of the orbital from the nucleus of an atom orbital is determined by the
+  A. Spin quantum number
+  B. Principal quantum number
+  C. Magnetic quantum
+  D. Orbital subshell
+
+Q28.
+What is the standard cell potential for the overall reaction of the cell below? ??(?)/??2+ (1?)//??+ (1?)/??(?) [?????? 0 ??2+ (??)/??(?) = 0.3402? ??? ? 0??+(??)/??(?) = 0.7996?]
+  A. 0.229?
+  B. 1.2590?
+  C. 0.4594?
+  D. 1.1398?
+
+Q29.
+The element that gives no colour in flame is
+  A. ??
+  B. ??
+  C. ??
+  D. ??
+
+Q30.
+All group I metals react with water to form
+  A. Hydrogen gas only
+  B. Neutral solutions
+  C. Acidic solution with liberation of hydrogen
+  D. Strong caustic solution with liberation of hydrogen
+
+Q31.
+The effect of acid rain includes the following except
+  A. Death of aquatic animals
+  B. Damage of buildings and status
+  C. Corrosion of iron
+  D. Depletion of ozone layer
+
+Q32.
+Which of the following is not a greenhouse gas?
+  A. ????
+  B. ??2
+  C. ?2?
+  D. ??4
+
+Q33.
+Which of the following is the correct increasing order of conductivity in aqueous solution?
+  A. ??+, ??+, ? +, ??+,??+
+  B. ??+, ??+, ? +, ??+, ??+
+  C. ??+, ??+, ? +,??+, ??+
+  D. ??+, ? +, ??+, ??+, ??+
+
+Q34.
+The alkaline earth metals become more reactive as we
+  A. Ascend the group
+  B. Descend the group
+  C. Introduce other group elements
+  D. Introduce an external force
+
+Q35.
+Chromium has the following isotopic masses and fractional abundances ???? ?????? ???????? ???? (???) ?????????? ????????? 50 49.9461 0.0435 52 51.9405 0.8379 53 52.9407 0.0950 54 53.9389 0.0236 What is the atomic mass of chromium?
+  A. 55.49 ???
+  B. 50.49 ???
+  C. 51.99 ???
+  D. 51.00 ???
+
+Q36.
+What is the name given to this complex ion [??(??4)(??3)5 ] +?
+  A. Pentaaminesulphatocobalt(I)ion
+  B. Pentaaminesulphatocobaltate(II)ion
+  C. Pentaaminesulphatocobalt(III)ion
+  D. Pentaaminesulphatocobalt(IV)ion
+
+Q37.
+Which of the following will form pale yellow precipitate slightly soluble in aqueous ammonia upon treatment with ????????????? (?) acid followed by silver nitrate
+  A. ?????3
+  B. ????
+  C. ????
+  D. ???
+
+Q38.
+Which of the statement below is not a property of halogen?
+  A. They all exhibit valency of +1
+  B. They belong to the ? ? ????? of the periodic table
+  C. They are non-metals
+  D. They are all oxidizing agents
+
+Q39.
+An element which can be detected using Lassaigne?s test is
+  A. Sodium
+  B. Sulphur
+  C. Potassium
+  D. Magnesium
+
+Q40.
+If the molecule A-B breaks homolytically, then
+  A. A becomes negatively charged
+  B. A becomes positively charged
+  C. Electrons are shared evenly
+  D. Both electrons move to B because B is more electronegative
+
+Q41.
+Lucas reagent is used to distinguish between
+  A. Saturated and unsaturated hydrocarbons
+  B. Primary and secondary amines
+  C. Alkanals and alkanones
+  D. The three classes of alkanols
+
+Q42.
+The IUPAC name of the compound ?? = ? ? ??2 ? ??2 ? ???? is
+  A. 1 ? ??????? ? 4 ? ??? ????
+  B. ??????? ? 1 ? ??? ????
+  C. 5 ? ?????? ? 1 ? ??? ????
+  D. ???? ? 4 ? ??? ? 1 ? ??? ????
+
+Q43.
+Which of the following compounds will show geometrical isomerism?
+  A. 1 ? ??????
+  B. 2 ? ??????
+  C. 2 ? ???????
+  D. 1, 2 ? ???????????????
+
+Q44.
+The number of ? electrons in butyne is
+  A. 6
+  B. 2
+  C. 4
+  D. 8
+
+Q45.
+The change in hybridization of carbon when two moles of hydrogen gas is passed over ethyne in the presence of platinum is
+  A. ?? 2 ?? ?? 3
+  B. ?? ?? ?? 3
+  C. ?? 3 ?? ??
+  D. ?? ?? ?? 2
+
+Q46.
+2.40? of ethanol was reacted with an excess of aqueous acidified ????????? ?????????? (??). The yield of the desired organic product was 70.0%. What mass of the desired product was collected? [? = 12,? = 16, ? = 1]
+  A. 1.60?
+  B. 4.10?
+  C. 2.29?
+  D. 3.29?
+
+Q47.
+In the reaction between propene and hydrogen chloride, the electrophile that initiates the reaction is
+  A. The ? electrons of ? = ? bond in propane
+  B. The partially positive hydrogen atom from HCI
+  C. The partially negative chlorine atom from HCI
+  D. The fully positive hydrogen from HCI
+
+Q48.
+?????????? ??? 2 ? ?????????? are related as
+  A. Functional isomers
+  B. Positional isomers
+  C. Chain isomers
+  D. Homologues
+
+Q49.
+Which of the following has the shortest carbon-carbon bond length?
+  A. Propene
+  B. Propane
+  C. Propyne
+  D. Ethane
+
+Q50.
+The properties of organic molecules are related to Carbon to Carbon bond properties such as: (I) Bond Length (II) Bond dissociation energy (III) Bond rotation Which of these properties reveal the fact that a ? ? ???? is weaker than a ? ? ?????
+  A. (II) Only
+  B. (III) Only
+  C. (I) Only
+  D. (I) and (III)
+
+===============================================================================
+ JUPEB 2018 — CHEMISTRY THEORY
+===============================================================================
+
+Q1.
+(ai)** What is isomerism? **[1 Mark]**
+
+**(ii)** Draw the structural formula of the isomeric alcohols with the molecular formula $\ce{C4H_{10}}$O and name them using IUPAC system of naming. **[4 Marks]**
+
+**(b)** What are the products of oxidation of each of the isomers in (1aii)? **[2 Mks]**
+
+**(ci)** Briefly explain why beryllium tends to be different from the other elements in (iii) ester **[3 Marks]**
+
+**(ii)** What are the products of ethanoic acid into each of the following with suitable equation
+- (i) acid chloride
+- (ii) acid anhydride
+- (iii) ester **[1Mark] [1Mark] [1Mark]**
+
+Q2.
+Using the following data:
+
+Fe??(aq) + e? ? Fe??(aq); E? = +0.77 V
+Mn$\ce{$\ce{O4}$}$?(aq) + 8H?(aq) + 5e? ? Mn??(aq) + 4$\ce{H2O}$(l); E? = +1.52 V
+I?(aq) + 2e? ? 2I?(aq); E? = +0.54 V
+$\ce{Cr2O_{7}}$??(aq) + 14H?(aq) + 6e? ? 2Cr??(aq) + 7$\ce{H2O}$(l); E? = +1.33 V
+
+**$\mathrm{(a)}$** Predict the outcome of mixing aqueous solutions of:
+- (i) Iron (II) sulphate with acidified potassium manganate (VII) **[1 Mark]**
+- (ii) Potassium iodide with acidified potassium dichromate (VI) **[1 Mark]**
+
+**(b)** Write the half equations and the balanced equations for the reactions you predicted **[2 Marks]**
+
+**(c)** Calculate the standard cell potential in each case **[2 Marks]**
+
+**(d)** The reaction ?$\ce{$\ce{N2}$}$ + 3/2$\ce{$\ce{H2}$}$ ? N$\ce{$\ce{H3}$}$ proceeded in a closed autoclaved volume of 5 dm?. In 1 second, 0.01 mole of nitrogen reacted. Calculate the rate of:
+- (i) Consumption of nitrogen **[1 Mark]**
+- (ii) Consumption of hydrogen **[1 Mark]**
+- (iii) Formation of ammonia **[1 Mark]**
+- (iv) The reaction. **[1 Mark]**
+
+Q3.
+(ai)** What is the coordination number of the metal in the following complexes:
+- [Cu(NH?)?($\ce{H2O}$)?]?? and [Cu?(N$\ce{H2C}$$\ce{H2C}$$\ce{H2N}$H?)?]?? **[1 Mark]**
+
+**(ii)** Provide the IUPAC names for the following:
+- (I) [Cu(NH?)?($\ce{H2O}$)?]??
+- (II) [Ni(NH?)?Cl?]??
+- (III) [Fe($\ce{H2O}$)?(en)?]??
+- (IV) [CrNH?)?($\ce{H2O}$)?]Cl? **[2 Marks]**
+
+**(ci)** Briefly explain why beryllium tends to be different from the other elements in group 2 of the periodic table. Give two examples of beryllium and nitrates **[1Mark]**
+
+**(ii)** Explain the trend of the thermal decomposition of the carbonates and nitrates of the alkaline earth metals **[2 Marks]**
+
+---
+
+## CHM 004: Organic Chemistry
+
+Q4.
+(ai)** What is a Grignard reagent? **[1 Mark]**
+
+**(ii)** Give an equation for the preparation of Grignard reagent: **[1 Mark]**
+
+**(iii)** What is the product of the reaction:
+C$\ce{H3C}$$\ce{H2C}$HO + C$\ce{H3C}$$\ce{H2Mg}$Br ? ?? **[2 Marks]**
+
+**(b)** Reactions of alcohols involve cleavage of the C-O bond or that of the O-H bond. Give one (1) example each of such reactions. **[1 Mark]**
+
+**(c)** Why does benzene not undergo addition reaction as expected of unsaturated bond. Give one (1) example of alcohols involve cleavage of the C-O **[2 Mks]**
+
+**(d)** State two (2) reasons why hydrocarbons used in the synthesis of Nylon 6,6 are more reactive than ketones. **[1 Mark]**
+
+**(e)** Name the monomers used in the synthesis of Nylon 6,6.
+
+---
+
+Q5.
+$\mathrm{(a)}$** State two differences between alpha (?) and beta (?) particle. **[2 Marks]**
+
+**(bi)** Define nuclear fusion **[1 Mark]**
+
+**(ii)** Calculate the nuclear energy per mole for the following nuclear reaction:
+???N + ??He ? ???O + ??H
+Given the following isotopic masses: ???N = 13.9992 amu, ??He = 4.0026 amu, ???O = 16.9991 amu, ??H = 1.0078 amu;
+1 amu = 1.66 \times 10^{-27}$ kg atom??, N_A = 6.023 \times 10^{23}$ mol??. **[3 Marks]**
+
+**(ci)** State Hess's law **[1 Mark]**
+
+**(ii)** For the reaction: $\ce{C2H_{4}}$(g) + 3$\ce{$\ce{O2}$}$(g) ? 2C$\ce{$\ce{O2}$}$(g) + 2$\ce{H2O}$(g); ?H?rxn = -1323 kJmol??
+Given that S?[$\ce{C2H_{4}}$(g)] = 219.6 Jmol??; S?[$\ce{$\ce{O2}$}$(g)] = 205 Jmol??; S?[C$\ce{$\ce{O2}$}$(g)] = 213.6 Jmol??; S?[$\ce{H2O}$(g)] = 130.6 Jmol??, calculate the value of ?G?rxn at 25?C. **[3 Mks]**
+
+---
+
+## CHM 003: Inorganic Chemistry
+
+Q6.
+$\mathrm{(a)}$** What are acid-base indicators? **[1 Mark]**
+
+**(b)** A 550 mg tablet containing vitamin C, $\ce{C6H_{8}}$O?, was dissolved in water and reacted with bromine ($\ce{C6H_{8}}$O? + Br? ? $\ce{C6H_{6}}$O? + 2HBr). The resulting solution was titrated with 40 cm? of 0.145 M NaOH (HBr + NaOH ? NaBr + $\ce{H2O}$)
+- (i) Calculate the percentage of vitamin C in the tablet **[6]**
+- (ii) Calculate the percentage of carbon in the vitamin C content of the tablet. **[6]**
+
+**(c)** The equilibrium constant expression for a reaction is:
+
+K = [N$\ce{$\ce{O2}$}$]?[$\ce{$\ce{O2}$}$] / [$\ce{N2O_{5}}$]
+
+- (i) Write the balanced chemical equation corresponding to this expression.
+- (ii) What is the equilibrium constant expression when the concentrations are halved?
+- (iii) Write the equilibrium constant expression for (i) above when the equation is reversed. **[3 Marks]**
+
+**(cii)** Define an acid and a base in terms of Bronsted-Lowry concept. **[2 Mks]**
+
+Q7.
+(a)** The elements in Group II show a variety of trends in their properties.
+- (i) Explain the trend in reactivity of Mg, Ca and Ba with cold water. **[2 Marks]**
+- (ii) Write the equation for the reaction of Mg with steam **[1 Mark]**
+
+**(b)** Name an element among the period three elements which forms an amphoteric oxide and write equations which illustrate this amphoteric property. **[2 Marks]**
+
+**(c)** What is meant by the term first ionization energy of nitrogen is greater than that of oxygen.
+- (i) Explain why the first ionization energy of nitrogen is greater than that of the other members of group 14 elements. **[1 Mark]**
+- (ii) Explain why the thermal decomposition energy of carbon that makes it different from the other carbonates and nitrates. **[2 Marks]**
+
+**(ai)** List four unique characteristics of carbon that makes it different from the other members of group 14 elements. **[2 Marks]**
+
+**(ii)** What is the name given to a complex ion? **[1 Mark]**
+
+Q8.
+(ai)** Calculate the pH of a buffer solution containing 0.623 moldm?? hexanoic acid and 0.812 moldm?? sodium hexanoate. [Ka = 1.32 \times 10^{-5}$] **[2 Marks]**
+
+**(b)** Classify the reactants in each of the following reactions as acid or base and identify the acid-base conjugate pairs:
+- (i) N$\ce{$\ce{H4}$}$? + $\ce{H2O}$ ? N$\ce{$\ce{H3}$}$ + $\ce{H3O}$? **[2 Marks]**
+- (ii) OH? + C$\ce{H3N}$H? ? C$\ce{H3N}$H?? + O?? **[2 Marks]**
+
+**(c)** Using relevant reaction equations, explain why:
+- (i) water is amphoteric. **[1]**
+- (ii) methanol is a Bronsted-Lowry acid **[1 Mark]**
+
+---
+
+## CHM 002: Physical Chemistry
+
+Q9.
+CHM 001: GENERAL CHEMISTRY\\n\\n1.a What are acid-base indicators? (1 ????)\n1.b A 550?? tablet containing vitamin C, ?6?8?6\n, was dissolved in water and\nreacted with bromine (?6?8?6\n, + ??2 ? ?6?6?6 + 2???). The resulting\nsolution was titrated with 40??3 ?? 0.145? ????\n(??? + ???? ? ???? + ?2?)\n[? = 12, ?? = 23,? = 16, ? = 1, ?? = 79]\ni) Calculate the percentage of vitamin C in the tablet. Calculate the percentage of\nCarbon in the Vitamin C content of the tablet.\n(6 ?????)\n1.c The equilibrium-constant expression for a reaction is\n?? =\n[???]?[??]\n[?2?5\n]\n2\ni) Write the balanced chemical equation corresponding to this expression.\nii) What is the equilibrium constant expression when the concentrations are halved?\niii) Write the equilibrium constant expression for c (ii) above when the equation is\nreversed\n(3 ?????)\n2.a\ni) Define an acid and a base in terms of Browsted-Lowry concept\n(2 ?????)\nii) Calculate the pH of a buffer solution containing\n0.623??????3 ???????? ???? ??? 0.812??????3\n?????? ?????????.\n[?? ???????? ???? = 1.32 ? 10 ? 5]. (2 ?????)\n2.b Classify the reactants in each of the following reactions as acid or base and\nidentify the acid-base conjugate pairs:\ni) ??4\n+ + ?2? ? ??3 + ?2?\n+ (2 ?????)\nii) ??? + ??3??2 ? ??3??3\n+ + ?\n2? (2 ?????)\n2.c Using relevant reactions equations, explain why\ni) Water is amphiprotic (1 ????)\nii) Methanol is a Bronsted-Lowry acid (1 ????)
+
+Q10.
+CHM 002: PHYSICAL CHEMISTRY\\n\\n3.a Using the following data\n??(\n3\n??\n+\n) + ?\n? ? ??(\n2\n??\n+\n)\n; ?\n0 = +0.77?\n???4(??) + 8?(\n+\n??) + 5?\n? ? ??(\n2\n??\n+\n) + 4?2?(?)\n; ?\n0 = +1.52?\n?2(??) + 2?\n? ? 2?(\n?\n??)\n; ?\n0 = +0.54?\n??2?7\n2\n(\n?\n??) + 14?(\n+\n??) + 6?\n? ? 2??5+ + 7?2?(?)\n; ?\n0 = +1.33?\nPredict the outcome of mixing aqueous solutions of\ni) Iron (II) sulphate with acidified potassium manganese (VII) (1 ????)\nii) Potassium iodide with acidified potassium dichromate (VI) (1 ????)\n3.b Write the half equations and the balanced equations for the reactions you predict\nabove. (2 ?????)\n3.c Calculate the standard cell potential in each case (2 ?????)\n3.d The reaction 1\n2\n?2 +\n3\n2\n?2 ? ??2 proceeded in a closed autoclave of volume\n5???3\n?? 1 ??????, 0.01 ???? of nitrogen reacted. Calculate the rate of\ni) Consumption of nitrogen (1 ????)\nii) Consumption of hydrogen (1 ????)\niii) Formation of ammonia (1 ????)\niv) The reaction (1 ????)\n4.a State two differences between alpha (?) and beta (?) particles.\n(2 ?????)\n4.b\ni) Define nuclear fusion\nii) Calculate the nuclear energy per mole for the following nuclear reaction:\n?7\n14 + 2\n4?? ? 17\n8? + 1\n1?\nGiven the following isotropic masses\n?7\n14 = 13.9992???\n?? 2\n4 = 4.0026???\n?8\n17 = 16.9991???\n?1\n1 = 1.0078???\n1??? = 1.66 ? 10?27?? ?????1\n?? = 6.023 ? 1023 ???? ????1\n4.c\ni) State Hess?s Law\nii) For the reaction:\n?2?4(?) + 3?2(?) ? 2??2(?) + 2?2?(?)\n?????\n0 = ?1323??????1\n????? ???? ?\n0\n[$\ce{C2H4}$(g)\n] = 219.6 Jmol?1\n;\n?\n0\n[$\ce{O2}$(g)] = 205 Jmol?1\n?\n0\n[CO2$\mathrm{(g)}$] = 213.6 Jmol?1\n?\n0\n[?2O$\mathrm{(g)}$] = 130.6 Jmol?1\n, Calculate the value of ?????\n0 ?? 250\n(3 ?????)
+
+Q11.
+CHM 003: INORGANIC CHEMISTRY\\n\\n5.a The elements in Group II show a variety of trends in their properties\ni) Explain the trend in reactivity of magnesium, calcium and barium with cold water.\n(2 ?????)\nii) Write the equation for the reaction of magnesium with steam\n(1 ????)\n5.b Name an element among the period three elements which forms an amphoteric\noxide and write equations which illustrate this amphoteric property.\n(2 ?????)\n5.c\ni) What is meant by the term ionization energy?\n(1 ????)\nii) Explain why the first ionization energy of nitrogen is greater than that of oxygen.\n(2 ?????)\n5.d List four unique properties of carbon that makes it different from other members of\ngroup 14 elements. (2 ?????)\n6.a\ni) What is a Complex ion? (1 ????)\nii) What is the name given to the molecules of ions bonded to a complex ion?\n(1 ????)\n6.b\ni) What is the co-ordination number of the metal in the following complexes\n[??(??3\n)4\n(?2?)2\n]\n2+ and\n[??(?2???2??2??2\n)2\n]\n2+ (1 ????)\nii) Provide the IUPAC names for the following:\n(1) [??(?2?)2\n(??)2\n]\n?+\n(2) [??(??3\n)2??4\n]\n??\n(3) [??(??3\n)3\n(?2?)3\n]??3\n(4) [??(?2???2??2??2\n)3\n(??4\n)3\n] (2 ?????)\n6.c\ni) Briefly explain why beryllium tends to be different from the elements in group 2 of\nthe periodic table. Give two anomalous properties of beryllium\n(2 ?????)\nii) Explain the trend of the thermal decomposition of the carbonates and nitrates of\nthe alkaline earth metals. (2 ?????)
+
+Q12.
+CHM 004: ORGANIC CHEMISTRY\\n\\n7.a\ni) What is isomerism? (1 ????)\nii) Draw the structural formula of the isomeric alcohols with the molecular formula\n?4?10? and name them using the IUPAC system of naming. (4 ?????)\niii) What are the products of oxidation of each of the isomers in 1? (??)?\n(2 ?????)\n7.b Show the conversion of ethanoic acid into the following with suitable equation and\nreagents;\ni) Acid chloride (II) Acid anhydride (III) Ester (3 ?????)\n8.a\ni) What is a Grignard reagent?\n(1 ????)\nii) Give an equation for the preparation of Grignard reagent.\n(1 ????)\niii) What is the product of the reaction?\n??3??2??? + ??3??2???? ? ? + ?\nGive the IUPAC name of the product\n(1 ????)\n8.b Reactions of alcohols involve cleavage of the ? ? ? bond or that of the ? ? ?\nbond. Give one example each of such reactions\n(2 ?????)\n8.c Why does benzene not undergo addition reaction as expected of unsaturated\nhydrocarbons? (1 ????)\n8.d State two (2) reasons why aldehydes are more reactive than ketones.\n(2 ?????)\n8.e Name the monomers used in the synthesis of ????? 6,6. (1 ????)
+
+===============================================================================
+ JUPEB 2018 — CHEMISTRY PRACTICAL
+===============================================================================
+
+Q1.
+You are provided with sample **(D)**, a mixture of two simple salts, and you are required to perform the following tests to identify the cations:
+
+**Test 1:** To about 0.5 g of (D) in the test tube, add minimum volume of water, followed by 6 M HCl. Filter any precipitate formed.
+
+**Test 2:** To the precipitate obtained in test 1, add hot water and allow to cool for five minutes.
+
+**Test 3:** Transfer filtrate from test 1 to a test tube and introduce 2M N$\ce{H4Cl}$, 2M N$\ce{H4O}$H and 2M (NH?)?C$\ce{$\ce{O3}$}$ until a precipitate is observed.
+
+**Test 4:** Filter the precipitate obtained in test 3, transfer the precipitate into a test tube and add 2M C$\ce{H3C}$OOH and 0.5M potassium chromate. State the compounds formed after: (i) test 1 (ii) test 4
+
+Record your observations and inference at each step.
+
+[Total = 10 Marks]
+
+---
+
+Q2.
+Given the following information;
+
+Solution **A**: An aqueous solution of HCl
+Solution **B**: 0.05 moldm?? solution of sodium carbonate
+Solution **C**: A solution of NaOH
+
+**$\mathrm{(a)}$ Procedure:**
+
+**(i)** Pipette 25 cm? of solution B into a clean conical flask. Add 2 or 3 drops of indicator. Titrate against the solution A in the burette. Record your titre value.
+
+**(ii)** Repeat the titration 2 more times and find the average.
+
+**(iii)** Pipette 25 cm? of solution C into another conical flask. Add 2 or 3 drops of indicator. Titrate against the solution A in the burette. Record your titre value. [Na =23, O =16, C =12, Cl =35.5, H =1]
+
+**(iv)** Repeat the titration 2 more times and find the average of the titre values.
+
+**(b)** What is the aim of this titrimetric analysis?
+
+**(c)** From your results, determine;
+
+**(i)** Number of moles of HCl in 1 dm? of A **(ii)** Concentration in $g/dm$?
+
+**(ii)** Number of moles of NaOH in 1 dm? of C
+
+**(iii)** Number of moles of HCl in 1 dm? of A (ii) Concentration in $g/dm$?
+
+**(iv)** Concentration in $g/dm$?
+
+[Total = 10 Marks]
+
+---
+
+===============================================================================
+ END OF 2018 QUESTIONS
+===============================================================================

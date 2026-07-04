@@ -106,23 +106,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) return { error, needsMfa: false };
-      if (data.session?.access_token) {
-        supabase.realtime.setAuth(data.session.access_token);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) {
+          if (attempt === 0 && (error.message?.includes('signal is aborted') || error.message?.includes('AbortError'))) {
+            try {
+              const keys = [];
+              for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && (k.includes('supabase') || k.includes('sb-') || k.startsWith('oauth'))) keys.push(k);
+              }
+              keys.forEach(k => localStorage.removeItem(k));
+            } catch {}
+            continue;
+          }
+          return { error, needsMfa: false };
+        }
+        if (data.session?.access_token) {
+          supabase.realtime.setAuth(data.session.access_token);
+        }
+        const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        if (aal && aal.nextLevel === 'aal2' && aal.currentLevel === 'aal1') {
+          return { error: null, needsMfa: true };
+        }
+        return { error: null, needsMfa: false };
+      } catch (error) {
+        if (attempt === 0) {
+          try {
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const k = localStorage.key(i);
+              if (k && (k.includes('supabase') || k.includes('sb-') || k.startsWith('oauth'))) keys.push(k);
+            }
+            keys.forEach(k => localStorage.removeItem(k));
+          } catch {}
+          continue;
+        }
+        return { error: error as Error, needsMfa: false };
       }
-      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-      if (aal && aal.nextLevel === 'aal2' && aal.currentLevel === 'aal1') {
-        return { error: null, needsMfa: true };
-      }
-      return { error: null, needsMfa: false };
-    } catch (error) {
-      return { error: error as Error, needsMfa: false };
     }
+    return { error: new Error('Unable to connect. Please check your network and try again.'), needsMfa: false };
   };
 
   const verifyMfa = async (code: string) => {

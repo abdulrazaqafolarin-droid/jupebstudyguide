@@ -10,7 +10,8 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat } from '@/lib/ai-service';
+import { useAuth } from '@/contexts/AuthContext';
+import { streamChat, stripThinkBlocks } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -52,6 +53,7 @@ const messageVariants = {
 const springMessage = { type: "spring" as const, stiffness: 400, damping: 28, mass: 0.5 };
 
 export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -121,7 +123,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
       onDelta: (text) => {
         firstToken = false;
         assistantContentRef.current += text;
-        const stripped = assistantContentRef.current;
+        const stripped = stripThinkBlocks(assistantContentRef.current);
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length > 0 && arr[arr.length - 1].role === 'assistant') {
@@ -145,6 +147,13 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
     e.preventDefault();
     if ((!input.trim() && !attachment) || isLoading) return;
     askTutor(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
+    if (user?.id) {
+      try {
+        const key = `u:${user.id}:ai-chat-count`;
+        const cur = JSON.parse(localStorage.getItem(key) || '0');
+        localStorage.setItem(key, JSON.stringify(cur + 1));
+      } catch {}
+    }
   };
 
   const handleQuickPrompt = (prompt: string) => {

@@ -1,23 +1,12 @@
-import { useState, useCallback } from "react";
-import type { TourPage, TourPageConfig, TourStep } from "@/types/feature-tour";
+import { useState, useCallback, useMemo } from "react";
+import type { TourPage, TourStep, TourPageConfig } from "@/types/feature-tour";
 import { TOUR_CONFIGS } from "@/data/tour-steps";
 
-const STORAGE_KEY = "rutex-feature-tour";
-
-export const TOUR_PAGE_ORDER: TourPage[] = [
-  "home",
-  "past-questions",
-  "syllabus",
-  "chat",
-  "leaderboard",
-  "achievements",
-  "discover",
-  "ai-tutor",
-  "profile",
-];
+const STORAGE_KEY = "rutex-feature-tour-v2";
 
 interface StoredState {
-  completedPages: string[];
+  currentStep: number;
+  completed: boolean;
   dismissed: boolean;
 }
 
@@ -26,7 +15,7 @@ function loadState(): StoredState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { completedPages: [], dismissed: false };
+  return { currentStep: 0, completed: false, dismissed: false };
 }
 
 function saveState(state: StoredState) {
@@ -35,120 +24,120 @@ function saveState(state: StoredState) {
   } catch {}
 }
 
-const PAGE_TOTAL = TOUR_PAGE_ORDER.length;
+export const TOUR_PAGE_ORDER: TourPage[] = TOUR_CONFIGS.map((c) => c.page);
+
+interface FlatStep {
+  step: TourStep;
+  pageConfig: TourPageConfig;
+  stepIndex: number;
+  pageIndex: number;
+}
+
+export function buildFlatSteps(): FlatStep[] {
+  const result: FlatStep[] = [];
+  for (let pi = 0; pi < TOUR_CONFIGS.length; pi++) {
+    const config = TOUR_CONFIGS[pi];
+    for (let si = 0; si < config.steps.length; si++) {
+      result.push({
+        step: config.steps[si],
+        pageConfig: config,
+        stepIndex: si,
+        pageIndex: pi,
+      });
+    }
+  }
+  return result;
+}
+
+export const FLAT_STEPS = buildFlatSteps();
+export const TOTAL_STEPS = FLAT_STEPS.length;
 
 export function useFeatureTour(onNavigate?: (route: string) => void) {
   const [state, setState] = useState<StoredState>(loadState);
   const [active, setActive] = useState(false);
-  const [queueIdx, setQueueIdx] = useState(0);
-  const [stepIdx, setStepIdx] = useState(0);
 
-  const currentPage = TOUR_PAGE_ORDER[queueIdx];
-  const currentPageConfig = TOUR_CONFIGS.find((c) => c.page === currentPage) ?? null;
-  const currentStep = currentPageConfig?.steps[stepIdx] ?? null;
-  const totalSteps = currentPageConfig?.steps.length ?? 0;
-  const isLastPage = queueIdx >= PAGE_TOTAL - 1;
-  const pagesCompleted = state.completedPages.length;
+  const stepIdx = active ? state.currentStep : 0;
+  const current = FLAT_STEPS[stepIdx] ?? null;
+  const totalSteps = TOTAL_STEPS;
+  const isNewUser = !state.completed && !state.dismissed;
 
-  const overallProgress = Math.round(
-    ((queueIdx * 100 + (stepIdx / Math.max(totalSteps, 1)) * 100) / PAGE_TOTAL)
-  );
+  const overallProgress = totalSteps > 0
+    ? Math.round((stepIdx / totalSteps) * 100)
+    : 0;
 
-  const markPageComplete = useCallback((page: string) => {
+  const isLastStep = stepIdx >= totalSteps - 1;
+
+  const updateState = useCallback((partial: Partial<StoredState>) => {
     setState((prev) => {
-      const next = {
-        ...prev,
-        completedPages: [...new Set([...prev.completedPages, page])],
-      };
+      const next = { ...prev, ...partial };
       saveState(next);
       return next;
     });
   }, []);
 
   const startTour = useCallback(() => {
+    updateState({ currentStep: 0, completed: false });
     setActive(true);
-    setQueueIdx(0);
-    setStepIdx(0);
-    const first = TOUR_CONFIGS[0];
-    if (first && onNavigate) onNavigate(first.route);
-  }, [onNavigate]);
+    const first = FLAT_STEPS[0];
+    if (first && first.pageConfig.route !== "*" && onNavigate) {
+      onNavigate(first.pageConfig.route);
+    }
+  }, [onNavigate, updateState]);
 
   const stopTour = useCallback(() => {
     setActive(false);
-    setQueueIdx(0);
-    setStepIdx(0);
   }, []);
 
-  function syncQueueAndNavigate(targetQueueIdx: number) {
-    const page = TOUR_PAGE_ORDER[targetQueueIdx];
-    const config = TOUR_CONFIGS.find((c) => c.page === page);
-    setQueueIdx(targetQueueIdx);
-    setStepIdx(0);
-    if (config && onNavigate) onNavigate(config.route);
-  }
-
-  const nextStep = useCallback((): "step" | "page" | "complete" | undefined => {
-    if (!currentPageConfig) return;
-    if (stepIdx < currentPageConfig.steps.length - 1) {
-      setStepIdx((i) => i + 1);
-      return "step";
+  const navigateToStep = useCallback((targetIdx: number) => {
+    const target = FLAT_STEPS[targetIdx];
+    if (!target) return;
+    updateState({ currentStep: targetIdx });
+    const route = target.step.route ?? target.pageConfig.route;
+    if (route !== "*" && onNavigate) {
+      onNavigate(route);
     }
-    markPageComplete(currentPage);
-    if (!isLastPage) {
-      syncQueueAndNavigate(queueIdx + 1);
-      return "page";
-    } else {
+  }, [onNavigate, updateState]);
+
+  const nextStep = useCallback((): "step" | "complete" | undefined => {
+    if (isLastStep) {
+      updateState({ completed: true });
       stopTour();
       return "complete";
     }
-  }, [currentPageConfig, stepIdx, currentPage, isLastPage, queueIdx, markPageComplete, stopTour]);
+    const nextIdx = stepIdx + 1;
+    navigateToStep(nextIdx);
+    return "step";
+  }, [isLastStep, stepIdx, navigateToStep, updateState, stopTour]);
 
   const prevStep = useCallback(() => {
     if (stepIdx > 0) {
-      setStepIdx((i) => i - 1);
-    } else if (queueIdx > 0) {
-      const prevIdx = queueIdx - 1;
-      const prevPage = TOUR_PAGE_ORDER[prevIdx];
-      const prevConfig = TOUR_CONFIGS.find((c) => c.page === prevPage);
-      setQueueIdx(prevIdx);
-      setStepIdx(prevConfig ? prevConfig.steps.length - 1 : 0);
-      if (prevConfig && onNavigate) onNavigate(prevConfig.route);
+      navigateToStep(stepIdx - 1);
     }
-  }, [stepIdx, queueIdx, onNavigate]);
+  }, [stepIdx, navigateToStep]);
 
   const skipTour = useCallback(() => {
-    const nextState = { ...state, dismissed: true };
-    setState(nextState);
-    saveState(nextState);
+    updateState({ dismissed: true });
     stopTour();
-  }, [state, stopTour]);
+  }, [updateState, stopTour]);
 
   const resetTour = useCallback(() => {
-    const nextState: StoredState = { completedPages: [], dismissed: false };
-    setState(nextState);
-    saveState(nextState);
+    setState({ currentStep: 0, completed: false, dismissed: false });
+    localStorage.removeItem(STORAGE_KEY);
   }, []);
-
-  const isNewUser = state.completedPages.length === 0 && !state.dismissed;
 
   return {
     active,
-    currentStep,
+    current,
     stepIdx,
     totalSteps,
-    currentPage,
-    currentPageConfig,
-    isNewUser,
-    pagesCompleted,
     overallProgress,
-    isLastPage,
-    queueIdx,
+    isNewUser,
+    isLastStep,
     startTour,
     stopTour,
     nextStep,
     prevStep,
     skipTour,
     resetTour,
-    completedPages: state.completedPages,
   };
 }

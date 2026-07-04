@@ -1,0 +1,858 @@
+===============================================================================
+ JUPEB 2018 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+Let Q, N, Z and Q' denote the set of rational, natural, integer, complex and irrational numbers respectively. Which of the following set contains the whole set of real number?
+  A. N
+  B. Z ? C
+  C. Q ? Q' {0}
+  D. Q ? C
+
+Q2.
+Determine the solution set of the inequality 2x? ? 3x ? 2 $\lt$ 0
+  A. (??, 2)
+  B. (??, ??)
+  C. D. [??, 2]
+  D. [??, 2]
+
+Q3.
+Evaluate the conjugate of the complex number Z = ?1/(?1+i)
+  A. ?1?i
+  B. ????i
+  C. D. 1+i
+  D. 1+i
+
+Q4.
+Compute the value of x if 4^(?x?32^(x+1)+5x) = 16^(x+1)/3
+  A. ?
+  B. 2/5
+  C. 4/5
+  D. 5/3
+
+Q5.
+Find tan 75? in surd form
+  A. (?3+2)
+  B. (2??3)/2
+  C. (?3?2)
+  D. (2+?3)
+
+Q6.
+Given that log?? 2 = 0.3010, log?? 3 = 0.4771 and log?? 7 = 0.8451, compute log?? 72
+  A. 1.6205
+  B. 1.6205
+  C. 3.6105
+  D. 1.5025
+
+Q7.
+If U? = 3, U? = 4, and U? = a + bn, compute U?
+  A. 3
+  B. 4
+  C. 2
+  D. 8
+
+Q8.
+Let ? and ? be the roots of the equation: x? ? 5x + 6 = 0. Deduce the equation whose roots are ?? and ??
+  A. x? ? 13x + 36 = 0
+  B. x? ? 13x ? 13 = 0
+  C. x? + 13x + 36 = 0
+  D. x? + 13x ? 13 = 0
+
+Q9.
+Which form of partial fraction is equivalent to the algebraic fraction f(x)/(x?+1)(x?b)?
+  A. (Ax+B)/(x?+a) + C/(x?b)
+  B. Ax+B/(x?+a) + C/(x?b)
+  C. (Cx+d)/(x?b)? + (x?b)/(x+a)
+  D. Ax+B/(x?+a) + (Ex+F)/(x+b)?
+
+Q10.
+Determine the centre and the radius of the circle x? + y? ? 2ax + 2yb + a? = 0 in terms of a and b
+  A. Centre (a, ?b), radius = b
+  B. Centre (?a, b), radius = a
+  C. Centre (a, b), radius = b
+  D. Centre (?a, ?b), radius = a
+
+Q11.
+Express 3+4i/1+2i in the form a + bi where a and b are real numbers
+  A. 5/5
+  B. 3/5 + 5/17i
+  C. D. 11/5 ? 2/5i
+  D. 11/5 ? 2/5i
+
+Q12.
+Which of the following statements is FALSE?
+  A. (C?B) = A ? (C?B) for all set A, B and C
+  B. A ? (C?B) = (A?C)?B for all sets A, B and C
+  C. A?(B?C) = (A?B) for all sets A, B and C
+  D. (A?B) ? C = A ? (C?B) for all sets A, B and C
+
+Q13.
+If A has 32 elements, B has 42 elements and (A?C) has 62 elements, the number of elements in (A?C)
+  A. 10
+  B. 20
+  C. 30
+  D. 40
+
+Q14.
+Obtain lim(x?0) [ln(1+x?)]/(e^x ? 1)
+  A. 10
+  B. 20
+  C. 8
+  D. ?
+
+Q15.
+Evaluate lim(x??) (x? ? x)/(1+x?)
+  A. 2
+  B. 0
+  C. ?32
+  D. undefined
+
+Q16.
+If f(t) = (2x?+1+10)/(t?5)(t+3) is not continuous, determine where
+  A. 4, 10
+  B. ?5, 3
+  C. 5, 3
+  D. 5, ?3
+
+Q17.
+If ?f^(3/2) dx/x = In K, find the value of k
+  A. ?4 sin 2t
+  B. cos 4t
+  C. ?4 cos 2t
+  D. 4 sin 2t
+
+Q18.
+Find the d?x/dt? in terms of the parameter t when y = cos 4t, x = sin 2t
+  A. ?4 sin 2t
+  B. cos 4t
+  C. ?4 cos 2t
+  D. 4 sin 2t
+
+Q19.
+Find the equation of a circle centered at the origin with radius ?6
+  A. x? + y? = 6
+  B. x? + y? ? ?3 = 9
+  C. x? + y? = 1
+  D. x? + y? = 3
+
+Q20.
+Find the mean values of the function f(x) = x? between the limits x = 2 and x = 4
+  A. 3
+  B. 6
+  C. 5
+  D. 7
+
+Q21.
+Determine where (4t+10)/((t?5)(t+3)) is not continuous
+  A. ?3 < x < 1
+  B. ?1 < x < 1
+  C. all real numbers
+  D. x < ?3 or x > 1
+
+Q22.
+Find the equation of the normal to the curve of y = 2x? + 3x? ? 2x = 3 at x = 3 at x = 4
+  A. y = 10x ? 10
+  B. y = 10 ? 10x
+  C. y = (2?x)/10  D.
+
+Q23.
+Find the gradient of the curve y = (? + 3)? at the point (1, 0)
+  A. ?8
+  B. 1
+  C. 5
+  D. 7
+
+Q24.
+Find the area between the curve y = 2x? ? x, the x-axis and the ordinate x = 0 and x = 4
+  A. 28
+  B. square unit
+  C. ? square unit
+  D. ?5? square unit
+
+Q25.
+The radius of a sphere is increasing at the rate at 0.1sm/sec when r = 5cm, find the rate at which the surface area is increasing
+  A. 4?cm?/sec
+  B. 0.4?cm?/sec
+  C. 0.16?cm?/sec
+  D. 16?cm?/sec
+
+Q26.
+The speed of a car increased from 36km/h in 0.6km, what was the acceleration?
+  A. 6500km/h?
+  B. 6600km/h?
+  C. 6700km/h?
+  D. 6000km/h?
+
+Q27.
+A load of mass 80kg is placed in a lift. Calculate the reaction between the floor of the lift and load when the lift moves upwards at constant velocity
+  A. 80N
+  B. 800N
+  C. 89.8N
+  D. 784N
+
+Q28.
+If vector a = 4i ? 3i + 2k, vector b = 2i + j + 5k then |a ? b| is
+  A. ?645
+  B. ?654
+  C. ?456
+  D. ?564
+
+Q29.
+Given that u = 2i + 6j + 3k and v = 12i ? 4j + 3k. Use the direction cosines approach to find the angles between two vectors u and v
+  A. cos??(39/at)
+  B. cos??(19/29)
+  C. cos??(29/at)
+  D. cos??(19/at)
+
+Q30.
+Calculate the force P that produces a velocity 12m/s in 6s on a body of mass 0.5kg
+  A. 1
+  B. C. 2
+  C. 2
+  D. ?20
+
+Q31.
+Find the dot product of a = 3i + j and b = i + j
+  A. 4
+  B. 6
+  C. +6
+  D. ?20
+
+Q32.
+Find the cosine of the angles between the vectors i + j and d = i + j + j
+  A. ?2/2
+  B. ?2/C
+  D. ??2/?10
+
+Q33.
+Find the projection of the vector u = 2i + j and d = i + j + j
+  A. C. ?10
+  C. ?10
+  D. ?10
+
+Q34.
+If F = (2x?+1)i + 2xj + (x+1)k, find |d$\ce{^2F}$/dt?| at x = 2
+  A. ?69
+  B. ?39
+  C. ?69
+  D. ?39
+
+Q35.
+A force of 10N acts one a body of mass 3kg of travelling at 5m/s for 0.3s in the direction of its motion. Find the impulse of the force
+  A. 3Ns
+  B. 0.3Ns
+  C. 30Ns
+  D. 0.003Ns
+
+Q36.
+As a body is moved from one continent one earth to another. Which of the following properties of the body changes?
+  A. mass
+  B. volume
+  C. density
+  D. weight
+
+Q37.
+The velocity of a modeled Toy car is given by V(t) = 6t? ? 4t + 5. What distance is covered by the car between 5 seconds and 10 seconds?
+  A. 1850m
+  B. 1575m
+  C. 1445m
+  D. 1625m
+
+Q38.
+The mean and variance of the Bernoulli distribution are respectively
+  A. np and p
+  B. pq and npq
+  C. p and pq  D.
+
+Q39.
+A data set is namely distributed with mean 100 and variance 25. Find P(x<90)
+  A. 0.0105
+  B. 0.2381
+  C. 0.1680
+  D. 0.1587
+
+Q40.
+The probability under the standard normal distribution P[?0.4 < z < 0.4] is
+  A. 0.1554
+  B. 0.5000
+  C. 0.3018
+  D. 0.1587
+
+Q41.
+A two-tailed test has rejected regions on
+  A. both tails
+  B. left tail only
+  C. right tail only
+  D. no tail
+
+Q42.
+Find the geometric mean of the data set: 5, 6, 10
+  A. 25200
+  B. 158.75
+  C. 7.59
+  D. 12
+
+Q43.
+A coin tossed thrice. What is the probability of having two heads?
+  A. ?
+  B. 5/8
+  C. 1/8
+  D. ?
+
+Q44.
+Find the mean of the following data:
+
+| Marks | 42 | 50 | 62 | 75 | 87 |
+|-------|----|----|----|----|-----|
+| Freq. | 22 | 18 | 22 | 40 | 13 | 7 |
+  A. ?
+  B. ?
+  C. 5/8
+  D. ?
+
+Q45.
+Types of sampling in which each element of population has equally likely chance of occurrence in a random sample is classified as
+  A. regular and irregular sampling
+  B. error free sampling
+  C. inertia sampling
+  D. simple random sampling
+
+Q46.
+Mr. Okonkwo is trying to prove that the new method of teaching Mathematics is more effective than the traditional one, he will conduct a
+  A. one tailed test
+  B. two tailed test
+  C. joint estimate of population parameter
+  D. confidence interval
+
+Q47.
+A fair coin is tossed 10 times, what is the probability of obtaining a head 6 times?
+  A. 0.36
+  B. 0.58
+  C. 0.84
+  D. 0.21
+
+Q48.
+Find the value of n for which C = n/10 = C/5
+  A. 15
+  B. 20
+  C. 25
+  D. 30
+
+Q49.
+One bag contains 4 white balls and 2 black balls; another contains 3 white balls and 5 black balls. If one ball is drawn from each bag. Find the probability that one is white and one is black
+  A. 13/24
+  B. 13/16
+  C. 7/24
+  D. 7/14
+
+Q50.
+Four letters are chosen at random from the word RANDOMLY. How many ways can this be done?
+  A. 3/14
+  B. 7/15
+  C. 7/15
+  D. 14
+
+===============================================================================
+ JUPEB 2018 -- MATH THEORY
+===============================================================================
+
+Q1.
+.(a)** Write two advantages and two disadvantages of each of these sampling techniques:
+
+**(i)** Quota sampling
+
+**(ii)** Simple random sampling
+
+**(b)** The table below shows a frequency distribution:
+
+| Class | Frequency |
+|---|---|
+| 60 ? 62 | 5 |
+| 63 ? 65 | 27 |
+| 66 ? 68 | 42 |
+| 69 ? 71 | 18 |
+| 72 ? 74 | 8 |
+
+**(i)** Show the class boundaries and class mark of each class.
+
+**(ii)** Find the standard deviation.
+
+**(c)(i)** Construct the cumulative frequency curve.
+
+**(ii)** Find the median and the interquartile range.
+
+Q1.
+.$\mathrm{(a)}$** Decompose (x?1)/[(x+2)(x+1)?] into partial fractions.
+
+**(b)** Find the equations of the tangent of 9x? ? 4y? = 36 at the point (?2, 0).
+
+**(c)** What is the radius of the circle x? + y? ? 4x + 6y ? 12 = 0?
+
+Q1.
+.$\mathrm{(a)}$** From the first principle, find the derivative of the function f(x) = x? + sin x with respect to x.
+
+**(b)** Let the parametric equation of a curve C be given by y = t?/(1?t), x = sin(4t? ? 3). Find dy/dx.
+
+**(c)** Employ Simpson's rule to approximate ??^(?/2) cos?x dx, n = 6.
+
+Q1.
+.** The table below shows the scores x and scores y of 12 students in Mathematics and Physics test respectively:
+
+| Scores x | 65 | 63 | 67 | 64 | 68 | 62 | 70 | 66 | |---|---|---|---|---|---|---|---|---|
+| Scores y | 68 | 66 | 68 | 65 | 69 | 66 | 68 | 65 |
+| x | y |
+|---|---|
+| 68 | 71 |
+| 67 | 67 |
+| 69 | 68 |
+| 71 | 70 |
+
+**Given that** ?x = 800, ?y = 811,
+?x? = 5_,418 *(the digit after "5" is unclear ? likely 56,418 or 58,418)*, ?y? = 54,849, ?xy = 54,107
+
+**$\mathrm{(a)}$** Find the least square regression of y on x.
+
+**(b)** Obtain the correlation coefficient and interpret your result.
+
+**(c)** When the score of a student from the population is 51 in Mathematics, what would be his/her score in Physics?
+
+---
+
+Q1.
+.$\mathrm{(a)}$i)** Compute (1 + 3/(1+i))?
+
+**(ii)** Find the value of x and y respectively for which (3+4i)/(2x+yi) = 1 ? 2i
+
+**(b)** Prove by mathematical induction that 5?? + 3n ? 1 is an integer multiple of 3
+
+---
+
+Q1.
+.$\mathrm{(a)}$** Show that y = A cos x + B sin x is a solution of the differential equation d?y/dx? + y = 0.
+
+**(b)** If xy + sin xy + y = 0, find dy/dx at [1, ?/3].
+
+**(c)** Sketch the graph of P(x) = x? ? x? ? 6x?.
+
+**(d)** Calculate the area enclosed between the curve y = 5x ? x? ? 4 and the line y = x ? 1.
+
+---
+
+Q1.
+.$\mathrm{(a)}$** Two particles of mass 5kg and 3kg connected by a light inelastic string passing over a smooth fixed pulley. Find the acceleration of the particles and the tension in the string when the system is moving freely.
+
+**(b)** A stone is dropped from a height of 40 metres above the ground.
+
+**(i)** Find the time taken for the stone to reach the ground.
+
+**(ii)** Find the speed of the stone as it reaches the ground.
+
+**(c)** A dustbin of mass 30kg rests on an inclined plane at angle 30? to the horizontal surface. The reaction of the inclined plane on the dustbin is 27N. Find:
+
+**(i)** the acceleration of the dustbin if it moves down the plane
+
+**(ii)** the velocity attained after 5s if it moves with an initial velocity of 25m/s [take g = 9.8 m/s?]
+
+**(d)** Two forces f? and f? act at a point O as shown below.
+
+*[Diagram]*
+
+Find:
+
+**(i)** The horizontal and vertical components of the resultant force
+
+**(ii)** The magnitude of the resultant force
+
+**(iii)** The angle which the resultant force makes with the horizontal, correct to the nearest degree
+
+---
+
+Q1.
+.$\mathrm{(a)}$i)** Find the area of the triangle whose two adjacent sides are given as ? = 2i ? 3j and b? = 2i + 3j ? 4k.
+
+**(ii)** Show that the vectors ? = 3i ? 5j + 6k, b? = 2i + 3j ? 2k and c? = ?i + 8j ? 8k are coplanar.
+
+**(b)** A particle moving in a line has an acceleration of (3t ? 4) m/s? at time t seconds. The particle is initially 1m from O, a fixed point on the line, with a velocity of 2m/s. Find the time when the velocity is zero. Find also the displacement of the particle from O when t = 3.
+
+===============================================================================
+ JUPEB 2018 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+The first scientist to discover a cell when observing a thin section of dead cork under a crude compound microscope is
+  A. Robert Hooke
+  B. Anthony Van Leewenhoek
+  C. Theodore Schwann
+  D. Matthias J. Schneider
+
+Q2.
+The lowest layer of earth's atmosphere is the conducive place we live, weather happens there and as such, almost all clouds are found in this layer. In one word, make an evaluation of the description above
+  A. mesosphere
+  B. thermosphere
+  D. stratosphere
+
+Q3.
+The type of relationship in which an aphid (insect) harbours the bacterium Buchneraaphidicola, in its cytoplasm as source for essential amino acids while in exchange providing a secure habitat and ample nutrients for the bacterium can best be described as
+  A. mutualism
+  B. tynergism
+  C. commensalism
+  D. syntrophism
+
+Q4.
+The simplest viruses are referred to as
+  A. capsid
+  C. enveloped viruses
+  D. nucleocapsid
+
+Q5.
+Which of the following shows a scattered arrangement of vascular bundles?
+  A. T.S of monocot root
+  B. T.S of monocot stem
+  C. T.S of dicot root
+  D. T.S of Dicot stem
+
+Q6.
+In the decomposition process, different products are released. Carbon dioxide, energy, water plant nutrients and resynthesized organic carbon compounds. Identify the microorganisms responsible for the process
+  A. viruses
+  B. bacteria
+  C. fungi
+  D. algae
+
+Q7.
+The idea that cells always emerge from cell division i.e. Omis cellula a cellula
+  A. Robert Hooke
+  B. Anthony Van Leewenhoek
+  D. Matthias J. Schneider
+
+Q8.
+\_\_\_\_\_\_\_\_ is the plant growth regulator that acts as anti transpirant
+  A. cytokinin
+  C. ethylene
+  D. absiscic acid
+
+Q9.
+In the protozoan termite relationship the flagellated protozoan living in the gut converts the cellulose in the diet of wood into \_\_\_\_\_\_\_\_
+  A. glucose
+  B. cellulose
+  D. ethanol
+
+Q10.
+A farmer wets his crops daily. He noticed that the crops were growing but realized some had evaporated through the aerial parts of the plant. The process is referred to as \_\_\_\_\_\_\_\_
+  A. transportation
+  B. Osmosi
+  C. excretion
+  D. transpiration
+
+Q11.
+The sac like structures which are present in the cell and function in the structure and transport of the selected particles throughout the cell are called \_\_\_\_\_\_\_\_
+  B. Golgi bodies
+  C. nuclei
+  D. ribosome
+
+Q12.
+During coral bleaching there is loss of \_\_\_\_\_\_\_\_
+  A. phosphates
+  B. nitrogenous compounds
+  C. carbon dioxide
+
+Q13.
+Plasma membrane is
+  A. a non selective barrier
+  B. made of cellulose
+  C. impermeable
+
+Q14.
+A vegetable farmer might wish to increase the number of leaves, what will you recommend?
+  A. give the plant a dose of gibberellins
+  C. decapitate the shoot tip
+  D. remove side branches
+
+Q15.
+A slender, prostrate stem branches with long or short internodes, creeping on the ground and such internodes is called \_\_\_\_\_\_\_\_
+  B. offset
+  C. sucker
+  D. runner
+
+Q16.
+What was the contribution of Schleiden and Schwann to the knowledge of cell?
+  B. development of cell theory
+  C. development of cell structure
+  D. development of prokaryotic cell
+
+Q17.
+From a patient's complaints, and through observation of signs and symptoms, it was discovered that an acute infectious disease caused by the spare forming bacterium, Bacillus species called \_\_\_\_\_\_\_\_
+  A. SARS
+  C. diphtheria
+  D. brucellosis
+
+Q18.
+Which of the following is not a usual approach for the preservation of food and food products from microbial spoilage?
+  A. low temperatures
+  C. radiation
+  D. filtration
+
+Q19.
+A plantain trader needed to supply ripe plantains to a consumer in three days but he had unripe plantains. He then tied up the unripe plantains in a sac for three days after which the plantains became ripe. The ripening process could be likened to the effect of which of the following hormones?
+  A. gibberellins
+  B. cytokinin
+  D. auxin
+
+Q20.
+Beilschmiediamann is a plant that produces a fruit which is used as a rising agent in baking. The fruit is likely to contain \_\_\_\_\_\_\_\_
+  A. Mucor ellipsoideus
+  B. rhizopus stolonifer
+  C. rhizobium leguminosarum
+
+Q21.
+In 1984, there was an invasion of Lagos water hyancith (Eichhornicrassipes) in order to control it without polluting the waters with herbicide, an insect was introduces to selectively feed on water hyacinth and not on any other aquatic plants. The type of consecration measure is known as
+  A. pest control
+  C. biological selection
+  D. competitive selection
+
+Q22.
+In a tissue culture experiment, an investigator wishes to initiate root development; the appropriate hormone to be used to achieve is \_\_\_\_\_\_\_\_
+  A. zeatin
+  B. kinetic
+  C. gibberellic acid
+
+Q23.
+During pasteurization, milk and milk products are treated to the following conditions
+
+Q24.
+Communities have been known to exhibits stratification on both \_\_\_\_\_\_\_\_ and \_\_\_\_\_\_\_\_ planes
+  A. transverse; vertical
+  C. vertical; horizontal
+  D. tangential; parallel
+
+Q25.
+Guard cell differ from epidermal cells in having \_\_\_\_\_\_\_\_
+  A. mitochondria
+  B. vacuoles
+  C. cell wall
+
+Q26.
+Four potted plants were placed each in four sealed container. The relative humidity in container A was 70%, 50% in container B, 30% in container C and 10% in container D. In which of the containers will the rate of transpiration be highest?
+  A. container A
+  B. container B
+  C. container C
+
+Q27.
+Steam sterilization is carried out with an antoclave, a device somewhat like a pressure cooker. What are the operating conditions of the autoclave that makes it capable of being used to eliminate microbial spores?
+  A. 100?C for 15mins
+  B. 121?C for 15mins
+  D. 121?C for 30mins
+
+Q28.
+\_\_\_\_\_\_\_\_ is the plant anatomical structure that is responsible for humidification of the atmosphere
+  A. epidermis
+  C. cuticle
+  D. trochomes
+
+Q29.
+Autecology tends to describe relationship between which of the following components
+  A. organisms, edaphic and population
+  B. population, plants and temperature
+  C. environment, animals and community
+
+Q30.
+Transpiration in plants will be lowest when \_\_\_\_\_\_\_\_
+  B. wind velocity is high
+  C. there is excess of water in the soil
+  D. the atmosphere is dry
+
+Q31.
+The group of plants that absorb and transport water, minerals and organic nutrients by diffusion is called \_\_\_\_\_\_\_\_
+  B. nonvascular plants
+  C. hepatophyta
+  D. anthoceratphyta
+
+Q32.
+Glassware and other heat stable items may be sterilized by dry heat at \_\_\_\_\_\_\_\_
+  A. 160?C for 30mins
+  C. 160?C for 4
+  D. 160?C for 1h
+
+Q33.
+The relationship between the man and his cat can be described as \_\_\_\_\_\_\_\_
+  A. parasitism
+  B. predation
+  D. commensalism
+
+Q34.
+The relationship between the cat and the rate is called \_\_\_\_\_\_\_\_
+  A. ammensalism
+  C. commensalism
+  D. parasitism
+
+Q35.
+A flower that bears the ovary above the other floral parts is said to be \_\_\_\_\_\_\_\_
+  B. inferior
+  C. semi inferior
+  D. semi superior
+
+Q36.
+In chloroplasts of green plant, photosynthesis converts $\ce{CO2}$ into sugars in a process called ______
+  A. carbon synthesis
+  C. chemosynthesis
+  D. redox reaction
+
+Q37.
+The father of zoological classification is \_\_\_\_\_\_\_\_
+  A. Anthony Van Leeuwenhoek
+  C. Luis Pasteur
+  D. Charles Darwin
+
+Q38.
+\_\_\_\_\_\_\_\_ is a protein produced by lymphocytes in the presence of a specific foreign substance
+  A. antigen
+  B. antigenic agent
+  C. chemotherapeutic agent
+
+Q39.
+Nuclear membrane disappears of \_\_\_\_\_\_\_\_
+  A. anaphase
+  B. telophase
+  D. late prophase
+
+Q40.
+Which of the following ecological instruments measures the transparency of water?
+  A. hygrometer
+  B. hydrometer
+  C. light meter
+
+Q41.
+\_\_\_\_\_\_\_\_ consists of groups of axially elongated and tightly packed cells with unevenly thickened walls.
+  B. sclerenchyma
+  C. protective tissue
+  D. aerenchyma
+
+Q42.
+Artificially acquired active immunity can be induced by \_\_\_\_\_\_\_\_
+  B. antibiotic
+  C. Injection
+  D. antibody
+
+Q43.
+\_\_\_\_\_\_\_\_ exhibits alternating medusoid and polypoid forms in its life cycle.
+  A. vorticella
+  C. actinia
+  D. entamoeba
+
+Q44.
+Annelids have \_\_\_\_\_\_\_\_
+  A. elongated felt body
+  C. segmented flat body
+  D. elongated ciliated body
+
+Q45.
+Chiasma formation during meiosis occurs at which stage?
+  B. leplotene
+  C. zygotene
+  D. pachytene
+
+Q46.
+Infectious agents that cause spongiform encephalopathies such as scrapie in sheep and composed only of protein are called \_\_\_\_\_\_\_\_
+  A. viruses
+  C. virion
+  D. prokaryotic call
+
+Q47.
+Another word for detritus is \_\_\_\_\_\_\_\_
+  A. producer
+  C. consumer
+  D. primary consumer
+
+Q48.
+The respiratory pigment in insect is known as \_\_\_\_\_\_\_\_
+  A. haemogoblin
+  C. haemocyanin
+  D. haemocytes
+
+Q49.
+The following organisms have uniform cilia except
+  A. Paramecium
+  C. Balantidium
+  D. Didymium
+  B. None of the above
+
+Q50.
+A loaf of bread left on a kitchen cupboard was observed to have been infested with yellow, black and white patches after four days. The organisms that have imparted the colours are most likely to be
+  A. mucor, rhizopus and bacillus respectively
+  C. aspergillus, trochoderma and trochronympa respectively
+  D. bacillus, gonoderma and trichoderma respectively
+
+===============================================================================
+ JUPEB 2018 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+1. (a) A breeder had rabbits with brown hair. Using a Punnet square describe how the breeder could possibly know if the rabbits are homozygous dominant or heterozygous recessive
+(b) For two parents with sickle cell trait, work out the chances of producing a sickle cell anaemic child and a normal child
+
+Q2.
+2. (a) Define evolution
+(b) Differentiate between the following terms:
+(i) Divergent and convergent
+(ii) Ammesaism and commensalism
+(c) Enumerate four differences between Meiosis and Mitosis
+
+Q3.
+3. (a) Define the term autotrophic nutrition
+(b) Briefly describe the three main events that take place during the light dependent reactions of photosynthesis
+(c) State any two pigments present in the membranes of the chloroplast
+
+Q4.
+4. (a) In a tabular form, give 5 differences between the xylem tissue and the phloem tissue
+(b) Define the following terms:
+i. Apopast movement
+ii. Perfect flower
+iii. Translocation
+iv. Photorespiration
+v. Alternation of generation
+
+Q5.
+5. (a) Outline the function of the following organelles/structure in a prokaryotic cell:
+i. Gas vacuole
+ii. Fimbriae
+iii. Capsule
+iv. Endosphere
+v. Flagella
+(b) Write short notes on the following types of culture media:
+i. Enriched medium
+ii. Selective medium
+iii. Differential medium
+iv. Complex medium
+v. Chemically defined medium
+
+Q6.
+6. (a) Outline the general morphological shape of bacteria
+(b) Explain the roles of safranin and methylene Blue in Gram staining procedure
+
+Q7.
+7. (a) State seven characteristics of phylum arthropoda
+(b) Insects are said to be the most successful animals. Discuss the characteristics that contribute to their success
+
+Q8.
+8. (a) Draw and label the mammalian heart
+(b) Briefly describe pulmonary circulation in mammals
+a. Specimen A = carrot tuber
+b. Specimen B = cassava tuber
+c. Specimen C = Sweet potato tuber
+d. Specimen D = Irish potato tuber
+e. Specimen E = cloves of garlic
+f. Specimen F = tapeworm
+g. Specimen G = housefly
+h. Specimen H = anopheles mosquito
+In a tabular form, state FOUR observable differences between specimens C and D
+(a) Mention two economic importance of specimen
+(b) How are specimens A and B propagated?
+(c) Which of the specimens provided is a good source of Vitamin A?
+(d) List at least two main features of specimen E
+(a) State 3 adaptive structures of specimen F to its environment
+(b) Highlight 2 economic importance of specimen G
+(c) What significant difference is there in the mouth parts of specimen G
+(d) State any 3 observable similarities between specimens G and H
+
+===============================================================================
+ END OF 2018 QUESTIONS
+===============================================================================

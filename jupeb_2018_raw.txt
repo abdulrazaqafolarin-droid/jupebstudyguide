@@ -1,0 +1,453 @@
+===============================================================================
+ JUPEB 2018 — PHYSICS OBJECTIVE (Q1-Q50)
+===============================================================================
+
+Q1.
+What are the dimensions of momentum and surface tension respectively?
+  A. ML$^{2}T$-?, ML$^{2}T$-?
+  B. MLT-?, MT-?
+  C. ML$^{2}T$-?, MLT-?
+  D. MLT-?, MLT-?
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q2.
+Given three vectors A = 3i+3k, B = -1+2j+k and C = 3i+5j+3k, find (A+B).C
+  A. 5
+  B. -8
+  C. -10
+  D. -14
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q3.
+When a box rests on the floor, what forces act upon it?
+  A. gravitational and centrifugal forces
+  B. gravitational and acceleration
+  C. gravitational and normal forces
+  D. gravitational and frictional forces
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q4.
+If the net force applied in the direction of motion to a certain object on a horizontal frictionless surface is doubled, what happens to the acceleration?
+  A. halved
+  B. doubled
+  C. unchanged
+  D. quadrupled
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q5.
+What is the average power expended by a student weighing 700N who climbs at constant speed to the top of an 8m vertical rope in 10s?
+  A. 875W
+  B. 560W
+  C. 600W
+  D. 400W
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q6.
+A projectile launched at 45 with a velocity hits a target. What will be the velocity if the range is doubled?
+  A. 560m/s
+  B. 415m/s
+  C. 414m/s
+  D. 400.5m/s
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q7.
+What is the instantaneous speed of a car moving according to the equation (2t3 + 4t2 + 11t) at time t = 4 secs?
+  A. 7.72s
+  B. 1.41s
+  C. 3.41s
+  D. 1.40s
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q8.
+A mass of 10g is suspended from the end of a spring whose force constant is 0.2N/m. Calculate the period of the harmonic motion.
+  A. the hidden heat that changes the liquid to vapor at same temperature
+  B. heat that raises temperature to boiling point
+  C. heat that converts liquid at boiling point
+  D. heat that changes unit mass at boiling point
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q9.
+What is the specific latent heat of evaporation of a liquid?
+  A. 450m/s
+  B. 239m/s
+  C. 409m/s
+  D. 298m/s
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q10.
+A swimming pool is filled with water of refractive index 1.33. Calculate the depth of the pool if the difference between the apparent and real depth is 1.5m.
+  A. 1.5m
+  B. 3.0m
+  C. 4.5m
+  D. 6.0m
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q11.
+A plane progressive wave is represented by y = 3 sin pi(200t + 7.5x). What are the wavelength and speed respectively?
+  A. 1.75m, 57m/s
+  B. 0.57m, 100m/s
+  C. 6.0m
+  D. 7.5m
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q12.
+A student is sighted with a near point of 100cm. What power of lens will the student use to read a newspaper at a normal near point?
+  A. 0.27m, 27m/s
+  B. 0.175m, 100m/s
+  C. 3.0D
+  D. 0.33D
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q13.
+The measurement of a thermodynamic quantity is properly known as which law of thermodynamics?
+  A. zeroth law of thermodynamics
+  B. second law of thermodynamics
+  C. first law of conservation of energy
+  D. law of conservation of thermodynamics
+  Answer: D
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q14.
+A light ray from air to another medium has an angle of incidence of 30 while it was refracted at an angle of 22. What is the refractive index of the second medium?
+  A. 30
+  B. 22
+  C. 45
+  D. 60
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q15.
+Calculate the mass of ice that would melt 2kg of copper at the boiling point of water is quickly transferred to a block of ice at 0C without heat loss.
+  A. 1.42
+  B. 1.52
+  C. 1.35
+  D. 1.33
+  Answer: D
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q16.
+What is the force of repulsion between two point charges 5microC and 8microC at a distance of 0.02 apart?
+  A. 33/80 kg
+  B. 80/33 kg
+  C. 33 kg
+  D. 5 kg
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q17.
+A battery of E.m.f of 24V and internal resistance 4ohm is connected to a resistor of 32ohm. What is the terminal potential?
+  A. 1800N
+  B. 900N
+  C. 300N
+  D. 450N
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q18.
+Calculate the peak alternating current which can cause a power dissipation of 200W heating coil of 100ohm.
+  A. 0.41A
+  B. 0.63A
+  C. 10A
+  D. 1.0A
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q19.
+The study of charge at rest as well as laws that govern them is known as?
+  A. electromagnetism
+  B. electrodynamics
+  C. electrostatics
+  D. electrophones
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q20.
+Which of the following are true about electric line of force?
+  A. they terminate from positive charges
+  B. they terminate on negative charges
+  C. they intersect each other
+  D. they repel each other
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q21.
+Which of the following statements is correct about the charges X and Y in the figure?
+  A. I, II and IV
+  B. I and II only
+  C. I, II and IV only
+  D. I and II only
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q22.
+In which of the following processes is the knowledge of electrostatics applicable?
+  A. washing of fly ash emissions
+  B. reduction of fly ash emissions
+  C. driving of cars
+  D. knowledge of electrostatics
+  Answer: D
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q23.
+The direction of force on a current carrying conductor placed in a magnetic field can be found using which rule?
+  A. cork screw rule
+  B. Fleming's left hand rule
+  C. Fleming's right hand rule
+  D. Using a compass
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q24.
+A semiconductor diode is used in rectifying alternating current into direct current mainly because it?
+  A. allows current to flow in only one direction
+  B. is non linear
+  C. offers a high input resistance
+  D. allows current to flow in either direction
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q25.
+If the bulk modulus of water is 8 x 1011N/m2, estimate the change in volume of 300cm3 of water subjected to a pressure of 35mPa.
+  A. 0.00013cm3
+  B. 0.0013cm3
+  C. 0.013cm3
+  D. 0.13cm3
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q26.
+Which of the following is true for a perfectly inelastic collision?
+  A. I and II only
+  B. III and IV only
+  C. II only
+  D. IV only
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q27.
+A laser beam is incident at an angle of 30 from the vertical onto a solution of corn syrup in water. If the beam is refracted to 19.24 from the vertical, what is the index of refraction of the syrup solution?
+  A. 1.52
+  B. 1.33
+  C. 1.44
+  D. 1.00
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q28.
+What is the internal energy of 1.0mol of an ideal monatomic gas at 273K?
+  A. 3.2 x 103J
+  B. 3.3 x 103J
+  C. 3.4 x 103J
+  D. 3.5 x 103J
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q29.
+The gravitational force between two masses m1 and m2 at a distance r apart is given by F = $Gm_{1}m$2/r2. What is the dimensional formula of the universal gravitational constant G?
+  A. M-1L3T-2
+  B. $M_{3}L$-1T-2
+  C. ML-1T-2
+  D. $M_{3}LT$-2
+  Answer: D
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q30.
+A Carnot engine operates between temperature of 500K and 3K and accepts a heat input of 1200J. What is the work output?
+  A. 720J
+  B. 240J
+  C. 480J
+  D. 500J
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q31.
+Two identical travelling waves y1 = ym sin(kx - wt) and y2 = ym sin(kx - wt + n) are combined. What is the resultant amplitude produced by the two waves destructive interference?
+  A. 0
+  B. ym
+  C. ym
+  D. 2ym
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q32.
+What is the correct order of increasing frequency and decreasing wavelength of the electromagnetic spectrum?
+  A. radio wave  infra ray  visible light  ultraviolet  X-ray  gamma ray
+  B. gamma ray  x-ray  ultra violet  visible light  infra ray  radio wave
+  C. infra ray  ultra violet  x-ray  radio wave  visible light  gamma ray
+  D. visible light  gamma ray  infra ray  radio wave  x-ray  ultra violet
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q33.
+What is an example of a non-contact force?
+  A. normal force
+  B. frictional force
+  C. magnetic force
+  D. tensional force
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q34.
+A 20microF capacitor is connected to a 120V, 60Hz source. What is the capacitance reactance?
+  A. 132.6ohm
+  B. 177.6ohm
+  C. 265.5ohm
+  D. 123.5ohm
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q35.
+What amount of energy is stored in an inductor of inductance 1.5H when a current of 1.5A flows through it?
+  A. 6.25J
+  B. 3.375J
+  C. 1.69J
+  D. 2.75J
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q36.
+A radioactive material has a half-life of 24 days. What is its decay constant?
+  A. 2.88 x 10-2/day
+  B. 0.693/day
+  C. 1.44 x 10-2/day
+  D. 3.38 x 10-2/day
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q37.
+A spaceship at 20,000m height is orbiting the moon. If its motion is only affected by the gravitational pull of the moon, find the time it takes for a single orbit (Mmoon = 7.34 x 1022kg and Rmoon = 1.738 x 106m).
+  A. 76mins
+  B. 96mins
+  C. 101mins
+  D. 10mins
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q38.
+Which of the following is true of an equipotential surface?
+  A. it is always at right angle to the lines of equipotential surface
+  B. it is always parallel to the lines of force
+  C. it varies with the shape of the conductor
+  D. it can be drawn in the absence of an absence field
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q39.
+Which of the following expressions is FALSE about photoelectric effect?
+  A. the maximum kinetic energy Emax of an ejected electron is given by Emax = hf
+  B. the maximum kinetic energy Emax of an ejected electron is thus Emax = h(f  f0)
+  C. the work function is given by  = hf0
+  D. the maximum kinetic energy Emax of an ejected electron is Emax = hf + f0
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q40.
+Which of the following transitions in a hydrogen atom emits the photon of lowest frequency?
+  A. n1 = 4  n2 = 3
+  B. n1 = 3  n2 = 1
+  C. n1 = 4  n2 = 2
+  D. n1 = 2  n2 = 1
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q41.
+Calculate the binding energy per nucleon for 185Si which has a mass number given that mass of proton is 27.9698amu and mass of neutron is 1.00782825amu.
+  A. 8.54MeV
+  B. 8.64MeV
+  C. 8.44MeV
+  D. 8.43MeV
+  Answer: B
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q42.
+From Rutherford's experiment on the structure of the atom, which conclusion was made?
+  A. the atom is a sphere of positive charges embedded with negative charges
+  B. electrons constitute most of the mass of the atom
+  C. the atom's positive charges were concentrated in a tiny massive central core
+  D. the atom does not contain a nucleus
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q43.
+Which of the following statements about Newton's laws of motion are correct?
+  A. I, II and III
+  B. II only
+  C. III only
+  D. II and III only
+  Answer: D
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q44.
+Which of the following is a wrong assumption of the Galilean transformation?
+  A. length is the same in all frames
+  B. length is different when measured from another frame of reference
+  C. a frame can move with constant relative velocity to another
+  D. the Galilean transformation
+  Answer: D
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q45.
+A sodium metal is illuminated by light of frequency 6.7 x 1014Hz. Calculate the energy of the scattered photon.
+  A. 1.42 x 10-19J
+  B. 3.00 x 10-19J
+  C. 4.42 x 10-19J
+  D. 7.42 x 10-19J
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q46.
+What is the most stable state of an electron in an atom?
+  A. excited state
+  B. n = 0 state
+  C. ground state
+  D. n =  state
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q47.
+The function of the x-rays in the Millikan's oil drop experiment can be achieved using?
+  A. electric field
+  B. magnetic field
+  C. Betatron
+  D. radioactive material
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q48.
+Which of Newton's laws of motion can be expressed in terms of momentum?
+  A. I. in the absence of external forces, total momentum of given system remain constant
+  B. II. the rate of change of momentum is equal to the momentum is equal to the net applied force
+  C. III. Whenever two bodies exert forces on one another, the resulting changes on momentum are equal and opposite
+  D. I and II only
+  Answer: C
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q49.
+What is the work done in transferring 5Mc of charge from point B to point A in an electric field if the potential difference between B and A is?
+  A. 1.5kV
+  B. 0.2kV
+  C. 3kV
+  D. 6kV
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.
+
+Q50.
+Which gives the correct relationship between the intensity of light and its amplitude?
+  A. I alpha $A_{2}$
+  B. I alpha A
+  C. I alpha 1/A
+  D. I alpha 1/$A_{2}$
+  Answer: A
+  Explanation: AI analysis failed. The response was not valid JSON.

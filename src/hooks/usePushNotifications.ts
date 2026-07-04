@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BCzx03Ds_U9JPP4VDWOzcYpw5ETez0tH2s6XFdDCBMzowsye2YCwwMu2XdKW4d35pVLF1ThFGGbuDdW4QCGypaw';
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BJS4IJQh3J57TGicjw2WzecX7YygxB2rVQGWN0TV1vNxlFg-CgF67VhrIvcs1Y7Y4_FsnbJ3qpaO9PSqUVe45FM';
 const PUSH_ENABLED = 'push_enabled';
 
 function urlBase64ToUint8Array(base64: string): Uint8Array {

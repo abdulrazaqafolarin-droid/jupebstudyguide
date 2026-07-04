@@ -616,8 +616,16 @@ export function ChatArea({
       clearTimeout(typingTimerRef.current);
       typingTimerRef.current = null;
     }
+    // Increment chat messages sent counter for achievements
+    if (user?.id) {
+      try {
+        const key = `u:${user.id}:chat-messages-sent`;
+        const cur = JSON.parse(localStorage.getItem(key) || '0');
+        localStorage.setItem(key, JSON.stringify(cur + 1));
+      } catch {}
+    }
     inputRef.current?.focus();
-  }, [input, onSend, onEditMessage, editingMessage, replyTo, onTyping]);
+  }, [input, onSend, onEditMessage, editingMessage, replyTo, onTyping, user]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);

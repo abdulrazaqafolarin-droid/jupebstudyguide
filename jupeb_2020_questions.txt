@@ -1,0 +1,1105 @@
+===============================================================================
+ JUPEB 2020 — PHYSICS OBJECTIVE
+===============================================================================
+
+Q0.
+Which of the above statement are correct? (referring to statements about fundamental and derived quantities)
+  I. all fundamental quantities are scalar quantities
+  II. all derived quantities are vector quantities
+  III. all fundamental quantities are scalar quantities
+  IV. not all derived quantities are vector quantities
+  A. I, II and III
+  B. I, II and IV
+  C. I, II and III and IV
+  D. II only
+
+Q0.
+A body generates 60 cycles per second of a progressive wave travelling at 20m/s, what is the wavelength of the wave?
+  A. 5.12m
+  B. 0.33m
+  C. 2.5m
+  D. 0.50m
+
+Q0.
+I. It should be a good conductor of heat
+  II. It should be opaque
+  III. It should wet glass
+  IV. It should have a high melting point and low boiling point
+  Which of the above properties are NOT those of a suitable thermometric liquid?
+  A. I and II
+  B. I and III
+  C. I and III
+  D. (partially cut)
+
+Q0.
+The equation a = 2 + 2t represents the acceleration of a particle in a time t. Find the instantaneous velocity after 4s.
+  A. 8ms
+  B. 32 ms
+  C. 24 ms
+  D. 42 ms
+
+Q0.
+A body is dropped from a given height under gravity. The kinetic energy at its half way is:
+  A. A little above half on its initial energy
+  B. A little below half on its initial energy
+  C. half of its energy
+  D. little above its energy
+
+Q0.
+The following statements/expressions are false except:
+  A. A close system allows only the exchange of matter with the surrounding
+  B. An adiabatic change refers to change of pressure and temperature only
+  C. for a given mass of a gas C  > C
+  D. dQ = dU   dW
+
+Q0.
+How many grams of water at 20 C must be added to 35g of ice at 0  to melt it completely?
+[specific heat capacity of water = 4.2   10  Jkg  K  , specific latent heat of fusion of ice = 3.4   10  JKg  ]
+  A. 320.2g
+  B. 445.2g
+  C. 125.0g
+  D. 129.8g
+
+Q0.
+A 200 turn coil having an axial length of 30mm and a radius of 10mm is pivoted in a magnetic field having a flux density of 0.8T. If the coil carries a current of 0.5S, calculate the torque acting on the coil.
+  A. 4.8Nm
+  B. 0.48Nm
+  C. 0.0048Nm
+  D. 0.00048Nm
+
+Q0.
+Which of the following statements is correct about an elastic collision?
+  A. only the total momentum of the colliding bodies is conserved
+  B. only the total kinetic energy and total kinetic energy are conserved
+  C. both of the momentum and total kinetic energy are conserved
+  D. neither the momentum of the colliding bodies nor the total kinetic energy is recoverable
+
+Q0.
+The safety speed of a vehicle on a curve horizontal road is:
+  A. rg
+  B. frg
+  C. rg
+  D. little above its energy
+
+Q0.
+Calculate the critical angle for a ray of light which is incident at a water glass surface.
+  A. 42
+  B. 49
+  C. 57
+  D. 63
+
+Q0.
+The gas model which considers the gas molecules to be small particles, which are far apart and move randomly at high speed and colliding elastically is called:
+  A. real gas theory
+  B. molecular gas theory
+  C. kinetic gas theory
+  D. atomic gas theory
+
+Q0.
+A string with a force 80N has an extension of 0.05m. If it is used to shoot a stone of mass 20g, what is the velocity of the stone?
+  A. 0.14m/s
+  B. 1.414m/s
+  C. 14.14m/s
+  D. 141.4m/s
+
+Q0.
+An aircraft carrier deck with a horizontal velocity of 90ms  . If it is brought to rest in a distance of 100m, calculate the average retarding force of mass 2.0   10  kg lands on an aircraft carrier deck.
+  A. 8.1   10 N
+  B. 4.1   10
+  C. 2.0   10 N
+  D. 2.0   10 N
+
+Q0.
+If two objects are each in thermal equilibrium with a third object, then the two objects are in thermal equilibrium with each other. This is a testament of:
+  A. A law of heat conservation
+  B. zeros law of thermodynamics
+  C. first law of thermodynamics
+  D. law of thermal preservation
+
+Q0.
+A capacitor stores 0.24 coulombs at 10V. Calculate its capacitance.
+  A. 0.024F
+  B. 0.12F
+  C. 0.6F
+  D. 0.8F
+
+Q0.
+The reluctance of an object to start moving what once it is at rest or stationary and its reluctance to stop moving is known as:
+  A. inertia
+  B. weight
+  C. reaction
+  D. action
+
+Q0.
+Which of the following is a suitable expression for Poiseuille's equation for the flow of liquid through a tube?
+  A. L/(a  x )
+  B. P(a  x )/4 L
+  C. 4 L/(a +d )
+  D. 4  /x
+
+Q0.
+The song of a bird with an intensity of 1.4   10   W/m  and frequency of 6.0kHz is heard by a hunter in the woods. Calculate the displacement amplitude of the sound wave.
+  A. 1.2   10   m
+  B. 2.2   10   m
+  C. 4.2   10   m
+  D. 7.4   10   m
+
+Q0.
+The SI units for magnetic flux is:
+  A. fluxon (Fl)
+  B. Weber (Wb)
+  C. Tesla (T)
+  D. Guass (G)
+
+Q0.
+In an extrinsic semi-conductor, electricity is conducted through:
+  A. electrons
+  B. holes
+  C. electrons and holes
+  D. electrons and proton
+
+Q0.
+Two blocks of masses m  = 300g and m  = 500g in constant with each other, rest on a table and the table is 0.4, what must be the value of the applied force if the blocks are to have an acceleration of 200cm/s ?
+  A. 7.84N
+  B. 1.60N
+  C. 4.74N
+  D. 3.14N
+
+Q0.
+A small metal sphere with diameter 12mm is dropped into glycerin. The viscous force on the object is 3.2N. Calculate the coefficient of viscosity of the fluid if the terminal velocity of the object is 8ms  .
+  A. 1.57 Ns/m
+  B. W/m  and frequency of 6.0kHz is heard by a
+  C. the object is 8ms
+  D. (page cut)
+
+Q0.
+Which of the following types of radiation has the longest wavelength?
+  A. ultra-violet
+  B. radio-wave
+  C. light wave
+  D. microwaves
+
+Q0.
+An RLC circuit is used in a radio to tune into the radio Lagos FM station broadcasting at 93.5Hz. The resistance is 15  and the inductance is 1.6H. Calculate the capacitance used.
+  A. 1.8 F
+  B. 2.5 F
+  C. 3.8 F
+  D. 5.0 F
+
+Q0.
+The magnitude of the mass of an object placed at the earth's North Pole is:
+  A. zero
+  B. greater at the pole than on earth surface C
+  C. of constant value
+  D. lesser at the pole
+
+Q0.
+Buttered paper is an example of:
+  A. a transparent object
+  B. a translucent object
+  C. an opaque object
+  D. a luminous object
+
+Q0.
+A string whose linear density is 400 g/m under a tension of 55N receives a sinusoidal wave of frequency 8Hz. Find the angular speed.
+  A. 50.3 rad/s
+  B. 40.4 rad/s
+  C. 30.8 rad/s
+  D. 25.1 rad/s
+
+Q0.
+Which of the following is true of electrical conductors?
+  A. they are materials in which some of the electrons are free electrons
+  B. they are materials in which none of the electrons are free electrons
+  C. they are materials in which all of the electrons are free electrons
+  D. they are material in which some of the neutrons are free conductors
+
+Q0.
+Vectors A and B are said to be parallel if:
+  A. A.B = 0
+  B. A.B = 90
+  C. |A B| = 90
+  D. |A B| = 0
+
+Q0.
+Determine the rate of radiant emission per m  from a blackbody at 25 C.
+  A. 4.42 Ns/m
+  B. 2.81 Ns/m
+  C. 3.54 Ns/m
+  D. 2.81 Ns/m
+
+Q0.
+A truck of mass 150kg is released from rest at A and moves along the frictionless track as shown in the figure below. Calculate its maximum Kinetic energy.
+  A. 30kJ
+  B. 60kJ
+  C. 120kJ
+  D. 90kJ
+
+Q0.
+In longitudinal waves, the direction of vibration of the particle is:
+  A. perpendicular to the propagation of wave
+  B. parallel to the propagation of wave
+  C. different from each other
+  D. variable from time to time
+
+Q0.
+In a double slit experiment the distance between the fringes on a screen was too small to measure. What would increase the distance between the fringes?
+  A. increasing the distance between the light source and the slit
+  B. increasing the distance between the slits and the screen
+  C. increasing the distance between the slits
+  D. decreasing the frequency of the light source
+
+Q0.
+A gas of volume 400cm  at 27 C is heated at constant pressure to a temperature of 45 C. What is its new volume?
+  A. 424cm
+  B. 42.4cm
+  C. 4.24cm
+  D. 0.424cm
+
+Q0.
+The carriers of charge in a gas are:
+  A. electrons only
+  B. ions only
+  C. electrons and holes
+  D. electrons and ions
+
+Q0.
+A battery of e.m.f 2.50V with an internal resistance 0.5  is connected in series to a resistor of 10 . Calculate the current flowing in the circuit.
+  A. 2.38A
+  B. 0.238A
+  C. 23.8A
+  D. 0.023A
+
+Q0.
+The force between two charges is $N_{120}N$. If the distance between the two charges is doubled, the magnitude of the force will be:
+  A. 60N
+  B. 30N
+  C. 40N
+  D. 15N
+
+Q0.
+The electric potential along an x-axis is given by the expression V = ax   bx , where a and b are constants. At what point on the x-axis is the electric field zero?
+  A. x = 0
+  B. x = a/2b
+  C. x = 2a/b
+  D. x = 3a/b
+
+Q0.
+A substance has a half-life of 5 minutes. After 10 minutes the count rate was observed to be 500. What was its count at zero time?
+  A. 100
+  B. 200
+  C. 2000
+  D. 5000
+
+Q0.
+One of the features of the nuclear fission process is that:
+  A. neutrons are not released
+  B. it leads to chain reaction
+  C. the sum of the masses of the reactants equals the sum of the masses of the products
+  D. its products are non-radioactive
+
+Q0.
+The characteristic X-rays depend on the:
+  A. electron energy
+  B. tube voltage
+  C. electron wavelength
+  D. target
+
+Q0.
+A hydrogen atom is in its fourth excited state. Calculate the radius of the electrons Bohr orbit.
+  A. 1.32   10  m
+  B. 8.46   10   m
+  C. 2.65   10   m
+  D. 2.13   10   m
+
+Q0.
+Find the charges on a stationary oil drop of mass 0.5kg located at a distance 5mm between two plates with potential difference 1000V in an electric field.
+  A. 2.5   10  C
+  B. 2.5   10  C
+  C. 2.5   10  C
+  D. 2.5   10 C
+
+Q0.
+An element and its isotopes only differ in the number of:
+  A. protons
+  B. neutrons
+  C. electrons
+  D. atomic number
+
+Q0.
+The electromagnetic radiation used in medicine is:
+  A. hard X-ray
+  B. soft X-ray
+  C. cosmic ray
+  D. gamma ray
+
+Q0.
+The pressure of a confined fluid is measured reliably by which of the following devices?
+  A. manometer and mercury barometer
+  B. thermometer and manometer
+  C. hydrometer and barometer
+  D. barometer and mercury barometer
+
+Q0.
+What is the de Broglie wavelength for an electron moving with a speed of 3.0   10  m/s?
+  A. 2.43   10   m
+  B. 2.43   10   m
+  C. 2.43   10  m
+  D. 2.43   10  m
+
+Q0.
+The essential parts of an AC generator consists of the following except:
+  A. field magnet
+  B. slip rings
+  C. split rings
+  D. brushes
+
+Q0.
+Calculate the maximum kinetic energy of liberated electrons when Caesium with function 8.6 10  Hz is illuminated by light of frequency 25   10   J.
+  A. 2.7   10   J
+  B. 6.4   10   J
+  C. 3.3   10   J
+  D. 5.4   10   J
+
+Q0.
+Test question?
+  A. Option A
+
+===============================================================================
+ JUPEB 2020 — PHYSICS THEORY
+===============================================================================
+
+Q1.
+(a) i. List four characteristics of waves
+ii. Define linear magnification
+iii. Write down without proof the formula for a thin lens in air
+
+(b) The particle displacement y of air molecules due to a sound wave is given by y = 0.008 cos kz sin kz, where k = 4?/m and w = 50? rad/s, calculate:
+i. The distance between two consecutive nodes
+ii. The amplitude after 0.56s
+
+(c) A truck travels down a highway at a speed of 66m/s with its horn emitting sound at a frequency of 800Hz. What frequency is heard by a passenger in a car travelling at 60m/s in the same direction, as the car and truck approach each other? [take the speed of sound in air to be 350m/s]
+
+Q2.
+(a) i. State Fleming's left hand rule
+ii. State two factors upon which the magnitude of the force on a charge moving in a magnetic field depend on
+
+(b) An electron is accelerated by a 2.5kV potential difference. How strong a magnetic field must be experimented by the electron if its path is a circle of radius 4.0cm?
+
+(c) A step up transformer's primary coil has 400 turns. Its secondary coil has 1200 turns. The primary coil is connected to an AC generator having an e.m.f of 150V
+
+i. Calculate the e.m.f of the secondary circuit
+ii. Find the current in the primary circuit of the current in the secondary circuit is 5A
+iii. Determine the power drawn by the primary circuit
+iv. Determine the power supplied by the secondary circuit
+
+Q3.
+(a) What is diffraction grating?
+
+(b) Distinguish between the following:
+i. Coherent sources and incoherent sources
+ii. Constructive interference and destructive interference
+
+(c) Determine the angular positions of the first and second order maximum for light of wavelength 400nm and 700nm incident on a grating containing 10000 lines/cm
+
+Q4.
+(a) Briefly explain the following:
+i. Young's modulus
+ii. Stiffness of an elastic material
+
+(b) Figure 1 shows a graph of force against extension for a metal specimen. Calculate the:
+i. Force constant of the specimen
+ii. Work done in stretching the specimen up to the proportional limit
+
+(c) Two particles of mass 0.20kg and 0.30kg are placed 0.15m apart. A third particle of mass 0.050kg is placed between them on the line joining the first two particles. Calculate:
+i. The gravitational force acting on the third particle if it is placed 0.050m from the 0.30kg mass;
+ii. Where along the line should it be placed for no gravitational force to be exerted on it?
+
+Q5.
+$\mathrm{(a)}$ i. Define unit vector
+ii. State the work energy theorem
+
+(b) A certain satellite is in circular orbit about the earth at an altitude of 550km. If the satellite makes a revolution every 110 minute, calculate:
+i. Its orbital speed
+ii. Its centrifugal acceleration
+(R_earth = 6.4 \times 10^{6}$m)
+
+(c) State without proof Bernoulli's equation for a tube flow with varying cross-sectional area. State each of the component and each of the parameters with their associated S.I units
+
+Q6.
+A circuit used to measure the energy transferred from a battery is as shown in fig 2a. The energy is transferred to a variable resistor of resistance R.
+
+Diagram
+
+The battery has an electromotive force (e.m.f) E and an internal resistance r. The potential difference (p.d) across R is V. The current in the circuit is I.
+
+(a) i. With reference to the circuit, distinguish between the definition of e.m.f and p.d
+ii. State Kirchoff's second law;
+iii. Using Kirchoff's second law, determine an expression for the current I in the circuit
+
+(b) The variation with current I of the p.d V across R is shown in fig 2b.
+
+Diagram
+
+Use fig 2b to determine:
+The e.m.f E
+The thermal resistance
+
+(c) i. Using data from figure 2b in (b) above, calculate the energy transferred to R per unit time for a current of 1.6A
+ii. Use your answers from (bi) and (ci) to calculate the efficiency of the battery for a current of 1.6A
+
+Q7.
+(a) Define a photon
+
+(b) A photon of wavelength 0.0033nm is incident on an isolated stationary electron of mass m_e
+
+Diagram
+
+The photon is deflected elastically by the electron. The wavelength of the deflected photon is 0.0038cm. Calculate for the incident photon,
+i. Its momentum
+ii. Its energy
+
+(c) The angle ? through which the photon is deflected is given by the expression
+
+?? = h/(m_e c) (1 ? cos ?)
+
+State the phenomena represented by the above expression and hence identify the symbols used in the expression
+
+Calculate the angle ? using the information given in question 8(b) above
+
+---
+
+Q8.
+$\mathrm{(a)}$ State two advantages and two disadvantages each of fusion power from the viewpoint of safety, pollution and resources
+
+(b) The radioactive isotope $\ce{^198Au}$ has a half life of 64.8h. A sample containing this isotope has an initial activity (t = 0) of 40.0mCi. Calculate the number of nuclei that decay in the time interval between t? = 10.0h and t? = 12.0h [1Ci = 3.7 \times 10^{10}$Bq]
+
+(c) If the average energy released in a fission is 208MeV, calculate the total number of fission events required to operate a 100W light bulb for 1.0h.
+
+(d) Molybdenum has a work function of 4.20eV. What is the stopping potential if the incident light has wavelength of 180nm?
+
+===============================================================================
+ JUPEB 2020 — CHEMISTRY OBJECTIVE
+===============================================================================
+
+Q1.
+Which of the following statements is incorrect?
+  A. An atom is electrically neutral
+  B. The size of a cation is smaller than that of the corresponding atom
+  C. An atom and its ion can have an equal unequal number of protons
+  D. Bronsted-Lowry base is an electron pair acceptor
+
+Q2.
+Which rule states that no two electrons in an atom can have the same set of four quantum numbers?
+  A. Aufbau's principle
+  B. Hund's rule
+  C. de Broglie hypothesis
+  D. Pauli's exclusion principle
+
+Q3.
+Calculate the relative molecular mass of a gaseous compound if 13.15 g of the compound occupies 4.80 dm3 at STP.
+  A. 61
+  B. 34
+  C. 24
+  D. 29
+
+Q4.
+Which one of the following species has the same electronic configuration as Al3 ion?
+  A. F-
+  B. Cl-
+  C. $S_{2}$-
+  D. $O_{2}$-
+
+Q5.
+What is the volume of oxygen required to burn completely 45 cm3 of methane?
+  A. 400 cm3
+  B. 180 cm3
+  C. 90 cm3
+  D. 22.5 cm3
+
+Q6.
+Which of the following is TRUE regarding a precipitation reaction?
+  A. Both products must be soluble in water
+  B. Not be spontaneous
+  C. At least one of the reactants must be insoluble in water
+  D. Spectator ions form insoluble salts
+
+Q7.
+Arrange the following in the order of increasing boiling point: CH4, HCN, CaO.
+  A. CH4 < HCN < CaO
+  B. HCN < CH4 < CaO
+  C. CH4 < CaO > HCN
+  D. CaO
+
+Q9.
+The electronegativity values of Si and H are 1.8 and 2.1 respectively. What type of bond exist within SiH4?
+  A. Ionic
+  B. Polar covalent
+  C. Coordinate covalent
+  D. Non-polar bond
+
+Q10.
+When an atom is oxidized, its oxidation number:
+  A. Decreases, as electrons are lost
+  B. Decreases, as electrons are gained
+  C. increases, as electrons are gained
+  D. increases, as electrons are lost
+
+Q11.
+What mass of carbon dioxide is formed when 60.0 g of carbon is burned in 750.0 g of oxygen? [C = 12, O = 16]
+  A. 60.0 g
+  B. 160.0 g
+  C. 220.0 g
+  D. 1031 g
+
+Q12.
+A solution capable of resisting change in pH upon addition of small amount of acid or base is:
+  A. an aqueous solution
+  B. a colloidal solution
+  C. a buffer solution
+  D. super saturated solution
+
+Q13.
+What is the percentage by mass of carbon present in 6.0 g of a hydrocarbon which burns completely in air to produce 11.0 g of carbon dioxide?
+  A. 25%
+  B. 33%
+  C. 50%
+  D. 75%
+
+Q14.
+In which of the following species is sp2 hybrid orbitals NOT involved?
+  A. BF3
+  B. $C_{2}H_{4}$
+  C. BF3
+  D. CO2
+
+Q15.
+Calculate the standard e.m.f. in volts of a cell that uses the following half-cell reactions:
+  A. 0.18
+  B. 0.69
+  C. 0.11
+  D. 0.19
+
+Q16.
+What is the oxidation number of oxygen in $Na_{2}O_{2}$?
+  A. -1
+  B. -2
+  C. 0
+  D. +2
+
+Q17.
+If the enthalpy of a given reaction is -215 kJmol-1 and the entropy change of the reaction is 15.2 Jmol-1K-1 at 30degC, the reaction will:
+  A. Not be spontaneous
+  B. Be spontaneous
+  C. be irreversible
+  D. be at equilibrium
+
+Q18.
+The temperature and pressure at which the three phases of pure water coexist respectively are:
+  A. 273 K and 760 mmHg
+  B. 298 K and 1 atm
+  C. 0.01degC and 4.5 mmHg
+  D. 0.273degC and 0.1 mmHg
+
+Q19.
+The pH of a buffer solution depends upon concentration of conjugate acid B, conjugate base C, salt D, conjugate acid and base.
+  A. 0.143
+  B. 0.286
+  C. 0.333
+  D. 0.572
+
+Q20.
+What is the mole fraction of hydrogen gas in a mixture containing 32.0 g of oxygen gas, 32.0 g of methane gas and 32.0 g of sulphur (IV) oxide? At 17degC, a sample of hydrogen gas occupies 125 cm3. What will the volume be at 100degC, if the pressure remains constant?
+  A. 21 cm3
+  B. 97 cm3
+  C. 161 cm3
+  D. 735 cm3
+
+Q21.
+At 17?C, a sample of hydrogen gas occupies 125 cm?. What will the volume be at 100?C if the pressure remains constant?
+  A. 21 cm?
+  B. 97 cm?
+  C. 161 cm?
+  D. 735 cm?
+
+Q22.
+Why is the first ionization energy of phosphorus greater than that of silicon?
+  A. The outer electron in a phosphorus is more shielded.
+  B. The outer electron pairs exhibit the most similar chemical properties.
+  C. A phosphorus atom has one more proton in its nucleus.
+  D. The atomic radius of a phosphorus atom is paired.
+
+Q23.
+Which of the following pairs exhibit the most similar chemical properties?
+  A. Li and Mg
+  B. Ca and Zn
+  C. B and C
+  D. N and O
+
+Q24.
+Which of the following metals is not a first-row transition element?
+  A. V
+  B. Cd
+  C. Cr
+  D. Mn
+
+Q25.
+The following ions have noble gas electronic configuration EXCEPT:
+  A. $Sr_{2}$
+  B. Rb
+  C. I-
+  D. $Sn_{2}$
+
+Q26.
+In which of the following ions is the anion most polarized?
+  A. LiF
+  B. LiI
+  C. LiCl
+  D. LiBr
+
+Q27.
+The colligative properties of a solution are affected by the:
+  A. nature of the solute
+  B. concentration of solute molecules
+  C. concentration number and oxidation state of the central atom in
+  D. surface area of liquid
+
+Q28.
+What is the coordination number and oxidation state of the central atom in [NiCl3(en)]?
+  A. 6, 2
+  B. 6, 0
+  C. 4, 2
+  D. 4, 4
+
+Q29.
+Excess soil acidity caused by acid rain can be neutralized by:
+  A. adding molten cryolite
+  B. adding more fertilizers
+  C. adding quick lime
+  D. adding brine
+
+Q30.
+Which of the following is an s-block element?
+  A. Cs
+  B. Ar
+  C. Cl
+  D. He
+
+Q31.
+Use the following data to determine the standard enthalpy of formation of solid ICl3:
+  A. -60 kJ/mol
+  B. -74 kJ/mol
+  C. -81 kJ/mol
+  D. -162 kJ/mol
+
+Q32.
+The oxide of nitrogen used as a mild anesthetic for surgery is:
+  A. nitrogen (IV) oxide
+  B. dinitrogen (I) oxide
+  C. dinitrogen tetroxide
+  D. nitrogen (II) oxide
+
+Q34.
+Which of these reactions in equilibrium is unaffected by a change in pressure?
+  A. 2O3$\mathrm{(g)}$ <-> 3O2$\mathrm{(g)}$
+  B. $N_{2}O_{4}$ <-> 2NO2
+  C. PCl5$\mathrm{(g)}$ <-> PCl3$\mathrm{(g)}$ + $Cl_{2}$(g)
+  D. 2HI$\mathrm{(g)}$ <-> $H_{2}$(g) + $I_{2}$(g)
+
+Q35.
+The trihalides of phosphorus reacts with water to form one of the following acids:
+  A. $H_{3}PO_{4}$
+  B. $H_{5}P_{3}O_{10}$
+  C. $H_{3}PO_{3}$
+  D. $H_{4}P_{2}O_{6}$
+
+Q36.
+Which of the following hydrogen halides is the most acidic?
+  A. HF
+  B. HI
+  C. HBr
+  D. HCl
+
+Q37.
+The IUPAC name for [FeF4($H_{2}O$)2]- is:
+  A. Diaquatetrafluoroiron (III) ion
+  B. Diaquatetrafluoroferrate (III) ion
+  C. Diaquatetrafluoroiron (III)
+  D. Diaquatetrafluoroferrate (III)
+
+Q38.
+Reaction between a hydrazine and a carbonyl compound yields a:
+  A. hydrazine
+  B. diazonium salt
+  C. benzaldehyde
+  D. phenylhydrazine
+
+Q39.
+Which of the following is a tertiary amine?
+  A. CH3CH2NH2
+  B. CH3CH2NHCH3
+  C. (CH3CH2)2NCH3
+  D. CH(NH2)3
+
+Q40.
+Name the following compound: CH3CH2CHCH2NH2 with CH2CH3 branch
+  A. 3-ethylbutanamine
+  B. 3-methylamine pentane
+  C. 2-ethylbutanamine
+  D. 3-ethyl-4-butanamine
+
+Q41.
+Heterolytic bond fission results in the formation of positively charged carbon species known as:
+  A. free radicals
+  B. carbanions
+  C. carbonium ions
+  D. carbenes
+
+Q42.
+Which of the following statements is NOT true of an electrolytic cell?
+  A. It converts electric energy to chemical energy
+  B. A porous partition is not needed
+  C. Cathode is negative electrode while anode is positive electrode
+  D. Electrodes are in separate compartment
+
+Q43.
+The oxidation of CH3CH2CHOHCH3 with potassium permanganate (VII) is:
+  A. CH3CH2CH2COOH
+  B. CH3CH2COOH
+  C. CH3CH2COCH3
+  D. CH3CH2CH2CHOH
+
+Q44.
+Hydrogenation of vegetable oils to produce margarine is an example of:
+  A. addition reaction
+  B. substitution reaction
+  C. elimination reaction
+  D. redox reaction
+
+Q45.
+The enzyme suitable for the conversion of starch to maltose is:
+  A. maltase
+  B. zymase
+  C. lipase
+  D. diastase
+
+Q46.
+CH3CH2CHCHCH2CH3 does not undergo:
+  A. addition reaction
+  B. substitution reaction
+  C. combustion reaction
+  D. polymerization reaction
+
+Q47.
+The compound with molecular formula $C_{5}H_{12}$ has:
+  A. 2 isomers
+  B. 3 isomers
+  C. 4 isomers
+  D. 5 isomers
+
+Q48.
+Consider the structure (diphenylmethane with $C_{9}H_{19}$ group). What electronic effect is likely to be observed?
+  A. Inductive effect
+  B. Electromeric effect
+  C. Steric effect
+  D. Tautomeric effect
+
+Q49.
+The following compounds $C_{6}H_{13}NH_{2}$, $C_{3}H_{7}NH_{2}$, CH3CH2NH2 and CH3NHCH3 are all related as:
+  A. chain isomers
+  B. homologues
+  C. functional group isomers
+  D. primary amines
+
+Q50.
+Which of the following reactions is suitable for the synthesis of alkenes?
+  A. Dehydration of primary alcohols
+  B. Hydrolysis of primary alcohols
+  C. Reduction of primary alcohols
+  D. Oxidation of primary alcohols
+
+Q51.
+Branched chain isomers have the following properties when compared to their linear isomers:
+  A. Low boiling point, low melting point and high density
+  B. Lower boiling point, high melting point and lower density
+  C. Higher boiling point, high melting point and low density
+  D. Lower boiling point, low melting point and low density
+
+Q52.
+Branched chain isomers have the following properties when compared to their linear isomers:
+  A. Low boiling point, low melting point and high density
+  B. Lower boiling point, high melting point and lower density
+  C. Higher boiling point, high melting point and low density
+  D. Lower boiling point, low melting point and low density
+
+===============================================================================
+ JUPEB 2020 — CHEMISTRY THEORY
+===============================================================================
+
+Q1.
+Use balanced chemical equations to illustrate what happens when the following compounds are added to water.
+$\mathrm{(a)}$. NaCl (b). S$\ce{$\ce{O3}$}$ (c). $\ce{Al2O_{3}}$ (d). $\ce{Na2O}$
+(ii). Predict the pH of the solutions. [4 Marks]
+
+(bi). Give reasons for trend in the solubility of Group 2 sulphates.
+(ii). Arrange the sulphates in order of increasing solubility. [2 Marks]
+
+(ci). List FOUR greenhouse gases.
+(ii). State the sources of environmental impact of any two in (ci) above. [3 Mks]
+
+Q2.
+An organic compound F, with the empirical formula, $\ce{C5H_{10}}$O has a vapour density of 43.
+(i). What is the molecular formula of F?
+(ii). If F does not react with Fehling's or Tollen's reagent but gives a yellow precipitate when reacted with aqueous iodine, draw the structure and give the IUPAC name of F.
+(iii). Write a reaction equation for the reduction of F with NaB$\ce{$\ce{H4}$}$. [3 Marks]
+
+(b). Methylbenzene can react with chlorine in two ways. The products formed in each case depends on the reaction conditions.
+
+*[Structure of methylbenzene (toluene) with two reaction pathways labeled: Cl?/UV ? A and Cl?/AlCl? ? B]*
+
+(i). Draw the structures of A and B.
+(ii). Predict the products for the reaction of A and B with NaOH. [2 Marks]
+(iii). Write a balanced equation and name the product$\mathrm{(s)}$ formed when:
+$\mathrm{(a)}$. C$\ce{H3C}$$\ce{H2C}$OC$\ce{H2C}$H? reacts with LiAl$\ce{$\ce{H4}$}$.
+(b). Benzene reacts with C$\ce{H3Cl}$.
+(c). C$\ce{H3C}$$\ce{H2O}$H reacts with C$\ce{H3C}$$\ce{H2C}$$\ce{H2C}$OOH. [3 Marks]
+
+Q3.
+Give TWO differences between nucleophilic substitution unimolecular (S?1) and nucleophilic substitution bimolecular (S?2) reactions. [2 Marks]
+
+(b). There are several isomers with the molecular formula $\ce{C5H_{12}}$O.
+(i). Provide the structures and names of three unbranched isomers of the alkanol with formula $\ce{C5H_{12}}$O.
+(ii). Which isomer$\mathrm{(s)}$ is /are chiral?
+(iii). Write a chemical equation for each compound in (bi) with excess acidified $\ce{K2Cr_{2}}$O? and provide names for the products formed. [5 Marks]
+
+(c). Below are the structures of two natural amino acids.
+
+*[Structures of Glycine: N$\ce{$\ce{H2}$}$-CH(H)-C(=O)OH and Alanine: N$\ce{$\ce{H2}$}$-CH(CH?)-C(=O)OH]*
+
+(i). Draw a structure of the compound formed in (i) above.
+(ii). What class of compound is formed in (i) above?
+(iii). What type of bond is obtained when glycine is combined with alanine. [3 Marks]
+
+Q4.
+State TWO properties of water that are different from the hydrides of Group 16.
+(ii). Why are the first ionization energies of the d-block metals greater than those of the s-block metals? [4 Marks]
+
+(bi). List THREE types of hydrides and give example of each.
+(ii). Give balanced chemical equations for the reaction of two types of hydrides in water. [5 Marks]
+
+(c). Name the ore from which aluminium can be extracted [1 Mark]
+
+---
+
+## CHM 004: ORGANIC CHEMISTRY
+
+Q5.
+2 g of He, 3 g of $\ce{$\ce{N2}$}$ and 4 g of Ar were introduced into a 15 dm? vessel at 100 ?C.
+(i). What are the mole fractions of He, $\ce{$\ce{N2}$}$ and Ar in the system?
+(ii). Calculate the total pressure of the system and hence, the partial pressures of each of the gases in the vessel. [4 Marks]
+
+(bi). The dissociation constant for an acid is a measure of its strength. Use the information below to arrange the following acids in order of increasing acidity.
+
+| Acid | Ka/ moldm?? |
+|---|---|
+| C$\ce{H3C}$$\ce{H2C}$OOH | 1.259 \times 10^{-5}$ |
+| C$\ce{H3C}$HClCOOH | 1.585 \times 10^{-3}$ |
+| C$\ce{H3C}$$\ce{Cl2C}$OOH | 3.982 \times 10^{-2}$ |
+| ClC$\ce{H2C}$$\ce{H2C}$OOH | 7.943 \times 10^{-5}$ |
+
+(ii). Suggest a reason for your arrangement. [2 Marks]
+
+(ci). Differentiate between ideal and non-ideal solutions.
+(ii). How does the solution of a non-volatile solute affect the following properties?
+$\mathrm{(a)}$ Vapour pressure lowering
+(b) Freezing point depression [4 Marks]
+
+---
+
+## CHM 003: INORGANIC CHEMISTRY
+
+Q6.
+In an experiment, 15.0 g of methanol and 10.0 g of carbon (ii) oxide were placed in a reaction vessel.
+C$\ce{H3O}$H$\mathrm{(l)}$ + CO$\mathrm{(g)}$ ? H$\ce{C2H_{3}}$O?$\mathrm{(l)}$
+(i). Determine which reactant is the limiting reactant.
+(ii). From (i) above, calculate the theoretical yield of acetic acid.
+(iii). If the actual yield is 19.1 g, what is the percentage yield? [4 Marks]
+
+(bi). Distinguish between a polar and non-polar molecule.
+(ii). State which of the following molecules is/are polar or non-polar.
+$\mathrm{(a)}$. CCl? (b). HF (c). C$\ce{$\ce{O2}$}$ (d). CHCl? [3 Marks]
+
+(ci). Define the term degeneracy as it applies to atomic orbitals.
+(ii). Give the values of the Azimuthal and magnetic quantum number of the electrons in an atom when n = 4. [3 Marks]
+
+---
+
+## CHM 002: PHYSICAL CHEMISTRY
+
+Q7.
+The phase diagram below is for a one-component system, Z.
+
+*[Phase diagram showing Solid, Liquid, Gas, and Vapour regions plotted against Pressure/Pa and Temperature/K, with 10? Pa marked on pressure axis and 298 K and Tc marked on temperature axis]*
+
+(i). What is Tc?
+(ii). Under what condition will Z sublime?
+(iii). What phase does Z exists as at 298 K and 10? Pa? [3 Marks]
+
+(b). The atomic mass of a naturally occurring element Y is 55.8. The masses of the isotopes of the element are $\ce{^54Y}$ and $\ce{^57Y}$.
+(i). Calculate the percentage abundance of each isotope.
+(ii). Deduce the isotopic mass ratio. [3 Marks]
+
+(c). Balance the redox reaction below in alkaline medium and identify the oxidizing and reducing agents.
+I? + Mn$\ce{$\ce{O4}$}$? ? I$\ce{$\ce{O3}$}$? + Mn$\ce{$\ce{O2}$}$ [4 Marks]
+
+Q8.
+What are fuel cells?
+(ii). With the aid of equations, state the reactions that occur at the anode and cathode of $\ce{$\ce{H2}$}$/$\ce{$\ce{O2}$}$ fuel cell. [4 Marks]
+
+(b). Calculate the standard enthalpy change for the reaction:
+C$\ce{$\ce{H4}$}$(g) + Cl?$\mathrm{(g)}$ ? C$\ce{H3Cl}$(g) + HCl$\mathrm{(g)}$
+
+Given the following bond enthalpies at 298K:
+
+| Bonds | ?H?/ kJmol?? |
+|---|---|
+| C-H | +411 |
+| Cl-Cl | +243 |
+| C-Cl | +327 |
+| H-Cl | +431 |
+
+[3 Marks]
+
+(c). The decay series of ?????U is shown below:
+??$\ce{^238U}$ ? (2-alpha, 2-beta) ? Z ? A ? ??$\ce{^222R}$ ? Q ? ??$\ce{^211Pb}$
+(i). State the mass and atomic number of Z.
+(ii). Identify the type of radiations represented by A and Q. [3 Marks]
+
+Q9.
+(i). State the mass and atomic number of Z. (ii). Identify the type of radiations represented by A and Q. [3 Marks]
+
+Q10.
+**Question 4(a).** 2 g of He, 3 g of N2 and 4 g of Ar were introduced into a 15 dm3 vessel at 100degC.
+
+Q11.
+(i). What are the mole fractions of He, N2 and Ar in the system? (ii). Calculate the total pressure of the system and hence, the partial pressures of each of the gases in the vessel. [4 Marks] **(bi).** The dissociation constant for an acid is a measure of its strength. Use the information below to arrange the following acids in order of increasing acidity: | Acid | Ka/ moldm-3 | |---|---| | CH3CH2COOH | 1.259 x 10-5 | | CH3CHClCOOH | 1.585 x 10-3 | | CH3CCl2COOH | 3.982 x 10-2 | | ClCH2CH2COOH | 7.943 x 10-5 | (ii). Suggest a reason for your arrangement. [2 Marks] **(ci).** Differentiate between ideal and non-ideal solutions. (ii). How does the solution of a non-volatile solute affect the following properties? (a) Vapour pressure lowering (b) Freezing point depression [4 Marks] **(1ai). Fuel cells** are galvanic cells that convert chemical energy to electrical energy by electrochemical reactions. [2 Marks] **(ii). At the anode:** H2 + 2HO- <-> 2H2O + 2e- **At the cathode:** O2 + 2H2O + 4e- <-> 4HO- deltaHdegrxn = deltaHdegB,E(reactant) deltaHdegB,E(product) = [4(411) + (243)] [3(411) + (431)] = -104 kJmol-1 [1 Mark each] **(b). Standard enthalpy change:** deltaHdegrxn = deltaHdegB,E(reactant) deltaHdegB,E(product) = [4(411) + (243)] [3(411) + (431)] = -104 kJmol-1 [2 Marks] **(ci). Decay of 23892U:** 2 alpha = 2 x 4He = 82X; 2 beta = 2 x 0 1e = 0Y This indicates that the atomic and mass numbers of 23892U decrease by 2 and 8 respectively. Therefore, atomic number of Z = 90, mass number = 230 [1 Mark] B = 2 alpha decay; A = 2 alpha and 3 neutron decay [2 Marks] **(4ai). Mole fractions:** Number of mole of He = 2/4 = 0.500 mole Number of mole of Ar = 39.9/4 = 0.100 mole Total number of mole = 0.500 + 0.107 + 0.100 = 0.707 Mole fraction of He = 0.500/0.707 = 0.707 Mole fraction of N2 = 0.151/0.707 = 0.141 / 0.707 = 0.141 Mole fraction of Ar = 0.107/0.707 = 0.107/0.707 = 0.151 **(ii). Total pressure:** P = nRT/V = 0.707 x 8.314 x 373/0.015 = 103339.5 Nm-2 Partial pressu
+
+Q12.
+**Question 5(ai).** Use balanced chemical equations to illustrate what happens when the following compounds are added to water:
+
+Q13.
+(a). NaCl (b). SO3 (c). Al2O3 (d). Na2O (ii). Predict the pH of the solutions. [4 Marks] **(bi).** Give reasons for trend in the solubility of Group 2 sulphates. (ii). Arrange the sulphates in order of increasing solubility. [2 Marks] **(ci).** List FOUR greenhouse gases. (ii). State the sources of environmental impact of any two in (ci) above. [3 Marks]
+
+Q14.
+**Question 6(ai).** State TWO properties of water that are different from the hydrides of Group 16. (ii). Why are the first ionization energies of the d-block metals greater than those of the s-block metals? [4 Marks] **(bi).** List THREE types of hydrides and give example of each. (ii). Give balanced chemical equations for the reaction of two types of hydrides in water. [5 Marks] **(c).** Name the ore from which aluminium can be extracted. [1 Mark] **(5ai).**
+
+Q15.
+(a). NaCl(s) <-> Na (aq) + Cl-(aq) [1/2 Mark]
+
+Q16.
+(b). SO3(g) + H2O(l) <-> H2SO4(aq) [1/2 Mark]
+
+Q17.
+(c). Al2O3(s) + H2O(l) <-> No reaction [1/2 Mark]
+
+Q18.
+(d). Na2O(s) + H2O(l) <-> 2NaOH(aq) [1/2 Mark] **(ii).**
+
+Q19.
+(a). pH = 7 (neutral) [1/2 Mark]
+
+Q20.
+(b). pH < 7 (acidic) [1/2 Mark]
+
+Q21.
+(c). pH = 7 (neutral) [1/2 Mark]
+
+Q22.
+(d). pH > 7 (alkaline) [1/2 Mark] **(bi).** The solubility of Group 2 elements decreases down the group due to a decrease in hydration and lattice energies. [2 Marks] (ii). BaSO4 < SrSO4 < CaSO4 < MgSO4 < BeSO4 [1 Mark] **(ci).** CO2, CH4, chlorofluorocarbon (CFC), H2O and N2O. [2 Marks] (ii). CO2 - deforestation and combustion of fossil fuel. CH4 - rice fields, landfills, leaking gas pipes, solid and organic wastes, termite mound and swamps. CFC - refrigerators, aerosol propellants and air conditioners. H2O - transpiration, sublimation, atmosphere and condensation. [1 Mark] **(6ai). Properties of water different from Group 16 hydrides:** - smaller sizes and higher nuclear charges [1 Mark] - the first electron is normally removed from the partially filled d-orbitals [1 Mark] **(ii).** Because the d-block metals have: smaller sizes and higher nuclear charges; which required higher energy than the s-block metals. [1 Mark] **(bi). Types of hydrides:** Covalent hydrides - NH3, H2O, HCl, H2S, PH3 [1 Mark] Ionic/saline hydrides - KH, NaH, CaH2, LiH, AlH3 [1 Mark] Interstitial hydrides - TiH1.5, KaH2.87 [1 Mark] (ii). KH + H2O <-> KOH + H2; NH3 + H2O <-> NH4OH [2 Marks] **(c).** Bauxite. [1 Mark] ### CHM 004: ORGANIC CHEMISTRY (2020)
+
+Q23.
+**Question 7(a).** Give TWO differences between nucleophilic substitution unimolecular (SN1) and nucleophilic substitution bimolecular (SN2) reactions. [2 Marks] | S/N | SN1 | SN2 | |---|---|---| | 1 | It is a two-step reaction | It is a one-step reaction | | 2 | Formation of an intermediate carbonium ion | No intermediate carbonium ion formed | | 3 | Rate determining step is determined by concentration of both substrate and nucleophile | Rate determining step is determined by concentration of both substrate and nucleophile | | 4 | Typical of tertiary alkyl halides | Typical of primary alkyl halides | | 5 | Racemic mixture is formed | Waiden inversion takes place | | 6 | Rearrangement may take place | No rearrangement takes place | | 7 | It is a unimolecular reaction | It is a bimolecular reaction | [2 Marks for Any Two] **(b).** There are several isomers with the molecular formula C5H12O.
+
+Q24.
+(i). Provide the structures and names of three unbranched isomers of the alkanol. (ii). Which isomer(s) is/are chiral? (iii). Write a chemical equation for each compound in (bi) with excess acidified K2Cr2O7 and provide names for the products formed.
+
+Q25.
+(c). Below are the structures of two natural amino acids. [5 Marks] Glycine structure: NH2-CH-COOH with H substituent Alanine structure: NH2-CH-COOH with CH3 substituent
+
+Q26.
+(i). Draw a structure of the compound formed when glycine is combined with alanine. (ii). What class of compound is formed in (i) above? (iii). What type of bond is obtained? (iv). Draw the zwitterionic forms of glycine and alanine.
+
+Q27.
+(v). An organic compound F, with the empirical formula C5H10O has a vapour density of 43.
+
+Q28.
+(i). What is the molecular formula of F? (ii). If F does not react with Fehling's or Tollen's reagent but gives a yellow precipitate when reacted with aqueous iodine, draw the structure and give the IUPAC name of F. (iii). Methylbenzene can react with chlorine in two ways. The products formed in each case depends on the reaction conditions. [3 Marks] **(bi).** CH3CH2CH2CH2OH, CH3CH2CH2CH(OH)(CH3) [11/2 Mark] (ii). CH3CH2CH(OH)CH3 [1/2 Mark] **(iii). Oxidation reactions with K2Cr2O7/H :** CH3CH2CH2CH2OH <-> (K2Cr2O7/H ) <-> CH3CH2CH2CHO (pentanal) <-> pentan-1-ol CH3CH2CH2CH(OH)CH3 <-> (K2Cr2O7/H ) <-> CH3CH2CH2COCH3 (pentan-2-one) <-> pentan-2-ol CH3CH2CH(OH)CH2CH3 <-> (K2Cr2O7/H ) <-> CH3CH2COCH2CH3 (pentan-3-one) <-> pentan-3-ol [3 Marks] **(8ai). Molecular formula of F:** Molecular mass of F = 2 x vapour density = 2 x 43 = 86 [E.F]n = 86; [C5H10O]n = 86; 86n = 86; n = 1 Molecular formula of F = C5H10O [1 Mark] **(ii). Structure of F = Pentan-2-one/2-pentanone:** [1 Mark] **(bi). Structure of A and B (from methylbenzene + Cl2):** A = CH2Cl-benzene (benzyl chloride) - via free radical mechanism (UV light) B = Cl-CH3-benzene (chloromethylbenzene) - via electrophilic substitution (AlCl3) [1 Mark] **(ii). Reaction of A and B with NaOH:** CH2Cl-benzene + NaOH <-> CH2OH-benzene (then LiAlH4) <-> CH2CH(OH)CH2CH3 (hexan-3-ol) No Reaction for B-type [1 Mark] **(iii). Reaction products:**
+
+Q29.
+(a). CH3CH2COCH2CH3 (hexanone)
+
+Q30.
+(b). CH3Cl-benzene + NaOH <-> No Reaction [1/2 Mark each] **(c). Increasing order of acidity:** Pentanoic acid < 3-chloropentanoic acid, 4-chloropentanoic acid, 2,2-dichloropentanoic acid - 3,3-dichloropentanoic acid. Ethylbutanoate [2 Marks] Justification: Negative inductive effect / Number of electron-withdrawing groups / Proximity or closeness of electron-withdrawing group to the functional group. [1]
+
+===============================================================================
+ JUPEB 2020 — CHEMISTRY PRACTICAL
+===============================================================================
+
+Q1.
+QUALITATIVE ANALYSIS
+
+You are provided with three liquid organic samples **A, B and C** and you are required to perform the following tests to identify the functional groups present in samples A, B and C.
+
+**Test 1:** Add 1 cm? of samples A, B and C to separate test tubes and add 1 cm? of 2,4-dinitrophenylhydrazine.
+
+**Test 2:** To fresh 1 cm? of samples A, B and C in separate test tubes, add 1 cm? of Tollen's reagent.
+
+**Test 3:** To fresh 1 cm? of samples A, B and C in separate test tubes, add 1 cm? of potassium dichromate solution followed by 1 cm? of NaHC$\ce{$\ce{O3}$}$.
+
+**Test 4:** To fresh 1 cm? of samples A, B and C in separate test tubes, add 1 cm? of iodine solution followed by 1 cm? of NaOH.
+
+Record your observations and inferences in each step.
+
+State the functional groups present in A, B and C.
+
+Write the structural formulae of samples A, B and C if they contain three carbon atoms each.
+
+[10 Marks]
+
+Q2.
+QUANTITATIVE ANALYSIS
+
+You are provided with the following:
+
+Solution **Y**: A 0.10 moldm?? of HN$\ce{$\ce{O3}$}$.
+Solution **Z**: A 1.86 g of $\ce{Na2C}$O?.n$\ce{H2O}$ in 250 cm? of solution
+
+**$\mathrm{(a)}$ Procedure:**
+
+**(i)** Pipette 25 cm? of solution Z into a clean conical flask. Add 2 or 3 drops of indicator.
+
+Methylorange indicator.
+
+**(ii)** Titrate against solution Y in the burette. Record your titre value.
+
+**(iii)** Repeat the titration two more times and find the average titre value. [Na =23, C = 12, O = 16, N = 14, H = 1]
+
+**(iii).** Write the balanced equation of reaction.
+
+**(b) From your result, calculate:**
+
+**(i)** number of moles of solutions Y and Z used.
+
+**(ii)** concentration in moldm?? of anhydrous $\ce{Na2C}$O? in substance Z.
+
+**(iii)** concentration in gdm?? of anhydrous $\ce{Na2C}$O? in substance Z.
+
+**(iv)** the numerical value of n in the formula.
+
+[10 Marks]
+
+---
+
+===============================================================================
+ END OF 2020 QUESTIONS
+===============================================================================

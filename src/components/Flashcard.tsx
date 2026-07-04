@@ -99,14 +99,16 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
           onClick={!question.options ? handleFlip : undefined}
         >
           {/* Front of card */}
-          <div className="flashcard-face absolute inset-0 rounded-2xl border-2 border-border shadow-xl overflow-hidden">
-            {/* Card background with subtle gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
-            <div className="absolute inset-0 chalk-texture opacity-30" />
+          <div className="flashcard-face absolute inset-0 rounded-2xl border-2 border-border shadow-xl">
+            {/* Card background with subtle gradient - clipped to rounded corners */}
+            <div className="absolute inset-0 rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
+              <div className="absolute inset-0 chalk-texture opacity-30" />
+            </div>
             
             <div className="relative h-full p-6 flex flex-col">
               {/* Header */}
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50 shrink-0">
                 <span className={cn(
                   'px-3 py-1.5 rounded-full text-sm font-medium',
                   `subject-${question.subject}`
@@ -119,25 +121,25 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
               </div>
 
               {/* Question - Scrollable */}
-              <div className={cn("flex-1 flex flex-col min-h-0", !question.options ? "overflow-y-auto" : "overflow-hidden")}>
+              <div className="flex-1 min-h-0 overflow-y-auto pr-1 scrollbar-thin">
                 {question.imageUrl && !imageBroken ? (
-                  <div className="mb-4 rounded-xl overflow-hidden border bg-muted/30 shrink-0">
+                  <div className="mb-4 rounded-xl overflow-hidden border bg-muted/30">
                     <img src={question.imageUrl} alt="Question" className="w-full max-h-48 object-contain" loading="lazy" onError={() => setImageBroken(true)} />
                   </div>
                 ) : imageBroken ? (
-                  <div className="mb-4 flex flex-col items-center justify-center gap-2 p-6 rounded-xl border border-dashed bg-muted/20 text-muted-foreground shrink-0">
+                  <div className="mb-4 flex flex-col items-center justify-center gap-2 p-6 rounded-xl border border-dashed bg-muted/20 text-muted-foreground">
                     <ImageOff className="h-8 w-8" />
                     <p className="text-xs">Image failed to load</p>
                   </div>
                 ) : (
-                  <div className="text-lg font-medium mb-4 leading-relaxed shrink-0">
+                  <div className="text-lg font-medium mb-4 leading-relaxed">
                     <MathRenderer content={question.question} />
                   </div>
                 )}
 
-                {/* MCQ Options - Scrollable container */}
+                {/* MCQ Options */}
                 {question.options && (
-                  <div className="space-y-2.5 flex-1 overflow-y-auto min-h-0 max-h-[280px] pr-1 scrollbar-thin">
+                  <div className="space-y-2.5 pr-1">
                     {question.options.map((option, oi) => {
                       const isSelected = selectedOption === option.label;
                       const isCorrectOption = option.label === question.correctAnswer;
@@ -185,7 +187,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
                 {/* Essay question - flip hint */}
                 {!question.options && (
-                  <div className="mt-auto text-center text-muted-foreground py-8">
+                  <div className="text-center text-muted-foreground py-8">
                     <p className="text-sm mb-2">Think about your answer, then click to reveal</p>
                     <RotateCcw className="w-6 h-6 mx-auto animate-pulse text-primary/60" />
                   </div>

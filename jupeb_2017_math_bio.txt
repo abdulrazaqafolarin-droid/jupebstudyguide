@@ -1,0 +1,739 @@
+===============================================================================
+ JUPEB 2017 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+The first three terms in the expansion of (2 + ax)?, in ascending power of x, are 32 ? 40x + bx?, evaluate (b+n/a)?
+  A. 900
+  B. 1600
+  C. 2500
+  D. 3600
+
+Q2.
+Find the value of k in the expansion (1 + 2x)(1 ? kx)? if the coefficient of the term in x is zero
+  A. -1
+  B. 2
+  C. -3
+  D. -4
+
+Q3.
+Find the equation of the line through (6, 7) parallel to
+  A. 2x + 4y = 3
+  B. 2y + x = 20
+  C. 2x + 4y = 3
+  D. 2x + 8y = 3
+
+Q4.
+The sum of the first terms of a linear sequence (A.P) is 28, and the sum of the first 28 terms is 21. Which term of the sequence is 0? And what is the sum of the terms proceeding what term?
+  A. 19th, 57/2
+  B. 16th, 51/2
+  C. 17th, 53/2
+  D. 18th, 55/2
+
+Q5.
+Find the coefficient of x? in the expansion ?((1?x)/(1+x))
+  A. 1/8
+  B. 1
+  C. 1/2
+  D. 1/4
+
+Q6.
+If A and B are acute angles, find A + B given that tan A = 5/6, tan B = 1/11
+  A. 60?
+  B. 30?
+  C. 45?
+  D. 61/66
+
+Q7.
+Write the equation sin?? + 3 sin ? cos ? = 4 cos?? as a quadratic equation in tan ?
+  A. tan?? + 3 tan ? ? 1 = 0
+  B. tan?? ? 6 tan ? ? 1 = 0
+  C. tan?? + 3 tan ? ? 4 = 0
+  D. tan?? ? 4 tan ? ? 3 = 0
+
+Q8.
+If the polynomial f(x) = x? + 13x + b and g(x) = 4x? + px + q are divided by x ? 1 the remainder are 12 and 6 respectively. If they are divided by x ? 2 the remainder are 20 respectively. Find the value of x for which f(x) ? g(x)
+  A. (?22 ? ?145)/2
+  B. (11 ? ?145)/2
+  C. (?11 + ?145)/2
+  D. (?11 + ?145)/2
+
+Q9.
+Find the value of (?i)^(?i)
+  A. ??/2
+  B. ?/2
+  C. e^(?/2)
+  D. e^(?/2)
+
+Q10.
+If |6i ?3i 1 / 4 3i ?1 / 20 3 i| = x + iy, then
+  A. x = 3, y = 1
+  B. x = 1, y = 3
+  C. x = 0, y = 3
+  D. x = 0, y = 0
+
+Q11.
+Which of the following is not correct concerning the argument ? of the complex number z?
+  A. ? is not defined when both real and imaginary parts are zero
+  B. ? can be negative
+  C. ? is measured in radians
+  D. ? is always positive
+
+Q12.
+Which of the following statements is FALSE?
+  A. for all sets A, B and C, A ? (B ? C) = (A ? B)
+  B. for all sets A, B and C(A ? B) ? C =
+  C. B, for all sets A, B and C, if A ? C =
+  D. N (C ? B) = (A ? C) ? B, for all sets A, B and C, if A ? C =
+
+Q13.
+If A has 32 elements, B has 42 elements and (A ? C) has 62 elements, the number of elements in (A ? C) =
+  A. 10
+  B. 20
+  C. 30
+  D. 40
+
+Q14.
+obtain lim(x?0) (x? + x)/(1 + x?)
+  A. 10
+  B. 20
+  C. 8.?
+  D. 40
+
+Q15.
+evaluate lim(x?0) [ln(1 + e^x)]/(e^x ? 1)
+  A. 2
+  B. 0
+  C. ?32
+  D. undefined
+
+Q16.
+integral ?[1/(1?e^x)] dx
+  A. ln(1 ? e^x) + x + C
+  B. ln(1 + e^x)
+  C. ?1/(1?e^x) + C
+  D. x ? ln(1 ? e^x) + C
+
+Q17.
+evaluate ln(x^(?40)) as x?0
+  A. 2
+  B. 0
+  C. ?32
+  D. undefined
+
+Q18.
+a side of a square percentage increases by 0.5%, find the approximation increase in the area
+  A. 1%
+  B. 2%
+  C. 3%
+  D. 4%
+
+Q19.
+A curve is such that (1, 4) is a point on the curve.
+  A. y = x? ? 1 + 12
+  B. y = ?x?/3 ? 12
+  C. y = x?/3 ? 12
+  D. 40%
+
+Q20.
+for what value of the constant k id the function f(x) = (x? + 4x)/(x? + x), x ? 2 continuous?
+  A. k = ?2/3
+  B. k = 5/2
+  C. k = 2/5
+  D. k = ?3/2
+
+Q21.
+If y = 5x?/2 ? 2x log x?/4, find ?y
+  A. 15x?/4 +
+  B. 30x?/2
+  C. 30x?/4
+  D. 45x?/2
+
+Q22.
+If y = x?/4, find dy/dx
+  A. x/2
+  B. x
+  C. x/4
+  D. 2x
+
+Q23.
+Evaluate ?x?/(x+ax) dx
+  A. x(x+ax)
+  B. 2.56
+  C. 4.28
+  D. 3.94
+
+Q24.
+Which is true for the integral I? = ??^? tan?x dx
+  A. I? + I??? = 1/(n?1)
+  B. I? + I??? = I??? + I???
+  C. I? + I??? = n?1
+  D. I??? + I??? = n?1
+
+Q25.
+Determine the value of ? such that the vectors a = 7i + ?j + k, b = 3i ? 2j + k, C = 5i + 3j + k are linearly independent
+  A. (5, 60)
+  B. (5, 75)
+  C. (10, 60)
+  D. (10, 125)
+
+Q26.
+Determine the value of ? such that the vectors a = 7i + ?j + k, b = 3i ? 2j + k
+  A. (5, 60)
+  B. (5, 75)
+  C. (10, 60)
+  D. (10, 125)
+
+Q27.
+The position vectors of point P, Q and R are relative to an origin O. Find OP ?
+  A. (?2/3) and (?5/2) respectively
+  B. (20) and (10/?15)
+  C. (300 + 20R A.) and (?15)
+  D. (4/8) and (3/?16)
+
+Q28.
+If a + j + k, b = 2i + j + 2k = 2i + j + k, b = 2i + j, find (a + b)(c + d)
+  A. 4i + 5k
+  B. 8 sq unit
+  C. 4?3 sq unit
+  D. 8?2 sq unit
+
+Q29.
+Find the area of the parallelogram whose adjacent sides are determined by the vectors a = (1+2) + 3k and b = 3i + 4 ? 1; respectively
+  A. 8
+  B. 49
+  C. 41
+
+Q30.
+A particle moving along the centre is speeded at any time t.
+  A. a cos ?t + ?
+  C. -??r
+  D. ??r
+
+Q31.
+Which of the following physical quantities are all unit?
+  A. ??
+  C. ???r
+  D. force, temperature, mass
+
+Q32.
+A see saw consists of a uniform bar 4m long and of mass 2kg, a boy of weight 42N, sits at end A of the see saw while another boy of weight 38N sits at the mass 2kg. What points must be see saw be pivoted if it is to balance (g = 9.8ms??)
+  A. 1.52m
+  B. 3.64m
+  C. 3.52m
+
+Q33.
+A particle of mass Mkg is placed on a smooth plane inclined at an angle ? to the horizontal. Find, in N, the horizontal force which can be supplied to keep the body in equilibrium
+  A. Mg sin ?
+  B. Mg cos ?
+  C. Mg cosec ?
+  D. Mg tan ?
+
+Q34.
+A street lamp of mass 10kg is a suspended at a position 0 by two wires OP and OQ across a road such that each wire is inclined at an angle of 80? to the upward vertical. If the system is in equilibrium, calculate the tension on one of the two wires
+  A. 286.9N
+  B. 277.8N
+  C. 286.9N
+  D. 297.9N
+
+Q35.
+The angle between forces 40N and 30N acting on a body of mass 20kg is 130?. Find the acceleration of a machine
+  A. 1.5ms??
+  B. 1.6 ms??
+  C. 1.7 ms??
+  D. 1.8 ms??
+
+Q36.
+Calculate the acceleration of an Atwood machine m? = 4kg ad m? = 7kg
+  A. 2.67
+  B. 3.56
+  C. 2.76
+  D. 3.86
+
+Q37.
+A particle moves along a curve whose parametric equations are 3e^(?2t), y = 4 sin 3t, z = 5 cos 3t. Find the magnitude of the velocity at t = 0
+  A. ?6?3 units
+  B. 6?5 units
+  C. ?6?5 units
+  D. 6?5 units
+
+Q38.
+If the scores on a test have a mean of 26 and a standard deviation of 4, what is the z score for the score of 187?
+  A. 2
+  B. ?2
+  C. 11
+  D. 141
+
+Q39.
+A researcher is curious about the IQ of students at the Utrecht university. The entire group students is an example of a
+  A. population
+  B. sample
+  C. parameter
+  D. statistics
+
+Q40.
+A box contains 10 balls of which 3 are red, 2 are yellow and 5 are blue. Five balls are randomly selected with replacement. Calculate the probability that fewer than 2 of the selected balls
+  A. 0.0643
+  B. 0.1003
+  C. 0.0012
+  D. 0.0187
+
+Q41.
+Let A, B and C be independent events such that P(A) = 0.5, P(B) = 0.6 and P(C) = ?0.1, calculate P(A ? B ? C)
+  A. 0.40
+  B. 0.60
+  C. 0.73
+  D. 0.98
+
+Q42.
+Let X be the number of head in three tosses of coin. Assume four possible values (0, 1, 2, 3) of X, find E(X)
+  A. 4.5
+  B. 6
+  C. 0.67
+  D. 0.15
+
+Q43.
+Let X be the harmonic mean of the following number
+  A. 1.32
+  B. 3125
+  C. 0.125
+  D. 0.5447
+
+Q44.
+Find the E(X)
+  A. 0.32
+  B. 3125
+  C. 0.5447
+
+Q45.
+If ?X = 603, ?Y? = 631, ?XY = 36540, find the Pearson correlation coefficient (?).
+  A. 0.7440
+  B. 3138
+  C. 0.5447
+
+Q46.
+Which of the following is a possible value of r? and indicate the strongest in linear relationship between the two quantitative variable
+  A. 0%
+  B. 0%
+  C. 80%
+  D. 120%
+
+Q47.
+Which of the following is not a characteristic of a binomial experiment?
+  A. there is sequence of identical trials
+  B. each trials result in two or more outcomes
+  C. the trials are independent
+  D. the probability of success p is the same for each trial
+
+Q48.
+A bowl contains 10 balls, of which 4 are red and 6 are white balls are randomly selected with replacement from the bowl until 4 red balls have been selected. Let X be the number of white balls drawn before the fourth red ball is selected. Calculate the probability of white balls drawn
+  A. 0.0043
+  B. 0.0187
+  C. 0.9357
+  D. 0.1003
+
+Q49.
+If Z ~ N(0,1) then P(Z ? 152) is?
+  A. 0.1003
+  B. 0.0012
+  C. 1.0
+  D. 0.0643
+
+Q50.
+A couple decides to have three children. What is the probability that has same sex in the family?
+  A. 0.20
+  B. 0.0643
+  C. 1.0
+  D. 0.25
+
+===============================================================================
+ JUPEB 2017 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+The part that will develop into an organ for feeling is labeled
+  A. IV
+  B. III
+  C. II
+  D. I
+
+Q2.
+The part labeled II is the
+  A. Silk thread
+  B. thorax
+  C. fore win
+  D. anchor
+
+Q3.
+Which of the following features are all associated with monocots?
+  A. Fibrous root system, branched network of vein and one seed leaf
+  B. Fibrous root system, two seed leaves an floral parts in threes
+  C. One seed leaf, petals in threes or group of threes and parallel venation of leaves
+  D. One seed leaf, net veined leaves and petals in three or multiples of three
+
+Q4.
+The set of fins that controls steering, balancing and change of direction and pitch in fish is
+  A. Dorsal and anal
+  B. pectoral and pelvic
+  C. caudal and dorsal
+  D. anal and pelvic
+
+Q5.
+The most recently evolved structure in animals is the
+  A. Hair
+  B. cilium
+  C. scale
+  D. feather
+
+Q6.
+Coelom is absent in the class of animals termed
+  A. Mollusca
+  B. reptilia
+  C. arthropoda
+  D. coelenterate
+
+Q7.
+A characteristics of vertebrate that unique to mammals is
+  A. The presence of pentadacty 1 limbs
+  B. Parental care
+  C. The possession of scrotum
+  D. Pulmonary circulation
+
+Q8.
+The order in which organic evolution has progressed in plant is
+  A. thallophyta, schizophyta, bryophyta, pteridophyta and spermatophyte
+  B. schizophyta, thallophyta, bryophyta, pteridophyta and spermatophyte
+  C. pteridophyta, spermatophyte, thallophyta, schizophyta and bryophyta
+  D. bryophyta, pteridophyta, spermatophyte, thallophyta and schizophyta
+
+Q9.
+In which part of the human body does the secretion of the growth hormone occur?
+  A. Head region
+  B. waist region
+  C. neck region
+  D. gonads
+
+Q10.
+The part labeled I and II make up the
+  A. Glomerulus
+  B. convoluted tubules
+  C. malpighian
+  D. bowman's capsule
+
+Q11.
+In mammals, re-absorption of salt takes place in
+  A. IV
+  B. III
+  C. II
+  D. I
+
+Q12.
+The part of the brain that controls body posture in mammals is the
+  A. Thalamus
+  B. cerebrum
+  C. spinal cord
+  D. cerebrum
+
+Q13.
+Peripheral arrangement of vascular tissues in dicots is a characteristics of the internal structures of the
+  A. leaf
+  B. petiole
+  C. steam
+  D. root
+
+Q14.
+The substance labeled II originates from
+  A. III only
+  B. IV only
+  C. I and IV
+  D. III and IV
+
+Q15.
+The gas occupying the space labeled I is
+  A. Carbon (IV)oxide
+  B. nitrogen
+  C. hydrogen
+  D. oxygen
+
+Q16.
+The scapula and the ischium are part of the
+  A. pectoral girdle
+  B. pelvic girdle
+  C. appendicular skeleton
+  D. hind limb
+
+Q17.
+Bacteria in the large intestine of man are important in the
+  A. synthesis of vitamins K and B?
+  B. digestion of vegetables
+  C. synthesis of vitamin A and D
+  D. absorption of water
+
+Q18.
+Short-sightedness can be corrected by lenses which are
+  A. convex
+  B. biconvex
+  C. piano-convex
+  D. concave
+
+Q19.
+The inner ear contains two main organs, namely, the
+  A. eardrum and Eustachian tube
+  B. cochlea and semi-circular canal
+  C. oval window and ossicles
+  D. pinna and cochlea
+
+Q20.
+For growth to occur in organisms. The rate of
+  A. food storages must be low
+  B. catabolism must exceed that of anabolism
+  C. anabolism must exceed that of catabolism
+  D. food storages must be high
+
+Q21.
+The production of violet coloration, when dilute NaOH solution is added to a solution of food substance, followed by drops of 1% CuSO? solution while making indicates the presence of
+  A. protein
+  B. carbohydrates
+  C. fats
+  D. reducing sugar
+
+Q22.
+The greatest amount of energy will be sustained by the oxidation of 100kg of
+  A. meat
+  B. butter
+  C. sugar
+  D. Biscuits
+
+Q23.
+The chamber of the mammalian heart with the thickest wall is the
+  A. right ventricle
+  B. left auricle
+  C. right auricle
+  D. left ventricle
+
+Q24.
+Serum differs from blood plasma because it
+  A. contain blood cell and fibrinogen
+  B. contain soluble food and mineral salts
+  C. lack of the blood protein fibrinogen
+  D. lacks blood cells and albumin
+
+Q25.
+The part labeled II is the
+  A. mesocarp
+  B. pericarp
+  C. endocarp
+  D. Epicarp
+
+Q26.
+The fruit represented is mainly dispersed by
+  A. animals
+  B. water
+  C. wind
+  D. birds
+
+Q27.
+In an experiment to estimate the volume of air in a soil sample using a measuring cylinder, it was found that: initial volume of water = p cm?, volume of water before mixing with water = q cm?, final volume of water after adding soil = r cm?. From the data above, which of the following deductions is correct?
+  A. r=p+q
+  B. r>p+q
+  C. q=r-p
+  D. r<p+q
+
+Q28.
+An ecological succession often leads to
+  A. an increase in species diversity
+  B. a decrease in species diversity
+  C. an unstable community
+  D. the dispersal of species
+
+Q29.
+Atmospheric nitrogen is converted to soil nitrogen for plant use by
+  A. nitrification and combustion
+  B. putrefaction and lighting
+  C. lighting nitrification
+  D. combustion and putrefaction
+
+Q30.
+The soil becomes toxic to plants when the concentration of its essential elements is the range labeled
+  A. IV
+  B. III
+  C. II
+  D. I
+
+Q31.
+The range at which soil essential element concentration is recorded for optimal plant growth is marked
+  A. IV
+  B. III
+  C. II
+  D. I
+
+Q32.
+Which of the following growth activities in plants is brought about by gibberellins?
+  A. Rapid cell division
+  B. Tropical response
+  C. Cell elongation
+  D. Main stem elongation
+
+Q33.
+Which of the following are adaptations of animals to aquatic habitants?
+  A. Gills streamlined bodies and lateral line
+  B. lateral line, streamline and lungs
+  C. Gills, scaly skin and lungs
+  D. Gills, streamlined bodies and spiracles
+
+Q34.
+Which of the following is an adaptation of forest species?
+  A. Few stomata
+  B. tick bark
+  C. buttress roots
+  D. Reduced leaves
+
+Q35.
+In a food chain, each succeeding level in a forward direction, represent?
+  A. an increase in the number of individuals
+  B. a decrease in the number of individuals
+  C. an increase in the biomass of individuals
+  D. a gain in the total energy being transferred
+
+Q36.
+The disaster that would have the least destructive impact on animal life and balance in nature is
+  A. chemical pollution
+  B. forest fires
+  C. oil spillage
+  D. grasshopper pests
+
+Q37.
+The legs and beak of an egret resemble those of the heron because they
+  A. both
+  B. are both birds
+  C. occupy similar niche
+  D. occupy the same tropical level
+
+Q38.
+The factors that determine the distribution of vegetable zones are
+  A. temperature, light, rain and humidity
+  B. light, humidity, air and mist
+  C. temperature, light, air and humidity
+  D. humidity, snow, frost and dew
+
+Q39.
+A cross between an albino female and a genetically normal male will result in offspring that are
+  A. all albino
+  B. all phenotypically normal
+  C. all genetically normally
+  D. half albino
+
+Q40.
+The pollutants that contribute to the depletion of the zone layer in the atmosphere are
+  A. radioactive materials
+  B. oxides of Sulphur
+  C. oxides of carbon
+  D. chlorofluorocarbons
+
+Q41.
+The surest way to combine the best qualities of both parents and offspring is by
+  A. cross-breeding
+  B. inbreeding
+  C. selective breeding
+  D. pure breeding
+
+Q42.
+Blood grouping in human beings is derived from combination of
+  A. two different alleles
+  B. four different alleles
+  C. three different alleles
+  D. two different genes
+
+Q43.
+The older fossil-bearing rocks, in contra to the more recent ones, are more likely to contain
+  A. animal rather than plant remains
+  B. invertebrates rather than birds
+  C. flowering plants rather than mosses
+  D. reptiles rather that fishes
+
+Q44.
+In a group of male Agama lizards, the one brightest head color is the
+  A. dominant
+  B. youngest
+  C. oldest
+  D. largest
+
+Q45.
+(diagram-based question)
+  A. taeniasis an malaria
+  B. cholera and gonorrhea
+  C. typhoid and syphilis
+  D. Dracunculiasis and haemophilia
+
+Q46.
+The mutation theory of organic evolution was propounded by
+  A. Gregor Mendal
+  B. Hugo vries
+  C. Jean Lamarck
+  D. Charles Darwin
+
+Q47.
+A certain savanna grasshopper changes color from green during the rainy season to brown during the dry season bush fires. The reason for these color changes is that the
+  A. grasshopper is getting older
+  B. environment temperatures is changing
+  C. grasshopper is avoiding predation
+  D. grasshopper is frequently moulting
+
+Q48.
+Complex social behavior and organization are found mostly in
+  A. insects
+  B. birds
+  C. reptiles
+  D. mammals
+
+Q49.
+Which of the following structural features are adapted for uses other than water conservation?
+  A. Succulent stems
+  B. Scales in annals
+  C. Spines in plants
+  D. Feathers in birds
+
+===============================================================================
+ JUPEB 2017 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+1a) Outline the general characteristics of viruses
+b) State the beneficial roles of bacteria in agriculture and food processing
+c) State the ways of food processing by which bacteria activity is controlled
+
+Q2.
+2a) Explain the term Mitosis
+b) State the differences between mitosis and meiosis with illustrated examples
+c) Outline the significance of mitosis
+
+Q3.
+3a) Describe the range of forms within the Algae giving named examples
+b) Range of forms within the Algae
+
+Q4.
+4a) State the beneficial roles of bacteria in agriculture and food processing
+b) State the ways of food processing by which bacteria activity is controlled
+c) Outline the general characteristics of viruses
+
+Q5.
+5a) Explain fully the concept of alternation of generation in the life cycle of a named pteridophyte
+b) What is its significance to the plant?
+
+Q6.
+6a) What are the "seed plants"
+b) Tabulate ten differences between gymnosperms and angiosperms
+c) List five characteristics of hydrophytes
+
+Q7.
+7a) Make a well labelled diagram of the vertical section of a molar tooth of a mammal
+b) Outline the roles of enzymes in digestion
+c) Point out the differences between digestive enzymes and other enzymes
+
+Q8.
+8a) List the characteristics of respiratory surfaces
+b) Outline the process of gaseous exchange in class amphibian
+
+===============================================================================
+ END OF 2017 QUESTIONS
+===============================================================================

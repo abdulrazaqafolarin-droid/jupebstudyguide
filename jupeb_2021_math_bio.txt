@@ -1,0 +1,803 @@
+===============================================================================
+ JUPEB 2021 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+Obtain the equation of normal to the curve 2y = x? ? 4x + 1 at the point (1, 2)
+  A. 2x + y = 1
+  B. 2xy = 1
+  C. 2x ? y = 1
+  D. y ? x = 1
+
+Q2.
+Determine the respective values of p and q if (x ? 1) and (x + 2) are factors of 2x? + px? ? x + q = 0
+  A. ?5, 6
+  B. 6, 5
+  C. 5, ?6
+  D. 5, 6
+
+Q3.
+If f: x ? x? + c and g: x ? ax + b, find (g ? f)(x)
+  A. a(x? + c) + b
+  B. (ax + b)? + c
+  C. a(x? + c)
+  D. (ax + b)?
+
+Q4.
+If ? and ? are the roots of the quadratic equation ax? + bx + c = 0, obtain the equation whose roots are 1/? and 1/?
+  A. cx? + bx + a
+  B. bx? + cx + a
+  C. cx? + abx + 1
+  D. x? + bx + a
+
+Q5.
+Deduce the values of x if 9x? = 3^(5x?2)
+  A. 2, ?
+  B. ?, 3
+  C. ?, 4
+  D. ?, 2
+
+Q6.
+Solve the inequality 2x? + 3x ? 2 ? 0
+  A. (2, ?)
+  B. [?2, ?]
+  C. [2, ?]
+  D. (?2, ?)
+
+Q7.
+Resolve the expression 1/(1?x?) into partial fractions
+  A. ?/(1?x) + ?/(1+x)
+  B. ?/(1?x) ? ?/(1+x)
+  C. ?/(1?x) ? 1/(1+x)
+  D. ?/(1?x) + 1/(1+x)
+
+Q8.
+The sum of the first n terms of a geometric series is 127 and the sum of their reciprocals is 127/64, if the first term is 1, find n and the common ratio
+  A. 5, 2
+  B. 7, 2
+  C. 2, 7
+  D. 5, 7
+
+Q9.
+Obtain the points common to the two loci whose equations are y? ? 6y ? 4x + 1 = 0 and 2y ? x ? 11 = 0
+  A. (?1, 9), (?1, 7)
+  B. (7, 9), (?1, 5)
+  C. (7, ?9), (?1, 5)
+  D. (?5, 9), (?1, 7)
+
+Q10.
+Solve for tan ? in the equation 7sec?? = 6tan? + 8
+  A. 1, 1/7
+  B. 1, ?1/7
+  C. 2, 1/7
+  D. ?2, 1/7
+
+Q11.
+What is the coefficient of x? in the expansion (1/x? ? x)???
+  A. 1020
+  B. 2020
+  C. 3060
+  D. 4020
+
+Q12.
+Given that A = {x: x $\lt$ 4, x is a natural number} and B = {x: x ? 2, x is an integer}. Deduce (A ? B) ? (A\B)
+  A. {(1,2), (1,3)}
+  B. {(2,3), (2,1)}
+  C. {(2,1), (3,1)}
+  D. {(3,2), (1,2)}
+
+Q13.
+Evaluate the gradient of the curve 3x? + 2xy ? y? ? 8 = 0 at point A(3, 1)
+  A. 10
+  B. ?5
+  C. 8
+  D. 5
+
+Q14.
+An ellipse is a conic section whose eccentricity (e) is
+  A. e = 1
+  B. 0 < e < 1
+  C. e > 1
+  D. e ? 2
+
+Q15.
+Find the sum to infinity of the following series 3 + 2 + 4/3 + 8/9 + 16/27 + ...
+  A. 1270
+  B. 190
+  C. 18
+  D. 9
+
+Q16.
+If x = t? + 1 and y = t? + 2, find y'
+  A. 2t
+  B. 3t
+  C. 3t/2
+  D. 2?/8
+
+Q17.
+If y = (3x + 8)??, obtain the derivative of y with respect to x
+  A. (3x + 8)??
+  B. 27(3x + 8)
+  C. 57(3x + 8)??
+  D. 19(3x + 8)??
+
+Q18.
+Evaluate ???? x?(x? + 1)dx
+  A. 2/3
+  B. 1/3
+  C. ?2
+  D. 2
+
+Q19.
+If y = (1 ? 4x)?, deduce dy/dx
+  A. 8(1 ? 4x)??
+  B. 8(1 ? 4x)??
+  C. ?8(1 ? 4x)??
+  D. 8(1 ? 4x)??
+
+Q20.
+Compute lim(x?4) {(x?4)/(?x?2)}
+  A. 2
+  B. ?4
+  C. 4
+  D. 0
+
+Q21.
+Which of the following differential equations is non linear?
+  A. y'' + 4y' ? 6y = 0
+  B. y'' + 2xy' ? y = 1
+  C. y'' + 2y dy/dx + y? = 0
+  D. y''' + 2y'' + x?y' = x
+
+Q22.
+Solve the differential equation dy/dx ? x?/y = 0
+  A. 3y? ? x? = C
+  B. 2y? ? x? = C
+  C. 3y? + x? = C
+  D. y? ? x? = C
+
+Q23.
+An asymptote is a tangent to curve in two points at
+  A. the origin
+  B. infinity
+  C. the axes
+  D. the centre
+
+Q24.
+The following are turning points except
+  A. maximum point
+  B. minimum point
+  C. inflexion point
+  D. maximum and minimum
+
+Q25.
+Solve the differential equation xdy + ydx = 0
+  A. x ? y = C
+  B. xy = C
+  C. y = C
+  D. x = C
+
+Q26.
+If y = 1/x then the nth derivative of y with respect to x equals
+  A. (?1)? nl/x^(n+1)
+  B. (?1)^(n?1) nl/x^(n+1)
+  C. (?1)^(n+1) nl/x^n
+  D. (?1)?/x^n
+
+Q27.
+If y = e^(2x?1) find d?y/dx? ? 2dy/dx ? 2y
+  A. 2
+  B. 1
+  C. 0
+  D. ?2
+
+Q28.
+Integrate the function xe^x
+  A. e^x(x ? 1)
+  B. e^x(x + 1)
+  C. xe^x(x + 1)
+  D. x(e^x ? 1)
+
+Q29.
+If C is the constant of integration, then which of the following is true for ?f'(x)/f(x) dx
+  A. ln[f'(x)]? + C
+  B. ln[f(x)] + C
+  C. f'(x)/f(x) + C
+  D. [f'(x)]? + C
+
+Q30.
+The motion of a particle along a straight line is specified by the equation x = 4t? ? 3t?, evaluate the velocity after 3 seconds
+  A. 513ms??
+  B. 378ms??
+  C. 351ms??
+  D. 486ms??
+
+Q31.
+The motion of a particle along a straight line is specified by the equation x = 4t? ? 3t?, compute the acceleration after 3 seconds
+  A. 513ms??
+  B. 378ms??
+  C. 351ms??
+  D. 486ms??
+
+Q32.
+Given that a = i + j ? 2k, b = i + k, c = 2i ? j + 3k. Evaluate |2a + b + 2c|
+  A. ?85
+  B. ??58
+  C. ??85
+  D. ??85
+
+Q33.
+A car accelerates uniformly for 4s and maintains a constant speed for 10s before it finally decelerates uniformly to rest in 6s. If the total distance travelled is 600m, calculate the maximum speed
+  A. 40m/s
+  B. ?40m/s
+  C. 25m/s
+  D. 41m/s
+
+Q34.
+A body of mass 6kg is suspended at a position P by two light inextensible strings AP and BP which are inclined respectively at angle 20? and 60? to the upward vertical. If the system is in equilibrium, calculate the total tension in the string
+  A. 62.75N
+  B. 87.71N
+  C. 32.75N
+  D. 25.57N
+
+Q35.
+A uniform beam is 14m long and has a mass of 40kg. Masses of 10kg and 20kg are suspended from its end. At what point from 20kg mass must the beam be suspended so that it may rest horizontally on the support
+  A. 8m
+  B. 7m
+  C. 5m
+  D. 6m
+
+Q36.
+A particle moving along the centre defined by r = a cos ?t i + a sin ?t j. Determine its speed at any time t
+  A. ?a? cos ?t i + a? sin ?t j
+  B. ?a?
+  C. a?
+  D. ???r
+
+Q37.
+Evaluate ??? F(t)dt if F(t) = 2e??i + 5 cos tj ? 3 sin tk
+  A. ?2i + 3k
+  B. 2(1 ? e??)i + 5 sin 2j + 3(1 ? cos 2)k
+  C. 2e??i + 5 sin tj + 3 cos tk
+  D. ?2i + 3j + 3(1 ? cos 2)k
+
+Q38.
+Two forces 10N and 6N act in the direction 060? and 330? respectively. Find the x-component of their resultant
+  A. 5?3 ? 3
+  B. 3 ? 5?3
+  C. 5 ? 3?3
+  D. 3?3 ? 5
+
+Q39.
+From the velocity-time graph shown (velocity reaches 30ms?? between t=0 to t=5, constant from t=5 to t=8, then decreases to 0 at t=10). Calculate the distance travelled when the acceleration is zero
+  A. 120m
+  B. 90m
+  C. 150m
+  D. 240m
+
+Q40.
+Negative Correlation means
+  A. Linear dependence
+  B. Direct relationship
+  C. Inverse relationship
+  D. No relationship
+
+Q41.
+How many 5-letter code-words can be formed from the letters of the word ALGEBRA, if the code-word must begin with A and end with A?
+  A. 20
+  B. 120
+  C. 60
+  D. 40
+
+Q42.
+In how many ways can a committee of 5 be formed from a group of 8 people consisting of 3 boys, 3 girls and a brother-sister pair; if the committee must include the brother-sister pair?
+  A. 40
+  B. 20
+  C. 56
+  D. 36
+
+Q43.
+Find the probability of at least 4 heads in 6 tosses of a fair coin
+  A. 11/32
+  B. 10/21
+  C. 1/6
+  D. ?
+
+Q44.
+On a final examination in Mathematics, the mean was 72 and the standard deviation was 15. Determine the standard score of students receiving the grade of 60
+  A. ?0.5
+  B. 1
+  C. ?0.8
+  D. 2.5
+
+Q45.
+The mean of the numbers 2, 5, 6, 8, x, y is 6, and their standard deviation is ?5. Compute x and y
+  A. 6, 9
+  B. 6, 7
+  C. 5, 9
+  D. 2, 4
+
+Q46.
+Compute the expected number of males and its standard deviation in a random sample of 100 families
+  A. 25, 5
+  B. 50, 25
+  C. 50, 5
+  D. 10, 5
+
+Q47.
+The hypothesis of primary interest is
+  A. alternative
+  B. specified
+  C. null
+  D. exact
+
+Q48.
+The equation y = ?? + ??x is called
+  A. a correlation equation
+  B. a prediction equation
+  C. a linear regression equation
+  D. a non-linear regression equation
+
+Q49.
+An unbiased six sided die has the score 2 engraved on two sides, the score 4 on three sides and score 6 on the remaining one side. The die is thrown once. Compute the probability of obtaining a score of 6 or less
+  A. 2/6
+  B. 1/6
+  C. 5/6
+  D. 1
+
+Q50.
+An unbiased six sided die has the score 2 engraved on two sides, the score 4 on three sides and score 6 on the remaining one side. The die is thrown once. Compute the probability of obtaining an odd score
+  A. 0
+  B. 1
+  C. 2/6
+  D. 5/6
+
+===============================================================================
+ JUPEB 2021 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+The process of a white blood cell engulfing a
+  A. endocytosis.
+  B. exocytosis.
+  C. asmosis.
+  D. diffusion.
+
+Q2.
+Each of the following is a water plant EXCEPT
+  A. Hycinth.
+  B. Lilly.
+  C. Cactus.
+  D. Letuce.
+
+Q3.
+In a plant cell, the chloroplast is located
+  A. inside the cell wall.
+  B. Outside the protoplasm.
+  C. within the vacuole.
+  D. within the cytoplasm.
+
+Q4.
+The ability of the cockroach to live in cracks and
+  A. wings and segmented body.
+  B. compound eyes.
+  C. claws on the legs.
+  D. dorso-ventrally flattened body.
+
+Q5.
+The function of the scrotum is to
+  A. keep the temperature of the testes equal to that
+  B. keep the temperature of the testes slightly
+  C. keep the temperature of the testes slightly
+  D. keep the temperature of the testes at a
+
+Q6.
+RNA viruses require their own supply of certain
+  A. the viruses are rapidly destroyed by host cell
+  B. the enzymes translate viral RNA into proteins.
+  C. the enzymes cannot be made by host cells.
+  D. those cells do not possess RNA-RNA or RNA-
+
+Q7.
+An infectious agent containing only protein and
+  A. prion.
+  B. toxin producer.
+  C. vivoid.
+  D. bacterium.
+
+Q8.
+A peptide bond is formed between
+  A. an aldehyde group and an amino group.
+  B. a carboxyl group and an amino group.
+  C. an aldehyde group and a carboxyl group.
+  D. an aldehyde group and an ester group.
+
+Q9.
+Which one of the following molecules contains
+  A. Cellulose.
+  B. Collagen.
+  C. Galactose.
+  D. Glycogen.
+
+Q10.
+A researcher, who wants to study the composition
+  A. Capillarity.
+  B. Hydrostatic pressure.
+  C. Root pressure.
+  D. transpiration stream
+
+Q11.
+In terms of number of individuals, which of the
+  A. Order.
+  B. Family.
+  C. Class.
+  D. Species.
+
+Q12.
+Unsaturated fat is in the form of
+  A. liquid.
+  B. solid.
+  C. gas.
+  D. mixture of liquid and gas.
+
+Q13.
+On the basis of susceptibility of organisms to
+  A. Thermophiles.
+  B. Mesophiles.
+  C. Agarmophiles.
+  D. Psychrophiles.
+
+Q14.
+RNA means
+  A. riboflavin nucleic acid.
+  B. ribonucleic acid.
+  C. ribosomal nucleic acid.
+  D. ribonucleic activity.
+
+Q15.
+One of these is NOT an element in the chain of
+  A. Infectious agent.
+  B. Reservoir.
+  C. Susceptible host.
+  D. Mode of defence.
+
+Q16.
+Which of the following is a prokaryote?
+  A. Bacteria.
+  B. Virus.
+  C. Fungi
+  D. Helminthes.
+
+Q17.
+Who is the father of taxonomy?
+  A. Antonie Van Leeuwenhoek.
+  B. Christian Gram.
+  C. Robert Koch.
+  D. Carl Linnaeus.
+
+Q18.
+The second scientific name of a microorganism is
+  A. scientific.
+  B. specific.
+  C. generic.
+  D. general.
+
+Q19.
+Which of these organelles synthesize, refines,
+  A. Mitochondria.
+  B. Lysosomes.
+  C. Golgi apparatus.
+  D. Ribosomes.
+
+Q20.
+Cocoyam is an example of a
+  A. rhizomes.
+  B. suckers.
+  C. Corms.
+  D. tendril.
+
+Q21.
+Which of these is the worst cause of animal
+  A. Hunting
+  B. Species Introduction.
+  C. Habitat destruction.
+  D. Pesticides application.
+
+Q22.
+The movement of molecules or ions from a region
+  A. photosymthesis.
+  B. Osmosis.
+  C. diffusion.
+  D. plasmolysis.
+
+Q23.
+The antibiotic neomycin is obtained from the
+  A. Bacillus subtilis.
+  B. Penicillium notadum.
+  C. Streptomyces fradiae.
+  D. Streptomyces griseus.
+
+Q24.
+All EXCEPT one of the following is a characteristic
+  A. Spread between hosts.
+  B. Become established in the host.
+  C. Repair the host immune system.
+  D. Obtain nutrients from the host.
+
+Q25.
+One of these is NOT a classification of egg based
+  A. Isolecithal.
+  B. Nanolecithal.
+  C. Mesolecithal.
+  D. Telolecithal.
+
+Q26.
+Which of the following statements correctly defines
+  A. The movement of molecules in and out of a cell
+  B. An energy-requiring process in which ions and
+  C. Active uptake of materials.
+  D. Use of heat to transport materials.
+
+Q27.
+Which statement(s) are correct about glycolysis?
+  A. I and II.
+  B. I and III.
+  C. I, II and III.
+  D. II and III.
+
+Q28.
+Which of the following biomes is characterized
+  A. Deserts.
+  B. Tropical wet forests.
+  C. Arctic tundra.
+  D. Savanna.
+
+Q29.
+In which of the following organisms would
+  A. Spirogyra.
+  B. Chlamydomonas.
+  C. Rattus rattus.
+  D. Mangifera.
+
+Q30.
+The phenotype ratio resulting from Mendel's law
+  A. 9:3:3:1.
+  B. 3:1.
+  C. 3:1:1.
+  D. 6:3:3:4
+
+Q31.
+The function of ribosome in cell is
+  A. protein synthesis.
+  B. starch synthesis.
+  C. transport materials.
+  D. lipid storage.
+
+Q32.
+The joint between the atlas and the vertebrae
+  A. rotary movement only.
+  B. up and down and nodding movement only.
+  C. rotary and nodding movements only.
+  D. no movement at all.
+
+Q33.
+In anaerobic respiration, glucose is converted to
+  A. carbon dioxide and water.
+  B. carbon dioxide only.
+  C. carbon dioxide and alcohol.
+  D. alcohol and water.
+
+Q34.
+During the excretion of urea, there is also a
+  A. Uriniferous tubules.
+  B. Bowman's capsule.
+  C. Glomerulus.
+  D. Malpighian capsule.
+
+Q35.
+Which of the following statement(s) is/are true of
+  A. All and III only.
+  B. I and III only.
+  C. II and III only.
+  D. I, II and III only.
+
+Q36.
+Organisms which take in complex organic
+  A. Autotrophs.
+  B. Heterotroph.
+  C. Symbiosis.
+  D. Parasites.
+
+Q37.
+The genotype ratio of a monohybrid cross in the
+  A. 3:1
+  B. 1:2:1
+  C. 1:1:2
+  D. 1:2
+
+Q38.
+Chiasma formation leads to
+  A. formation of gametes.
+  B. creation of variability.
+  C. formation of genes.
+  D. formation of the different sexes.
+
+Q39.
+Techniques of sterilization were introduced by
+  A. Louis Pasteur.
+  B. Robert Koch.
+  C. Ferdinand Cohn.
+  D. John Needham.
+
+Q40.
+Lipopolysaccharide is a major constituent in cell
+  A. Gram-positive bacteria
+  B. Gram-negative bacteria.
+  C. Fungi
+  D. Protozoa.
+
+Q41.
+Acquisition of naked DNA by a bacterium from its
+  A. Transformation.
+  B. Transduction.
+  C. Conjugation.
+  D. Lysogenic conversion.
+
+Q42.
+HIV belongs to the family Retroviridae and
+  A. Lentivinae.
+  B. Oncovirinae.
+  C. Retrovirinae.
+  D. None of the options.
+
+Q43.
+Two useful substances produced by the light-
+  A. ATP and NADP2.
+  B. ATP and NADPH2.
+  C. ADP and ethanol.
+  D. ATP and NADPH2.
+
+Q44.
+Which of the following mode of nutrition is not
+  A. Autotrophism.
+  B. Saprotrophism.
+  C. Parasitism.
+  D. Cellular.
+
+Q45.
+All and III only.
+  B. I and III only.
+  C. II and III only.
+  D. I, II and III only.
+
+Q46.
+Which one of the following provided the least
+  A. Embryology.
+  B. Palaeontology.
+  C. Natural selection.
+  D. Geography.
+
+Q47.
+Staining techniques are useful in microbiology
+  A. stains deflect electrons propagated towards
+  B. most microscopes are of poor quality.
+  C. the cytoplasm of microorganisms is
+  D. stains make the condenser and diaphragm of
+
+Q48.
+Microorganisms selected for probiotic use should
+  A. Adhere to the intestinal mucosa of the host.
+  B. Be toxic and pathogenic to the host's
+  C. Remain viable for a long time.
+  D. Withstand HCl in the host's stomach.
+
+Q49.
+Which of these statements is/are CORRECT?
+  A. I only.
+  B. I and III only.
+  C. II and III only.
+  D. I, II and III only.
+
+Q50.
+Which of the following can be used in the
+  A. I only.
+  B. I & III only.
+  C. II & III only.
+  D. I, II & III.
+
+===============================================================================
+ JUPEB 2021 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+1(a) What is gaseous exchange?
+
+(b)  What is respiratory surface?
+
+(c)  State FOUR properties required for a cell to
+be an effective respiratory surface.
+
+(d)  Give FOUR examples of respiratory surfaces.
+
+Q2.
+2(a) Define the following Ecological terms:
+i.   Niche.
+ii.  Microhabitat.
+iii. Ecosystem, and
+iv.  Population.
+
+(b)  Give TWO explanations each on how the
+population growth of an organism can be affected
+by density dependent and density independent
+factors.
+
+(c)  Give TWO reasons why a small population can
+easily go into extinction.
+
+Q3.
+3(a) Mention TEN macro-elements (excluding
+phosphorus) which are required by plants for
+healthy growth.
+
+(b)  State THREE anatomical differences between
+Monocot and Dicot.
+
+(c)  State THREE symptoms which can be
+observed in a plant growing in soil that is
+deficient in Phosphorus.
+
+(d)  Mention FOUR roles of cytokinin in plant
+growth.
+
+(e)  Define the following terms:
+i.   Hypogeal germination.
+ii.  Mesisten.
+iii. Epigeal germination.
+iv.  Georopism.
+
+Q5.
+5(a) Enumerate Two major historical
+developments of Microbiology.
+
+(b)  Describe the FOUR major groups of fungi
+based on the spores produced.
+
+(c)  Give FOUR differences between mutational
+and plasmids mediated drug resistance.
+
+(d)  Define introduction of E. Coli.
+
+Q6.
+6(a) Name the constituents of a balanced diet and
+the their importance in the diet.
+
+(b)  What are the modifications and the
+mechanisms associated with the following habits:
+i.   Filter feeding in mosquito larva.
+ii.  Parasitic feeding in tapeworms.
+
+Q7.
+7(a) Enumerate FIVE reasons why Monotremes and
+Marsupials are special categories of mammals
+
+(b)  List FIVE biological advancements of
+Amphibians over Fishes.
+
+(c)  Explain ultra filtration.
+
+(d)  Describe the life cycle of E. Coli.
+
+Q8.
+8(a) Describe the intermediate host.
+
+(b)  State FOUR differences between bacteria and
+viruses.
+
+(c)  List TWO conditions necessary for growth.
+
+(d)  State ONE feature possessed by a seed or fruit
+dispersed by wind.
+
+===============================================================================
+ END OF 2021 QUESTIONS
+===============================================================================

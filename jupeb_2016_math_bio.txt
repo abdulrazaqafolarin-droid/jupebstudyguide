@@ -1,0 +1,876 @@
+===============================================================================
+ JUPEB 2016 -- MATH OBJECTIVE
+===============================================================================
+
+Q1.
+Express $\tan 8\theta$ in terms of $\tan 4\theta$
+  A. (2tan4?)/(1?tan?4?)
+  B. (4tan4?)/(1?tan?4?)
+  C. (2tan4?)/(1?tan4?)
+  D. (?tan4?)/(4tan?4?)
+
+Q2.
+Given that straight lines $2x - 3y = 8$ and $3x + 4y = -5$ intersect at point $P(x, y)$, find the coordinates of $P$
+  A. (3, 4)
+  B. (1, -2)
+  C. (-1, 2)
+  D. (3, -4)
+
+Q3.
+Find the equation of the straight line through $(1, -2)$ which is perpendicular to $3x - 2y = 6$
+  A. 2y + 4x = 20
+  B. 3y + 2x = 20
+  C. 2y + 4x = 0
+  D. 4y + x = 20
+
+Q4.
+The ends of a diameter of a circle have coordinates $(6, 2)$ and $(-3, -3)$. Find the equation of the circle.
+  A. x?+y??3x+y?24=0
+  B. x?+2y??3x?y+9=0
+  C. 2x?+2y??5x?3y?6=0
+  D. x?+y??2x?8y+9=0
+
+Q5.
+Find the tangent of the angle between lines $AB$ and $AC$ where $A(4, 4)$, $B(3, 2)$ and $C(9, 5)$
+  A. 1/4
+  B. 1
+  C. 1/2
+  D. 1/8
+
+Q6.
+Which of the following is NOT correct concerning the argument $\theta$ of the complex number $z$?
+  A. a = r cos ?
+  B. ? = tan??(b/a)
+  C. b = r sin ?
+  D. 3
+
+Q7.
+If $\cos 2\theta = A$, find the value of $\sin\theta$ in terms of $A$
+  A. ?((1?A)/2)
+  B. A??
+  C. ?(1?A?)
+  D. ??(1?A?)
+
+Q8.
+Find the zero of $f(x)$ such that the remainder of $f(x) = 2x^3 + ax^2 + 6$ is $12$ when $f(x)$ is divided by $(x - 1)$ and $-18$ when it is divided by $(x - 4)$
+  A. 2, 3, ?
+  B. ?2, ?3, ?
+  C. ?2, 3, ??
+  D. ?2, ?3, ??
+
+Q9.
+Which of the following is NOT true when finding the exponential form of the product $(1 - i\sqrt{3})^3(1 + i)^3$?
+  A. r = 16
+  B. ? = ?
+  C. r = 16
+  D. (1?i?3)?(1+i)? = 16i
+
+Q10.
+Which of the following correctly represents De Moivre's theorem?
+  A. z? = r?(cos m? + i sin m?)
+  B. z? = r?(cos m? ? i sin m?)
+  C. z? = r?(cos m?)
+  D. z? = r?(cos ? ? i sin ?)
+
+Q11.
+The indices of the complex number $i$ that can have the values $\left[i,\ -1,\ (-1)^{\frac{1}{2}},\ 1-i\right]$ are respectively?
+  A. [i?, i, i?, i??, i?]
+  B. [i?, i, i?, i??, i?]
+  C. i?, i?, i?, i??
+  D. [i?, i?, i, i??]
+
+Q12.
+Determine the value of $x$ if:
+$\begin{vmatrix} x & 2 & 1 \\ 4 & 5 & x \\ 1 & -3 & 1 \end{vmatrix} = 32$
+  A. 2
+  B. ??
+  C. 4
+  D. 7
+
+Q13.
+Given that $f(x) = 2x - 5$ and $g(x) = 1 - x^2$, find $f^{-1}(g(x))$
+  A. (6?x?)/2
+  B. x/2
+  C. 7
+  D. ?2
+
+Q14.
+For what value of the constant $k$ is the function below continuous?
+$f(x) = \frac{x^2 + kx + 2}{x^2 - k^2}$
+  A. k = ?2/3
+  B. k = 5
+  C. k = 7
+  D. k = ?2
+
+Q15.
+Evaluate:
+$\lim_{x \to \frac{1}{2}} \frac{1 - 2x}{x^2 - \dfrac{1}{4}}$
+  A. ?2
+  B. ?
+  C. 7
+  D. ??
+
+Q16.
+If $f(x) = 4x^2 + 3x - 1$, evaluate:
+$\lim_{\Delta x \to 0} \frac{f(2 + \Delta x) - f(x)}{\Delta x}$
+  A. 19
+  B. 21
+  C. 28
+  D. 37
+
+Q17.
+Evaluate $\displaystyle\int \csc^2 x \cot x \ dx$
+  A. cosec?x/2
+  B. ?cosec?x/2
+  C. ?cosec?x/6
+  D. cosec?x/6
+
+Q18.
+Given that $y = e^{-x}\sin x$, evaluate:
+$\frac{d^2y}{dx^2} + 2\frac{dy}{dx} + 2y$
+  A. 0
+  B. e^(?x) cos x
+  C. e^(?x) sin x
+  D. ?7
+
+Q19.
+Using the substitution $u = x - 2$, show that the integral $\displaystyle\int \frac{x+3}{x-2}\ dx$ reduces to $\displaystyle\int\left(1 + \frac{5}{u}\right)du$
+  A. ?(u+5)/u du
+  B. ?(1+5/u)du
+  C. ?(u?5)/u du
+  D. ?(u+5)/2u du
+
+Q20.
+Evaluate:
+$\int \frac{dx}{(x+6)(x-5)}$
+  A. (9/11)log(x+6) ? (7/11)log(x?5)
+  B. (13/11)log(x+6) + (13/11)log(x?5)
+  C. (2/11)log(x+6) ? 7log(x?5)
+  D. log(x+6)(x?5)
+
+Q21.
+Obtain $\displaystyle\int \sin^2 x \ dx$
+  A. ?x ? (sin 2x)/4
+  B. ?x + (sin 2x)/4
+  C. ?x ? (sin?x)/2
+  D. (sin 2x)/2
+
+Q22.
+The equation of a curve is such that $\dfrac{dy}{dx} = \dfrac{3}{\sqrt{x}} - x$. Given that the curve passes through the point $(4, 6)$, find the equation of the curve.
+  A. 6?x ? (1/2)x? ? (1/2)x? + 2
+  B. 6?x ? (1/2)x? ? (1/2)x? + 2
+  C. 4?x + (3/2)x? ? (1/2)x? + 2
+  D. ?x ? (1/2)x? ? (1/2)x? + 2
+
+Q23.
+Find the exact value of the constant $K$ which satisfies:
+$\int_1^K \frac{(2x-1)}{x-1}\ dx = 1$
+  A. ?(1?e?)
+  B. ?(1+e?)
+  C. ?(1+e)
+  D. ?
+
+Q24.
+Find the first derivative of $5\sqrt{x} + \dfrac{1}{\sqrt{2x}}$ with respect to $x$
+  A. 5/(2?x) ? 1/(2?(2x?))
+  B. 5/(2?x) ? 1/?(2x)
+  C. ??(1+e?)
+  D. 1/(2?x)
+
+Q25.
+Find the derivative of $\tan(\tan^{-1}x)$
+  A. 1/(1+tan?x)
+  B. sec?(tan??x) ? 1/(1+x?)
+  C. x?
+  D. tan??x
+
+Q26.
+A particle moves along a curve whose parametric equations are $x = 3e^{-2t}$, $y = 4\sin 3t$, $z = 5\cos 3t$. Find the velocity vector at any time $t$.
+  A. ?6e^(?2t) ? 12 cos 3t ? 15 sin 3t
+  B. ?6e^(?2t) + 12 cos 3t ? 15 sin 3t
+  C. ?6e^(?2t) + 12 cos 3t + 15 sin 3t
+  D. 6e^(?2t) ? 12 cos 3t ? 15 sin 3t
+
+Q27.
+Which of the following is NOT an example of scalar quantities?
+  A. force
+  B. work
+  C. time
+  D. power
+
+Q28.
+Find the area of the parallelogram in square units whose adjacent sides are determined by the vectors $\mathbf{a} = \mathbf{i} + 2\mathbf{j} + 3\mathbf{k}$ and $\mathbf{b} = 3\mathbf{i} - 2\mathbf{j} + \mathbf{k}$
+  A. 8?3
+  B. 4?3
+  C. 2?3
+  D. ?2
+
+Q29.
+Find the magnitude of the velocity of the particle in question 26 at $t = 0$
+  A. ?3 units
+  B. 6?3 units
+  C. ?6?5 units
+  D. 6?5 units
+
+Q30.
+If $\mathbf{r} = \cos t\ \mathbf{i} + \sin t\ \mathbf{j} + t\mathbf{k}$, evaluate $\left|\dfrac{d^2\mathbf{r}}{dt^2}\right|$
+  A. 1
+  B. ?2
+  C. 2?2
+  D. ?3
+
+Q31.
+The vertices of a triangle have position vectors $A = 4\mathbf{i} + 2\mathbf{j} - 3\mathbf{k}$, $B = 6\mathbf{i} - 9\mathbf{j} + \mathbf{k}$ and $C = 10\mathbf{i} - 7\mathbf{j} - \mathbf{k}$. Then triangle $ABC$ is?
+  A. equilateral
+  B. isosceles
+  C. right angle
+  D. scalene
+
+Q32.
+Given that $\mathbf{Y} = 3\mathbf{i} - 2\mathbf{j} + \mathbf{k}$ and $\mathbf{Z} = 2\mathbf{i} + 2\mathbf{j} + 4\mathbf{k}$, find $\mathbf{Y} \times \mathbf{Z}$
+  A. ?6i+14j+10k
+  B. ?6t+14j+10k
+  C. 6i+14j+10k
+  D. 6i?4j?10k
+
+Q33.
+Express in the form $x\mathbf{i} + y\mathbf{j}$ the vector of magnitude 12 making an angle of $120?$ with the $x$-axis, where $\mathbf{i}$ and $\mathbf{j}$ are the usual perpendicular unit vectors
+  A. ?6i+6?3j
+  B. 6?3i?6j
+  C. 6i?6?3j
+  D. 6?3i+6j
+
+Q34.
+A mass of $8$ kg hangs in equilibrium, suspended by two light inelastic strings making angles $30?$ and $45?$ with the horizontal. Calculate the tensions in the two strings.
+  A. 190N
+  B. 196N
+  C. 80N
+  D. 756N
+
+Q35.
+A body of mass $120$ kg rests on a horizontal surface. If the coefficient of friction between the body and the horizontal surface is $0.63$, calculate the maximum horizontal force enough to just move the body.
+  A. 576N
+  B. 657N
+  C. 756N
+  D. 765N
+
+Q36.
+Which of the following is NOT a measure of dispersion?
+  A. the range
+  B. the 50th percentile
+  C. the standard deviation
+  D. the interquartile range
+
+Q37.
+Consider the following discrete probability distribution:
+
+| $X$ | $-2.25$ | $0$ | $0.25$ | $1.5$ |
+|---|---|---|---|---|
+| $P(X)$ | $0.19$ | $0.15$ | $0.25$ | $0.16$ |
+| | $C$ | | | |
+  A. 0.25
+  B. 0.16
+  C. 0.5
+  D. 1.0
+
+Q38.
+What is the missing value $C$ in the probability distribution in question 37?
+  A. 0.25
+  B. 0.75
+  C. 0.5
+  D. 1.0
+
+Q39.
+The mean mark of a group of candidates in a statistics examination was $69$ and the standard deviation was $8$. What is the missing value $C$?
+  A. 0.9
+  B. 8.6
+  C. 1.3
+  D. 1.0
+
+Q40.
+A teacher gave a statistics test to a class of geography students and computed the measures of central tendency for the test scores. Which of the following statements CANNOT be an accurate description of the scores?
+  A. 0.9
+  B. 8.6
+  C. 1.3
+  D. 8.6
+
+Q41.
+What effect would increasing the sample size have on a confidence interval?
+  A. the confidence interval would increase in size
+  B. the confidence interval would decrease in size
+  C. the confidence interval would be unaffected by sample size
+  D. the confidence interval could either increase or decrease in size
+
+Q42.
+A couple decides to have three children. What is the probability that at least one is a boy?
+  A. 0.825
+  B. 0.785
+  C. 0.875
+  D. 0.857
+
+Q43.
+A numerical value used as a summary measure for a sample, such as the mean, is known as?
+  A. a population mean
+  B. sample parameter
+  C. population
+  D. sample statistic
+
+Q44.
+A student collects $10$ values and computes the mean to be $9.4$. She then collects $5$ more values and the mean of all $15$ to be $8.6$. What is the average of the last $5$ values?
+  A. 5.0
+  B. 7.0
+  C. 6.5
+  D. 0.988
+
+Q45.
+If $Y \sim P_0(0.24)$, find $P(5 \leq Y \leq 6)$
+  A. 0.084
+  B. 0.024
+  C. 0.988
+  D. 0.998
+
+Q46.
+The difference between the largest and smallest data values is called?
+  A. variance
+  B. coefficient of variation
+  C. range
+  D. interquartile range
+
+Q47.
+Five hypotheses are to be tested using five independent test statistics. A common significance level (size) for each test is desired such that the probability of rejecting at least one hypothesis when all five are true is $0.4$. Determine the desired common significance level.
+  A. 0.040
+  B. 0.167
+  C. 0.080
+  D. 0.097
+
+Q48.
+The probability that a particular machine breaks down on any day is $0.2$ and is independent of whether it broke down on any other day. Calculate the probability that the machine breaks down two more times in ten days.
+  A. 0.0175
+  B. 0.4598
+  C. 0.2684
+  D. 0.6242
+
+Q49.
+Normally distributed data are normally referred to as?
+  A. bell shaped
+  B. peaked
+  C. skewed
+  D. asymmetrical
+
+Q50.
+If a sample is drawn from a population with mean $\mu = 48$ and unknown standard deviation, what kind of test is required to test the null hypothesis?
+  A. one sample Z test
+  B. one sample t test
+  C. one sample t test
+  D. paired sample test
+
+===============================================================================
+ JUPEB 2016 -- MATH THEORY
+===============================================================================
+
+Q1.
+.$\mathrm{(a)}$** If y? = a?x/(2a?x), evaluate dy/dx.
+
+**(b)** When 2x? ? 5x? + 4x ? 8 is divided by ax? + bx? + c the quotient is x ? 2 and the remainder is bx ? a. Evaluate (a+b+c)?.
+
+Q1.
+.** A manager wants to draw a sample without replacement of 30 employees from a workforce of 150. Describe how the chance of being selected will change over the course of drawing the sample.
+
+**(b)** A university medical research center finds out that treatment of skin cancer by the use of chemotherapy has a success rate of 70%. Suppose five patients are treated with chemotherapy. The probability distribution of X successful outcomes of the five patients is given in the table below.
+
+| X | 0 | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|---|
+| P(X) | 0.10 | 0.20 | 0.45 | 0.15 | 0.05 | 0.05 |
+
+*(table values approximated from the photo ? please confirm against your original copy)*
+
+Find the expected value of the distribution.
+
+Find the variance and standard deviation of the distribution.
+
+**(c)** A student goes to the library. Let events B = the student checks out a book and D = the student checks out a DVD. Suppose that P(B) = 0.40, P(D) = 0.30 and P(D|B) = 0.5.
+
+**i.** Find P(B and D)
+
+**ii.** Find P(B or D)
+
+Q1.
+.(a)** A school offering JUPEB has 70% of the students taking physics, 50% taking chemistry and 40% taking biology. If 20% of the students take physics and chemistry, 30% of the students take chemistry and biology, and 30% of the students take physics and biology, what is:
+
+**i.** the percentage of students taking all three subjects
+
+**ii.** the percentage of students taking physics or chemistry
+
+**iii.** the percentage of students taking physics and biology but not chemistry
+
+---
+
+Q1.
+.$\mathrm{(a)}$** Suppose the random variables X and Y have the following normal distributions: X~N(5,6) and Y~N(2,1). If x = 17 then z = 2. If y = 4, what is z?
+
+**(b)** Suppose the diameter of a certain train component follows the normal distribution X~N(73,8). Find the proportion of these components that have diameter less than 91mm, P(X?91).
+
+Q1.
+.$\mathrm{(a)}$** Given that A = $\begin{pmatrix}2 & 1\\1 & 1\end{pmatrix}$, if f(x) = x? + 2x + 1, find f(A).
+
+**(b)** Compute the inverse of the matrix
+
+A = $\begin{pmatrix}1 & 5 & -2\\3 & 6 & 2\\-1 & 0 & 3\end{pmatrix}$
+
+**(c)** Factorize the polynomial equation y = x? + x? ? 20
+
+Q1.
+.$\mathrm{(a)}$** Evaluate:
+
+**i.** lim(x??3) (3x??27)/(x+3)
+
+**ii.** lim(x?0) (3x??2x?+4x)/(x?+5x)
+
+**iii.** lim(x??) (2x?+x??3)/(x?+2x?5)
+
+**(b)** Find the Taylor series expansion for sin x at x = a, and determine its radius of convergence.
+
+**(c)** Find the area enclosed by the curve y = 25 ? x? and the line y = x + 13.
+
+**(d)** Differentiate from the first principle, y = 1/x?.
+
+**(e)** Using the chain rule, evaluate:
+
+**i.** y = 2x?e^(3x) ln x?
+
+**ii.** y = (2x? ? 4x? + 3x ? 5)?
+
+---
+
+Q1.
+.$\mathrm{(a)}$** What is the polar form of the complex number (? + i?3/2)???
+
+**(b)** Four cables are attached to the top of a telegraph pole. The tensions in these cables are shown in the diagram below. Compute the resultant forces acting on the pole and its direction.
+*[Diagram]*
+
+**(c)** R is the resultant of forces 12N and 7N. If the angle between 7N and R is 40?, find the angle between forces 12N and R.
+
+Q1.
+.$\mathrm{(a)}$** A string ABCDE whose one end A is fixed to the wall and the other end E is loaded with a weight of 300N. The string passes through a frictionless pulley and two other weights are hung at B and C as shown in the figure. Determine the tension in the string and the magnitude of weights W? and W?.
+
+*[Diagram]*
+
+**(b)** Two coplanar forces of 19N and 21N are acting at a point P such that the resultant force between them is 37N. Find the angle between the two coplanar forces.
+
+**(c)** A ladder of length 5m and mass 25kg leans against a smooth wall so that it is at an angle of 70? to the horizontal. The ladder remains at rest, with its base on rough, horizontal ground.
+
+**i.** Find the magnitude of the normal reaction and friction forces acting on the base of the ladder.
+
+**ii.** Find an inequality that the coefficient of friction must satisfy.
+
+---
+
+===============================================================================
+ JUPEB 2016 -- BIOLOGY OBJECTIVE
+===============================================================================
+
+Q1.
+Which of the following devised the modern system of classifying living organisms?
+  A. aristotle
+  B. carolus linnaeus
+  C. charles darwin
+  D. gregor mendel
+
+Q2.
+Choose from the list below the one that is not a kind of adoption by animals
+  A. camoflaged
+  B. warning coloration
+  C. minicry
+  D. growth
+
+Q3.
+Which of these organelles is involved in protrin synthesis? **
+  A. ribosomes
+  B. golgi apparatus
+  C. mitochondrai
+  D. endoplasmic reticulum
+
+Q4.
+Which of the following is a function of monomers of biological molecule? **
+  A. serves as building blocks
+  B. are not soluble in water
+  C. are connected by dehydration reactions
+  D. are not linked by covalent bond
+
+Q5.
+The under listed are function of lipids except
+  A. storage of energy
+  B. protection of body organs
+  C. structural components of membranes
+  D. repairs warn out tissues
+
+Q6.
+Identify the statement that is wrong
+  A. recessive traits are not expressed in heterozygote
+  B. dominant traits are governed by an allele that can be expressed in the presence of another allele
+  C. homozygous means having the same allele at the same locuson both members of a pair of chromosomes
+  D. hetezygous means having two allele at two loci of a pair of chromosomes
+
+Q7.
+Mycorrhizae represents a
+  A. symbiotic association between a fungus and liverworts
+  B. parasitic association between a fungus and an alga
+  C. parasitic association between a fungus and roots of plants
+  D. symbolic association between a fungus and roots of higher plants
+
+Q8.
+In Meiosis, the daughter cells differ from parent cell as well as amongst themselves due to an allele that can be expressed in the presence of another allele **
+  A. segregation, independence assortment and crossing over
+  B. segregation and crossing over
+  C. independent assortment and crossing over
+  D. segregation and independent assortment
+
+Q9.
+Prokaryotic cells have a specialized material called
+  A. peptidoglycan
+  B. pectin
+  C. peptidoglucose
+  D. peptidoaminose
+
+Q10.
+Proteins synthesized by the rough endoplasmic reticulum are
+  A. for internal regulation
+  B. to build more membranes in the cell
+  C. exported from the cell
+  D. for internal storage
+
+Q11.
+Within chloroplasts, light is captured by
+  A. thylakiods with grana
+  B. grana within thylakiods
+  C. grana within cisternae
+  D. cisternae within grana
+
+Q12.
+In what organelle are ribophorins located?
+  A. mitochondria
+  B. rough endoplasmic reticulum
+  C. nuclear membrane
+  D. lysosomes
+
+Q13.
+In the life cycle of pteridophytes embryo becomes **
+  A. zygote
+  B. sporophytes
+  C. seed
+  D. leaves
+
+Q14.
+Which of the following fundamental processes reproduction in the plants
+  A. mitosis and somatic cells expansion
+  B. pollination and fertilization
+  C. fruit formation and seed dispersal
+  D. meiosis and somatic cell expansion
+
+Q15.
+Which of these best defines a fruit?
+  A. an immature ovule
+  B. a budding gametophyte
+  C. an immature sporophyte
+  D. a developed ovary
+
+Q16.
+In primary growth, plant stems and roots elongate by
+  A. cell division
+  B. cell enlargement
+  C. cell elongation
+  D. cell compartment
+
+Q17.
+Angiosperm can be distinguished from gymnospersm by **
+  A. naked seeds
+  B. enclosed seeds
+  C. vascular structures
+  D. Variable leaves
+
+Q18.
+Soil microorganism are beneficial because their involvement in
+  A. photosynthesis
+  B. translocation
+  C. cycling of nutrients
+  D. respiration using soil air
+
+Q19.
+Which of the equipment sterilizes by moist heat?
+  A. oven
+  B. autoclave
+  C. incubator
+  D. water bath
+
+Q20.
+Which of the following group microbiological method employed in the identification of microorganisms? **
+  A. gram staining
+  B. sterilization
+  C. inoculation
+  D. pasteurization
+
+Q21.
+Which of the following group of microorganisms lack a true nucleus?
+  A. protozoa
+  B. fungi
+  C. bacteria
+  D. algae
+
+Q22.
+Bacteria which grows in the absence of oxygen are referred as
+  A. aerobes
+  B. anaerobics
+  C. facultative aerobes
+  D. microaerophiles
+
+Q23.
+Which of the following class of fungi is referred to as fungi imperticti?
+  A. basidiomycets
+  B. ascomycetes
+  C. deuteromycets
+  D. zygomycets
+
+Q24.
+Which of the following vascular tissue conduct water and mineral salt?
+  A. cambium
+  B. xylem
+  C. phloem
+  D. companion cell
+
+Q25.
+Which of the following statements is correct?
+  A. all epidermis cells lacks chloroplast
+  B. vitamins are one of the assimilates made from leaf
+  C. photosynthesis occur more in spongy mesophyll than palisade mesophyll
+  D. transpiration occurs most in stomata than any other opening in plant
+
+Q26.
+The term microbiology was given by
+  A. Louis Pasteur (1822-1895)
+  B. Robert Hooke (1665-1789)
+  C. Girolamo Fracastoro (1478-1533)
+  D. John Needham (1713-1781)
+
+Q27.
+The fundamental differences between gram positive and gram negative bacteria is that **
+  A. the former contain thick peptidoglycan layer while the latter posses thin peptidoglycan layer
+  B. gram positive bacteria often contain lipopolysaccharides in addition to peptidoglycan
+  C. the latter contain peptioglyan in addition to lilpopysaccharides layers
+  D. the former contain high technoic acid than the latter
+
+Q28.
+Which type of cell actually secrets antibodies?
+  A. Tcells
+  B. macrophages
+  C. plasma
+  D. monocytes
+
+Q29.
+A typical transport medium must **
+  A. provide temporary storage of specimens
+  B. provide nutrients for the organism
+  C. provide organic buffers and salts
+  D. provide only vitamins and growth factors
+
+Q30.
+The removal of all microorganisms including spores from a sample is termed
+  A. disinfection
+  B. sterilization... [shows C]  Wait ? let me re-check: based on key, #30 =
+  C. A. disinfection B. ~~~ C. sterilization
+  D. radiation
+
+Q31.
+A student wishes to isolate the bacterium staphylococcus...aureus. The technologist is expected to provide one of the following media for primary isolation of the organism **
+  A. eosin methylene blue agar
+  B. mannitol salt agar
+  C. sabourard dextrose agar
+  D. macconkey agar
+
+Q32.
+Which of these is not produced by microorganisms?
+  A. penicillin
+  B. streptomycin
+  C. polysaccharides
+  D. poly vinylchloreide
+
+Q33.
+Which of the following equipment sterilization by dry heat **
+  A. oven
+  B. autoclave
+  C. incubator
+  D. water bath
+
+Q34.
+The causative organism of amoebic dysentery is a **
+  A. protozoa
+  B. fungi
+  C. bacterial
+  D. algae
+
+Q35.
+In a vinegar production company, some microorganisms are used. Choose the one that are relevant form the give microorganism I. bacteria II. Protozoa III. Yeast IV. Protista **
+  A. I and II
+  B. II and III
+  C. I and II
+  D. I and IV
+
+Q36.
+Each HIV particle possesses a glycoprotein called on its surface
+  A. Cd4
+  B. gp8
+  C. gp120
+  D. CXXR4
+
+Q37.
+What is plasmid?
+  A. self-replicating strand of double stranded DNA
+  B. self-replicating strand of single stranded RNA
+  C. bacteria chromosome
+  D. all of the above
+
+Q38.
+Which of the following organism, passes tube feet?
+  A. Cray fish
+  B. jelly fish
+  C. star fish
+  D. moon
+
+Q39.
+Annelid with well-developed head are called
+  A. oligochaetes
+  B. hirudinae
+  C. polychaetes
+  D. monochaetes
+
+Q40.
+The most adapted and diverse species on the terrestrial ecosystem are
+  A. mammals
+  B. reptiles
+  C. insects
+  D. birds
+
+Q41.
+Which of the following organs is used by reptiles for taste and smell detection
+  A. Thompson organ
+  B. robinson organ
+  C. Johnson organ
+  D. Jacobson organ
+
+Q42.
+Vipers detect thermal radiation and their prey a two chambered organ located between the eye and the nostril on each side of the head called
+  A. Rx organ
+  B. heat organ
+  C. pit organ
+  D. kit organ
+
+Q43.
+Which of the following is not a mammal
+  A. fruit eating bat
+  B. swimming seal
+  C. blue whale
+  D. turtle
+
+Q44.
+The following blood vessels have value except **
+  A. renal artery
+  B. renal vein
+  C. pulmonary artery
+  D. pulmonary vein
+
+Q45.
+Which of the following plasma protein is involved in blood clotting?
+  A. albumin
+  B. globulin
+  C. fibrinogen
+  D. thrombin
+
+Q46.
+The following act in an alkaline medium except
+  A. ptyalin
+  B. pepsin
+  C. crepsin
+  D. steapsin
+
+Q47.
+The intestinal coenzyme that activates the pancreatic enzyme is called
+  A. polyptide
+  B. enterokinase
+  C. succusentericus
+  D. amylase *(Diagram of human digestive system referenced for questions 48?49)*
+
+Q48.
+The organ labeled C is the
+  A. gall bladder
+  B. stomach
+  C. liver
+  D. small intestine
+
+Q49.
+Absence of structure D in the human body will result in
+  A. inability to digest starch
+  B. inability to secret mucus
+  C. inability to emulsify fat
+  D. inability to denature protein
+
+Q50.
+In absence of oxygen in animal pyruvate is converted to
+  A. ethanol
+  B. lactate
+  C. acetyl CoA
+  D. oxaloacetate
+
+===============================================================================
+ JUPEB 2016 -- BIOLOGY THEORY
+===============================================================================
+
+Q1.
+Describe five evidence of evolution
+**(b)** Discuss briefly the factors affecting enzyme activity
+**(c)** Differentiate between an aldose an a ketose
+
+Q2.
+The following set of data represents the number of seeds obtained from 60 pod of cocoa:
+102, 187, 116, 129, 100, 121, 121, 196, 194, 128,
+106, 189, 100, 108, 124, 114, 118, 199, 108, 191,
+137, 102, 126, 111, 192, 100, 116, 198, 116, 110,
+109, 119, 113, 123, 132, 124, 156, 164, 132, 167,
+122, 134, 145, 165, 187, 100, 123, 143, 100, 165,
+127, 165, 1776, 190
+Use the data given above to answer the following questions:
+- a. Prepare a frequency distribution table using the interval of 10
+- b. Use the frequencies obtained to plot a histogram representing the number of seeds in the pod of cocoa
+- c. Determine the mean seed per pod of cocoa
+
+Q3.
+- a. List two major types of passive transport
+- b. State two major differences between positive and active transport
+- c. State one reason why energy is required in active transport
+- d. Differentiate between phospholipid and glycolipids
+
+Q4.
+- a. List the plant tissues that constitutes the functional structures of the leaf veins
+- b. Outline the role of medullary rays in xylem parenchyma
+- c. Discuss the importance of parenchyma tissue to plants
+
+Q5.
+- a. Name and describe a specific relationship that is beneficial to both participating organisms
+- b. Differentiate between antiseptics and disinfectants sterilization and sanitation
+- c. Mention one application of generic engineering in each of the following agriculture, medicine and industry
+
+Q6.
+- a. Write a succinct note on this topic: bacteria are more beneficial to humans than viruses
+- b. Differentiate between bacteria and viruses
+
+Q7.
+- a. List ten characteristics of the phylum annelid
+- b. State four economic importance of earthworm
+- c. State five similarities between reptilian and aye
+
+Q8.
+- a. List eight characteristics of mammals
+- b. Explain two of the characteristics that ensured their supremacy over the reptiles
+- c. Explain the functions of the epithelium of the stomach in the digestion of food in mammals
+
+===============================================================================
+ END OF 2016 QUESTIONS
+===============================================================================

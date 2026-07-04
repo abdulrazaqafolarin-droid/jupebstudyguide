@@ -24,11 +24,12 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && devTaggerPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      strategies: "generateSW",
+      strategies: "injectManifest",
+      src: "sw.js",
       includeAssets: ["favicon.ico", "favicon.svg", "robots.txt"],
       manifest: {
-        name: "JUPEB Master - Past Questions Study App",
-        short_name: "JUPEB Master",
+        name: "Rutex Jupeb Master - Past Questions Study App",
+        short_name: "Rutex Jupeb Master",
         description: "Master JUPEB exams with spaced repetition and AI tutoring. Study Physics, Chemistry & Biology past questions.",
         theme_color: "#D4A34C",
         background_color: "#0D0D0D",
@@ -57,22 +58,6 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        skipWaiting: true,
-        clientsClaim: true,
-        runtimeCaching: [
-          {
-            urlPattern: /^https?:\/\/.*\.supabase\.co\/.*/i,
-            handler: 'NetworkOnly',
-          },
-          {
-            urlPattern: /^https?:\/\/.*\.googleapis\.com\/.*/i,
-            handler: 'NetworkOnly',
-          },
-          {
-            urlPattern: /^https?:\/\/.*\.groq\.com\/.*/i,
-            handler: 'NetworkOnly',
-          },
-        ],
       },
     }),
   ].filter(Boolean),

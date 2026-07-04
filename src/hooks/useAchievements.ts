@@ -25,6 +25,13 @@ export interface AchievementStats {
   studiedAfterMidnight?: boolean;
   studiedBefore6am?: boolean;
   consecutiveCorrect?: number;
+  aiChatCount?: number;
+  chatMessagesSent?: number;
+  friendCount?: number;
+  totalScore?: number;
+  hasAvatar?: boolean;
+  tourCompleted?: boolean;
+  quizPerfectScore?: boolean;
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
@@ -295,6 +302,131 @@ export const ACHIEVEMENTS: Achievement[] = [
     condition: (s) => s.studiedBefore6am === true,
     rarity: 'uncommon',
     getProgress: (s) => ({ current: s.studiedBefore6am ? 1 : 0, max: 1 }),
+  },
+
+  {
+    id: 'streak_60',
+    name: 'Two Month Titan',
+    description: 'Maintain a 60-day study streak',
+    icon: '⚡',
+    condition: (s) => s.longestStreak >= 60,
+    rarity: 'legendary',
+    getProgress: (s) => ({ current: Math.min(s.longestStreak, 60), max: 60 }),
+  },
+  {
+    id: 'streak_100',
+    name: 'Century Streak',
+    description: 'Maintain a 100-day study streak',
+    icon: '💯',
+    condition: (s) => s.longestStreak >= 100,
+    rarity: 'legendary',
+    getProgress: (s) => ({ current: Math.min(s.longestStreak, 100), max: 100 }),
+  },
+
+  {
+    id: 'ai_tutor_1',
+    name: 'Digital Mentor',
+    description: 'Have your first AI tutor conversation',
+    icon: '🤖',
+    condition: (s) => (s.aiChatCount ?? 0) >= 1,
+    rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.aiChatCount ?? 0, 1), max: 1 }),
+  },
+  {
+    id: 'ai_tutor_20',
+    name: 'AI Apprentice',
+    description: 'Have 20 AI tutor conversations',
+    icon: '🧠',
+    condition: (s) => (s.aiChatCount ?? 0) >= 20,
+    rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.aiChatCount ?? 0, 20), max: 20 }),
+  },
+
+  {
+    id: 'chat_first',
+    name: 'First Word',
+    description: 'Send your first chat message',
+    icon: '💬',
+    condition: (s) => (s.chatMessagesSent ?? 0) >= 1,
+    rarity: 'common',
+    getProgress: (s) => ({ current: Math.min(s.chatMessagesSent ?? 0, 1), max: 1 }),
+  },
+  {
+    id: 'chat_100',
+    name: 'Chatterbox',
+    description: 'Send 100 chat messages',
+    icon: '🗣️',
+    condition: (s) => (s.chatMessagesSent ?? 0) >= 100,
+    rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.chatMessagesSent ?? 0, 100), max: 100 }),
+  },
+
+  {
+    id: 'friends_3',
+    name: 'Social Trio',
+    description: 'Add 3 friends',
+    icon: '👥',
+    condition: (s) => (s.friendCount ?? 0) >= 3,
+    rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.friendCount ?? 0, 3), max: 3 }),
+  },
+  {
+    id: 'friends_10',
+    name: 'Social Hub',
+    description: 'Add 10 friends',
+    icon: '🌐',
+    condition: (s) => (s.friendCount ?? 0) >= 10,
+    rarity: 'rare',
+    getProgress: (s) => ({ current: Math.min(s.friendCount ?? 0, 10), max: 10 }),
+  },
+
+  {
+    id: 'leaderboard_top50',
+    name: 'On the Board',
+    description: 'Earn 5,000 total points',
+    icon: '📊',
+    condition: (s) => (s.totalScore ?? 0) >= 5000,
+    rarity: 'uncommon',
+    getProgress: (s) => ({ current: Math.min(s.totalScore ?? 0, 5000), max: 5000 }),
+  },
+  {
+    id: 'leaderboard_top10',
+    name: 'Elite Rank',
+    description: 'Earn 50,000 total points',
+    icon: '🏅',
+    condition: (s) => (s.totalScore ?? 0) >= 50000,
+    rarity: 'epic',
+    getProgress: (s) => ({ current: Math.min(s.totalScore ?? 0, 50000), max: 50000 }),
+  },
+
+  {
+    id: 'profile_complete',
+    name: 'Picture Perfect',
+    description: 'Add a profile photo',
+    icon: '📸',
+    condition: (s) => s.hasAvatar === true,
+    rarity: 'common',
+    getProgress: (s) => ({ current: s.hasAvatar ? 1 : 0, max: 1 }),
+  },
+
+  {
+    id: 'tour_complete',
+    name: 'Explorer',
+    description: 'Complete the feature tour',
+    icon: '🧭',
+    condition: (s) => s.tourCompleted === true,
+    rarity: 'common',
+    getProgress: (s) => ({ current: s.tourCompleted ? 1 : 0, max: 1 }),
+  },
+
+  {
+    id: 'quiz_perfect',
+    name: 'Perfect Score',
+    description: 'Get 100% on a quiz',
+    icon: '🎯',
+    condition: (s) => s.quizPerfectScore === true,
+    rarity: 'rare',
+    getProgress: (s) => ({ current: s.quizPerfectScore ? 1 : 0, max: 1 }),
   },
 ];
 

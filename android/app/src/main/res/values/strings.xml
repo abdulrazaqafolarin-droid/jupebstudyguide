@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">JUPEB Master</string>
-    <string name="title_activity_main">JUPEB Master</string>
-    <string name="package_name">com.jupeb.master</string>
-    <string name="custom_url_scheme">com.jupeb.master</string>
+    <string name="app_name">Rutex Jupeb Master</string>
+    <string name="title_activity_main">Rutex Jupeb Master</string>
+    <string name="package_name">com.rutex.jupeb.master</string>
+    <string name="custom_url_scheme">com.rutex.jupeb.master</string>
 </resources>

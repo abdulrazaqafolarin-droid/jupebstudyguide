@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
 import { Flashcard } from './Flashcard';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
@@ -27,12 +27,17 @@ export const StudyView = ({ questions, subject, onBack, consecutiveCorrect, onCo
   const subjectInfo = SUBJECT_INFO[subject];
   const stats = getStats(questions);
 
-  const studyQueue = useMemo(() => {
+  const [studyQueue, setStudyQueue] = useState<Question[]>(() =>
+    mode === 'review' ? getDueQuestions(questions) : [...questions].sort(() => Math.random() - 0.5)
+  );
+
+  useEffect(() => {
     if (mode === 'review') {
-      return getDueQuestions(questions);
+      setStudyQueue(getDueQuestions(questions));
+    } else {
+      setStudyQueue([...questions].sort(() => Math.random() - 0.5));
     }
-    return [...questions].sort(() => Math.random() - 0.5);
-  }, [mode, questions, getDueQuestions, shuffleKey]);
+  }, [mode, shuffleKey, questions.length]);
 
   const currentQuestion = studyQueue[currentIndex];
   const hasQuestions = studyQueue.length > 0;

@@ -308,7 +308,7 @@ export default function ProfilePage() {
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         {/* Avatar section */}
-        <section data-tour="profile-stats" className="animate-in-up stagger-1">
+        <section data-tour="profile-avatar" className="animate-in-up stagger-1">
           <div className="bg-card rounded-2xl border border-border p-8 chalk-texture relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
             <div className="relative flex flex-col items-center gap-4">

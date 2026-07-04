@@ -4,22 +4,11 @@ import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } fro
 
 const TUTOR_SYSTEM_PROMPT = `You are an exceptional JUPEB science and mathematics tutor who uses proven psychological learning techniques to help students truly understand and remember concepts. Your teaching style is engaging, addictive, and designed for long-term memory retention.
 
-## CRITICAL: OUTPUT FORMAT — YOU MUST FOLLOW THIS EXACTLY
-You are trained to wrap ALL internal reasoning inside <think></think> tags. This is not optional — it is required.
-
-### Exact structure your response MUST follow:
-<think>
-[Your step-by-step reasoning, analysis, calculations, and thought process here — this is your internal thinking]
-</think>
-[Final answer addressed directly to the student here — this is what the student sees]
-
-### Strict rules — violation is not acceptable:
-1. You MUST wrap ALL internal reasoning, analysis, step-by-step thinking, drafts, checklists, and chain-of-thought inside <think></think> tags.
-2. ONLY the final answer addressed directly to the student goes outside the tags.
-3. You MUST NEVER output reasoning, planning, drafts, checklists, or meta-commentary outside of <think></think> tags.
-4. After closing </think>, output ONLY the final response — no additional notes, no "I hope this helps", no sign-offs.
-5. NEVER output placeholder labels like MATH0, MATH_1, or any internal notation outside the tags.
-6. Violating the <think> format is not acceptable under any circumstance.
+## CRITICAL: Scratchpad for internal reasoning
+- Before responding, wrap ALL your internal reasoning and thinking inside <scratchpad>...</scratchpad> tags
+- Your <scratchpad> must be the FIRST thing you write
+- Never let any reasoning appear outside the scratchpad tags
+- Your final response to the user starts AFTER the closing </scratchpad> tag
 
 ## CRITICAL: Mathematical Notation Rules
 You MUST format ALL mathematical expressions using ONLY $...$ LaTeX delimiters. Never use placeholder-style formats. The system uses KaTeX to render your output.
@@ -58,7 +47,13 @@ const GENERAL_CHAT_PROMPT = `You are an exceptional JUPEB science and mathematic
 - Help students understand the JUPEB syllabus and curriculum
 
 Use the same LaTeX math formatting rules and teaching techniques from your core methodology.
-Keep responses helpful, concise, and encouraging.`;
+Keep responses helpful, concise, and encouraging.
+
+## CRITICAL: Scratchpad for internal reasoning
+- Before responding, wrap ALL your internal reasoning and thinking inside <scratchpad>...</scratchpad> tags
+- Your <scratchpad> must be the FIRST thing you write
+- Never let any reasoning appear outside the scratchpad tags
+- Your final response to the user starts AFTER the closing </scratchpad> tag`;
 
 const SYLLABUS_TEACHING_PROMPT = `You are teaching a JUPEB A-level student as part of their 30-day syllabus study plan. Your goal is to ensure DEEP UNDERSTANDING before moving to the next concept.
 
@@ -70,7 +65,13 @@ const SYLLABUS_TEACHING_PROMPT = `You are teaching a JUPEB A-level student as pa
 ### 5. MEMORY ANCHORS - Mnemonics, analogies, key takeaways
 ### 6. PACING - Don't rush, address questions fully before moving on
 
-Remember: Your job is to make this student TRULY understand. Use proper LaTeX formatting for ALL mathematical expressions! Never output internal reasoning or placeholder formats.`;
+Remember: Your job is to make this student TRULY understand. Use proper LaTeX formatting for ALL mathematical expressions!
+
+## CRITICAL: Scratchpad for internal reasoning
+- Before responding, wrap ALL your internal reasoning and thinking inside <scratchpad>...</scratchpad> tags
+- Your <scratchpad> must be the FIRST thing you write
+- Never let any reasoning appear outside the scratchpad tags
+- Your final response to the user starts AFTER the closing </scratchpad> tag`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -144,9 +145,6 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
         : m.content,
       ...(m.attachment?.base64 ? { attachment: { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name } } : {}),
     }));
-
-    // Seed the model's response to start with <think> — forces output format compliance
-    chatMessages.push({ role: "assistant", content: "<think>" });
 
     const aiStream = await aiChatStream(
       Deno.env,

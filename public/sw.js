@@ -1,4 +1,23 @@
-self.__WB_MANIFEST;
+import { precacheAndRoute } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
+import { NetworkOnly } from 'workbox-strategies';
+
+precacheAndRoute(self.__WB_MANIFEST);
+
+registerRoute(
+  /^https?:\/\/.*\.supabase\.co\/.*/i,
+  new NetworkOnly()
+);
+
+registerRoute(
+  /^https?:\/\/.*\.googleapis\.com\/.*/i,
+  new NetworkOnly()
+);
+
+registerRoute(
+  /^https?:\/\/.*\.groq\.com\/.*/i,
+  new NetworkOnly()
+);
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -14,7 +33,7 @@ self.addEventListener('push', (event) => {
     data = event.data ? event.data.json() : {};
   } catch {}
 
-  const title = data.title || 'JUPEB Master';
+  const title = data.title || 'Rutex Jupeb Master';
   const options = {
     body: data.body || '',
     icon: '/pwa-192x192.png',

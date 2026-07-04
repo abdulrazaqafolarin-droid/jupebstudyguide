@@ -154,7 +154,7 @@ const Chat = () => {
   // Update document title and favicon with total unread count
   const totalUnread = chat.totalUnreadCount;
   useEffect(() => {
-    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] JUPEB Study Guide` : 'JUPEB Study Guide';
+    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] Rutex Jupeb Master` : 'Rutex Jupeb Master';
     document.title = title;
     updateFaviconBadge(totalUnread);
   }, [totalUnread]);
@@ -238,6 +238,7 @@ const Chat = () => {
                 Chats
               </Button>
               <Button
+                data-tour="chat-friends-tab"
                 variant={tab === 'friends' ? 'default' : 'ghost'}
                 size="sm"
                 className="h-8 text-xs rounded-lg flex-1 relative"

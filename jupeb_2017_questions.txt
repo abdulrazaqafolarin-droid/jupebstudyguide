@@ -1,0 +1,931 @@
+===============================================================================
+ JUPEB 2017 — PHYSICS OBJECTIVE (Q1-Q50)
+===============================================================================
+
+Q1.
+The force of attraction between two point charges each of magnitude q placed at a distance r apart in a vacuum is F. What is the force when the distance between them is increased to 2r?
+
+A. F/4
+B. F/2
+C. 2F
+D. 4F
+
+Q2.
+Which of the following statements is CORRECT about the cathode rays?
+
+A. They consist of fast-moving protons
+B. They are deflected by electric field only
+C. They are deflected by magnetic field only
+D. They consist of fast-moving electrons
+
+Q3.
+A particle of mass m moves with velocity v. Its kinetic energy is
+
+A. mv/2
+B. mv²/2
+C. 2mv
+D. mv
+
+Q4.
+Which of the following is a scalar quantity?
+
+A. Force
+B. Velocity
+C. Acceleration
+D. Speed
+
+Q5.
+A stone is thrown vertically upwards with a speed of 20 m/s. The maximum height reached is (g = 10 m/s²)
+
+A. 10 m
+B. 20 m
+C. 30 m
+D. 40 m
+
+Q6.
+Which of the following is NOT a vector quantity?
+
+A. Momentum
+B. Weight
+C. Energy
+D. Displacement
+
+Q7.
+A man walks 8 m due east and then 6 m due north. The magnitude of his displacement is
+
+A. 2 m
+B. 10 m
+C. 14 m
+D. 48 m
+
+Q8.
+The S.I unit of momentum is
+
+A. Ns
+B. Nm
+C. N/s
+D. N/m
+
+Q9.
+A ball of mass 2 kg moving with a velocity of 3 m/s collides with another ball of mass 1 kg moving with a velocity of 2 m/s in the same direction. If the balls stick together after collision, their common velocity is
+
+A. 2.0 m/s
+B. 2.5 m/s
+C. 3.0 m/s
+D. 3.5 m/s
+
+Q10.
+The coefficient of static friction between a block of mass 5 kg and a horizontal surface is 0.4. The minimum force required to start the block moving is (g = 10 m/s²)
+
+A. 10 N
+B. 20 N
+C. 30 N
+D. 40 N
+
+Q11.
+Which of the following devices converts electrical energy to mechanical energy?
+
+A. Generator
+B. Transformer
+C. Electric motor
+D. Battery
+
+Q12.
+A current of 2 A flows through a resistor of 5 Ω. The voltage across the resistor is
+
+A. 2.5 V
+B. 5 V
+C. 10 V
+D. 20 V
+
+Q13.
+Which of the following materials is a good conductor of electricity?
+
+A. Glass
+B. Rubber
+C. Copper
+D. Plastic
+
+Q14.
+The resistance of a wire depends on all the following EXCEPT
+
+A. Its length
+B. Its cross-sectional area
+C. Its temperature
+D. The voltage across it
+
+Q15.
+Two resistors of 3 Ω and 6 Ω are connected in parallel. The effective resistance is
+
+A. 2 Ω
+B. 4 Ω
+C. 9 Ω
+D. 18 Ω
+
+Q16.
+The unit of electric current is
+
+A. Volt
+B. Ohm
+C. Ampere
+D. Coulomb
+
+Q17.
+Which of the following is the correct unit of capacitance?
+
+A. Farad
+B. Ohm
+C. Volt
+D. Coulomb
+
+Q18.
+A capacitor of capacitance 10 μF is charged to a potential difference of 100 V. The energy stored is
+
+A. 0.05 J
+B. 0.10 J
+C. 0.50 J
+D. 1.00 J
+
+Q19.
+The magnetic flux through a coil of 500 turns is 0.01 Wb. If the flux is reversed in 0.1 s, the induced e.m.f. is
+
+A. 50 V
+B. 100 V
+C. 150 V
+D. 200 V
+
+Q20.
+Which of the following is TRUE about a step-down transformer?
+
+A. Np > Ns, Vp > Vs
+B. Np < Ns, Vp < Vs
+C. Np = Ns, Vp = Vs
+D. Np > Ns, Vp < Vs
+
+Q21.
+The phenomenon of light bending around an obstacle is known as
+
+A. Refraction
+B. Diffraction
+C. Interference
+D. Polarization
+
+Q22.
+Which of the following colours of light has the highest frequency?
+
+A. Red
+B. Blue
+C. Green
+D. Violet
+
+Q23.
+A converging lens of focal length 10 cm forms a real image at a distance of 30 cm from the lens. The object distance is
+
+A. 5 cm
+B. 10 cm
+C. 15 cm
+D. 20 cm
+
+Q24.
+The speed of light in a medium is 2.0 × 10⁸ m/s. The refractive index of the medium is (Speed of light in vacuum = 3.0 × 10⁸ m/s)
+
+A. 1.33
+B. 1.50
+C. 2.00
+D. 3.00
+
+Q25.
+The critical angle for light travelling from medium X to air is 45°. The refractive index of medium X is
+
+A. 1.33
+B. 1.41
+C. 1.50
+D. 2.00
+
+Q26.
+Which of the following is a characteristic of a plane mirror image?
+
+A. Real and inverted
+B. Virtual and laterally inverted
+C. Real and laterally inverted
+D. Virtual and erect
+
+Q27.
+The frequency of a wave is 50 Hz. Its period is
+
+A. 0.02 s
+B. 0.05 s
+C. 0.10 s
+D. 0.50 s
+
+Q28.
+The wavelength of a wave is the distance between
+
+A. Two successive troughs
+B. Two successive crests
+C. A crest and a trough
+D. Both A and B
+
+Q29.
+The speed of sound in air at room temperature is approximately
+
+A. 330 m/s
+B. 360 m/s
+C. 400 m/s
+D. 500 m/s
+
+Q30.
+Which of the following factors does NOT affect the speed of sound in air?
+
+A. Temperature
+B. Humidity
+C. Pressure
+D. Frequency
+
+Q31.
+The equation of a wave is y = A sin(ωt - kx). The quantity k represents
+
+A. Frequency
+B. Wavelength
+C. Wave number
+D. Angular frequency
+
+Q32.
+Which of the following is the correct expression for the beat frequency when two waves of frequencies f₁ and f₂ interfere?
+
+A. f₁ + f₂
+B. |f₁ - f₂|
+C. (f₁ + f₂)/2
+D. |f₁ - f₂|/2
+
+Q33.
+A simple pendulum of length 1.0 m has a period of 2.0 s. What is the period if the length is increased to 4.0 m?
+
+A. 1.0 s
+B. 2.0 s
+C. 4.0 s
+D. 8.0 s
+
+Q34.
+In simple harmonic motion, the acceleration is proportional to
+
+A. Velocity
+B. Displacement
+C. Frequency
+D. Amplitude
+
+Q35.
+The temperature at which the volume of an ideal gas becomes zero is
+
+A. 0 °C
+B. -100 °C
+C. -273 °C
+D. 273 °C
+
+Q36.
+The gas law that relates pressure and volume at constant temperature is
+
+A. Boyle's law
+B. Charles' law
+C. Pressure law
+D. Gay-Lussac's law
+
+Q37.
+A gas at a pressure of 2 atm occupies a volume of 10 L at constant temperature. What is the volume when the pressure is increased to 5 atm?
+
+A. 2 L
+B. 4 L
+C. 5 L
+D. 25 L
+
+Q38.
+The specific heat capacity of a substance is the quantity of heat required to
+
+A. Raise the temperature of the substance by 1 K
+B. Raise the temperature of 1 kg of the substance by 1 K
+C. Melt 1 kg of the substance
+D. Vaporize 1 kg of the substance
+
+Q39.
+200 g of water at 30 °C is mixed with 100 g of water at 60 °C. The final temperature is
+
+A. 35 °C
+B. 40 °C
+C. 45 °C
+D. 50 °C
+
+Q40.
+The latent heat of fusion of ice is 336 J/g. The quantity of heat required to melt 10 g of ice at 0 °C is
+
+A. 336 J
+B. 1680 J
+C. 3360 J
+D. 6720 J
+
+Q41.
+Which of the following is NOT a mode of heat transfer?
+
+A. Conduction
+B. Convection
+C. Radiation
+D. Reflection
+
+Q42.
+The principle of conservation of energy states that energy
+
+A. Can be created but not destroyed
+B. Can be destroyed but not created
+C. Cannot be created or destroyed but can be transformed
+D. Can be both created and destroyed
+
+Q43.
+An object of mass 2 kg is lifted to a height of 10 m. Its potential energy is (g = 10 m/s²)
+
+A. 20 J
+B. 50 J
+C. 100 J
+D. 200 J
+
+Q44.
+Which of the following is the correct unit of power?
+
+A. J
+B. N
+C. W
+D. Pa
+
+Q45.
+A machine has an efficiency of 80%. If the work input is 500 J, the useful work output is
+
+A. 100 J
+B. 200 J
+C. 400 J
+D. 600 J
+
+Q46.
+The three quantities needed to define a force are
+
+A. Magnitude, direction, and time
+B. Magnitude, direction, and point of application
+C. Magnitude, direction, and speed
+D. Direction, speed, and acceleration
+
+Q47.
+The terminal velocity of a falling object is reached when
+
+A. Weight equals air resistance
+B. Weight is greater than air resistance
+C. Weight is less than air resistance
+D. Acceleration is maximum
+
+Q48.
+A body of mass 5 kg is acted upon by a net force of 20 N. Its acceleration is
+
+A. 2 m/s²
+B. 4 m/s²
+C. 10 m/s²
+D. 100 m/s²
+
+Q49.
+The pressure exerted by a column of liquid depends on all the following EXCEPT
+
+A. Density of the liquid
+B. Height of the column
+C. Acceleration due to gravity
+D. Cross-sectional area
+
+Q50.
+The upthrust on an object immersed in a fluid is equal to
+
+A. Weight of the object
+B. Weight of the fluid displaced
+C. Volume of the object
+D. Density of the fluid
+
+
+===============================================================================
+ JUPEB 2017 — PHYSICS THEORY (Q1-Q6)
+===============================================================================
+
+Q1.
+(a) State Newton's laws of motion.
+(b) A body of mass 10 kg is acted upon by a force of 20 N. Calculate the acceleration produced.
+(c) Define impulse and state its SI unit.
+
+Q2.
+(a) Explain what is meant by the conservation of mechanical energy.
+(b) A ball of mass 0.5 kg is dropped from a height of 20 m. Calculate its velocity just before hitting the ground. (g = 10 m/s²)
+(c) A car of mass 1000 kg moving at 20 m/s comes to rest over a distance of 50 m. Calculate the average braking force.
+
+Q3.
+(a) State Coulomb's law of electrostatics.
+(b) Two point charges of +2 μC and +4 μC are placed 10 cm apart in air. Calculate the force between them. (k = 9 × 10⁹ Nm²/C²)
+(c) Explain what is meant by an electric field.
+
+Q4.
+(a) State Ohm's law.
+(b) Three resistors of 2 Ω, 3 Ω, and 5 Ω are connected in series across a 20 V supply. Calculate:
+   (i) The total resistance
+   (ii) The current flowing
+   (iii) The voltage across the 3 Ω resistor
+(c) Distinguish between a conductor and an insulator.
+
+Q5.
+(a) State the laws of refraction of light.
+(b) A ray of light travels from air into water at an angle of incidence of 45°. If the refractive index of water is 1.33, calculate the angle of refraction.
+(c) Explain total internal reflection and state two conditions for it to occur.
+
+Q6.
+(a) Define the term wavelength.
+(b) A wave travels with a speed of 340 m/s and has a frequency of 170 Hz. Calculate its wavelength.
+(c) Distinguish between transverse and longitudinal waves, giving an example of each.
+
+
+===============================================================================
+ JUPEB 2017 — CHEMISTRY OBJECTIVE (Q1-Q50)
+===============================================================================
+
+Q1.
+The sub-atomic particle with the smallest mass is the
+
+A. Proton
+B. Neutron
+C. Electron
+D. Positron
+
+Q2.
+The atomic number of an element is determined by the number of
+
+A. Protons
+B. Neutrons
+C. Electrons
+D. Protons and neutrons
+
+Q3.
+Which of the following is the correct electronic configuration of sodium (Na, Z = 11)?
+
+A. 2, 8, 1
+B. 2, 8, 2
+C. 2, 8, 3
+D. 2, 8, 4
+
+Q4.
+The maximum number of electrons that can occupy the third shell is
+
+A. 2
+B. 8
+C. 18
+D. 32
+
+Q5.
+Isotopes are atoms of the same element with the same number of protons but different numbers of
+
+A. Electrons
+B. Neutrons
+C. Protons
+D. Positrons
+
+Q6.
+Which of the following elements has the highest electronegativity?
+
+A. Na
+B. Mg
+C. Cl
+D. F
+
+Q7.
+The bond formed by the sharing of electrons between two atoms is called
+
+A. Ionic bond
+B. Covalent bond
+C. Metallic bond
+D. Dative bond
+
+Q8.
+Which of the following compounds contains an ionic bond?
+
+A. H₂O
+B. CO₂
+C. NaCl
+D. CH₄
+
+Q9.
+The formula of the compound formed between calcium (Group 2) and chlorine (Group 7) is
+
+A. CaCl
+B. CaCl₂
+C. Ca₂Cl
+D. Ca₂Cl₂
+
+Q10.
+Which of the following is a property of ionic compounds?
+
+A. They conduct electricity in the solid state
+B. They have low melting points
+C. They are soluble in non-polar solvents
+D. They conduct electricity when molten or in solution
+
+Q11.
+The oxidation state of chromium in K₂Cr₂O₇ is
+
+A. +3
+B. +4
+C. +5
+D. +6
+
+Q12.
+Which of the following is the correct formula for the permanganate ion?
+
+A. MnO₄⁻
+B. MnO₄²⁻
+C. MnO₂
+D. Mn₂O₇
+
+Q13.
+In the reaction: 2Mg + O₂ → 2MgO, the substance that is oxidized is
+
+A. O₂
+B. Mg
+C. MgO
+D. Both Mg and O₂
+
+Q14.
+The oxidation number of hydrogen in NaH is
+
+A. +1
+B. 0
+C. -1
+D. +2
+
+Q15.
+The mass of one mole of carbon-12 atoms is
+
+A. 6 g
+B. 12 g
+C. 24 g
+D. 48 g
+
+Q16.
+How many moles are present in 18 g of water? (H = 1, O = 16)
+
+A. 0.5
+B. 1.0
+C. 1.5
+D. 2.0
+
+Q17.
+The number of particles in one mole of a substance is
+
+A. 6.02 × 10²³
+B. 6.02 × 10²²
+C. 3.02 × 10²³
+D. 3.02 × 10²²
+
+Q18.
+The volume occupied by one mole of an ideal gas at STP is
+
+A. 11.2 L
+B. 22.4 L
+C. 33.6 L
+D. 44.8 L
+
+Q19.
+According to the kinetic theory of gases, the average kinetic energy of gas molecules is directly proportional to
+
+A. Pressure
+B. Volume
+C. Absolute temperature
+D. Number of moles
+
+Q20.
+Which of the following gases deviates most from ideal behavior at room temperature?
+
+A. H₂
+B. He
+C. NH₃
+D. O₂
+
+Q21.
+The pH of a neutral solution at 25 °C is
+
+A. 0
+B. 1
+C. 7
+D. 14
+
+Q22.
+Which of the following is a strong acid?
+
+A. CH₃COOH
+B. H₂CO₃
+C. HCl
+D. H₂S
+
+Q23.
+In the reaction: HCl + NaOH → NaCl + H₂O, the salt formed is
+
+A. Sodium chlorate
+B. Sodium chloride
+C. Sodium hypochlorite
+D. Sodium chlorite
+
+Q24.
+The indicator suitable for the titration of a strong acid and a strong base is
+
+A. Methyl orange
+B. Phenolphthalein
+C. Litmus
+D. Any of the above
+
+Q25.
+The heat of neutralization of a strong acid and a strong base is approximately
+
+A. -13.6 kJ/mol
+B. -28.7 kJ/mol
+C. -57.1 kJ/mol
+D. -114.2 kJ/mol
+
+Q26.
+Which of the following factors does NOT affect the rate of a chemical reaction?
+
+A. Temperature
+B. Concentration
+C. Pressure for gases
+D. Size of the container
+
+Q27.
+A catalyst increases the rate of a reaction by
+
+A. Increasing the activation energy
+B. Decreasing the activation energy
+C. Increasing the temperature
+D. Decreasing the temperature
+
+Q28.
+The functional group of an alcohol is
+
+A. -CHO
+B. -COOH
+C. -OH
+D. -NH₂
+
+Q29.
+The general formula of alkanes is
+
+A. CₙH₂ₙ
+B. CₙH₂ₙ₊₂
+C. CₙH₂ₙ₋₂
+D. CₙH₂ₙ₊₁
+
+Q30.
+The process of converting alkanes into alkenes by passing them through a heated catalyst is called
+
+A. Cracking
+B. Polymerization
+C. Hydrogenation
+D. Hydrolysis
+
+Q31.
+Which of the following is the correct IUPAC name for CH₃CH₂CH₂OH?
+
+A. Propanal
+B. Propanol
+C. Propanone
+D. Propanoic acid
+
+Q32.
+The functional group of a carboxylic acid is
+
+A. -CHO
+B. -CO-
+C. -COOH
+D. -OH
+
+Q33.
+Which of the following is a primary alcohol?
+
+A. CH₃CH₂OH
+B. (CH₃)₂CHOH
+C. (CH₃)₃COH
+D. CH₃OH
+
+Q34.
+Isomerism in which compounds have the same molecular formula but different structural arrangements of atoms is called
+
+A. Geometrical isomerism
+B. Optical isomerism
+C. Structural isomerism
+D. Tautomerism
+
+Q35.
+The process of separating mixtures based on differences in boiling points is called
+
+A. Filtration
+B. Distillation
+C. Chromatography
+D. Sublimation
+
+Q36.
+Which of the following methods is used to separate a mixture of sand and water?
+
+A. Distillation
+B. Filtration
+C. Chromatography
+D. Sublimation
+
+Q37.
+The color of methyl orange in an alkaline medium is
+
+A. Red
+B. Yellow
+C. Orange
+D. Colorless
+
+Q38.
+Which of the following is used as a drying agent in the laboratory?
+
+A. CaO
+B. NaCl
+C. CaCl₂
+D. NaOH
+
+Q39.
+The process of heating a substance to high temperatures in the presence of air to cause oxidation is called
+
+A. Roasting
+B. Smelting
+C. Calcination
+D. Refining
+
+Q40.
+The chief ore of iron is
+
+A. Bauxite
+B. Haematite
+C. Galena
+D. Chalcopyrite
+
+Q41.
+The method used to obtain highly reactive metals from their ores is
+
+A. Electrolysis
+B. Reduction with carbon
+C. Reduction with hydrogen
+D. Thermal decomposition
+
+Q42.
+Iron is extracted from its ore in a
+
+A. Blast furnace
+B. Electric furnace
+C. Open hearth furnace
+D. Bessemer converter
+
+Q43.
+Which of the following is an alloy of iron?
+
+A. Brass
+B. Bronze
+C. Steel
+D. Duralumin
+
+Q44.
+The main component of natural gas is
+
+A. Ethane
+B. Propane
+C. Methane
+D. Butane
+
+Q45.
+The refining of petroleum is based on the principle of
+
+A. Fractional distillation
+B. Simple distillation
+C. Cracking
+D. Polymerization
+
+Q46.
+The repeating unit in a polymer is called a
+
+A. Dimer
+B. Monomer
+C. Trimer
+D. Isomer
+
+Q47.
+Which of the following is a natural polymer?
+
+A. Nylon
+B. Polythene
+C. Rubber
+D. PVC
+
+Q48.
+Which of the following is NOT a greenhouse gas?
+
+A. CO₂
+B. CH₄
+C. O₂
+D. H₂O vapour
+
+Q49.
+The major cause of ozone layer depletion is
+
+A. Carbon dioxide
+B. Methane
+C. Chlorofluorocarbons (CFCs)
+D. Sulfur dioxide
+
+Q50.
+A common method of water purification at home is
+
+A. Filtration and boiling
+B. Decantation
+C. Sedimentation
+D. Chlorination
+
+
+===============================================================================
+ JUPEB 2017 — CHEMISTRY THEORY (Q1-Q10)
+===============================================================================
+
+Q1.
+(a) Define an atom and state its constituent particles.
+(b) An element X has an atomic number of 12 and a mass number of 24.
+   (i) How many protons, neutrons, and electrons does it have?
+   (ii) Write its electronic configuration.
+(c) Distinguish between atomic number and mass number.
+
+Q2.
+(a) State the octet rule.
+(b) Explain how an ionic bond is formed between sodium and chlorine.
+(c) Draw the dot-and-cross diagram for the formation of magnesium oxide (MgO).
+
+Q3.
+(a) Define oxidation and reduction in terms of electron transfer.
+(b) Determine the oxidation number of:
+   (i) Sulfur in H₂SO₄
+   (ii) Manganese in KMnO₄
+   (iii) Carbon in CO₂
+(c) Balance the following redox equation: Fe₂O₃ + CO → Fe + CO₂
+
+Q4.
+(a) Calculate the percentage by mass of oxygen in calcium carbonate, CaCO₃. (Ca = 40, C = 12, O = 16)
+(b) How many moles are there in 50 g of calcium carbonate?
+(c) 20 g of calcium carbonate was heated strongly. Calculate the mass of calcium oxide produced.
+   Equation: CaCO₃ → CaO + CO₂
+
+Q5.
+(a) State three assumptions of the kinetic theory of gases.
+(b) Explain why real gases deviate from ideal behavior at high pressure and low temperature.
+(c) A gas occupies 500 cm³ at 27 °C and 760 mmHg. Calculate its volume at STP.
+
+Q6.
+(a) Define pH and write the formula for calculating it.
+(b) Calculate the pH of a 0.01 M solution of HCl.
+(c) Explain the action of a buffer solution.
+
+Q7.
+(a) State Le Chatelier's principle.
+(b) In the reaction N₂(g) + 3H₂(g) ⇌ 2NH₃(g) ΔH = -92 kJ/mol, predict the effect on the equilibrium position of:
+   (i) Increasing temperature
+   (ii) Increasing pressure
+   (iii) Adding a catalyst
+(c) Explain your answers.
+
+Q8.
+(a) Draw and name the isomers of butane (C₄H₁₀).
+(b) Write a balanced equation for the complete combustion of methane.
+(c) State two uses of alkanes.
+
+Q9.
+(a) Differentiate between addition and condensation polymerization.
+(b) Give one example each of an addition polymer and a condensation polymer.
+(c) State two uses of nylon.
+
+Q10.
+(a) State three causes of environmental pollution.
+(b) Explain the greenhouse effect and name two greenhouse gases.
+(c) Suggest two ways to reduce air pollution.
+
+
+===============================================================================
+ JUPEB 2017 — CHEMISTRY PRACTICAL (Q1-Q3)
+===============================================================================
+
+Q1.
+Describe how you would prepare a sample of copper(II) sulfate crystals from copper(II) oxide and dilute sulfuric acid. Include the necessary equations.
+
+Q2.
+You are provided with a mixture of sand and sodium chloride. Describe how you would separate the components and recover both substances in pure form.
+
+Q3.
+Describe a simple laboratory test that could be used to distinguish between:
+(a) An acid and a base
+(b) A carbonate and a sulfate
+(c) Iron(II) ions and iron(III) ions
+
+================================================================================
+ END OF 2017 QUESTIONS
+================================================================================

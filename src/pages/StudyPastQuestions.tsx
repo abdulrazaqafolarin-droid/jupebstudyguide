@@ -24,6 +24,7 @@ import { useStudyQuestions } from "@/hooks/study-questions/useStudyQuestions";
 import { useQuestionTimer } from "@/hooks/study-questions/useQuestionTimer";
 import { useBookmarks } from "@/hooks/study-questions/useBookmarks";
 import { useActivation } from "@/hooks/useActivation";
+import { useSubjectLockTimer } from "@/hooks/useSubjectLockTimer";
 import { StudyCategoryTabs } from "@/components/study-past-questions/StudyCategoryTabs";
 import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
@@ -86,6 +87,8 @@ function StudyPastQuestionsInner() {
   const timer = useQuestionTimer();
   const { bookmarks, toggle, isBookmarked } = useBookmarks();
   const { status: activationStatus } = useActivation();
+  const { timeLeft: lockTimeLeft, progress: lockProgress, isExpired: lockExpired } = useSubjectLockTimer(activationStatus.is_admin);
+  const LOCKED_SUBJECTS: Subject[] = lockExpired ? [] : ["biology", "math"];
 
   const [view, setView] = useState<View>("subjects");
   const [quizComplete, setQuizComplete] = useState(false);
@@ -263,6 +266,7 @@ function StudyPastQuestionsInner() {
   }, [handleSearch]);
 
   const handleSubjectSelect = (subject: Subject) => {
+    if (LOCKED_SUBJECTS.includes(subject)) return;
     selectSubject(subject);
     setView("years");
   };
@@ -396,10 +400,11 @@ function StudyPastQuestionsInner() {
                   </button>
                   <div className="flex-1 text-center">
                     <h1 className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Study Past Questions</h1>
-                    <p className="text-[10px] text-muted-foreground/60 -mt-0.5">JUPEB Exam Prep</p>
+                    <p className="text-[10px] text-muted-foreground/60 -mt-0.5">Rutex Exam Prep</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
+                      data-tour="pq-search"
                       onClick={() => { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}
                       className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
                       aria-label="Search questions"
@@ -407,6 +412,7 @@ function StudyPastQuestionsInner() {
                       <Search className="w-[18px] h-[18px] text-muted-foreground" />
                     </button>
                     <button
+                      data-tour="pq-bookmark"
                       onClick={() => setView("bookmarks")}
                       className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
                       aria-label="View bookmarked questions"
@@ -522,6 +528,9 @@ function StudyPastQuestionsInner() {
                 <SubjectCardGrid
                   onSelect={handleSubjectSelect}
                   counts={subjectCounts}
+                  lockedSubjects={LOCKED_SUBJECTS}
+                  timeLeft={lockTimeLeft}
+                  lockProgress={lockProgress}
                 />
               </motion.div>
               )}

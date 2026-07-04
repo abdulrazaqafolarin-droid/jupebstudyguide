@@ -1,0 +1,602 @@
+[
+  {
+    "number": 1,
+    "question": "If P = {x: 3 < x < 15, x is prime} and Q = {x : 2 < x < 14, x is odd}, evaluate n(P ∩ Q) + n(P ∪ Q)",
+    "options": {
+      "A": "35",
+      "B": "26",
+      "C": "12",
+      "D": "10"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 2,
+    "question": "Determine the range of values of x for which -2x² + 5x + 3 > 0",
+    "options": {
+      "A": "-3 < x < ½",
+      "B": "-2 < x < 3",
+      "C": "½ < x < 2",
+      "D": "-1/2 < x < 3"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 3,
+    "question": "The following binary operations are commutative with the exception of",
+    "options": {
+      "A": "a * b = a + b – 3ab",
+      "B": "a * b = 5/a + 5/b",
+      "C": "a * b = a – b + 3ab",
+      "D": "a * b = 2a + 2b – ab"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 4,
+    "question": "Solve for x the equation 0.25x + 1 = 32",
+    "options": {
+      "A": "9/2",
+      "B": "-5/2",
+      "C": "-7/2",
+      "D": "7/2"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 5,
+    "question": "Solve the logarithmic equation: log2(x – 1) = log2(x²–2) – 1",
+    "options": {
+      "A": "0 or -2",
+      "B": "0 or 2",
+      "C": "2 or -2",
+      "D": "1 or 2"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 6,
+    "question": "Given a function defined as f(x) = x² – 7x, find the values of t for which f(2t) = 30.",
+    "options": {
+      "A": "-5, 2/3",
+      "B": "2/3, -1",
+      "C": "½, 3/2",
+      "D": "5, -3/2"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 7,
+    "question": "For an arithmetical sequence, the first term is 2 and the common difference is 3. Find the sum of the first 11 terms.",
+    "options": {
+      "A": "157",
+      "B": "187",
+      "C": "197",
+      "D": "200"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 8,
+    "question": "Consider the function f(x) = (5–x²)/(5x–x²). Which of the following is true for f(x)?",
+    "options": {
+      "A": "f(x) is discontinuous at only one point (x = 0).",
+      "B": "f(x) is discontinuous at exactly two point.",
+      "C": "f(x) is discontinuous at no point at all.",
+      "D": "f(x) is discontinuous at only one point (x = 5)."
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 9,
+    "question": "Evaluate ∫(x³ + 1/x²)dx.",
+    "options": {
+      "A": "x³ + x⁻²/(-2) + c",
+      "B": "x²/4 + x⁻²/(-2) + c",
+      "C": "x⁴ + 4x + c",
+      "D": "x + x⁻² – 2 + C"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 10,
+    "question": "If f(x – 3) = x² + 2x + 3, find f(1).",
+    "options": {
+      "A": "27",
+      "B": "11",
+      "C": "16",
+      "D": "8"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 11,
+    "question": "Determine the area bounded by y = x² – 2x + 3, the axis and ordinates x = -1 and x = 3",
+    "options": {
+      "A": "13⅓",
+      "B": "9 units",
+      "C": "4⅔ units",
+      "D": "5⅓ units"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 12,
+    "question": "Compute dy/dx if y = t² and x = t³",
+    "options": {
+      "A": "1/t",
+      "B": "t",
+      "C": "2/3t",
+      "D": "2t/3"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 13,
+    "question": "if y = sin⁻¹x, deduce dy/dx at x = -1",
+    "options": {
+      "A": "Undefined",
+      "B": "½",
+      "C": "1/√2",
+      "D": "√2"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 14,
+    "question": "Differentiate sin⁻¹(x²).",
+    "options": {
+      "A": "2x/(1–x)",
+      "B": "2x/√(1+x²)",
+      "C": "2x/√(x⁴–1)",
+      "D": "2x/√(1–x⁴)"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 15,
+    "question": "Find the 5th term of the harmonic progression 1, 1/3, 1/5, …",
+    "options": {
+      "A": "1/11",
+      "B": "1/9",
+      "C": "1/7",
+      "D": "1/5"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 16,
+    "question": "if α and β are the roots of 4x² – 5x – 3 = 0, evaluate α²+β²",
+    "options": {
+      "A": "21/7",
+      "B": "25/16",
+      "C": "49/16",
+      "D": "1"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 17,
+    "question": "Find the remainder when the polynomial x⁴ – 3x³ + 4x – 8 is divided by 2x + 1",
+    "options": {
+      "A": "16",
+      "B": "167/16",
+      "C": "-1/3",
+      "D": "112/5"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 18,
+    "question": "Resolve the function x/((x–3)(x+5)) into partial fractions.",
+    "options": {
+      "A": "⅛{5/(x+5) – 3/(x–3)}",
+      "B": "⅓{8/(x+5) – 5/(x+5)}",
+      "C": "⅕{3/(x+3) – 5/(x+5)}",
+      "D": "⅛{3/(x–3) – 5/(x+5)}"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 19,
+    "question": "Obtain the equation whose product and sum of roots are -5/2 and ¾ respectively",
+    "options": {
+      "A": "2x² – 3x – 5 = 0",
+      "B": "2x² + 3x + 5 = 0",
+      "C": "4x² – 3x – 10 = 0",
+      "D": "4x² – 3x – 5 = 0"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 20,
+    "question": "Given that 8^(x/4) = log₃81, determine the value of x.",
+    "options": {
+      "A": "2",
+      "B": "8/3",
+      "C": "6",
+      "D": "5"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 21,
+    "question": "Given that: x → 3x – 8, x is a member of real numbers R, compute f⁻¹(-2).",
+    "options": {
+      "A": "6",
+      "B": "-8",
+      "C": "2",
+      "D": "0"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 22,
+    "question": "Given that f(x) = 1 – 2x and g(x) = 1 + 2x, x is a member of real numbers, find {fog(x) – gof(x)}.",
+    "options": {
+      "A": "5",
+      "B": "2",
+      "C": "-4",
+      "D": "6x"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 23,
+    "question": "Solve the differential equation y'' + 3y' – 4y = 0",
+    "options": {
+      "A": "Peˣ + Qe⁴ˣ",
+      "B": "Pe⁻ˣ + Qe⁴ˣ",
+      "C": "Peˣ + Qe⁻⁴ˣ",
+      "D": "Peˣ + Qe⁻⁴ˣ"
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 24,
+    "question": "Let f(x) = sinx/x then evaluate lim(x→0) f(x).",
+    "options": {
+      "A": "1",
+      "B": "0",
+      "C": "∞",
+      "D": "-1"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 25,
+    "question": "Calculate the Spearman's rank correlation for the following pairs of numbers (40,27), (50,60), (60,75), (70,80), (80,67), (90,58).",
+    "options": {
+      "A": "0.257",
+      "B": "0.743",
+      "C": "0.876",
+      "D": "0.1"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 26,
+    "question": "A statistical hypothesis can be",
+    "options": {
+      "A": "null/exact.",
+      "B": "null/simple.",
+      "C": "simple/composite.",
+      "D": "exact/composite."
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 27,
+    "question": "Four coins are tossed together. Determine the probability that they will show the same face.",
+    "options": {
+      "A": "1/16",
+      "B": "1/8",
+      "C": "¼",
+      "D": "½"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 28,
+    "question": "Given the table (insufficient data)",
+    "options": {
+      "A": "",
+      "B": "",
+      "C": "",
+      "D": ""
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 29,
+    "question": "Evaluate the mean of the set of data 97,91,94,90,85",
+    "options": {
+      "A": "91",
+      "B": "92",
+      "C": "94",
+      "D": "95"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 30,
+    "question": "If two fair dice are tossed, determine the probability that total score that shows up is 8.",
+    "options": {
+      "A": "3/12",
+      "B": "5/36",
+      "C": "1/36",
+      "D": "19/36"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 31,
+    "question": "Determine the number of different arrangements of the letters of the word OGBOMOSO.",
+    "options": {
+      "A": "2400",
+      "B": "1280",
+      "C": "1500",
+      "D": "1680"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 32,
+    "question": "Evaluate ∫₂³ x/(1+x²) dx.",
+    "options": {
+      "A": "π/4",
+      "B": "2π/5",
+      "C": "π",
+      "D": "π/2"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 33,
+    "question": "If y = ln (x + 2ˣ), find dy/dx.",
+    "options": {
+      "A": "(1+2ˣln2)/(x+2ˣ)",
+      "B": "(1–2ˣln2)/(x+2ˣ)",
+      "C": "(2ˣln2–1)/(x+2ˣ)",
+      "D": "2ˣ/(x+2ˣ)"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 34,
+    "question": "What is the derivative of y = cos²x + sin²x",
+    "options": {
+      "A": "0",
+      "B": "1",
+      "C": "2sin2x",
+      "D": "-2cosx+2sinx"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 35,
+    "question": "Deduce the coefficient of variation of this population data: 7, 10, 11, 12",
+    "options": {
+      "A": "1.87",
+      "B": "0.187",
+      "C": "3.5",
+      "D": "0.35"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 36,
+    "question": "What is the derivative of y = cos2x + sin2x",
+    "options": {
+      "A": "0",
+      "B": "1",
+      "C": "2sin2x",
+      "D": "-2cosx + 2sinx"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 37,
+    "question": "Deduce the coefficient of variation of this population data: 7, 10, 11, 12",
+    "options": {
+      "A": "1.87",
+      "B": "0.187",
+      "C": "3.5",
+      "D": "0.35"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 38,
+    "question": "A random distribution that measures rare events in space and time that has its mean and variance the same is expressed as",
+    "options": {
+      "A": "Beta Distribution",
+      "B": "Gamma Distribution",
+      "C": "Hypergeometric Distribution",
+      "D": "Poisson Distribution"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 39,
+    "question": "Determine the number of complete permutations of the letters of the word MISSISSIPPI",
+    "options": {
+      "A": "34650",
+      "B": "12967",
+      "C": "6750",
+      "D": "35550"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 40,
+    "question": "The sampling technique that does not involve the use of random sampling is identified as",
+    "options": {
+      "A": "Quota.",
+      "B": "Stratified.",
+      "C": "Systematic",
+      "D": "Multi-stage."
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 41,
+    "question": "A loan N1000 is given at 15% for 8 months. Find the maturity of the loan.",
+    "options": {
+      "A": "N1300",
+      "B": "N1100",
+      "C": "N1200",
+      "D": "N1050"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 42,
+    "question": "What is an amount established so that maturity value equals a specific amount at regular intervals?",
+    "options": {
+      "A": "Annuity.",
+      "B": "Sinking Fund.",
+      "C": "Bond",
+      "D": "Rent."
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 43,
+    "question": "The two essential factors of production in the Cobb-Douglas production formula are",
+    "options": {
+      "A": "Land and Entrepreneurship.",
+      "B": "Land and Labour",
+      "C": "Capital and Labour",
+      "D": "Capital and Land."
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 44,
+    "question": "Which of these relations best describe the total cost of production?",
+    "options": {
+      "A": "The sum of marginal cost and variable cost.",
+      "B": "The sum of total variable cost and marginal cost.",
+      "C": "The sum of marginal revenue and total fixed cost.",
+      "D": "The sum of total variable cost and total fixed cost."
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 45,
+    "question": "Which of the following best describe elasticity (e) of demand",
+    "options": {
+      "A": "e = (rate of change of demand)/(rate of change of price)",
+      "B": "e = (rate of change of price)/(rate of change of demand)",
+      "C": "e = 1 – (rate of change of demand)/(rate of change of price)",
+      "D": "e = 1 + (rate of change of price)/(rate of change of demand)"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 46,
+    "question": "Calculate the first payment made by Mr. Iyanda after borrowing N1000 yearly instalment and repays N50 at 8% per annum.",
+    "options": {
+      "A": "N64.92",
+      "B": "N46.29",
+      "C": "N96.24",
+      "D": "N42.96"
+    },
+    "correct": "B",
+    "explanation": ""
+  },
+  {
+    "number": 47,
+    "question": "The production function of a company is given Q = 2x½y⅔. Find the marginal productivity of labour",
+    "options": {
+      "A": "2x⁻½y⅔",
+      "B": "4x½y⅔",
+      "C": "3x½y⅔",
+      "D": "x⅔y⅔"
+    },
+    "correct": "A",
+    "explanation": ""
+  },
+  {
+    "number": 48,
+    "question": "The consumption function for a commodity is C = 200 + 0.25I. What is the Marginal Propensity to Save?",
+    "options": {
+      "A": "0.25",
+      "B": "0.45",
+      "C": "0.55",
+      "D": "0.75"
+    },
+    "correct": "D",
+    "explanation": ""
+  },
+  {
+    "number": 49,
+    "question": "Which of the following gives the revenue of a company?",
+    "options": {
+      "A": "Product of selling price and units bought.",
+      "B": "Product of units sold and quantity bought.",
+      "C": "Product of selling price and units sold.",
+      "D": "Product of buying price and units sold."
+    },
+    "correct": "C",
+    "explanation": ""
+  },
+  {
+    "number": 50,
+    "question": "Consider the linear programming problem Z=15x+10y subject to 2x+3y≤15, 5x+7y≤30. The inequalities in equation (2) are called",
+    "options": {
+      "A": "objective functions.",
+      "B": "Constrains",
+      "C": "Feasible solutions.",
+      "D": "Optimal values"
+    },
+    "correct": "B",
+    "explanation": ""
+  }
+]

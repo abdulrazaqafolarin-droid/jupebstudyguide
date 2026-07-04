@@ -1,0 +1,36 @@
+Q1:
+  Q: When the polynomial (f(x)=x^3+3x^2+ax-2) is divided by (x-3), the remainder is 100. Determine the value of (a).
+  Options: [('A', '16'), ('B', '8'), ('C', '−3'), ('D', '−3')]
+  Correct: A
+  Expl: :**
+
+The **Remainder Theorem** states that if a polynomial (f(x)) is divided by ((x-a)), then the remainder is equal to 
+Q2:
+  Q: If $\alpha$ and $\beta$ are the roots of the quadratic equation $2x^2+3x-2=0$, evaluate
+$$\frac1\alpha+\frac1\beta.$$
+  Options: [('A', '$\\dfrac23$'), ('B', '$\\dfrac3{12}$'), ('C', '$\\dfrac21-3$'), ('D', '$\\dfrac31-2$')]
+  Correct: A
+  Expl: :**
+
+Using the properties of quadratic equations,
+$$\alpha+\beta=-\frac ba$$
+and
+$$\alpha\beta=\frac ca.$$
+For
+$$2x^2+3x
+Q3:
+  Q: Obtain the coefficient of ((ab)^4) in the expansion of
+$$\left$a+\frac b2\right$^8.$$
+  Options: [('A', '30'), ('B', '$\\dfrac{35}{8}$'), ('C', '35'), ('D', '$\\dfrac18$')]
+  Correct: B
+  Expl: :**
+
+The general term of the binomial expansion is
+$$T_{r+1}
+=\binom8r a^{8-r}\left$\frac b2\right$^r.$$
+Since we want t
+---Corrected questions:---
+Q1: A
+Q4: B
+Q7: A
+Q20: D

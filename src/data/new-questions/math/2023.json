@@ -1,602 +1,1235 @@
 [
   {
+    "id": "mat-2023-mq-0001",
     "number": 1,
     "question": "If P = {x: 3 < x < 15, x is prime} and Q = {x : 2 < x < 14, x is odd}, evaluate n(P ∩ Q) + n(P ∪ Q)",
-    "options": {
-      "A": "35",
-      "B": "26",
-      "C": "12",
-      "D": "10"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "$35$"
+      },
+      {
+        "label": "B",
+        "text": "$26$"
+      },
+      {
+        "label": "C",
+        "text": "$12$"
+      },
+      {
+        "label": "D",
+        "text": "$10$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0002",
     "number": 2,
     "question": "Determine the range of values of x for which -2x² + 5x + 3 > 0",
-    "options": {
-      "A": "-3 < x < ½",
-      "B": "-2 < x < 3",
-      "C": "½ < x < 2",
-      "D": "-1/2 < x < 3"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-3 < x < ½$"
+      },
+      {
+        "label": "B",
+        "text": "$-2 < x < 3$"
+      },
+      {
+        "label": "C",
+        "text": "$½ < x < 2$"
+      },
+      {
+        "label": "D",
+        "text": "$-1/2 < x < 3$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0003",
     "number": 3,
     "question": "The following binary operations are commutative with the exception of",
-    "options": {
-      "A": "a * b = a + b – 3ab",
-      "B": "a * b = 5/a + 5/b",
-      "C": "a * b = a – b + 3ab",
-      "D": "a * b = 2a + 2b – ab"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "$a * b = a + b – 3ab$"
+      },
+      {
+        "label": "B",
+        "text": "$a * b = 5/a + 5/b$"
+      },
+      {
+        "label": "C",
+        "text": "$a * b = a – b + 3ab$"
+      },
+      {
+        "label": "D",
+        "text": "$a * b = 2a + 2b – ab$"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0004",
     "number": 4,
     "question": "Solve for x the equation 0.25x + 1 = 32",
-    "options": {
-      "A": "9/2",
-      "B": "-5/2",
-      "C": "-7/2",
-      "D": "7/2"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "$9/2$"
+      },
+      {
+        "label": "B",
+        "text": "$-5/2$"
+      },
+      {
+        "label": "C",
+        "text": "$-7/2$"
+      },
+      {
+        "label": "D",
+        "text": "$7/2$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0005",
     "number": 5,
     "question": "Solve the logarithmic equation: log2(x – 1) = log2(x²–2) – 1",
-    "options": {
-      "A": "0 or -2",
-      "B": "0 or 2",
-      "C": "2 or -2",
-      "D": "1 or 2"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "$0 or -2$"
+      },
+      {
+        "label": "B",
+        "text": "$0 or 2$"
+      },
+      {
+        "label": "C",
+        "text": "$2 or -2$"
+      },
+      {
+        "label": "D",
+        "text": "$1 or 2$"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0006",
     "number": 6,
     "question": "Given a function defined as f(x) = x² – 7x, find the values of t for which f(2t) = 30.",
-    "options": {
-      "A": "-5, 2/3",
-      "B": "2/3, -1",
-      "C": "½, 3/2",
-      "D": "5, -3/2"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "$-5, 2/3$"
+      },
+      {
+        "label": "B",
+        "text": "$2/3, -1$"
+      },
+      {
+        "label": "C",
+        "text": "$½, 3/2$"
+      },
+      {
+        "label": "D",
+        "text": "$5, -3/2$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0007",
     "number": 7,
     "question": "For an arithmetical sequence, the first term is 2 and the common difference is 3. Find the sum of the first 11 terms.",
-    "options": {
-      "A": "157",
-      "B": "187",
-      "C": "197",
-      "D": "200"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$157$"
+      },
+      {
+        "label": "B",
+        "text": "$187$"
+      },
+      {
+        "label": "C",
+        "text": "$197$"
+      },
+      {
+        "label": "D",
+        "text": "$200$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0008",
     "number": 8,
     "question": "Consider the function f(x) = (5–x²)/(5x–x²). Which of the following is true for f(x)?",
-    "options": {
-      "A": "f(x) is discontinuous at only one point (x = 0).",
-      "B": "f(x) is discontinuous at exactly two point.",
-      "C": "f(x) is discontinuous at no point at all.",
-      "D": "f(x) is discontinuous at only one point (x = 5)."
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "f(x) is discontinuous at only one point (x = 0)."
+      },
+      {
+        "label": "B",
+        "text": "f(x) is discontinuous at exactly two point."
+      },
+      {
+        "label": "C",
+        "text": "f(x) is discontinuous at no point at all."
+      },
+      {
+        "label": "D",
+        "text": "f(x) is discontinuous at only one point (x = 5)."
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0009",
     "number": 9,
     "question": "Evaluate ∫(x³ + 1/x²)dx.",
-    "options": {
-      "A": "x³ + x⁻²/(-2) + c",
-      "B": "x²/4 + x⁻²/(-2) + c",
-      "C": "x⁴ + 4x + c",
-      "D": "x + x⁻² – 2 + C"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$x³ + x⁻²/(-2) + c$"
+      },
+      {
+        "label": "B",
+        "text": "$x²/4 + x⁻²/(-2) + c$"
+      },
+      {
+        "label": "C",
+        "text": "$x⁴ + 4x + c$"
+      },
+      {
+        "label": "D",
+        "text": "$x + x⁻² – 2 + C$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0010",
     "number": 10,
     "question": "If f(x – 3) = x² + 2x + 3, find f(1).",
-    "options": {
-      "A": "27",
-      "B": "11",
-      "C": "16",
-      "D": "8"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$27$"
+      },
+      {
+        "label": "B",
+        "text": "$11$"
+      },
+      {
+        "label": "C",
+        "text": "$16$"
+      },
+      {
+        "label": "D",
+        "text": "$8$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0011",
     "number": 11,
     "question": "Determine the area bounded by y = x² – 2x + 3, the axis and ordinates x = -1 and x = 3",
-    "options": {
-      "A": "13⅓",
-      "B": "9 units",
-      "C": "4⅔ units",
-      "D": "5⅓ units"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$13⅓$"
+      },
+      {
+        "label": "B",
+        "text": "9 units"
+      },
+      {
+        "label": "C",
+        "text": "4⅔ units"
+      },
+      {
+        "label": "D",
+        "text": "5⅓ units"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0012",
     "number": 12,
     "question": "Compute dy/dx if y = t² and x = t³",
-    "options": {
-      "A": "1/t",
-      "B": "t",
-      "C": "2/3t",
-      "D": "2t/3"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1/t$"
+      },
+      {
+        "label": "B",
+        "text": "$t$"
+      },
+      {
+        "label": "C",
+        "text": "$2/3t$"
+      },
+      {
+        "label": "D",
+        "text": "$2t/3$"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0013",
     "number": 13,
     "question": "if y = sin⁻¹x, deduce dy/dx at x = -1",
-    "options": {
-      "A": "Undefined",
-      "B": "½",
-      "C": "1/√2",
-      "D": "√2"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "Undefined"
+      },
+      {
+        "label": "B",
+        "text": "$½$"
+      },
+      {
+        "label": "C",
+        "text": "$1/√2$"
+      },
+      {
+        "label": "D",
+        "text": "$√2$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0014",
     "number": 14,
     "question": "Differentiate sin⁻¹(x²).",
-    "options": {
-      "A": "2x/(1–x)",
-      "B": "2x/√(1+x²)",
-      "C": "2x/√(x⁴–1)",
-      "D": "2x/√(1–x⁴)"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "$2x/(1–x)$"
+      },
+      {
+        "label": "B",
+        "text": "$2x/√(1+x²)$"
+      },
+      {
+        "label": "C",
+        "text": "$2x/√(x⁴–1)$"
+      },
+      {
+        "label": "D",
+        "text": "$2x/√(1–x⁴)$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0015",
     "number": 15,
     "question": "Find the 5th term of the harmonic progression 1, 1/3, 1/5, …",
-    "options": {
-      "A": "1/11",
-      "B": "1/9",
-      "C": "1/7",
-      "D": "1/5"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1/11$"
+      },
+      {
+        "label": "B",
+        "text": "$1/9$"
+      },
+      {
+        "label": "C",
+        "text": "$1/7$"
+      },
+      {
+        "label": "D",
+        "text": "$1/5$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0016",
     "number": 16,
     "question": "if α and β are the roots of 4x² – 5x – 3 = 0, evaluate α²+β²",
-    "options": {
-      "A": "21/7",
-      "B": "25/16",
-      "C": "49/16",
-      "D": "1"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "$21/7$"
+      },
+      {
+        "label": "B",
+        "text": "$25/16$"
+      },
+      {
+        "label": "C",
+        "text": "$49/16$"
+      },
+      {
+        "label": "D",
+        "text": "$1$"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0017",
     "number": 17,
     "question": "Find the remainder when the polynomial x⁴ – 3x³ + 4x – 8 is divided by 2x + 1",
-    "options": {
-      "A": "16",
-      "B": "167/16",
-      "C": "-1/3",
-      "D": "112/5"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$16$"
+      },
+      {
+        "label": "B",
+        "text": "$167/16$"
+      },
+      {
+        "label": "C",
+        "text": "$-1/3$"
+      },
+      {
+        "label": "D",
+        "text": "$112/5$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0018",
     "number": 18,
     "question": "Resolve the function x/((x–3)(x+5)) into partial fractions.",
-    "options": {
-      "A": "⅛{5/(x+5) – 3/(x–3)}",
-      "B": "⅓{8/(x+5) – 5/(x+5)}",
-      "C": "⅕{3/(x+3) – 5/(x+5)}",
-      "D": "⅛{3/(x–3) – 5/(x+5)}"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "$⅛{5/(x+5) – 3/(x–3)}$"
+      },
+      {
+        "label": "B",
+        "text": "$⅓{8/(x+5) – 5/(x+5)}$"
+      },
+      {
+        "label": "C",
+        "text": "$⅕{3/(x+3) – 5/(x+5)}$"
+      },
+      {
+        "label": "D",
+        "text": "$⅛{3/(x–3) – 5/(x+5)}$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0019",
     "number": 19,
     "question": "Obtain the equation whose product and sum of roots are -5/2 and ¾ respectively",
-    "options": {
-      "A": "2x² – 3x – 5 = 0",
-      "B": "2x² + 3x + 5 = 0",
-      "C": "4x² – 3x – 10 = 0",
-      "D": "4x² – 3x – 5 = 0"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "$2x² – 3x – 5 = 0$"
+      },
+      {
+        "label": "B",
+        "text": "$2x² + 3x + 5 = 0$"
+      },
+      {
+        "label": "C",
+        "text": "$4x² – 3x – 10 = 0$"
+      },
+      {
+        "label": "D",
+        "text": "$4x² – 3x – 5 = 0$"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0020",
     "number": 20,
     "question": "Given that 8^(x/4) = log₃81, determine the value of x.",
-    "options": {
-      "A": "2",
-      "B": "8/3",
-      "C": "6",
-      "D": "5"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$2$"
+      },
+      {
+        "label": "B",
+        "text": "$8/3$"
+      },
+      {
+        "label": "C",
+        "text": "$6$"
+      },
+      {
+        "label": "D",
+        "text": "$5$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0021",
     "number": 21,
     "question": "Given that: x → 3x – 8, x is a member of real numbers R, compute f⁻¹(-2).",
-    "options": {
-      "A": "6",
-      "B": "-8",
-      "C": "2",
-      "D": "0"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "$6$"
+      },
+      {
+        "label": "B",
+        "text": "$-8$"
+      },
+      {
+        "label": "C",
+        "text": "$2$"
+      },
+      {
+        "label": "D",
+        "text": "$0$"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0022",
     "number": 22,
     "question": "Given that f(x) = 1 – 2x and g(x) = 1 + 2x, x is a member of real numbers, find {fog(x) – gof(x)}.",
-    "options": {
-      "A": "5",
-      "B": "2",
-      "C": "-4",
-      "D": "6x"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "$5$"
+      },
+      {
+        "label": "B",
+        "text": "$2$"
+      },
+      {
+        "label": "C",
+        "text": "$-4$"
+      },
+      {
+        "label": "D",
+        "text": "$6x$"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0023",
     "number": 23,
     "question": "Solve the differential equation y'' + 3y' – 4y = 0",
-    "options": {
-      "A": "Peˣ + Qe⁴ˣ",
-      "B": "Pe⁻ˣ + Qe⁴ˣ",
-      "C": "Peˣ + Qe⁻⁴ˣ",
-      "D": "Peˣ + Qe⁻⁴ˣ"
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "Peˣ + Qe⁴ˣ"
+      },
+      {
+        "label": "B",
+        "text": "Pe⁻ˣ + Qe⁴ˣ"
+      },
+      {
+        "label": "C",
+        "text": "Peˣ + Qe⁻⁴ˣ"
+      },
+      {
+        "label": "D",
+        "text": "Peˣ + Qe⁻⁴ˣ"
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0024",
     "number": 24,
     "question": "Let f(x) = sinx/x then evaluate lim(x→0) f(x).",
-    "options": {
-      "A": "1",
-      "B": "0",
-      "C": "∞",
-      "D": "-1"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1$"
+      },
+      {
+        "label": "B",
+        "text": "$0$"
+      },
+      {
+        "label": "C",
+        "text": "$∞$"
+      },
+      {
+        "label": "D",
+        "text": "$-1$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0025",
     "number": 25,
     "question": "Calculate the Spearman's rank correlation for the following pairs of numbers (40,27), (50,60), (60,75), (70,80), (80,67), (90,58).",
-    "options": {
-      "A": "0.257",
-      "B": "0.743",
-      "C": "0.876",
-      "D": "0.1"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$0.257$"
+      },
+      {
+        "label": "B",
+        "text": "$0.743$"
+      },
+      {
+        "label": "C",
+        "text": "$0.876$"
+      },
+      {
+        "label": "D",
+        "text": "$0.1$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0026",
     "number": 26,
     "question": "A statistical hypothesis can be",
-    "options": {
-      "A": "null/exact.",
-      "B": "null/simple.",
-      "C": "simple/composite.",
-      "D": "exact/composite."
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "null/exact."
+      },
+      {
+        "label": "B",
+        "text": "null/simple."
+      },
+      {
+        "label": "C",
+        "text": "simple/composite."
+      },
+      {
+        "label": "D",
+        "text": "exact/composite."
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0027",
     "number": 27,
     "question": "Four coins are tossed together. Determine the probability that they will show the same face.",
-    "options": {
-      "A": "1/16",
-      "B": "1/8",
-      "C": "¼",
-      "D": "½"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1/16$"
+      },
+      {
+        "label": "B",
+        "text": "$1/8$"
+      },
+      {
+        "label": "C",
+        "text": "$¼$"
+      },
+      {
+        "label": "D",
+        "text": "$½$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0028",
     "number": 28,
-    "question": "Given the table (insufficient data)",
-    "options": {
-      "A": "",
-      "B": "",
-      "C": "",
-      "D": ""
-    },
-    "correct": "A",
+    "question": "Given the table:\n\n| x | 0 | 1 | 2 |\n|---|---|---|---|\n| f(x) | 1/6 | ¼ | 1/3 |\n\n*(insufficient quest",
+    "options": [],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0029",
     "number": 29,
     "question": "Evaluate the mean of the set of data 97,91,94,90,85",
-    "options": {
-      "A": "91",
-      "B": "92",
-      "C": "94",
-      "D": "95"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$91$"
+      },
+      {
+        "label": "B",
+        "text": "$92$"
+      },
+      {
+        "label": "C",
+        "text": "$94$"
+      },
+      {
+        "label": "D",
+        "text": "$95$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0030",
     "number": 30,
     "question": "If two fair dice are tossed, determine the probability that total score that shows up is 8.",
-    "options": {
-      "A": "3/12",
-      "B": "5/36",
-      "C": "1/36",
-      "D": "19/36"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$3/12$"
+      },
+      {
+        "label": "B",
+        "text": "$5/36$"
+      },
+      {
+        "label": "C",
+        "text": "$1/36$"
+      },
+      {
+        "label": "D",
+        "text": "$19/36$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0031",
     "number": 31,
     "question": "Determine the number of different arrangements of the letters of the word OGBOMOSO.",
-    "options": {
-      "A": "2400",
-      "B": "1280",
-      "C": "1500",
-      "D": "1680"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "$2400$"
+      },
+      {
+        "label": "B",
+        "text": "$1280$"
+      },
+      {
+        "label": "C",
+        "text": "$1500$"
+      },
+      {
+        "label": "D",
+        "text": "$1680$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0032",
     "number": 32,
     "question": "Evaluate ∫₂³ x/(1+x²) dx.",
-    "options": {
-      "A": "π/4",
-      "B": "2π/5",
-      "C": "π",
-      "D": "π/2"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$π/4$"
+      },
+      {
+        "label": "B",
+        "text": "$2π/5$"
+      },
+      {
+        "label": "C",
+        "text": "$π$"
+      },
+      {
+        "label": "D",
+        "text": "$π/2$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0033",
     "number": 33,
     "question": "If y = ln (x + 2ˣ), find dy/dx.",
-    "options": {
-      "A": "(1+2ˣln2)/(x+2ˣ)",
-      "B": "(1–2ˣln2)/(x+2ˣ)",
-      "C": "(2ˣln2–1)/(x+2ˣ)",
-      "D": "2ˣ/(x+2ˣ)"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$(1+2ˣln2)/(x+2ˣ)$"
+      },
+      {
+        "label": "B",
+        "text": "$(1–2ˣln2)/(x+2ˣ)$"
+      },
+      {
+        "label": "C",
+        "text": "$(2ˣln2–1)/(x+2ˣ)$"
+      },
+      {
+        "label": "D",
+        "text": "$2ˣ/(x+2ˣ)$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0034",
     "number": 34,
     "question": "What is the derivative of y = cos²x + sin²x",
-    "options": {
-      "A": "0",
-      "B": "1",
-      "C": "2sin2x",
-      "D": "-2cosx+2sinx"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$0$"
+      },
+      {
+        "label": "B",
+        "text": "$1$"
+      },
+      {
+        "label": "C",
+        "text": "$2sin2x$"
+      },
+      {
+        "label": "D",
+        "text": "-2cosx+2sinx"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0035",
     "number": 35,
     "question": "Deduce the coefficient of variation of this population data: 7, 10, 11, 12",
-    "options": {
-      "A": "1.87",
-      "B": "0.187",
-      "C": "3.5",
-      "D": "0.35"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1.87$"
+      },
+      {
+        "label": "B",
+        "text": "$0.187$"
+      },
+      {
+        "label": "C",
+        "text": "$3.5$"
+      },
+      {
+        "label": "D",
+        "text": "$0.35$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0036",
     "number": 36,
     "question": "What is the derivative of y = cos2x + sin2x",
-    "options": {
-      "A": "0",
-      "B": "1",
-      "C": "2sin2x",
-      "D": "-2cosx + 2sinx"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$0$"
+      },
+      {
+        "label": "B",
+        "text": "$1$"
+      },
+      {
+        "label": "C",
+        "text": "$2sin2x$"
+      },
+      {
+        "label": "D",
+        "text": "-2cosx + 2sinx"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0037",
     "number": 37,
     "question": "Deduce the coefficient of variation of this population data: 7, 10, 11, 12",
-    "options": {
-      "A": "1.87",
-      "B": "0.187",
-      "C": "3.5",
-      "D": "0.35"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$1.87$"
+      },
+      {
+        "label": "B",
+        "text": "$0.187$"
+      },
+      {
+        "label": "C",
+        "text": "$3.5$"
+      },
+      {
+        "label": "D",
+        "text": "$0.35$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0038",
     "number": 38,
     "question": "A random distribution that measures rare events in space and time that has its mean and variance the same is expressed as",
-    "options": {
-      "A": "Beta Distribution",
-      "B": "Gamma Distribution",
-      "C": "Hypergeometric Distribution",
-      "D": "Poisson Distribution"
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "Beta Distribution"
+      },
+      {
+        "label": "B",
+        "text": "Gamma Distribution"
+      },
+      {
+        "label": "C",
+        "text": "Hypergeometric Distribution"
+      },
+      {
+        "label": "D",
+        "text": "Poisson Distribution"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0039",
     "number": 39,
     "question": "Determine the number of complete permutations of the letters of the word MISSISSIPPI",
-    "options": {
-      "A": "34650",
-      "B": "12967",
-      "C": "6750",
-      "D": "35550"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$34650$"
+      },
+      {
+        "label": "B",
+        "text": "$12967$"
+      },
+      {
+        "label": "C",
+        "text": "$6750$"
+      },
+      {
+        "label": "D",
+        "text": "$35550$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0040",
     "number": 40,
     "question": "The sampling technique that does not involve the use of random sampling is identified as",
-    "options": {
-      "A": "Quota.",
-      "B": "Stratified.",
-      "C": "Systematic",
-      "D": "Multi-stage."
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "Quota."
+      },
+      {
+        "label": "B",
+        "text": "Stratified."
+      },
+      {
+        "label": "C",
+        "text": "Systematic"
+      },
+      {
+        "label": "D",
+        "text": "Multi-stage.  ---  ### MAT 004A: APPLIED MATHEMATICS"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0041",
     "number": 41,
     "question": "A loan N1000 is given at 15% for 8 months. Find the maturity of the loan.",
-    "options": {
-      "A": "N1300",
-      "B": "N1100",
-      "C": "N1200",
-      "D": "N1050"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$N1300$"
+      },
+      {
+        "label": "B",
+        "text": "$N1100$"
+      },
+      {
+        "label": "C",
+        "text": "$N1200$"
+      },
+      {
+        "label": "D",
+        "text": "$N1050$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0042",
     "number": 42,
     "question": "What is an amount established so that maturity value equals a specific amount at regular intervals?",
-    "options": {
-      "A": "Annuity.",
-      "B": "Sinking Fund.",
-      "C": "Bond",
-      "D": "Rent."
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "Annuity."
+      },
+      {
+        "label": "B",
+        "text": "Sinking Fund."
+      },
+      {
+        "label": "C",
+        "text": "Bond"
+      },
+      {
+        "label": "D",
+        "text": "Rent."
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0043",
     "number": 43,
     "question": "The two essential factors of production in the Cobb-Douglas production formula are",
-    "options": {
-      "A": "Land and Entrepreneurship.",
-      "B": "Land and Labour",
-      "C": "Capital and Labour",
-      "D": "Capital and Land."
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "Land and Entrepreneurship."
+      },
+      {
+        "label": "B",
+        "text": "Land and Labour"
+      },
+      {
+        "label": "C",
+        "text": "Capital and Labour"
+      },
+      {
+        "label": "D",
+        "text": "Capital and Land. *(Note: Cobb-Douglas typically uses Capital and Labour — see flag below)"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0044",
     "number": 44,
     "question": "Which of these relations best describe the total cost of production?",
-    "options": {
-      "A": "The sum of marginal cost and variable cost.",
-      "B": "The sum of total variable cost and marginal cost.",
-      "C": "The sum of marginal revenue and total fixed cost.",
-      "D": "The sum of total variable cost and total fixed cost."
-    },
-    "correct": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "The sum of marginal cost and variable cost."
+      },
+      {
+        "label": "B",
+        "text": "The sum of total variable cost and marginal cost."
+      },
+      {
+        "label": "C",
+        "text": "The sum of marginal revenue and total fixed cost."
+      },
+      {
+        "label": "D",
+        "text": "The sum of total variable cost and total fixed cost."
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0045",
     "number": 45,
     "question": "Which of the following best describe elasticity (e) of demand",
-    "options": {
-      "A": "e = (rate of change of demand)/(rate of change of price)",
-      "B": "e = (rate of change of price)/(rate of change of demand)",
-      "C": "e = 1 – (rate of change of demand)/(rate of change of price)",
-      "D": "e = 1 + (rate of change of price)/(rate of change of demand)"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "e = (rate of change of demand)/(rate of change of price)"
+      },
+      {
+        "label": "B",
+        "text": "e = (rate of change of price)/(rate of change of demand)"
+      },
+      {
+        "label": "C",
+        "text": "e = 1 – (rate of change of demand)/(rate of change of price)"
+      },
+      {
+        "label": "D",
+        "text": "e = 1 + (rate of change of price)/(rate of change of demand)"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0046",
     "number": 46,
     "question": "Calculate the first payment made by Mr. Iyanda after borrowing N1000 yearly instalment and repays N50 at 8% per annum.",
-    "options": {
-      "A": "N64.92",
-      "B": "N46.29",
-      "C": "N96.24",
-      "D": "N42.96"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "$N64.92$"
+      },
+      {
+        "label": "B",
+        "text": "$N46.29$"
+      },
+      {
+        "label": "C",
+        "text": "$N96.24$"
+      },
+      {
+        "label": "D",
+        "text": "$N42.96$"
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0047",
     "number": 47,
     "question": "The production function of a company is given Q = 2x½y⅔. Find the marginal productivity of labour",
-    "options": {
-      "A": "2x⁻½y⅔",
-      "B": "4x½y⅔",
-      "C": "3x½y⅔",
-      "D": "x⅔y⅔"
-    },
-    "correct": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "$2x⁻½y⅔** *(∂Q/∂x = x⁻½y⅔)* — **A$"
+      },
+      {
+        "label": "B",
+        "text": "$4x½y⅔$"
+      },
+      {
+        "label": "C",
+        "text": "$3x½y⅔$"
+      },
+      {
+        "label": "D",
+        "text": "$x⅔y⅔$"
+      }
+    ],
+    "correct_answer": "A",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0048",
     "number": 48,
-    "question": "The consumption function for a commodity is C = 200 + 0.25I. What is the Marginal Propensity to Save?",
-    "options": {
-      "A": "0.25",
-      "B": "0.45",
-      "C": "0.55",
-      "D": "0.75"
-    },
-    "correct": "D",
+    "question": "The consumption function for a commodity is C = 200 + 0.25I. What is the Marginal Propensity to Save? MPC=0.25 → MPS=1-0.25=0.75",
+    "options": [
+      {
+        "label": "A",
+        "text": "$0.25$"
+      },
+      {
+        "label": "B",
+        "text": "$0.45$"
+      },
+      {
+        "label": "C",
+        "text": "$0.55$"
+      },
+      {
+        "label": "D",
+        "text": "$0.75$"
+      }
+    ],
+    "correct_answer": "D",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0049",
     "number": 49,
     "question": "Which of the following gives the revenue of a company?",
-    "options": {
-      "A": "Product of selling price and units bought.",
-      "B": "Product of units sold and quantity bought.",
-      "C": "Product of selling price and units sold.",
-      "D": "Product of buying price and units sold."
-    },
-    "correct": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "Product of selling price and units bought."
+      },
+      {
+        "label": "B",
+        "text": "Product of units sold and quantity bought."
+      },
+      {
+        "label": "C",
+        "text": "Product of selling price and units sold."
+      },
+      {
+        "label": "D",
+        "text": "Product of buying price and units sold."
+      }
+    ],
+    "correct_answer": "C",
     "explanation": ""
   },
   {
+    "id": "mat-2023-mq-0050",
     "number": 50,
     "question": "Consider the linear programming problem Z=15x+10y subject to 2x+3y≤15, 5x+7y≤30. The inequalities in equation (2) are called",
-    "options": {
-      "A": "objective functions.",
-      "B": "Constrains",
-      "C": "Feasible solutions.",
-      "D": "Optimal values"
-    },
-    "correct": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "objective functions."
+      },
+      {
+        "label": "B",
+        "text": "Constrains"
+      },
+      {
+        "label": "C",
+        "text": "Feasible solutions."
+      },
+      {
+        "label": "D",
+        "text": "Optimal values  ---  **Flag:** A couple of answers (Q4, Q43, Q45 wording, Q47 sign) depend on exact option phrasing I couldn't fully verify against an official key, and I solved these independently rather than from a transcribed answer sheet — worth double-checking those against your source if precision matters."
+      }
+    ],
+    "correct_answer": "B",
     "explanation": ""
   }
 ]

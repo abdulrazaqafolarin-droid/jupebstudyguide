@@ -1,0 +1,77 @@
+Q1:
+  Q: When the polynomial $f(x)=x^3+3x^2+ax-2$ is divided by $x-3$, the remainder is 100. Determine the value of $a$.
+  Options:
+    A: 16
+    B: 8
+    C: −3
+    D: −3
+  Correct: A
+
+Q2:
+  Q: If $\alpha$ and $\beta$ are the roots of the quadratic equation $2x^2+3x-2=0$, evaluate
+$$\frac1\alpha+\frac1\beta.$$
+  Options:
+    A: $\dfrac23$
+    B: $\dfrac3{12}$
+    C: $\dfrac21-3$
+    D: $\dfrac31-2$
+  Correct: A
+
+Q3:
+  Q: Obtain the coefficient of $(ab)^4$ in the expansion of
+$$\left(a+\frac b2\right)^8.$$
+  Options:
+    A: 30
+    B: $\dfrac{35}{8}$
+    C: 35
+    D: $\dfrac18$
+  Correct: B
+
+Q20:
+  Q: Differentiate
+$$e^{x\cos x}$$
+  Expl (first 500): Let
+$$y=e^{x\cos x}.$$
+Use the chain rule:
+$$\frac{dy}{dx}
+=e^{x\cos x}\cdot\frac{d}{dx}(x\cos x).$$
+Differentiate $x\cos x$ using the product rule:
+$$\frac{d}{dx}(x\cos x)=\cos x-x\sin x.$$
+Therefore,
+$$\boxed{\frac{dy}{dx}=e^{x\cos x}(\cos x-x\sin x)}.$$
+  Options:
+    A: $e^{x\cos x}(\cos x-x\sin x)$
+    B: $e^{x(\cos x-x\sin x)}$
+    C: $e^{x\cos x}\sin x$
+    D: $e^{x\cos x}\cos x$
+Q4 expl (first 500): :**
+
+Expand the determinant along the first row:
+$$=1
+\begin{vmatrix}
+2&6\
+1&4
+\end{vmatrix}
+-(-2)
+\begin{vmatrix}
+2&6\
+4&4
+\end{vmatrix}
++3
+\begin{vmatrix}
+2&2\
+4&1
+\end{vmatrix}$$
+Now evaluate each minor.
+
+First minor:
+$$(2\times4)-(6\times1)=8-6=2.$$
+Second minor:
+$$(2\times4)-(6\times4)=8-24=-16.$$
+Third minor:
+$$(2\times1)-(2\times4)=2-8=-6.$$
+Therefore,
+$$=1(2)-(-2)(-16)+3(-6)$$$$=2-32-18
+=-48.$$
+Thus,
+$$\boxed{-48}$$

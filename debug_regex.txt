@@ -1,0 +1,22 @@
+=== Raw repr ===
+'The **Remainder Theorem** states that if a polynomial (f(x)) is divided by ((x-a)), then the remainder is equal to (f(a)).\n\nSince the polynomial is divided by (x-3),\n\n[\nf(3)=100.\n]\n\nSubstitute (x=3) into the polynomial:\n\n[\nf(3)=3^3+3(3^2)+3a-2.\n]\n\nSimplify:\n\n[\n=27+27+3a-2\n=52+3a.\n]\n\nSince the remainder is 100,\n\n[\n52+3a=100.\n]\n\nSubtract 52 from both sides:\n\n[\n3a=48.\n]\n\nDivide both sides by 3:\n\n[\na=16.\n]\n\nTherefore,\n\n[\n\\boxed{a=16.}\n]\n\n> **Note:** The official answer key marks **Option C (−3)**, b'
+
+=== After display math regex ===
+The **Remainder Theorem** states that if a polynomial (f(x)) is divided by ((x-a)), then the remainder is equal to (f(a)).
+
+Since the polynomial is divided by (x-3),
+@@DISPLAY@@f(3)=100.@@ENDDISPLAY@@
+Substitute (x=3) into the polynomial:
+@@DISPLAY@@f(3)=3^3+3(3^2)+3a-2.@@ENDDISPLAY@@
+Simplify:
+@@DISPLAY@@=27+27+3a-2
+=52+3a.@@ENDDISPLAY@@
+Since the remainder is 100,
+@@DISPLAY@@52+3a=100.@@ENDDISPLAY@@
+Subtract 52 from both sides:
+@@DISPLAY@@3a=48.@@ENDDISPLAY@@
+Divide both sides by 3:
+@@DISPLAY@@a=16.@@ENDDISPLAY@@
+Therefore,
+@@DISPLAY@@\boxed{a=16.}@@ENDDISPLAY@@
+> **Note:** The official answer key marks **Option C (−3)**, but this is **incorrect**. The correct answer is **Option A (16).**

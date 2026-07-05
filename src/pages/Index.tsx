@@ -490,8 +490,7 @@ const Index = () => {
         <QuizMode
           questions={currentQuizQuestions}
           subject={selectedSubject || undefined}
-          onComplete={(result) => {
-            setCurrentQuizQuestions([]);
+            onComplete={(result) => {
             handleQuizComplete(result);
           }}
           onExit={() => { setCurrentQuizQuestions([]); handleBack(); }}

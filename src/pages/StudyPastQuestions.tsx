@@ -15,11 +15,12 @@ import {
   Search,
   Shield,
   ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import type { Subject } from "@/types/question";
 import type { StudyCategory, StudyQuestion } from "@/types/study-questions";
 import { STUDY_SUBJECT_INFO, STUDY_YEARS } from "@/types/study-questions";
-import { getStudyQuestionsBySubject, refreshData } from "@/data/study-questions";
+import { getStudyQuestionsBySubject, isDataReady, refreshData } from "@/data/study-questions";
 import { useStudyQuestions } from "@/hooks/study-questions/useStudyQuestions";
 import { useQuestionTimer } from "@/hooks/study-questions/useQuestionTimer";
 import { useBookmarks } from "@/hooks/study-questions/useBookmarks";
@@ -657,6 +658,13 @@ export default function StudyPastQuestions() {
                   exit={PAGE_VARIANTS.exit}
                   transition={PAGE_TRANSITION}
                 >
+                      {effectiveQuestions.length === 0 && !isDataReady() ? (
+                        <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                          <p className="text-sm text-muted-foreground">Loading questions…</p>
+                        </div>
+                      ) : (
+                      <>
                       <QuestionViewer
                         questions={effectiveQuestions}
                         subject={selectedSubject!}
@@ -686,6 +694,8 @@ export default function StudyPastQuestions() {
                           {Object.keys(userAnswers).length}/{effectiveQuestions.length}
                         </span>
                       </div>
+                      </>
+                      )}
                 </motion.div>
               ) : (
                 <motion.div

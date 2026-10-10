@@ -188,7 +188,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
   const handleBlock = async () => {
     if (!userId) return;
     setActionLoading(true);
-    await supabase.rpc('block_user', { target_user_id: userId });
+    await supabase.rpc('block_user', { p_blocked_id: userId });
     setRelationship('blocked');
     toast.success('User blocked');
     setActionLoading(false);
@@ -197,7 +197,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
   const handleUnblock = async () => {
     if (!userId) return;
     setActionLoading(true);
-    await supabase.rpc('unblock_user', { target_user_id: userId });
+    await supabase.rpc('unblock_user', { p_blocked_id: userId });
     setRelationship('stranger');
     toast.success('User unblocked');
     setActionLoading(false);

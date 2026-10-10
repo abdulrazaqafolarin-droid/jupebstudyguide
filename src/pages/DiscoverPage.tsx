@@ -33,15 +33,19 @@ export default function DiscoverPage() {
     setLoading(true);
 
     Promise.all([
-      supabase.from('profiles').select('user_id, display_name, avatar_url, email, last_seen_at').neq('user_id', user.id),
+      supabase.from('profiles').select('user_id, display_name, avatar_url, last_seen_at').neq('user_id', user.id),
       supabase.rpc('get_weekly_leaderboard', { p_week_start: new Date().toISOString().slice(0, 10) }),
     ]).then(([profilesRes, leaderboardRes]) => {
-      const profileData = (profilesRes.data ?? []) as DiscoverUser[];
-      const leaderboardData = (leaderboardRes.data ?? []) as { user_id: string; total_score: number }[];
-      const scoreMap = new Map(leaderboardData.map(l => [l.user_id, l.total_score]));
+      const profileData = profilesRes.data ?? [];
+      const leaderboardData = (leaderboardRes.data ?? []) as { user_id: string; week_score: number }[];
+      const scoreMap = new Map(leaderboardData.map(l => [l.user_id, l.week_score]));
 
       const enriched: DiscoverUser[] = profileData.map(p => ({
-        ...p,
+        user_id: p.user_id,
+        display_name: p.display_name,
+        avatar_url: p.avatar_url,
+        email: null,
+        last_seen_at: p.last_seen_at,
         total_score: scoreMap.get(p.user_id) ?? 0,
         is_online: false, // will be refined after privacy check
       }));
@@ -97,7 +101,8 @@ export default function DiscoverPage() {
     const { data, error } = await supabase.rpc('find_or_create_dm', { other_user_id: otherUserId });
     setStartingChat(null);
     if (error || !data) return;
-    navigate(`/chat?conversation=${data.id}`);
+    const dm = data as unknown as { id: string };
+    navigate(`/chat?conversation=${dm.id}`);
   };
 
   return (

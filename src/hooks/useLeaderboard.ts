@@ -61,7 +61,7 @@ export function useLeaderboard(limit = 5) {
         profileMap.set(p.user_id, {
           display_name: p.display_name,
           avatar_url: p.avatar_url,
-          achievements: Array.isArray(p.achievements) ? p.achievements : [],
+          achievements: (Array.isArray(p.achievements) ? p.achievements : []).filter((a): a is string => typeof a === 'string'),
         });
       }
     }

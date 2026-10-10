@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { encryptApiKey } from "../_shared/keyVault.ts";
+import { encryptApiKey, decryptApiKey, isVaultProvider } from "../_shared/keyVault.ts";
+import { validateKey } from "../_shared/ai-router.ts";
 
 /// DEPLOYMENT — FIRST-TIME SETUP
 /// ==============================
@@ -28,6 +29,7 @@ type Action =
   | "reset-exhausted"
   | "reset-all-exhausted"
   | "reorder-keys"
+  | "test-key"
   | "get-usage-summary"
   | "get-recent-logs";
 
@@ -35,6 +37,7 @@ interface Payload {
   action: Action;
   label?: string;
   apiKey?: string;
+  provider?: string;
   id?: string;
   priority?: number;
   is_active?: boolean;
@@ -45,6 +48,8 @@ interface Payload {
   status?: string;
   adminEmail?: string;
 }
+
+const KEY_COLUMNS = "id, label, key_preview, provider, priority, is_active, token_exhausted, last_error, consecutive_failures, cooldown_until, total_requests, total_tokens_used, last_used_at, exhausted_at, created_at";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -112,6 +117,8 @@ Deno.serve(async (req) => {
         return handleResetAllExhausted(supabase);
       case "reorder-keys":
         return handleReorderKeys(supabase, payload);
+      case "test-key":
+        return handleTestKey(supabase, encryptionSecret, payload);
       case "get-usage-summary":
         return handleGetUsageSummary(supabase);
       case "get-recent-logs":
@@ -152,7 +159,57 @@ async function handleCompleteSetup(
   adminEmail: string
 ) {
   return new Response(
-    JSON.stringify({ success: true, adminEmail }),
+    JSON.stringify({ success: true }),
+    { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+  );
+}
+
+async function handleTestKey(
+  supabase: ReturnType<typeof createClient>,
+  encryptionSecret: string,
+  payload: Payload
+) {
+  if (!payload.id) {
+    return new Response(
+      JSON.stringify({ error: "id is required" }),
+      { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  const { data: row, error: fetchError } = await supabase
+    .from("ai_api_keys")
+    .select("id, label, api_key, provider")
+    .eq("id", payload.id)
+    .maybeSingle();
+
+  if (fetchError || !row) {
+    return new Response(
+      JSON.stringify({ ok: false, error: fetchError?.message || "key not found" }),
+      { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  const typed = row as { id: string; label: string; api_key: string; provider: string };
+  if (!isVaultProvider(typed.provider)) {
+    return new Response(
+      JSON.stringify({ ok: false, error: `unknown provider "${typed.provider}"` }),
+      { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  let apiKey: string;
+  try {
+    apiKey = await decryptApiKey(typed.api_key, encryptionSecret);
+  } catch {
+    return new Response(
+      JSON.stringify({ ok: false, error: "stored value is not a valid encrypted key — delete and re-add this key" }),
+      { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  const validation = await validateKey(typed.provider, apiKey);
+  return new Response(
+    JSON.stringify(validation),
     { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
   );
 }
@@ -160,7 +217,8 @@ async function handleCompleteSetup(
 async function handleListKeys(supabase: ReturnType<typeof createClient>) {
   const { data, error } = await supabase
     .from("ai_api_keys")
-    .select("id, label, key_preview, priority, is_active, token_exhausted, total_requests, total_tokens_used, last_used_at, exhausted_at, created_at")
+    .select(KEY_COLUMNS)
+    .order("provider", { ascending: true })
     .order("priority", { ascending: true });
 
   if (error) {
@@ -188,30 +246,40 @@ async function handleAddKey(
     );
   }
 
+  const provider = payload.provider || "gemini";
+  if (!isVaultProvider(provider)) {
+    return new Response(
+      JSON.stringify({ error: `provider must be one of: gemini, groq, nvidia (got "${payload.provider}")` }),
+      { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
   const encrypted = await encryptApiKey(payload.apiKey, encryptionSecret);
   const preview = payload.apiKey.slice(-4);
 
-  // Auto-assign priority if not given
+  // Auto-assign priority if not given (per provider — priorities are unique within a provider)
   let priority = payload.priority;
   if (!priority) {
     const { data: maxKey } = await supabase
       .from("ai_api_keys")
       .select("priority")
+      .eq("provider", provider)
       .order("priority", { ascending: false })
       .limit(1)
       .maybeSingle();
-    priority = (maxKey?.priority ?? 0) + 1;
+    priority = ((maxKey as { priority?: number } | null)?.priority ?? 0) + 1;
   }
 
   const { data, error } = await supabase
     .from("ai_api_keys")
     .insert({
       label: payload.label,
-      encrypted_key: encrypted,
+      api_key: encrypted,
+      provider,
       key_preview: `••••••••••••${preview}`,
       priority,
     })
-    .select("id, label, key_preview, priority, is_active, token_exhausted, total_requests, total_tokens_used, last_used_at, exhausted_at, created_at")
+    .select(KEY_COLUMNS)
     .single();
 
   if (error) {
@@ -247,7 +315,7 @@ async function handleUpdateKey(
     .from("ai_api_keys")
     .update(updates)
     .eq("id", payload.id)
-    .select("id, label, key_preview, priority, is_active, token_exhausted, total_requests, total_tokens_used, last_used_at, exhausted_at, created_at")
+    .select(KEY_COLUMNS)
     .single();
 
   if (error) {
@@ -305,9 +373,9 @@ async function handleResetExhausted(
 
   const { data, error } = await supabase
     .from("ai_api_keys")
-    .update({ token_exhausted: false, exhausted_at: null })
+    .update({ token_exhausted: false, exhausted_at: null, consecutive_failures: 0, cooldown_until: null, last_error: null })
     .eq("id", payload.id)
-    .select("id, label, key_preview, priority, is_active, token_exhausted, total_requests, total_tokens_used, last_used_at, exhausted_at, created_at")
+    .select(KEY_COLUMNS)
     .single();
 
   if (error) {
@@ -326,7 +394,7 @@ async function handleResetExhausted(
 async function handleResetAllExhausted(supabase: ReturnType<typeof createClient>) {
   const { data, error } = await supabase
     .from("ai_api_keys")
-    .update({ token_exhausted: false, exhausted_at: null })
+    .update({ token_exhausted: false, exhausted_at: null, consecutive_failures: 0, cooldown_until: null, last_error: null })
     .eq("token_exhausted", true)
     .select("id");
 
@@ -354,15 +422,25 @@ async function handleReorderKeys(
     );
   }
 
-  for (let i = 0; i < payload.orderedIds.length; i++) {
+  // Priorities are unique per provider, so assign sequences within each
+  // provider group (preserving the UI's relative order).
+  const { data: rows } = await supabase
+    .from("ai_api_keys")
+    .select("id, provider")
+    .in("id", payload.orderedIds);
+  const byId = new Map((rows as Array<{ id: string; provider: string }> | null || []).map((r) => [r.id, r.provider]));
+  const counters: Record<string, number> = {};
+  for (const id of payload.orderedIds) {
+    const provider = byId.get(id) || "gemini";
+    counters[provider] = (counters[provider] || 0) + 1;
     const { error } = await supabase
       .from("ai_api_keys")
-      .update({ priority: i + 1 })
-      .eq("id", payload.orderedIds[i]);
+      .update({ priority: counters[provider] })
+      .eq("id", id);
 
     if (error) {
       return new Response(
-        JSON.stringify({ error: `Failed to reorder key ${payload.orderedIds[i]}: ${error.message}` }),
+        JSON.stringify({ error: `Failed to reorder key ${id}: ${error.message}` }),
         { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }

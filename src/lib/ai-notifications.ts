@@ -1,7 +1,7 @@
 import { chatCompletion } from "./ai-service";
 import type { AppNotification, NotificationKind } from "@/hooks/useNotifications";
 
-interface AIEventContext {
+export interface AIEventContext {
   action: "quiz_completed" | "streak_milestone" | "weak_area" | "study_session" | "rank_change" | "inactivity";
   subject?: string;
   score?: number;

@@ -4,6 +4,7 @@ const PBKDF2_SALT = "ai-key-vault-salt-v1";
 
 // ============================================================
 // AES-256-GCM Encryption (Web Crypto API — works in Deno)
+// The live ai_api_keys.api_key column holds the encrypted blob.
 // ============================================================
 
 async function deriveKey(secret: string): Promise<CryptoKey> {
@@ -50,42 +51,171 @@ export async function decryptApiKey(encrypted: string, secret: string): Promise<
 }
 
 // ============================================================
-// Active Key Fetcher — queries DB for highest-priority active key
+// Multi-provider key pool with cooldown auto-recovery.
+// A key is usable when: is_active AND NOT token_exhausted AND
+// (cooldown_until IS NULL OR cooldown_until <= now).
+// Transient failures set a short cooldown (auto-recover).
+// Repeated quota failures escalate to token_exhausted (manual reset).
 // ============================================================
 
-export interface ActiveKeyResult {
+export type VaultProvider = "gemini" | "groq" | "nvidia";
+
+export const VAULT_PROVIDERS: VaultProvider[] = ["gemini", "groq", "nvidia"];
+
+export function isVaultProvider(value: unknown): value is VaultProvider {
+  return value === "gemini" || value === "groq" || value === "nvidia";
+}
+
+export interface VaultKey {
   keyId: string;
   apiKey: string;
   label: string;
+  provider: VaultProvider;
+  priority: number;
 }
 
-export async function getActiveGeminiKey(
+interface VaultRow {
+  id: string;
+  label: string;
+  api_key: string;
+  provider: string;
+  priority: number;
+  cooldown_until: string | null;
+}
+
+const QUOTA_FAILURES_BEFORE_EXHAUSTED = 5;
+const MAX_COOLDOWN_SECONDS = 24 * 3600;
+
+function cooldownSecondsForQuotaFailures(consecutiveFailures: number): number {
+  const next = consecutiveFailures + 1;
+  return Math.min(300 * 2 ** (next - 1), MAX_COOLDOWN_SECONDS);
+}
+
+function toVaultKey(row: VaultRow, apiKey: string): VaultKey {
+  return {
+    keyId: row.id,
+    apiKey,
+    label: row.label,
+    provider: isVaultProvider(row.provider) ? row.provider : "gemini",
+    priority: row.priority,
+  };
+}
+
+export async function getVaultKeys(
   supabaseUrl: string,
   supabaseKey: string,
-  encryptionSecret: string
-): Promise<ActiveKeyResult | null> {
+  encryptionSecret: string,
+  provider: VaultProvider
+): Promise<VaultKey[]> {
   const supabase = createClient(supabaseUrl, supabaseKey);
+  const now = new Date().toISOString();
   const { data, error } = await supabase
     .from("ai_api_keys")
-    .select("id, label, encrypted_key")
+    .select("id, label, api_key, provider, priority, cooldown_until")
+    .eq("provider", provider)
     .eq("is_active", true)
     .eq("token_exhausted", false)
-    .order("priority", { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .order("priority", { ascending: true });
 
   if (error || !data) {
-    console.error("[KeyVault] No active key available:", error?.message || "no keys");
-    return null;
+    console.error(`[KeyVault] No ${provider} keys available:`, error?.message || "no keys");
+    return [];
   }
 
-  try {
-    const apiKey = await decryptApiKey(data.encrypted_key, encryptionSecret);
-    return { keyId: data.id, apiKey, label: data.label };
-  } catch (err) {
-    console.error("[KeyVault] Failed to decrypt key:", err);
-    return null;
+  const keys: VaultKey[] = [];
+  for (const row of data as VaultRow[]) {
+    if (row.cooldown_until && row.cooldown_until > now) continue;
+    try {
+      const apiKey = await decryptApiKey(row.api_key, encryptionSecret);
+      if (!apiKey) throw new Error("decrypted to empty string");
+      keys.push(toVaultKey(row, apiKey));
+    } catch (err) {
+      // A single corrupt row (e.g. plaintext stored by an old version)
+      // must never take down the whole provider — record and skip.
+      console.error(`[KeyVault] Skipping ${provider} key "${row.label}" (undecryptable):`, String(err).slice(0, 120));
+      await supabase
+        .from("ai_api_keys")
+        .update({ last_error: "Stored value is not a valid encrypted key — delete and re-add this key." })
+        .eq("id", row.id);
+    }
   }
+  return keys;
+}
+
+async function touchKey(
+  supabaseUrl: string,
+  supabaseKey: string,
+  keyId: string,
+  patch: Record<string, string | number | boolean | null>
+): Promise<void> {
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  await supabase.from("ai_api_keys").update(patch).eq("id", keyId);
+}
+
+export async function recordKeySuccess(
+  supabaseUrl: string,
+  supabaseKey: string,
+  keyId: string
+): Promise<void> {
+  await touchKey(supabaseUrl, supabaseKey, keyId, {
+    consecutive_failures: 0,
+    cooldown_until: null,
+    last_error: null,
+    last_used_at: new Date().toISOString(),
+  });
+}
+
+export async function recordKeyQuotaFailure(
+  supabaseUrl: string,
+  supabaseKey: string,
+  keyId: string,
+  errorMessage: string
+): Promise<void> {
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  const { data } = await supabase
+    .from("ai_api_keys")
+    .select("consecutive_failures")
+    .eq("id", keyId)
+    .maybeSingle();
+  const failures = ((data as { consecutive_failures?: number } | null)?.consecutive_failures ?? 0) + 1;
+  const cooldownSeconds = cooldownSecondsForQuotaFailures(failures - 1);
+  const cooldownUntil = new Date(Date.now() + cooldownSeconds * 1000).toISOString();
+  const patch: Record<string, string | number | boolean | null> = {
+    consecutive_failures: failures,
+    cooldown_until: cooldownUntil,
+    last_error: errorMessage.slice(0, 300),
+  };
+  if (failures >= QUOTA_FAILURES_BEFORE_EXHAUSTED) {
+    patch.token_exhausted = true;
+    patch.exhausted_at = new Date().toISOString();
+  }
+  await supabase.from("ai_api_keys").update(patch).eq("id", keyId);
+}
+
+export async function recordKeyTransientFailure(
+  supabaseUrl: string,
+  supabaseKey: string,
+  keyId: string,
+  errorMessage: string
+): Promise<void> {
+  await touchKey(supabaseUrl, supabaseKey, keyId, {
+    cooldown_until: new Date(Date.now() + 60 * 1000).toISOString(),
+    last_error: errorMessage.slice(0, 300),
+  });
+}
+
+export async function recordKeyFatalFailure(
+  supabaseUrl: string,
+  supabaseKey: string,
+  keyId: string,
+  errorMessage: string
+): Promise<void> {
+  // Auth/config errors (401/403/400/404): the key will keep failing until a
+  // human intervenes, so park it briefly and surface the reason in the UI.
+  await touchKey(supabaseUrl, supabaseKey, keyId, {
+    cooldown_until: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    last_error: errorMessage.slice(0, 300),
+  });
 }
 
 // ============================================================
@@ -136,7 +266,7 @@ export async function logKeyUsage(
 }
 
 // ============================================================
-// Mark key as exhausted (quota hit)
+// Manual exhaustion controls (kept for the admin UI)
 // ============================================================
 
 export async function markKeyExhausted(

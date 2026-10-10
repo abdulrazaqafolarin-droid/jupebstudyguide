@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { QuestionMath } from '@/components/QuestionMath';
 
 interface QuizModeProps {
   questions: Question[];
@@ -348,7 +349,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
         {/* Question */}
         <h3 className="text-lg font-medium mb-6 leading-relaxed">
-          {currentQuestion.question}
+          <QuestionMath content={currentQuestion.question} inline />
         </h3>
 
         {/* Options */}
@@ -383,8 +384,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
                    showResult && isSelected && !isCorrectOption ? <X className="w-4 h-4" /> :
                    option.label}
                 </span>
-                <span className="font-mono text-sm leading-relaxed pt-1">
-                  {option.text}
+                <span className="font-mono text-sm leading-relaxed pt-1 flex-1 min-w-0">
+                  <QuestionMath content={option.text} inline />
                 </span>
               </button>
             );
@@ -403,7 +404,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
               <strong className={hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
                 {hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? '✓ Correct!' : !hasRealAnswer(currentQuestion) ? 'Answer recorded' : '✗ Incorrect'}
               </strong>
-              {' '}{currentQuestion.explanation}
+              {' '}<QuestionMath content={currentQuestion.explanation} inline />
             </p>
           </div>
         )}

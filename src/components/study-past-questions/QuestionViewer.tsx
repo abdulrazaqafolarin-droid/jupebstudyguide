@@ -10,6 +10,7 @@ import type { Subject, Question } from "@/types/question";
 
 import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
+import { QuestionMath } from "@/components/QuestionMath";
 
 interface AnswerEntry {
   questionId: string;
@@ -357,25 +358,28 @@ export function QuestionViewer({
           >
             <div>
               {category === "practical" && (
+                ((question.title || "").trim() || (question.objective || "").trim() ||
+                  (question.apparatus && question.apparatus.length > 0) ||
+                  (question.procedure || "").trim()) && (
                 <div className="mb-4 p-4 rounded-xl bg-muted/50 border space-y-3">
                   {question.imageUrl && !brokenImages.has(question.id) && (
                     <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-lg" loading="lazy" onError={() => handleImageError(question.id)} />
                   )}
-                  <p className="font-semibold text-lg">{question.title}</p>
-                  <p className="text-sm text-muted-foreground">{question.objective}</p>
+                  <p className="font-semibold text-lg"><QuestionMath content={question.title || ""} inline /></p>
+                  <p className="text-sm text-muted-foreground"><QuestionMath content={question.objective || ""} inline /></p>
                   {question.apparatus && question.apparatus.length > 0 && (
                     <div>
                       <p className="text-xs font-medium text-muted-foreground mb-1">Apparatus:</p>
                       <ul className="list-disc list-inside text-sm text-muted-foreground space-y-0.5">
                         {question.apparatus.map((a, i) => (
-                          <li key={i}>{a}</li>
+                          <li key={i}><QuestionMath content={a} inline /></li>
                         ))}
                       </ul>
                     </div>
                   )}
-                  <p className="text-sm">{question.procedure}</p>
+                  <QuestionMath content={question.procedure || ""} className="text-sm" />
                 </div>
-              )}
+                ))}
               {category === "practical" && question.subQuestions ? (
                 <div className="space-y-4">
                   {question.subQuestions.map((sq, i) => {
@@ -383,7 +387,7 @@ export function QuestionViewer({
                     return (
                       <div key={sq.id} className="space-y-2">
                         <p className="text-sm font-medium">
-                          {i + 1}. {sq.text}
+                          {i + 1}. <QuestionMath content={sq.text} inline />
                         </p>
                         {isSubmitted ? (
                           <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
@@ -407,7 +411,7 @@ export function QuestionViewer({
                   {question.imageUrl && !brokenImages.has(question.id) ? (
                     <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(question.id)} />
                   ) : (
-                    <p className="text-base font-medium leading-relaxed">{question.question}</p>
+                    <QuestionMath content={question.question} className="text-base font-medium leading-relaxed" />
                   )}
                   <div className="space-y-2">
                     {(question.options ?? []).map((opt) => {
@@ -441,7 +445,7 @@ export function QuestionViewer({
                           >
                           {opt.label}
                             </span>
-                          <span className="text-pretty break-words">{opt.text}</span>
+                          <span className="text-pretty break-words flex-1 min-w-0"><QuestionMath content={opt.text} inline /></span>
                           {showFeedback && isCorrect && (
                             <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>
                           )}
@@ -477,7 +481,7 @@ export function QuestionViewer({
                         {question.explanation && (
                           <div className="p-3 rounded-xl bg-card border">
                             <p className="text-xs font-medium text-muted-foreground mb-1">Explanation</p>
-                            <p className="text-sm leading-relaxed">{question.explanation}</p>
+                            <QuestionMath content={question.explanation} className="text-sm leading-relaxed" />
                           </div>
                         )}
                         <button
@@ -496,17 +500,21 @@ export function QuestionViewer({
                   {question.imageUrl && !brokenImages.has(question.id) ? (
                     <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(question.id)} />
                   ) : (
-                    <p className="text-base font-medium leading-relaxed">{question.question}</p>
+                    <QuestionMath content={question.question} className="text-base font-medium leading-relaxed" />
                   )}
                   {submittedTheory.has(question.id) ? (
                     <div className="space-y-3">
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
                         <Check className="h-3 w-3" /> Submitted
                       </span>
-                      {question.answerGuide && (
+                      {(question.answerGuide || question.explanation) ? (
                         <div className="p-3 rounded-xl bg-card border">
                           <p className="text-xs font-medium text-muted-foreground mb-1">Answer Guide</p>
-                          <p className="text-sm leading-relaxed whitespace-pre-line">{question.answerGuide}</p>
+                          <QuestionMath content={question.answerGuide || question.explanation || ""} className="text-sm leading-relaxed whitespace-pre-line" />
+                        </div>
+                      ) : (
+                        <div className="p-3 rounded-xl bg-card border">
+                          <p className="text-sm text-muted-foreground leading-relaxed">No model answer is available for this question yet. Compare your answer with the marking points in your notes, or ask the AI tutor below.</p>
                         </div>
                       )}
                       <button
@@ -534,8 +542,8 @@ export function QuestionViewer({
         </AnimatePresence>
       </div>
 
-      {/* Sticky bottom bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 bg-background/95 backdrop-blur-lg border-t border-border">
+      {/* Sticky bottom bar (lifted above the global bottom nav) */}
+      <div className="fixed bottom-[calc(3.75rem+env(safe-area-inset-bottom))] left-0 right-0 z-20 bg-background/95 backdrop-blur-lg border-t border-border">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
           <button
             onClick={() => goTo(current - 1, -1)}
@@ -575,7 +583,7 @@ export function QuestionViewer({
         </div>
       </div>
       <AITutor
-        question={question as Question}
+        question={question as unknown as Question}
         isOpen={showAITutor}
         onClose={() => setShowAITutor(false)}
       />

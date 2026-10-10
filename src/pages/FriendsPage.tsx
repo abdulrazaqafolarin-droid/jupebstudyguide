@@ -112,7 +112,7 @@ export default function FriendsPage() {
                 const hasPendingOutgoing = friends.outgoingRequests.some((r) => r.receiver_id === profile.user_id);
                 const hasIncomingRequest = friends.incomingRequests.some((r) => r.sender_id === profile.user_id);
                 return (
-                  <div key={profile.id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/30 transition-all">
+                  <div key={profile.user_id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent/30 transition-all">
                     <button onClick={() => openProfile(profile.user_id)}>
                       <UserAvatar url={profile.avatar_url} name={profile.display_name} className="w-8 h-8 ring-0" targetUserId={profile.user_id} />
                     </button>

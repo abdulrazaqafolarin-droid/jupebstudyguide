@@ -6,8 +6,11 @@ import {
   SyllabusTopic,
   UserSubjectCombination,
   SYLLABUSES,
+  type StoredSyllabus,
 } from '@/types/syllabus';
 import { useUserStorage } from './useUserStorage';
+
+export type { StoredSyllabus };
 
 const STORAGE_KEY = 'syllabus-progress';
 
@@ -86,11 +89,6 @@ function generateDailyTasks(
   return tasks;
 }
 
-export type StoredSyllabus = Omit<SyllabusProgress, 'startedAt' | 'lastStudiedAt'> & {
-  startedAt: string;
-  lastStudiedAt?: string;
-};
-
 export function useSyllabusProgress() {
   const [stored, setStored, { reset: resetStorage }] = useUserStorage<StoredSyllabus | null>(
     STORAGE_KEY,
@@ -103,6 +101,10 @@ export function useSyllabusProgress() {
       ...stored,
       startedAt: new Date(stored.startedAt),
       lastStudiedAt: stored.lastStudiedAt ? new Date(stored.lastStudiedAt) : undefined,
+      dailyTasks: stored.dailyTasks.map(t => ({
+        ...t,
+        completedAt: t.completedAt ? new Date(t.completedAt) : undefined,
+      })),
     };
   }, [stored]);
 
@@ -114,12 +116,20 @@ export function useSyllabusProgress() {
               ...prev,
               startedAt: new Date(prev.startedAt),
               lastStudiedAt: prev.lastStudiedAt ? new Date(prev.lastStudiedAt) : undefined,
+              dailyTasks: prev.dailyTasks.map(t => ({
+                ...t,
+                completedAt: t.completedAt ? new Date(t.completedAt) : undefined,
+              })),
             }
           : null;
         const next = typeof updater === 'function' ? updater(prevHydrated as SyllabusProgress | null) : updater;
         if (!next) return null;
         return {
           ...next,
+          dailyTasks: next.dailyTasks.map(t => ({
+            ...t,
+            completedAt: typeof t.completedAt === 'string' ? t.completedAt : t.completedAt?.toISOString(),
+          })),
           startedAt: typeof next.startedAt === 'string' ? next.startedAt : next.startedAt.toISOString(),
           lastStudiedAt: next.lastStudiedAt ? (typeof next.lastStudiedAt === 'string' ? next.lastStudiedAt : next.lastStudiedAt.toISOString()) : undefined,
         };

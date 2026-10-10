@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 import type { Subject } from "@/types/question";
 import { STUDY_SUBJECT_INFO } from "@/types/study-questions";
@@ -8,14 +8,14 @@ interface SubjectCardGridProps {
   counts?: Record<Subject, number>;
 }
 
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: { staggerChildren: 0.08 },
   },
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 24, scale: 0.95 },
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] } },
 };

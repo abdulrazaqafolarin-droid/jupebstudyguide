@@ -98,16 +98,24 @@ export default function AdminDashboard() {
       return;
     }
 
+    const raw = data as unknown as {
+      total_users: number;
+      activated_users: number;
+      total_codes: number;
+      used_codes: number;
+      recent_signups: { date: string; count: number }[] | null;
+      plan_distribution: { name: string; value: number }[] | null;
+    };
     setStats({
-      totalUsers: data.total_users,
-      activatedUsers: data.activated_users,
-      totalCodes: data.total_codes,
-      usedCodes: data.used_codes,
-      recentSignups: (data.recent_signups || []).map((s: { date: string; count: number }) => ({
+      totalUsers: raw.total_users,
+      activatedUsers: raw.activated_users,
+      totalCodes: raw.total_codes,
+      usedCodes: raw.used_codes,
+      recentSignups: (raw.recent_signups || []).map((s: { date: string; count: number }) => ({
         date: format(new Date(s.date + "T00:00:00"), "MMM d"),
         count: s.count,
       })),
-      planDistribution: data.plan_distribution || [],
+      planDistribution: raw.plan_distribution || [],
     });
     if (showLoader) setStatsLoading(false);
   }, []);

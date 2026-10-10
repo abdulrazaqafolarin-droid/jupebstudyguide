@@ -83,8 +83,9 @@ Deno.serve(async (req) => {
             keys: { p256dh: sub.p256dh, auth: sub.auth },
           },
           payload,
-        ).catch(async (err: any) => {
-          if (err.statusCode === 410 || err.statusCode === 404) {
+        ).catch(async (err) => {
+          const statusCode = (err as { statusCode?: unknown })?.statusCode;
+          if (statusCode === 410 || statusCode === 404) {
             await supabase
               .from('notification_subscriptions')
               .delete()

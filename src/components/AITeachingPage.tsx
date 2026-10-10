@@ -141,7 +141,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       },
       onDone: () => setIsLoading(false),
       onError: (err) => {
-        toast.error(err?.message ?? String(err));
+        toast.error(typeof err === 'string' ? err : String(err));
         setIsLoading(false);
       },
     }, ragContext);

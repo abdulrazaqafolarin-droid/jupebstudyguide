@@ -61,9 +61,14 @@ export interface StoredStudySession {
   updatedAt: string;
 }
 
-export type StoredSyllabus = Omit<SyllabusProgress, 'startedAt' | 'lastStudiedAt'> & {
+export type StoredDailyTask = Omit<DailyTask, 'completedAt'> & {
+  completedAt?: string;
+};
+
+export type StoredSyllabus = Omit<SyllabusProgress, 'startedAt' | 'lastStudiedAt' | 'dailyTasks'> & {
   startedAt: string;
   lastStudiedAt?: string;
+  dailyTasks: StoredDailyTask[];
 };
 
 export function serializeProgress(p: SyllabusProgress): StoredSyllabus {

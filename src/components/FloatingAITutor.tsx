@@ -13,7 +13,7 @@ import {
   Copy, Pencil, Library, ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo, type Variants } from 'framer-motion';
 import { toast } from 'sonner';
 import { streamChat as aiStreamChat } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
@@ -37,13 +37,13 @@ const messageVariants = {
   exit: { opacity: 0, y: -10, scale: 0.96 }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   animate: {
     transition: { staggerChildren: 0.05, delayChildren: 0.08 }
   }
 };
 
-const staggerItem = {
+const staggerItem: Variants = {
   initial: { opacity: 0, y: 10, scale: 0.95 },
   animate: {
     opacity: 1, y: 0, scale: 1,
@@ -400,7 +400,13 @@ export const FloatingAITutor = () => {
     let acc = '';
     let firstToken = true;
 
-    await aiStreamChat(systemPrompt, newMsgs, {
+    await aiStreamChat(systemPrompt, newMsgs.map(m => ({
+      role: m.role,
+      content: m.content,
+      attachment: m.attachment?.base64
+        ? { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name }
+        : null,
+    })), {
       onDelta: (text) => {
         if (firstToken) {
           firstToken = false;
@@ -814,7 +820,7 @@ export const FloatingAITutor = () => {
                               animate={{ opacity: 1, scale: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.8, y: 10 }}
                               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                              onClick={scrollToBottom}
+                              onClick={() => scrollToBottom()}
                               className="sticky bottom-2 left-1/2 -translate-x-1/2 z-10 w-8 h-8 rounded-full bg-primary shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-colors"
                             >
                               <ChevronDown className="w-4 h-4 text-primary-foreground" />

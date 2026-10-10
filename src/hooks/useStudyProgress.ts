@@ -96,7 +96,7 @@ export const useStudyProgress = () => {
     });
   }, [persist]);
 
-  const getDueQuestions = useCallback((questions: Question[]): Question[] => {
+  const getDueQuestions = useCallback(<T extends Pick<Question, 'id'>>(questions: T[]): T[] => {
     const now = new Date();
     return questions.filter(q => {
       const p = progress[q.id];
@@ -105,7 +105,7 @@ export const useStudyProgress = () => {
     });
   }, [progress]);
 
-  const getStats = useCallback((questions: Question[]) => {
+  const getStats = useCallback((questions: Pick<Question, 'id'>[]) => {
     const total = questions.length;
     const studied = questions.filter(q => progress[q.id]).length;
     const learned = questions.filter(q => progress[q.id]?.isLearned).length;

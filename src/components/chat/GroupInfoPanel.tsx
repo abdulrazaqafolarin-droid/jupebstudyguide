@@ -128,7 +128,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
         .not('user_id', 'in', `(${[...memberIds].join(',')})`)
         .ilike('display_name', `%${searchQuery}%`)
         .limit(10);
-      setSearchResults(data || []);
+      setSearchResults((data || []).map(p => ({ ...p, is_admin: false })));
       setSearching(false);
     }, 300);
     return () => clearTimeout(timer);

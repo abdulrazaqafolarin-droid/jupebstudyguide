@@ -77,6 +77,8 @@ export async function streamChat(
 
     const decoder = new TextDecoder();
     let buffer = "";
+    let receivedContent = false;
+    let streamError: string | null = null;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -91,15 +93,30 @@ export async function streamChat(
         if (!trimmed || !trimmed.startsWith("data: ")) continue;
         const data = trimmed.slice(6).trim();
         if (data === "[DONE]") {
+          if (streamError && !receivedContent) {
+            callbacks.onError("AI error: " + streamError);
+            return;
+          }
           callbacks.onDone();
           return;
         }
         try {
           const parsed = JSON.parse(data);
+          if (typeof parsed.error === "string" && parsed.error) {
+            streamError = parsed.error;
+            continue;
+          }
           const delta = parsed.choices?.[0]?.delta?.content;
-          if (delta) callbacks.onDelta(delta);
+          if (delta) {
+            receivedContent = true;
+            callbacks.onDelta(delta);
+          }
         } catch (e) { console.warn('AI stream parse error:', e); }
       }
+    }
+    if (streamError && !receivedContent) {
+      callbacks.onError("AI error: " + streamError);
+      return;
     }
     callbacks.onDone();
   } catch (err) {

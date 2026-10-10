@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, ImageOff } from 'lucide-react';
 import { Button } from './ui/button';
 import { AITutor } from './AITutor';
-import MathRenderer from './MathRenderer';
+import { QuestionMath } from './QuestionMath';
 
 interface FlashcardProps {
   question: Question;
@@ -96,7 +96,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </div>
                 ) : (
                   <div className="text-lg font-medium mb-4 leading-relaxed overflow-y-auto max-h-[140px] scrollbar-thin">
-                    <MathRenderer content={question.question} />
+                    <QuestionMath content={question.question} />
                   </div>
                 )}
 
@@ -140,7 +140,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                             'text-sm leading-relaxed pt-1 flex-1 min-w-0 transition-opacity duration-200',
                             showResult && !isSelected && !isCorrectOption && 'opacity-60'
                           )}>
-                            <MathRenderer content={option.text} />
+                            <QuestionMath content={option.text} inline />
                           </span>
                         </button>
                       );
@@ -176,7 +176,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
                 <div className="flex-1 overflow-y-auto">
                   <div className="text-base leading-relaxed">
-                    <MathRenderer content={question.explanation} />
+                    <QuestionMath content={question.explanation} />
                   </div>
                 </div>
 
@@ -217,7 +217,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 {isCorrect ? 'Perfect! ' : 'Not quite right'}
               </p>
               <div className="text-sm leading-relaxed text-foreground/90 mb-4 bg-background/50 rounded-xl p-3 border border-border/30">
-                <MathRenderer content={question.explanation} />
+                <QuestionMath content={question.explanation} />
               </div>
               <button
                 onClick={() => setShowAITutor(true)}

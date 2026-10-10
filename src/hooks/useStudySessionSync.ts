@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import type { StudySessionData } from '@/types/syllabus';
+import type { StudySessionData, StoredStudySession } from '@/types/syllabus';
 
 export function useStudySessionSync(
   sessions: StudySessionData[],
@@ -27,15 +27,15 @@ export function useStudySessionSync(
       .single()
       .then(({ data, error }) => {
         if (error || !data) return;
-        const raw = data.sessions as any[];
+        const raw = data.sessions as unknown as StoredStudySession[];
         if (Array.isArray(raw) && raw.length > 0) {
-          const hydrated = raw.map((s: any) => ({
+          const hydrated: StudySessionData[] = raw.map((s) => ({
             ...s,
             progress: {
               ...s.progress,
               startedAt: new Date(s.progress.startedAt),
               lastStudiedAt: s.progress.lastStudiedAt ? new Date(s.progress.lastStudiedAt) : undefined,
-              dailyTasks: (s.progress.dailyTasks ?? []).map((t: any) => ({
+              dailyTasks: (s.progress.dailyTasks ?? []).map((t) => ({
                 ...t,
                 completedAt: t.completedAt ? new Date(t.completedAt) : undefined,
               })),

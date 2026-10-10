@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatJSON } from "../_shared/ai.ts";
 
@@ -92,12 +91,23 @@ Return a JSON object with this exact format:
 
     const userMessage = `Document name: ${documentName}\nSubject: ${subject}\n\nDocument content:\n${documentText}`;
 
-    const result = await aiChatJSON(
+    interface ParsedQuestion {
+      year?: number;
+      topic?: string;
+      question: string;
+      type?: string;
+      options?: unknown;
+      correctAnswer?: string;
+      explanation?: string;
+      difficulty?: string;
+    }
+
+    const result = (await aiChatJSON(
       Deno.env,
       systemPrompt,
       [{ role: "user", content: userMessage }],
       { model: "llama-3.3-70b-versatile", temperature: 0.1, maxTokens: 16384 }
-    );
+    )) as { questions?: ParsedQuestion[] };
 
     if (!result.questions || !Array.isArray(result.questions)) {
       return new Response(
@@ -106,7 +116,7 @@ Return a JSON object with this exact format:
       );
     }
 
-    const questionsToInsert = result.questions.map((q: any) => ({
+    const questionsToInsert = result.questions.map((q: ParsedQuestion) => ({
       document_name: documentName,
       subject: subject,
       year: q.year || null,

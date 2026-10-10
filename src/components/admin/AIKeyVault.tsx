@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie,
@@ -25,15 +25,31 @@ interface ApiKey {
   id: string;
   label: string;
   key_preview: string;
+  provider: string;
   priority: number;
   is_active: boolean;
   token_exhausted: boolean;
+  last_error: string | null;
+  consecutive_failures: number;
+  cooldown_until: string | null;
   total_requests: number;
   total_tokens_used: number;
   last_used_at: string | null;
   exhausted_at: string | null;
   created_at: string;
 }
+
+const PROVIDERS = [
+  { value: "gemini", label: "Gemini" },
+  { value: "groq", label: "Groq" },
+  { value: "nvidia", label: "Kimi (NVIDIA)" },
+] as const;
+
+const PROVIDER_COLORS: Record<string, string> = {
+  gemini: "text-sky-500 bg-sky-500/10",
+  groq: "text-orange-500 bg-orange-500/10",
+  nvidia: "text-emerald-500 bg-emerald-500/10",
+};
 
 interface UsageSummary {
   totalRequests: number;
@@ -95,12 +111,12 @@ async function callAdminManager(action: string, payload: Record<string, unknown>
 
 // ---- Component ----
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.08 } },
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.23, 1, 0.32, 1] } },
 };
@@ -118,8 +134,10 @@ export default function AIKeyVault() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newLabel, setNewLabel] = useState("");
   const [newKey, setNewKey] = useState("");
+  const [newProvider, setNewProvider] = useState<string>("gemini");
   const [newPriority, setNewPriority] = useState("");
   const [adding, setAdding] = useState(false);
+  const [testingId, setTestingId] = useState<string | null>(null);
 
   // Auto-refresh
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
@@ -176,6 +194,7 @@ export default function AIKeyVault() {
       const result = await callAdminManager("add-key", {
         label: newLabel.trim(),
         apiKey: newKey,
+        provider: newProvider,
         priority: newPriority ? parseInt(newPriority) : undefined,
       });
       if (result.key) {
@@ -183,6 +202,7 @@ export default function AIKeyVault() {
         setKeys(prev => [...prev, result.key].sort((a, b) => a.priority - b.priority));
         setNewLabel("");
         setNewKey("");
+        setNewProvider("gemini");
         setNewPriority("");
         setShowAddForm(false);
       } else {
@@ -192,6 +212,25 @@ export default function AIKeyVault() {
       toast.error("Failed to add key");
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleTestKey = async (id: string, label: string) => {
+    setTestingId(id);
+    try {
+      const result = await callAdminManager("test-key", { id }) as {
+        ok: boolean; provider?: string; model?: string; latencyMs?: number; error?: string;
+      };
+      if (result.ok) {
+        toast.success(`"${label}" works (${result.provider} ${result.model}, ${result.latencyMs}ms)`);
+      } else {
+        toast.error(`"${label}" failed: ${result.error || "unknown error"}`, { duration: 8000 });
+      }
+      loadData(false);
+    } catch (err) {
+      toast.error("Key test failed");
+    } finally {
+      setTestingId(null);
     }
   };
 
@@ -260,10 +299,10 @@ export default function AIKeyVault() {
             <Key className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">AI Key Vault</h2>
-            <p className="text-sm text-muted-foreground">
-              Manage Gemini API keys with automatic failover
-            </p>
+              <h2 className="text-lg font-semibold">AI Key Vault</h2>
+              <p className="text-sm text-muted-foreground">
+                Stack Gemini, Groq and Kimi keys with automatic failover
+              </p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={refreshAll} disabled={refreshing} className="gap-1.5">
@@ -323,7 +362,7 @@ export default function AIKeyVault() {
               <Key className="w-4 h-4 text-primary" />
               Key Pool
             </CardTitle>
-            <CardDescription>Manage your Gemini API keys. Keys are encrypted at rest using AES-256-GCM.</CardDescription>
+            <CardDescription>Manage your Gemini, Groq and Kimi API keys. Keys are encrypted at rest using AES-256-GCM.</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             {hasAnyExhausted && (
@@ -344,7 +383,19 @@ export default function AIKeyVault() {
               animate={{ opacity: 1, height: "auto" }}
               className="bg-secondary/30 rounded-lg p-4 border border-border/50 space-y-3"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs text-muted-foreground">Provider</label>
+                  <select
+                    value={newProvider}
+                    onChange={e => setNewProvider(e.target.value)}
+                    className="w-full h-9 rounded-md border border-input bg-background/50 px-3 text-sm"
+                  >
+                    {PROVIDERS.map(p => (
+                      <option key={p.value} value={p.value}>{p.label}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="space-y-1.5">
                   <label className="text-xs text-muted-foreground">Label</label>
                   <Input
@@ -360,7 +411,7 @@ export default function AIKeyVault() {
                     type="password"
                     value={newKey}
                     onChange={e => setNewKey(e.target.value)}
-                    placeholder="Paste your Gemini API key"
+                    placeholder="Paste your API key"
                     className="bg-background/50 font-mono text-xs"
                   />
                 </div>
@@ -377,7 +428,7 @@ export default function AIKeyVault() {
                 </div>
               </div>
               <div className="flex items-center gap-2 justify-end">
-                <Button variant="ghost" size="sm" onClick={() => { setShowAddForm(false); setNewKey(""); setNewLabel(""); }}>
+                <Button variant="ghost" size="sm" onClick={() => { setShowAddForm(false); setNewKey(""); setNewLabel(""); setNewProvider("gemini"); setNewPriority(""); }}>
                   Cancel
                 </Button>
                 <Button size="sm" onClick={handleAddKey} disabled={adding} className="gap-1.5">
@@ -396,7 +447,7 @@ export default function AIKeyVault() {
             <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
           ) : keys.length === 0 ? (
             <div className="text-center py-8 text-sm text-muted-foreground">
-              No API keys configured. Add your first Gemini API key above.
+              No API keys configured. Add your first key above — test it right after saving.
             </div>
           ) : (
             <div className="space-y-2">
@@ -430,6 +481,9 @@ export default function AIKeyVault() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium text-sm">{key.label}</span>
+                      <Badge variant="outline" className={cn("text-[10px] h-4 px-1.5", PROVIDER_COLORS[key.provider] || "")}>
+                        {PROVIDERS.find(p => p.value === key.provider)?.label || key.provider}
+                      </Badge>
                       <Badge variant="outline" className="text-[10px] h-4 px-1.5">
                         #{key.priority}
                       </Badge>
@@ -460,11 +514,27 @@ export default function AIKeyVault() {
                           &middot; Exhausted: {format(new Date(key.exhausted_at), "MMM d, HH:mm")}
                         </span>
                       )}
+                      {key.cooldown_until && new Date(key.cooldown_until).getTime() > Date.now() && (
+                        <span className="text-[10px] text-amber-400">
+                          &middot; Cooling down until {format(new Date(key.cooldown_until), "HH:mm")}
+                        </span>
+                      )}
                     </div>
+                    {key.last_error && (
+                      <p className="text-[10px] text-red-400/90 mt-1 break-all">
+                        Last error: {key.last_error}
+                      </p>
+                    )}
                   </div>
 
                   {/* Actions */}
                   <div className="flex items-center gap-1 shrink-0">
+                    <Button variant="ghost" size="sm" onClick={() => handleTestKey(key.id, key.label)}
+                      className="h-7 w-7 p-0" title="Test this key live" disabled={testingId === key.id}>
+                      {testingId === key.id
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : <Activity className="w-3 h-3" />}
+                    </Button>
                     {key.token_exhausted && (
                       <Button variant="ghost" size="sm" onClick={() => handleResetExhausted(key.id)}
                         className="h-7 w-7 p-0" title="Reset exhausted">

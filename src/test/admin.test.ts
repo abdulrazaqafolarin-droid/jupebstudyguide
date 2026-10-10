@@ -36,8 +36,9 @@ describe("consume_activation_code RPC", () => {
       p_code: "ABCD-1234-EFGH",
       p_user_id: "user-1",
     });
-    expect(result.data?.success).toBe(true);
-    expect(result.data?.plan_type).toBe("premium");
+    const payload = result.data as unknown as { success?: boolean; plan_type?: string };
+    expect(payload?.success).toBe(true);
+    expect(payload?.plan_type).toBe("premium");
   });
 
   it("rejects an invalid code", async () => {
@@ -52,8 +53,9 @@ describe("consume_activation_code RPC", () => {
       p_user_id: "user-1",
     });
 
-    expect(result.data?.success).toBe(false);
-    expect(result.data?.error).toBe("Invalid or already used code");
+    const payload = result.data as unknown as { success?: boolean; error?: string };
+    expect(payload?.success).toBe(false);
+    expect(payload?.error).toBe("Invalid or already used code");
   });
 
   it("handles database errors", async () => {
@@ -306,7 +308,7 @@ describe("resetPassword (forgot password)", () => {
   it("calls resetPasswordForEmail via auth API", async () => {
     // The AuthContext's resetPassword calls supabase.auth.resetPasswordForEmail
     // with the email and redirectTo. Test the shape of the function call.
-    const mockReset = vi.fn(() => Promise.resolve({ error: null }));
+    const mockReset = vi.fn((_email: string, _opts?: unknown) => Promise.resolve({ error: null }));
     const email = "test@example.com";
     const redirectTo = `${window.location.origin}/auth`;
 
@@ -316,7 +318,7 @@ describe("resetPassword (forgot password)", () => {
   });
 
   it("returns error when email is invalid", async () => {
-    const mockReset = vi.fn(() => Promise.resolve({ error: new Error("Email not found") }));
+    const mockReset = vi.fn((_email: string) => Promise.resolve({ error: new Error("Email not found") }));
     const result = await mockReset("invalid@test.com");
     expect(result.error).toBeDefined();
     expect(result.error.message).toBe("Email not found");
@@ -329,7 +331,7 @@ describe("delete_my_account RPC", () => {
   });
 
   it("calls delete_my_account RPC and signs out on success", async () => {
-    const mockRpcLocal = vi.fn(() => Promise.resolve({ data: null, error: null }));
+    const mockRpcLocal = vi.fn((_fn: string) => Promise.resolve({ data: null, error: null }));
     const mockSignOut = vi.fn();
 
     const result = await mockRpcLocal("delete_my_account");
@@ -342,7 +344,7 @@ describe("delete_my_account RPC", () => {
   });
 
   it("returns error if RPC fails", async () => {
-    const mockRpcLocal = vi.fn(() => Promise.resolve({ data: null, error: new Error("RPC failed") }));
+    const mockRpcLocal = vi.fn((_fn: string) => Promise.resolve({ data: null, error: new Error("RPC failed") }));
 
     const result = await mockRpcLocal("delete_my_account");
     expect(result.error).toBeDefined();

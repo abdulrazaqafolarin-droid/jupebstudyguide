@@ -52,6 +52,7 @@ export interface StudyQuestion {
   subQuestions?: { id: string; text: string; answerGuide: string }[];
   difficulty?: Difficulty;
   imageUrl?: string;
+  imagePosition?: "image-only" | "image-above" | "image-beside";
 }
 
 export interface YearData {
@@ -91,6 +92,7 @@ export interface StudySessionData {
 
 export interface SubjectMeta {
   subject: Subject;
+  label: string;
   icon: string;
   gradient: string;
   lightGradient: string;
@@ -101,6 +103,7 @@ export interface SubjectMeta {
 export const STUDY_SUBJECT_INFO: Record<Subject, SubjectMeta> = {
   physics: {
     subject: "physics",
+    label: "Physics",
     icon: "⚛️",
     gradient: "from-physics/80 to-physics/30",
     lightGradient: "from-physics/10 to-physics/5",
@@ -109,6 +112,7 @@ export const STUDY_SUBJECT_INFO: Record<Subject, SubjectMeta> = {
   },
   chemistry: {
     subject: "chemistry",
+    label: "Chemistry",
     icon: "🧪",
     gradient: "from-chemistry/80 to-chemistry/30",
     lightGradient: "from-chemistry/10 to-chemistry/5",
@@ -117,6 +121,7 @@ export const STUDY_SUBJECT_INFO: Record<Subject, SubjectMeta> = {
   },
   biology: {
     subject: "biology",
+    label: "Biology",
     icon: "🧬",
     gradient: "from-biology/80 to-biology/30",
     lightGradient: "from-biology/10 to-biology/5",
@@ -125,6 +130,7 @@ export const STUDY_SUBJECT_INFO: Record<Subject, SubjectMeta> = {
   },
   math: {
     subject: "math",
+    label: "Mathematics",
     icon: "📐",
     gradient: "from-math/80 to-math/30",
     lightGradient: "from-math/10 to-math/5",

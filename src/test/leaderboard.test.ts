@@ -49,7 +49,7 @@ describe("score_events", () => {
 
   it("award_score RPC is called with correct params", async () => {
     const mockRpc = vi.mocked(supabase.rpc);
-    mockRpc.mockResolvedValueOnce({ data: { duplicate: false }, error: null });
+    mockRpc.mockResolvedValueOnce({ data: { duplicate: false }, error: null, count: null, status: 200, statusText: "OK" });
 
     const result = await supabase.rpc("award_score", {
       p_user_id: "user-1",
@@ -69,7 +69,7 @@ describe("score_events", () => {
 
   it("duplicate reference_id returns duplicate: true (idempotent)", async () => {
     const mockRpc = vi.mocked(supabase.rpc);
-    mockRpc.mockResolvedValueOnce({ data: { duplicate: true }, error: null });
+    mockRpc.mockResolvedValueOnce({ data: { duplicate: true }, error: null, count: null, status: 200, statusText: "OK" });
 
     const result = await supabase.rpc("award_score", {
       p_user_id: "user-1",
@@ -83,7 +83,7 @@ describe("score_events", () => {
 
   it("award_score handles errors gracefully", async () => {
     const mockRpc = vi.mocked(supabase.rpc);
-    mockRpc.mockResolvedValueOnce({ data: null, error: new Error("DB error") });
+    mockRpc.mockResolvedValueOnce({ data: null, error: { name: "PostgrestError", message: "DB error", details: "", hint: "", code: "500" }, count: null, status: 500, statusText: "Error" });
 
     const result = await supabase.rpc("award_score", {
       p_user_id: "user-1",
@@ -103,19 +103,15 @@ describe("weekly leaderboard queries", () => {
 
   it("get_weekly_leaderboard RPC returns ranked results", async () => {
     const mockData = [
-      { user_id: "u1", display_name: "Alice", total_score: 150, rank: 1 },
-      { user_id: "u2", display_name: "Bob", total_score: 120, rank: 2 },
+      { user_id: "u1", display_name: "Alice", avatar_url: "a", event_count: 5, week_score: 150, rank: 1 },
+      { user_id: "u2", display_name: "Bob", avatar_url: "b", event_count: 4, week_score: 120, rank: 2 },
     ];
     const mockRpc = vi.mocked(supabase.rpc);
-    mockRpc.mockResolvedValueOnce({ data: mockData, error: null });
+    mockRpc.mockResolvedValueOnce({ data: mockData, error: null, count: null, status: 200, statusText: "OK" });
 
-    const result = await supabase.rpc("get_weekly_leaderboard", {
-      p_limit: 5,
-    });
+    const result = await supabase.rpc("get_weekly_leaderboard", {});
 
-    expect(mockRpc).toHaveBeenCalledWith("get_weekly_leaderboard", {
-      p_limit: 5,
-    });
+    expect(mockRpc).toHaveBeenCalledWith("get_weekly_leaderboard", {});
     expect(result.data).toHaveLength(2);
     expect(result.data![0].display_name).toBe("Alice");
   });

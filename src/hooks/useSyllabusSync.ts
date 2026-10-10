@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
-import type { SyllabusProgress } from '@/types/syllabus';
-import type { StoredSyllabus } from './useSyllabusProgress';
+import type { SyllabusProgress, StoredSyllabus } from '@/types/syllabus';
 
 function deserialize(data: StoredSyllabus): SyllabusProgress {
   return {
@@ -61,7 +61,7 @@ export function useSyllabusSync(
       .single()
       .then(({ data, error }) => {
         if (error || !data) return;
-        const restored = deserialize(data.data as StoredSyllabus);
+        const restored = deserialize(data.data as unknown as StoredSyllabus);
         setProgress(restored);
       });
   }, [user, hasLocalData, setProgress]);
@@ -79,7 +79,7 @@ export function useSyllabusSync(
       supabase
         .from('syllabus_progress')
         .upsert(
-          { user_id: user.id, data: serialized },
+          { user_id: user.id, data: serialized as unknown as Json },
           { onConflict: 'user_id' },
         )
         .then(({ error }) => { if (error) console.error('syllabus sync', error); });

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import { useChat, Profile } from '@/hooks/useChat';
+import { useChat, Profile, Message } from '@/hooks/useChat';
 import { useRealtimeChat } from '@/hooks/useRealtimeChat';
 import { useFriends } from '@/hooks/useFriends';
 import { usePresenceContext } from '@/contexts/PresenceContext';

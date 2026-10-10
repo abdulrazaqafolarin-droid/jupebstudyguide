@@ -4,10 +4,13 @@
 -- ============================================================
 -- TABLE 1: ai_api_keys — the managed key pool
 -- ============================================================
+-- NOTE (2026-10-09): the live project stores the (encrypted) key material in
+-- column "api_key". This file previously said "encrypted_key" but was never
+-- applied as written, so it is aligned here with the live schema.
 CREATE TABLE IF NOT EXISTS public.ai_api_keys (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   label text NOT NULL,
-  encrypted_key text NOT NULL,
+  api_key text NOT NULL,
   key_preview text NOT NULL, -- last 4 chars of the raw key, for UI identification
   priority integer NOT NULL DEFAULT 1,
   is_active boolean NOT NULL DEFAULT true,

@@ -5,8 +5,9 @@ import re
 with open('C:/Users/HP/Downloads/chemistry_extraction.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
 
-# Read chemistry.ts
-with open('src/data/study-questions/chemistry.ts', 'r', encoding='utf-8') as f:
+# NOTE: static question banks were archived to archive/study-questions/
+# (the live question source of truth is the Supabase study_questions table).
+with open('archive/study-questions/chemistry.ts', 'r', encoding='utf-8') as f:
     content = f.read()
 
 # Parse each objective question from the raw_text
@@ -136,7 +137,7 @@ replacement = new_obj_text + '\n\n' + theory_text + '\n    '
 # Do the replacement
 new_content = content[:obj_start] + '    ' + replacement + content[obj_end:]
 
-with open('src/data/study-questions/chemistry.ts', 'w', encoding='utf-8') as f:
+with open('archive/study-questions/chemistry.ts', 'w', encoding='utf-8') as f:
     f.write(new_content)
 
 print("Done! 2015 questions replaced.")

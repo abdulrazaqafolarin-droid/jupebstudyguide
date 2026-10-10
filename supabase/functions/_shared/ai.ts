@@ -1,5 +1,5 @@
 import { routerText, routerJSON, routerStream } from "./ai-router.ts";
-import type { RouterMessage } from "./ai-router.ts";
+import type { RouterMessage, RouterOpts } from "./ai-router.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 
@@ -9,30 +9,30 @@ const CORS_HEADERS = {
 };
 
 export async function aiChatText(
-  _env: any,
+  _env: unknown,
   systemPrompt: string,
   messages: RouterMessage[],
-  opts?: any
+  opts?: RouterOpts
 ): Promise<string> {
   const { text } = await routerText(systemPrompt, messages, opts);
   return text;
 }
 
 export async function aiChatJSON(
-  _env: any,
+  _env: unknown,
   systemPrompt: string,
   messages: RouterMessage[],
-  opts?: any
-): Promise<any> {
+  opts?: RouterOpts
+): Promise<unknown> {
   return routerJSON(systemPrompt, messages, opts);
 }
 
 export async function aiChatStream(
-  _env: any,
+  _env: unknown,
   systemPrompt: string,
   messages: RouterMessage[],
-  opts?: any
-): Promise<ReadableStream> {
+  opts?: RouterOpts
+): Promise<ReadableStream<Uint8Array>> {
   return routerStream(systemPrompt, messages, opts);
 }
 

@@ -18,7 +18,7 @@ export async function ollamaChat(
 ): Promise<Response | null> {
   const model = opts.model || "qwen2.5:7b";
   try {
-    const body: any = {
+    const body: Record<string, unknown> = {
       model,
       messages,
       stream: opts.stream ?? false,

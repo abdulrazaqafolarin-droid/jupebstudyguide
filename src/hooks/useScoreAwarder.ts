@@ -36,25 +36,28 @@ export function useScoreAwarder() {
       // Deduplicate in-flight requests
       if (pendingRef.current.has(refId)) {
         const result = await pendingRef.current.get(refId);
-        return result?.data?.duplicate === false;
+        return (result as { duplicate?: boolean } | null)?.duplicate === false;
       }
 
       const amount = extraAmount ?? SCORE_VALUES[reason];
-      const promise = supabase.rpc("award_score", {
-        p_user_id: user.id,
-        p_amount: amount,
-        p_reason: reason,
-        p_reference_id: refId,
-      });
+      const promise: Promise<{ duplicate?: boolean } | null> = (async () => {
+        const { data, error } = await supabase.rpc("award_score", {
+          p_user_id: user.id,
+          p_amount: amount,
+          p_reason: reason,
+          p_reference_id: refId,
+        });
+        if (error) {
+          console.error("Score award error:", error);
+          return null;
+        }
+        return (data as unknown as { duplicate?: boolean } | null);
+      })();
 
       pendingRef.current.set(refId, promise);
       try {
-        const { data, error } = await promise;
-        if (error) {
-          console.error("Score award error:", error);
-          return false;
-        }
-        return data?.duplicate === false;
+        const result = await promise;
+        return result?.duplicate === false;
       } finally {
         pendingRef.current.delete(refId);
       }

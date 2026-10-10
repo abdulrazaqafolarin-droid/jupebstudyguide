@@ -2,6 +2,12 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 
+interface InboundMessage {
+  role: string;
+  content?: string;
+  attachment?: { base64?: string; mimeType?: string; name?: string } | null;
+}
+
 const TUTOR_SYSTEM_PROMPT = `You are an exceptional JUPEB science and mathematics tutor who uses proven psychological learning techniques to help students truly understand and remember concepts. Your teaching style is engaging, addictive, and designed for long-term memory retention.
 
 ## CRITICAL: Mathematical Notation Rules
@@ -107,7 +113,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
 
     let referencesEvent = "";
 
-    const lastUserMsg = [...(messages || [])].reverse().find((m: any) => m.role === "user");
+    const lastUserMsg = [...(messages || [])].reverse().find((m: InboundMessage) => m.role === "user");
     if (lastUserMsg?.content) {
       const chunks = await retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
         subject: subject || undefined,
@@ -120,7 +126,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       }
     }
 
-    const chatMessages = (messages || []).map((m: any) => ({
+    const chatMessages = (messages || []).map((m: InboundMessage) => ({
       role: m.role === "assistant" ? "assistant" : "user",
       content: m.attachment?.mimeType?.startsWith('image/')
         ? `[User attached an image: ${m.attachment.name}]\n${m.content || ''}`
@@ -132,7 +138,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       Deno.env,
       systemContent,
       chatMessages,
-      { model: "llama-3.3-70b-versatile", temperature: 0.7, maxTokens: 2048 }
+      { temperature: 0.7, maxTokens: 2048 }
     );
 
     const combinedStream = new ReadableStream({

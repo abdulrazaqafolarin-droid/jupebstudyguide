@@ -6,7 +6,7 @@ async function getPDFJS() {
   if (!pdfjsLib) {
     pdfjsLib = await import("pdfjs-dist");
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs";
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs";
   }
   return pdfjsLib;
 }
@@ -95,7 +95,7 @@ export async function processPDF(
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const pageText = content.items.map((item: { str: string }) => item.str).join(" ");
+    const pageText = content.items.map((item) => ("str" in item ? item.str : "")).join(" ");
     fullText += pageText + "\n\n";
   }
 

@@ -37,15 +37,17 @@ export default function SettingsProfile() {
 
   useEffect(() => {
     if (!profile) return;
+    const asPrivacy = (v: string | null): 'everyone' | 'friends' | 'nobody' =>
+      v === 'friends' || v === 'nobody' ? v : 'everyone';
     setDisplayName(profile.display_name ?? '');
     setBio(profile.bio ?? '');
-    setAvatarPrivacy(profile.privacy_avatar ?? 'everyone');
-    setProfilePrivacy(profile.privacy_profile ?? 'everyone');
-    setLastSeenPrivacy(profile.privacy_last_seen ?? 'everyone');
-    setReadReceiptsPrivacy(profile.privacy_read_receipts ?? 'everyone');
-    setActivityStatusPrivacy(profile.privacy_activity_status ?? 'everyone');
-    setOnlineStatusPrivacy(profile.privacy_online_status ?? 'everyone');
-    setGroupsPrivacy(profile.privacy_groups ?? 'everyone');
+    setAvatarPrivacy(asPrivacy(profile.privacy_avatar));
+    setProfilePrivacy(asPrivacy(profile.privacy_profile));
+    setLastSeenPrivacy(asPrivacy(profile.privacy_last_seen));
+    setReadReceiptsPrivacy(asPrivacy(profile.privacy_read_receipts));
+    setActivityStatusPrivacy(asPrivacy(profile.privacy_activity_status));
+    setOnlineStatusPrivacy(asPrivacy(profile.privacy_online_status));
+    setGroupsPrivacy(asPrivacy(profile.privacy_groups));
   }, [profile]);
 
   const handleAvatarUpload = useCallback(async (file: File) => {

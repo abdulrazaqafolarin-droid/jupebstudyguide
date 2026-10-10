@@ -7,7 +7,7 @@ import { getPersistedDeletedIds } from "@/lib/admin-questions-service";
 const ALL_YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
 let currentData: StudyQuestion[] = [];
-let listeners: Set<() => void> = new Set();
+const listeners: Set<() => void> = new Set();
 let fetchStarted = false;
 let _ready = false;
 
@@ -18,7 +18,7 @@ function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
     year: row.year as number,
     category: row.category as StudyCategory,
     question: row.question as string,
-    difficulty: (row.difficulty as string) || "medium",
+    difficulty: (row.difficulty as StudyQuestion["difficulty"]) || "medium",
   };
   if (row.options) {
     sq.options = typeof row.options === "string"

@@ -2,6 +2,12 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 
+interface InboundMessage {
+  role: string;
+  content?: string;
+  attachment?: { base64?: string; mimeType?: string; name?: string } | null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: CORS_HEADERS });
@@ -75,7 +81,7 @@ Deno.serve(async (req) => {
     let systemMsg = systemPrompt || "You are a helpful assistant for JUPEB exam preparation.";
     let referencesEvent = "";
 
-    const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
+    const lastUserMsg = [...messages].reverse().find((m: InboundMessage) => m.role === "user");
     if (lastUserMsg?.content) {
       const chunks = await retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
         subject: subject || undefined,
@@ -88,7 +94,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    const chatMessages = (messages || []).filter((m: any) => m.role !== "system").map((m: any) => ({
+    const chatMessages = (messages || []).filter((m: InboundMessage) => m.role !== "system").map((m: InboundMessage) => ({
       role: m.role === "assistant" ? "assistant" : "user",
       content: m.content,
       ...(m.attachment?.base64 ? { attachment: { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name } } : {}),
@@ -98,7 +104,7 @@ Deno.serve(async (req) => {
       Deno.env,
       systemMsg,
       chatMessages,
-      { model: "llama-3.3-70b-versatile", temperature: 0.7, maxTokens: 2048 }
+      { temperature: 0.7, maxTokens: 2048 }
     );
 
     const combinedStream = new ReadableStream({

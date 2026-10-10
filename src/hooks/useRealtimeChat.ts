@@ -53,7 +53,7 @@ export function useRealtimeChat({
           lastPollCursorRef.current = data[data.length - 1].created_at;
           for (const msg of data) {
             if (msg.sender_id === uid) continue;
-            onNewMessageRef.current(msg as Message);
+            onNewMessageRef.current(msg as unknown as Message);
           }
         }
         pollFailedRef.current = false;

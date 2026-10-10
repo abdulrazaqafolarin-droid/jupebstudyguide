@@ -1,8 +1,19 @@
 import { recordSuccess, recordError, shouldTryProvider } from "./provider-health.ts";
-import { getActiveGeminiKey, logKeyUsage, markKeyExhausted, type GeminiUsageMeta } from "./keyVault.ts";
+import {
+  getVaultKeys,
+  recordKeySuccess,
+  recordKeyQuotaFailure,
+  recordKeyTransientFailure,
+  recordKeyFatalFailure,
+  logKeyUsage,
+  type VaultKey,
+  type VaultProvider,
+  type GeminiUsageMeta,
+} from "./keyVault.ts";
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const NVIDIA_BASE = "https://integrate.api.nvidia.com/v1";
+const GROQ_BASE = "https://api.groq.com/openai/v1";
 
 export interface RouterMessage {
   role: string;
@@ -10,12 +21,25 @@ export interface RouterMessage {
   attachment?: { base64: string; mimeType: string; name: string };
 }
 
-interface Opts {
+export interface RouterOpts {
   model?: string;
   temperature?: number;
   maxTokens?: number;
   json?: boolean;
-  stream?: boolean;
+}
+
+export interface RouterContext {
+  supabaseUrl: string | undefined;
+  supabaseKey: string | undefined;
+  encryptionSecret: string | undefined;
+}
+
+export function loadRouterContext(): RouterContext {
+  return {
+    supabaseUrl: Deno.env.get("SUPABASE_URL"),
+    supabaseKey: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+    encryptionSecret: Deno.env.get("KEY_ENCRYPTION_SECRET"),
+  };
 }
 
 function getKey(name: string): string | null {
@@ -23,13 +47,187 @@ function getKey(name: string): string | null {
   return k && k.length > 0 ? k : null;
 }
 
-const GEMINI_INLINE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif", "application/pdf", "text/plain"];
-function isGeminiInlineType(mimeType: string): boolean {
-  return GEMINI_INLINE_TYPES.some(t => mimeType.startsWith(t));
+function modelFor(provider: VaultProvider, opts: RouterOpts): string {
+  // NOTE: opts.model carries OpenAI-style ids (e.g. llama-3.3-70b-versatile)
+  // used by Groq/NVIDIA. Gemini always uses its own model setting — passing a
+  // Groq id to Gemini 404s, so it is deliberately ignored here.
+  if (provider === "gemini") return Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
+  if (opts.model) return opts.model;
+  if (provider === "groq") return Deno.env.get("GROQ_MODEL") || "llama-3.3-70b-versatile";
+  return Deno.env.get("NVIDIA_MODEL") || "nvidia/kimi-k2-6";
 }
 
-function buildMsgs(systemPrompt: string, messages: RouterMessage[]) {
-  const msgs: { role: string; content: string }[] = [];
+function envKeyName(provider: VaultProvider): string {
+  if (provider === "gemini") return "GEMINI_API_KEY";
+  if (provider === "groq") return "GROQ_API_KEY";
+  return "NVIDIA_API_KEY";
+}
+
+function providerLabel(provider: VaultProvider): string {
+  if (provider === "gemini") return "Gemini";
+  if (provider === "groq") return "Groq";
+  return "Kimi";
+}
+
+// ============================================================
+// Failure classification — determines per-key consequences.
+// quota     -> escalating cooldown, eventual exhaustion (auto-recovers first)
+// fatal     -> auth/config problem, parked briefly, surfaced to admin
+// transient -> network/5xx, short cooldown, auto-recovers
+// ============================================================
+
+export type FailureKind = "quota" | "fatal" | "transient";
+
+export function classifyError(status: number, bodyText: string): FailureKind {
+  const t = (bodyText || "").toLowerCase();
+  if (
+    status === 429 ||
+    status === 402 ||
+    t.includes("quota") ||
+    t.includes("rate limit") ||
+    t.includes("rate_limit") ||
+    t.includes("too many requests")
+  ) {
+    return "quota";
+  }
+  if (status === 401 || status === 403 || status === 400 || status === 404) {
+    return "fatal";
+  }
+  return "transient";
+}
+
+// ============================================================
+// Key resolution: vault keys (decrypted, cooldown-aware) first,
+// static env secret last as a lowest-priority fallback.
+// ============================================================
+
+export interface ResolvedKey {
+  keyId: string | null;
+  label: string;
+  apiKey: string;
+  fromEnv: boolean;
+}
+
+export async function resolveKeys(
+  ctx: RouterContext,
+  provider: VaultProvider
+): Promise<{ keys: ResolvedKey[]; vaultConfigured: boolean }> {
+  const vaultConfigured = Boolean(ctx.supabaseUrl && ctx.supabaseKey && ctx.encryptionSecret);
+  let keys: ResolvedKey[] = [];
+  if (vaultConfigured) {
+    const vaultKeys: VaultKey[] = await getVaultKeys(
+      ctx.supabaseUrl as string,
+      ctx.supabaseKey as string,
+      ctx.encryptionSecret as string,
+      provider
+    );
+    keys = vaultKeys.map((k) => ({ keyId: k.keyId, label: k.label, apiKey: k.apiKey, fromEnv: false }));
+  }
+  const envKey = getKey(envKeyName(provider));
+  if (envKey) {
+    keys.push({ keyId: null, label: "env", apiKey: envKey, fromEnv: true });
+  }
+  return { keys, vaultConfigured };
+}
+
+async function recordAttempt(
+  ctx: RouterContext,
+  providerName: string,
+  key: ResolvedKey,
+  kind: "success" | FailureKind,
+  detail: string,
+  feature: string,
+  model: string,
+  usageMeta?: GeminiUsageMeta
+): Promise<void> {
+  if (!key.keyId) {
+    // Env fallback key — no DB row to update; track in memory only.
+    if (kind === "success") recordSuccess(providerName, 0);
+    else recordError(providerName, detail, 0);
+    return;
+  }
+  if (kind === "success") {
+    recordSuccess(providerName, 0);
+    await recordKeySuccess(ctx.supabaseUrl as string, ctx.supabaseKey as string, key.keyId);
+    await logKeyUsage(ctx.supabaseUrl as string, ctx.supabaseKey as string, {
+      keyId: key.keyId, feature, usageMeta, model, status: "success",
+    }).catch((e) => console.error("[Router] Failed to log usage:", e));
+    return;
+  }
+  recordError(providerName, detail, 0);
+  const url = ctx.supabaseUrl as string;
+  const sk = ctx.supabaseKey as string;
+  if (kind === "quota") {
+    await recordKeyQuotaFailure(url, sk, key.keyId, detail);
+    await logKeyUsage(url, sk, {
+      keyId: key.keyId, feature, model, status: "quota_error", errorMessage: detail,
+    }).catch((e) => console.error("[Router] Failed to log quota error:", e));
+  } else if (kind === "fatal") {
+    await recordKeyFatalFailure(url, sk, key.keyId, detail);
+    await logKeyUsage(url, sk, {
+      keyId: key.keyId, feature, model, status: "error", errorMessage: detail,
+    }).catch((e) => console.error("[Router] Failed to log error:", e));
+  } else {
+    await recordKeyTransientFailure(url, sk, key.keyId, detail);
+  }
+}
+
+// ============================================================
+// Request builders
+// ============================================================
+
+const GEMINI_INLINE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif", "application/pdf", "text/plain"];
+
+function isGeminiInlineType(mimeType: string): boolean {
+  return GEMINI_INLINE_TYPES.some((t) => mimeType.startsWith(t));
+}
+
+interface GeminiPart {
+  text?: string;
+  inlineData?: { mimeType: string; data: string };
+}
+
+interface GeminiContent {
+  role: string;
+  parts: GeminiPart[];
+}
+
+interface GeminiBody {
+  systemInstruction?: { parts: Array<{ text: string }> };
+  contents: GeminiContent[];
+  generationConfig: { temperature: number; maxOutputTokens: number; responseMimeType?: string };
+}
+
+function buildGeminiBody(systemPrompt: string, messages: RouterMessage[], opts: RouterOpts): GeminiBody {
+  const contents: GeminiContent[] = messages
+    .filter((m) => m.role !== "system")
+    .map((m) => {
+      const parts: GeminiPart[] = [];
+      if (m.attachment?.base64 && isGeminiInlineType(m.attachment.mimeType)) {
+        parts.push({ inlineData: { mimeType: m.attachment.mimeType, data: m.attachment.base64 } });
+      }
+      parts.push({ text: m.content || "" });
+      return { role: m.role === "assistant" ? "model" : "user", parts };
+    });
+  const body: GeminiBody = {
+    contents,
+    generationConfig: {
+      temperature: opts.temperature ?? 0.7,
+      maxOutputTokens: opts.maxTokens ?? 2048,
+    },
+  };
+  if (systemPrompt) body.systemInstruction = { parts: [{ text: systemPrompt }] };
+  if (opts.json) body.generationConfig.responseMimeType = "application/json";
+  return body;
+}
+
+interface OpenAIChatMessage {
+  role: string;
+  content: string;
+}
+
+function buildOpenAIMessages(systemPrompt: string, messages: RouterMessage[]): OpenAIChatMessage[] {
+  const msgs: OpenAIChatMessage[] = [];
   if (systemPrompt) msgs.push({ role: "system", content: systemPrompt });
   for (const m of messages) {
     let content = m.content || "";
@@ -44,653 +242,525 @@ function buildMsgs(systemPrompt: string, messages: RouterMessage[]) {
   return msgs;
 }
 
-function buildGeminiParts(m: RouterMessage): any[] {
-  const parts: any[] = [];
-  if (m.attachment?.base64 && isGeminiInlineType(m.attachment.mimeType)) {
-    parts.push({
-      inlineData: { mimeType: m.attachment.mimeType, data: m.attachment.base64 },
-    });
-  }
-  parts.push({ text: m.content || "" });
-  return parts;
+interface OpenAIBody {
+  model: string;
+  messages: OpenAIChatMessage[];
+  temperature: number;
+  max_tokens: number;
+  stream: boolean;
+  response_format?: { type: string };
 }
 
-function buildGeminiBody(systemPrompt: string, messages: RouterMessage[], opts: Opts): any {
-  const chatMessages = messages.filter(m => m.role !== "system");
-  const mappedMessages = chatMessages.map(m => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: buildGeminiParts(m),
-  }));
-  const body: any = {};
-  if (systemPrompt) {
-    body.systemInstruction = { parts: [{ text: systemPrompt }] };
-  }
-  body.contents = mappedMessages;
-  body.generationConfig = {
+function buildOpenAIBody(provider: VaultProvider, systemPrompt: string, messages: RouterMessage[], opts: RouterOpts, stream: boolean): OpenAIBody {
+  const body: OpenAIBody = {
+    model: modelFor(provider, opts),
+    messages: buildOpenAIMessages(systemPrompt, messages),
     temperature: opts.temperature ?? 0.7,
-    maxOutputTokens: opts.maxTokens ?? 2048,
+    max_tokens: opts.maxTokens ?? 2048,
+    stream,
   };
-  if (opts.json) body.generationConfig.responseMimeType = "application/json";
+  if (opts.json) body.response_format = { type: "json_object" };
   return body;
 }
 
 // ============================================================
-// Gemini Key Vault — replaces static GEMINI_API_KEY env var
+// Response parsing (typed, no `any`)
 // ============================================================
 
-interface GeminiCallResult {
-  text: string | null;
-  usageMeta?: GeminiUsageMeta;
-  is429: boolean;
-  error?: string;
+interface GeminiResponse {
+  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number };
+  error?: { message?: string };
 }
 
-async function geminiFetch(
-  body: any, apiKey: string, stream: boolean
-): Promise<Response> {
-  const endpoint = stream
-    ? `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${apiKey}`
-    : `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:generateContent?key=${apiKey}`;
-  return fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+function parseGeminiText(data: GeminiResponse): string | null {
+  const parts = data.candidates?.[0]?.content?.parts || [];
+  const text = parts.map((p) => p.text || "").join("");
+  return text || null;
 }
 
-async function geminiCall(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts, apiKey: string
-): Promise<GeminiCallResult> {
-  const body = buildGeminiBody(systemPrompt, messages, opts);
-  try {
-    const res = await geminiFetch(body, apiKey, false);
-    if (!res.ok) {
-      const err = await res.text().catch(() => "unknown");
-      const is429 = res.status === 429 || err.toLowerCase().includes("quota") || err.toLowerCase().includes("rate limit");
-      return { text: null, is429, error: `${res.status}: ${err.slice(0, 200)}` };
-    }
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
-    const usageMeta: GeminiUsageMeta | undefined = data.usageMetadata ? {
-      promptTokenCount: data.usageMetadata.promptTokenCount,
-      candidatesTokenCount: data.usageMetadata.candidatesTokenCount,
-      totalTokenCount: data.usageMetadata.totalTokenCount,
-    } : undefined;
-    return { text, usageMeta, is429: false };
-  } catch (err) {
-    return { text: null, is429: false, error: String(err) };
-  }
+function parseGeminiUsage(data: GeminiResponse): GeminiUsageMeta | undefined {
+  const u = data.usageMetadata;
+  if (!u) return undefined;
+  return {
+    promptTokenCount: u.promptTokenCount,
+    candidatesTokenCount: u.candidatesTokenCount,
+    totalTokenCount: u.totalTokenCount,
+  };
 }
 
-// --- Provider 1: Gemini with Key Vault + automatic failover on 429 ---
-async function tryGemini(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts
-): Promise<{ text: string | null; latency: number }> {
-  const t0 = performance.now();
-
-  if (!shouldTryProvider("Gemini")) return { text: null, latency: 0 };
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
-
-  // Fallback to static env var if key vault is not configured
-  const fallbackKey = !supabaseUrl || !supabaseKey || !encryptionSecret ? getKey("GEMINI_API_KEY") : null;
-  if (fallbackKey) {
-    const result = await geminiCall(systemPrompt, messages, opts, fallbackKey);
-    const ms = Math.round(performance.now() - t0);
-    if (result.text) recordSuccess("Gemini", ms);
-    else recordError("Gemini", result.error || "unknown", ms);
-    return { text: result.text, latency: ms };
-  }
-
-  // No static key either — can't do Gemini
-  if (!supabaseUrl || !supabaseKey || !encryptionSecret) {
-    return { text: null, latency: 0 };
-  }
-
-  return tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, encryptionSecret, t0, 0);
+interface OpenAIResponse {
+  choices?: Array<{ message?: { content?: string }; delta?: { content?: string } }>;
+  error?: { message?: string };
 }
 
-async function tryGeminiWithFailover(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts,
-  supabaseUrl: string, supabaseKey: string, encryptionSecret: string,
-  t0: number, depth: number
-): Promise<{ text: string | null; latency: number }> {
-  // Safety: max 3 retries to avoid infinite loops
-  if (depth >= 3) {
-    console.error("[Router] Gemini failover exhausted all retries");
-    return { text: null, latency: Math.round(performance.now() - t0) };
-  }
-
-  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey, encryptionSecret);
-  if (!activeKey) {
-    if (depth === 0) console.warn("[Router] No active Gemini keys available");
-    return { text: null, latency: Math.round(performance.now() - t0) };
-  }
-
-  const result = await geminiCall(systemPrompt, messages, opts, activeKey.apiKey);
-  const ms = Math.round(performance.now() - t0);
-
-  if (result.text) {
-    recordSuccess("Gemini", ms);
-    // Log success usage asynchronously — don't block response
-    logKeyUsage(supabaseUrl, supabaseKey, {
-      keyId: activeKey.keyId, feature: "ai-router",
-      usageMeta: result.usageMeta,
-      status: "success",
-    }).catch(e => console.error("[Router] Failed to log usage:", e));
-    return { text: result.text, latency: ms };
-  }
-
-  if (result.is429) {
-    console.warn(`[Router] Gemini key ${activeKey.label} exhausted (429), failing over`);
-    recordError("Gemini", result.error || "429", ms);
-    // Mark exhausted + log error asynchronously
-    Promise.all([
-      markKeyExhausted(supabaseUrl, supabaseKey, activeKey.keyId),
-      logKeyUsage(supabaseUrl, supabaseKey, {
-        keyId: activeKey.keyId, feature: "ai-router",
-        status: "quota_error", errorMessage: result.error,
-      }),
-    ]).catch(e => console.error("[Router] Failed to mark key exhausted:", e));
-    // Retry with next key
-    return tryGeminiWithFailover(systemPrompt, messages, opts, supabaseUrl, supabaseKey, encryptionSecret, t0, depth + 1);
-  }
-
-  // Non-429 error
-  recordError("Gemini", result.error || "unknown", ms);
-  logKeyUsage(supabaseUrl, supabaseKey, {
-    keyId: activeKey.keyId, feature: "ai-router",
-    status: "error", errorMessage: result.error,
-  }).catch(e => console.error("[Router] Failed to log error:", e));
-  return { text: null, latency: ms };
+function parseOpenAIText(data: OpenAIResponse): string | null {
+  return data.choices?.[0]?.message?.content || null;
 }
 
-// --- Provider 2: Kimi K2.6 via NVIDIA NIM (free, 40 RPM) ---
-async function tryKimi(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts
-): Promise<{ text: string | null; latency: number }> {
-  const t0 = performance.now();
-  const key = getKey("NVIDIA_API_KEY");
-  if (!key || !shouldTryProvider("Kimi")) return { text: null, latency: 0 };
-  try {
-    const body: any = {
-      model: "nvidia/kimi-k2-6",
-      messages: buildMsgs(systemPrompt, messages),
-      temperature: opts.temperature ?? 0.7,
-      max_tokens: opts.maxTokens ?? 2048,
-      stream: false,
-    };
-    if (opts.json) body.response_format = { type: "json_object" };
-    const res = await fetch(`${NVIDIA_BASE}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${key}`,
-      },
-      body: JSON.stringify(body),
-    });
-    const ms = Math.round(performance.now() - t0);
-    if (!res.ok) {
-      const err = await res.text().catch(() => "unknown");
-      recordError("Kimi", `${res.status}: ${err.slice(0, 200)}`, ms);
-      return { text: null, latency: ms };
-    }
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || null;
-    if (text) recordSuccess("Kimi", ms);
-    return { text, latency: ms };
-  } catch (err) {
-    const ms = Math.round(performance.now() - t0);
-    recordError("Kimi", String(err), ms);
-    return { text: null, latency: ms };
-  }
-}
-
-// --- Provider 3: Groq (safe fallback — key already exists) ---
-async function tryGroq(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts
-): Promise<{ text: string | null; latency: number }> {
-  const t0 = performance.now();
-  const key = getKey("GROQ_API_KEY");
-  if (!key || !shouldTryProvider("Groq")) return { text: null, latency: 0 };
-  try {
-    const body: any = {
-      model: opts.model || "llama-3.3-70b-versatile",
-      messages: buildMsgs(systemPrompt, messages),
-      temperature: opts.temperature ?? 0.7,
-      max_tokens: opts.maxTokens ?? 2048,
-      stream: false,
-    };
-    if (opts.json) body.response_format = { type: "json_object" };
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-      body: JSON.stringify(body),
-    });
-    const ms = Math.round(performance.now() - t0);
-    if (!res.ok) {
-      const err = await res.text().catch(() => "unknown");
-      recordError("Groq", `${res.status}: ${err.slice(0, 200)}`, ms);
-      return { text: null, latency: ms };
-    }
-    const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || null;
-    if (text) recordSuccess("Groq", ms);
-    return { text, latency: ms };
-  } catch (err) {
-    const ms = Math.round(performance.now() - t0);
-    recordError("Groq", String(err), ms);
-    return { text: null, latency: ms };
-  }
-}
-
-// --- Parallel dispatch: first valid non-streaming response wins ---
-interface ProviderFn {
-  name: string;
-  fn: () => Promise<{ text: string | null; latency: number }>;
-}
-
-async function firstValid(fns: ProviderFn[]): Promise<{ text: string; name: string; latency: number }> {
-  const results = new Array<{ text: string | null; latency: number; name: string } | null>(fns.length).fill(null);
-  let settled = 0;
-
-  return new Promise((resolve, reject) => {
-    for (const pf of fns) {
-      const idx = fns.indexOf(pf);
-      pf.fn().then(r => {
-        results[idx] = { ...r, name: pf.name };
-        settled++;
-        if (r.text) resolve(results[idx] as { text: string; name: string; latency: number });
-        else if (settled === fns.length) {
-          const allErrors = results.map(r =>
-            r ? `${r.name}(lat:${r.latency}ms, text:${r.text ? "ok" : "null"})` : "pending"
-          ).join(", ");
-          reject(new Error(`All providers failed: ${allErrors}`));
-        }
-      }).catch(err => {
-        results[idx] = { text: null, latency: 0, name: pf.name };
-        settled++;
-        if (settled === fns.length) {
-          reject(new Error(`All providers failed: last error ${err}`));
-        }
-      });
-    }
-  });
-}
-
-function hasAttachment(messages: RouterMessage[]): boolean {
-  return messages.some(m => m.attachment?.base64 != null);
-}
-
-function stripAttachments(messages: RouterMessage[]): RouterMessage[] {
-  return messages.map(m => {
-    const { attachment, ...rest } = m;
-    return rest;
-  });
-}
-
-// ============================================================
-// Public non-streaming API
-// ============================================================
-
-export async function routerText(
-  systemPrompt: string,
-  messages: RouterMessage[],
-  opts: Opts = {}
-): Promise<{ text: string; provider: string; latency: number }> {
-  const hasMedia = hasAttachment(messages);
-  if (hasMedia) {
-    const geminiResult = await tryGemini(systemPrompt, messages, opts).catch(() => ({ text: null as string | null, latency: 0 }));
-    if (geminiResult.text) {
-      return { text: geminiResult.text, provider: "Gemini", latency: geminiResult.latency };
-    }
-    console.warn("[Router] Gemini failed for attachment request, falling back to text-only providers");
-    const textOnly = stripAttachments(messages);
-    const fallbackProviders: ProviderFn[] = [
-      { name: "Groq", fn: () => tryGroq(systemPrompt, textOnly, opts) },
-      { name: "Kimi", fn: () => tryKimi(systemPrompt, textOnly, opts) },
-    ];
-    const result = await firstValid(fallbackProviders);
-    return { text: result.text, provider: result.name, latency: result.latency };
-  }
-  const providers: ProviderFn[] = [
-    { name: "Gemini", fn: () => tryGemini(systemPrompt, messages, opts) },
-    { name: "Groq", fn: () => tryGroq(systemPrompt, messages, opts) },
-    { name: "Kimi", fn: () => tryKimi(systemPrompt, messages, opts) },
-  ];
-
-  const result = await firstValid(providers);
-  console.log(`[Router] ${result.name} responded in ${result.latency}ms`);
-  return { text: result.text, provider: result.name, latency: result.latency };
-}
-
-export async function routerJSON(
-  systemPrompt: string,
-  messages: RouterMessage[],
-  opts: Opts = {}
-): Promise<any> {
-  const { text } = await routerText(systemPrompt, messages, { ...opts, json: true });
-  return JSON.parse(text);
-}
-
-// ============================================================
-// Streaming
-// ============================================================
-
-const encoder = new TextEncoder();
-
-// --- Gemini Stream with Key Vault + failover ---
-async function tryGeminiStream(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts, signal: AbortSignal
-): Promise<{ stream: ReadableStream | null; keyId?: string; label?: string }> {
-  if (!shouldTryProvider("Gemini")) return { stream: null };
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const encryptionSecret = Deno.env.get("KEY_ENCRYPTION_SECRET");
-
-  const fallbackKey = !supabaseUrl || !supabaseKey || !encryptionSecret ? getKey("GEMINI_API_KEY") : null;
-  if (fallbackKey) {
-    try {
-      const body = buildGeminiBody(systemPrompt, messages, opts);
-      const res = await fetch(
-        `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${fallbackKey}`,
-        { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal }
-      );
-      return { stream: res.ok ? res.body : null };
-    } catch {
-      return { stream: null };
-    }
-  }
-
-  if (!supabaseUrl || !supabaseKey || !encryptionSecret) return { stream: null };
-
-  return tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, encryptionSecret, 0);
-}
-
-async function tryGeminiStreamWithFailover(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts, signal: AbortSignal,
-  supabaseUrl: string, supabaseKey: string, encryptionSecret: string,
-  depth: number
-): Promise<{ stream: ReadableStream | null; keyId?: string; label?: string }> {
-  if (depth >= 3) return { stream: null };
-
-  const activeKey = await getActiveGeminiKey(supabaseUrl, supabaseKey, encryptionSecret);
-  if (!activeKey) return { stream: null };
-
-  try {
-    const body = buildGeminiBody(systemPrompt, messages, opts);
-    const res = await fetch(
-      `${GEMINI_BASE}/models/gemma-4-26b-a4b-it:streamGenerateContent?alt=sse&key=${activeKey.apiKey}`,
-      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal }
-    );
-    if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      const is429 = res.status === 429 || errText.toLowerCase().includes("quota") || errText.toLowerCase().includes("rate limit");
-      if (is429) {
-        await markKeyExhausted(supabaseUrl, supabaseKey, activeKey.keyId);
-        return tryGeminiStreamWithFailover(systemPrompt, messages, opts, signal, supabaseUrl, supabaseKey, encryptionSecret, depth + 1);
-      }
-      return { stream: null };
-    }
-    // Log stream start asynchronously — best-effort
-    logKeyUsage(supabaseUrl, supabaseKey, {
-      keyId: activeKey.keyId, feature: "ai-router-stream",
-      status: "success",
-    }).catch(() => {});
-    return { stream: res.body, keyId: activeKey.keyId, label: activeKey.label };
-  } catch {
-    return { stream: null };
-  }
-}
-
-async function tryKimiStream(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts, signal: AbortSignal
-): Promise<ReadableStream | null> {
-  const key = getKey("NVIDIA_API_KEY");
-  if (!key || !shouldTryProvider("Kimi")) return null;
-  try {
-    const body: any = {
-      model: "nvidia/kimi-k2-6",
-      messages: buildMsgs(systemPrompt, messages),
-      temperature: opts.temperature ?? 0.7,
-      max_tokens: opts.maxTokens ?? 2048,
-      stream: true,
-    };
-    const res = await fetch(`${NVIDIA_BASE}/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-      body: JSON.stringify(body),
-      signal,
-    });
-    if (!res.ok) return null;
-    return res.body;
-  } catch {
-    return null;
-  }
-}
-
-async function tryGroqStream(
-  systemPrompt: string, messages: RouterMessage[], opts: Opts, signal: AbortSignal
-): Promise<ReadableStream | null> {
-  const key = getKey("GROQ_API_KEY");
-  if (!key || !shouldTryProvider("Groq")) return null;
-  try {
-    const body: any = {
-      model: opts.model || "llama-3.3-70b-versatile",
-      messages: buildMsgs(systemPrompt, messages),
-      temperature: opts.temperature ?? 0.7,
-      max_tokens: opts.maxTokens ?? 2048,
-      stream: true,
-    };
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-      body: JSON.stringify(body),
-      signal,
-    });
-    if (!res.ok) return null;
-    return res.body;
-  } catch {
-    return null;
-  }
-}
-
-function parseSSE(line: string): string | null {
+function parseSSEDelta(line: string): string | null {
   const trimmed = line.trim();
   if (!trimmed.startsWith("data: ")) return null;
   const data = trimmed.slice(6).trim();
   if (data === "[DONE]") return null;
   try {
-    const parsed = JSON.parse(data);
+    const parsed = JSON.parse(data) as OpenAIResponse & GeminiResponse;
     const delta = parsed.choices?.[0]?.delta?.content;
     if (delta) return delta;
-    const geminiText = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+    const geminiText = parseGeminiText(parsed);
     if (geminiText) return geminiText;
   } catch { /* ignore parse error */ }
   return null;
 }
 
-interface StreamEntry {
-  provider: string;
+// ============================================================
+// Single-key attempts (text + stream)
+// ============================================================
+
+export interface KeyAttemptFailure {
+  label: string;
+  kind: FailureKind;
+  status: number;
+  detail: string;
+}
+
+interface TextAttemptOk {
+  ok: true;
+  text: string;
+  usageMeta?: GeminiUsageMeta;
+}
+
+interface TextAttemptFail {
+  ok: false;
+  failure: KeyAttemptFailure;
+}
+
+async function attemptText(
+  provider: VaultProvider,
+  key: ResolvedKey,
+  systemPrompt: string,
+  messages: RouterMessage[],
+  opts: RouterOpts
+): Promise<TextAttemptOk | TextAttemptFail> {
+  const fail = (status: number, detail: string): TextAttemptFail => ({
+    ok: false,
+    failure: { label: key.label, kind: classifyError(status, detail), status, detail },
+  });
+  try {
+    if (provider === "gemini") {
+      const model = modelFor(provider, opts);
+      const res = await fetch(
+        `${GEMINI_BASE}/models/${model}:generateContent?key=${key.apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildGeminiBody(systemPrompt, messages, opts)),
+          signal: AbortSignal.timeout(55_000),
+        }
+      );
+      if (!res.ok) {
+        const err = await res.text().catch(() => "unknown");
+        return fail(res.status, `${res.status}: ${err.slice(0, 200)}`);
+      }
+      const data = (await res.json()) as GeminiResponse;
+      const text = parseGeminiText(data);
+      if (!text) return fail(200, "empty candidates in Gemini response");
+      return { ok: true, text, usageMeta: parseGeminiUsage(data) };
+    }
+    const base = provider === "groq" ? GROQ_BASE : NVIDIA_BASE;
+    const res = await fetch(`${base}/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key.apiKey}` },
+      body: JSON.stringify(buildOpenAIBody(provider, systemPrompt, messages, opts, false)),
+      signal: AbortSignal.timeout(55_000),
+    });
+    if (!res.ok) {
+      const err = await res.text().catch(() => "unknown");
+      return fail(res.status, `${res.status}: ${err.slice(0, 200)}`);
+    }
+    const data = (await res.json()) as OpenAIResponse;
+    const text = parseOpenAIText(data);
+    if (!text) return fail(200, "empty choices in provider response");
+    return { ok: true, text };
+  } catch (err) {
+    const detail = String(err).slice(0, 200);
+    return { ok: false, failure: { label: key.label, kind: "transient" as FailureKind, status: 0, detail } };
+  }
+}
+
+interface StreamAttemptOk {
+  ok: true;
   stream: ReadableStream<Uint8Array>;
-  controller: AbortController;
+}
+
+async function attemptStream(
+  provider: VaultProvider,
+  key: ResolvedKey,
+  systemPrompt: string,
+  messages: RouterMessage[],
+  opts: RouterOpts,
+  signal: AbortSignal
+): Promise<StreamAttemptOk | TextAttemptFail> {
+  const fail = (status: number, detail: string): TextAttemptFail => ({
+    ok: false,
+    failure: { label: key.label, kind: classifyError(status, detail), status, detail },
+  });
+  try {
+    if (provider === "gemini") {
+      const model = modelFor(provider, opts);
+      const res = await fetch(
+        `${GEMINI_BASE}/models/${model}:streamGenerateContent?alt=sse&key=${key.apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildGeminiBody(systemPrompt, messages, opts)),
+          signal,
+        }
+      );
+      if (!res.ok || !res.body) {
+        const err = await res.text().catch(() => "unknown");
+        return fail(res.status, `${res.status}: ${err.slice(0, 200)}`);
+      }
+      return { ok: true, stream: res.body };
+    }
+    const base = provider === "groq" ? GROQ_BASE : NVIDIA_BASE;
+    const res = await fetch(`${base}/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key.apiKey}` },
+      body: JSON.stringify(buildOpenAIBody(provider, systemPrompt, messages, opts, true)),
+      signal,
+    });
+    if (!res.ok || !res.body) {
+      const err = await res.text().catch(() => "unknown");
+      return fail(res.status, `${res.status}: ${err.slice(0, 200)}`);
+    }
+    return { ok: true, stream: res.body };
+  } catch (err) {
+    const detail = String(err).slice(0, 200);
+    return { ok: false, failure: { label: key.label, kind: "transient", status: 0, detail } };
+  }
+}
+
+// ============================================================
+// Provider runners — iterate ALL keys of a provider.
+// Throws ProviderFailure carrying every key's reason.
+// ============================================================
+
+export class ProviderFailure extends Error {
+  provider: string;
+  keyFailures: KeyAttemptFailure[];
+  constructor(provider: string, keyFailures: KeyAttemptFailure[]) {
+    super(`${provider}: ${keyFailures.map((k) => `[${k.label}] ${k.detail}`).join("; ") || "no keys"}`);
+    this.provider = provider;
+    this.keyFailures = keyFailures;
+  }
+}
+
+const PROVIDER_ORDER: VaultProvider[] = ["gemini", "groq", "nvidia"];
+
+export interface ProviderSuccess {
+  text: string;
+  provider: string;
+  keyLabel: string;
+  latency: number;
+}
+
+async function runProviderText(
+  ctx: RouterContext,
+  provider: VaultProvider,
+  systemPrompt: string,
+  messages: RouterMessage[],
+  opts: RouterOpts,
+  feature: string
+): Promise<ProviderSuccess> {
+  const t0 = performance.now();
+  const label = providerLabel(provider);
+  if (!shouldTryProvider(label)) {
+    throw new ProviderFailure(label, [{ label: "-", kind: "transient", status: 0, detail: "provider in backoff" }]);
+  }
+  const { keys, vaultConfigured } = await resolveKeys(ctx, provider);
+  if (keys.length === 0) {
+    throw new ProviderFailure(label, [{
+      label: "-",
+      kind: "fatal",
+      status: 0,
+      detail: vaultConfigured
+        ? "no usable keys in vault (all exhausted, disabled, or cooling down)"
+        : `key vault not configured and ${envKeyName(provider)} not set`,
+    }]);
+  }
+  const model = modelFor(provider, opts);
+  const keyFailures: KeyAttemptFailure[] = [];
+  for (const key of keys) {
+    const attempt = await attemptText(provider, key, systemPrompt, messages, opts);
+    if (attempt.ok) {
+      const ms = Math.round(performance.now() - t0);
+      recordSuccess(label, ms);
+      await recordAttempt(ctx, label, key, "success", "", feature, model, attempt.usageMeta);
+      return { text: attempt.text, provider: label, keyLabel: key.label, latency: ms };
+    }
+    keyFailures.push(attempt.failure);
+    await recordAttempt(ctx, label, key, attempt.failure.kind, attempt.failure.detail, feature, model);
+  }
+  const ms = Math.round(performance.now() - t0);
+  recordError(label, keyFailures.map((k) => k.detail).join("; ").slice(0, 200), ms);
+  throw new ProviderFailure(label, keyFailures);
+}
+
+export interface StreamSuccess {
+  stream: ReadableStream<Uint8Array>;
+  provider: string;
+  keyLabel: string;
+  key: ResolvedKey;
+}
+
+async function runProviderStream(
+  ctx: RouterContext,
+  provider: VaultProvider,
+  systemPrompt: string,
+  messages: RouterMessage[],
+  opts: RouterOpts,
+  signal: AbortSignal,
+  feature: string
+): Promise<StreamSuccess> {
+  const label = providerLabel(provider);
+  if (!shouldTryProvider(label)) {
+    throw new ProviderFailure(label, [{ label: "-", kind: "transient", status: 0, detail: "provider in backoff" }]);
+  }
+  const { keys, vaultConfigured } = await resolveKeys(ctx, provider);
+  if (keys.length === 0) {
+    throw new ProviderFailure(label, [{
+      label: "-",
+      kind: "fatal",
+      status: 0,
+      detail: vaultConfigured
+        ? "no usable keys in vault (all exhausted, disabled, or cooling down)"
+        : `key vault not configured and ${envKeyName(provider)} not set`,
+    }]);
+  }
+  const model = modelFor(provider, opts);
+  const keyFailures: KeyAttemptFailure[] = [];
+  for (const key of keys) {
+    const attempt = await attemptStream(provider, key, systemPrompt, messages, opts, signal);
+    if (attempt.ok) {
+      recordSuccess(label, 0);
+      await recordAttempt(ctx, label, key, "success", "", feature, model);
+      return { stream: attempt.stream, provider: label, keyLabel: key.label, key };
+    }
+    keyFailures.push(attempt.failure);
+    await recordAttempt(ctx, label, key, attempt.failure.kind, attempt.failure.detail, feature, model);
+  }
+  recordError(label, keyFailures.map((k) => k.detail).join("; ").slice(0, 200), 0);
+  throw new ProviderFailure(label, keyFailures);
+}
+
+// ============================================================
+// Public non-streaming API — race providers, first text wins.
+// ============================================================
+
+export async function routerText(
+  systemPrompt: string,
+  messages: RouterMessage[],
+  opts: RouterOpts = {},
+  ctx: RouterContext = loadRouterContext()
+): Promise<ProviderSuccess> {
+  // Attachments REQUIRE Gemini (vision). Without attachments, race all providers.
+  if (hasAttachment(messages)) {
+    return geminiFirstScope(ctx, systemPrompt, messages, opts);
+  }
+  const settled = await Promise.allSettled(
+    PROVIDER_ORDER.map((p) => runProviderText(ctx, p, systemPrompt, messages, opts, "ai-router"))
+  );
+  for (const s of settled) {
+    if (s.status === "fulfilled") {
+      console.log(`[Router] ${s.value.provider} responded in ${s.value.latency}ms`);
+      return s.value;
+    }
+  }
+  const reasons = settled
+    .filter((s): s is PromiseRejectedResult => s.status === "rejected")
+    .map((s) => (s.reason instanceof ProviderFailure ? s.reason.message : String(s.reason)))
+    .join(" | ");
+  throw new Error(`All AI providers failed (${reasons})`);
+}
+
+async function geminiFirstScope(
+  ctx: RouterContext,
+  systemPrompt: string,
+  messages: RouterMessage[],
+  opts: RouterOpts
+): Promise<ProviderSuccess> {
+  try {
+    return await runProviderText(ctx, "gemini", systemPrompt, messages, opts, "ai-router");
+  } catch (err) {
+    console.warn("[Router] Gemini failed for attachment request, falling back to text-only providers");
+    const textOnly = stripAttachments(messages);
+    const settled = await Promise.allSettled(
+      (["groq", "nvidia"] as VaultProvider[]).map((p) => runProviderText(ctx, p, systemPrompt, textOnly, opts, "ai-router"))
+    );
+    for (const s of settled) {
+      if (s.status === "fulfilled") return s.value;
+    }
+    const reasons = settled
+      .filter((s): s is PromiseRejectedResult => s.status === "rejected")
+      .map((s) => (s.reason instanceof ProviderFailure ? s.reason.message : String(s.reason)))
+      .join(" | ");
+    throw new Error(`All AI providers failed for attachment request (Gemini: ${err instanceof ProviderFailure ? err.message : String(err)} | ${reasons})`);
+  }
+}
+
+export async function routerJSON(
+  systemPrompt: string,
+  messages: RouterMessage[],
+  opts: RouterOpts = {},
+  ctx: RouterContext = loadRouterContext()
+): Promise<unknown> {
+  const { text } = await routerText(systemPrompt, messages, { ...opts, json: true }, ctx);
+  return JSON.parse(text) as unknown;
+}
+
+// ============================================================
+// Public streaming API — sequential providers (no wasted calls).
+// The final SSE error names EVERY provider and key reason.
+// ============================================================
+
+const encoder = new TextEncoder();
+
+function hasAttachment(messages: RouterMessage[]): boolean {
+  return messages.some((m) => m.attachment?.base64 != null);
+}
+
+function stripAttachments(messages: RouterMessage[]): RouterMessage[] {
+  return messages.map((m) => {
+    const { attachment: _attachment, ...rest } = m;
+    return rest;
+  });
+}
+
+function sseError(message: string): Uint8Array {
+  return encoder.encode(`data: ${JSON.stringify({ error: message })}\n\n`);
+}
+
+function sseDone(): Uint8Array {
+  return encoder.encode("data: [DONE]\n\n");
+}
+
+function sseChoices(content: string): Uint8Array {
+  return encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`);
+}
+
+async function pipeProviderStream(
+  entry: StreamSuccess,
+  controller: ReadableStreamDefaultController<Uint8Array>
+): Promise<void> {
+  const reader = entry.stream.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || "";
+      for (const line of lines) {
+        const delta = parseSSEDelta(line);
+        if (delta) controller.enqueue(sseChoices(delta));
+      }
+    }
+    controller.enqueue(sseDone());
+    controller.close();
+  } catch (err) {
+    controller.enqueue(sseError(`Stream failed (${entry.provider}): ${err}`));
+    controller.enqueue(sseDone());
+    controller.close();
+  }
 }
 
 export async function routerStream(
   systemPrompt: string,
   messages: RouterMessage[],
-  opts: Opts = {}
-): Promise<ReadableStream> {
-  const abortControllers: AbortController[] = [];
-  const cleanup = () => { for (const ac of abortControllers) try { ac.abort(); } catch { /* abort may throw */ } };
+  opts: RouterOpts = {},
+  ctx: RouterContext = loadRouterContext()
+): Promise<ReadableStream<Uint8Array>> {
+  const providers: VaultProvider[] = hasAttachment(messages) ? ["gemini"] : PROVIDER_ORDER;
+  const failures: string[] = [];
 
-  const hasMedia = hasAttachment(messages);
-
-  if (hasMedia) {
-    const ac1 = new AbortController(); abortControllers.push(ac1);
-    const geminiResult = await tryGeminiStream(systemPrompt, messages, opts, ac1.signal);
-    if (geminiResult.stream) {
-      return new ReadableStream({
+  for (const provider of providers) {
+    const ac = new AbortController();
+    try {
+      const entry = await runProviderStream(ctx, provider, systemPrompt, messages, opts, ac.signal, "ai-router-stream");
+      return new ReadableStream<Uint8Array>({
         async start(controller) {
-          try {
-            const reader = geminiResult.stream!.getReader();
-            const decoder = new TextDecoder();
-            let buffer = "";
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              buffer += decoder.decode(value, { stream: true });
-              const lines = buffer.split("\n");
-              buffer = lines.pop() || "";
-              for (const line of lines) {
-                const delta = parseSSE(line);
-                if (delta) {
-                  controller.enqueue(encoder.encode(
-                    `data: ${JSON.stringify({ choices: [{ delta: { content: delta } }] })}\n\n`
-                  ));
-                }
-              }
-            }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-            controller.close();
-          } catch (err) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: `Gemini stream failed: ${err}` })}\n\n`));
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-            controller.close();
-          }
-          cleanup();
+          await pipeProviderStream(entry, controller);
         },
       });
+    } catch (err) {
+      ac.abort();
+      failures.push(err instanceof ProviderFailure ? err.message : String(err));
     }
-    console.warn("[Router] Gemini stream unavailable for attachment, falling back to text-only providers");
-    const textOnly = stripAttachments(messages);
-    const ac2 = new AbortController(); abortControllers.push(ac2);
-    const ac3 = new AbortController(); abortControllers.push(ac3);
-    const fallbackAttempts: Promise<StreamEntry | null>[] = [
-      tryGroqStream(systemPrompt, textOnly, opts, ac2.signal).then(s => s ? { provider: "Groq", stream: s, controller: ac2 } : null),
-      tryKimiStream(systemPrompt, textOnly, opts, ac3.signal).then(s => s ? { provider: "Kimi", stream: s, controller: ac3 } : null),
-    ];
-    const electedFallback = new Promise<StreamEntry>((resolve, reject) => {
-      let settled = 0;
-      for (let i = 0; i < fallbackAttempts.length; i++) {
-        fallbackAttempts[i].then(r => {
-          if (r) resolve(r);
-          else { settled++; if (settled === fallbackAttempts.length) reject(new Error("All fallback providers unavailable")); }
-        });
-      }
-    });
-    return new ReadableStream({
-      async start(controller) {
-        try {
-          const entry = await electedFallback;
-          for (const ac of abortControllers) { if (ac !== entry.controller) try { ac.abort(); } catch {} }
-          const reader = entry.stream.getReader();
-          const decoder = new TextDecoder();
-          let buffer = "";
-          try {
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              buffer += decoder.decode(value, { stream: true });
-              const lines = buffer.split("\n");
-              buffer = lines.pop() || "";
-              for (const line of lines) {
-                const delta = parseSSE(line);
-                if (delta) {
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: delta } }] })}\n\n`));
-                }
-              }
-            }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-            controller.close();
-          } catch (err) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: `Fallback stream failed: ${err}` })}\n\n`));
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-            controller.close();
-          }
-        } catch {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: "All AI providers unavailable for streaming" })}\n\n`));
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
-        }
-        cleanup();
-      },
-    });
   }
 
-  const ac1 = new AbortController(); abortControllers.push(ac1);
-  const ac2 = new AbortController(); abortControllers.push(ac2);
-  const ac3 = new AbortController(); abortControllers.push(ac3);
-
-  const attempts: Promise<StreamEntry | null>[] = [
-    tryGeminiStream(systemPrompt, messages, opts, ac1.signal).then(s => s.stream ? { provider: "Gemini", stream: s.stream!, controller: ac1 } : null),
-    tryGroqStream(systemPrompt, messages, opts, ac2.signal).then(s => s ? { provider: "Groq", stream: s, controller: ac2 } : null),
-    tryKimiStream(systemPrompt, messages, opts, ac3.signal).then(s => s ? { provider: "Kimi", stream: s, controller: ac3 } : null),
-  ];
-
-  const elected = new Promise<StreamEntry>((resolve, reject) => {
-    let settled = 0;
-    for (let i = 0; i < attempts.length; i++) {
-      attempts[i].then(r => {
-        if (r) {
-          resolve(r);
-        } else {
-          settled++;
-          if (settled === attempts.length) reject(new Error("All AI providers unavailable"));
-        }
-      });
-    }
-  });
-
-  return new ReadableStream({
-    async start(controller) {
+  if (hasAttachment(messages)) {
+    // Gemini (vision) failed — fall back to text-only providers.
+    const textOnly = stripAttachments(messages);
+    for (const provider of ["groq", "nvidia"] as VaultProvider[]) {
+      const ac = new AbortController();
       try {
-        const entry = await elected;
-        recordSuccess(entry.provider, 0);
-        for (const ac of abortControllers) {
-          if (ac !== entry.controller) try { ac.abort(); } catch { /* abort may throw */ }
-        }
-        const reader = entry.stream.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split("\n");
-            buffer = lines.pop() || "";
-            for (const line of lines) {
-              const delta = parseSSE(line);
-              if (delta) {
-                controller.enqueue(encoder.encode(
-                  `data: ${JSON.stringify({ choices: [{ delta: { content: delta } }] })}\n\n`
-                ));
-              }
-            }
-          }
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
-        } catch (err) {
-          controller.enqueue(encoder.encode(
-            `data: ${JSON.stringify({ error: `Stream failed: ${err}` })}\n\n`
-          ));
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
-        }
-      } catch {
-        controller.enqueue(encoder.encode(
-          `data: ${JSON.stringify({ error: "All AI providers unavailable for streaming" })}\n\n`
-        ));
-        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-        controller.close();
+        const entry = await runProviderStream(ctx, provider, systemPrompt, textOnly, opts, ac.signal, "ai-router-stream");
+        return new ReadableStream<Uint8Array>({
+          async start(controller) {
+            await pipeProviderStream(entry, controller);
+          },
+        });
+      } catch (err) {
+        ac.abort();
+        failures.push(err instanceof ProviderFailure ? err.message : String(err));
       }
+    }
+  }
 
-      cleanup();
+  const summary = `All AI providers unavailable for streaming (${failures.join(" | ") || "no providers attempted"})`;
+  console.error(`[Router] ${summary}`);
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(sseError(summary));
+      controller.enqueue(sseDone());
+      controller.close();
     },
   });
+}
+
+// ============================================================
+// Key validation (used by admin "test key") — tiny live call.
+// ============================================================
+
+export interface KeyValidation {
+  ok: boolean;
+  provider: string;
+  model: string;
+  latencyMs: number;
+  error?: string;
+}
+
+export async function validateKey(
+  provider: VaultProvider,
+  apiKey: string,
+  model?: string
+): Promise<KeyValidation> {
+  const t0 = performance.now();
+  const opts: RouterOpts = model ? { model, maxTokens: 16 } : { maxTokens: 16 };
+  const resolved: ResolvedKey = { keyId: null, label: "test", apiKey, fromEnv: true };
+  const attempt = await attemptText(provider, resolved, "Reply with: ok", [{ role: "user", content: "Reply with: ok" }], opts);
+  const ms = Math.round(performance.now() - t0);
+  if (attempt.ok) {
+    return { ok: true, provider: providerLabel(provider), model: modelFor(provider, opts), latencyMs: ms };
+  }
+  return {
+    ok: false,
+    provider: providerLabel(provider),
+    model: modelFor(provider, opts),
+    latencyMs: ms,
+    error: `[${attempt.failure.kind}] ${attempt.failure.detail}`,
+  };
 }

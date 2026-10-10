@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Trash2, Plus, AlertTriangle, GripVertical, ListOrdered, ImageIcon, Upload, XCircle, Loader2 } from "lucide-react";
+import { X, Save, Trash2, Plus, AlertTriangle, GripVertical, ListOrdered, ImageIcon, Upload, XCircle, Loader2, Eye } from "lucide-react";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import type { Subject } from "@/types/question";
 import { addQuestion, updateQuestion, deleteQuestion, generateQuestionId, batchUpdateSortOrder, uploadQuestionImage, deleteQuestionImage } from "@/lib/admin-questions-service";
@@ -8,6 +8,7 @@ import { refreshData } from "@/data/study-questions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
+import { QuestionMath } from "@/components/QuestionMath";
 
 interface AdminQuestionPanelProps {
   question: StudyQuestion | null;
@@ -57,6 +58,7 @@ export function AdminQuestionPanel({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const [cropFileName, setCropFileName] = useState<string>("");
   const [editingQuestion, setEditingQuestion] = useState<StudyQuestion | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -640,6 +642,37 @@ export function AdminQuestionPanel({
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
                       placeholder="Explain why the correct answer is right..."
                     />
+                  </div>
+
+                  <div className="rounded-xl border border-border/60 overflow-hidden">
+                    <button
+                      onClick={() => setShowPreview(v => !v)}
+                      className="w-full flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      {showPreview ? "Hide student preview" : "Show student preview (math rendering)"}
+                    </button>
+                    {showPreview && (
+                      <div className="px-3 pb-3 pt-1 space-y-2 border-t border-border/50 bg-card/50">
+                        {questionText.trim() && (
+                          <QuestionMath content={questionText} className="text-sm font-medium leading-relaxed pt-2" />
+                        )}
+                        {isObjective && options.filter(o => o.text.trim()).map(opt => (
+                          <div key={opt.label} className="flex items-center gap-2 text-sm">
+                            <span className="shrink-0 w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                              {opt.label}
+                            </span>
+                            <QuestionMath content={opt.text} inline className="flex-1 min-w-0" />
+                          </div>
+                        ))}
+                        {explanation.trim() && (
+                          <div className="rounded-lg bg-background border border-border/50 p-2">
+                            <p className="text-[10px] font-medium text-muted-foreground mb-0.5">Explanation</p>
+                            <QuestionMath content={explanation} className="text-xs leading-relaxed" />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </>
               ) : (

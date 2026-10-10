@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAudioAnalyser } from './useAudioAnalyser';
+import type { Message } from './useChat';
 
 export type RecordingState = 'idle' | 'recording' | 'sending';
 
@@ -69,14 +70,16 @@ export function useVoiceRecorder() {
       }, 1000);
 
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       cleanupAnalyser();
-      if (err.name === 'NotAllowedError') {
+      const name = err instanceof DOMException ? err.name : (err as { name?: unknown })?.name;
+      const message = err instanceof Error ? err.message : String(err);
+      if (name === 'NotAllowedError') {
         setError('Microphone permission denied. Please allow microphone in browser settings.');
-      } else if (err.name === 'NotFoundError') {
+      } else if (name === 'NotFoundError') {
         setError('No microphone found on this device.');
       } else {
-        setError('Could not start recording: ' + err.message);
+        setError('Could not start recording: ' + message);
       }
       setRecordingState('idle');
       return false;
@@ -145,7 +148,7 @@ export function useVoiceRecorder() {
     conversationId: string,
     senderId: string,
     currentDuration: number,
-    onSent: (message: any) => void,
+    onSent: (message: Message) => void,
     onQueueOffline?: (blob: Blob, senderId: string, duration: number) => void,
   ) => {
     let blob = recordedBlob;
@@ -208,9 +211,9 @@ export function useVoiceRecorder() {
 
       if (msgError) throw msgError;
 
-      onSent(message);
-    } catch (err: any) {
-      setError('Failed to send voice note: ' + err.message);
+      onSent(message as unknown as Message);
+    } catch (err: unknown) {
+      setError('Failed to send voice note: ' + (err instanceof Error ? err.message : String(err)));
       console.error('[voice] upload failed:', err);
     } finally {
       setRecordingState('idle');

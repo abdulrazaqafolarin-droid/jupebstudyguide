@@ -58,7 +58,7 @@ describe("LeaderboardPage console.warn", () => {
   });
 
   it("warns on champion fetch failure", () => {
-    mockConsoleWarn("Failed to fetch past champions:", new Error("DB error"));
+    console.warn("Failed to fetch past champions:", new Error("DB error"));
     expect(mockConsoleWarn).toHaveBeenCalledWith("Failed to fetch past champions:", expect.any(Error));
   });
 });
@@ -70,7 +70,7 @@ describe("linkify fetchOgPreview console.warn", () => {
   });
 
   it("warns on og preview fetch failure", () => {
-    mockConsoleWarn("OG preview fetch failed:", new Error("timeout"));
+    console.warn("OG preview fetch failed:", new Error("timeout"));
     expect(mockConsoleWarn).toHaveBeenCalledWith("OG preview fetch failed:", expect.any(Error));
   });
 });
@@ -103,12 +103,12 @@ describe("empty catch blocks", () => {
   });
 
   it("reports storage cleanup failure via console.warn", () => {
-    mockConsoleWarn("Storage cleanup failed:", new Error("permission denied"));
+    console.warn("Storage cleanup failed:", new Error("permission denied"));
     expect(mockConsoleWarn).toHaveBeenCalledWith("Storage cleanup failed:", expect.any(Error));
   });
 
   it("handles ImageAnswerInput upload error via warn", () => {
-    mockConsoleWarn("Failed to upload image:", new Error("upload failed"));
+    console.warn("Failed to upload image:", new Error("upload failed"));
     expect(mockConsoleWarn).toHaveBeenCalledWith("Failed to upload image:", expect.any(Error));
   });
 });

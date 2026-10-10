@@ -64,7 +64,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
   async function extractPDFText(file: File): Promise<string> {
     setOcrProgress('Loading PDF...');
     const pdfjsLib = await import("pdfjs-dist");
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs";
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     let fullText = "";
@@ -73,7 +73,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
       setProgress(20 + Math.round((i / pdf.numPages) * 30));
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      const pageText = content.items.map((item: { str: string }) => item.str).join(" ");
+      const pageText = content.items.map((item) => ("str" in item ? item.str : "")).join(" ");
       fullText += pageText + "\n\n";
     }
     if (fullText.trim().length < 50) {
@@ -89,7 +89,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
         canvas.height = viewport.height;
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          await page.render({ canvasContext: ctx, viewport }).promise;
+          await page.render({ canvas, viewport }).promise;
           const { data } = await Tesseract.recognize(canvas, 'eng');
           fullText += data.text + "\n\n";
         }

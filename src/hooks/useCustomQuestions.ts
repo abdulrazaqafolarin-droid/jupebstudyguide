@@ -41,6 +41,7 @@ export function useCustomQuestions() {
         correctAnswer: row.correct_answer,
         explanation: row.explanation,
         difficulty: (row.difficulty as 'easy' | 'medium' | 'hard') || 'medium',
+        document_name: row.document_name || undefined,
       }));
 
       setCustomQuestions(questions);

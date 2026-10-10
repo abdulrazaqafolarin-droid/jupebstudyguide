@@ -68,7 +68,7 @@ export async function retrieveRelevantChunks(
   }
 
   const data = await res.json();
-  return (data || []).map((r: any) => ({
+  return (data || []).map((r: { id: string; textbook_id: string; textbook_title: string; content: string; similarity: number }) => ({
     id: r.id,
     textbook_id: r.textbook_id,
     textbook_title: r.textbook_title,

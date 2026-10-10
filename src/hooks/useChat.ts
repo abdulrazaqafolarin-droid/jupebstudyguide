@@ -61,6 +61,7 @@ export interface Message {
   delivered_at?: string | null;
   read_at?: string | null;
   message_type?: 'text' | 'image' | 'file' | 'video' | 'audio';
+  status?: 'sending' | 'sent' | 'delivered' | 'read';
   reply_to_id?: string | null;
   is_edited?: boolean;
   is_deleted?: boolean;
@@ -319,7 +320,7 @@ export function useChat() {
         }
       }
 
-      let enriched: Conversation[] = convData.map((conv) => {
+      const enriched: Conversation[] = convData.map((conv) => {
         const convParticipantIds = participantsByConv.get(conv.id) ?? [];
         const isGroup = convParticipantIds.length > 2;
         const otherParticipantIds = convParticipantIds.filter(pid => pid !== user.id);
@@ -584,7 +585,7 @@ export function useChat() {
     const globalChannel = createGlobalChannel();
 
     const msgBroadcast = supabase
-      .channel('msg-broadcast', { selfBroadcast: false })
+      .channel('msg-broadcast', { config: { broadcast: { self: false } } })
       .on('broadcast', { event: 'msg' }, (payload) => {
         const newMsg = payload.payload.message as Message;
         if (newMsg.sender_id === user.id) return;
@@ -803,6 +804,7 @@ export function useChat() {
     if (item.kind === 'text') {
       const { data, error } = await supabase.from('messages').insert({
         conversation_id: item.conversationId,
+        sender_id: user.id,
         content: item.content.trim(),
         message_type: 'text',
         reply_to_id: item.replyToId || null,
@@ -819,6 +821,7 @@ export function useChat() {
     if (item.kind === 'image') {
       const { data, error } = await supabase.from('messages').insert({
         conversation_id: item.conversationId,
+        sender_id: user.id,
         content: '',
         message_type: 'image',
         image_url: item.imageUrl,
@@ -836,6 +839,7 @@ export function useChat() {
       const mt = item.fileType.startsWith('video/') ? 'video' : item.fileType.startsWith('audio/') ? 'audio' : 'file';
       const { data, error } = await supabase.from('messages').insert({
         conversation_id: item.conversationId,
+        sender_id: user.id,
         content: item.fileName,
         message_type: mt,
         file_url: item.fileUrl,
@@ -958,7 +962,7 @@ export function useChat() {
 
     if (data?.[0]) {
       setMessages(prev => prev.map(m =>
-        m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
+        m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as unknown as Message : m
       ));
       msgBroadcastRef.current?.send({
         type: 'broadcast',
@@ -1041,7 +1045,7 @@ export function useChat() {
 
     if (data?.[0]) {
       setMessages(prev => prev.map(m =>
-        m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
+        m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as unknown as Message : m
       ));
       msgBroadcastRef.current?.send({
         type: 'broadcast',
@@ -1096,7 +1100,7 @@ export function useChat() {
 
     if (data?.[0]) {
       setMessages(prev => prev.map(m =>
-        m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
+        m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as unknown as Message : m
       ));
       msgBroadcastRef.current?.send({
         type: 'broadcast',
@@ -1194,7 +1198,7 @@ export function useChat() {
     }).select();
 
     if (error) {
-      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl: msg.image_url });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Image queued — will send when back online');
       return;
@@ -1203,7 +1207,7 @@ export function useChat() {
     if (data?.[0]) {
       if (targetConversationId === activeConversation) {
         setMessages(prev => prev.map(m =>
-          m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as Message : m
+          m.id === optimisticMsg.id ? { ...data[0], reactions: undefined } as unknown as Message : m
         ));
       }
       msgBroadcastRef.current?.send({
@@ -1278,9 +1282,9 @@ export function useChat() {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url, bio, email')
+        .select('user_id, display_name, avatar_url, bio')
         .neq('user_id', user.id)
-        .or(`display_name.ilike.%${query}%,email.ilike.%${query}%,bio.ilike.%${query}%`)
+        .or(`display_name.ilike.%${query}%,bio.ilike.%${query}%`)
         .limit(20);
 
       return data || [];

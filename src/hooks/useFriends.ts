@@ -35,12 +35,12 @@ export function useFriends() {
       const [friendsData, incomingData, outgoingData] = await Promise.all([
         supabase.rpc('get_friends', { user_id: user.id }),
         supabase.from('friend_requests')
-          .select('*, sender:profiles!sender_id(display_name, avatar_url)')
+          .select('id, sender_id, receiver_id, status, created_at')
           .eq('receiver_id', user.id)
           .eq('status', 'pending')
           .order('created_at', { ascending: false }),
         supabase.from('friend_requests')
-          .select('*, receiver:profiles!receiver_id(display_name, avatar_url)')
+          .select('id, sender_id, receiver_id, status, created_at')
           .eq('sender_id', user.id)
           .eq('status', 'pending')
           .order('created_at', { ascending: false }),
@@ -51,8 +51,36 @@ export function useFriends() {
         display_name: f.display_name as string | null,
         avatar_url: f.avatar_url as string | null,
       })));
-      setIncomingRequests(incomingData.data || []);
-      setOutgoingRequests(outgoingData.data || []);
+      const incoming = incomingData.data || [];
+      const outgoing = outgoingData.data || [];
+      // friend_requests has no FK to profiles, so fetch counterpart profiles separately
+      const counterpartIds = [...new Set([...incoming.map(r => r.sender_id), ...outgoing.map(r => r.receiver_id)])];
+      const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
+      if (counterpartIds.length > 0) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('user_id, display_name, avatar_url')
+          .in('user_id', counterpartIds);
+        for (const p of profs || []) {
+          profileMap.set(p.user_id, { display_name: p.display_name, avatar_url: p.avatar_url });
+        }
+      }
+      setIncomingRequests(incoming.map(r => ({
+        id: r.id,
+        sender_id: r.sender_id,
+        receiver_id: r.receiver_id,
+        status: r.status as FriendRequest['status'],
+        created_at: r.created_at,
+        sender: profileMap.get(r.sender_id) || { display_name: null, avatar_url: null },
+      })));
+      setOutgoingRequests(outgoing.map(r => ({
+        id: r.id,
+        sender_id: r.sender_id,
+        receiver_id: r.receiver_id,
+        status: r.status as FriendRequest['status'],
+        created_at: r.created_at,
+        receiver: profileMap.get(r.receiver_id) || { display_name: null, avatar_url: null },
+      })));
     } catch (err) {
       console.error('Failed to fetch friends data:', err);
       toast.error('Failed to load friends');

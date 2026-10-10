@@ -33,7 +33,7 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
       const groupCheck: { conversationId: string; lastReadAt: string | null }[] = [];
 
       for (const p of participantData) {
-        const { data: partCount } = await supabase
+        const { count: partCount } = await supabase
           .from('conversation_participants')
           .select('id', { count: 'exact', head: true })
           .eq('conversation_id', p.conversation_id);

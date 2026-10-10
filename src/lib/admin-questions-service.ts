@@ -98,6 +98,44 @@ export async function deleteQuestion(id: string): Promise<{ success: boolean; er
   }
 }
 
+const DELETED_IDS_STORAGE_KEY = "jupeb_deleted_question_ids";
+
+function readDeletedIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(DELETED_IDS_STORAGE_KEY);
+    if (!raw) return new Set();
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return new Set();
+    return new Set(parsed.filter((v): v is string => typeof v === "string"));
+  } catch {
+    return new Set();
+  }
+}
+
+export function getPersistedDeletedIds(): Set<string> {
+  return readDeletedIds();
+}
+
+export function persistDeletedId(id: string): void {
+  try {
+    const ids = readDeletedIds();
+    ids.add(id);
+    localStorage.setItem(DELETED_IDS_STORAGE_KEY, JSON.stringify([...ids]));
+  } catch {
+    // localStorage unavailable — ignore
+  }
+}
+
+export function removePersistedDeletedId(id: string): void {
+  try {
+    const ids = readDeletedIds();
+    ids.delete(id);
+    localStorage.setItem(DELETED_IDS_STORAGE_KEY, JSON.stringify([...ids]));
+  } catch {
+    // localStorage unavailable — ignore
+  }
+}
+
 export function generateQuestionId(subject: Subject, year: number, category: StudyCategory): string {
   const prefix = subject === "chemistry" ? "che" : subject === "physics" ? "phy" : subject === "biology" ? "bio" : "mat";
   const type = category === "objective" ? "mq" : category === "theory" ? "th" : "pr";

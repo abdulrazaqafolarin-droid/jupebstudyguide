@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, type Variants, type Transition } from 'framer-motion';
 import confetti from "canvas-confetti";
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { getAllStudyQuestions, getAllStudyQuestionsForSubject, subscribe } from '@/data/study-questions';
@@ -34,13 +34,13 @@ import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { cn } from '@/lib/utils';
 
-const springBounce = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
-const fastSpring = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
-const containerVariants = {
+const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
+const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
+const containerVariants: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.9 },
   show: { opacity: 1, y: 0, scale: 1, transition: springBounce },
 };

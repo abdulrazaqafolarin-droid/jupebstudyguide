@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
-import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File, Music, Trash2, Edit3, Download, Loader2, Camera, Image, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
+import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File as FileIcon, Music, Trash2, Edit3, Download, Loader2, Camera, Image, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Message, Conversation } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
@@ -235,6 +235,7 @@ export function ChatArea({
   onSendImage,
   onSendFile,
   onReact,
+  onForward,
   onEditMessage,
   onDeleteMessage,
   onUploadImage,
@@ -383,9 +384,10 @@ export function ChatArea({
   useEffect(() => {
     if (!otherUserId || isGroup) { setCanSeeReadReceipts(true); return; }
     let cancelled = false;
-    supabase.rpc('can_view_read_receipts', { p_target_user_id: otherUserId }).then(({ data }) => {
-      if (!cancelled) setCanSeeReadReceipts(data !== false);
-    }).catch(() => { if (!cancelled) setCanSeeReadReceipts(true); });
+    supabase.rpc('can_view_read_receipts', { p_target_user_id: otherUserId }).then(
+      ({ data }) => { if (!cancelled) setCanSeeReadReceipts(data !== false); },
+      () => { if (!cancelled) setCanSeeReadReceipts(true); },
+    );
     return () => { cancelled = true; };
   }, [otherUserId, isGroup]);
 
@@ -431,7 +433,7 @@ export function ChatArea({
     if (reason === null) return;
     try {
       const result = await supabase.rpc('report_user', {
-        p_reported_id: msg.sender_id,
+        p_reported_user_id: msg.sender_id,
         p_reason: reason?.trim() || 'Inappropriate message',
         p_description: `Message ID: ${msg.id}\nContent: ${msg.content?.slice(0, 200)}`,
       });
@@ -683,7 +685,7 @@ export function ChatArea({
     e.preventDefault();
     vnGestureRef.current = { startX: e.clientX, startY: e.clientY, started: false, pointerId: e.pointerId };
     const el = e.currentTarget as HTMLElement;
-    try { el.setPointerCapture(e.pointerId); } catch {}
+    try { el.setPointerCapture(e.pointerId); } catch { void 0; }
     setVnIsDragging(true);
     setVnDragX(0);
     setVnDragY(0);
@@ -692,7 +694,7 @@ export function ChatArea({
     if (ok) onRecordingVn?.(true);
     if (!ok) {
       setVnIsDragging(false);
-      try { el.releasePointerCapture(e.pointerId); } catch {}
+      try { el.releasePointerCapture(e.pointerId); } catch { void 0; }
     }
   }, [uploadingFile, vnStartRecording, onRecordingVn]);
 
@@ -1404,7 +1406,7 @@ export function ChatArea({
                                     className="flex items-center gap-3 p-3 rounded-lg bg-secondary/40 hover:bg-secondary/60 transition-colors mb-1.5 group"
                                   >
                                     <div className="p-2 rounded-lg bg-primary/10">
-                                      <File className="w-5 h-5 text-primary" />
+                                      <FileIcon className="w-5 h-5 text-primary" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <p className="text-xs font-medium truncate">

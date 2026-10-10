@@ -74,12 +74,14 @@ export function PrivacySettings({
   profilePrivacy,
   lastSeenPrivacy,
   readReceiptsPrivacy,
+  activityStatusPrivacy,
   onlineStatusPrivacy,
   groupsPrivacy,
   onAvatarChange,
   onProfileChange,
   onLastSeenChange,
   onReadReceiptsChange,
+  onActivityStatusChange,
   onOnlineStatusChange,
   onGroupsChange,
   otherUserId,
@@ -88,12 +90,14 @@ export function PrivacySettings({
   profilePrivacy: PrivacyOption;
   lastSeenPrivacy: PrivacyOption;
   readReceiptsPrivacy: PrivacyOption;
+  activityStatusPrivacy: PrivacyOption;
   onlineStatusPrivacy: PrivacyOption;
   groupsPrivacy: PrivacyOption;
   onAvatarChange: (v: PrivacyOption) => void;
   onProfileChange: (v: PrivacyOption) => void;
   onLastSeenChange: (v: PrivacyOption) => void;
   onReadReceiptsChange: (v: PrivacyOption) => void;
+  onActivityStatusChange: (v: PrivacyOption) => void;
   onOnlineStatusChange: (v: PrivacyOption) => void;
   onGroupsChange: (v: PrivacyOption) => void;
   otherUserId?: string;
@@ -170,6 +174,14 @@ export function PrivacySettings({
         value={lastSeenPrivacy}
         onChange={onLastSeenChange}
         comingSoon
+      />
+      <div className="h-px bg-border/50" />
+      <PrivacyToggle
+        key="activity_status"
+        label="Activity Status"
+        description="Who can see what you're studying?"
+        value={activityStatusPrivacy}
+        onChange={onActivityStatusChange}
       />
       <div className="h-px bg-border/50" />
       <PrivacyToggle

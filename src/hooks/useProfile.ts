@@ -11,6 +11,11 @@ export interface Profile {
   bio: string | null;
   privacy_avatar: string;
   privacy_profile: string;
+  privacy_last_seen: string;
+  privacy_read_receipts: string;
+  privacy_activity_status: string;
+  privacy_online_status: string;
+  privacy_groups: string;
   achievements: string[];
 }
 
@@ -29,7 +34,7 @@ export function useProfile() {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('id, user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, achievements')
+        .select('id, user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, privacy_last_seen, privacy_read_receipts, privacy_activity_status, privacy_online_status, privacy_groups, achievements')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -42,7 +47,12 @@ export function useProfile() {
             .eq('user_id', user.id);
           data.display_name = fallback;
         }
-        setProfile(data as Profile);
+        setProfile({
+          ...data,
+          achievements: Array.isArray(data.achievements)
+            ? data.achievements.filter((a): a is string => typeof a === 'string')
+            : [],
+        });
       } else {
         const fallback = user.email?.split('@')[0] || 'Student';
         const { data: created } = await supabase
@@ -53,7 +63,12 @@ export function useProfile() {
           }, { onConflict: 'user_id' })
           .select()
           .single();
-        setProfile(created ?? null);
+        setProfile(created ? {
+          ...created,
+          achievements: Array.isArray(created.achievements)
+            ? created.achievements.filter((a): a is string => typeof a === 'string')
+            : [],
+        } : null);
       }
     } catch (err) {
       console.error('Failed to fetch profile:', err);

@@ -89,9 +89,9 @@ export function useActivation() {
       if (result?.success) {
         setStatus({ is_activated: true, is_admin: status.is_admin, checking: false });
         setValidating(false);
-        return { success: true, plan_type: result.plan_type };
+        return { success: true, plan_type: typeof result.plan_type === "string" ? result.plan_type : undefined };
       } else {
-        const msg = result?.error || "Invalid code";
+        const msg = typeof result?.error === "string" && result.error ? result.error : "Invalid code";
         setError(msg);
         setValidating(false);
         return { success: false, error: msg };

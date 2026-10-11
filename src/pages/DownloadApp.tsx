@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Download, Smartphone, Monitor, CheckCircle, Loader2, Shield, Zap } from "lucide-react";
 
-const GITHUB_REPO = "abdulrazaqafolarin-droid/jupebstudyguide";
-const RELEASES_URL = `https://github.com/${GITHUB_REPO}/releases`;
+// Direct, no-login download (APK is mirrored to public Supabase storage on
+// every release; the GitHub repo is private so its release assets 404 for guests).
+const APK_URL =
+  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
+const APK_INFO = "Latest build • ~10 MB • Android 8.0+";
 const APP_URL = "https://jupebstudyguide-main.vercel.app";
 
 function getPlatform(): "android" | "ios" | "desktop" {
@@ -17,32 +20,18 @@ function getPlatform(): "android" | "ios" | "desktop" {
 export default function DownloadApp() {
   const [platform, setPlatform] = useState<"android" | "ios" | "desktop">("desktop");
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
-  const [versionFound, setVersionFound] = useState(false);
-  const [versionLoading, setVersionLoading] = useState(true);
-  const [versionError, setVersionError] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     setPlatform(getPlatform());
-    setVersionLoading(true);
-    fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`)
-      .then((r) => r.ok ? r.json() : null)
-      .then((data) => {
-        if (data?.tag_name) {
-          setLatestVersion(data.tag_name);
-          setVersionFound(true);
-        }
-        setVersionLoading(false);
-      })
-      .catch(() => { setVersionError(true); setVersionLoading(false); });
+    // No version API check: the APK link below always serves the latest
+    // mirrored build, so there is nothing to look up.
+    setLatestVersion("android-latest");
   }, []);
 
   const downloadAPK = () => {
     setDownloading(true);
-    const apkUrl = versionFound
-      ? `${RELEASES_URL}/latest/download/app-debug.apk`
-      : `${RELEASES_URL}`;
-    window.open(apkUrl, "_blank");
+    window.open(APK_URL, "_blank");
     setTimeout(() => setDownloading(false), 3000);
   };
 
@@ -85,11 +74,8 @@ export default function DownloadApp() {
               </button>
 
               <div className="text-xs text-muted-foreground text-center space-y-1">
-                {versionLoading && <p className="animate-pulse">Checking for latest version...</p>}
-                {!versionLoading && latestVersion && <p>Latest version: {latestVersion}</p>}
-                {!versionLoading && !versionFound && !versionError && <p>No release found yet — APK is being built via CI</p>}
-                {versionError && <p>Could not check for updates. Default APK link will be used.</p>}
-                <p>Version 1.0.0 | ~15MB | Android 8.0+</p>
+                <p>Latest version: {latestVersion}</p>
+                <p>{APK_INFO}</p>
               </div>
 
               <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
@@ -157,13 +143,13 @@ export default function DownloadApp() {
                 />
               </div>
               <a
-                href={RELEASES_URL}
+                href={APK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 <Download className="h-4 w-4" />
-                View Releases on GitHub
+                Download APK for Android
               </a>
               <a
                 href="/"

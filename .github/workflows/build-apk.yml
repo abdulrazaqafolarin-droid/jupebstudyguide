@@ -23,7 +23,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          # Capacitor 8 / AGP 8.x requires JDK 21 to compile.
+          java-version: 21
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3

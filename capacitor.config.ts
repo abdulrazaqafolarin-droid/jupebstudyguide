@@ -2,13 +2,11 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.jupeb.master',
-  appName: 'JUPEB Master',
+  appName: 'Rutex Master(JUPEB)',
   webDir: 'dist',
-  server: {
-    url: 'https://jupebstudyguide-main.vercel.app',
-    androidScheme: 'https',
-    cleartext: false,
-  },
+  // NOTE: no server.url — the app bundles dist locally so it opens instantly
+  // without depending on a remote URL (Supabase data still needs internet).
+  androidScheme: 'https',
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],

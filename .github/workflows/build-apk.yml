@@ -5,6 +5,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Needed so the release step (softprops/action-gh-release) can create the
+# android-latest release with GITHUB_TOKEN.
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build APK

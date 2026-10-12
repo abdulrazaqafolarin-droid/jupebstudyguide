@@ -1,6 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
+import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent } from "../_shared/question-retrieve.ts";
+import { generateEmbedding, generateEmbeddings, resolveEmbedKey } from "../_shared/textbook-embed.ts";
 
 interface InboundMessage {
   role: string;
@@ -38,41 +40,60 @@ Deno.serve(async (req) => {
 
   try {
     const encoder = new TextEncoder();
-    const { action, systemPrompt, messages, text, subject } = await req.json();
+    const { action, systemPrompt, messages, text, texts, subject } = await req.json();
 
+    // Single embedding (client use). Vault key first, env fallback.
     if (action === "embed") {
-      const geminiKey = Deno.env.get("GEMINI_API_KEY");
-      if (!geminiKey) {
+      const embedKey = await resolveEmbedKey(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
+      if (!embedKey) {
         return new Response(
-          JSON.stringify({ embedding: [], error: "GEMINI_API_KEY not configured" }),
+          JSON.stringify({ embedding: [], error: "No Gemini embedding key configured" }),
           { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
         );
       }
-      const embedRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-exp-03-07:embedContent?key=${geminiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "models/gemini-embedding-exp-03-07",
-            content: { parts: [{ text: text || "" }] },
-          }),
-        }
-      );
-      if (!embedRes.ok) {
-        const errText = await embedRes.text();
+      const embedding = await generateEmbedding(text || "", embedKey, "RETRIEVAL_QUERY");
+      if (!embedding) {
         return new Response(
-          JSON.stringify({
-            embedding: [],
-            error: `Gemini embedding failed (${embedRes.status}): ${errText}`,
-          }),
-          { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+          JSON.stringify({ embedding: [], error: "Gemini embedding failed" }),
+          { status: 502, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
         );
       }
-      const embedData = await embedRes.json();
-      const embedding = embedData.embedding?.values || [];
       return new Response(
         JSON.stringify({ embedding }),
+        { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Admin-only batch embeddings for backfilling the question-bank index.
+    // Body: { action: "embed-batch", texts: string[] } (max 25 per call).
+    if (action === "embed-batch") {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("user_id", user.id)
+        .single();
+      if (!profile?.is_admin) {
+        return new Response(
+          JSON.stringify({ error: "Admin only" }),
+          { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
+      }
+      if (!Array.isArray(texts) || texts.length === 0 || texts.length > 25) {
+        return new Response(
+          JSON.stringify({ error: "texts must be an array of 1-25 strings" }),
+          { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
+      }
+      const embedKey = await resolveEmbedKey(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
+      if (!embedKey) {
+        return new Response(
+          JSON.stringify({ error: "No Gemini embedding key configured" }),
+          { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
+      }
+      const embeddings = await generateEmbeddings(texts, embedKey, "RETRIEVAL_DOCUMENT");
+      return new Response(
+        JSON.stringify({ embeddings }),
         { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
@@ -83,17 +104,29 @@ Deno.serve(async (req) => {
 
     let systemMsg = systemPrompt || "You are a helpful assistant for JUPEB exam preparation.";
     let referencesEvent = "";
+    let questionRefsEvent = "";
 
     const lastUserMsg = [...messages].reverse().find((m: InboundMessage) => m.role === "user");
     if (lastUserMsg?.content) {
-      const chunks = await retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
-        subject: subject || undefined,
-        maxChunks: 3,
-      });
+      const [chunks, questions] = await Promise.all([
+        retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
+          subject: subject || undefined,
+          maxChunks: 3,
+        }),
+        retrieveRelevantQuestions(supabaseUrl, supabaseKey, lastUserMsg.content, {
+          subject: subject || undefined,
+          maxQuestions: 5,
+        }),
+      ]);
       const rag = buildRAGContext(chunks);
       if (rag.promptBlock) {
         systemMsg += rag.promptBlock;
         referencesEvent = serializeReferencesEvent(rag.references);
+      }
+      const qrag = buildQuestionRAGContext(questions);
+      if (qrag.promptBlock) {
+        systemMsg += qrag.promptBlock;
+        questionRefsEvent = serializeQuestionReferencesEvent(qrag.references);
       }
     }
 
@@ -114,6 +147,9 @@ Deno.serve(async (req) => {
       async start(controller) {
         if (referencesEvent) {
           controller.enqueue(encoder.encode(referencesEvent));
+        }
+        if (questionRefsEvent) {
+          controller.enqueue(encoder.encode(questionRefsEvent));
         }
         const reader = aiStream.getReader();
         const decoder = new TextDecoder();

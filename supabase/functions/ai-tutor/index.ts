@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
+import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent } from "../_shared/question-retrieve.ts";
 
 interface InboundMessage {
   role: string;
@@ -115,17 +116,29 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
     }
 
     let referencesEvent = "";
+    let questionRefsEvent = "";
 
     const lastUserMsg = [...(messages || [])].reverse().find((m: InboundMessage) => m.role === "user");
     if (lastUserMsg?.content) {
-      const chunks = await retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
-        subject: subject || undefined,
-        maxChunks: 3,
-      });
+      const [chunks, questions] = await Promise.all([
+        retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
+          subject: subject || undefined,
+          maxChunks: 3,
+        }),
+        retrieveRelevantQuestions(supabaseUrl, supabaseKey, lastUserMsg.content, {
+          subject: subject || undefined,
+          maxQuestions: 5,
+        }),
+      ]);
       const rag = buildRAGContext(chunks);
       if (rag.promptBlock) {
         systemContent += rag.promptBlock;
         referencesEvent = serializeReferencesEvent(rag.references);
+      }
+      const qrag = buildQuestionRAGContext(questions);
+      if (qrag.promptBlock) {
+        systemContent += qrag.promptBlock;
+        questionRefsEvent = serializeQuestionReferencesEvent(qrag.references);
       }
     }
 
@@ -148,6 +161,9 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       async start(controller) {
         if (referencesEvent) {
           controller.enqueue(encoder.encode(referencesEvent));
+        }
+        if (questionRefsEvent) {
+          controller.enqueue(encoder.encode(questionRefsEvent));
         }
         const reader = aiStream.getReader();
         const decoder = new TextDecoder();

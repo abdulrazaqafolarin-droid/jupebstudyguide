@@ -65,6 +65,7 @@ export async function streamChat(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ systemPrompt, messages: msgs }),
+      signal: AbortSignal.timeout(55000),
     });
 
     if (!res.ok) {
@@ -79,10 +80,26 @@ export async function streamChat(
     let buffer = "";
     let receivedContent = false;
     let streamError: string | null = null;
+    let lastChunkAt = Date.now();
+    let finished = false;
+    const STALL_TIMEOUT_MS = 45000;
 
+    // Stall watchdog: a silent stream is cancelled so we never hang forever.
+    void (async () => {
+      while (!finished) {
+        await new Promise((r) => setTimeout(r, 5000));
+        if (!finished && Date.now() - lastChunkAt > STALL_TIMEOUT_MS) {
+          try { await reader.cancel("stall timeout"); } catch { /* already closed */ }
+          return;
+        }
+      }
+    })();
+
+    try {
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
+      lastChunkAt = Date.now();
       buffer += decoder.decode(value, { stream: true });
 
       const lines = buffer.split("\n");
@@ -119,6 +136,9 @@ export async function streamChat(
       return;
     }
     callbacks.onDone();
+    } finally {
+      finished = true;
+    }
   } catch (err) {
     callbacks.onError("AI error: " + (err instanceof Error ? err.message : String(err)));
   }
@@ -145,6 +165,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ action: "embed", text }),
+    signal: AbortSignal.timeout(30000),
   });
 
   if (!res.ok) {

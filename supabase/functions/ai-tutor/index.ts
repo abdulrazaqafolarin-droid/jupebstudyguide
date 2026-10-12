@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { CORS_HEADERS, aiChatStream } from "../_shared/ai.ts";
+import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 
 interface InboundMessage {
@@ -85,6 +85,9 @@ Deno.serve(async (req) => {
       { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }
+
+  const blocked = await guardAiAccess(supabase, user);
+  if (blocked) return blocked;
 
   try {
     const encoder = new TextEncoder();

@@ -46,29 +46,21 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
     const { start, end } = getWeekBoundaries();
     let anyError: string | null = null;
 
-    const { data: scores, error: scoresErr } = await supabase
-      .from("score_events")
-      .select("user_id, amount")
-      .gte("created_at", start)
-      .lt("created_at", end);
+    // Server-side aggregation (one bounded query instead of downloading
+    // every score event of the week).
+    const { data: board, error: boardErr } = await supabase.rpc(
+      "get_weekly_leaderboard",
+      { p_week_start: start.slice(0, 10) }
+    );
 
-    if (scoresErr) {
-      console.error("Failed to fetch score_events:", scoresErr);
-      anyError = "Failed to load scores";
+    if (boardErr) {
+      console.error("Failed to fetch weekly leaderboard:", boardErr);
+      setState((s) => ({ ...s, loading: false, error: "Failed to load scores" }));
+      return;
     }
 
-    const scoreMap = new Map<string, number>();
-    const countMap = new Map<string, number>();
-    for (const s of scores ?? []) {
-      scoreMap.set(s.user_id, (scoreMap.get(s.user_id) ?? 0) + s.amount);
-      countMap.set(s.user_id, (countMap.get(s.user_id) ?? 0) + 1);
-    }
-
-    const sorted = [...scoreMap.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, limit);
-
-    const userIds = sorted.map(([id]) => id);
+    const top = (board ?? []).slice(0, limit);
+    const userIds = top.map((r) => r.user_id);
 
     const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; achievements: string[] }>();
     if (userIds.length > 0) {
@@ -89,26 +81,26 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
       }
     }
 
-    const rows: WeeklyLeaderboardRow[] = sorted.map(([user_id, week_score], i) => {
-      const prof = profileMap.get(user_id);
+    const rows: WeeklyLeaderboardRow[] = top.map((r) => {
+      const prof = profileMap.get(r.user_id);
       return {
-        user_id,
-        week_score,
-        event_count: countMap.get(user_id) ?? 0,
-        display_name: prof?.display_name || user_id.slice(0, 8),
-        avatar_url: prof?.avatar_url ?? null,
+        user_id: r.user_id,
+        week_score: Number(r.week_score),
+        event_count: Number(r.event_count),
+        display_name: prof?.display_name || r.display_name || r.user_id.slice(0, 8),
+        avatar_url: prof?.avatar_url ?? r.avatar_url ?? null,
         achievements: prof?.achievements ?? [],
-        rank: i + 1,
+        rank: Number(r.rank),
       };
     });
 
     let myRank: { rank: number; score: number } | null = null;
     if (userId) {
-      const found = rows.find((r) => r.user_id === userId);
+      const found = (board ?? []).find((r) => r.user_id === userId);
       if (found) {
-        myRank = { rank: found.rank, score: found.week_score };
+        myRank = { rank: Number(found.rank), score: Number(found.week_score) };
       } else {
-        myRank = { rank: rows.length + 1, score: 0 };
+        myRank = { rank: (board ?? []).length + 1, score: 0 };
       }
     }
 
@@ -136,23 +128,8 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
 
   useEffect(() => {
     fetchData();
-    intervalRef.current = setInterval(fetchData, 30000);
+    intervalRef.current = setInterval(fetchData, 60000);
     return () => clearInterval(intervalRef.current);
-  }, [fetchData]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("score_events_live")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "score_events" },
-        () => fetchData()
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [fetchData]);
 
   return state;

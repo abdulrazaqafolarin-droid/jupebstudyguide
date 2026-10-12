@@ -14,7 +14,6 @@ import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
 import InstallPrompt from "./components/InstallPrompt";
-import { FloatingAITutor } from "./components/FloatingAITutor";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
@@ -27,6 +26,9 @@ const SettingsProfile = lazy(() => import("./pages/SettingsProfile"));
 const SecuritySettings = lazy(() => import("./pages/SecuritySettings"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const FloatingAITutor = lazy(() =>
+  import("./components/FloatingAITutor").then((m) => ({ default: m.FloatingAITutor }))
+);
 const AchievementsPage = lazy(() => import("./pages/AchievementsPage"));
 const StudyStatsDashboard = lazy(() => import("./pages/StudyStatsDashboard"));
 const DiscoverPage = lazy(() => import("./pages/DiscoverPage"));
@@ -300,7 +302,9 @@ const App = () => {
             <BrowserRouter>
               <AnimatedRoutes />
               <ErrorBoundary>
-              <FloatingAITutor />
+              <Suspense fallback={null}>
+                <FloatingAITutor />
+              </Suspense>
               </ErrorBoundary>
             </BrowserRouter>
           </ProfilePhotoViewerProvider>

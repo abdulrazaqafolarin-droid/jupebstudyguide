@@ -1155,6 +1155,14 @@ export type Database = {
         Args: { p_target_user_id: string }
         Returns: boolean
       }
+      // PENDING REGEN: added by migration 20261011000003 (regenerate types to refresh)
+      can_view_online_status_many: {
+        Args: { p_user_ids: string[] }
+        Returns: {
+          user_id: string
+          allowed: boolean
+        }[]
+      }
       can_view_online_status: {
         Args: { p_target_user_id: string }
         Returns: boolean

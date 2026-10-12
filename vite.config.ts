@@ -24,7 +24,11 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && devTaggerPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      strategies: "generateSW",
+      // injectManifest: custom SW (precache + push notifications) in src/sw.ts.
+      // generateSW would clobber the hand-written push handler.
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
       includeAssets: ["favicon.ico", "favicon.svg", "robots.txt"],
       manifest: {
         name: "JUPEB Master - Past Questions Study App",

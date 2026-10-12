@@ -19,60 +19,13 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
   const poll = useCallback(async (cancelled: { current: boolean }) => {
     if (!user || cancelled.current) return;
     try {
-      const { data: participantData } = await supabase
-        .from('conversation_participants')
-        .select('conversation_id, last_read_at')
-        .eq('user_id', user.id);
+      // Single server-side count for all conversations (no per-conv queries).
+      const { data, error } = await supabase
+        .rpc('get_unread_counts', { p_user_id: user.id });
 
-      if (!participantData || participantData.length === 0) {
-        if (!cancelled.current) setTotalUnread(0);
-        return;
-      }
-
-      let uniqueUnread = 0;
-      const groupCheck: { conversationId: string; lastReadAt: string | null }[] = [];
-
-      for (const p of participantData) {
-        const { count: partCount } = await supabase
-          .from('conversation_participants')
-          .select('id', { count: 'exact', head: true })
-          .eq('conversation_id', p.conversation_id);
-
-        const isGroup = (partCount ?? 0) > 2;
-
-        if (isGroup) {
-          groupCheck.push({ conversationId: p.conversation_id, lastReadAt: p.last_read_at });
-          continue;
-        }
-
-        // DM: count unread messages directly
-        const lastRead = p.last_read_at || new Date(0).toISOString();
-        const { count } = await supabase
-          .from('messages')
-          .select('id', { count: 'exact', head: true })
-          .eq('conversation_id', p.conversation_id)
-          .neq('sender_id', user.id)
-          .gt('created_at', lastRead)
-          .neq('is_deleted', true)
-          .neq('message_type', 'system');
-
-        if ((count ?? 0) > 0) uniqueUnread++;
-      }
-
-      // Groups: use RPC
-      if (groupCheck.length > 0) {
-        const { data: groupUnreadData } = await supabase
-          .rpc('get_unread_counts', { p_user_id: user.id });
-
-        if (groupUnreadData) {
-          const convIds = new Set(groupCheck.map(g => g.conversationId));
-          for (const row of groupUnreadData as { conversation_id: string; count: number }[]) {
-            if (convIds.has(row.conversation_id) && Number(row.count) > 0) {
-              uniqueUnread++;
-            }
-          }
-        }
-      }
+      if (error) throw error;
+      const uniqueUnread = ((data ?? []) as { conversation_id: string; count: number }[])
+        .filter((row) => Number(row.count) > 0).length;
 
       if (!cancelled.current) {
         setTotalUnread(uniqueUnread);

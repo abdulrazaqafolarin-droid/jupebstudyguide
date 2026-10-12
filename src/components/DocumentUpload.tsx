@@ -8,7 +8,11 @@ import { toast } from 'sonner';
 import { Subject, SUBJECT_INFO } from '@/types/question';
 import { chatCompletion } from '@/lib/ai-service';
 import { DOCUMENT_PARSE_PROMPT } from '@/lib/prompts';
-import Tesseract from 'tesseract.js';
+
+// tesseract.js (~2MB + wasm) loads on demand so the upload dialog stays light.
+async function loadTesseract() {
+  return (await import('tesseract.js')).default;
+}
 
 interface DocumentUploadProps {
   onUploadComplete: () => void;
@@ -48,6 +52,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
 
   async function ocrImage(file: File): Promise<string> {
     setOcrProgress('Initializing OCR engine...');
+    const Tesseract = await loadTesseract();
     const { data } = await Tesseract.recognize(file, 'eng', {
       logger: (m) => {
         if (m.status === 'recognizing text') {
@@ -90,6 +95,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onUploadComplete, onClo
         const ctx = canvas.getContext('2d');
         if (ctx) {
           await page.render({ canvas, viewport }).promise;
+          const Tesseract = await loadTesseract();
           const { data } = await Tesseract.recognize(canvas, 'eng');
           fullText += data.text + "\n\n";
         }

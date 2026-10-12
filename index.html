@@ -32,39 +32,11 @@
     <script>
       (function() {
         if (!('serviceWorker' in navigator)) return;
-        var isReset = location.search.includes('swreset=1');
-        if (!isReset) {
-          navigator.serviceWorker.getRegistrations().then(function(regs) {
-            for (var i = 0; i < regs.length; i++) regs[i].unregister();
-          }).catch(function(){});
-          if ('caches' in window) {
-            caches.keys().then(function(keys) {
-              return Promise.all(keys.map(function(k) { return caches.delete(k); }));
-            }).catch(function(){});
-          }
-          location.replace(location.pathname + '?swreset=1');
-          return;
-        }
+        // Workbox (skipWaiting + clientsClaim, see vite.config.ts) handles
+        // updates. Never nuke registrations/caches here: that defeats
+        // offline support and forces full re-downloads.
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(function(reg) {
-            if (reg.active && !navigator.serviceWorker.controller) {
-              return;
-            }
-            if (reg.waiting) {
-              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-              location.reload();
-              return;
-            }
-            reg.addEventListener('updatefound', function() {
-              var sw = reg.installing;
-              sw.addEventListener('statechange', function() {
-                if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-                  sw.postMessage({ type: 'SKIP_WAITING' });
-                  location.reload();
-                }
-              });
-            });
-          }).catch(function(){});
+          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function(){});
         });
       })();
     </script>

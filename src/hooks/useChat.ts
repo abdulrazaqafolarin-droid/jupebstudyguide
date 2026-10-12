@@ -281,17 +281,18 @@ export function useChat() {
       }
 
       const lastMsgByConv = new Map<string, Message>();
-      await Promise.all(convIds.map(async (cid) => {
-        const { data } = await supabase
-          .from('messages')
-          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
-          .eq('conversation_id', cid)
-          .order('created_at', { ascending: false })
-          .limit(1);
-        if (data?.[0]) {
-          lastMsgByConv.set(cid, data[0] as Message);
+      // Single bounded query instead of one round-trip per conversation.
+      const { data: recentMsgs } = await supabase
+        .from('messages')
+        .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
+        .in('conversation_id', convIds)
+        .order('created_at', { ascending: false })
+        .limit(500);
+      for (const m of recentMsgs ?? []) {
+        if (!lastMsgByConv.has(m.conversation_id)) {
+          lastMsgByConv.set(m.conversation_id, m as Message);
         }
-      }));
+      }
 
       const unreadCountMap = new Map<string, number>();
       for (const conv of convData) {
@@ -472,7 +473,7 @@ export function useChat() {
         .channel(`chat-global-${user.id}`)
         .on(
           'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'messages' },
+          { event: 'INSERT', schema: 'public', table: 'messages', filter: `sender_id=neq.${user.id}` },
           (payload) => {
             const newMsg = payload.new as Message;
             setGlobalInsertCount(prev => prev + 1);
@@ -514,7 +515,7 @@ export function useChat() {
         )
         .on(
           'postgres_changes',
-          { event: 'DELETE', schema: 'public', table: 'messages' },
+          { event: 'DELETE', schema: 'public', table: 'messages', filter: `sender_id=neq.${user.id}` },
           (payload) => {
             const oldMsg = payload.old as { conversation_id: string; sender_id: string; is_read: boolean };
             if (oldMsg.sender_id === user.id) return;
@@ -529,7 +530,7 @@ export function useChat() {
         )
         .on(
           'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'messages' },
+          { event: 'UPDATE', schema: 'public', table: 'messages', filter: `sender_id=neq.${user.id}` },
           (payload) => {
             const newMsg = payload.new as Message & { is_deleted: boolean };
             const oldMsg = payload.old as Message & { is_deleted: boolean };
@@ -584,8 +585,13 @@ export function useChat() {
 
     const globalChannel = createGlobalChannel();
 
-    const msgBroadcast = supabase
-      .channel('msg-broadcast', { config: { broadcast: { self: false } } })
+    let msgBroadcastRetry = 0;
+    let msgBroadcastTimer: ReturnType<typeof setTimeout> | undefined;
+    // Mutable holder so cleanup always removes the latest resubscribed channel.
+    const msgBroadcastBox: { current: ReturnType<typeof supabase.channel> | null } = { current: null };
+    const createMsgBroadcast = () => {
+      const ch = supabase
+        .channel('msg-broadcast', { config: { broadcast: { self: false } } })
       .on('broadcast', { event: 'msg' }, (payload) => {
         const newMsg = payload.payload.message as Message;
         if (newMsg.sender_id === user.id) return;
@@ -637,20 +643,34 @@ export function useChat() {
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
-          msgBroadcastRef.current = msgBroadcast;
-        } else if (status === 'CHANNEL_ERROR') {
-          debugWarn('[realtime] msg-broadcast error');
-        } else if (status === 'CLOSED') {
-          debugWarn('[realtime] msg-broadcast closed');
+          msgBroadcastRef.current = ch;
+          msgBroadcastRetry = 0;
+        } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
+          debugWarn('[realtime] msg-broadcast', status, '- scheduling resubscribe');
+          // Polling already covers delivery; keep the channel retrying quietly
+          // with capped backoff instead of dying silently.
+          clearTimeout(msgBroadcastTimer);
+          const delay = Math.min(3000 * Math.pow(1.5, msgBroadcastRetry++), 30000);
+          msgBroadcastTimer = setTimeout(() => {
+            if (disposed) return;
+            supabase.removeChannel(ch);
+            msgBroadcastBox.current = createMsgBroadcast();
+          }, delay + Math.random() * 1000);
         }
       });
+      return ch;
+    };
+
+    const msgBroadcast = createMsgBroadcast();
+    msgBroadcastBox.current = msgBroadcast;
     msgBroadcastRef.current = msgBroadcast;
 
     return () => {
       disposed = true;
       clearTimeout(retryTimer);
+      clearTimeout(msgBroadcastTimer);
       supabase.removeChannel(globalChannel);
-      supabase.removeChannel(msgBroadcast);
+      if (msgBroadcastBox.current) supabase.removeChannel(msgBroadcastBox.current);
       msgBroadcastRef.current = null;
     };
   }, [user, fetchConversations]);
@@ -683,7 +703,8 @@ export function useChat() {
             .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
             .in('conversation_id', convIds)
             .gt('created_at', pollCursorRef.current)
-            .order('created_at', { ascending: true });
+            .order('created_at', { ascending: true })
+            .limit(100);
 
           if (error) throw error;
           if (!data || data.length === 0) return;
@@ -910,10 +931,16 @@ export function useChat() {
     const queue = [...offlineQueueRef.current];
     offlineQueueRef.current = [];
     setPendingCount(0);
-    const results = await Promise.allSettled(
-      queue.map(item => trySendItem(item))
-    );
-    const failed = queue.filter((_, i) => results[i].status === 'rejected' || results[i].value === false);
+    // Sequential: preserves send order (parallel flush reorders messages).
+    const failed: typeof queue = [];
+    for (const item of queue) {
+      try {
+        const ok = await trySendItem(item);
+        if (!ok) failed.push(item);
+      } catch {
+        failed.push(item);
+      }
+    }
     if (failed.length > 0) {
       offlineQueueRef.current = failed;
       setPendingCount(failed.length);
@@ -1039,7 +1066,9 @@ export function useChat() {
     }).select();
 
     if (error) {
-      toast.error(`Send error: ${error.message}`);
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      setPendingCount(offlineQueueRef.current.length);
+      toast.info('Image queued — will send when back online');
       return;
     }
 
@@ -1198,9 +1227,20 @@ export function useChat() {
     }).select();
 
     if (error) {
-      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl: msg.image_url });
+      // Queue a faithful copy: same kind, same target conversation.
+      if (msg.message_type === 'image' && msg.image_url) {
+        offlineQueueRef.current.push({ kind: 'image', conversationId: targetConversationId, imageUrl: msg.image_url });
+      } else if ((msg.message_type === 'file' || msg.message_type === 'video' || msg.message_type === 'audio') && msg.file_url) {
+        offlineQueueRef.current.push({
+          kind: 'file', conversationId: targetConversationId,
+          fileUrl: msg.file_url, fileName: msg.file_name || 'file',
+          fileSize: msg.file_size || 0, fileType: msg.file_type || 'application/octet-stream',
+        });
+      } else {
+        offlineQueueRef.current.push({ kind: 'text', conversationId: targetConversationId, content: msg.content || '' });
+      }
       setPendingCount(offlineQueueRef.current.length);
-      toast.info('Image queued — will send when back online');
+      toast.info('Message queued — will send when back online');
       return;
     }
 
@@ -1294,10 +1334,15 @@ export function useChat() {
     }
   }, [user]);
 
+  const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+  const SAFE_EXT = /^[a-z0-9]{1,5}$/i;
+
   const uploadFile = useCallback(async (file: File): Promise<{ url: string | null; error: string | null }> => {
     if (!user) return { url: null, error: 'Not authenticated' };
+    if (file.size > MAX_UPLOAD_BYTES) return { url: null, error: 'File too large (10MB max)' };
 
-    const ext = file.name.split('.').pop();
+    const rawExt = file.name.split('.').pop() || 'bin';
+    const ext = SAFE_EXT.test(rawExt) ? rawExt.toLowerCase() : 'bin';
     const fileName = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
     const { data, error } = await supabase.storage
@@ -1317,8 +1362,10 @@ export function useChat() {
 
   const uploadImage = useCallback(async (file: File): Promise<string | null> => {
     if (!user) return null;
+    if (file.size > MAX_UPLOAD_BYTES) { toast.error('Image too large (10MB max)'); return null; }
 
-    const ext = file.name.split('.').pop();
+    const rawExt = file.name.split('.').pop() || 'jpg';
+    const ext = SAFE_EXT.test(rawExt) ? rawExt.toLowerCase() : 'jpg';
     const fileName = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
     const { data, error } = await supabase.storage

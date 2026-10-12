@@ -45,6 +45,12 @@ jobs:
         run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
+          # Public, non-secret build values (also on Vercel). The bundled app
+          # boots blank without these since Vite inlines them at build time.
+          VITE_SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX"
+          VITE_SUPABASE_PROJECT_ID: "gzyczowqqywesqhqqpdi"
+          VITE_ADMIN_EMAIL: "admin@example.com"
 
       - name: Sync Capacitor
         run: npx cap sync android

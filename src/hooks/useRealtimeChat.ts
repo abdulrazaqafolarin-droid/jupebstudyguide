@@ -9,7 +9,6 @@ interface UseRealtimeChatProps {
 }
 
 const RECONNECT_DELAY = 3000;
-const MAX_RECONNECT_ATTEMPTS = 5;
 const POLL_INTERVAL = 3000;
 
 export function useRealtimeChat({
@@ -47,7 +46,8 @@ export function useRealtimeChat({
           .select('*')
           .eq('conversation_id', cid)
           .gt('created_at', lastPollCursorRef.current)
-          .order('created_at', { ascending: true });
+          .order('created_at', { ascending: true })
+          .limit(100);
         if (error) throw error;
         if (data && data.length > 0) {
           lastPollCursorRef.current = data[data.length - 1].created_at;
@@ -114,12 +114,11 @@ export function useRealtimeChat({
 
   const scheduleMsgReconnect = useCallback(() => {
     if (msgDisposedRef.current) return;
-    if (msgReconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
-      console.error('[useRealtimeChat] max messages reconnect attempts reached');
-      return;
-    }
 
     clearTimeout(msgReconnectTimerRef.current);
+    // Unbounded with capped backoff + jitter: polling already covers gaps,
+    // so realtime keeps retrying quietly instead of dying after 5 attempts.
+    const delay = Math.min(RECONNECT_DELAY * Math.pow(1.5, msgReconnectAttemptsRef.current), 30000);
     msgReconnectTimerRef.current = setTimeout(() => {
       if (msgDisposedRef.current) return;
       msgReconnectAttemptsRef.current++;
@@ -127,7 +126,7 @@ export function useRealtimeChat({
         supabase.removeChannel(msgChannelRef.current);
       }
       msgSubscribe();
-    }, RECONNECT_DELAY * Math.pow(1.5, msgReconnectAttemptsRef.current));
+    }, delay + Math.random() * 1000);
   }, [msgSubscribe]);
 
   useEffect(() => {

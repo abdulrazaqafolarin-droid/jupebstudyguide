@@ -33,7 +33,7 @@ export default function DiscoverPage() {
     setLoading(true);
 
     Promise.all([
-      supabase.from('profiles').select('user_id, display_name, avatar_url, last_seen_at').neq('user_id', user.id),
+      supabase.from('profiles').select('user_id, display_name, avatar_url, last_seen_at').neq('user_id', user.id).order('display_name').range(0, 49),
       supabase.rpc('get_weekly_leaderboard', { p_week_start: new Date().toISOString().slice(0, 10) }),
     ]).then(([profilesRes, leaderboardRes]) => {
       const profileData = profilesRes.data ?? [];
@@ -62,15 +62,14 @@ export default function DiscoverPage() {
           }
         });
         if (onlineIds.length > 0) {
-          Promise.all(
-            onlineIds.map(async (uid) => {
-              const { data: allowed } = await supabase.rpc('can_view_online_status', {
-                p_target_user_id: uid,
-              });
-              return { uid, allowed: allowed !== false };
-            })
-          ).then((results) => {
-            const visibleOnlineIds = new Set(results.filter(r => r.allowed).map(r => r.uid));
+          supabase.rpc('can_view_online_status_many', {
+            p_user_ids: onlineIds.slice(0, 50),
+          }).then(({ data }) => {
+            const visibleOnlineIds = new Set(
+              ((data ?? []) as { user_id: string; allowed: boolean }[])
+                .filter(r => r.allowed)
+                .map(r => r.user_id)
+            );
             setUsers(prev => prev.map(u => ({
               ...u,
               is_online: visibleOnlineIds.has(u.user_id),

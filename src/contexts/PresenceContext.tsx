@@ -29,19 +29,57 @@ const PresenceContext = createContext<PresenceContextValue>({
   getLastSeen: () => null,
 });
 
-const onlineStatusCache = new Map<string, boolean>();
+const onlineStatusCache = new Map<string, { allowed: boolean; at: number }>();
+const ONLINE_STATUS_TTL_MS = 5 * 60 * 1000;
+const ONLINE_STATUS_MAX = 500;
 
 async function canViewOnlineStatus(viewerId: string, targetId: string): Promise<boolean> {
   const cacheKey = `${viewerId}_${targetId}`;
-  if (onlineStatusCache.has(cacheKey)) return Promise.resolve(onlineStatusCache.get(cacheKey)!);
+  const cached = onlineStatusCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < ONLINE_STATUS_TTL_MS) return cached.allowed;
   try {
     const { data } = await supabase.rpc('can_view_online_status', { p_target_user_id: targetId });
     const allowed = data !== false;
-    onlineStatusCache.set(cacheKey, allowed);
+    if (onlineStatusCache.size >= ONLINE_STATUS_MAX) {
+      const oldest = onlineStatusCache.keys().next().value;
+      if (oldest) onlineStatusCache.delete(oldest);
+    }
+    onlineStatusCache.set(cacheKey, { allowed, at: Date.now() });
     return allowed;
   } catch {
     return true;
   }
+}
+
+async function canViewOnlineStatusMany(viewerId: string, targetIds: string[]): Promise<Map<string, boolean>> {
+  const result = new Map<string, boolean>();
+  const now = Date.now();
+  const uncached = targetIds.filter((id) => {
+    const cached = onlineStatusCache.get(`${viewerId}_${id}`);
+    if (cached && now - cached.at < ONLINE_STATUS_TTL_MS) {
+      result.set(id, cached.allowed);
+      return false;
+    }
+    return true;
+  });
+  if (uncached.length > 0) {
+    try {
+      const { data } = await supabase.rpc('can_view_online_status_many', {
+        p_user_ids: uncached.slice(0, 50),
+      });
+      for (const row of ((data ?? []) as { user_id: string; allowed: boolean }[])) {
+        result.set(row.user_id, row.allowed);
+        if (onlineStatusCache.size >= ONLINE_STATUS_MAX) {
+          const oldest = onlineStatusCache.keys().next().value;
+          if (oldest) onlineStatusCache.delete(oldest);
+        }
+        onlineStatusCache.set(`${viewerId}_${row.user_id}`, { allowed: row.allowed, at: now });
+      }
+    } catch {
+      for (const id of uncached) result.set(id, true);
+    }
+  }
+  return result;
 }
 
 export function PresenceProvider({ children }: { children: React.ReactNode }) {
@@ -129,15 +167,12 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
           });
         });
         if (toCheck.length > 0) {
-          Promise.all(toCheck.map(async (peerId) => {
-            const allowed = await canViewOnlineStatus(user.id, peerId);
-            return { peerId, allowed };
-          })).then((results) => {
+          canViewOnlineStatusMany(user.id, toCheck).then((allowedMap) => {
             const filteredOnline = new Set<string>();
             const filteredTyping = new Set<string>();
             const filteredRecording = new Set<string>();
-            results.forEach(({ peerId, allowed }) => {
-              if (!allowed) return;
+            for (const peerId of toCheck) {
+              if (!allowedMap.get(peerId)) continue;
               filteredOnline.add(peerId);
               const presences = state[peerId] || [];
               presences.forEach((p) => {
@@ -148,7 +183,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
                   filteredRecording.add(p.user_id);
                 }
               });
-            });
+            }
             setOnlineUsers(filteredOnline);
             setTypingUsers(filteredTyping);
             setRecordingUsers(filteredRecording);

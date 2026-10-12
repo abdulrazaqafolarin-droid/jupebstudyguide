@@ -38,6 +38,26 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Ingestion writes admin tables and burns embedding quota: admins only.
+    const { data: profile } = await authSupabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (!profile?.is_admin) {
+      return new Response(
+        JSON.stringify({ error: "Admin access required" }),
+        { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (content.length > 500000) {
+      return new Response(
+        JSON.stringify({ error: "content too large (500KB max)" }),
+        { status: 413, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
     const chunks = chunkText(content);
     console.log(`[Ingest] "${title}": ${chunks.length} chunks created`);
 

@@ -5,7 +5,8 @@ const EMBED_MODEL = "gemini-embedding-001";
 // Must match VECTOR(768) in textbook_chunks / study_question_embeddings.
 export const EMBED_DIMS = 768;
 
-export type EmbedTaskType = "RETRIEVAL_QUERY" | "RETRIEVAL_DOCUMENT";
+/** Last Gemini embedding error (diagnostics for admin embed-batch). */
+export let lastEmbedError: string | null = null;
 
 /**
  * Resolve ALL usable Gemini API keys for embeddings: vault keys in priority
@@ -93,15 +94,18 @@ async function geminiEmbed(
     );
     if (!res.ok) {
       const err = await res.text().catch(() => "unknown");
-      console.error(`[Embed] Gemini error (${res.status}): ${err.slice(0, 200)}`);
+      lastEmbedError = `Gemini error (${res.status}): ${err.slice(0, 200)}`;
+      console.error(`[Embed] ${lastEmbedError}`);
       return null;
     }
     const data = await res.json();
     const values = data.embedding?.values || null;
     if (!values || values.length !== EMBED_DIMS) {
-      console.error(`[Embed] unexpected dims: got ${values?.length}, want ${EMBED_DIMS}`);
+      lastEmbedError = `unexpected dims: got ${values?.length}, want ${EMBED_DIMS}`;
+      console.error(`[Embed] ${lastEmbedError}`);
       return null;
     }
+    lastEmbedError = null;
     return values;
   } catch (err) {
     console.error("[Embed] Gemini request failed:", String(err));

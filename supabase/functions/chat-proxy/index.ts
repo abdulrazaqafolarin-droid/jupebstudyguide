@@ -2,7 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent } from "../_shared/question-retrieve.ts";
-import { generateEmbedding, generateEmbeddings, resolveEmbedKeys } from "../_shared/textbook-embed.ts";
+import { generateEmbedding, generateEmbeddings, resolveEmbedKeys, lastEmbedError } from "../_shared/textbook-embed.ts";
 
 interface InboundMessage {
   role: string;
@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
       }
       const embeddings = await generateEmbeddings(texts, embedKeys, "RETRIEVAL_DOCUMENT");
       return new Response(
-        JSON.stringify({ embeddings }),
+        JSON.stringify({ embeddings, embedError: lastEmbedError }),
         { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }

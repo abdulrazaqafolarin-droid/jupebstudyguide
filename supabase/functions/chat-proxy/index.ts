@@ -2,7 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent } from "../_shared/question-retrieve.ts";
-import { generateEmbedding, generateEmbeddings, resolveEmbedKey } from "../_shared/textbook-embed.ts";
+import { generateEmbedding, generateEmbeddings, resolveEmbedKeys } from "../_shared/textbook-embed.ts";
 
 interface InboundMessage {
   role: string;
@@ -42,16 +42,16 @@ Deno.serve(async (req) => {
     const encoder = new TextEncoder();
     const { action, systemPrompt, messages, text, texts, subject } = await req.json();
 
-    // Single embedding (client use). Vault key first, env fallback.
+    // Single embedding (client use). Vault keys first, env fallback.
     if (action === "embed") {
-      const embedKey = await resolveEmbedKey(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
-      if (!embedKey) {
+      const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
+      if (embedKeys.length === 0) {
         return new Response(
           JSON.stringify({ embedding: [], error: "No Gemini embedding key configured" }),
           { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
         );
       }
-      const embedding = await generateEmbedding(text || "", embedKey, "RETRIEVAL_QUERY");
+      const embedding = await generateEmbedding(text || "", embedKeys, "RETRIEVAL_QUERY");
       if (!embedding) {
         return new Response(
           JSON.stringify({ embedding: [], error: "Gemini embedding failed" }),
@@ -84,14 +84,14 @@ Deno.serve(async (req) => {
           { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
         );
       }
-      const embedKey = await resolveEmbedKey(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
-      if (!embedKey) {
+      const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
+      if (embedKeys.length === 0) {
         return new Response(
           JSON.stringify({ error: "No Gemini embedding key configured" }),
           { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
         );
       }
-      const embeddings = await generateEmbeddings(texts, embedKey, "RETRIEVAL_DOCUMENT");
+      const embeddings = await generateEmbeddings(texts, embedKeys, "RETRIEVAL_DOCUMENT");
       return new Response(
         JSON.stringify({ embeddings }),
         { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
@@ -108,14 +108,17 @@ Deno.serve(async (req) => {
 
     const lastUserMsg = [...messages].reverse().find((m: InboundMessage) => m.role === "user");
     if (lastUserMsg?.content) {
+      const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
       const [chunks, questions] = await Promise.all([
         retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
           subject: subject || undefined,
           maxChunks: 3,
+          embedKeys,
         }),
         retrieveRelevantQuestions(supabaseUrl, supabaseKey, lastUserMsg.content, {
           subject: subject || undefined,
           maxQuestions: 5,
+          embedKey: embedKeys,
         }),
       ]);
       const rag = buildRAGContext(chunks);

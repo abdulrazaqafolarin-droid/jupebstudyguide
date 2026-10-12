@@ -8,41 +8,65 @@ export const EMBED_DIMS = 768;
 export type EmbedTaskType = "RETRIEVAL_QUERY" | "RETRIEVAL_DOCUMENT";
 
 /**
- * Resolve a Gemini API key for embeddings: vault first (cooldown-aware),
- * GEMINI_API_KEY env fallback. Returns null when nothing is configured.
+ * Resolve ALL usable Gemini API keys for embeddings: vault keys in priority
+ * order, GEMINI_API_KEY env last. Multiple keys allow failover when one is
+ * rate-limited (429) — critical for backfills.
  */
+export async function resolveEmbedKeys(
+  supabaseUrl: string,
+  serviceKey: string,
+  encryptionSecret: string | undefined
+): Promise<string[]> {
+  const keys: string[] = [];
+  if (encryptionSecret) {
+    try {
+      const vaultKeys = await getVaultKeys(supabaseUrl, serviceKey, encryptionSecret, "gemini");
+      for (const k of vaultKeys) keys.push(k.apiKey);
+    } catch (err) {
+      console.warn("[Embed] vault key lookup failed, trying env:", String(err).slice(0, 120));
+    }
+  }
+  const envKey = Deno.env.get("GEMINI_API_KEY");
+  if (envKey) keys.push(envKey);
+  return keys;
+}
+
+/** Legacy single-key resolver (first usable key or null). */
 export async function resolveEmbedKey(
   supabaseUrl: string,
   serviceKey: string,
   encryptionSecret: string | undefined
 ): Promise<string | null> {
-  if (encryptionSecret) {
-    try {
-      const vaultKeys = await getVaultKeys(supabaseUrl, serviceKey, encryptionSecret, "gemini");
-      if (vaultKeys.length > 0) return vaultKeys[0].apiKey;
-    } catch (err) {
-      console.warn("[Embed] vault key lookup failed, trying env:", String(err).slice(0, 120));
-    }
-  }
-  return Deno.env.get("GEMINI_API_KEY") || null;
+  const keys = await resolveEmbedKeys(supabaseUrl, serviceKey, encryptionSecret);
+  if (keys.length === 0) console.warn("[Embed] No Gemini key available — embeddings unavailable");
+  return keys[0] || null;
 }
 
 export async function generateEmbedding(
   text: string,
-  apiKey?: string,
+  apiKey?: string | string[],
   taskType: EmbedTaskType = "RETRIEVAL_QUERY"
 ): Promise<number[] | null> {
-  const key = apiKey || Deno.env.get("GEMINI_API_KEY");
-  if (!key) {
+  const keys = Array.isArray(apiKey) ? apiKey : apiKey ? [apiKey] : [];
+  if (keys.length === 0) {
+    const envKey = Deno.env.get("GEMINI_API_KEY");
+    if (envKey) keys.push(envKey);
+  }
+  if (keys.length === 0) {
     console.warn("[Embed] No Gemini key available — embeddings unavailable");
     return null;
   }
-  return geminiEmbed(text, key, taskType);
+  // Fail over across keys (e.g. 429 on the first) before giving up.
+  for (const key of keys) {
+    const vec = await geminiEmbed(text, key, taskType);
+    if (vec) return vec;
+  }
+  return null;
 }
 
 export async function generateEmbeddings(
   texts: string[],
-  apiKey?: string,
+  apiKey?: string | string[],
   taskType: EmbedTaskType = "RETRIEVAL_DOCUMENT"
 ): Promise<(number[] | null)[]> {
   return Promise.all(texts.map((t) => generateEmbedding(t, apiKey, taskType)));

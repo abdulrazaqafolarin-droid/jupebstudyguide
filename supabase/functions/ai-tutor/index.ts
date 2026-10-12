@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
 import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent } from "../_shared/question-retrieve.ts";
+import { resolveEmbedKeys } from "../_shared/textbook-embed.ts";
 
 interface InboundMessage {
   role: string;
@@ -120,14 +121,17 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
 
     const lastUserMsg = [...(messages || [])].reverse().find((m: InboundMessage) => m.role === "user");
     if (lastUserMsg?.content) {
+      const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
       const [chunks, questions] = await Promise.all([
         retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
           subject: subject || undefined,
           maxChunks: 3,
+          embedKeys,
         }),
         retrieveRelevantQuestions(supabaseUrl, supabaseKey, lastUserMsg.content, {
           subject: subject || undefined,
           maxQuestions: 5,
+          embedKey: embedKeys,
         }),
       ]);
       const rag = buildRAGContext(chunks);

@@ -26,6 +26,8 @@ export interface RetrieveOptions {
   subject?: string;
   maxChunks?: number;
   similarityThreshold?: number;
+  /** Resolved Gemini key(s) — vault first. Falls back to env when omitted. */
+  embedKeys?: string | string[];
 }
 
 export async function retrieveRelevantChunks(
@@ -37,7 +39,7 @@ export async function retrieveRelevantChunks(
   const maxChunks = options.maxChunks ?? 5;
   const threshold = options.similarityThreshold ?? 0.5;
 
-  const embedding = await generateEmbedding(query);
+  const embedding = await generateEmbedding(query, options.embedKeys, "RETRIEVAL_QUERY");
   if (!embedding) return [];
 
   const vectorStr = `[${embedding.join(",")}]`;

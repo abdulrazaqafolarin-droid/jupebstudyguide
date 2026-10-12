@@ -26,8 +26,8 @@ export interface RetrieveQuestionsOptions {
   subject?: string;
   maxQuestions?: number;
   similarityThreshold?: number;
-  /** Resolved Gemini key (vault first). If omitted, falls back to env. */
-  embedKey?: string;
+  /** Resolved Gemini key(s) — vault first. Falls back to env when omitted. */
+  embedKey?: string | string[];
 }
 
 /** Canonical text used both for indexing (RETRIEVAL_DOCUMENT) and querying. */

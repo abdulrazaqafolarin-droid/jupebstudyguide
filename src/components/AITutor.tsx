@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { streamChat } from '@/lib/ai-service';
+import type { QuestionRef } from '@/lib/ai-service';
+import QuestionRefChips from './QuestionRefChips';
 import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -19,6 +21,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   attachment?: { base64: string; mimeType: string; name: string };
+  questionRefs?: QuestionRef[];
 }
 
 interface AITutorProps {
@@ -123,7 +126,16 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length > 0 && arr[arr.length - 1].role === 'assistant') {
-            arr[arr.length - 1] = { role: 'assistant', content };
+            arr[arr.length - 1] = { role: 'assistant', content, questionRefs: arr[arr.length - 1].questionRefs };
+          }
+          return arr;
+        });
+      },
+      onQuestionReferences: (refs) => {
+        setMessages(prev => {
+          const arr = [...prev];
+          if (arr.length > 0 && arr[arr.length - 1].role === 'assistant') {
+            arr[arr.length - 1] = { ...arr[arr.length - 1], questionRefs: refs };
           }
           return arr;
         });
@@ -135,7 +147,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
         toast.error(err);
         setIsLoading(false);
       },
-    }, ragContext);
+    }, ragContext, question.subject);
   }, [question, attachment, clearAttachment, messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -295,6 +307,9 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
                             </div>
                           ) : (
                             <p className="text-xs whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.content}</p>
+                          )}
+                          {msg.role === 'assistant' && msg.questionRefs && msg.questionRefs.length > 0 && (
+                            <QuestionRefChips refs={msg.questionRefs} />
                           )}
                         </div>
                         {msg.role === 'user' && (

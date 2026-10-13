@@ -8,10 +8,19 @@ export interface AIChatMessage {
   attachment?: { base64: string; mimeType: string; name: string } | null;
 }
 
+export interface QuestionRef {
+  question_id: string;
+  subject: string;
+  year: number;
+  category: string;
+}
+
 export interface StreamCallbacks {
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (err: string) => void;
+  /** Past-bank questions the backend retrieved for this reply (RAG). */
+  onQuestionReferences?: (refs: QuestionRef[]) => void;
 }
 
 interface OutboundMessage {
@@ -52,7 +61,8 @@ export async function streamChat(
   systemPrompt: string,
   messages: AIChatMessage[],
   callbacks: StreamCallbacks,
-  ragContext?: string
+  ragContext?: string,
+  subject?: string
 ): Promise<void> {
   try {
     const token = await getAuthToken();
@@ -64,7 +74,7 @@ export async function streamChat(
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ systemPrompt, messages: msgs }),
+      body: JSON.stringify({ systemPrompt, messages: msgs, subject: subject || undefined }),
       signal: AbortSignal.timeout(55000),
     });
 
@@ -123,6 +133,12 @@ export async function streamChat(
             streamError = parsed.error;
             continue;
           }
+          if (parsed.type === "question-references" && Array.isArray(parsed.references)) {
+            try { callbacks.onQuestionReferences?.(parsed.references as QuestionRef[]); } catch { /* never break stream */ }
+            continue;
+          }
+          // Textbook citations event (legacy) — informational only.
+          if (parsed.type === "references") continue;
           const delta = parsed.choices?.[0]?.delta?.content;
           if (delta) {
             receivedContent = true;

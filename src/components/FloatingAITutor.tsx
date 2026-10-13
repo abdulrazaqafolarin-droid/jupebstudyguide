@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo, type Variants } from 'framer-motion';
 import { toast } from 'sonner';
 import { streamChat as aiStreamChat } from '@/lib/ai-service';
+import QuestionRefChips from './QuestionRefChips';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -417,7 +418,16 @@ export const FloatingAITutor = () => {
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length && arr[arr.length - 1].role === 'assistant') {
-            arr[arr.length - 1] = { role: 'assistant', content: acc };
+            arr[arr.length - 1] = { role: 'assistant', content: acc, questionRefs: arr[arr.length - 1].questionRefs };
+          }
+          return arr;
+        });
+      },
+      onQuestionReferences: (refs) => {
+        setMessages(prev => {
+          const arr = [...prev];
+          if (arr.length && arr[arr.length - 1].role === 'assistant') {
+            arr[arr.length - 1] = { ...arr[arr.length - 1], questionRefs: refs };
           }
           return arr;
         });
@@ -761,6 +771,9 @@ export const FloatingAITutor = () => {
                                       </div>
                                     ) : (
                                       <p className="text-xs whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.content}</p>
+                                    )}
+                                    {msg.role === 'assistant' && msg.questionRefs && msg.questionRefs.length > 0 && (
+                                      <QuestionRefChips refs={msg.questionRefs} />
                                     )}
                                     {msg.content && (
                                       <motion.div

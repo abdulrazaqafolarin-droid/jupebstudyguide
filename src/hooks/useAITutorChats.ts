@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import type { QuestionRef } from '@/lib/ai-service';
 
 export interface AIMessage {
   id?: string;
   role: 'user' | 'assistant';
   content: string;
   attachment?: { base64?: string; mimeType: string; name: string } | null;
+  /** Past-bank questions retrieved for this reply (RAG citations, not persisted). */
+  questionRefs?: QuestionRef[];
 }
 
 export interface AIChat {

@@ -25,6 +25,7 @@ import { useStudyQuestions } from "@/hooks/study-questions/useStudyQuestions";
 import { useQuestionTimer } from "@/hooks/study-questions/useQuestionTimer";
 import { useBookmarks } from "@/hooks/study-questions/useBookmarks";
 import { useActivation } from "@/hooks/useActivation";
+import { useScoreAwarder } from "@/hooks/useScoreAwarder";
 import { StudyCategoryTabs } from "@/components/study-past-questions/StudyCategoryTabs";
 import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
@@ -82,6 +83,14 @@ export default function StudyPastQuestions() {
   const timer = useQuestionTimer();
   const { bookmarks, toggle, isBookmarked } = useBookmarks();
   const { status: activationStatus } = useActivation();
+  const {
+    answerQuestion: awardAnswer,
+    correctAnswer: awardCorrect,
+    quizComplete: awardQuizComplete,
+  } = useScoreAwarder();
+  // Guarantees one XP grant per quiz attempt even if both manual submit
+  // and timer-expiry paths fire.
+  const awardedRef = useRef(false);
 
   const [view, setView] = useState<View>("subjects");
   const [quizComplete, setQuizComplete] = useState(false);
@@ -266,6 +275,7 @@ export default function StudyPastQuestions() {
       setQuizComplete(false);
       setQuizResults([]);
       setUserAnswers({});
+      awardedRef.current = false;
     } else if (view === "bookmarks") {
       setSelectedBookmarkId(null);
       setView("subjects");
@@ -276,10 +286,24 @@ export default function StudyPastQuestions() {
     setUserAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
 
+  const awardForResults = (results: AnswerEntry[]) => {
+    if (awardedRef.current) return;
+    awardedRef.current = true;
+    // XP parity with the home quiz flow: server dedupes by reference id,
+    // so re-attempting the same questions never double-awards.
+    const sessionId = `past-questions_${Date.now()}`;
+    awardQuizComplete(sessionId);
+    for (const r of results) {
+      awardAnswer(r.questionId);
+      if (r.isCorrect) awardCorrect(r.questionId);
+    }
+  };
+
   const handleComplete = (results: AnswerEntry[]) => {
     setQuizResults(results);
     setQuizComplete(true);
     timer.stop();
+    awardForResults(results);
   };
 
   useEffect(() => {
@@ -294,6 +318,7 @@ export default function StudyPastQuestions() {
       });
       setQuizResults(results);
       setQuizComplete(true);
+      awardForResults(results);
     }
   }, [timer.state, quizComplete, effectiveQuestions, userAnswers]);
 
@@ -331,6 +356,7 @@ export default function StudyPastQuestions() {
     setQuizComplete(false);
     setQuizResults([]);
     setUserAnswers({});
+    awardedRef.current = false;
     setView("years");
   };
 

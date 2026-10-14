@@ -20,7 +20,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_user_reference
 
 -- Prevent clients from bypassing award_score by inserting arbitrary score rows directly.
 DROP POLICY IF EXISTS "Users insert own score events" ON public.score_events;
-REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM anon, authenticated;
+REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM PUBLIC, anon, authenticated;
 
 CREATE OR REPLACE FUNCTION public.award_score(
   p_user_id UUID,
@@ -36,6 +36,9 @@ AS $$
 DECLARE
   v_expected_amount INTEGER;
   v_inserted_id UUID;
+  v_reference_key TEXT;
+  v_question_exists BOOLEAN;
+  v_reference_date DATE;
 BEGIN
   -- Service-role edge functions may award server-verified events. All other
   -- callers may award only to their own authenticated account.
@@ -75,6 +78,103 @@ BEGIN
      OR right(p_reference_id, length(p_user_id::TEXT)) <> p_user_id::TEXT THEN
     RAISE EXCEPTION 'Invalid reward reference'
       USING ERRCODE = '22023';
+  END IF;
+
+  v_reference_key := split_part(p_reference_id, ':', 2);
+  IF v_reference_key IS NULL OR btrim(v_reference_key) = '' THEN
+    RAISE EXCEPTION 'A non-empty reward reference key is required'
+      USING ERRCODE = '22023';
+  END IF;
+
+  IF p_reason IN ('answered_question', 'correct_answer') THEN
+    SELECT EXISTS (
+      SELECT 1
+      FROM public.study_questions q
+      WHERE q.id::TEXT = v_reference_key
+        AND q.hidden = false
+      UNION ALL
+      SELECT 1
+      FROM public.custom_questions q
+      WHERE q.id::TEXT = v_reference_key
+        AND q.user_id = p_user_id
+    ) INTO v_question_exists;
+
+    IF NOT v_question_exists THEN
+      RAISE EXCEPTION 'Question reward reference is not valid for this user'
+        USING ERRCODE = '22023';
+    END IF;
+
+    IF p_reason = 'correct_answer' THEN
+      SELECT EXISTS (
+        SELECT 1
+        FROM public.study_questions q
+        WHERE q.id::TEXT = v_reference_key
+          AND q.hidden = false
+          AND q.correct_answer IS NOT NULL
+          AND btrim(q.correct_answer) <> ''
+          AND upper(btrim(q.correct_answer)) <> 'TBD'
+        UNION ALL
+        SELECT 1
+        FROM public.custom_questions q
+        WHERE q.id::TEXT = v_reference_key
+          AND q.user_id = p_user_id
+          AND btrim(q.correct_answer) <> ''
+          AND upper(btrim(q.correct_answer)) <> 'TBD'
+      ) INTO v_question_exists;
+
+      IF NOT v_question_exists THEN
+        RAISE EXCEPTION 'Cannot award correctness for a question without an answer key'
+          USING ERRCODE = '22023';
+      END IF;
+    END IF;
+  ELSIF p_reason = 'syllabus_day' THEN
+    IF v_reference_key !~ '^[0-9]+ (user_id, amount, reason, reference_id)
+  VALUES (p_user_id, p_amount, p_reason, p_reference_id)
+  ON CONFLICT (user_id, reference_id) WHERE reference_id IS NOT NULL
+  DO NOTHING
+  RETURNING id INTO v_inserted_id;
+
+  IF v_inserted_id IS NULL THEN
+    RETURN jsonb_build_object('success', true, 'duplicate', true);
+  END IF;
+
+  RETURN jsonb_build_object('success', true, 'duplicate', false);
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) TO authenticated, service_role;
+ OR v_reference_key::INTEGER NOT BETWEEN 1 AND 30 THEN
+      RAISE EXCEPTION 'Invalid syllabus day reward reference'
+        USING ERRCODE = '22023';
+    END IF;
+  ELSIF p_reason = 'streak_day' THEN
+    IF v_reference_key !~ '^\d{4}-\d{2}-\d{2} (user_id, amount, reason, reference_id)
+  VALUES (p_user_id, p_amount, p_reason, p_reference_id)
+  ON CONFLICT (user_id, reference_id) WHERE reference_id IS NOT NULL
+  DO NOTHING
+  RETURNING id INTO v_inserted_id;
+
+  IF v_inserted_id IS NULL THEN
+    RETURN jsonb_build_object('success', true, 'duplicate', true);
+  END IF;
+
+  RETURN jsonb_build_object('success', true, 'duplicate', false);
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) TO authenticated, service_role;
+ THEN
+      RAISE EXCEPTION 'Invalid streak date reward reference'
+        USING ERRCODE = '22023';
+    END IF;
+    v_reference_date := to_date(v_reference_key, 'YYYY-MM-DD');
+    IF to_char(v_reference_date, 'YYYY-MM-DD') <> v_reference_key
+       OR v_reference_date NOT BETWEEN CURRENT_DATE - 1 AND CURRENT_DATE + 1 THEN
+      RAISE EXCEPTION 'Streak rewards are limited to the current local date'
+        USING ERRCODE = '22023';
+    END IF;
   END IF;
 
   INSERT INTO public.score_events (user_id, amount, reason, reference_id)

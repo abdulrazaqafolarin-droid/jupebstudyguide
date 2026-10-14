@@ -261,14 +261,33 @@ const Index = () => {
     });
   }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, getAllQuestionsBySubject]);
 
+  const handleMissionAttempt = useCallback((mission: DailyMissionRecord, attempt: DailyMissionRecord["attempts"][number]) => {
+    let streak = consecutiveCorrect;
+    attempt.answers.forEach(({ questionId, isCorrect }) => {
+      updateProgress(questionId, isCorrect ? 4 : 1);
+      awardAnswer(questionId);
+      if (isCorrect) {
+        streak++;
+        awardCorrect(questionId);
+      } else {
+        streak = 0;
+      }
+    });
+    setConsecutiveCorrect(streak);
+    recordStudySession(attempt.answers.length);
+    const hour = new Date().getHours();
+    setSessionHours((previous) => previous.includes(hour) ? previous : [...previous, hour].slice(-20));
+  }, [consecutiveCorrect, updateProgress, awardAnswer, awardCorrect, setConsecutiveCorrect, recordStudySession, setSessionHours]);
+
   const handleMissionComplete = useCallback((mission: DailyMissionRecord) => {
     const finalAttempt = mission.attempts[mission.attempts.length - 1];
     if (!finalAttempt || finalAttempt.accuracy < 70) return;
     completeSessionDay(mission.sessionId, mission.syllabusDay, finalAttempt.accuracy);
+    awardQuizComplete(mission.id);
     awardSyllabusDay(mission.syllabusDay);
     confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
     toast.success(`Daily mission complete — ${finalAttempt.accuracy}% accuracy!`);
-  }, [completeSessionDay, awardSyllabusDay]);
+  }, [completeSessionDay, awardSyllabusDay, awardQuizComplete]);
 
   const documentsUploaded = documentUploadCount;
 
@@ -478,6 +497,7 @@ const Index = () => {
         history={dailyMissions}
         onBack={() => setCurrentView('home')}
         onUpdate={updateMission}
+        onAttemptComplete={handleMissionAttempt}
         onComplete={handleMissionComplete}
       />
     );

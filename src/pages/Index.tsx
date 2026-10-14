@@ -16,6 +16,14 @@ import AchievementsPanel from '@/components/AchievementsPanel';
 import AchievementPopup from '@/components/AchievementPopup';
 import SyllabusSetup from '@/components/SyllabusSetup';
 import SessionListView from '@/components/SessionListView';
+import DailyMissionCard from '@/components/DailyMissionCard';
+import {
+  buildSessionName,
+  getActiveDailySession,
+  getTodayTask,
+  suggestElectives,
+  todayDateString,
+} from '@/lib/daily-mission';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useCustomQuestions } from '@/hooks/useCustomQuestions';
 import { useStreak } from '@/hooks/useStreak';
@@ -164,6 +172,41 @@ const Index = () => {
   }, [sessions]);
 
   const isSyllabusStarted = sessions.length > 0;
+
+  // Daily Mission widget: surface the active session's current task on home.
+  const activeDailySession = useMemo(
+    () => getActiveDailySession(sessions),
+    [sessions],
+  );
+  const todayMissionTask = useMemo(
+    () => (activeDailySession ? getTodayTask(activeDailySession) : null),
+    [activeDailySession],
+  );
+  const studiedSubjects = useMemo(() => {
+    const studied = new Set<Subject>();
+    for (const subject of ['physics', 'chemistry', 'biology', 'math'] as Subject[]) {
+      if (getStats(getAllQuestionsBySubject(subject)).studied > 0) studied.add(subject);
+    }
+    return studied;
+  }, [getStats, getAllQuestionsBySubject]);
+  const missionElectives = useMemo(
+    () => suggestElectives(studiedSubjects),
+    [studiedSubjects],
+  );
+
+  const handleStartDailyMission = useCallback((subjects: Subject[]) => {
+    createSession(buildSessionName(subjects), subjects, todayDateString(), 30);
+    toast.success('Daily mission started! Day 1 is ready below.');
+  }, [createSession]);
+
+  const handleCompleteDailyMission = useCallback((sessionId: string, day: number, mastery: number) => {
+    completeSessionDay(sessionId, day, mastery);
+    awardSyllabusDay(day);
+    if (mastery >= 70) {
+      confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
+    }
+    toast.success(`Day ${day} complete — ${mastery}% mastery!`);
+  }, [completeSessionDay, awardSyllabusDay]);
 
   const documentsUploaded = documentUploadCount;
 
@@ -571,7 +614,17 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4">
+      <main className="max-w-4xl mx-auto px-4 pt-8">
+        {/* Daily Mission */}
+        <DailyMissionCard
+          session={activeDailySession}
+          todayTask={todayMissionTask}
+          suggestedElectives={missionElectives}
+          onStartMission={handleStartDailyMission}
+          onCompleteDay={handleCompleteDailyMission}
+          onViewPlan={() => setCurrentView('syllabus')}
+        />
+
         {/* Overall Progress */}
         <section className="mb-12 animate-in-up stagger-1">
           <div className="relative bg-card rounded-2xl border border-border p-6 md:p-8 chalk-texture overflow-hidden">

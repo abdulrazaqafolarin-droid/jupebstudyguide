@@ -132,7 +132,16 @@ export function DailyMissionExperience({
                         name={`mission-${mission.id}-${question.id}`}
                         value={option.label}
                         checked={answers[question.id] === option.label}
-                        onChange={() => setAnswers((previous) => ({ ...previous, [question.id]: option.label }))}
+                        onChange={() => {
+                          setAnswers((previous) => ({ ...previous, [question.id]: option.label }));
+                          onUpdate(mission.id, (current) => ({
+                            ...current,
+                            currentAnswers: [
+                              ...current.currentAnswers.filter((answer) => answer.questionId !== question.id),
+                              { questionId: question.id, selectedAnswer: option.label, isCorrect: false },
+                            ],
+                          }));
+                        }}
                         className="mt-1 accent-primary"
                       />
                       <span className="text-sm"><strong>{option.label}.</strong> {option.text}</span>

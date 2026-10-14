@@ -129,6 +129,7 @@ export function useDailyMissions() {
     session: StudySessionData;
     task: DailyTask;
     questions: Question[];
+    weakQuestionIds?: string[];
   }): Promise<DailyMissionRecord | null> => {
     const localDate = todayDateString();
     const existingLocal = missions.find((mission) => mission.localDate === localDate);

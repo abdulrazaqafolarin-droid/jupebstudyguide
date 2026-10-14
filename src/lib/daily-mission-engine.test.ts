@@ -106,6 +106,27 @@ describe("daily mission engine", () => {
     expect(mission?.currentQuestionIds).not.toContain("q12");
   });
 
+  it("includes previous mistakes from another subject in the mixed daily set", () => {
+    const previous = {
+      ...missionFixture(),
+      localDate: "2026-10-13",
+      mistakeQuestionIds: ["bio1"],
+    };
+    const pool = [
+      ...Array.from({ length: 11 }, (_, index) => question(`q${index + 1}`)),
+      { ...question("bio1", "Cell Structure"), subject: "biology" as const },
+    ];
+    const mission = createDailyMission({
+      session,
+      task,
+      questions: pool,
+      history: [previous],
+      localDate: "2026-10-14",
+      now: new Date("2026-10-14T10:00:00.000Z"),
+    });
+    expect(mission?.currentQuestionIds).toContain("bio1");
+  });
+
   it("does not create a second mission for the same local date", () => {
     const existing = missionFixture();
     expect(createDailyMission({

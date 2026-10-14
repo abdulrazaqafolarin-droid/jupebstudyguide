@@ -8,6 +8,7 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
+import { gradeAnswer, percentageScore } from '@/lib/answer-scoring';
 
 interface QuizModeProps {
   questions: Question[];
@@ -24,8 +25,10 @@ export interface QuizResult {
   answeredQuestions: Array<{
     questionId: string;
     isCorrect: boolean;
+    isGradable?: boolean;
     timeSpent: number;
   }>;
+  gradableQuestions?: number;
 }
 
 const TIMER_PRESETS = [
@@ -41,7 +44,7 @@ function hasRealAnswer(q: Question): boolean {
 export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModeProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Array<{ questionId: string; isCorrect: boolean; timeSpent: number }>>([]);
+  const [answers, setAnswers] = useState<Array<{ questionId: string; isCorrect: boolean; isGradable: boolean; timeSpent: number }>>([]);
   const [startTime, setStartTime] = useState(Date.now());
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const [showResult, setShowResult] = useState(false);
@@ -60,22 +63,24 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
     const totalTime = (Date.now() - startTime) / 1000;
     const finalAnswers = [...answers];
     if (selectedOption && currentIndex < questions.length) {
-      const hasCorrectAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
-      const isCorrect = hasCorrectAnswer ? selectedOption === currentQuestion.correctAnswer : true;
+      const { isCorrect, isGradable } = gradeAnswer(selectedOption, currentQuestion.correctAnswer);
       const qTimeSpent = (Date.now() - questionStartTime) / 1000;
       finalAnswers.push({
         questionId: currentQuestion.id,
         isCorrect,
+        isGradable,
         timeSpent: qTimeSpent,
       });
     }
     const result: QuizResult = {
       totalQuestions: questions.length,
-      correctAnswers: finalAnswers.filter(a => a.isCorrect).length,
-      wrongAnswers: finalAnswers.filter(a => !a.isCorrect).length,
+      correctAnswers: finalAnswers.filter(a => a.isGradable && a.isCorrect).length,
+      wrongAnswers: finalAnswers.filter(a => a.isGradable && !a.isCorrect).length,
+      gradableQuestions: finalAnswers.filter(a => a.isGradable).length,
       timeSpent: totalTime,
       answeredQuestions: finalAnswers,
     };
+    setAnswers(finalAnswers);
     setQuizComplete(true);
     onComplete(result);
   }, [answers, startTime, onComplete, selectedOption, currentIndex, questions, currentQuestion, questionStartTime]);
@@ -101,12 +106,12 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
   const handleNext = () => {
     const timeSpent = (Date.now() - questionStartTime) / 1000;
-    const hasCorrectAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
-    const isCorrect = hasCorrectAnswer ? selectedOption === currentQuestion.correctAnswer : true;
+    const { isCorrect, isGradable } = gradeAnswer(selectedOption, currentQuestion.correctAnswer);
 
     const newAnswers = [...answers, {
       questionId: currentQuestion.id,
       isCorrect,
+      isGradable,
       timeSpent,
     }];
     setAnswers(newAnswers);
@@ -120,8 +125,9 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
       const totalTime = (Date.now() - startTime) / 1000;
       const result: QuizResult = {
         totalQuestions: questions.length,
-        correctAnswers: newAnswers.filter(a => a.isCorrect).length,
-        wrongAnswers: newAnswers.filter(a => !a.isCorrect).length,
+        correctAnswers: newAnswers.filter(a => a.isGradable && a.isCorrect).length,
+        wrongAnswers: newAnswers.filter(a => a.isGradable && !a.isCorrect).length,
+        gradableQuestions: newAnswers.filter(a => a.isGradable).length,
         timeSpent: totalTime,
         answeredQuestions: newAnswers,
       };
@@ -141,8 +147,9 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
   }
 
   if (quizComplete) {
-    const correctCount = answers.filter(a => a.isCorrect).length;
-    const percentage = Math.round((correctCount / questions.length) * 100);
+    const correctCount = answers.filter(a => a.isGradable && a.isCorrect).length;
+    const gradableCount = answers.filter(a => a.isGradable).length;
+    const percentage = percentageScore(answers) ?? 0;
 
     const getGrade = () => {
       if (percentage >= 90) return { label: 'Excellent!', icon: '🏆', color: 'text-primary' };

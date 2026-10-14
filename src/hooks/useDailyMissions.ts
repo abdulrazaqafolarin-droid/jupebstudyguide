@@ -156,7 +156,7 @@ export function useDailyMissions() {
 
       if (!error && data) {
         chosen = data.mission as unknown as DailyMissionRecord;
-      } else if (error.code === "23505") {
+      } else if (error?.code === "23505") {
         const existing = await supabase
           .from("daily_missions")
           .select("mission")

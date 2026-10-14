@@ -127,21 +127,19 @@ describe("daily mission engine", () => {
     expect(result.mistakeQuestionIds).toEqual(["q2", "q3"]);
   });
 
-  it("completes at 70% or higher", () => {
+  it("completes at exactly 70% accuracy", () => {
     const mission = missionFixture();
-    const pool = [...mission.currentQuestionIds, "q4"].map((id) => question(id));
-    const fourQuestionMission = {
-      ...mission,
-      currentQuestionIds: ["q1", "q2", "q3", "q4"],
-    };
-    const result = submitMissionAttempt(fourQuestionMission, pool, [
-      { questionId: "q1", selectedAnswer: "A", isCorrect: true },
-      { questionId: "q2", selectedAnswer: "A", isCorrect: true },
-      { questionId: "q3", selectedAnswer: "A", isCorrect: true },
-      { questionId: "q4", selectedAnswer: "B", isCorrect: false },
-    ]);
+    const questionIds = Array.from({ length: 10 }, (_, index) => `q${index + 1}`);
+    const tenQuestionMission = { ...mission, currentQuestionIds: questionIds };
+    const pool = questionIds.map((id) => question(id));
+    const answers = questionIds.map((questionId, index) => ({
+      questionId,
+      selectedAnswer: index < 7 ? "A" : "B",
+      isCorrect: index < 7,
+    }));
+    const result = submitMissionAttempt(tenQuestionMission, pool, answers);
     expect(result.stage).toBe("completed");
-    expect(result.attempts[0].accuracy).toBe(75);
+    expect(result.attempts[0].accuracy).toBe(70);
   });
 
   it("uses a fresh targeted set when enough questions exist", () => {

@@ -190,7 +190,11 @@ export function QuestionViewer({
               <div
                 key={r.questionId}
                 className={`p-4 rounded-xl border ${
-                  r.isCorrect ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20" : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
+                  r.isGradable === false
+                    ? "border-border bg-muted/30"
+                    : r.isCorrect
+                      ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
+                      : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
                 }`}
               >
                 <p className="text-sm font-medium mb-1">

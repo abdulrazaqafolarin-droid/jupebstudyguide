@@ -254,7 +254,10 @@ const Index = () => {
       task: todayMissionTask,
       questions: pool,
     }).then((mission) => {
-      if (!mission) toast.error('Today\'s mission could not be prepared because fewer than three gradable questions are available for this topic.');
+      if (!mission) {
+        autoMissionKeyRef.current = null;
+        toast.error('Today\'s mission could not be prepared because fewer than three gradable questions are available for this topic.');
+      }
     });
   }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, getAllQuestionsBySubject]);
 

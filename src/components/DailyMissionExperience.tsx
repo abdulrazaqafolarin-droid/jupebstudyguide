@@ -13,7 +13,7 @@ interface DailyMissionExperienceProps {
   history: DailyMissionRecord[];
   onBack: () => void;
   onUpdate: (missionId: string, update: (mission: DailyMissionRecord) => DailyMissionRecord) => void;
-  onAttemptComplete: (mission: DailyMissionRecord, attempt: DailyMissionRecord["attempts"][number]) => void;
+  onAttemptComplete: (attempt: DailyMissionRecord["attempts"][number]) => void;
   onComplete: (mission: DailyMissionRecord) => void;
 }
 
@@ -60,7 +60,7 @@ export function DailyMissionExperience({
     const result = submitMissionAttempt(mission, questions, submitted);
     onUpdate(mission.id, () => result);
     const attempt = result.attempts[result.attempts.length - 1];
-    if (attempt) onAttemptComplete(result, attempt);
+    if (attempt) onAttemptComplete(attempt);
     if (result.stage === "completed") onComplete(result);
   };
 

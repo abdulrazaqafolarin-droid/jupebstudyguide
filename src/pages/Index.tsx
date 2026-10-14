@@ -234,9 +234,14 @@ const Index = () => {
   }, [createSession, openMissionForSession]);
 
   const handleOpenDailyMission = useCallback(() => {
+    if (todayMission) {
+      setSelectedDailyMissionId(todayMission.id);
+      setCurrentView('daily-mission');
+      return;
+    }
     if (!activeDailySession || !todayMissionTask) return;
     void openMissionForSession(activeDailySession, todayMissionTask);
-  }, [activeDailySession, todayMissionTask, openMissionForSession]);
+  }, [todayMission, activeDailySession, todayMissionTask, openMissionForSession]);
 
   const autoMissionKeyRef = useRef<string | null>(null);
   useEffect(() => {

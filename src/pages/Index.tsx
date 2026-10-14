@@ -261,7 +261,7 @@ const Index = () => {
     });
   }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, getAllQuestionsBySubject]);
 
-  const handleMissionAttempt = useCallback((mission: DailyMissionRecord, attempt: DailyMissionRecord["attempts"][number]) => {
+  const handleMissionAttempt = useCallback((attempt: DailyMissionRecord["attempts"][number]) => {
     let streak = consecutiveCorrect;
     attempt.answers.forEach(({ questionId, isCorrect }) => {
       updateProgress(questionId, isCorrect ? 4 : 1);

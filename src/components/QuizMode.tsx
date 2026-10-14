@@ -8,7 +8,7 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
-import { gradeAnswer, percentageScore } from '@/lib/answer-scoring';
+import { gradeAnswer, hasGradableAnswer, percentageScore } from '@/lib/answer-scoring';
 
 interface QuizModeProps {
   questions: Question[];
@@ -29,6 +29,10 @@ export interface QuizResult {
     timeSpent: number;
   }>;
   gradableQuestions?: number;
+}
+
+function hasRealAnswer(question: Question): boolean {
+  return hasGradableAnswer(question.correctAnswer);
 }
 
 const TIMER_PRESETS = [

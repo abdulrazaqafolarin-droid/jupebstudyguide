@@ -74,6 +74,7 @@ export function selectMissionQuestions(args: {
   attemptNumber?: number;
   excludedQuestionIds?: string[];
   preferredQuestionIds?: string[];
+  weakQuestionIds?: string[];
   difficulty?: Difficulty;
 }): Question[] {
   const {
@@ -84,10 +85,12 @@ export function selectMissionQuestions(args: {
     attemptNumber = 1,
     excludedQuestionIds = [],
     preferredQuestionIds = [],
+    weakQuestionIds = [],
     difficulty = "medium",
   } = args;
   const excluded = new Set(excludedQuestionIds);
   const priorMistakes = new Set(history.flatMap((mission) => mission.mistakeQuestionIds));
+  const weakQuestions = new Set(weakQuestionIds);
   const recentlySeen = new Set(history.slice(-2).flatMap((mission) => [
     ...mission.currentQuestionIds,
     ...mission.attempts.flatMap((attempt) => attempt.questionIds),
@@ -113,7 +116,7 @@ export function selectMissionQuestions(args: {
   // Reserve up to three slots for previous mistakes so a syllabus-heavy bank
   // cannot crowd out review of weak questions from earlier days.
   const mistakeReview = ranked
-    .filter((question) => priorMistakes.has(question.id))
+    .filter((question) => priorMistakes.has(question.id) || weakQuestions.has(question.id))
     .slice(0, Math.min(3, count));
   const selectedIds = new Set(mistakeReview.map((question) => question.id));
   const remainder = ranked.filter((question) => !selectedIds.has(question.id));
@@ -152,6 +155,7 @@ export function createDailyMission(args: {
   task: DailyTask;
   questions: Question[];
   history: DailyMissionRecord[];
+  weakQuestionIds?: string[];
   localDate: string;
   now?: Date;
 }): DailyMissionRecord | null {
@@ -163,6 +167,7 @@ export function createDailyMission(args: {
     pool: questions,
     task,
     history,
+    weakQuestionIds: args.weakQuestionIds,
     difficulty,
   });
   if (selected.length < 3) return null;

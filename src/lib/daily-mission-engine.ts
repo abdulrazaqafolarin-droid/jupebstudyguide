@@ -94,7 +94,6 @@ export function selectMissionQuestions(args: {
   ]));
   const uniquePool = [...new Map(pool.map((question) => [question.id, question])).values()];
   const valid = uniquePool.filter((question) =>
-    question.subject === task.subject &&
     question.type === "mcq" &&
     (question.options?.length ?? 0) >= 2 &&
     hasGradableAnswer(question.correctAnswer) &&
@@ -103,16 +102,22 @@ export function selectMissionQuestions(args: {
   const score = (question: Question) => {
     let points = 0;
     if (preferredQuestionIds.includes(question.id)) points += 1000;
-    if (priorMistakes.has(question.id)) points += 100;
-    if (topicMatches(question, task)) points += 50;
+    if (topicMatches(question, task)) points += 60;
+    if (question.subject === task.subject) points += 20;
     if (questionDifficulty(question) === difficulty) points += 10;
     if (recentlySeen.has(question.id) && !priorMistakes.has(question.id)) points -= 25;
     if (attemptNumber > 1 && !excluded.has(question.id)) points += 1;
     return points;
   };
-  return [...valid]
-    .sort((a, b) => score(b) - score(a) || a.id.localeCompare(b.id))
-    .slice(0, Math.min(count, valid.length));
+  const ranked = [...valid].sort((a, b) => score(b) - score(a) || a.id.localeCompare(b.id));
+  // Reserve up to three slots for previous mistakes so a syllabus-heavy bank
+  // cannot crowd out review of weak questions from earlier days.
+  const mistakeReview = ranked
+    .filter((question) => priorMistakes.has(question.id))
+    .slice(0, Math.min(3, count));
+  const selectedIds = new Set(mistakeReview.map((question) => question.id));
+  const remainder = ranked.filter((question) => !selectedIds.has(question.id));
+  return [...mistakeReview, ...remainder].slice(0, Math.min(count, valid.length));
 }
 
 export function buildMissionLesson(task: DailyTask): { title: string; text: string } {
@@ -245,6 +250,18 @@ export function prepareRecoveryAttempt(
   history: DailyMissionRecord[],
 ): DailyMissionRecord {
   const excluded = new Set(mission.attempts.flatMap((attempt) => attempt.questionIds));
+  const missedTopics = pool
+    .filter((question) => mission.mistakeQuestionIds.includes(question.id) && question.topic?.trim())
+    .map((question) => question.topic!.trim())
+    .filter((topic, index, all) => all.indexOf(topic) === index)
+    .map((topic, index) => ({
+      id: `missed-topic-${index}`,
+      name: topic,
+      description: `Review questions previously missed in ${topic}.`,
+      subtopics: [],
+      difficulty: mission.difficulty === "hard" ? "advanced" as const : mission.difficulty === "easy" ? "beginner" as const : "intermediate" as const,
+      estimatedHours: 1,
+    }));
   const targetedTask: DailyTask = {
     day: mission.syllabusDay,
     topics: [{
@@ -254,7 +271,7 @@ export function prepareRecoveryAttempt(
       subtopics: [],
       difficulty: mission.difficulty === "hard" ? "advanced" : mission.difficulty === "easy" ? "beginner" : "intermediate",
       estimatedHours: 1,
-    }],
+    }, ...missedTopics],
     subject: mission.subject,
     learningObjectives: [mission.topicName],
     checkpointQuestions: [],

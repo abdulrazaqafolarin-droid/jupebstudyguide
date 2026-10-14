@@ -70,7 +70,7 @@ const Index = () => {
   const [tick, setTick] = useState(0);
 
   const { getStats, updateProgress, progress } = useStudyProgress();
-  const { missions: dailyMissions, todayMission, ready: dailyMissionsReady, startMission, updateMission } = useDailyMissions();
+  const { missions: dailyMissions, todayMission, todayDate: missionLocalDate, ready: dailyMissionsReady, startMission, updateMission } = useDailyMissions();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
   const { profile, syncAchievements } = useProfile();
@@ -204,6 +204,12 @@ const Index = () => {
     () => dailyMissions.find((mission) => mission.id === selectedDailyMissionId) ?? todayMission,
     [dailyMissions, selectedDailyMissionId, todayMission],
   );
+
+  // Do not let an unfinished prior-day mission remain the active workspace after local midnight.
+  useEffect(() => {
+    if (currentView !== 'daily-mission' || !selectedDailyMission) return;
+    if (selectedDailyMission.localDate !== missionLocalDate) setCurrentView('home');
+  }, [currentView, selectedDailyMission, missionLocalDate]);
 
   const openMissionForSession = useCallback(async (session: StudySessionData, task: DailyTask) => {
     const mission = todayMission ?? await startMission({

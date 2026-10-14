@@ -105,6 +105,8 @@ export function selectMissionQuestions(args: {
   const score = (question: Question) => {
     let points = 0;
     if (preferredQuestionIds.includes(question.id)) points += 1000;
+    if (priorMistakes.has(question.id)) points += 100;
+    if (weakQuestions.has(question.id)) points += 80;
     if (topicMatches(question, task)) points += 60;
     if (question.subject === task.subject) points += 20;
     if (questionDifficulty(question) === difficulty) points += 10;

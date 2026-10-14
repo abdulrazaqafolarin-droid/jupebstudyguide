@@ -215,7 +215,7 @@ const Index = () => {
     const mission = todayMission ?? await startMission({
       session,
       task,
-      questions: getAllQuestionsBySubject(task.subject),
+      questions: allQuestions,
     });
     if (!mission) {
       toast.error('I could not find at least three gradable multiple-choice questions for this topic yet. Please choose another syllabus topic or report the missing question bank coverage.');
@@ -224,7 +224,7 @@ const Index = () => {
     setSelectedDailyMissionId(mission.id);
     setCurrentView('daily-mission');
     return true;
-  }, [todayMission, startMission, getAllQuestionsBySubject]);
+  }, [todayMission, startMission, allQuestions]);
 
   const handleStartDailyMission = useCallback(async (subjects: Subject[]) => {
     const session = createSession(buildSessionName(subjects), subjects, todayDateString(), 30);
@@ -248,7 +248,7 @@ const Index = () => {
     if (!dailyMissionsReady || !activeDailySession || !todayMissionTask || todayMission) return;
     const key = `${todayDateString()}|${activeDailySession.id}|${todayMissionTask.day}`;
     if (autoMissionKeyRef.current === key) return;
-    const pool = getAllQuestionsBySubject(todayMissionTask.subject);
+    const pool = allQuestions;
     if (pool.length === 0) {
       autoMissionKeyRef.current = null;
       return;
@@ -264,7 +264,7 @@ const Index = () => {
         toast.error('Today\'s mission could not be prepared because fewer than three gradable questions are available for this topic.');
       }
     });
-  }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, getAllQuestionsBySubject]);
+  }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, allQuestions]);
 
   const handleMissionAttempt = useCallback((attempt: DailyMissionRecord["attempts"][number]) => {
     let streak = consecutiveCorrect;
@@ -505,7 +505,7 @@ const Index = () => {
     return (
       <DailyMissionExperience
         mission={selectedDailyMission}
-        questions={getAllQuestionsBySubject(selectedDailyMission.subject)}
+        questions={allQuestions}
         history={dailyMissions}
         onBack={() => setCurrentView('home')}
         onUpdate={updateMission}

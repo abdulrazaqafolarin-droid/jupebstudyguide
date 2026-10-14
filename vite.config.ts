@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
-let devTaggerPlugin: () => () => void = () => () => {};
+let devTaggerPlugin: typeof import("lovable-tagger").componentTagger | undefined;
 try {
   devTaggerPlugin = (await import("lovable-tagger")).componentTagger;
 } catch {
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === "development" && devTaggerPlugin(),
+    ...(mode === "development" && devTaggerPlugin ? [devTaggerPlugin()] : []),
     VitePWA({
       registerType: "autoUpdate",
       // injectManifest: custom SW (precache + push notifications) in src/sw.ts.
@@ -79,7 +79,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
     }),
-  ].filter(Boolean),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -17,6 +17,9 @@ import AchievementPopup from '@/components/AchievementPopup';
 import SyllabusSetup from '@/components/SyllabusSetup';
 import SessionListView from '@/components/SessionListView';
 import DailyMissionCard from '@/components/DailyMissionCard';
+import { DailyMissionExperience } from '@/components/DailyMissionExperience';
+import { useDailyMissions } from '@/hooks/useDailyMissions';
+import type { DailyMissionRecord } from '@/lib/daily-mission-engine';
 import {
   buildSessionName,
   getActiveDailySession,
@@ -54,7 +57,7 @@ const cardVariants: Variants = {
 };
 
 
-type View = 'home' | 'study' | 'quiz-setup' | 'quiz' | 'syllabus-setup' | 'syllabus';
+type View = 'home' | 'study' | 'quiz-setup' | 'quiz' | 'syllabus-setup' | 'syllabus' | 'daily-mission';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -62,9 +65,11 @@ const Index = () => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [quizPlan, setQuizPlan] = useState<QuizPlan | null>(null);
   const [currentQuizQuestions, setCurrentQuizQuestions] = useState<Question[]>([]);
+  const [selectedDailyMissionId, setSelectedDailyMissionId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
 
   const { getStats, updateProgress, progress } = useStudyProgress();
+  const { missions: dailyMissions, todayMission, ready: dailyMissionsReady, startMission, updateMission } = useDailyMissions();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
   const { profile, syncAchievements } = useProfile();
@@ -194,22 +199,44 @@ const Index = () => {
     [studiedSubjects],
   );
 
-  const handleStartDailyMission = useCallback((subjects: Subject[]) => {
-    createSession(buildSessionName(subjects), subjects, todayDateString(), 30);
-    toast.success('Daily mission started! Day 1 is ready below.');
-  }, [createSession]);
+  const selectedDailyMission = useMemo(
+    () => dailyMissions.find((mission) => mission.id === selectedDailyMissionId) ?? todayMission,
+    [dailyMissions, selectedDailyMissionId, todayMission],
+  );
 
-  const handleCompleteDailyMission = useCallback((sessionId: string, day: number, mastery: number) => {
-    if (!Number.isFinite(mastery) || mastery < 70 || mastery > 100) {
-      toast.error('You need at least 70% mastery to complete this day. Review the topics and try again.');
+  const openMissionForSession = useCallback(async (session: StudySessionData, task: DailyTask) => {
+    const mission = todayMission ?? await startMission({
+      session,
+      task,
+      questions: getAllQuestionsBySubject(task.subject),
+    });
+    if (!mission) {
+      toast.error('I could not find at least three gradable multiple-choice questions for this topic yet. Please choose another syllabus topic or report the missing question bank coverage.');
       return;
     }
-    completeSessionDay(sessionId, day, mastery);
-    awardSyllabusDay(day);
-    if (mastery >= 70) {
-      confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
-    }
-    toast.success(`Day ${day} complete — ${mastery}% mastery!`);
+    setSelectedDailyMissionId(mission.id);
+    setCurrentView('daily-mission');
+  }, [todayMission, startMission, getAllQuestionsBySubject]);
+
+  const handleStartDailyMission = useCallback(async (subjects: Subject[]) => {
+    const session = createSession(buildSessionName(subjects), subjects, todayDateString(), 30);
+    const task = session.progress.dailyTasks[0];
+    await openMissionForSession(session, task);
+    toast.success('Your first guided daily mission is ready.');
+  }, [createSession, openMissionForSession]);
+
+  const handleOpenDailyMission = useCallback(() => {
+    if (!activeDailySession || !todayMissionTask) return;
+    void openMissionForSession(activeDailySession, todayMissionTask);
+  }, [activeDailySession, todayMissionTask, openMissionForSession]);
+
+  const handleMissionComplete = useCallback((mission: DailyMissionRecord) => {
+    const finalAttempt = mission.attempts[mission.attempts.length - 1];
+    if (!finalAttempt || finalAttempt.accuracy < 70) return;
+    completeSessionDay(mission.sessionId, mission.syllabusDay, finalAttempt.accuracy);
+    awardSyllabusDay(mission.syllabusDay);
+    confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
+    toast.success(`Daily mission complete — ${finalAttempt.accuracy}% accuracy!`);
   }, [completeSessionDay, awardSyllabusDay]);
 
   const documentsUploaded = documentUploadCount;
@@ -410,6 +437,20 @@ const Index = () => {
     setSelectedSubject(null);
     setQuizPlan(null);
   };
+
+  // Daily mission experience
+  if (currentView === 'daily-mission' && selectedDailyMission) {
+    return (
+      <DailyMissionExperience
+        mission={selectedDailyMission}
+        questions={getAllQuestionsBySubject(selectedDailyMission.subject)}
+        history={dailyMissions}
+        onBack={() => setCurrentView('home')}
+        onUpdate={updateMission}
+        onComplete={handleMissionComplete}
+      />
+    );
+  }
 
   // Study view
   if (currentView === 'study' && selectedSubject) {
@@ -627,9 +668,10 @@ const Index = () => {
         <DailyMissionCard
           session={activeDailySession}
           todayTask={todayMissionTask}
+          todayMission={todayMission}
           suggestedElectives={missionElectives}
           onStartMission={handleStartDailyMission}
-          onCompleteDay={handleCompleteDailyMission}
+          onOpenMission={handleOpenDailyMission}
           onViewPlan={() => setCurrentView('syllabus')}
         />
 

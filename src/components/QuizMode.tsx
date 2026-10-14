@@ -8,6 +8,7 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
+import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
 
 interface QuizModeProps {
   questions: Question[];
@@ -24,8 +25,14 @@ export interface QuizResult {
   answeredQuestions: Array<{
     questionId: string;
     isCorrect: boolean;
+    isGradable?: boolean;
     timeSpent: number;
   }>;
+  gradableQuestions?: number;
+}
+
+function hasRealAnswer(question: Question): boolean {
+  return hasGradableAnswer(question.correctAnswer);
 }
 
 const TIMER_PRESETS = [
@@ -34,14 +41,10 @@ const TIMER_PRESETS = [
   { label: '1 hour', value: 60, gradient: 'from-violet-500/20 to-violet-600/10 hover:from-violet-500/30 hover:to-violet-600/20' },
 ];
 
-function hasRealAnswer(q: Question): boolean {
-  return !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
-}
-
 export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModeProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Array<{ questionId: string; isCorrect: boolean; timeSpent: number }>>([]);
+  const [answers, setAnswers] = useState<Array<{ questionId: string; isCorrect: boolean; isGradable: boolean; timeSpent: number }>>([]);
   const [startTime, setStartTime] = useState(Date.now());
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const [showResult, setShowResult] = useState(false);
@@ -60,22 +63,24 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
     const totalTime = (Date.now() - startTime) / 1000;
     const finalAnswers = [...answers];
     if (selectedOption && currentIndex < questions.length) {
-      const hasCorrectAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
-      const isCorrect = hasCorrectAnswer ? selectedOption === currentQuestion.correctAnswer : true;
+      const { isCorrect, isGradable } = gradeAnswer(selectedOption, currentQuestion.correctAnswer);
       const qTimeSpent = (Date.now() - questionStartTime) / 1000;
       finalAnswers.push({
         questionId: currentQuestion.id,
         isCorrect,
+        isGradable,
         timeSpent: qTimeSpent,
       });
     }
     const result: QuizResult = {
       totalQuestions: questions.length,
-      correctAnswers: finalAnswers.filter(a => a.isCorrect).length,
-      wrongAnswers: finalAnswers.filter(a => !a.isCorrect).length,
+      correctAnswers: finalAnswers.filter(a => a.isGradable && a.isCorrect).length,
+      wrongAnswers: questions.filter((question) => hasRealAnswer(question)).length - finalAnswers.filter(a => a.isGradable && a.isCorrect).length,
+      gradableQuestions: questions.filter((question) => hasRealAnswer(question)).length,
       timeSpent: totalTime,
       answeredQuestions: finalAnswers,
     };
+    setAnswers(finalAnswers);
     setQuizComplete(true);
     onComplete(result);
   }, [answers, startTime, onComplete, selectedOption, currentIndex, questions, currentQuestion, questionStartTime]);
@@ -101,12 +106,12 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
   const handleNext = () => {
     const timeSpent = (Date.now() - questionStartTime) / 1000;
-    const hasCorrectAnswer = !!currentQuestion.correctAnswer && currentQuestion.correctAnswer !== "TBD" && currentQuestion.correctAnswer !== "tbd";
-    const isCorrect = hasCorrectAnswer ? selectedOption === currentQuestion.correctAnswer : true;
+    const { isCorrect, isGradable } = gradeAnswer(selectedOption, currentQuestion.correctAnswer);
 
     const newAnswers = [...answers, {
       questionId: currentQuestion.id,
       isCorrect,
+      isGradable,
       timeSpent,
     }];
     setAnswers(newAnswers);
@@ -120,8 +125,9 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
       const totalTime = (Date.now() - startTime) / 1000;
       const result: QuizResult = {
         totalQuestions: questions.length,
-        correctAnswers: newAnswers.filter(a => a.isCorrect).length,
-        wrongAnswers: newAnswers.filter(a => !a.isCorrect).length,
+        correctAnswers: newAnswers.filter(a => a.isGradable && a.isCorrect).length,
+        wrongAnswers: questions.filter((question) => hasRealAnswer(question)).length - newAnswers.filter(a => a.isGradable && a.isCorrect).length,
+        gradableQuestions: questions.filter((question) => hasRealAnswer(question)).length,
         timeSpent: totalTime,
         answeredQuestions: newAnswers,
       };
@@ -141,8 +147,9 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
   }
 
   if (quizComplete) {
-    const correctCount = answers.filter(a => a.isCorrect).length;
-    const percentage = Math.round((correctCount / questions.length) * 100);
+    const correctCount = answers.filter(a => a.isGradable && a.isCorrect).length;
+    const gradableCount = questions.filter((question) => hasRealAnswer(question)).length;
+    const percentage = gradableCount > 0 ? Math.round((correctCount / gradableCount) * 100) : 0;
 
     const getGrade = () => {
       if (percentage >= 90) return { label: 'Excellent!', icon: '🏆', color: 'text-primary' };
@@ -151,7 +158,9 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
       if (percentage >= 40) return { label: 'Keep Trying!', icon: '📚', color: 'text-chemistry' };
       return { label: 'Keep Studying!', icon: '🎯', color: 'text-destructive' };
     };
-    const grade = getGrade();
+    const grade = gradableCount === 0
+      ? { label: 'Not graded', icon: '📝', color: 'text-muted-foreground' }
+      : getGrade();
 
     return (
       <div className="max-w-lg mx-auto animate-scale-in">
@@ -177,7 +186,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
               className="mx-auto mb-6"
             >
               <div className="text-center">
-                <span className={cn("text-4xl font-bold", grade.color)}>{percentage}%</span>
+                <span className={cn("text-4xl font-bold", grade.color)}>{gradableCount === 0 ? "—" : `${percentage}%`}</span>
                 <p className="text-xs text-muted-foreground mt-0.5">Score</p>
               </div>
             </ProgressRing>
@@ -191,7 +200,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
               </div>
               <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-xl p-4 border border-destructive/10">
                 <X className="w-5 h-5 mx-auto mb-1.5 text-destructive" />
-                <p className="text-2xl font-bold text-destructive">{questions.length - correctCount}</p>
+                <p className="text-2xl font-bold text-destructive">{gradableCount - correctCount}</p>
                 <p className="text-xs text-muted-foreground">Wrong</p>
               </div>
               <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10">
@@ -201,9 +210,16 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
               </div>
             </div>
 
+            {gradableCount < questions.length && (
+              <p className="text-xs text-muted-foreground mb-4">
+                {questions.length - gradableCount} question(s) were excluded from scoring because an answer key is missing.
+              </p>
+            )}
+
             {/* Message */}
             <p className="text-sm text-muted-foreground mb-6">
-              {percentage >= 90 ? "Outstanding performance! You're exam-ready." :
+              {gradableCount === 0 ? "This quiz could not be scored because no valid answer keys are available." :
+               percentage >= 90 ? "Outstanding performance! You're exam-ready." :
                percentage >= 80 ? "Excellent work! Keep the momentum going." :
                percentage >= 60 ? "Good progress! Review the questions you missed." :
                percentage >= 40 ? "You're building foundation. Keep practicing!" :

@@ -11,11 +11,13 @@ import type { Subject, Question } from "@/types/question";
 import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
+import { gradeAnswer, percentageScore } from "@/lib/answer-scoring";
 
 interface AnswerEntry {
   questionId: string;
   answer: string;
   isCorrect: boolean;
+  isGradable?: boolean;
 }
 
 interface QuestionViewerProps {
@@ -116,11 +118,8 @@ export function QuestionViewer({
   const handleSubmitAll = useCallback(() => {
     const all: AnswerEntry[] = questions.map((q) => {
       const answer = answers[q.id] ?? theoryAnswers[q.id] ?? "";
-      const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
-      const isCorrect = hasRealAnswer
-        ? answer.toUpperCase() === q.correctAnswer.toUpperCase()
-        : true;
-      return { questionId: q.id, answer, isCorrect };
+      const { isCorrect, isGradable } = gradeAnswer(answer, q.correctAnswer);
+      return { questionId: q.id, answer, isCorrect, isGradable };
     });
     setResults(all);
     setSubmitted(true);
@@ -162,8 +161,9 @@ export function QuestionViewer({
   }
 
   if (submitted) {
-    const correct = results.filter((r) => r.isCorrect).length;
-    const score = Math.round((correct / results.length) * 100);
+    const correct = results.filter((r) => r.isGradable !== false && r.isCorrect).length;
+    const gradableCount = results.filter((r) => r.isGradable !== false).length;
+    const score = percentageScore(results);
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -172,11 +172,16 @@ export function QuestionViewer({
       >
         <div className="text-center py-8">
           <div className="text-4xl font-bold mb-2">
-            {score}%
+            {score === null ? "—" : `${score}%`}
           </div>
           <p className="text-muted-foreground">
-            {correct} of {results.length} correct
+            {correct} of {gradableCount} gradable questions correct
           </p>
+          {gradableCount < results.length && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {results.length - gradableCount} question(s) excluded because an answer key is missing.
+            </p>
+          )}
         </div>
         <div className="space-y-3 max-h-[400px] overflow-y-auto">
           {results.map((r, i) => {
@@ -185,7 +190,11 @@ export function QuestionViewer({
               <div
                 key={r.questionId}
                 className={`p-4 rounded-xl border ${
-                  r.isCorrect ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20" : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
+                  r.isGradable === false
+                    ? "border-border bg-muted/30"
+                    : r.isCorrect
+                      ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
+                      : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
                 }`}
               >
                 <p className="text-sm font-medium mb-1">
@@ -194,9 +203,11 @@ export function QuestionViewer({
                 <p className="text-xs text-muted-foreground">
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
                 </p>
-                {q.correctAnswer && (
+                {r.isGradable === false ? (
+                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no answer key is available.</p>
+                ) : q.correctAnswer && (
                   <p className="text-xs text-muted-foreground mt-0.5">
-                  {r.isCorrect ? "Correct" : `Correct answer: ${q.correctAnswer}`}
+                    {r.isCorrect ? "Correct" : `Correct answer: ${q.correctAnswer}`}
                   </p>
                 )}
               </div>

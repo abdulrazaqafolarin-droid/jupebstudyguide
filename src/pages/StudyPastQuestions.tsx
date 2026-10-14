@@ -34,6 +34,7 @@ import { StudyTimer } from "@/components/study-past-questions/StudyTimer";
 import { AdminQuestionPanel } from "@/components/study-past-questions/AdminQuestionPanel";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { gradeAnswer } from "@/lib/answer-scoring";
 
 type View = "subjects" | "years" | "questions" | "bookmarks";
 
@@ -41,6 +42,7 @@ interface AnswerEntry {
   questionId: string;
   answer: string;
   isCorrect: boolean;
+  isGradable?: boolean;
 }
 
 const SUBJECTS: Subject[] = ["physics", "chemistry", "biology", "math"];
@@ -310,11 +312,8 @@ export default function StudyPastQuestions() {
     if (timer.state === "expired" && !quizComplete && effectiveQuestions.length > 0) {
       const results = effectiveQuestions.map((q) => {
         const answer = userAnswers[q.id] || "";
-        const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
-        const isCorrect = hasRealAnswer
-          ? answer.toUpperCase() === q.correctAnswer.toUpperCase()
-          : true;
-        return { questionId: q.id, answer, isCorrect };
+        const { isCorrect, isGradable } = gradeAnswer(answer, q.correctAnswer);
+        return { questionId: q.id, answer, isCorrect, isGradable };
       });
       setQuizResults(results);
       setQuizComplete(true);
@@ -322,8 +321,8 @@ export default function StudyPastQuestions() {
     }
   }, [timer.state, quizComplete, effectiveQuestions, userAnswers]);
 
-  const correctCount = quizResults.filter((r) => r.isCorrect).length;
-  const totalCount = quizResults.length;
+  const correctCount = quizResults.filter((r) => r.isGradable !== false && r.isCorrect).length;
+  const totalCount = quizResults.filter((r) => r.isGradable !== false).length;
   const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   useEffect(() => {

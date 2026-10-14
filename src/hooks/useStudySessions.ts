@@ -182,6 +182,8 @@ export function useStudySessions() {
     (sessionId: string, day: number, masteryScore: number) => {
       setSessions(prev => prev.map(s => {
         if (s.id !== sessionId) return s;
+        // A day is not complete until the learner reaches the required threshold.
+        if (!Number.isFinite(masteryScore) || masteryScore < 70 || masteryScore > 100) return s;
         const updatedTasks = s.progress.dailyTasks.map(task =>
           task.day === day
             ? { ...task, isCompleted: true, completedAt: new Date(), masteryScore }

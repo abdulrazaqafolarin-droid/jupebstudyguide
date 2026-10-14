@@ -8,6 +8,7 @@ import {
   missionStreak,
   subjectsFromElectives,
   suggestElectives,
+  todayDateString,
 } from "./daily-mission";
 
 function makeSession(
@@ -134,5 +135,17 @@ describe("buildSessionName", () => {
     expect(buildSessionName(["physics", "chemistry", "math"])).toBe(
       "Physics + Chemistry + Math Plan"
     );
+  });
+});
+
+
+describe("todayDateString", () => {
+  it("formats the learner's local calendar date rather than converting to UTC", () => {
+    const lateLocalEvening = new Date(2026, 9, 14, 23, 59, 0);
+    expect(todayDateString(lateLocalEvening)).toBe("2026-10-14");
+  });
+
+  it("zero-pads month and day", () => {
+    expect(todayDateString(new Date(2026, 0, 5, 12, 0, 0))).toBe("2026-01-05");
   });
 });

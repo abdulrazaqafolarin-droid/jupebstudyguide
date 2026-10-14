@@ -685,6 +685,7 @@ const Index = () => {
           session={activeDailySession}
           todayTask={todayMissionTask}
           todayMission={todayMission}
+          history={dailyMissions}
           suggestedElectives={missionElectives}
           onStartMission={handleStartDailyMission}
           onOpenMission={handleOpenDailyMission}

@@ -200,6 +200,10 @@ const Index = () => {
   }, [createSession]);
 
   const handleCompleteDailyMission = useCallback((sessionId: string, day: number, mastery: number) => {
+    if (!Number.isFinite(mastery) || mastery < 70 || mastery > 100) {
+      toast.error('You need at least 70% mastery to complete this day. Review the topics and try again.');
+      return;
+    }
     completeSessionDay(sessionId, day, mastery);
     awardSyllabusDay(day);
     if (mastery >= 70) {
@@ -512,6 +516,10 @@ const Index = () => {
           createSession(name, subjects, startDate, dailyGoal);
         }}
         onCompleteDay={(sessionId, day, mastery) => {
+          if (mastery < 70) {
+            toast.error('You need at least 70% mastery to complete this day.');
+            return;
+          }
           completeSessionDay(sessionId, day, mastery);
           awardSyllabusDay(day);
         }}

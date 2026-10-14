@@ -200,6 +200,11 @@ const Index = () => {
     [studiedSubjects],
   );
 
+  const weakQuestionIds = useMemo(
+    () => Object.values(progress).filter((entry) => entry.repetitions === 0).map((entry) => entry.questionId),
+    [progress],
+  );
+
   const selectedDailyMission = useMemo(
     () => dailyMissions.find((mission) => mission.id === selectedDailyMissionId) ?? todayMission,
     [dailyMissions, selectedDailyMissionId, todayMission],
@@ -216,6 +221,7 @@ const Index = () => {
       session,
       task,
       questions: allQuestions,
+      weakQuestionIds,
     });
     if (!mission) {
       toast.error('I could not find at least three gradable multiple-choice questions for this topic yet. Please choose another syllabus topic or report the missing question bank coverage.');
@@ -224,7 +230,7 @@ const Index = () => {
     setSelectedDailyMissionId(mission.id);
     setCurrentView('daily-mission');
     return true;
-  }, [todayMission, startMission, allQuestions]);
+  }, [todayMission, startMission, allQuestions, weakQuestionIds]);
 
   const handleStartDailyMission = useCallback(async (subjects: Subject[]) => {
     const session = createSession(buildSessionName(subjects), subjects, todayDateString(), 30);
@@ -258,13 +264,14 @@ const Index = () => {
       session: activeDailySession,
       task: todayMissionTask,
       questions: pool,
+      weakQuestionIds,
     }).then((mission) => {
       if (!mission) {
         autoMissionKeyRef.current = null;
         toast.error('Today\'s mission could not be prepared because fewer than three gradable questions are available for this topic.');
       }
     });
-  }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, allQuestions]);
+  }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, allQuestions, weakQuestionIds]);
 
   const handleMissionAttempt = useCallback((attempt: DailyMissionRecord["attempts"][number]) => {
     let streak = consecutiveCorrect;

@@ -81,7 +81,7 @@ export function DailyMissionCard({
         </div>
 
         <div className="space-y-4 p-6 md:p-8">
-          {!session && (
+          {!session && !todayMission && (
             <>
               <p className="text-sm text-muted-foreground">
                 Your first mission starts with the JUPEB syllabus. Physics and Chemistry are included; choose any electives you study.
@@ -114,7 +114,7 @@ export function DailyMissionCard({
             </>
           )}
 
-          {session && missionCompleted && (
+          {todayMission && missionCompleted && (
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className="gap-1 bg-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" /> Mission complete</Badge>
@@ -126,6 +126,16 @@ export function DailyMissionCard({
               </div>
               <p className="text-sm text-muted-foreground">Your next daily mission will be ready on your next local calendar day. You can still review your syllabus plan.</p>
               <Button variant="outline" onClick={onViewPlan} className="gap-2">View full plan <ChevronRight className="h-4 w-4" /></Button>
+            </div>
+          )}
+
+          {!session && todayMission && !missionCompleted && (
+            <div className="space-y-4">
+              <p className="font-medium">{todayMission.topicName}</p>
+              <p className="text-sm text-muted-foreground">Your mission is saved for today. Continue where you left off.</p>
+              <Button onClick={onOpenMission} className="gap-2">
+                <Play className="h-4 w-4" /> Continue today's mission
+              </Button>
             </div>
           )}
 

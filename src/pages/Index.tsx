@@ -69,7 +69,7 @@ const Index = () => {
   const [selectedDailyMissionId, setSelectedDailyMissionId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
 
-  const { getStats, updateProgress, progress } = useStudyProgress();
+  const { getStats, updateProgress, progress, isLoaded: studyProgressReady } = useStudyProgress();
   const { missions: dailyMissions, todayMission, todayDate: missionLocalDate, ready: dailyMissionsReady, startMission, updateMission } = useDailyMissions();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
@@ -251,7 +251,7 @@ const Index = () => {
 
   const autoMissionKeyRef = useRef<string | null>(null);
   useEffect(() => {
-    if (!dailyMissionsReady || !activeDailySession || !todayMissionTask || todayMission) return;
+    if (!dailyMissionsReady || !studyProgressReady || !activeDailySession || !todayMissionTask || todayMission) return;
     const key = `${todayDateString()}|${activeDailySession.id}|${todayMissionTask.day}`;
     if (autoMissionKeyRef.current === key) return;
     const pool = allQuestions;
@@ -271,7 +271,7 @@ const Index = () => {
         toast.error('Today\'s mission could not be prepared because fewer than three gradable questions are available for this topic.');
       }
     });
-  }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, allQuestions, weakQuestionIds]);
+  }, [dailyMissionsReady, studyProgressReady, activeDailySession, todayMissionTask, todayMission, startMission, allQuestions, weakQuestionIds]);
 
   const handleMissionAttempt = useCallback((attempt: DailyMissionRecord["attempts"][number]) => {
     let streak = consecutiveCorrect;

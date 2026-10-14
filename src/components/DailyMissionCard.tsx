@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Checkbox } from "./ui/checkbox";

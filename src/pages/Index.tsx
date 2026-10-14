@@ -263,7 +263,11 @@ const Index = () => {
 
   const handleMissionAttempt = useCallback((attempt: DailyMissionRecord["attempts"][number]) => {
     let streak = consecutiveCorrect;
-    attempt.answers.forEach(({ questionId, isCorrect }) => {
+    attempt.answers.forEach(({ questionId, selectedAnswer, isCorrect }) => {
+      if (!selectedAnswer.trim()) {
+        streak = 0;
+        return;
+      }
       updateProgress(questionId, isCorrect ? 4 : 1);
       awardAnswer(questionId);
       if (isCorrect) {
@@ -274,9 +278,12 @@ const Index = () => {
       }
     });
     setConsecutiveCorrect(streak);
-    recordStudySession(attempt.answers.length);
-    const hour = new Date().getHours();
-    setSessionHours((previous) => previous.includes(hour) ? previous : [...previous, hour].slice(-20));
+    const answeredCount = attempt.answers.filter((answer) => answer.selectedAnswer.trim()).length;
+    if (answeredCount > 0) {
+      recordStudySession(answeredCount);
+      const hour = new Date().getHours();
+      setSessionHours((previous) => previous.includes(hour) ? previous : [...previous, hour].slice(-20));
+    }
   }, [consecutiveCorrect, updateProgress, awardAnswer, awardCorrect, setConsecutiveCorrect, recordStudySession, setSessionHours]);
 
   const handleMissionComplete = useCallback((mission: DailyMissionRecord) => {

@@ -37,10 +37,6 @@ const TIMER_PRESETS = [
   { label: '1 hour', value: 60, gradient: 'from-violet-500/20 to-violet-600/10 hover:from-violet-500/30 hover:to-violet-600/20' },
 ];
 
-function hasRealAnswer(q: Question): boolean {
-  return !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
-}
-
 export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModeProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -198,7 +194,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
               </div>
               <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-xl p-4 border border-destructive/10">
                 <X className="w-5 h-5 mx-auto mb-1.5 text-destructive" />
-                <p className="text-2xl font-bold text-destructive">{questions.length - correctCount}</p>
+                <p className="text-2xl font-bold text-destructive">{gradableCount - correctCount}</p>
                 <p className="text-xs text-muted-foreground">Wrong</p>
               </div>
               <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/10">
@@ -207,6 +203,12 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
                 <p className="text-xs text-muted-foreground">Time</p>
               </div>
             </div>
+
+            {gradableCount < questions.length && (
+              <p className="text-xs text-muted-foreground mb-4">
+                {questions.length - gradableCount} question(s) were excluded from scoring because an answer key is missing.
+              </p>
+            )}
 
             {/* Message */}
             <p className="text-sm text-muted-foreground mb-6">

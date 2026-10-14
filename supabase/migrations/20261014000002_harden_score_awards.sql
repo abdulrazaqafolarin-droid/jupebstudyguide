@@ -67,7 +67,8 @@ BEGIN
   END IF;
 
   -- The client uses reason:reference:userId. Reject mismatched ownership tags.
-  IF p_reference_id NOT LIKE p_reason || ':%:' || p_user_id::TEXT THEN
+  IF left(p_reference_id, length(p_reason) + 1) <> p_reason || ':'
+     OR right(p_reference_id, length(p_user_id::TEXT)) <> p_user_id::TEXT THEN
     RAISE EXCEPTION 'Invalid reward reference'
       USING ERRCODE = '22023';
   END IF;

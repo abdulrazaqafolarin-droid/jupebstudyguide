@@ -8,7 +8,7 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
-import { gradeAnswer, hasGradableAnswer, percentageScore } from '@/lib/answer-scoring';
+import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
 
 interface QuizModeProps {
   questions: Question[];
@@ -75,8 +75,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
     const result: QuizResult = {
       totalQuestions: questions.length,
       correctAnswers: finalAnswers.filter(a => a.isGradable && a.isCorrect).length,
-      wrongAnswers: finalAnswers.filter(a => a.isGradable && !a.isCorrect).length,
-      gradableQuestions: finalAnswers.filter(a => a.isGradable).length,
+      wrongAnswers: questions.filter((question) => hasRealAnswer(question)).length - finalAnswers.filter(a => a.isGradable && a.isCorrect).length,
+      gradableQuestions: questions.filter((question) => hasRealAnswer(question)).length,
       timeSpent: totalTime,
       answeredQuestions: finalAnswers,
     };
@@ -126,8 +126,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
       const result: QuizResult = {
         totalQuestions: questions.length,
         correctAnswers: newAnswers.filter(a => a.isGradable && a.isCorrect).length,
-        wrongAnswers: newAnswers.filter(a => a.isGradable && !a.isCorrect).length,
-        gradableQuestions: newAnswers.filter(a => a.isGradable).length,
+        wrongAnswers: questions.filter((question) => hasRealAnswer(question)).length - newAnswers.filter(a => a.isGradable && a.isCorrect).length,
+        gradableQuestions: questions.filter((question) => hasRealAnswer(question)).length,
         timeSpent: totalTime,
         answeredQuestions: newAnswers,
       };
@@ -148,8 +148,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
   if (quizComplete) {
     const correctCount = answers.filter(a => a.isGradable && a.isCorrect).length;
-    const gradableCount = answers.filter(a => a.isGradable).length;
-    const percentage = percentageScore(answers) ?? 0;
+    const gradableCount = questions.filter((question) => hasRealAnswer(question)).length;
+    const percentage = gradableCount > 0 ? Math.round((correctCount / gradableCount) * 100) : 0;
 
     const getGrade = () => {
       if (percentage >= 90) return { label: 'Excellent!', icon: '🏆', color: 'text-primary' };

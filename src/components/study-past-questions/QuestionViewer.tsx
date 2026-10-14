@@ -172,11 +172,16 @@ export function QuestionViewer({
       >
         <div className="text-center py-8">
           <div className="text-4xl font-bold mb-2">
-            {score}%
+            {score === null ? "—" : `${score}%`}
           </div>
           <p className="text-muted-foreground">
-            {correct} of {results.length} correct
+            {correct} of {gradableCount} gradable questions correct
           </p>
+          {gradableCount < results.length && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {results.length - gradableCount} question(s) excluded because an answer key is missing.
+            </p>
+          )}
         </div>
         <div className="space-y-3 max-h-[400px] overflow-y-auto">
           {results.map((r, i) => {
@@ -194,9 +199,11 @@ export function QuestionViewer({
                 <p className="text-xs text-muted-foreground">
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
                 </p>
-                {q.correctAnswer && (
+                {r.isGradable === false ? (
+                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no answer key is available.</p>
+                ) : q.correctAnswer && (
                   <p className="text-xs text-muted-foreground mt-0.5">
-                  {r.isCorrect ? "Correct" : `Correct answer: ${q.correctAnswer}`}
+                    {r.isCorrect ? "Correct" : `Correct answer: ${q.correctAnswer}`}
                   </p>
                 )}
               </div>

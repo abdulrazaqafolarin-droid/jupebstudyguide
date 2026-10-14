@@ -35,3 +35,5 @@ CREATE POLICY "Learners can delete their own daily missions"
 
 CREATE INDEX IF NOT EXISTS daily_missions_user_date_idx
   ON public.daily_missions (user_id, local_date DESC);
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.daily_missions TO authenticated;

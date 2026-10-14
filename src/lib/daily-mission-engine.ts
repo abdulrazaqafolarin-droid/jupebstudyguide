@@ -88,7 +88,12 @@ export function selectMissionQuestions(args: {
   } = args;
   const excluded = new Set(excludedQuestionIds);
   const priorMistakes = new Set(history.flatMap((mission) => mission.mistakeQuestionIds));
-  const valid = pool.filter((question) =>
+  const recentlySeen = new Set(history.slice(-2).flatMap((mission) => [
+    ...mission.currentQuestionIds,
+    ...mission.attempts.flatMap((attempt) => attempt.questionIds),
+  ]));
+  const uniquePool = [...new Map(pool.map((question) => [question.id, question])).values()];
+  const valid = uniquePool.filter((question) =>
     question.subject === task.subject &&
     question.type === "mcq" &&
     (question.options?.length ?? 0) >= 2 &&
@@ -101,6 +106,7 @@ export function selectMissionQuestions(args: {
     if (priorMistakes.has(question.id)) points += 100;
     if (topicMatches(question, task)) points += 50;
     if (questionDifficulty(question) === difficulty) points += 10;
+    if (recentlySeen.has(question.id) && !priorMistakes.has(question.id)) points -= 25;
     if (attemptNumber > 1 && !excluded.has(question.id)) points += 1;
     return points;
   };

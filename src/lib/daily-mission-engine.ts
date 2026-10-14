@@ -239,38 +239,37 @@ export function prepareRecoveryAttempt(
   history: DailyMissionRecord[],
 ): DailyMissionRecord {
   const excluded = new Set(mission.attempts.flatMap((attempt) => attempt.questionIds));
+  const targetedTask: DailyTask = {
+    day: mission.syllabusDay,
+    topics: [{
+      id: mission.topicId,
+      name: mission.topicName,
+      description: mission.lessonText,
+      subtopics: [],
+      difficulty: mission.difficulty === "hard" ? "advanced" : mission.difficulty === "easy" ? "beginner" : "intermediate",
+      estimatedHours: 1,
+    }],
+    subject: mission.subject,
+    learningObjectives: [mission.topicName],
+    checkpointQuestions: [],
+    isCompleted: false,
+  };
   const nextQuestions = selectMissionQuestions({
     pool,
-    task: {
-      day: mission.syllabusDay,
-      topics: [],
-      subject: mission.subject,
-      learningObjectives: [mission.topicName],
-      checkpointQuestions: [],
-      isCompleted: false,
-    },
+    task: targetedTask,
     history,
     count: Math.max(3, mission.currentQuestionIds.length),
     attemptNumber: mission.attemptNumber + 1,
     excludedQuestionIds: [...excluded],
-    preferredQuestionIds: mission.mistakeQuestionIds,
     difficulty: mission.difficulty === "hard" ? "medium" : "easy",
   });
   // If the bank is too small to provide new questions, reuse a focused set rather than blocking study.
   const fallback = nextQuestions.length >= 3 ? nextQuestions : selectMissionQuestions({
     pool,
-    task: {
-      day: mission.syllabusDay,
-      topics: [],
-      subject: mission.subject,
-      learningObjectives: [mission.topicName],
-      checkpointQuestions: [],
-      isCompleted: false,
-    },
+    task: targetedTask,
     history,
     count: Math.max(3, mission.currentQuestionIds.length),
     attemptNumber: mission.attemptNumber + 1,
-    preferredQuestionIds: mission.mistakeQuestionIds,
     difficulty: "easy",
   });
   return {

@@ -205,6 +205,9 @@ export function useVoiceRecorder() {
           file_name: 'Voice note',
           file_type: blob.type,
           file_size: blob.size,
+          // Idempotent like text/image/file sends — a retried upload
+          // after a timeout lands once instead of twice.
+          client_msg_id: crypto.randomUUID(),
         })
         .select()
         .single();

@@ -68,6 +68,10 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     setSearchResults([]);
     setConfirmAction(null);
     setConfirmMemberId(null);
+    // Reset per-conversation state so switching groups never shows the
+    // previous group's avatar/name/policy while the new one loads.
+    setAvatarUrl(null);
+    setMessagesPolicy('all');
 
     Promise.all([
       supabase.from('conversations').select('group_avatar, created_by').eq('id', conversationId).single(),
@@ -121,11 +125,15 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     setSearching(true);
     const timer = setTimeout(async () => {
       const memberIds = new Set(members.map(m => m.user_id));
-      const { data } = await supabase
+      let query = supabase
         .from('profiles')
         .select('user_id, display_name, avatar_url')
-        .neq('user_id', user.id)
-        .not('user_id', 'in', `(${[...memberIds].join(',')})`)
+        .neq('user_id', user.id);
+      // PostgREST rejects an empty `in ()` list — only exclude when non-empty.
+      if (memberIds.size > 0) {
+        query = query.not('user_id', 'in', `(${[...memberIds].join(',')})`);
+      }
+      const { data } = await query
         .ilike('display_name', `%${searchQuery}%`)
         .limit(10);
       setSearchResults((data || []).map(p => ({ ...p, is_admin: false })));
@@ -165,9 +173,10 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     if (file.size > 5 * 1024 * 1024) { toast.error('Avatar must be under 5MB'); return; }
     setUploadingAvatar(true);
     try {
-      const ext = file.name.split('.').pop() || 'jpg';
+      const rawExt = file.name.split('.').pop() || 'jpg';
+      const ext = /^[a-z0-9]{1,5}$/i.test(rawExt) ? rawExt.toLowerCase() : 'jpg';
       const path = `${user.id}/group-avatars/${conversationId}/${crypto.randomUUID()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from('chat-images').upload(path, file, { upsert: true });
+      const { error: uploadError } = await supabase.storage.from('chat-images').upload(path, file, { upsert: true, contentType: file.type || undefined });
       if (uploadError) throw uploadError;
       const publicUrl = supabase.storage.from('chat-images').getPublicUrl(path).data?.publicUrl ?? null;
       if (!publicUrl) throw new Error('Failed to get public URL');
@@ -225,7 +234,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const handleToggleMute = async () => {
     const { data, error } = await supabase.rpc('toggle_mute_conversation', { p_conversation_id: conversationId });
     if (error) {
-      toast.error('Mute is not available yet. Apply the pending DB migration.');
+      toast.error('Failed to update mute setting');
       return;
     }
     if (typeof data === 'boolean') setMuted(data);
@@ -252,7 +261,8 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
     }
     const { error } = await supabase.from('conversation_participants').delete().eq('conversation_id', conversationId).eq('user_id', user.id);
     if (error) { toast.error('Failed to leave group'); setLeaving(false); return; }
-    await insertSystemMsg('group_member_left', `${user.email || 'A member'} left the group`);
+    const ownName = members.find(m => m.user_id === user.id)?.display_name || 'A member';
+    await insertSystemMsg('group_member_left', `${ownName} left the group`);
     toast.success('Left group');
     onLeft?.();
     onClose();
@@ -261,9 +271,13 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
   const handleDelete = async () => {
     if (!user || !isAdmin) return;
     setDeleting(true);
-    await supabase.from('conversations').delete().eq('id', conversationId);
-    toast.success('Group deleted');
+    const { error } = await supabase.from('conversations').delete().eq('id', conversationId);
     setDeleting(false);
+    if (error) {
+      toast.error('Failed to delete group');
+      return;
+    }
+    toast.success('Group deleted');
     onDeleted?.();
     onClose();
   };
@@ -366,7 +380,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                         {uploadingAvatar ? (
                           <Loader2 className="w-5 h-5 text-white animate-spin" />
                         ) : (
-                          <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 max-md:opacity-100 transition-opacity" />
                         )}
                       </button>
                       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
@@ -484,7 +498,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                             </div>
                           </button>
                           {isAdmin && !isSelf && (
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 max-md:opacity-100 transition-opacity shrink-0">
                               {isMemberAdmin ? (
                                 adminCount > 1 && member.user_id !== createdBy && user?.id === createdBy && (
                                   <button
@@ -544,7 +558,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
                   </span>
                 </button>
               )}
-              {isAdmin && members.length > 1 && (
+              {isAdmin && (
                 <Button
                   variant="outline"
                   className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"

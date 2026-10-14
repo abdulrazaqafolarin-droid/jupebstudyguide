@@ -89,8 +89,12 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       setIsPlaying(false);
     } else {
       await resume();
-      audio.play().catch(() => {});
-      setIsPlaying(true);
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false);
+      }
     }
   }, [isPlaying, resume, suspend]);
 

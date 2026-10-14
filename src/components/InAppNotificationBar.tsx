@@ -66,6 +66,15 @@ export function InAppNotificationBar({
         .single();
       if (!part) return;
 
+      // Muted conversations stay silent in-app (badge still counts them,
+      // matching WhatsApp-style behavior for muted chats).
+      try {
+        const { data: isMuted } = await supabase.rpc('is_muted', {
+          p_conversation_id: message.conversation_id,
+        });
+        if (isMuted === true) return;
+      } catch { /* mute check failed — fall through to notify */ }
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('display_name, avatar_url')

@@ -56,7 +56,7 @@ export function VoiceRecorder({
       } else {
         audioRef.current.currentTime = 0;
       }
-      audioRef.current.play();
+      audioRef.current.play()?.catch(() => setIsPlaying(false));
       setIsPlaying(true);
     }
   }, [previewUrl, isPlaying]);
@@ -69,6 +69,15 @@ export function VoiceRecorder({
       setAudioProgress(0);
     }
   }, [isLocked]);
+
+  // Release the preview element on unmount so its listeners/buffer die with it.
+  useEffect(() => {
+    const ref = audioRef;
+    return () => {
+      ref.current?.pause();
+      ref.current = null;
+    };
+  }, []);
   const cancelRatio = Math.min(1, Math.max(0, -dragX / 110));
   const lockRatio = Math.min(1, Math.max(0, -dragY / 90));
   const isCancelling = cancelRatio > 0.6;

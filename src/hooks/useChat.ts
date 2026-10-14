@@ -558,6 +558,30 @@ export function useChat() {
             fetchConversations();
           }
         )
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'conversations' },
+          (payload) => {
+            const updated = payload.new as {
+              id: string; group_name?: string | null; group_avatar?: string | null;
+              messages_policy?: string; updated_at?: string;
+            };
+            if (!convIdsRef.current.includes(updated.id)) return;
+            // Group renames / avatar / policy changes apply instantly —
+            // previously they stayed stale until a full reload.
+            setConversations(prev => prev.map(c =>
+              c.id === updated.id
+                ? {
+                    ...c,
+                    group_name: updated.group_name ?? c.group_name,
+                    group_avatar: updated.group_avatar ?? c.group_avatar,
+                    messages_policy: updated.messages_policy ?? c.messages_policy,
+                    updated_at: updated.updated_at ?? c.updated_at,
+                  }
+                : c
+            ));
+          }
+        )
         .subscribe((status, err) => {
           setGlobalChannelStatus(status);
           debug('[Realtime] chat-global status:', status);

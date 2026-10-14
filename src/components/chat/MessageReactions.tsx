@@ -23,6 +23,43 @@ const EMOJI_CATEGORIES = [
 ];
 
 const ALL_EMOJIS = EMOJI_CATEGORIES.flatMap(c => c.emojis);
+
+// Keywords so the picker search actually matches something — raw emoji
+// glyphs contain no latin text, so a naive substring search always empties.
+const EMOJI_KEYWORDS: Record<string, string> = {
+  '👍': 'thumbs up like yes good approve',
+  '❤️': 'heart love red like',
+  '😂': 'laugh lol funny joy tears',
+  '😮': 'wow surprised open mouth',
+  '😢': 'cry sad tears',
+  '🔥': 'fire lit hot popular',
+  '🎉': 'party celebrate congrats tada',
+  '💯': 'hundred perfect score 100',
+  '👏': 'clap applause bravo',
+  '😍': 'heart eyes love',
+  '🤣': 'laugh rolling floor lol',
+  '😭': 'cry sob loud tears',
+  '😤': 'angry huff triumph',
+  '🙄': 'eyeroll annoyed',
+  '🤔': 'thinking hmm',
+  '🥺': 'pleading puppy eyes beg',
+  '🙏': 'pray please thanks folded hands',
+  '💪': 'muscle strong flex',
+  '👋': 'wave hi hello bye',
+  '✌️': 'victory peace',
+  '🤝': 'handshake deal agree',
+  '✨': 'sparkles shine new magic',
+  '💀': 'skull dead lol',
+  '🎊': 'confetti celebrate party',
+  '💅': 'nails sassy',
+  '🤌': 'pinched fingers italian',
+  '🧡': 'orange heart', '💛': 'yellow heart', '💚': 'green heart',
+  '💙': 'blue heart', '💜': 'purple heart', '🖤': 'black heart',
+  '🤍': 'white heart', '💝': 'gift heart present', '💖': 'sparkling heart',
+  '🚀': 'rocket launch fast', '⭐': 'star favorite',
+  '✅': 'check yes done correct', '❌': 'cross no wrong x',
+  '💡': 'idea light bulb', '🎯': 'target bullseye direct',
+};
 const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥'];
 
 interface MessageReactionsProps {
@@ -93,8 +130,13 @@ export function MessageReactions({
     if (!searchQuery.trim()) {
       return EMOJI_CATEGORIES[activeCategory]?.emojis || ALL_EMOJIS;
     }
-    const q = searchQuery.toLowerCase();
-    return ALL_EMOJIS.filter(e => e.toLowerCase().includes(q));
+    const q = searchQuery.toLowerCase().trim();
+    const seen = new Set<string>();
+    return ALL_EMOJIS.filter(e => {
+      if (seen.has(e)) return false;
+      seen.add(e);
+      return (EMOJI_KEYWORDS[e] || '').includes(q);
+    });
   }, [searchQuery, activeCategory]);
 
   const quickReact = useCallback((emoji: string) => {
@@ -133,6 +175,7 @@ export function MessageReactions({
           {/* Add reaction button next to pills */}
           <button
             onClick={() => setShowPicker(p => !p)}
+            aria-label="Add reaction"
             className={cn(
               'inline-flex items-center rounded-full transition-all duration-150 active:scale-90 px-1.5',
               'bg-secondary/30 border border-dashed border-border/40 hover:bg-secondary hover:border-border/70 text-muted-foreground/60 hover:text-muted-foreground',
@@ -170,6 +213,7 @@ export function MessageReactions({
           )}
           <button
             onClick={() => setShowPicker(p => !p)}
+            aria-label="Add reaction"
             className="inline-flex items-center rounded-full px-1 text-muted-foreground/60 hover:text-muted-foreground active:scale-90"
           >
             <SmilePlus className="w-3 h-3" />
@@ -186,6 +230,7 @@ export function MessageReactions({
               <button
                 key={emoji}
                 onClick={() => quickReact(emoji)}
+                aria-label={`React with ${emoji}`}
                 className={cn(
                   'w-7 h-7 flex items-center justify-center rounded-full text-sm transition-all duration-100 active:scale-90',
                   isSelected
@@ -199,6 +244,7 @@ export function MessageReactions({
           })}
           <button
             onClick={() => setShowPicker(p => !p)}
+            aria-label="More reactions"
             className={cn(
               'w-7 h-7 flex items-center justify-center rounded-full transition-all duration-100 active:scale-90',
               showPicker ? 'bg-secondary' : 'hover:bg-secondary/80'
@@ -213,6 +259,7 @@ export function MessageReactions({
       {!compact && !hasReactions && (
         <button
           onClick={() => setShowPicker(p => !p)}
+          aria-label="Add reaction"
           className={cn(
             'rounded-full transition-all duration-150 active:scale-90 p-0.5',
             'hover:bg-secondary/80 opacity-50 hover:opacity-100',
@@ -286,13 +333,13 @@ export function MessageReactions({
                     <button
                       key={emoji}
                       onClick={() => handleReact(emoji)}
+                      aria-label={`React with ${emoji}`}
                       className={cn(
                         'w-[42px] h-[42px] flex items-center justify-center rounded-lg text-xl transition-all duration-100 active:scale-90',
                         isSelected
                           ? 'bg-primary/15 ring-1 ring-primary/30 scale-110'
                           : 'hover:bg-secondary/80 hover:scale-110'
                       )}
-                      title={emoji}
                     >
                       {emoji}
                     </button>

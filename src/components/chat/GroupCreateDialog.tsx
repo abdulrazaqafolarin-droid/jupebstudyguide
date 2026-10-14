@@ -21,6 +21,7 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
   const { user } = useAuth();
   const { compressImage } = useImageCompression();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarPreviewRef = useRef<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<Profile[]>([]);
   const [selected, setSelected] = useState<Profile[]>([]);
@@ -33,6 +34,10 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
 
   useEffect(() => {
     if (!isOpen) {
+      if (avatarPreviewRef.current) {
+        URL.revokeObjectURL(avatarPreviewRef.current);
+        avatarPreviewRef.current = null;
+      }
       setSearchQuery('');
       setResults([]);
       setSelected([]);
@@ -88,8 +93,15 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { toast.error('Image too large (max 5MB)'); return; }
     const compressed = await compressImage(file, 512, 0.8);
-    setGroupAvatar(URL.createObjectURL(compressed));
-    const compressedFile = new File([compressed], file.name, { type: file.type || 'image/jpeg' });
+    // Revoke the previous preview so repeated picks don't leak blob URLs.
+    if (avatarPreviewRef.current) {
+      URL.revokeObjectURL(avatarPreviewRef.current);
+      avatarPreviewRef.current = null;
+    }
+    const previewUrl = URL.createObjectURL(compressed);
+    avatarPreviewRef.current = previewUrl;
+    setGroupAvatar(previewUrl);
+    const compressedFile = new File([compressed], file.name, { type: (compressed as Blob).type || 'image/jpeg' });
     setGroupAvatarFile(compressedFile);
   };
 
@@ -113,11 +125,12 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
     try {
       let avatarUrl: string | null = null;
       if (groupAvatarFile) {
-        const ext = groupAvatarFile.name.split('.').pop() || 'jpg';
+        const rawExt = groupAvatarFile.name.split('.').pop() || 'jpg';
+        const ext = /^[a-z0-9]{1,5}$/i.test(rawExt) ? rawExt.toLowerCase() : 'jpg';
         const path = `${user.id}/group-avatars/${groupConvId}/${Date.now()}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from('chat-images')
-          .upload(path, groupAvatarFile, { cacheControl: '3600', upsert: true });
+          .upload(path, groupAvatarFile, { cacheControl: '3600', upsert: true, contentType: groupAvatarFile.type || undefined });
         if (!uploadError) {
           avatarUrl = supabase.storage.from('chat-images').getPublicUrl(path).data?.publicUrl ?? null;
         }
@@ -154,11 +167,21 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
         }
       }
 
+      let creatorName = 'Someone';
+      try {
+        const { data: ownProfile } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        const dn = (ownProfile as { display_name?: string | null } | null)?.display_name;
+        if (dn) creatorName = dn;
+      } catch { /* fall back to generic label */ }
       try {
         await supabase.rpc('insert_group_system_message', {
           p_conversation_id: groupConvId,
           p_message_type: 'group_created',
-          p_content: `${user.email || 'Someone'} created this group`,
+          p_content: `${creatorName} created this group`,
         });
       } catch { /* best effort */ }
 
@@ -194,7 +217,7 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
                 <Users className="w-4 h-4" />
                 Create Group
               </h2>
-              <button onClick={onClose} className="p-1 rounded-lg hover:bg-accent transition-colors">
+              <button onClick={onClose} aria-label="Close" className="p-1 rounded-lg hover:bg-accent transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -203,6 +226,7 @@ export function GroupCreateDialog({ isOpen, onClose, onCreated }: GroupCreateDia
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => fileInputRef.current?.click()}
+                  aria-label="Choose group avatar"
                   className="relative w-14 h-14 rounded-full overflow-hidden bg-secondary shrink-0 hover:opacity-80 transition-opacity"
                 >
                   {groupAvatar ? (

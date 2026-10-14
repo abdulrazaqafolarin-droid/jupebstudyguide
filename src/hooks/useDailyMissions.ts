@@ -34,6 +34,21 @@ export function useDailyMissions() {
   const [today, setToday] = useState(() => todayDateString());
   const loadedUserRef = useRef<string | null>(null);
   const lastSyncHash = useRef("");
+  const observedUserRef = useRef<string | null>(user?.id ?? null);
+  const storageReadyForUserRef = useRef(false);
+
+  useEffect(() => {
+    const currentUserId = user?.id ?? null;
+    if (observedUserRef.current !== currentUserId) {
+      observedUserRef.current = currentUserId;
+      storageReadyForUserRef.current = false;
+      loadedUserRef.current = null;
+      lastSyncHash.current = "";
+      setRemoteReady(false);
+      return;
+    }
+    if (storage.isReady) storageReadyForUserRef.current = true;
+  }, [user?.id, storage.isReady]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -44,7 +59,7 @@ export function useDailyMissions() {
   }, []);
 
   useEffect(() => {
-    if (!storage.isReady) return;
+    if (!storage.isReady || !storageReadyForUserRef.current) return;
     if (!user) {
       setRemoteReady(true);
       loadedUserRef.current = null;
@@ -81,7 +96,7 @@ export function useDailyMissions() {
   }, [user, storage.isReady, setMissions]);
 
   useEffect(() => {
-    if (!user || !storage.isReady || !remoteReady || missions.length === 0) return;
+    if (!user || !storage.isReady || !storageReadyForUserRef.current || !remoteReady || loadedUserRef.current !== user.id || missions.length === 0) return;
     const hash = JSON.stringify(missions.map((mission) => [mission.localDate, mission.updatedAt]));
     if (hash === lastSyncHash.current) return;
     const timeout = window.setTimeout(() => {

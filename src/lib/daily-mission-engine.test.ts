@@ -4,7 +4,6 @@ import type { DailyTask, StudySessionData } from "@/types/syllabus";
 import {
   createDailyMission,
   prepareRecoveryAttempt,
-  selectMissionQuestions,
   submitMissionAttempt,
   type DailyMissionRecord,
 } from "./daily-mission-engine";

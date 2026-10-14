@@ -6,6 +6,7 @@ import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { getAllStudyQuestions, getAllStudyQuestionsForSubject, subscribe } from '@/data/study-questions';
 import { toQuestions } from '@/lib/question-adapter';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
+import type { DailyTask, StudySessionData } from '@/types/syllabus';
 import { SubjectCard } from '@/components/SubjectCard';
 import { StudyView } from '@/components/StudyView';
 import { QuizMode, QuizResult } from '@/components/QuizMode';
@@ -229,6 +230,21 @@ const Index = () => {
     if (!activeDailySession || !todayMissionTask) return;
     void openMissionForSession(activeDailySession, todayMissionTask);
   }, [activeDailySession, todayMissionTask, openMissionForSession]);
+
+  const autoMissionKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!dailyMissionsReady || !activeDailySession || !todayMissionTask || todayMission) return;
+    const key = `${todayDateString()}|${activeDailySession.id}|${todayMissionTask.day}`;
+    if (autoMissionKeyRef.current === key) return;
+    autoMissionKeyRef.current = key;
+    void startMission({
+      session: activeDailySession,
+      task: todayMissionTask,
+      questions: getAllQuestionsBySubject(todayMissionTask.subject),
+    }).then((mission) => {
+      if (!mission) toast.error('Today\'s mission could not be prepared because fewer than three gradable questions are available for this topic.');
+    });
+  }, [dailyMissionsReady, activeDailySession, todayMissionTask, todayMission, startMission, getAllQuestionsBySubject]);
 
   const handleMissionComplete = useCallback((mission: DailyMissionRecord) => {
     const finalAttempt = mission.attempts[mission.attempts.length - 1];

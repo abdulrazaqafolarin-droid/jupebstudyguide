@@ -108,7 +108,7 @@ const Index = () => {
     const builtIn = toQuestions(getAllStudyQuestionsForSubject(subject));
     const custom = customQuestions.filter(q => q.subject === subject);
     return [...builtIn, ...custom];
-  }, [customQuestions]);
+  }, [customQuestions, tick]);
 
   // Track previous streak to detect new streak days
   const prevStreakRef = useRef(currentStreak);
@@ -213,17 +213,18 @@ const Index = () => {
     });
     if (!mission) {
       toast.error('I could not find at least three gradable multiple-choice questions for this topic yet. Please choose another syllabus topic or report the missing question bank coverage.');
-      return;
+      return false;
     }
     setSelectedDailyMissionId(mission.id);
     setCurrentView('daily-mission');
+    return true;
   }, [todayMission, startMission, getAllQuestionsBySubject]);
 
   const handleStartDailyMission = useCallback(async (subjects: Subject[]) => {
     const session = createSession(buildSessionName(subjects), subjects, todayDateString(), 30);
     const task = session.progress.dailyTasks[0];
-    await openMissionForSession(session, task);
-    toast.success('Your first guided daily mission is ready.');
+    const opened = await openMissionForSession(session, task);
+    if (opened) toast.success('Your first guided daily mission is ready.');
   }, [createSession, openMissionForSession]);
 
   const handleOpenDailyMission = useCallback(() => {
@@ -236,11 +237,16 @@ const Index = () => {
     if (!dailyMissionsReady || !activeDailySession || !todayMissionTask || todayMission) return;
     const key = `${todayDateString()}|${activeDailySession.id}|${todayMissionTask.day}`;
     if (autoMissionKeyRef.current === key) return;
+    const pool = getAllQuestionsBySubject(todayMissionTask.subject);
+    if (pool.length === 0) {
+      autoMissionKeyRef.current = null;
+      return;
+    }
     autoMissionKeyRef.current = key;
     void startMission({
       session: activeDailySession,
       task: todayMissionTask,
-      questions: getAllQuestionsBySubject(todayMissionTask.subject),
+      questions: pool,
     }).then((mission) => {
       if (!mission) toast.error('Today\'s mission could not be prepared because fewer than three gradable questions are available for this topic.');
     });

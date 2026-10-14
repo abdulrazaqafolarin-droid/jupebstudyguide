@@ -51,6 +51,13 @@ export function InAppNotificationBar({
       };
       if (message.sender_id === user.id) return;
 
+      // Don't pop a banner for the conversation already on screen —
+      // the message is visible and the badge stays untouched.
+      try {
+        const openConv = new URLSearchParams(window.location.search).get('conversation');
+        if (openConv && openConv === message.conversation_id && window.location.pathname === '/chat') return;
+      } catch { /* URL parse failed — fall through to notify */ }
+
       const { data: part } = await supabase
         .from('conversation_participants')
         .select('conversation_id')

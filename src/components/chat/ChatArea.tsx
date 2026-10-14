@@ -154,7 +154,7 @@ function renderHighlighted(text: string, query: string) {
     if (part.toLowerCase() === query.toLowerCase()) {
       return <span key={i} className="bg-yellow-300/40 dark:bg-yellow-500/30 rounded px-0.5 font-medium">{part}</span>;
     }
-    return <span key={i}>{part}</span>;
+    return <span key={i}>{renderLinkified(part)}</span>;
   });
 }
 
@@ -633,7 +633,7 @@ export function ChatArea({
   }, [onTyping]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (!e.shiftKey || e.ctrlKey)) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -648,8 +648,21 @@ export function ChatArea({
   }, [handleSend]);
 
   const insertEmoji = useCallback((emoji: string) => {
-    setInput(prev => prev + emoji);
-    inputRef.current?.focus();
+    const el = inputRef.current;
+    if (!el) {
+      setInput(prev => prev + emoji);
+      return;
+    }
+    const start = el.selectionStart ?? inputRef.current?.value.length ?? 0;
+    const end = el.selectionEnd ?? start;
+    const current = el.value;
+    const next = current.slice(0, start) + emoji + current.slice(end);
+    setInput(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + emoji.length;
+      try { el.setSelectionRange(pos, pos); } catch { /* noop */ }
+    });
     setShowStickers(false);
     setShowAttachments(false);
   }, []);
@@ -767,11 +780,16 @@ export function ChatArea({
       const file = galleryFiles[i];
       try {
         let uploadFile: File;
-        try {
-          const compressed = await compressImage(file, 1920, 0.8);
-          uploadFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-        } catch {
+        // Preserve GIFs as-is so animation survives; compress other images.
+        if (file.type === 'image/gif') {
           uploadFile = file;
+        } else {
+          try {
+            const compressed = await compressImage(file, 1920, 0.8);
+            uploadFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+          } catch {
+            uploadFile = file;
+          }
         }
         const url = await onUploadImage?.(uploadFile);
         if (url) {
@@ -812,11 +830,15 @@ export function ChatArea({
     try {
       const file = galleryFiles[0];
       let uploadFile: File;
-      try {
-        const compressed = await compressImage(file, 1920, 0.8);
-        uploadFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-      } catch {
+      if (file.type === 'image/gif') {
         uploadFile = file;
+      } else {
+        try {
+          const compressed = await compressImage(file, 1920, 0.8);
+          uploadFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+        } catch {
+          uploadFile = file;
+        }
       }
       const url = await onUploadImage?.(uploadFile);
       if (url) {
@@ -878,8 +900,8 @@ export function ChatArea({
   }, []);
 
   const handleFileSelected = useCallback(async (file: File) => {
-    if (file.size > 50 * 1024 * 1024) {
-      toast.error('File must be under 50MB');
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File must be under 10MB');
       return;
     }
 
@@ -895,7 +917,7 @@ export function ChatArea({
 
     try {
       let uploadFile = file;
-      if (isImage) {
+      if (isImage && file.type !== 'image/gif') {
         try {
           const compressed = await compressImage(file, 1920, 0.8);
           uploadFile = new File([compressed], file.name, { type: 'image/jpeg' });
@@ -947,15 +969,19 @@ export function ChatArea({
     if (isGallery) {
       const newFiles: File[] = [];
       const newPreviews: string[] = [];
+      let skipped = 0;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        if (file.size > 50 * 1024 * 1024) continue;
+        if (file.size > 10 * 1024 * 1024) { skipped++; continue; }
         if (file.type.startsWith('image/')) {
           newFiles.push(file);
           const url = URL.createObjectURL(file);
           blobUrlsRef.current.add(url);
           newPreviews.push(url);
         }
+      }
+      if (skipped > 0) {
+        toast.error(`${skipped} image${skipped !== 1 ? 's' : ''} skipped — 10MB max each`);
       }
       if (newFiles.length > 0) {
         setGalleryPreviews(prev => [...prev, ...newPreviews]);
@@ -1032,7 +1058,7 @@ export function ChatArea({
       {/* Header */}
       <div className="h-14 border-b border-border flex items-center px-4 gap-3 shrink-0 bg-card/80 backdrop-blur-sm z-10">
         {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0 -ml-1">
+          <Button variant="ghost" size="icon" onClick={onBack} className="shrink-0 -ml-1" aria-label="Back to conversations">
             <ArrowLeft className="w-5 h-5" />
           </Button>
         )}
@@ -1130,11 +1156,11 @@ export function ChatArea({
               </button>
             )}
             {!isGroup && otherUserId && (
-              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-full" onClick={() => onProfileClick?.(otherUserId)} title="View profile">
+              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-full" onClick={() => onProfileClick?.(otherUserId)} title="View profile" aria-label="View profile">
                 <Info className="w-4 h-4" />
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-full" onClick={() => setShowSearch(true)} title="Search">
+            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-full" onClick={() => setShowSearch(true)} title="Search" aria-label="Search messages">
               <Search className="w-4 h-4" />
             </Button>
           </>
@@ -1478,6 +1504,7 @@ export function ChatArea({
                                   className="rounded-full h-6 w-6"
                                   onClick={() => setReplyTo(msg)}
                                   title="Reply"
+                                  aria-label="Reply to message"
                                 >
                                   <Reply className="w-3 h-3" />
                                 </Button>
@@ -1487,6 +1514,7 @@ export function ChatArea({
                                   className="rounded-full h-6 w-6"
                                   onClick={() => handleCopyMessage(msg.content || '')}
                                   title="Copy"
+                                  aria-label="Copy message"
                                 >
                                   <Copy className="w-3 h-3" />
                                 </Button>
@@ -1497,6 +1525,7 @@ export function ChatArea({
                                     className="rounded-full h-6 w-6"
                                     onClick={() => handleReportMessage(msg)}
                                     title="Report"
+                                    aria-label="Report message"
                                   >
                                     <Flag className="w-3 h-3" />
                                   </Button>
@@ -1507,6 +1536,7 @@ export function ChatArea({
                                   className="rounded-full h-6 w-6"
                                   onClick={() => setForwardMsgId(msg.id)}
                                   title="Forward"
+                                  aria-label="Forward message"
                                 >
                                   <Forward className="w-3 h-3" />
                                 </Button>
@@ -1518,6 +1548,7 @@ export function ChatArea({
                                       className="rounded-full h-6 w-6"
                                       onClick={() => handleStartEdit(msg)}
                                       title="Edit"
+                                      aria-label="Edit message"
                                     >
                                       <Edit3 className="w-3 h-3" />
                                     </Button>
@@ -1536,6 +1567,7 @@ export function ChatArea({
                                         }
                                       }}
                                       title={canDeleteEveryone(msg) ? 'Delete' : 'Delete expired (48h)'}
+                                      aria-label="Delete message"
                                     >
                                       <Trash2 className="w-3 h-3" />
                                     </Button>
@@ -1923,6 +1955,7 @@ export function ChatArea({
               onClick={() => { setShowAttachments(v => !v); setShowStickers(false); }}
               disabled={uploadingFile || !canSend}
               title="Attach"
+              aria-label="Attach file"
             >
               <Paperclip className="w-4 h-4" />
             </Button>
@@ -1946,6 +1979,7 @@ export function ChatArea({
               className="shrink-0 rounded-full"
               onClick={handleSend}
               disabled={!input.trim() || uploadingFile || !canSend}
+              aria-label={editingMessage ? 'Save edit' : 'Send message'}
             >
               {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
             </Button>
@@ -2052,6 +2086,7 @@ export function ChatArea({
               <div className="max-h-60 overflow-y-auto scrollbar-thin space-y-0.5">
                 {conversations
                   .filter(c => c.id !== activeConversation)
+                  .filter(c => !c.is_group || c.messages_policy !== 'admins' || c.is_admin === true)
                   .map(conv => (
                     <button
                       key={conv.id}
@@ -2078,7 +2113,7 @@ export function ChatArea({
                       </div>
                     </button>
                   ))}
-                {conversations.filter(c => c.id !== activeConversation).length === 0 && (
+                {conversations.filter(c => c.id !== activeConversation).filter(c => !c.is_group || c.messages_policy !== 'admins' || c.is_admin === true).length === 0 && (
                   <p className="text-xs text-muted-foreground text-center py-6">No other conversations</p>
                 )}
               </div>

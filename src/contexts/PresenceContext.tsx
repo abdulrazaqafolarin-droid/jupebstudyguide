@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -64,16 +64,24 @@ async function canViewOnlineStatusMany(viewerId: string, targetIds: string[]): P
   });
   if (uncached.length > 0) {
     try {
-      const { data } = await supabase.rpc('can_view_online_status_many', {
-        p_user_ids: uncached.slice(0, 50),
-      });
-      for (const row of ((data ?? []) as { user_id: string; allowed: boolean }[])) {
-        result.set(row.user_id, row.allowed);
-        if (onlineStatusCache.size >= ONLINE_STATUS_MAX) {
-          const oldest = onlineStatusCache.keys().next().value;
-          if (oldest) onlineStatusCache.delete(oldest);
+      // Chunk so large groups never silently drop members past the first 50.
+      for (let i = 0; i < uncached.length; i += 50) {
+        const chunk = uncached.slice(i, i + 50);
+        const { data } = await supabase.rpc('can_view_online_status_many', {
+          p_user_ids: chunk,
+        });
+        for (const row of ((data ?? []) as { user_id: string; allowed: boolean }[])) {
+          result.set(row.user_id, row.allowed);
+          if (onlineStatusCache.size >= ONLINE_STATUS_MAX) {
+            const oldest = onlineStatusCache.keys().next().value;
+            if (oldest) onlineStatusCache.delete(oldest);
+          }
+          onlineStatusCache.set(`${viewerId}_${row.user_id}`, { allowed: row.allowed, at: now });
         }
-        onlineStatusCache.set(`${viewerId}_${row.user_id}`, { allowed: row.allowed, at: now });
+      }
+      // Anyone the RPC didn't return defaults to visible.
+      for (const id of uncached) {
+        if (!result.has(id)) result.set(id, true);
       }
     } catch {
       for (const id of uncached) result.set(id, true);
@@ -91,6 +99,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const activeConvRef = useRef<string | null>(null);
+  const lastSeenInflight = useRef<Set<string>>(new Set());
   const visibilityHandlersRef = useRef<(() => void) | null>(null);
   const privacyFilterRef = useRef<Set<string>>(new Set());
 
@@ -119,13 +128,13 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   const updateLastSeen = useCallback(async () => {
     if (!user) return;
     try {
-      await supabase.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', user.id);
+      await supabase.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('user_id', user.id);
     } catch { /* silent */ }
   }, [user]);
 
   const reconnectPresence = useCallback(() => {
     if (!user || channelRef.current) return;
-    console.log('[presence] connecting...');
+
     const channel = supabase.channel('chat-presence', {
       config: { presence: { key: user.id } },
     });
@@ -134,7 +143,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
         channel.untrack();
         updateLastSeen();
         syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
-        console.log('[presence] tab hidden — untracked');
+
       } else {
         channel.track({
           user_id: user.id,
@@ -143,7 +152,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
           recording_vn_in: null,
         } as PresenceState);
         syncPresenceToDb({ is_online: true, online_at: new Date().toISOString() });
-        console.log('[presence] tab visible — tracked');
+
       }
     };
     const handleBeforeUnload = () => {
@@ -155,7 +164,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState<PresenceState>();
         const userIds = Object.keys(state);
-        console.log('[presence] sync — tracked users:', userIds);
+
         const online = new Set<string>();
         const typing = new Set<string>();
         const recording = new Set<string>();
@@ -195,7 +204,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .subscribe(async (status) => {
-        console.log('[presence] subscribe status:', status);
+
         if (status === 'SUBSCRIBED') {
           channelRef.current = channel;
           await channel.track({
@@ -205,7 +214,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
             recording_vn_in: null,
           } as PresenceState);
           syncPresenceToDb({ is_online: true, online_at: new Date().toISOString() });
-          console.log('[presence] tracked self as online');
+
           document.addEventListener('visibilitychange', handleVisibilityChange);
           window.addEventListener('beforeunload', handleBeforeUnload);
           visibilityHandlersRef.current = () => {
@@ -235,7 +244,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
 
   const setTyping = useCallback((isTyping: boolean) => {
     if (!user || !channelRef.current) {
-      console.warn('[presence] setTyping skipped — no channel');
+
       return;
     }
 
@@ -243,7 +252,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(typingTimeoutRef.current);
     }
 
-    console.log('[presence] setTyping:', isTyping, 'conv:', activeConvRef.current);
+
     channelRef.current.track({
       user_id: user.id,
       typing_in: isTyping ? activeConvRef.current : null,
@@ -281,16 +290,27 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   const getLastSeen = useCallback((userId: string) => {
     if (onlineUsers.has(userId)) return null;
     if (lastSeenCache[userId]) return lastSeenCache[userId];
-    supabase.rpc('get_last_seen', { p_target_user_id: userId }).then(({ data, error }) => {
-      if (data && !error) {
-        setLastSeenCache(prev => ({ ...prev, [userId]: data }));
-      }
-    });
+    // Dedupe in-flight lookups so group headers don't fan out N identical RPCs.
+    if (!lastSeenInflight.current.has(userId)) {
+      lastSeenInflight.current.add(userId);
+      supabase.rpc('get_last_seen', { p_target_user_id: userId }).then(({ data, error }) => {
+        lastSeenInflight.current.delete(userId);
+        if (data && !error) {
+          setLastSeenCache(prev => ({ ...prev, [userId]: data }));
+        }
+      });
+    }
     return null;
   }, [onlineUsers, lastSeenCache]);
 
+  // Memoized so consumers' effects (e.g. Chat's active-conversation sync)
+  // don't re-fire on every provider render.
+  const value = useMemo(() => ({
+    isOnline, isTyping, isRecordingVn, setTyping, setRecordingVn, setActiveConversation, getLastSeen,
+  }), [isOnline, isTyping, isRecordingVn, setTyping, setRecordingVn, setActiveConversation, getLastSeen]);
+
   return (
-    <PresenceContext.Provider value={{ isOnline, isTyping, isRecordingVn, setTyping, setRecordingVn, setActiveConversation, getLastSeen }}>
+    <PresenceContext.Provider value={value}>
       {children}
     </PresenceContext.Provider>
   );

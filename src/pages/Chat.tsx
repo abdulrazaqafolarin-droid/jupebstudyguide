@@ -20,9 +20,17 @@ import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { useChatUnreadCount } from '@/contexts/ChatUnreadContext';
 import { toast } from 'sonner';
 
+let faviconOriginalHref: string | null = null;
+
 function updateFaviconBadge(count: number) {
   const existing = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
   if (!existing) return;
+  // Pin the pristine icon on first run: redrawing from the already-badged
+  // data URL compounds badges on every unread change.
+  if (faviconOriginalHref === null) {
+    faviconOriginalHref = existing.href;
+  }
+  const sourceHref = faviconOriginalHref;
   const canvas = document.createElement('canvas');
   canvas.width = 32;
   canvas.height = 32;
@@ -46,7 +54,7 @@ function updateFaviconBadge(count: number) {
     }
     existing.href = canvas.toDataURL();
   };
-  img.src = existing.href;
+  img.src = sourceHref;
 }
 
 type Tab = 'chats' | 'friends';
@@ -68,7 +76,9 @@ const Chat = () => {
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [searchParams] = useSearchParams();
 
-  // Handle URL params from notification bar navigation
+  // Handle URL params from notification bar navigation.
+  // Re-runs when the query string changes so taps while already on /chat
+  // switch conversations instead of being swallowed by the one-shot effect.
   useEffect(() => {
     const convParam = searchParams.get('conversation');
     const tabParam = searchParams.get('tab');
@@ -79,7 +89,8 @@ const Chat = () => {
     if (tabParam === 'friends') {
       setTab('friends');
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const { setStaleUnread } = useChatUnreadCount();
 
@@ -87,12 +98,11 @@ const Chat = () => {
     setStaleUnread(chat.staleUnread);
   }, [chat.staleUnread, setStaleUnread]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleRealtimeMessage = useCallback((message: Message) => {
     chat.pushMessage(message);
-  }, [chat]);
+  }, [chat.pushMessage]);
 
-  console.log('[Chat] conversationId passed to hook:', chat.activeConversation);
-  console.log('[Chat] currentUserId passed to hook:', user?.id ?? null);
   useRealtimeChat({
     conversationId: chat.activeConversation,
     currentUserId: user?.id ?? null,
@@ -161,7 +171,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
+    <div className="h-[100dvh] flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
       {(!isMobile || showSidebar) && (
@@ -348,7 +358,8 @@ const Chat = () => {
                           variant="outline"
                           className="h-8 text-xs rounded-lg"
                           onClick={async () => {
-                            await friends.respondToRequest(req.id, false);
+                            const { error } = await friends.respondToRequest(req.id, false);
+                            if (error) toast.error(error.message);
                           }}
                         >
                           Decline

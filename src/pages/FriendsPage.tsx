@@ -46,7 +46,7 @@ export default function FriendsPage() {
       setSearchingUsers(false);
     }, 300);
     return () => clearTimeout(debounceRef.current);
-  }, [addFriendQuery, chat]);
+  }, [addFriendQuery, chat.searchUsers]);
 
   const handleStartConversation = async (userId: string) => {
     try {

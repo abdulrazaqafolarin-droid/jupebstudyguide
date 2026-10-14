@@ -227,7 +227,7 @@ export function ChatSidebar({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-7 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="h-7 text-xs rounded-lg opacity-0 group-hover:opacity-100 focus-visible:opacity-100 max-md:opacity-100 transition-opacity"
                       onClick={() => {
                         onStartConversation(profile.user_id);
                         setUserSearchQuery('');

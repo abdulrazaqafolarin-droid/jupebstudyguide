@@ -16,8 +16,6 @@ export function useRealtimeChat({
   currentUserId,
   onNewMessage,
 }: UseRealtimeChatProps) {
-  console.log('[Realtime] Hook mounted, conversationId:', conversationId, 'userId:', currentUserId);
-
   const msgReconnectAttemptsRef = useRef(0);
   const msgReconnectTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const msgChannelRef = useRef<ReturnType<typeof supabase.channel>>();
@@ -70,12 +68,17 @@ export function useRealtimeChat({
     const cid = conversationIdRef.current;
     const uid = currentUserIdRef.current;
     if (!cid || !uid) {
-      console.log('[Realtime] msgSubscribe skipped: no cid or uid', { cid, uid });
+
       return;
     }
-    console.log('[Realtime] Creating channel for conversation:', cid, 'user:', uid);
+
 
     msgDisposedRef.current = false;
+    // Seed the poll cursor at subscribe time so a later realtime outage
+    // only backfills genuinely new rows instead of replaying history.
+    if (lastPollCursorRef.current === new Date(0).toISOString()) {
+      lastPollCursorRef.current = new Date().toISOString();
+    }
 
     const channel = supabase.channel(`chat-conv-${cid}`);
     msgChannelRef.current = channel;
@@ -91,14 +94,14 @@ export function useRealtimeChat({
         },
         (payload) => {
           const newMsg = payload.new as Message;
-          console.log('[Realtime] INSERT:', newMsg.id, 'conv:', newMsg.conversation_id, 'from:', newMsg.sender_id);
+
           if (newMsg.sender_id === uid) return;
           lastPollCursorRef.current = newMsg.created_at;
           onNewMessageRef.current(newMsg);
         }
       )
       .subscribe((status, err) => {
-        console.log('[Realtime] subscribe status:', status, 'convId:', conversationIdRef.current, 'userId:', currentUserIdRef.current);
+
         if (msgDisposedRef.current) return;
 
         if (status === 'SUBSCRIBED') {

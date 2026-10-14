@@ -816,6 +816,11 @@ export function useChat() {
     setMessages([]);
     setHasMoreMessages(true);
     messagesCursorRef.current = null;
+    // Optimistically clear the badge so it never flashes stale counts
+    // while fetchMessages/fetchConversations race the mark-read RPC.
+    setConversations(prev => prev.map(c =>
+      c.id === conversationId ? { ...c, unread_count: 0 } : c
+    ));
     await fetchMessages(conversationId);
     fetchConversations();
   }, [fetchMessages, fetchConversations]);
@@ -953,8 +958,9 @@ export function useChat() {
   const sendMessage = useCallback(async (content: string, replyToId?: string | null) => {
     if (!user || !activeConversation || !content.trim()) return;
 
+    const clientId = crypto.randomUUID();
     const optimisticMsg: Message = {
-      id: crypto.randomUUID(),
+      id: clientId,
       conversation_id: activeConversation,
       sender_id: user.id,
       content: content.trim(),
@@ -978,9 +984,29 @@ export function useChat() {
       content: content.trim(),
       message_type: 'text',
       reply_to_id: replyToId || null,
+      client_msg_id: clientId,
     }).select();
 
     if (error) {
+      // Idempotency conflict (23505): a retry already landed — reconcile from server.
+      if ((error as { code?: string }).code === '23505') {
+        const { data: existing } = await supabase
+          .from('messages')
+          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
+          .eq('client_msg_id', clientId)
+          .maybeSingle();
+        if (existing) {
+          setMessages(prev => prev.map(m =>
+            m.id === optimisticMsg.id ? { ...(existing as Message), reactions: undefined } as unknown as Message : m
+          ));
+          msgBroadcastRef.current?.send({
+            type: 'broadcast',
+            event: 'msg',
+            payload: { message: existing },
+          });
+          return;
+        }
+      }
       offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Message queued — will send when back online');
@@ -1038,8 +1064,9 @@ export function useChat() {
   const sendImage = useCallback(async (imageUrl: string) => {
     if (!user || !activeConversation || !imageUrl.trim()) return;
 
+    const clientId = crypto.randomUUID();
     const optimisticMsg: Message = {
-      id: crypto.randomUUID(),
+      id: clientId,
       conversation_id: activeConversation,
       sender_id: user.id,
       content: '',
@@ -1063,9 +1090,23 @@ export function useChat() {
       content: '',
       message_type: 'image',
       image_url: imageUrl,
+      client_msg_id: clientId,
     }).select();
 
     if (error) {
+      if ((error as { code?: string }).code === '23505') {
+        const { data: existing } = await supabase
+          .from('messages')
+          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
+          .eq('client_msg_id', clientId)
+          .maybeSingle();
+        if (existing) {
+          setMessages(prev => prev.map(m =>
+            m.id === optimisticMsg.id ? { ...(existing as Message), reactions: undefined } as unknown as Message : m
+          ));
+          return;
+        }
+      }
       offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Image queued — will send when back online');
@@ -1087,8 +1128,9 @@ export function useChat() {
   const sendFile = useCallback(async (fileUrl: string, fileName: string, fileSize: number, fileType: string) => {
     if (!user || !activeConversation) return;
 
+    const clientId = crypto.randomUUID();
     const optimisticMsg: Message = {
-      id: crypto.randomUUID(),
+      id: clientId,
       conversation_id: activeConversation,
       sender_id: user.id,
       content: fileName,
@@ -1118,9 +1160,23 @@ export function useChat() {
       file_name: fileName,
       file_size: fileSize,
       file_type: fileType,
+      client_msg_id: clientId,
     }).select();
 
     if (error) {
+      if ((error as { code?: string }).code === '23505') {
+        const { data: existing } = await supabase
+          .from('messages')
+          .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
+          .eq('client_msg_id', clientId)
+          .maybeSingle();
+        if (existing) {
+          setMessages(prev => prev.map(m =>
+            m.id === optimisticMsg.id ? { ...(existing as Message), reactions: undefined } as unknown as Message : m
+          ));
+          return;
+        }
+      }
       offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('File queued — will send when back online');
@@ -1401,6 +1457,22 @@ export function useChat() {
       return [...prev, message].sort(
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
+    });
+    // Keep the sidebar preview in sync: per-conversation realtime only appends
+    // to the message list, so bump last_message + ordering here as well.
+    setConversations(prev => {
+      if (!prev.some(c => c.id === message.conversation_id)) return prev;
+      const updated = prev.map(c =>
+        c.id === message.conversation_id ? { ...c, last_message: message } : c
+      );
+      return updated.sort((a, b) => {
+        const aTime = a.last_message?.created_at;
+        const bTime = b.last_message?.created_at;
+        if (!aTime && !bTime) return 0;
+        if (!aTime) return 1;
+        if (!bTime) return -1;
+        return bTime.localeCompare(aTime);
+      });
     });
   }, []);
 

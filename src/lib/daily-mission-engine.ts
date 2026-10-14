@@ -80,7 +80,7 @@ export function selectMissionQuestions(args: {
     pool,
     task,
     history,
-    count = 5,
+    count = 10,
     attemptNumber = 1,
     excludedQuestionIds = [],
     preferredQuestionIds = [],

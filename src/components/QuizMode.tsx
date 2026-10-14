@@ -158,7 +158,9 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
       if (percentage >= 40) return { label: 'Keep Trying!', icon: '📚', color: 'text-chemistry' };
       return { label: 'Keep Studying!', icon: '🎯', color: 'text-destructive' };
     };
-    const grade = getGrade();
+    const grade = gradableCount === 0
+      ? { label: 'Not graded', icon: '📝', color: 'text-muted-foreground' }
+      : getGrade();
 
     return (
       <div className="max-w-lg mx-auto animate-scale-in">
@@ -184,7 +186,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
               className="mx-auto mb-6"
             >
               <div className="text-center">
-                <span className={cn("text-4xl font-bold", grade.color)}>{percentage}%</span>
+                <span className={cn("text-4xl font-bold", grade.color)}>{gradableCount === 0 ? "—" : `${percentage}%`}</span>
                 <p className="text-xs text-muted-foreground mt-0.5">Score</p>
               </div>
             </ProgressRing>
@@ -216,7 +218,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
 
             {/* Message */}
             <p className="text-sm text-muted-foreground mb-6">
-              {percentage >= 90 ? "Outstanding performance! You're exam-ready." :
+              {gradableCount === 0 ? "This quiz could not be scored because no valid answer keys are available." :
+               percentage >= 90 ? "Outstanding performance! You're exam-ready." :
                percentage >= 80 ? "Excellent work! Keep the momentum going." :
                percentage >= 60 ? "Good progress! Review the questions you missed." :
                percentage >= 40 ? "You're building foundation. Keep practicing!" :

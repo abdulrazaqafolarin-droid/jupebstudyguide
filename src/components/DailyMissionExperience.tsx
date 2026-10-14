@@ -3,7 +3,7 @@ import { ArrowLeft, BookOpen, CheckCircle2, CircleHelp, RotateCcw, Target } from
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { Question } from "@/types/question";
+import { SUBJECT_INFO, type Question } from "@/types/question";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
 import { prepareRecoveryAttempt, submitMissionAttempt } from "@/lib/daily-mission-engine";
 
@@ -123,7 +123,7 @@ export function DailyMissionExperience({
               </div>
             ) : currentQuestions.map((question, index) => (
               <fieldset key={question.id} className="space-y-3 rounded-xl border border-border p-4">
-                <legend className="px-2 text-sm font-semibold">Question {index + 1} of {currentQuestions.length}</legend>
+                <legend className="px-2 text-sm font-semibold">Question {index + 1} of {currentQuestions.length} · {SUBJECT_INFO[question.subject].name}</legend>
                 <p className="leading-6">{question.question}</p>
                 <div className="space-y-2">
                   {(question.options ?? []).map((option) => (

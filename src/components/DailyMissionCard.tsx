@@ -23,6 +23,7 @@ interface DailyMissionCardProps {
   session: StudySessionData | null;
   todayTask: DailyTask | null;
   todayMission: DailyMissionRecord | null;
+  history: DailyMissionRecord[];
   suggestedElectives: { biology: boolean; math: boolean };
   onStartMission: (subjects: Subject[]) => void;
   onOpenMission: () => void;
@@ -39,6 +40,7 @@ export function DailyMissionCard({
   session,
   todayTask,
   todayMission,
+  history,
   suggestedElectives,
   onStartMission,
   onOpenMission,
@@ -169,6 +171,31 @@ export function DailyMissionCard({
               <h3 className="text-lg font-bold">Syllabus plan complete!</h3>
               <p className="text-sm text-muted-foreground">You finished the current 30-day plan. Review your history or start another plan.</p>
               <Button variant="outline" onClick={onViewPlan}>View full plan</Button>
+            </div>
+          )}
+
+          {history.filter((mission) => mission.id !== todayMission?.id).length > 0 && (
+            <div className="border-t border-border pt-4">
+              <h3 className="mb-3 text-sm font-semibold">Previous missions</h3>
+              <div className="space-y-2">
+                {[...history]
+                  .filter((mission) => mission.id !== todayMission?.id)
+                  .sort((a, b) => b.localDate.localeCompare(a.localDate))
+                  .slice(0, 3)
+                  .map((mission) => (
+                    <div key={mission.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{mission.topicName}</p>
+                        <p className="text-xs text-muted-foreground">{mission.localDate} · Day {mission.syllabusDay}</p>
+                      </div>
+                      <Badge variant={mission.stage === "completed" ? "secondary" : "outline"} className="shrink-0">
+                        {mission.stage === "completed"
+                          ? `Completed · ${mission.bestAccuracy ?? 0}%`
+                          : "Unfinished · saved"}
+                      </Badge>
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
         </div>

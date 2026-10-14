@@ -128,44 +128,16 @@ BEGIN
       END IF;
     END IF;
   ELSIF p_reason = 'syllabus_day' THEN
-    IF v_reference_key !~ '^[0-9]+ (user_id, amount, reason, reference_id)
-  VALUES (p_user_id, p_amount, p_reason, p_reference_id)
-  ON CONFLICT (user_id, reference_id) WHERE reference_id IS NOT NULL
-  DO NOTHING
-  RETURNING id INTO v_inserted_id;
-
-  IF v_inserted_id IS NULL THEN
-    RETURN jsonb_build_object('success', true, 'duplicate', true);
-  END IF;
-
-  RETURN jsonb_build_object('success', true, 'duplicate', false);
-END;
-$$;
-
-REVOKE EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) TO authenticated, service_role;
- OR v_reference_key::INTEGER NOT BETWEEN 1 AND 30 THEN
+    IF v_reference_key !~ '^[0-9]+$' THEN
+      RAISE EXCEPTION 'Invalid syllabus day reward reference'
+        USING ERRCODE = '22023';
+    END IF;
+    IF v_reference_key::INTEGER NOT BETWEEN 1 AND 30 THEN
       RAISE EXCEPTION 'Invalid syllabus day reward reference'
         USING ERRCODE = '22023';
     END IF;
   ELSIF p_reason = 'streak_day' THEN
-    IF v_reference_key !~ '^\d{4}-\d{2}-\d{2} (user_id, amount, reason, reference_id)
-  VALUES (p_user_id, p_amount, p_reason, p_reference_id)
-  ON CONFLICT (user_id, reference_id) WHERE reference_id IS NOT NULL
-  DO NOTHING
-  RETURNING id INTO v_inserted_id;
-
-  IF v_inserted_id IS NULL THEN
-    RETURN jsonb_build_object('success', true, 'duplicate', true);
-  END IF;
-
-  RETURN jsonb_build_object('success', true, 'duplicate', false);
-END;
-$$;
-
-REVOKE EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) TO authenticated, service_role;
- THEN
+    IF v_reference_key !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' THEN
       RAISE EXCEPTION 'Invalid streak date reward reference'
         USING ERRCODE = '22023';
     END IF;
@@ -173,6 +145,19 @@ GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) TO authe
     IF to_char(v_reference_date, 'YYYY-MM-DD') <> v_reference_key
        OR v_reference_date NOT BETWEEN CURRENT_DATE - 1 AND CURRENT_DATE + 1 THEN
       RAISE EXCEPTION 'Streak rewards are limited to the current local date'
+        USING ERRCODE = '22023';
+    END IF;
+  ELSIF p_reason = 'achievement' THEN
+    IF v_reference_key NOT IN (
+      'first_day', 'streak_3', 'streak_7', 'streak_14', 'streak_30',
+      'first_10', 'first_50', 'first_100', 'first_500', 'first_1000',
+      'master_10', 'master_50', 'master_100', 'master_200',
+      'accuracy_high', 'accuracy_perfect', 'perfect_10', 'all_subjects',
+      'four_subjects', 'first_upload', 'upload_5', 'upload_10',
+      'syllabus_start', 'syllabus_week1', 'syllabus_half', 'syllabus_25',
+      'syllabus_complete', 'night_owl', 'early_bird'
+    ) THEN
+      RAISE EXCEPTION 'Invalid achievement reward reference'
         USING ERRCODE = '22023';
     END IF;
   END IF;

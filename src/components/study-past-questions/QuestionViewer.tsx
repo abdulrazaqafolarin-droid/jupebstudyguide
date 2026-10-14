@@ -11,11 +11,13 @@ import type { Subject, Question } from "@/types/question";
 import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
+import { gradeAnswer, percentageScore } from "@/lib/answer-scoring";
 
 interface AnswerEntry {
   questionId: string;
   answer: string;
   isCorrect: boolean;
+  isGradable?: boolean;
 }
 
 interface QuestionViewerProps {
@@ -116,11 +118,8 @@ export function QuestionViewer({
   const handleSubmitAll = useCallback(() => {
     const all: AnswerEntry[] = questions.map((q) => {
       const answer = answers[q.id] ?? theoryAnswers[q.id] ?? "";
-      const hasRealAnswer = !!q.correctAnswer && q.correctAnswer !== "TBD" && q.correctAnswer !== "tbd";
-      const isCorrect = hasRealAnswer
-        ? answer.toUpperCase() === q.correctAnswer.toUpperCase()
-        : true;
-      return { questionId: q.id, answer, isCorrect };
+      const { isCorrect, isGradable } = gradeAnswer(answer, q.correctAnswer);
+      return { questionId: q.id, answer, isCorrect, isGradable };
     });
     setResults(all);
     setSubmitted(true);
@@ -162,8 +161,9 @@ export function QuestionViewer({
   }
 
   if (submitted) {
-    const correct = results.filter((r) => r.isCorrect).length;
-    const score = Math.round((correct / results.length) * 100);
+    const correct = results.filter((r) => r.isGradable !== false && r.isCorrect).length;
+    const gradableCount = results.filter((r) => r.isGradable !== false).length;
+    const score = percentageScore(results);
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}

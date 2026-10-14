@@ -39,6 +39,7 @@ DECLARE
   v_reference_key TEXT;
   v_question_exists BOOLEAN;
   v_reference_date DATE;
+  v_quiz_awards_last_24h INTEGER;
 BEGIN
   -- Service-role edge functions may award server-verified events. All other
   -- callers may award only to their own authenticated account.
@@ -84,6 +85,17 @@ BEGIN
   IF v_reference_key IS NULL OR btrim(v_reference_key) = '' THEN
     RAISE EXCEPTION 'A non-empty reward reference key is required'
       USING ERRCODE = '22023';
+  END IF;
+
+  -- Fast idempotency check means retries of an existing reward still succeed
+  -- even if the user has reached a per-day reward cap.
+  IF EXISTS (
+    SELECT 1
+    FROM public.score_events
+    WHERE user_id = p_user_id
+      AND reference_id = p_reference_id
+  ) THEN
+    RETURN jsonb_build_object('success', true, 'duplicate', true);
   END IF;
 
   IF p_reason IN ('answered_question', 'correct_answer') THEN
@@ -145,6 +157,17 @@ BEGIN
     IF to_char(v_reference_date, 'YYYY-MM-DD') <> v_reference_key
        OR v_reference_date NOT BETWEEN CURRENT_DATE - 1 AND CURRENT_DATE + 1 THEN
       RAISE EXCEPTION 'Streak rewards are limited to the current local date'
+        USING ERRCODE = '22023';
+    END IF;
+  ELSIF p_reason = 'quiz_complete' THEN
+    SELECT COUNT(*)::INTEGER INTO v_quiz_awards_last_24h
+    FROM public.score_events
+    WHERE user_id = p_user_id
+      AND reason = 'quiz_complete'
+      AND created_at >= now() - interval '24 hours';
+
+    IF v_quiz_awards_last_24h >= 20 THEN
+      RAISE EXCEPTION 'Daily quiz reward limit reached'
         USING ERRCODE = '22023';
     END IF;
   ELSIF p_reason = 'achievement' THEN

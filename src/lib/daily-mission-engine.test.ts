@@ -88,7 +88,10 @@ function missionFixture(): DailyMissionRecord {
 
 describe("daily mission engine", () => {
   it("builds a syllabus-guided lesson and selects gradable topic questions", () => {
-    const pool = [question("q1"), question("q2"), question("q3"), question("q4", "Waves")];
+    const pool = [
+      ...Array.from({ length: 11 }, (_, index) => question(`q${index + 1}`)),
+      question("q12", "Waves"),
+    ];
     const mission = createDailyMission({
       session,
       task,
@@ -99,8 +102,8 @@ describe("daily mission engine", () => {
     });
     expect(mission?.topicName).toBe("Motion");
     expect(mission?.stage).toBe("lesson");
-    expect(mission?.currentQuestionIds).toHaveLength(3);
-    expect(mission?.currentQuestionIds).not.toContain("q4");
+    expect(mission?.currentQuestionIds).toHaveLength(10);
+    expect(mission?.currentQuestionIds).not.toContain("q12");
   });
 
   it("does not create a second mission for the same local date", () => {

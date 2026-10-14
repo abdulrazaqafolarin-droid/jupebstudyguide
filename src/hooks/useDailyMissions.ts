@@ -34,6 +34,7 @@ export function useDailyMissions() {
   const [today, setToday] = useState(() => todayDateString());
   const loadedUserRef = useRef<string | null>(null);
   const lastSyncHash = useRef("");
+  const syncQueueRef = useRef<Promise<unknown>>(Promise.resolve());
   const observedUserRef = useRef<string | null>(user?.id ?? null);
   const storageReadyForUserRef = useRef(false);
 
@@ -107,10 +108,12 @@ export function useDailyMissions() {
         mission: mission as unknown as import("@/integrations/supabase/types").Json,
         updated_at: mission.updatedAt,
       }));
-      supabase
-        .from("daily_missions")
-        .upsert(rows, { onConflict: "user_id,local_date" })
-        .then(({ error }) => {
+      syncQueueRef.current = syncQueueRef.current
+        .catch(() => undefined)
+        .then(async () => {
+          const { error } = await supabase
+            .from("daily_missions")
+            .upsert(rows, { onConflict: "user_id,local_date" });
           if (error) {
             console.error("Daily mission sync failed:", error);
             lastSyncHash.current = "";

@@ -18,6 +18,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_user_reference
   ON public.score_events (user_id, reference_id)
   WHERE reference_id IS NOT NULL;
 
+-- Prevent clients from bypassing award_score by inserting arbitrary score rows directly.
+DROP POLICY IF EXISTS "Users insert own score events" ON public.score_events;
+REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM anon, authenticated;
+
 CREATE OR REPLACE FUNCTION public.award_score(
   p_user_id UUID,
   p_amount INTEGER,

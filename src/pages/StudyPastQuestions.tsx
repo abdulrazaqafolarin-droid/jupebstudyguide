@@ -321,8 +321,8 @@ export default function StudyPastQuestions() {
     }
   }, [timer.state, quizComplete, effectiveQuestions, userAnswers]);
 
-  const correctCount = quizResults.filter((r) => r.isCorrect).length;
-  const totalCount = quizResults.length;
+  const correctCount = quizResults.filter((r) => r.isGradable !== false && r.isCorrect).length;
+  const totalCount = quizResults.filter((r) => r.isGradable !== false).length;
   const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   useEffect(() => {

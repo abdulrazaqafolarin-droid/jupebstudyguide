@@ -14,6 +14,7 @@ import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
 import InstallPrompt from "./components/InstallPrompt";
+import SWUpdatePrompt from "./components/SWUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
@@ -299,6 +300,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             <InstallPrompt />
+            <SWUpdatePrompt />
             <BrowserRouter>
               <AnimatedRoutes />
               <ErrorBoundary>

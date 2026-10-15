@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { SUBJECT_INFO, type Question } from "@/types/question";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
 import { prepareRecoveryAttempt, submitMissionAttempt } from "@/lib/daily-mission-engine";
+import QuestionMath from "@/components/QuestionMath";
 
 interface DailyMissionExperienceProps {
   mission: DailyMissionRecord;
@@ -84,7 +85,7 @@ export function DailyMissionExperience({
               <Badge variant="outline">{mission.difficulty} difficulty</Badge>
               {mission.stage === "completed" && <Badge className="bg-emerald-600">Completed</Badge>}
             </div>
-            <h1 className="mt-4 text-2xl font-bold md:text-3xl">{mission.topicName}</h1>
+            <h1 className="mt-4 text-2xl font-bold md:text-3xl"><QuestionMath inline content={mission.topicName} /></h1>
             <p className="mt-2 text-sm text-muted-foreground">
               One focused lesson, then questions. You need at least 70% accuracy to complete today's mission.
             </p>
@@ -97,10 +98,10 @@ export function DailyMissionExperience({
               <div className="rounded-xl bg-primary/10 p-3"><BookOpen className="h-5 w-5 text-primary" /></div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Quick lesson</p>
-                <h2 className="text-xl font-semibold">{mission.lessonTitle}</h2>
+                <h2 className="text-xl font-semibold"><QuestionMath inline content={mission.lessonTitle} /></h2>
               </div>
             </div>
-            <div className="whitespace-pre-line leading-7 text-foreground/90">{mission.lessonText}</div>
+            <div className="whitespace-pre-line leading-7 text-foreground/90"><QuestionMath content={mission.lessonText} /></div>
             <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
               Read the lesson, explain the main idea in your own words, then test your understanding.
             </div>
@@ -124,7 +125,7 @@ export function DailyMissionExperience({
             ) : currentQuestions.map((question, index) => (
               <fieldset key={question.id} className="space-y-3 rounded-xl border border-border p-4">
                 <legend className="px-2 text-sm font-semibold">Question {index + 1} of {currentQuestions.length} · {SUBJECT_INFO[question.subject].name}</legend>
-                <p className="leading-6">{question.question}</p>
+                <p className="leading-6"><QuestionMath inline content={question.question} /></p>
                 <div className="space-y-2">
                   {(question.options ?? []).map((option) => (
                     <label
@@ -148,7 +149,7 @@ export function DailyMissionExperience({
                         }}
                         className="mt-1 accent-primary"
                       />
-                      <span className="text-sm"><strong>{option.label}.</strong> {option.text}</span>
+                      <span className="text-sm"><strong>{option.label}.</strong> <QuestionMath inline content={option.text} /></span>
                     </label>
                   ))}
                 </div>
@@ -179,9 +180,9 @@ export function DailyMissionExperience({
               return (
                 <div key={questionId} className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Review question {index + 1}</p>
-                  <p className="font-medium">{question.question}</p>
-                  <p className="text-sm"><span className="font-semibold">Correct answer:</span> {question.correctAnswer}{correctOption ? ` — ${correctOption.text}` : ""}</p>
-                  {question.explanation && <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">{question.explanation}</p>}
+                  <p className="font-medium"><QuestionMath inline content={question.question} /></p>
+                  <p className="text-sm"><span className="font-semibold">Correct answer:</span> {question.correctAnswer}{correctOption ? <> — <QuestionMath inline content={correctOption.text} /></> : ""}</p>
+                  {question.explanation && <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground"><QuestionMath inline content={question.explanation} /></p>}
                 </div>
               );
             })}

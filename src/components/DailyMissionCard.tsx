@@ -8,6 +8,7 @@ import { SUBJECT_INFO, Subject } from "@/types/question";
 import type { DailyTask, StudySessionData } from "@/types/syllabus";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
 import { missionStreak } from "@/lib/daily-mission";
+import QuestionMath from "@/components/QuestionMath";
 import {
   CalendarDays,
   CheckCircle2,
@@ -32,7 +33,8 @@ interface DailyMissionCardProps {
 function TopicLine({ task }: { task: DailyTask }) {
   const names = task.topics.slice(0, 2).map((topic) => topic.name);
   if (names.length === 0) return <span>Review the syllabus and practise past questions</span>;
-  return <span>{names.join(" · ")}{task.topics.length > 2 && ` +${task.topics.length - 2} more`}</span>;
+  const label = names.join(" · ") + (task.topics.length > 2 ? ` +${task.topics.length - 2} more` : "");
+  return <QuestionMath inline content={label} />;
 }
 
 export function DailyMissionCard({
@@ -118,7 +120,7 @@ export function DailyMissionCard({
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className="gap-1 bg-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" /> Mission complete</Badge>
-                <span className="text-sm text-muted-foreground">{todayMission.topicName}</span>
+                <span className="text-sm text-muted-foreground"><QuestionMath inline content={todayMission.topicName} /></span>
               </div>
               <div>
                 <p className="text-3xl font-bold">{todayMission.bestAccuracy ?? 0}%</p>
@@ -131,7 +133,7 @@ export function DailyMissionCard({
 
           {!session && todayMission && !missionCompleted && (
             <div className="space-y-4">
-              <p className="font-medium">{todayMission.topicName}</p>
+              <p className="font-medium"><QuestionMath inline content={todayMission.topicName} /></p>
               <p className="text-sm text-muted-foreground">Your mission is saved for today. Continue where you left off.</p>
               <Button onClick={onOpenMission} className="gap-2">
                 <Play className="h-4 w-4" /> Continue today's mission
@@ -151,11 +153,12 @@ export function DailyMissionCard({
                   </span>
                 )}
               </div>
-              <p className="font-medium">{todayMission ? todayMission.topicName : <TopicLine task={todayTask} />}</p>
+              <p className="font-medium">{todayMission ? <QuestionMath inline content={todayMission.topicName} /> : <TopicLine task={todayTask} />}</p>
               <ul className="space-y-2">
                 {todayTask.learningObjectives.slice(0, 3).map((objective, index) => (
                   <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" /> {objective}
+                    <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                    <QuestionMath inline content={objective} />
                   </li>
                 ))}
               </ul>
@@ -194,7 +197,7 @@ export function DailyMissionCard({
                   .map((mission) => (
                     <div key={mission.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">{mission.topicName}</p>
+                        <p className="truncate text-sm font-medium"><QuestionMath inline content={mission.topicName} /></p>
                         <p className="text-xs text-muted-foreground">{mission.localDate} · Day {mission.syllabusDay}</p>
                       </div>
                       <Badge variant={mission.stage === "completed" ? "secondary" : "outline"} className="shrink-0">

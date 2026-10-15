@@ -20,6 +20,7 @@ import {
   PlayCircle,
 } from 'lucide-react';
 import AITeachingPage from './AITeachingPage';
+import QuestionMath from './QuestionMath';
 
 interface SyllabusDayViewProps {
   task: DailyTask;
@@ -172,7 +173,7 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
                         )}>
                           {topic.difficulty}
                         </span>
-                        <span className="font-medium">{topic.name}</span>
+                        <span className="font-medium"><QuestionMath inline content={topic.name} /></span>
                       </div>
                       {expandedTopic === topic.id ? (
                         <ChevronUp className="w-5 h-5 text-muted-foreground" />
@@ -183,7 +184,7 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
                     
                     {expandedTopic === topic.id && (
                       <div className="p-4 pt-0 border-t border-border space-y-4">
-                        <p className="text-sm text-muted-foreground">{topic.description}</p>
+                        <p className="text-sm text-muted-foreground"><QuestionMath inline content={topic.description} /></p>
                         
                         <div>
                           <h4 className="text-sm font-medium mb-2">Subtopics:</h4>
@@ -191,7 +192,7 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
                             {topic.subtopics.map((sub, i) => (
                               <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                {sub}
+                                <QuestionMath inline content={sub} />
                               </li>
                             ))}
                           </ul>
@@ -250,7 +251,7 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
                       ? 'text-accent line-through'
                       : 'text-foreground group-hover:text-primary'
                   )}>
-                    {objective}
+                    <QuestionMath inline content={objective} />
                   </span>
                 </label>
               ))}
@@ -279,7 +280,7 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
           <CardContent className="space-y-4">
             {task.checkpointQuestions.map((question, i) => (
               <div key={i} className="p-4 bg-secondary/30 rounded-lg">
-                <p className="text-sm font-medium mb-2">{question}</p>
+                <p className="text-sm font-medium mb-2"><QuestionMath inline content={question} /></p>
                 <p className="text-xs text-muted-foreground">
                   Start learning a topic above to get help with this question.
                 </p>

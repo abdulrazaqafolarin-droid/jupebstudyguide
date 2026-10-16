@@ -60,6 +60,11 @@ jobs:
           chmod +x android/gradlew
           cd android
           ./gradlew assembleDebug
+        env:
+          # Monotonic per-workflow counter: every main-branch build gets a
+          # unique versionCode so installed APKs accept in-app updates.
+          APK_VERSION_CODE: ${{ github.run_number }}
+          APK_VERSION_NAME: 1.1.${{ github.run_number }}
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -77,3 +82,37 @@ jobs:
           tag_name: android-latest
           name: "Android APK (latest)"
           files: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Mirror APK + version file to public storage
+        # The installed app checks this version.json on launch to offer
+        # in-app updates (the GitHub repo is private, so the app cannot
+        # query releases directly). Requires a SUPABASE_SERVICE_ROLE_KEY
+        # repository secret; skipped silently when absent.
+        if: github.ref == 'refs/heads/main'
+        env:
+          SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "No SUPABASE_SERVICE_ROLE_KEY secret — skipping public mirror."
+            exit 0
+          fi
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          BUILT_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk"}' \
+            "${{ github.run_number }}" "1.1.${{ github.run_number }}" "${{ github.sha }}" "$BUILT_AT" "$SUPABASE_URL" \
+            > version.json
+          curl -sS --fail-with-body -X POST \
+            "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master.apk" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            -H "x-upsert: true" \
+            --data-binary "@$APK"
+          curl -sS --fail-with-body -X POST \
+            "$SUPABASE_URL/storage/v1/object/app-releases/version.json" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "x-upsert: true" \
+            --data-binary "@version.json"

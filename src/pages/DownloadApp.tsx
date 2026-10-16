@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Download, Smartphone, Monitor, CheckCircle, Loader2, Shield, Zap } from "lucide-react";
+import { fetchLatestRelease } from "@/lib/app-updater";
 
 // Direct, no-login download (APK is mirrored to public Supabase storage on
 // every release; the GitHub repo is private so its release assets 404 for guests).
@@ -24,9 +25,21 @@ export default function DownloadApp() {
 
   useEffect(() => {
     setPlatform(getPlatform());
-    // No version API check: the APK link below always serves the latest
-    // mirrored build, so there is nothing to look up.
-    setLatestVersion("android-latest");
+    // The mirror workflow publishes version.json next to the APK, so the
+    // page can show the real version instead of a static label.
+    fetchLatestRelease().then((release) => {
+      if (release) {
+        const date = release.builtAt ? new Date(release.builtAt) : null;
+        setLatestVersion(
+          `v${release.versionName}` +
+            (date && !Number.isNaN(date.getTime())
+              ? ` · ${date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}`
+              : ""),
+        );
+      } else {
+        setLatestVersion("android-latest");
+      }
+    });
   }, []);
 
   const downloadAPK = () => {

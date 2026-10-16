@@ -15,6 +15,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
 import InstallPrompt from "./components/InstallPrompt";
 import SWUpdatePrompt from "./components/SWUpdatePrompt";
+import AppUpdatePrompt from "./components/AppUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
@@ -301,6 +302,7 @@ const App = () => {
             <Sonner />
             <InstallPrompt />
             <SWUpdatePrompt />
+            <AppUpdatePrompt />
             <BrowserRouter>
               <AnimatedRoutes />
               <ErrorBoundary>

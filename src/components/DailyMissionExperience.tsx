@@ -177,10 +177,14 @@ export function DailyMissionExperience({
               const answer = latestAnswers.get(questionId);
               if (!question || answer?.isCorrect) return null;
               const correctOption = question.options?.find((option) => option.label.toUpperCase() === question.correctAnswer.toUpperCase());
+              const userOption = question.options?.find((option) => option.label.toUpperCase() === (answer?.selectedAnswer ?? "").toUpperCase());
               return (
                 <div key={questionId} className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Review question {index + 1}</p>
                   <p className="font-medium"><QuestionMath inline content={question.question} /></p>
+                  {answer && (
+                    <p className="text-sm"><span className="font-semibold">Your answer:</span> {answer.selectedAnswer || "—"}{userOption ? <> — <QuestionMath inline content={userOption.text} /></> : ""}</p>
+                  )}
                   <p className="text-sm"><span className="font-semibold">Correct answer:</span> {question.correctAnswer}{correctOption ? <> — <QuestionMath inline content={correctOption.text} /></> : ""}</p>
                   {question.explanation && <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground"><QuestionMath inline content={question.explanation} /></p>}
                 </div>

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Question } from "@/types/question";
 import type { DailyTask, StudySessionData } from "@/types/syllabus";
 import {
@@ -106,15 +106,16 @@ describe("daily mission engine", () => {
     expect(mission?.currentQuestionIds).not.toContain("q12");
   });
 
-  it("includes previous mistakes from another subject in the mixed daily set", () => {
+  it("excludes previous mistakes from other subjects and off-day topics", () => {
     const previous = {
       ...missionFixture(),
       localDate: "2026-10-13",
-      mistakeQuestionIds: ["bio1"],
+      mistakeQuestionIds: ["bio1", "opt1"],
     };
     const pool = [
       ...Array.from({ length: 11 }, (_, index) => question(`q${index + 1}`)),
       { ...question("bio1", "Cell Structure"), subject: "biology" as const },
+      question("opt1", "Geometrical Optics"),
     ];
     const mission = createDailyMission({
       session,
@@ -124,7 +125,88 @@ describe("daily mission engine", () => {
       localDate: "2026-10-14",
       now: new Date("2026-10-14T10:00:00.000Z"),
     });
-    expect(mission?.currentQuestionIds).toContain("bio1");
+    // Neither the cross-subject mistake nor the off-topic mistake may leak in,
+    // even though mistakes used to outrank topic matches.
+    expect(mission?.currentQuestionIds).not.toContain("bio1");
+    expect(mission?.currentQuestionIds).not.toContain("opt1");
+    expect(mission?.currentQuestionIds).toHaveLength(10);
+  });
+
+  it("keeps every question inside the day's shown topics and subject", () => {
+    const twoTopicTask: DailyTask = {
+      ...task,
+      topics: [
+        task.topics[0],
+        {
+          id: "waves",
+          name: "Waves",
+          description: "Wave properties and behaviour.",
+          subtopics: ["Frequency", "Wavelength"],
+          difficulty: "intermediate",
+          estimatedHours: 2,
+        },
+      ],
+    };
+    const pool = [
+      ...Array.from({ length: 5 }, (_, index) => question(`m${index + 1}`, "Motion")),
+      ...Array.from({ length: 5 }, (_, index) => question(`w${index + 1}`, "Waves")),
+      question("off1", "Geometrical Optics"),
+      { ...question("bio9", "Motion"), subject: "biology" as const },
+    ];
+    const byId = new Map(pool.map((q) => [q.id, q]));
+    const mission = createDailyMission({
+      session,
+      task: twoTopicTask,
+      questions: pool,
+      history: [],
+      localDate: "2026-10-14",
+      now: new Date("2026-10-14T10:00:00.000Z"),
+    });
+    expect(mission?.currentQuestionIds.length).toBeGreaterThanOrEqual(3);
+    for (const id of mission?.currentQuestionIds ?? []) {
+      const q = byId.get(id)!;
+      expect(q.subject).toBe("physics");
+      expect(["Motion", "Waves"]).toContain(q.topic);
+    }
+    expect(mission?.currentQuestionIds).not.toContain("off1");
+    expect(mission?.currentQuestionIds).not.toContain("bio9");
+  });
+
+  it("spotlights a random topic from the day's set as the lesson focus", () => {
+    const twoTopicTask: DailyTask = {
+      ...task,
+      topics: [
+        task.topics[0],
+        {
+          id: "waves",
+          name: "Waves",
+          description: "Wave properties and behaviour.",
+          subtopics: ["Frequency"],
+          difficulty: "intermediate",
+          estimatedHours: 2,
+        },
+      ],
+    };
+    const pool = [
+      ...Array.from({ length: 5 }, (_, index) => question(`m${index + 1}`, "Motion")),
+      ...Array.from({ length: 5 }, (_, index) => question(`w${index + 1}`, "Waves")),
+    ];
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.99);
+    try {
+      const mission = createDailyMission({
+        session,
+        task: twoTopicTask,
+        questions: pool,
+        history: [],
+        localDate: "2026-10-14",
+        now: new Date("2026-10-14T10:00:00.000Z"),
+      });
+      expect(mission?.topicId).toBe("waves");
+      expect(mission?.topicName).toBe("Waves");
+      expect(mission?.lessonTitle).toBe("Waves");
+    } finally {
+      random.mockRestore();
+    }
   });
 
   it("does not create a second mission for the same local date", () => {

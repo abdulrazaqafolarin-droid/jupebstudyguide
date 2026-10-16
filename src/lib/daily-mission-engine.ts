@@ -43,10 +43,10 @@ export interface DailyMissionRecord {
 const normalize = (value: string | undefined) =>
   (value ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
-function topicMatches(question: Question, task: DailyTask): boolean {
+function topicMatches(question: Question, topics: DailyTask["topics"]): boolean {
   const qTopic = normalize(question.topic);
   if (!qTopic) return false;
-  return task.topics.some((topic) => {
+  return topics.some((topic) => {
     const name = normalize(topic.name);
     const subtopics = topic.subtopics.map(normalize);
     return Boolean(name && (qTopic.includes(name) || name.includes(qTopic))) ||
@@ -76,6 +76,8 @@ export function selectMissionQuestions(args: {
   preferredQuestionIds?: string[];
   weakQuestionIds?: string[];
   difficulty?: Difficulty;
+  /** Syllabus topic id the mission lesson focuses on — matched questions rank first. */
+  focusTopicId?: string;
 }): Question[] {
   const {
     pool,
@@ -87,6 +89,7 @@ export function selectMissionQuestions(args: {
     preferredQuestionIds = [],
     weakQuestionIds = [],
     difficulty = "medium",
+    focusTopicId,
   } = args;
   const excluded = new Set(excludedQuestionIds);
   const priorMistakes = new Set(history.flatMap((mission) => mission.mistakeQuestionIds));
@@ -96,33 +99,58 @@ export function selectMissionQuestions(args: {
     ...mission.attempts.flatMap((attempt) => attempt.questionIds),
   ]));
   const uniquePool = [...new Map(pool.map((question) => [question.id, question])).values()];
-  const valid = uniquePool.filter((question) =>
+  const gradable = uniquePool.filter((question) =>
     question.type === "mcq" &&
     (question.options?.length ?? 0) >= 2 &&
     hasGradableAnswer(question.correctAnswer) &&
     !excluded.has(question.id)
   );
+  // Hard gate 1: never cross subjects — a physics mission never asks biology.
+  const sameSubject = gradable.filter((question) => question.subject === task.subject);
+  // Hard gate 2: the question's topic must be one of the topics shown for
+  // the day (review days with no topics fall back to same-subject revision).
+  const dayTopics = task.topics ?? [];
+  const topical = dayTopics.length === 0
+    ? sameSubject
+    : sameSubject.filter((question) => topicMatches(question, dayTopics));
+  const focusTopics = focusTopicId
+    ? dayTopics.filter((topic) => topic.id === focusTopicId)
+    : [];
   const score = (question: Question) => {
     let points = 0;
     if (preferredQuestionIds.includes(question.id)) points += 1000;
     if (priorMistakes.has(question.id)) points += 100;
     if (weakQuestions.has(question.id)) points += 80;
-    if (topicMatches(question, task)) points += 60;
-    if (question.subject === task.subject) points += 20;
+    if (focusTopics.length > 0 && topicMatches(question, focusTopics)) points += 40;
     if (questionDifficulty(question) === difficulty) points += 10;
     if (recentlySeen.has(question.id) && !priorMistakes.has(question.id)) points -= 25;
     if (attemptNumber > 1 && !excluded.has(question.id)) points += 1;
     return points;
   };
-  const ranked = [...valid].sort((a, b) => score(b) - score(a) || a.id.localeCompare(b.id));
-  // Reserve up to three slots for previous mistakes so a syllabus-heavy bank
-  // cannot crowd out review of weak questions from earlier days.
-  const mistakeReview = ranked
+  const rank = (list: Question[]) =>
+    [...list].sort((a, b) => score(b) - score(a) || a.id.localeCompare(b.id));
+  const ordered: Question[] = [];
+  const picked = new Set<string>();
+  const push = (question: Question) => {
+    if (ordered.length >= count || picked.has(question.id)) return;
+    picked.add(question.id);
+    ordered.push(question);
+  };
+  // Reserve up to three slots for previous mistakes / weak spots — all
+  // topic-aligned by construction, so review never smuggles in off-topic
+  // questions the way the old +100/+80-vs-+60 scoring did.
+  rank(topical)
     .filter((question) => priorMistakes.has(question.id) || weakQuestions.has(question.id))
-    .slice(0, Math.min(3, count));
-  const selectedIds = new Set(mistakeReview.map((question) => question.id));
-  const remainder = ranked.filter((question) => !selectedIds.has(question.id));
-  return [...mistakeReview, ...remainder].slice(0, Math.min(count, valid.length));
+    .slice(0, Math.min(3, count))
+    .forEach(push);
+  rank(topical).forEach(push);
+  // Thin bank fallback: top up from the same subject only. Topic-matched
+  // questions always come first; cross-subject questions never qualify.
+  if (ordered.length < count) {
+    const topicalIds = new Set(topical.map((question) => question.id));
+    rank(sameSubject.filter((question) => !topicalIds.has(question.id))).forEach(push);
+  }
+  return ordered.slice(0, count);
 }
 
 export function buildMissionLesson(task: DailyTask): { title: string; text: string } {
@@ -165,15 +193,25 @@ export function createDailyMission(args: {
   if (history.some((mission) => mission.localDate === localDate)) return null;
   const previousAccuracies = history.flatMap((mission) => mission.attempts.map((attempt) => attempt.accuracy));
   const difficulty = chooseMissionDifficulty(previousAccuracies);
+  // The lesson spotlights one random topic from the day's set (stable for
+  // the day: missions are created once per localDate), and every question
+  // is drawn from the topics shown — never an unrelated topic or subject.
+  const focus = task.topics.length > 0
+    ? task.topics[Math.floor(Math.random() * task.topics.length)]
+    : undefined;
   const selected = selectMissionQuestions({
     pool: questions,
     task,
     history,
     weakQuestionIds: args.weakQuestionIds,
     difficulty,
+    focusTopicId: focus?.id,
   });
   if (selected.length < 3) return null;
-  const lesson = buildMissionLesson(task);
+  const focusedTask = focus
+    ? { ...task, topics: [focus, ...task.topics.filter((topic) => topic.id !== focus.id)] }
+    : task;
+  const lesson = buildMissionLesson(focusedTask);
   const now = (args.now ?? new Date()).toISOString();
   return {
     id: `mission-${localDate}-${session.id}`,
@@ -181,8 +219,8 @@ export function createDailyMission(args: {
     sessionId: session.id,
     syllabusDay: task.day,
     subject: task.subject,
-    topicId: task.topics[0]?.id ?? `subject-${task.subject}`,
-    topicName: task.topics[0]?.name ?? task.learningObjectives[0] ?? task.subject,
+    topicId: focus?.id ?? `subject-${task.subject}`,
+    topicName: focus?.name ?? task.learningObjectives[0] ?? task.subject,
     lessonTitle: lesson.title,
     lessonText: lesson.text,
     stage: "lesson",
@@ -292,6 +330,7 @@ export function prepareRecoveryAttempt(
     attemptNumber: mission.attemptNumber + 1,
     excludedQuestionIds: [...excluded],
     difficulty: mission.difficulty === "hard" ? "medium" : "easy",
+    focusTopicId: mission.topicId,
   });
   // If the bank is too small to provide new questions, reuse a focused set rather than blocking study.
   const fallback = nextQuestions.length >= 3 ? nextQuestions : selectMissionQuestions({
@@ -301,6 +340,7 @@ export function prepareRecoveryAttempt(
     count: Math.max(3, mission.currentQuestionIds.length),
     attemptNumber: mission.attemptNumber + 1,
     difficulty: "easy",
+    focusTopicId: mission.topicId,
   });
   return {
     ...mission,

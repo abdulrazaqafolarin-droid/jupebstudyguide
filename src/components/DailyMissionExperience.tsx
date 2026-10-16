@@ -7,6 +7,7 @@ import { SUBJECT_INFO, type Question } from "@/types/question";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
 import { prepareRecoveryAttempt, submitMissionAttempt } from "@/lib/daily-mission-engine";
 import QuestionMath from "@/components/QuestionMath";
+import MistakeExplanation from "@/components/MistakeExplanation";
 
 interface DailyMissionExperienceProps {
   mission: DailyMissionRecord;
@@ -187,6 +188,12 @@ export function DailyMissionExperience({
                   )}
                   <p className="text-sm"><span className="font-semibold">Correct answer:</span> {question.correctAnswer}{correctOption ? <> — <QuestionMath inline content={correctOption.text} /></> : ""}</p>
                   {question.explanation && <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground"><QuestionMath inline content={question.explanation} /></p>}
+                  <MistakeExplanation
+                    subject={mission.subject}
+                    topicName={mission.topicName}
+                    question={question}
+                    selectedAnswer={answer?.selectedAnswer ?? ""}
+                  />
                 </div>
               );
             })}

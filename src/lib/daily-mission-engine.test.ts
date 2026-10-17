@@ -248,6 +248,92 @@ describe("daily mission engine", () => {
     expect(result.attempts[0].accuracy).toBe(70);
   });
 
+  it("matches coarse course slugs (e.g. phy-mechanics) to fine syllabus topics", () => {
+    const dynamicsTask: DailyTask = {
+      day: 2,
+      subject: "physics",
+      topics: [{
+        id: "phy-dynamics",
+        name: "Dynamics",
+        description: "Newton's laws, forces, equilibrium, momentum, collisions",
+        subtopics: ["Newton's Laws of Motion", "Equilibrium of Forces"],
+        difficulty: "intermediate",
+        estimatedHours: 5,
+      }],
+      learningObjectives: ["Understand Newton's laws."],
+      checkpointQuestions: ["State the three laws."],
+      isCompleted: false,
+    };
+    const pool = [
+      // Course-slug questions: the bank tags them under the broad course
+      // "phy-mechanics", which must still map to the syllabus topic Dynamics.
+      ...Array.from({ length: 10 }, (_, i) => question(`mech${i + 1}`, "phy-mechanics")),
+      // Off-topic slug: waves questions must never appear under Dynamics.
+      question("wave1", "phy-waves"),
+      // Off-topic slug from another chapter of the same subject.
+      question("opt1", "phy-optics"),
+    ];
+    const mission = createDailyMission({
+      session,
+      task: dynamicsTask,
+      questions: pool,
+      history: [],
+      localDate: "2026-10-15",
+      now: new Date("2026-10-15T10:00:00.000Z"),
+    });
+    expect(mission).not.toBeNull();
+    expect(mission!.currentQuestionIds).toHaveLength(10);
+    expect(mission!.currentQuestionIds).toContain("mech1");
+    expect(mission!.currentQuestionIds).not.toContain("wave1");
+    expect(mission!.currentQuestionIds).not.toContain("opt1");
+  });
+
+  it("matches messy human-typed course labels via substring lookup", () => {
+    const organicTask: DailyTask = {
+      day: 3,
+      subject: "chemistry",
+      topics: [{
+        id: "chm-hydrocarbons",
+        name: "Hydrocarbons",
+        description: "Alkanes, alkenes, alkynes and their reactions",
+        subtopics: ["Alkanes/Alkenes/Alkynes"],
+        difficulty: "advanced",
+        estimatedHours: 6,
+      }],
+      learningObjectives: ["Distinguish alkane reactions."],
+      checkpointQuestions: ["What is cracking?"],
+      isCompleted: false,
+    };
+    const labels = ["Chm- organic chem", "chm-organic", "Chm- organic", "Chm- organic chm"];
+    const pool = [
+      // Variants that appear in the real bank data — all must resolve to the
+      // organic course slug and therefore to the Hydrocarbons syllabus topic.
+      ...labels.map((label, i) => ({ ...question(`org${i + 1}`, label), subject: "chemistry" as const })),
+      ...Array.from({ length: 7 }, (_, i) => ({
+        ...question(`orgx${i + 1}`, "Chm- organic"),
+        subject: "chemistry" as const,
+      })),
+      // Off-topic slug: bonding questions must not displace topical ones.
+      { ...question("bond1", "chm-chemical-bonding"), subject: "chemistry" as const },
+    ];
+    const mission = createDailyMission({
+      session,
+      task: organicTask,
+      questions: pool,
+      history: [],
+      localDate: "2026-10-16",
+      now: new Date("2026-10-16T10:00:00.000Z"),
+    });
+    expect(mission).not.toBeNull();
+    const ids = mission!.currentQuestionIds;
+    expect(ids).toHaveLength(10);
+    expect(ids).toContain("org1");
+    expect(ids).toContain("org2");
+    expect(ids).toContain("org3");
+    expect(ids).toContain("org4");
+    expect(ids).not.toContain("bond1");
+  });
+
   it("uses a fresh targeted set when enough questions exist", () => {
     const mission = missionFixture();
     const pool = ["q1", "q2", "q3", "q4", "q5", "q6"].map((id) => question(id));

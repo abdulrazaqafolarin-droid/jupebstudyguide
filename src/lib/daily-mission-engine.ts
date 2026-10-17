@@ -43,9 +43,146 @@ export interface DailyMissionRecord {
 const normalize = (value: string | undefined) =>
   (value ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
+/**
+ * The question bank stores `course` as coarse-grained slugs (e.g. `phy-mechanics`,
+ * `chm-organic`) while the syllabus uses fine-grained topic IDs (e.g. `phy-dynamics`,
+ * `chm-hydrocarbons`).  This map bridges the two so that questions tagged with a
+ * course slug match every syllabus topic that falls under that slug.
+ *
+ * Keys must match the raw `course` value (case-insensitive) after normalisation.
+ */
+const COURSE_TOPIC_MAP: Record<string, readonly string[]> = {
+  // ── Physics ──────────────────────────────────────────────────────────
+  "phy mechanics": [
+    "phy-kinematics", "phy-dynamics", "phy-gravity", "phy-work-energy",
+    "phy-circular", "phy-elasticity", "phy-hydrostatics",
+  ],
+  "phy modern physics": [
+    "phy-atomic", "phy-modern", "phy-xrays", "phy-quantum",
+    "phy-radioactivity", "phy-semiconductors", "phy-em-waves",
+  ],
+  "phy electricity": [
+    "phy-electrostatics", "phy-capacitors", "phy-current",
+    "phy-magnetism", "phy-force-conductor", "phy-induction", "phy-ac",
+  ],
+  "phy thermodynamics": [
+    "phy-temperature", "phy-thermodynamics", "phy-gases",
+  ],
+  "phy waves": ["phy-waves", "phy-sound", "phy-wave-light"],
+  "phy optics": ["phy-geometrical-optics"],
+  "phy magnetism": ["phy-magnetism", "phy-force-conductor", "phy-induction"],
+  "phy nuclear": ["phy-radioactivity"],
+  // ── Chemistry ────────────────────────────────────────────────────────
+  "chm organic": [
+    "chm-organic-structure", "chm-organic-reactions", "chm-isomerism",
+    "chm-hydrocarbons", "chm-macromolecules", "chm-petroleum",
+  ],
+  "chm organic chem": [
+    "chm-organic-structure", "chm-organic-reactions", "chm-isomerism",
+    "chm-hydrocarbons",
+  ],
+  "chm organic chm": [
+    "chm-organic-structure", "chm-organic-reactions", "chm-isomerism",
+    "chm-hydrocarbons",
+  ],
+  "chm chemical bonding": ["chm-bonding"],
+  "chm periodic table": ["chm-periodicity", "chm-periodicity-advanced"],
+  "chm atomic structure": ["chm-atomic"],
+  "chm equilibrium": ["chm-equilibrium"],
+  "chm chemical equilibrium": ["chm-equilibrium"],
+  "chm gas laws": ["chm-gases"],
+  "chm redox": ["chm-reactions", "chm-electrochemistry"],
+  "chm kinetics": ["chm-kinetics"],
+  "chm chemical kinetics": ["chm-kinetics"],
+  "chm thermochemistry": ["chm-thermochemistry", "chm-thermodynamics"],
+  "chm thermodynamics": ["chm-thermodynamics", "chm-thermochemistry"],
+  "chm nuclear": ["chm-nuclear"],
+  "chm electrochemistry": ["chm-electrochemistry"],
+  "chm inorganic": ["chm-dblock", "chm-pblock", "chm-periodicity-advanced"],
+  "chm coordination chemistry": ["chm-dblock"],
+  "chm coordination number": ["chm-dblock"],
+  "chm stochiometry": ["chm-mole"],
+  "chm stoichiometry": ["chm-mole"],
+  "chm mole concept": ["chm-mole"],
+  "chm acid base": ["chm-equilibrium"],
+  "chm acids bases": ["chm-equilibrium"],
+  "chm isomerism": ["chm-isomerism"],
+  "chm aromatic compounds": ["chm-hydrocarbons"],
+  "chm electronic config": ["chm-atomic"],
+  "chm mass spectrometer": ["chm-mole"],
+  "chm kinetic theory of gases": ["chm-gases"],
+  "chm state of matter": ["chm-matter"],
+  "chm waves": ["chm-matter"],
+  "chm homologous series": ["chm-organic-structure"],
+  "chm separation technique": ["chm-separation"],
+  "chm biotechnology": ["chm-nanochemistry"],
+  "chm biochemistry": ["chm-macromolecules"],
+  "chm industrial chem": ["chm-environment"],
+  "chm metallurgy": ["chm-dblock"],
+  // ── Biology ──────────────────────────────────────────────────────────
+  "bio physiology": ["bio-physiology", "bio-transport"],
+  "bio cell biology": ["bio-cells"],
+  "bio genetics": ["bio-genetics"],
+  "bio ecology": ["bio-ecology"],
+  "bio biochemistry": ["bio-molecules"],
+  "bio plant hormones": ["bio-growth-regulators"],
+  "bio nutrition": ["bio-plant-nutrition", "bio-physiology"],
+  "bio evidence of evolution": ["bio-evolution"],
+  "bio mitosis": ["bio-genetics"],
+  "bio immunity": ["bio-microbial-ecology"],
+  "bio cnidarians": ["bio-animal-taxonomy"],
+  "bio animal classification": ["bio-animal-taxonomy"],
+  "bio protozoa": ["bio-micro-types"],
+  "bio taxonomy": ["bio-taxonomy"],
+  "bio food tests": ["bio-physiology"],
+  "bio dna replication": ["bio-micro-nucleic"],
+  "bio epithelial tissues": ["bio-transport"],
+  "bio fermentation": ["bio-plant-respiration"],
+  "bio transpiration": ["bio-plant-transport"],
+  "bio bacterial disease": ["bio-micro-types"],
+  "bio connective tissue": ["bio-transport"],
+  "bio food preservation": ["bio-microbial-ecology"],
+  "bio food science": ["bio-physiology"],
+  "bio xerophytes": ["bio-plant-diversity"],
+};
+
+/**
+ * Resolve a question's raw course/topic value to a set of syllabus topic IDs.
+ *  1. Direct slug lookup (exact course value present in the map).
+ *  2. Substring match — if the course value contains a known slug fragment
+ *     (e.g. "Chm- organic chem" contains "chm organic"), use that entry.
+ */
+function resolveCourseTopicIds(rawTopic: string | undefined): readonly string[] {
+  const key = normalize(rawTopic);
+  if (!key) return [];
+  // Exact match
+  const direct = COURSE_TOPIC_MAP[key];
+  if (direct) return direct;
+  // Substring match: find the longest key that is contained in the value
+  let best: readonly string[] = [];
+  let bestLen = 0;
+  for (const [mapKey, ids] of Object.entries(COURSE_TOPIC_MAP)) {
+    if (key.includes(mapKey) && mapKey.length > bestLen) {
+      best = ids;
+      bestLen = mapKey.length;
+    }
+  }
+  return best;
+}
+
 function topicMatches(question: Question, topics: DailyTask["topics"]): boolean {
   const qTopic = normalize(question.topic);
   if (!qTopic) return false;
+
+  // 1. Check if the question's course maps to any of the syllabus topic IDs.
+  const mappedIds = resolveCourseTopicIds(question.topic);
+  if (mappedIds.length > 0 && topics.some((t) => mappedIds.includes(t.id))) return true;
+
+  // 2. Check if the raw course value IS a syllabus topic ID (e.g. "phy-current").
+  if (topics.some((t) => t.id === question.topic)) return true;
+
+  // 3. Original name / subtopic matching (covers questions whose topic is a
+  //    human-readable string that directly matches a syllabus topic name).
   return topics.some((topic) => {
     const name = normalize(topic.name);
     const subtopics = topic.subtopics.map(normalize);

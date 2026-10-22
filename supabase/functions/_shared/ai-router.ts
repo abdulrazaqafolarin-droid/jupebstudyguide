@@ -15,9 +15,17 @@ const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const NVIDIA_BASE = "https://integrate.api.nvidia.com/v1";
 const GROQ_BASE = "https://api.groq.com/openai/v1";
 /** Max wait for stream response headers before trying the next key/provider. */
-const STREAM_HEADERS_TIMEOUT_MS = 20_000;
+const STREAM_HEADERS_TIMEOUT_MS = 12_000;
 /** Max silence between stream chunks before the SSE pipe gives up. */
 const STREAM_IDLE_TIMEOUT_MS = 45_000;
+/**
+ * Hard cap on total provider+key election time. Once the deadline passes no
+ * further keys or providers are attempted, so worst-case latency stays
+ * bounded (~deadline + one in-flight attempt) no matter how many keys are
+ * in the vault. Without this, N keys each eating the header window stack up
+ * (8 keys x 12s+ ≈ 100s+ of spinner before a structured error).
+ */
+const ELECTION_DEADLINE_MS = 45_000;
 
 export interface RouterMessage {
   role: string;
@@ -403,7 +411,8 @@ async function attemptStream(
   systemPrompt: string,
   messages: RouterMessage[],
   opts: RouterOpts,
-  signal: AbortSignal
+  signal: AbortSignal,
+  deadline: number
 ): Promise<StreamAttemptOk | TextAttemptFail> {
   const fail = (status: number, detail: string): TextAttemptFail => ({
     ok: false,
@@ -424,7 +433,12 @@ async function attemptStream(
     headerTimer = undefined;
     signal.removeEventListener("abort", relayAbort);
   };
-  headerTimer = setTimeout(() => attemptAc.abort(), STREAM_HEADERS_TIMEOUT_MS);
+  // Clamp the per-key window to the remaining election deadline so a late
+  // attempt can't overshoot the global cap by a full timeout.
+  headerTimer = setTimeout(
+    () => attemptAc.abort(),
+    Math.max(1, Math.min(STREAM_HEADERS_TIMEOUT_MS, deadline - Date.now()))
+  );
   try {
     if (provider === "gemini") {
       const model = modelFor(provider, opts);
@@ -494,12 +508,21 @@ async function runProviderText(
   systemPrompt: string,
   messages: RouterMessage[],
   opts: RouterOpts,
-  feature: string
+  feature: string,
+  deadline: number
 ): Promise<ProviderSuccess> {
   const t0 = performance.now();
   const label = providerLabel(provider);
   if (!shouldTryProvider(label)) {
     throw new ProviderFailure(label, [{ label: "-", kind: "transient", status: 0, detail: "provider in backoff" }]);
+  }
+  if (Date.now() >= deadline) {
+    throw new ProviderFailure(label, [{
+      label: "-",
+      kind: "transient",
+      status: 0,
+      detail: `election deadline (${ELECTION_DEADLINE_MS}ms) reached`,
+    }]);
   }
   const { keys, vaultConfigured } = await resolveKeys(ctx, provider);
   if (keys.length === 0) {
@@ -515,6 +538,15 @@ async function runProviderText(
   const model = modelFor(provider, opts);
   const keyFailures: KeyAttemptFailure[] = [];
   for (const key of keys) {
+    if (Date.now() >= deadline) {
+      keyFailures.push({
+        label: key.label,
+        kind: "transient",
+        status: 0,
+        detail: `election deadline (${ELECTION_DEADLINE_MS}ms) reached`,
+      });
+      break;
+    }
     const attempt = await attemptText(provider, key, systemPrompt, messages, opts);
     if (attempt.ok) {
       const ms = Math.round(performance.now() - t0);
@@ -544,11 +576,20 @@ async function runProviderStream(
   messages: RouterMessage[],
   opts: RouterOpts,
   signal: AbortSignal,
-  feature: string
+  feature: string,
+  deadline: number
 ): Promise<StreamSuccess> {
   const label = providerLabel(provider);
   if (!shouldTryProvider(label)) {
     throw new ProviderFailure(label, [{ label: "-", kind: "transient", status: 0, detail: "provider in backoff" }]);
+  }
+  if (Date.now() >= deadline) {
+    throw new ProviderFailure(label, [{
+      label: "-",
+      kind: "transient",
+      status: 0,
+      detail: `election deadline (${ELECTION_DEADLINE_MS}ms) reached`,
+    }]);
   }
   const { keys, vaultConfigured } = await resolveKeys(ctx, provider);
   if (keys.length === 0) {
@@ -564,7 +605,16 @@ async function runProviderStream(
   const model = modelFor(provider, opts);
   const keyFailures: KeyAttemptFailure[] = [];
   for (const key of keys) {
-    const attempt = await attemptStream(provider, key, systemPrompt, messages, opts, signal);
+    if (Date.now() >= deadline) {
+      keyFailures.push({
+        label: key.label,
+        kind: "transient",
+        status: 0,
+        detail: `election deadline (${ELECTION_DEADLINE_MS}ms) reached`,
+      });
+      break;
+    }
+    const attempt = await attemptStream(provider, key, systemPrompt, messages, opts, signal, deadline);
     if (attempt.ok) {
       recordSuccess(label, 0);
       await recordAttempt(ctx, label, key, "success", "", feature, model);
@@ -591,8 +641,9 @@ export async function routerText(
   if (hasAttachment(messages)) {
     return geminiFirstScope(ctx, systemPrompt, messages, opts);
   }
+  const deadline = Date.now() + ELECTION_DEADLINE_MS;
   const settled = await Promise.allSettled(
-    PROVIDER_ORDER.map((p) => runProviderText(ctx, p, systemPrompt, messages, opts, "ai-router"))
+    PROVIDER_ORDER.map((p) => runProviderText(ctx, p, systemPrompt, messages, opts, "ai-router", deadline))
   );
   for (const s of settled) {
     if (s.status === "fulfilled") {
@@ -613,13 +664,14 @@ async function geminiFirstScope(
   messages: RouterMessage[],
   opts: RouterOpts
 ): Promise<ProviderSuccess> {
+  const deadline = Date.now() + ELECTION_DEADLINE_MS;
   try {
-    return await runProviderText(ctx, "gemini", systemPrompt, messages, opts, "ai-router");
+    return await runProviderText(ctx, "gemini", systemPrompt, messages, opts, "ai-router", deadline);
   } catch (err) {
     console.warn("[Router] Gemini failed for attachment request, falling back to text-only providers");
     const textOnly = stripAttachments(messages);
     const settled = await Promise.allSettled(
-      (["groq", "nvidia"] as VaultProvider[]).map((p) => runProviderText(ctx, p, systemPrompt, textOnly, opts, "ai-router"))
+      (["groq", "nvidia"] as VaultProvider[]).map((p) => runProviderText(ctx, p, systemPrompt, textOnly, opts, "ai-router", deadline))
     );
     for (const s of settled) {
       if (s.status === "fulfilled") return s.value;
@@ -733,12 +785,13 @@ export async function routerStream(
   ctx: RouterContext = loadRouterContext()
 ): Promise<ReadableStream<Uint8Array>> {
   const providers: VaultProvider[] = hasAttachment(messages) ? ["gemini"] : PROVIDER_ORDER;
+  const deadline = Date.now() + ELECTION_DEADLINE_MS;
   const failures: string[] = [];
 
   for (const provider of providers) {
     const ac = new AbortController();
     try {
-      const entry = await runProviderStream(ctx, provider, systemPrompt, messages, opts, ac.signal, "ai-router-stream");
+      const entry = await runProviderStream(ctx, provider, systemPrompt, messages, opts, ac.signal, "ai-router-stream", deadline);
       return new ReadableStream<Uint8Array>({
         async start(controller) {
           await pipeProviderStream(entry, controller);
@@ -756,7 +809,7 @@ export async function routerStream(
     for (const provider of ["groq", "nvidia"] as VaultProvider[]) {
       const ac = new AbortController();
       try {
-        const entry = await runProviderStream(ctx, provider, systemPrompt, textOnly, opts, ac.signal, "ai-router-stream");
+        const entry = await runProviderStream(ctx, provider, systemPrompt, textOnly, opts, ac.signal, "ai-router-stream", deadline);
         return new ReadableStream<Uint8Array>({
           async start(controller) {
             await pipeProviderStream(entry, controller);

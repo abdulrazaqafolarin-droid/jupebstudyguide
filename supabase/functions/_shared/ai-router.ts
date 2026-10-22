@@ -14,6 +14,10 @@ import {
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const NVIDIA_BASE = "https://integrate.api.nvidia.com/v1";
 const GROQ_BASE = "https://api.groq.com/openai/v1";
+/** Max wait for stream response headers before trying the next key/provider. */
+const STREAM_HEADERS_TIMEOUT_MS = 20_000;
+/** Max silence between stream chunks before the SSE pipe gives up. */
+const STREAM_IDLE_TIMEOUT_MS = 45_000;
 
 export interface RouterMessage {
   role: string;
@@ -405,6 +409,22 @@ async function attemptStream(
     ok: false,
     failure: { label: key.label, kind: classifyError(status, detail), status, detail },
   });
+  // Bound how long we wait for response HEADERS. routerStream is awaited
+  // before a single byte reaches the client, so a provider that accepts the
+  // connection and then goes silent would otherwise hang the chat forever.
+  // The timer is disarmed the moment headers arrive so that long-running
+  // streams are never cut off mid-answer.
+  const attemptAc = new AbortController();
+  const relayAbort = () => attemptAc.abort();
+  if (signal.aborted) attemptAc.abort();
+  else signal.addEventListener("abort", relayAbort, { once: true });
+  let headerTimer: ReturnType<typeof setTimeout> | undefined;
+  const disarm = () => {
+    if (headerTimer !== undefined) clearTimeout(headerTimer);
+    headerTimer = undefined;
+    signal.removeEventListener("abort", relayAbort);
+  };
+  headerTimer = setTimeout(() => attemptAc.abort(), STREAM_HEADERS_TIMEOUT_MS);
   try {
     if (provider === "gemini") {
       const model = modelFor(provider, opts);
@@ -414,9 +434,10 @@ async function attemptStream(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(buildGeminiBody(systemPrompt, messages, opts)),
-          signal,
+          signal: attemptAc.signal,
         }
       );
+      disarm();
       if (!res.ok || !res.body) {
         const err = await res.text().catch(() => "unknown");
         return fail(res.status, `${res.status}: ${err.slice(0, 200)}`);
@@ -428,14 +449,16 @@ async function attemptStream(
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key.apiKey}` },
       body: JSON.stringify(buildOpenAIBody(provider, systemPrompt, messages, opts, true)),
-      signal,
+      signal: attemptAc.signal,
     });
+    disarm();
     if (!res.ok || !res.body) {
       const err = await res.text().catch(() => "unknown");
       return fail(res.status, `${res.status}: ${err.slice(0, 200)}`);
     }
     return { ok: true, stream: res.body };
   } catch (err) {
+    disarm();
     const detail = String(err).slice(0, 200);
     return { ok: false, failure: { label: key.label, kind: "transient", status: 0, detail } };
   }
@@ -649,6 +672,27 @@ function sseChoices(content: string): Uint8Array {
   return encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`);
 }
 
+async function readWithIdleTimeout<T>(
+  reader: ReadableStreamDefaultReader<T>,
+  ms: number
+): Promise<ReadableStreamReadResult<T>> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const readPromise = reader.read();
+  // Guard against a late rejection of the abandoned read after we time out
+  // (an unhandled rejection can kill the edge-function isolate).
+  readPromise.catch(() => {});
+  try {
+    return await Promise.race([
+      readPromise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`stream stalled (no data for ${ms}ms)`)), ms);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function pipeProviderStream(
   entry: StreamSuccess,
   controller: ReadableStreamDefaultController<Uint8Array>
@@ -658,7 +702,7 @@ async function pipeProviderStream(
   let buffer = "";
   try {
     while (true) {
-      const { done, value } = await reader.read();
+      const { done, value } = await readWithIdleTimeout(reader, STREAM_IDLE_TIMEOUT_MS);
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split("\n");
@@ -671,6 +715,11 @@ async function pipeProviderStream(
     controller.enqueue(sseDone());
     controller.close();
   } catch (err) {
+    try {
+      await reader.cancel();
+    } catch {
+      // already closed — nothing to do
+    }
     controller.enqueue(sseError(`Stream failed (${entry.provider}): ${err}`));
     controller.enqueue(sseDone());
     controller.close();

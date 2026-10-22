@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
-import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
-import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent } from "../_shared/question-retrieve.ts";
+import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent, type RetrievedChunk } from "../_shared/textbook-retrieve.ts";
+import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent, type RetrievedQuestion } from "../_shared/question-retrieve.ts";
 import { generateEmbedding, generateEmbeddings, resolveEmbedKeys, lastEmbedError } from "../_shared/textbook-embed.ts";
 
 interface InboundMessage {
@@ -9,6 +9,13 @@ interface InboundMessage {
   content?: string;
   attachment?: { base64?: string; mimeType?: string; name?: string } | null;
 }
+
+interface RagOutcome {
+  chunks: RetrievedChunk[];
+  questions: RetrievedQuestion[];
+}
+
+const RAG_DEADLINE_MS = 12_000;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -109,7 +116,9 @@ Deno.serve(async (req) => {
     const lastUserMsg = [...messages].reverse().find((m: InboundMessage) => m.role === "user");
     if (lastUserMsg?.content) {
       const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
-      const [chunks, questions] = await Promise.all([
+      // Hard deadline: retrieval must never stall the chat. If embedding or
+      // vector search misbehaves we drop RAG and still stream an answer.
+      const ragPromise: Promise<RagOutcome> = Promise.all([
         retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
           subject: subject || undefined,
           maxChunks: 3,
@@ -120,13 +129,28 @@ Deno.serve(async (req) => {
           maxQuestions: 5,
           embedKey: embedKeys,
         }),
+      ])
+        .then(([chunks, questions]) => ({ chunks, questions }))
+        .catch((err: unknown) => {
+          console.error("[RAG] retrieval failed:", String(err).slice(0, 200));
+          return { chunks: [] as RetrievedChunk[], questions: [] as RetrievedQuestion[] };
+        });
+      const outcome = await Promise.race([
+        ragPromise,
+        new Promise<RagOutcome>((resolve) => {
+          const timer = setTimeout(() => {
+            console.error(`[RAG] retrieval exceeded ${RAG_DEADLINE_MS}ms — continuing without RAG`);
+            resolve({ chunks: [], questions: [] });
+          }, RAG_DEADLINE_MS);
+          void ragPromise.then(() => clearTimeout(timer));
+        }),
       ]);
-      const rag = buildRAGContext(chunks);
+      const rag = buildRAGContext(outcome.chunks);
       if (rag.promptBlock) {
         systemMsg += rag.promptBlock;
         referencesEvent = serializeReferencesEvent(rag.references);
       }
-      const qrag = buildQuestionRAGContext(questions);
+      const qrag = buildQuestionRAGContext(outcome.questions);
       if (qrag.promptBlock) {
         systemMsg += qrag.promptBlock;
         questionRefsEvent = serializeQuestionReferencesEvent(qrag.references);

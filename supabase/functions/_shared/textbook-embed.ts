@@ -90,6 +90,8 @@ async function geminiEmbed(
           taskType,
           outputDimensionality: EMBED_DIMS,
         }),
+        // A stalled embed call must never hang the whole chat request.
+        signal: AbortSignal.timeout(15_000),
       }
     );
     if (!res.ok) {

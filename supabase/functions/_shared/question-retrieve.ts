@@ -68,20 +68,27 @@ export async function retrieveRelevantQuestions(
   const embedding = await generateEmbedding(query, options.embedKey, "RETRIEVAL_QUERY");
   if (!embedding) return [];
 
-  const res = await fetch(`${supabaseUrl}/rest/v1/rpc/match_study_questions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-    },
-    body: JSON.stringify({
-      query_embedding: `[${embedding.join(",")}]`,
-      match_threshold: threshold,
-      match_count: maxQuestions,
-      filter_subject: options.subject || null,
-    }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${supabaseUrl}/rest/v1/rpc/match_study_questions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+      },
+      body: JSON.stringify({
+        query_embedding: `[${embedding.join(",")}]`,
+        match_threshold: threshold,
+        match_count: maxQuestions,
+        filter_subject: options.subject || null,
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (err) {
+    console.error(`[QRetrieve] match_study_questions failed: ${String(err).slice(0, 200)}`);
+    return [];
+  }
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "unknown");

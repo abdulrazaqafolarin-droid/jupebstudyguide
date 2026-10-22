@@ -49,19 +49,26 @@ export async function retrieveRelevantChunks(
     url += `?subject=eq.${encodeURIComponent(options.subject)}`;
   }
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: supabaseKey,
-      Authorization: `Bearer ${supabaseKey}`,
-    },
-    body: JSON.stringify({
-      query_embedding: vectorStr,
-      match_threshold: threshold,
-      match_count: maxChunks,
-    }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+      },
+      body: JSON.stringify({
+        query_embedding: vectorStr,
+        match_threshold: threshold,
+        match_count: maxChunks,
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (err) {
+    console.error(`[Retrieve] match_textbook_chunks failed: ${String(err).slice(0, 200)}`);
+    return [];
+  }
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "unknown");

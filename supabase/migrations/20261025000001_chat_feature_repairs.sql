@@ -333,3 +333,42 @@ $function$;
 --    complete (tiny table, infrequent updates).
 -- ------------------------------------------------------------
 ALTER TABLE public.conversation_participants REPLICA IDENTITY FULL;
+
+-- ------------------------------------------------------------
+-- 6) profiles privacy/visibility RPCs keyed on profiles.id, but
+--    profiles.id is a surrogate PK (0/111 rows have id = user_id)
+--    while every caller passes an auth uid (user_id). Consequences
+--    observed live: get_last_seen always returned NULL (the "last
+--    seen" line never rendered), and can_view_online_status /
+--    can_view_read_receipts / can_view_profile_photo /
+--    can_add_to_group denied every non-friend pair even with the
+--    default privacy = everyone (so online/typing/recording
+--    indicators were hidden outside friendships). Rewritten to key
+--    on user_id; pg_get_functiondef + regexp keeps every other
+--    function attribute byte-identical, and the loop skips already
+--    fixed functions so the section is idempotent.
+-- ------------------------------------------------------------
+DO $$
+DECLARE fn record; def text; newdef text; replaced int := 0;
+BEGIN
+  FOR fn IN
+    SELECT p.oid, p.proname, p.prosrc
+    FROM pg_proc p
+    JOIN pg_namespace nsp ON nsp.oid = p.pronamespace
+    WHERE nsp.nspname = 'public'
+      AND p.proname IN ('can_view_online_status', 'get_last_seen',
+                        'can_view_read_receipts', 'can_view_profile_photo',
+                        'can_add_to_group')
+  LOOP
+    IF fn.prosrc !~* 'profiles(\s+)(\w+\.)?where(\s+)id(\s*)=' THEN
+      RAISE NOTICE 'skip %: profiles-id pattern not found (already fixed?)', fn.proname;
+      CONTINUE;
+    END IF;
+    def := pg_get_functiondef(fn.oid);
+    newdef := regexp_replace(def, 'profiles(\s+)(\w+\.)?where(\s+)id(\s*)=', 'profiles\1\2where\3user_id\4=', 'gi');
+    EXECUTE newdef;
+    replaced := replaced + 1;
+    RAISE NOTICE 'fixed profiles-id lookup in %', fn.proname;
+  END LOOP;
+  RAISE NOTICE 'profiles user_id fix: % function(s) rewritten', replaced;
+END $$;

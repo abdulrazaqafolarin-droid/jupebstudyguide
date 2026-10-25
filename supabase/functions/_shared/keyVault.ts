@@ -105,7 +105,8 @@ export async function getVaultKeys(
   supabaseUrl: string,
   supabaseKey: string,
   encryptionSecret: string,
-  provider: VaultProvider
+  provider: VaultProvider,
+  bypassCooldowns = false
 ): Promise<VaultKey[]> {
   const supabase = createClient(supabaseUrl, supabaseKey);
   const now = new Date().toISOString();
@@ -124,7 +125,11 @@ export async function getVaultKeys(
 
   const keys: VaultKey[] = [];
   for (const row of data as VaultRow[]) {
-    if (row.cooldown_until && row.cooldown_until > now) continue;
+    // Transient cooldowns protect across requests; a deliberate same-request
+    // retry (chat-proxy non-stream fallback) passes bypassCooldowns so keys
+    // just exercised on the *streaming* endpoint can be tried on the
+    // *non-streaming* one. is_active/token_exhausted filters always apply.
+    if (!bypassCooldowns && row.cooldown_until && row.cooldown_until > now) continue;
     try {
       const apiKey = await decryptApiKey(row.api_key, encryptionSecret);
       if (!apiKey) throw new Error("decrypted to empty string");

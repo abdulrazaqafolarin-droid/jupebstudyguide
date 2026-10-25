@@ -39,11 +39,14 @@ export interface RouterOpts {
   maxTokens?: number;
   json?: boolean;
   /**
-   * Skip the in-memory provider circuit breaker for this call. Used by the
-   * chat-proxy non-streaming fallback: when streaming just failed, gemini is
-   * necessarily in backoff, and without this the fallback would never get to
-   * test the (different) non-streaming endpoint within the same request.
-   * Per-key vault cooldowns still apply.
+   * Deliberate same-request retry — used by the chat-proxy non-streaming
+   * fallback. Skips BOTH safety rails that would otherwise block it: the
+   * in-memory provider circuit breaker (streaming just failed, so gemini is
+   * necessarily in backoff) and transient per-key vault cooldowns (the stream
+   * phase just exercised those keys on a *different* endpoint —
+   * streamGenerateContent — whose 503s say nothing about generateContent).
+   * is_active/token_exhausted filters always apply; bounded by the election
+   * deadline like every other attempt.
    */
   bypassBackoff?: boolean;
 }
@@ -130,7 +133,8 @@ export interface ResolvedKey {
 
 export async function resolveKeys(
   ctx: RouterContext,
-  provider: VaultProvider
+  provider: VaultProvider,
+  bypassCooldowns = false
 ): Promise<{ keys: ResolvedKey[]; vaultConfigured: boolean }> {
   const vaultConfigured = Boolean(ctx.supabaseUrl && ctx.supabaseKey && ctx.encryptionSecret);
   let keys: ResolvedKey[] = [];
@@ -139,7 +143,8 @@ export async function resolveKeys(
       ctx.supabaseUrl as string,
       ctx.supabaseKey as string,
       ctx.encryptionSecret as string,
-      provider
+      provider,
+      bypassCooldowns
     );
     keys = vaultKeys.map((k) => ({ keyId: k.keyId, label: k.label, apiKey: k.apiKey, fromEnv: false }));
   }
@@ -539,7 +544,7 @@ async function runProviderText(
       detail: `election deadline (${ELECTION_DEADLINE_MS}ms) reached`,
     }]);
   }
-  const { keys, vaultConfigured } = await resolveKeys(ctx, provider);
+  const { keys, vaultConfigured } = await resolveKeys(ctx, provider, opts.bypassBackoff === true);
   if (keys.length === 0) {
     throw new ProviderFailure(label, [{
       label: "-",

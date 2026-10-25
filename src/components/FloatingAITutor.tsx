@@ -10,7 +10,7 @@ import {
   Bot, Send, Sparkles, X, Lightbulb, HelpCircle,
   BookOpen, Loader2, MessageCircle, Minimize2,
   Plus, Image, FileText, Trash2, ChevronLeft,
-  Copy, Pencil, Library, ChevronDown
+  Copy, Pencil, Library, ChevronDown, Square
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo, type Variants } from 'framer-motion';
@@ -31,6 +31,21 @@ const QUICK_PROMPTS = [
 
 const springPanel = { type: "spring" as const, stiffness: 320, damping: 28, mass: 0.85 };
 const springMessage = { type: "spring" as const, stiffness: 220, damping: 26, mass: 0.8 };
+
+/** Where a thread must be cut when the user edits the message at `index`:
+ *  the edited message and everything after it becomes stale. Returns the DB
+ *  timestamp boundary (messages carry created_at once loaded/saved) so the
+ *  rewind can be mirrored in storage. */
+function resolveEditBoundary(list: AIMessage[], index: number): { ts: string | null; include: boolean } {
+  const first = list.slice(index).find(m => m.created_at);
+  if (first?.created_at) return { ts: first.created_at, include: true };
+  for (let j = index - 1; j >= 0; j--) {
+    const m = list[j];
+    if (m.created_at) return { ts: m.created_at, include: false };
+  }
+  // Nothing persisted before this point → the whole stored thread is stale.
+  return { ts: null, include: true };
+}
 
 const messageVariants = {
   initial: { opacity: 0, y: 14, scale: 0.96 },
@@ -122,13 +137,27 @@ export const FloatingAITutor = () => {
   const {
     chats, activeChatId, messages, setMessages,
     switchChat, newChat, deleteChat,
-    saveUserMessage, saveAssistantMessage,
+    saveUserMessage, saveAssistantMessage, deleteMessagesFrom,
   } = useAITutorChats();
 
   const activeChat = chats.find(c => c.id === activeChatId);
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  /** Index of the message being edited (ChatGPT-style: nothing is removed or
+   *  rewritten until the edited message is re-sent; cancel restores the draft). */
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const inputBeforeEditRef = useRef('');
+  /** Controller for the in-flight AI response — aborted by the stop button. */
+  const abortRef = useRef<AbortController | null>(null);
+  /** Mirror of activeChatId for use inside async save callbacks. */
+  const activeChatIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId;
+    // A pending edit never survives a chat switch (indices would be stale).
+    setEditingIndex(null);
+  }, [activeChatId]);
 
   const [isAtBottom, setIsAtBottom] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -165,11 +194,22 @@ export const FloatingAITutor = () => {
     toast.success('Copied to clipboard');
   }, []);
 
+  /** Stage an edit: copy the message into the input, but keep it (and the
+   *  rest of the thread) visible until the user re-sends or cancels. The
+   *  actual rewind happens in handleStreamChat. */
   const editMessage = useCallback((index: number, content: string) => {
+    if (isLoading) return; // never rewire the thread mid-response
+    if (editingIndex === null) inputBeforeEditRef.current = input; // remember the draft once
+    setEditingIndex(index);
     setInput(content);
-    setMessages(prev => prev.filter((_, i) => i !== index));
     setTimeout(() => inputRef.current?.focus(), 50);
-  }, [setMessages]);
+  }, [isLoading, editingIndex, input]);
+
+  const cancelEdit = useCallback(() => {
+    setEditingIndex(null);
+    setInput(inputBeforeEditRef.current);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }, []);
 
   const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
@@ -382,14 +422,42 @@ export const FloatingAITutor = () => {
       attachment: attachment ? { base64: attachment.base64, mimeType: attachment.mimeType, name: attachment.name } : null,
     };
 
-    const newMsgs = [...messages, userMsg];
+    // Rewind mode: an edit is pending → drop the edited message and every
+    // later message before appending the new one (stale replies must not
+    // survive an edit), and mirror the same cut in the DB.
+    const editBoundary = editingIndex !== null ? resolveEditBoundary(messages, editingIndex) : null;
+    const baseMsgs = editingIndex !== null ? messages.slice(0, editingIndex) : messages;
+    const newMsgs = [...baseMsgs, userMsg];
+    setEditingIndex(null);
     setMessages(newMsgs);
     setIsLoading(true);
     setInput('');
     clearAttachment();
     assistantContentRef.current = '';
 
-    saveUserMessage(chatId, userMsg).catch(console.error);
+    if (editBoundary) {
+      try {
+        // Prune BEFORE inserting: the new row is newer than the boundary, so
+        // running the delete after the insert would remove the new message too.
+        await deleteMessagesFrom(chatId, editBoundary.ts, editBoundary.include);
+      } catch (e) {
+        console.warn('Could not prune edited messages from DB:', e);
+      }
+    }
+
+    const savedUserIdx = newMsgs.length - 1;
+    saveUserMessage(chatId, userMsg).then(saved => {
+      if (!saved?.created_at || activeChatIdRef.current !== chatId) return;
+      setMessages(prev => {
+        const m = prev[savedUserIdx];
+        if (m && m.role === 'user' && !m.created_at && m.content === userMsg.content) {
+          const next = [...prev];
+          next[savedUserIdx] = { ...m, id: saved.id, created_at: saved.created_at };
+          return next;
+        }
+        return prev;
+      });
+    }).catch(console.error);
 
     const systemPrompt = TUTOR_SYSTEM_PROMPT + "\n\n" + GENERAL_CHAT_PROMPT + getSyllabusContext();
 
@@ -400,6 +468,9 @@ export const FloatingAITutor = () => {
 
     let acc = '';
     let firstToken = true;
+
+    const ac = new AbortController();
+    abortRef.current = ac;
 
     await aiStreamChat(systemPrompt, newMsgs.map(m => ({
       role: m.role,
@@ -433,9 +504,26 @@ export const FloatingAITutor = () => {
         });
       },
       onDone: async () => {
+        if (abortRef.current === ac) abortRef.current = null;
         if (!firstToken && assistantContentRef.current) {
           try {
-            await saveAssistantMessage(chatId, assistantContentRef.current);
+            const savedContent = assistantContentRef.current;
+            const saved = await saveAssistantMessage(chatId, savedContent);
+            // Stamp the local bubble with its DB timestamp so a later edit
+            // can cut the stored thread at exactly this message.
+            if (saved?.created_at && activeChatIdRef.current === chatId) {
+              setMessages(prev => {
+                for (let i = prev.length - 1; i >= 0; i--) {
+                  const m = prev[i];
+                  if (m.role === 'assistant' && !m.created_at && m.content === savedContent) {
+                    const next = [...prev];
+                    next[i] = { ...m, id: saved.id, created_at: saved.created_at };
+                    return next;
+                  }
+                }
+                return prev;
+              });
+            }
           } catch {
             console.warn('Save failed - chat may have been deleted during streaming');
           }
@@ -443,14 +531,15 @@ export const FloatingAITutor = () => {
         setIsLoading(false);
       },
       onError: (err) => {
+        if (abortRef.current === ac) abortRef.current = null;
         if (firstToken) {
           setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
         }
         toast.error(err);
         setIsLoading(false);
       },
-    }, ragContext);
-  }, [activeChatId, attachment, messages, setMessages, clearAttachment, saveUserMessage, saveAssistantMessage]);
+    }, ragContext, undefined, ac.signal);
+  }, [activeChatId, attachment, messages, setMessages, clearAttachment, saveUserMessage, saveAssistantMessage, deleteMessagesFrom, editingIndex]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -458,8 +547,24 @@ export const FloatingAITutor = () => {
     handleStreamChat(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
   };
 
+  /** ChatGPT-style stop: abort the stream, keep whatever already streamed
+   *  (onDone still persists the partial answer). */
+  const handleStop = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    // Drop a still-empty assistant placeholder (nothing streamed yet).
+    setMessages(prev =>
+      prev.length && prev[prev.length - 1].role === 'assistant' && !prev[prev.length - 1].content
+        ? prev.slice(0, -1)
+        : prev
+    );
+    setIsLoading(false);
+  };
+
   const handleQuickPrompt = (prompt: string) => {
     if (isLoading) return;
+    // A pending edit is abandoned — the prompt goes out as a normal turn.
+    setEditingIndex(null);
     handleStreamChat(prompt);
   };
 
@@ -755,7 +860,8 @@ export const FloatingAITutor = () => {
                                       "max-w-[85%]",
                                       msg.role === 'assistant'
                                         ? "bg-white/[0.06] border border-white/5 text-foreground"
-                                        : "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-sm shadow-primary/20"
+                                        : "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-sm shadow-primary/20",
+                                      editingIndex === i && "ring-2 ring-primary/80 ring-offset-1 ring-offset-background"
                                     )}
                                     style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
                                   >
@@ -793,7 +899,7 @@ export const FloatingAITutor = () => {
                                         >
                                           <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                                         </button>
-                                        {msg.role === 'user' && (
+                                        {msg.role === 'user' && !isLoading && (
                                           <button
                                             type="button"
                                             onClick={() => editMessage(i, msg.content!)}
@@ -864,6 +970,21 @@ export const FloatingAITutor = () => {
                       <div className="shrink-0 border-t border-white/5 bg-background/30">
                         <StaggerContent delay={0.25}>
                           <form onSubmit={handleSubmit} className="p-3">
+                        {editingIndex !== null && (
+                          <div className="flex items-center gap-2 pb-2 text-[11px] text-muted-foreground border-b border-white/5 mb-2">
+                            <Pencil className="w-3 h-3 shrink-0" />
+                            <span className="flex-1 truncate">Editing message — the thread rewinds when you re-send</span>
+                            <button
+                              type="button"
+                              onClick={cancelEdit}
+                              className="p-1 rounded hover:bg-white/10 transition-colors"
+                              title="Cancel edit"
+                              aria-label="Cancel edit"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
                         <div className="flex gap-2 items-end">
                           <input
                             ref={fileInputRef}
@@ -902,20 +1023,38 @@ export const FloatingAITutor = () => {
                               disabled={isLoading}
                             />
                           </div>
-                          <motion.button
-                            type="submit"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            disabled={(!input.trim() && !attachment) || isLoading}
-                            className={cn(
-                              "shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
-                              "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
-                              "hover:bg-primary/90 transition-colors",
-                              "disabled:opacity-50 disabled:cursor-not-allowed"
-                            )}
-                          >
-                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                          </motion.button>
+                          {isLoading ? (
+                            <motion.button
+                              type="button"
+                              onClick={handleStop}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              title="Stop response"
+                              aria-label="Stop response"
+                              className={cn(
+                                "shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
+                                "bg-foreground text-background shadow-sm",
+                                "hover:opacity-90 transition-opacity"
+                              )}
+                            >
+                              <Square className="w-3.5 h-3.5" fill="currentColor" />
+                            </motion.button>
+                          ) : (
+                            <motion.button
+                              type="submit"
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              disabled={!input.trim() && !attachment}
+                              className={cn(
+                                "shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
+                                "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
+                                "hover:bg-primary/90 transition-colors",
+                                "disabled:opacity-50 disabled:cursor-not-allowed"
+                              )}
+                            >
+                              <Send className="w-4 h-4" />
+                            </motion.button>
+                          )}
                         </div>
                       </form>
                     </StaggerContent>

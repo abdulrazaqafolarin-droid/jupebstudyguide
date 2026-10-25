@@ -57,13 +57,30 @@ function buildMessages(system: string, history: AIChatMessage[], ragContext?: st
   return msgs;
 }
 
+/** How long to wait for response headers before giving up. Must exceed
+ * chat-proxy's worst case (RAG ~12s + stream election ~57s + non-stream
+ * fallback ~45s + overhead) — otherwise the client would kill requests the
+ * server is still working on. Once headers arrive, the stall watchdog below
+ * owns the body (also matches the server's own 45s idle watchdog). */
+const PRE_HEADERS_TIMEOUT_MS = 120_000;
+
 export async function streamChat(
   systemPrompt: string,
   messages: AIChatMessage[],
   callbacks: StreamCallbacks,
   ragContext?: string,
-  subject?: string
+  subject?: string,
+  /** Caller-initiated stop (stop button). When aborted, the partial answer
+   * is kept and the stream resolves via onDone — never as an error. */
+  signal?: AbortSignal
 ): Promise<void> {
+  const ac = new AbortController();
+  let timedOut = false;
+  const preHeadersTimer = setTimeout(() => { timedOut = true; ac.abort(); }, PRE_HEADERS_TIMEOUT_MS);
+  const relayAbort = () => ac.abort();
+  if (signal?.aborted) ac.abort();
+  else signal?.addEventListener("abort", relayAbort, { once: true });
+
   try {
     const token = await getAuthToken();
     const msgs = buildMessages(systemPrompt, messages, ragContext);
@@ -75,8 +92,10 @@ export async function streamChat(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ systemPrompt, messages: msgs, subject: subject || undefined }),
-      signal: AbortSignal.timeout(55000),
+      signal: ac.signal,
     });
+    // Headers in: the body is governed by the stall watchdog, not the timer.
+    clearTimeout(preHeadersTimer);
 
     if (!res.ok) {
       const body = await res.text();
@@ -156,7 +175,19 @@ export async function streamChat(
       finished = true;
     }
   } catch (err) {
+    // User pressed stop → keep the partial answer and finish cleanly.
+    if (signal?.aborted) {
+      callbacks.onDone();
+      return;
+    }
+    if (timedOut) {
+      callbacks.onError("AI took too long to respond. Please try again.");
+      return;
+    }
     callbacks.onError("AI error: " + (err instanceof Error ? err.message : String(err)));
+  } finally {
+    clearTimeout(preHeadersTimer);
+    signal?.removeEventListener("abort", relayAbort);
   }
 }
 

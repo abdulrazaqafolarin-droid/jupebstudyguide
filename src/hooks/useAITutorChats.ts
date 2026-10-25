@@ -5,11 +5,20 @@ import type { QuestionRef } from '@/lib/ai-service';
 
 export interface AIMessage {
   id?: string;
+  /** DB timestamp — messages carry it once loaded (or after save resolves) so
+   *  an edit can rewind the stored thread at exactly this message. */
+  created_at?: string;
   role: 'user' | 'assistant';
   content: string;
   attachment?: { base64?: string; mimeType: string; name: string } | null;
   /** Past-bank questions retrieved for this reply (RAG citations, not persisted). */
   questionRefs?: QuestionRef[];
+}
+
+/** DB identity of a persisted message row. */
+export interface SavedMessageRef {
+  id: string;
+  created_at: string;
 }
 
 export interface AIChat {
@@ -49,11 +58,12 @@ export function useAITutorChats() {
   const loadMessages = useCallback(async (chatId: string) => {
     const { data } = await supabase
       .from('ai_chat_messages')
-      .select('id,role,content,attachment')
+      .select('id,role,content,attachment,created_at')
       .eq('chat_id', chatId)
       .order('created_at', { ascending: true });
     const msgs: AIMessage[] = (data || []).map(m => ({
       id: m.id,
+      created_at: m.created_at,
       role: m.role as 'user' | 'assistant',
       content: m.content,
       attachment: m.attachment as AIMessage['attachment'],
@@ -144,7 +154,7 @@ export function useAITutorChats() {
     const { data } = await supabase
       .from('ai_chat_messages')
       .insert({ chat_id: chatId, user_id: user.id, role: 'user', content: msg.content, attachment: attachmentMeta })
-      .select('id').single();
+      .select('id,created_at').single();
 
     // Auto-title after first user message
     const userCount = messagesRef.current.filter(m => m.role === 'user').length + 1;
@@ -157,16 +167,36 @@ export function useAITutorChats() {
     } else {
       await supabase.from('ai_chats').update({ updated_at: new Date().toISOString() }).eq('id', chatId);
     }
-    return data?.id || null;
+    return data ? { id: data.id, created_at: data.created_at } : null;
   }, [user, chats]);
 
   // Persist assistant message after stream completes
-  const saveAssistantMessage = useCallback(async (chatId: string, content: string) => {
-    if (!user || !content.trim()) return;
-    await supabase
+  const saveAssistantMessage = useCallback(async (chatId: string, content: string): Promise<SavedMessageRef | null> => {
+    if (!user || !content.trim()) return null;
+    const { data } = await supabase
       .from('ai_chat_messages')
-      .insert({ chat_id: chatId, user_id: user.id, role: 'assistant', content });
+      .insert({ chat_id: chatId, user_id: user.id, role: 'assistant', content })
+      .select('id,created_at').single();
     await supabase.from('ai_chats').update({ updated_at: new Date().toISOString() }).eq('id', chatId);
+    return data ? { id: data.id, created_at: data.created_at } : null;
+  }, [user]);
+
+  /** Rewind stored history: delete this chat's persisted messages from
+   *  `fromCreatedAt` onward — inclusive by default, or only rows strictly
+   *  after it when `inclusive` is false. `fromCreatedAt === null` deletes the
+   *  whole stored thread (nothing before the cut point is persisted). */
+  const deleteMessagesFrom = useCallback(async (
+    chatId: string,
+    fromCreatedAt: string | null,
+    inclusive = true,
+  ) => {
+    if (!user) return;
+    let q = supabase.from('ai_chat_messages').delete().eq('chat_id', chatId);
+    if (fromCreatedAt) {
+      q = inclusive ? q.gte('created_at', fromCreatedAt) : q.gt('created_at', fromCreatedAt);
+    }
+    const { error } = await q;
+    if (error) throw error;
   }, [user]);
 
   return {
@@ -180,6 +210,7 @@ export function useAITutorChats() {
     deleteChat,
     saveUserMessage,
     saveAssistantMessage,
+    deleteMessagesFrom,
     refreshChats: loadChats,
   };
 }

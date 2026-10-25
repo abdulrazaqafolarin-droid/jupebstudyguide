@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Loader2, Sparkles, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MathRenderer from "@/components/MathRenderer";
 import { useUserStorage } from "@/hooks/useUserStorage";
@@ -54,6 +54,11 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
   const [text, setText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Set when the user hit stop — onDone then keeps the partial text out of
+   *  the cache so a later tap re-generates the full explanation. */
+  const [stopped, setStopped] = useState(false);
+  const stoppedRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   // Pick up a cached explanation once storage hydrates.
   useEffect(() => {
@@ -69,6 +74,8 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
     }
     if (loading) return;
     setLoading(true);
+    setStopped(false);
+    stoppedRef.current = false;
     const options = (question.options ?? [])
       .map((o) => `${o.label}. ${o.text}`)
       .join("\n");
@@ -82,6 +89,8 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
       question.explanation ? `Bank explanation: ${question.explanation}` : "",
     ].filter(Boolean).join("\n\n");
     let full = "";
+    const ac = new AbortController();
+    abortRef.current = ac;
     void streamChat(
       SYSTEM_PROMPT,
       [{ role: "user", content: userMessage }],
@@ -91,7 +100,11 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
           setText(full);
         },
         onDone: () => {
+          if (abortRef.current === ac) abortRef.current = null;
           setLoading(false);
+          // Stopped by the user: keep the partial text on screen, but never
+          // cache it — a later tap should regenerate the full explanation.
+          if (stoppedRef.current) return;
           const finalText = full;
           setCache((prev) => {
             const next = { ...prev, [cacheKey]: finalText };
@@ -103,11 +116,25 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
           });
         },
         onError: (err) => {
+          if (abortRef.current === ac) abortRef.current = null;
           setLoading(false);
           setError(friendlyError(err));
         },
       },
+      undefined,
+      undefined,
+      ac.signal,
     );
+  };
+
+  /** Stop the response; partial text stays visible (uncached). */
+  const stop = () => {
+    stoppedRef.current = true;
+    setStopped(true);
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setLoading(false);
+    if (!text) setOpen(false); // nothing streamed yet → collapse back to the trigger
   };
 
   return (
@@ -128,15 +155,34 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
             <Sparkles className="h-3.5 w-3.5" />
             Why this tripped you up
           </p>
-          {loading && !text && (
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Asking the AI tutor…
-            </p>
-          )}
           {text && <MathRenderer content={text} className="text-sm leading-6" />}
           {loading && text && (
             <span className="mt-1 inline-block h-3.5 w-1.5 animate-pulse rounded bg-primary/60" aria-hidden />
+          )}
+          {loading && (
+            <div className={`flex items-center gap-2 ${text ? "mt-2" : "mt-1.5"}`}>
+              {!text && (
+                <span className="flex flex-1 items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Asking the AI tutor…
+                </span>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={stop}
+                className="gap-1.5 text-xs"
+                aria-label="Stop response"
+              >
+                <Square className="h-3 w-3" fill="currentColor" />
+                Stop
+              </Button>
+            </div>
+          )}
+          {!loading && stopped && text && !error && (
+            <Button variant="outline" size="sm" onClick={start} className="mt-2 gap-1.5 text-xs">
+              Generate full explanation
+            </Button>
           )}
           {error && (
             <div className="space-y-2">

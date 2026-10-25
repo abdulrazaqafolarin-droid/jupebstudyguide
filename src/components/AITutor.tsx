@@ -5,7 +5,7 @@ import MathRenderer from './MathRenderer';
 import { useAttachment } from '@/hooks/useAttachment';
 import { 
   Bot, Send, Sparkles, X, Lightbulb, HelpCircle,
-  BookOpen, Loader2, Plus, Image, FileText, Copy, Pencil, ChevronDown
+  BookOpen, Loader2, Plus, Image, FileText, Copy, Pencil, ChevronDown, Square
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -64,6 +64,8 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const assistantContentRef = useRef('');
   const prevQuestionId = useRef(question.id);
+  /** Controller for the in-flight AI response — aborted by the stop button. */
+  const abortRef = useRef<AbortController | null>(null);
   
   const { attachment, isProcessing, addAttachment, clearAttachment } = useAttachment();
 
@@ -119,6 +121,9 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
       ragContext = await searchRelevantChunks(userMessage);
     } catch (e) { console.warn("RAG unavailable, continuing without it:", e); }
 
+    const ac = new AbortController();
+    abortRef.current = ac;
+
     await streamChat(systemPrompt, allMessages, {
       onDelta: (text) => {
         assistantContentRef.current += text;
@@ -141,19 +146,34 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
         });
       },
       onDone: () => {
+        if (abortRef.current === ac) abortRef.current = null;
         setIsLoading(false);
       },
       onError: (err) => {
+        if (abortRef.current === ac) abortRef.current = null;
         toast.error(err);
         setIsLoading(false);
       },
-    }, ragContext, question.subject);
+    }, ragContext, question.subject, ac.signal);
   }, [question, attachment, clearAttachment, messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if ((!input.trim() && !attachment) || isLoading) return;
     askTutor(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
+  };
+
+  /** ChatGPT-style stop: abort the stream, keep whatever already streamed. */
+  const handleStop = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    // Drop a still-empty assistant placeholder (nothing streamed yet).
+    setMessages(prev =>
+      prev.length && prev[prev.length - 1].role === 'assistant' && !prev[prev.length - 1].content
+        ? prev.slice(0, -1)
+        : prev
+    );
+    setIsLoading(false);
   };
 
   const handleQuickPrompt = (prompt: string) => {
@@ -415,19 +435,37 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
                 rows={1}
                 disabled={isLoading}
               />
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                disabled={(!input.trim() && !attachment) || isLoading}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                  "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
-                  "disabled:opacity-40 disabled:cursor-not-allowed"
-                )}
-              >
-                {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-              </motion.button>
+              {isLoading ? (
+                <motion.button
+                  type="button"
+                  onClick={handleStop}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Stop response"
+                  aria-label="Stop response"
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                    "bg-foreground text-background shadow-sm",
+                    "hover:opacity-90"
+                  )}
+                >
+                  <Square className="w-3 h-3" fill="currentColor" />
+                </motion.button>
+              ) : (
+                <motion.button
+                  type="submit"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={!input.trim() && !attachment}
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                    "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
+                    "disabled:opacity-40 disabled:cursor-not-allowed"
+                  )}
+                >
+                  <Send className="w-3.5 h-3.5" />
+                </motion.button>
+              )}
             </div>
           </form>
         </motion.div>

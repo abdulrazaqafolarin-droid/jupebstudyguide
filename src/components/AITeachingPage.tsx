@@ -7,7 +7,7 @@ import { SUBJECT_INFO } from '@/types/question';
 import { 
   Bot, Send, ArrowLeft, Loader2, BookOpen,
   GraduationCap, CheckCircle, Plus, Image, FileText, X,
-  ChevronDown
+  ChevronDown, Square
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -85,6 +85,8 @@ export const AITeachingPage = ({ task, topic, onBack, onComplete }: AITeachingPa
 
   const messagesRef = useRef<Message[]>([]);
   useEffect(() => { messagesRef.current = messages; }, [messages]);
+  /** Controller for the in-flight AI response — aborted by the stop button. */
+  const abortRef = useRef<AbortController | null>(null);
 
   const handleStreamChat = useCallback(async (userMessage: string, isInitial = false) => {
     const userMsg: Message = {
@@ -128,6 +130,9 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
 
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
+    const ac = new AbortController();
+    abortRef.current = ac;
+
     await streamChat(systemPrompt, newMessages, {
       onDelta: (text) => {
         acc += text;
@@ -139,12 +144,16 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
           return newArr;
         });
       },
-      onDone: () => setIsLoading(false),
+      onDone: () => {
+        if (abortRef.current === ac) abortRef.current = null;
+        setIsLoading(false);
+      },
       onError: (err) => {
+        if (abortRef.current === ac) abortRef.current = null;
         toast.error(typeof err === 'string' ? err : String(err));
         setIsLoading(false);
       },
-    }, ragContext);
+    }, ragContext, undefined, ac.signal);
   }, [topic, task, attachment, clearAttachment]);
 
   const startTeaching = () => {
@@ -167,6 +176,19 @@ Please teach me this topic thoroughly, step by step. Start from the fundamentals
     e.preventDefault();
     if ((!input.trim() && !attachment) || isLoading) return;
     handleStreamChat(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
+  };
+
+  /** ChatGPT-style stop: abort the stream, keep whatever already streamed. */
+  const handleStop = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    // Drop a still-empty assistant placeholder (nothing streamed yet).
+    setMessages(prev =>
+      prev.length && prev[prev.length - 1].role === 'assistant' && !prev[prev.length - 1].content
+        ? prev.slice(0, -1)
+        : prev
+    );
+    setIsLoading(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -380,19 +402,37 @@ Please teach me this topic thoroughly, step by step. Start from the fundamentals
               rows={1}
               disabled={isLoading}
             />
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={(!input.trim() && !attachment) || isLoading}
-              className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
-                "disabled:opacity-40 disabled:cursor-not-allowed"
-              )}
-            >
-              {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-            </motion.button>
+            {isLoading ? (
+              <motion.button
+                type="button"
+                onClick={handleStop}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                title="Stop response"
+                aria-label="Stop response"
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                  "bg-foreground text-background shadow-sm",
+                  "hover:opacity-90"
+                )}
+              >
+                <Square className="w-3 h-3" fill="currentColor" />
+              </motion.button>
+            ) : (
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={!input.trim() && !attachment}
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                  "bg-primary text-primary-foreground shadow-sm shadow-primary/30",
+                  "disabled:opacity-40 disabled:cursor-not-allowed"
+                )}
+              >
+                <Send className="w-3.5 h-3.5" />
+              </motion.button>
+            )}
           </div>
           <p className="text-[11px] text-muted-foreground/60 mt-1.5 text-center">
             Attach images or documents for AI analysis • The tutor will teach step-by-step

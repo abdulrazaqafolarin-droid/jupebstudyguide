@@ -4,6 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserAvatar } from '@/components/UserAvatar';
 import { Button } from '@/components/ui/button';
+import {
+  isNativePlatform,
+  isNativeNotificationsEnabled,
+  postNativeNotification,
+  NOTIFICATION_CHANNELS,
+} from '@/lib/native-notifications';
+import { buildMessagePreview, stableNotificationId } from '@/lib/message-preview';
 
 interface PopupNotification {
   id: string;
@@ -26,6 +33,11 @@ export function InAppNotificationBar({
   const [current, setCurrent] = useState<PopupNotification | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const dismissedRef = useRef<Set<string>>(new Set());
+  // Message ids already routed through this handler. The same arrival can be
+  // dispatched twice (useChat on the Chat/Friends screens + the always-on
+  // NativeNotificationBridge elsewhere) — guard so the query chain below
+  // runs exactly once per message.
+  const processedRef = useRef<Set<string>>(new Set());
 
   const show = useCallback((n: PopupNotification) => {
     if (dismissedRef.current.has(n.id)) return;
@@ -34,6 +46,28 @@ export function InAppNotificationBar({
     timeoutRef.current = setTimeout(() => {
       setCurrent(null);
     }, 5000);
+
+    // Backgrounded → mirror non-chat popups into the Android shade with the
+    // same content (chat messages are mirrored by NativeNotificationBridge,
+    // which also owns their mute/membership rules).
+    if (
+      n.kind !== 'chat_message' &&
+      isNativePlatform &&
+      document.visibilityState === 'hidden' &&
+      isNativeNotificationsEnabled()
+    ) {
+      void postNativeNotification({
+        channelId:
+          n.kind === 'friend_request' ? NOTIFICATION_CHANNELS.requests : NOTIFICATION_CHANNELS.messages,
+        id: stableNotificationId(n.id),
+        title: n.title,
+        body: n.body,
+        data:
+          n.kind === 'friend_request'
+            ? { type: 'friends' }
+            : { type: 'chat', conversationId: n.conversationId ?? '' },
+      });
+    }
   }, []);
 
   const dismiss = useCallback(() => {
@@ -50,6 +84,9 @@ export function InAppNotificationBar({
         message: { id: string; conversation_id: string; sender_id: string; content?: string; message_type?: string };
       };
       if (message.sender_id === user.id) return;
+      if (processedRef.current.has(message.id)) return;
+      processedRef.current.add(message.id);
+      if (processedRef.current.size > 1000) processedRef.current.clear();
 
       // Don't pop a banner for the conversation already on screen —
       // the message is visible and the badge stays untouched.
@@ -81,11 +118,7 @@ export function InAppNotificationBar({
         .eq('user_id', message.sender_id)
         .single();
 
-      const preview = message.message_type === 'image' ? 'Photo'
-        : message.message_type === 'video' ? 'Video'
-        : message.message_type === 'audio' ? 'Audio'
-        : message.message_type === 'file' ? 'File'
-        : message.content?.slice(0, 80) || 'Message';
+      const preview = buildMessagePreview(message);
 
       show({
         id: `msg-${message.id}`,

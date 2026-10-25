@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { isNativePlatform } from '@/lib/native-notifications';
 import type { AppNotification, NotificationKind } from '@/hooks/useNotifications';
 
 const ICONS: Record<NotificationKind, React.ComponentType<{ className?: string }>> = {
@@ -145,14 +146,16 @@ export function NotificationCenter({
         {permission === 'default' && (
           <div className="px-4 py-3 border-b border-border bg-primary/5">
             <p className="text-xs text-foreground mb-2">
-              Get reminders even when this tab is closed.
+              {isNativePlatform
+                ? 'Get message alerts and study reminders.'
+                : 'Get reminders even when this tab is closed.'}
             </p>
             <Button
               size="sm"
               onClick={onRequestPermission}
               className="h-7 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              Enable browser notifications
+              {isNativePlatform ? 'Enable notifications' : 'Enable browser notifications'}
             </Button>
           </div>
         )}
@@ -178,7 +181,9 @@ export function NotificationCenter({
             </div>
             <p className="text-[10px] text-muted-foreground mt-1">
               {isPushSubscribed
-                ? 'Notifications will arrive even when the tab is closed.'
+                ? isNativePlatform
+                  ? 'Message alerts and study reminders are on.'
+                  : 'Notifications will arrive even when the tab is closed.'
                 : 'Get notified when you receive messages.'}
             </p>
           </div>

@@ -10,6 +10,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
 import { PushNotificationsProvider } from "@/contexts/PushNotificationsContext";
+import { NativeNotificationBridge } from "@/components/NativeNotificationBridge";
 import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
@@ -304,6 +305,7 @@ const App = () => {
             <SWUpdatePrompt />
             <AppUpdatePrompt />
             <BrowserRouter>
+              <NativeNotificationBridge />
               <AnimatedRoutes />
               <ErrorBoundary>
               <Suspense fallback={null}>

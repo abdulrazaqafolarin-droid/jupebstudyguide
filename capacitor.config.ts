@@ -11,6 +11,12 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
+    LocalNotifications: {
+      // Status-bar glyph (white mortarboard in res/drawable) + accent tint
+      // matching the app's amber primary.
+      smallIcon: 'ic_stat_rutex',
+      iconColor: '#E19209',
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       backgroundColor: '#0f0f1a',

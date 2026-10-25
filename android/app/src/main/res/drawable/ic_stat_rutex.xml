@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Status-bar icons are rendered from the alpha channel only: pure white
+         shapes on transparent background, like every stock app icon. -->
+    <!-- Mortarboard board -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,3L1.8,8 12,13 22.2,8z" />
+    <!-- Cap under the board -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M6.2,10.2L6.2,14.6C6.2,15.9 8.8,17 12,17s5.8,-1.1 5.8,-2.4L17.8,10.2 12,13.1z" />
+    <!-- Tassel -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M20.6,8.6L20.6,13.4L19.3,12.8L19.3,8z" />
+</vector>

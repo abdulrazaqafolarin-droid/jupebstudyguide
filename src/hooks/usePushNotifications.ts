@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  isNativePlatform,
+  getNotificationPermission,
+  requestNotificationPermission,
+  isNativeNotificationsEnabled,
+  setNativeNotificationsEnabled,
+  ensureNotificationChannels,
+  scheduleDailyReminders,
+  cancelDailyReminders,
+} from '@/lib/native-notifications';
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BCzx03Ds_U9JPP4VDWOzcYpw5ETez0tH2s6XFdDCBMzowsye2YCwwMu2XdKW4d35pVLF1ThFGGbuDdW4QCGypaw';
 const PUSH_ENABLED = 'push_enabled';
@@ -19,19 +29,30 @@ export function usePushNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
 
   useEffect(() => {
+    if (isNativePlatform) {
+      // The APK's WebView has no PushManager/Web Push; notifications go
+      // through Android's notification manager instead.
+      setSupported(true);
+      void getNotificationPermission().then((p) => {
+        setPermission(p);
+        setIsSubscribed(p === 'granted' && isNativeNotificationsEnabled());
+      });
+      return;
+    }
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       setSupported(true);
     }
   }, []);
 
   useEffect(() => {
+    if (isNativePlatform) return; // permission read from the plugin above
     if (typeof Notification !== 'undefined') {
       setPermission(Notification.permission);
     }
   }, []);
 
   useEffect(() => {
-    if (!supported || !user) return;
+    if (isNativePlatform || !supported || !user) return;
 
     navigator.serviceWorker.ready.then((reg) => {
       reg.pushManager.getSubscription().then((sub) => {
@@ -41,6 +62,19 @@ export function usePushNotifications() {
   }, [supported, user]);
 
   const subscribe = useCallback(async () => {
+    if (isNativePlatform) {
+      // One OS dialog (Android 13+ POST_NOTIFICATIONS), then everything is
+      // posted through the native notification manager.
+      const result = await requestNotificationPermission();
+      setPermission(result);
+      if (result !== 'granted') return;
+      setNativeNotificationsEnabled(true);
+      await ensureNotificationChannels();
+      await scheduleDailyReminders();
+      setIsSubscribed(true);
+      return;
+    }
+
     if (!supported || !user) return;
 
     const swReg = await navigator.serviceWorker.ready;
@@ -87,6 +121,16 @@ export function usePushNotifications() {
   }, [supported, user]);
 
   const unsubscribe = useCallback(async () => {
+    if (isNativePlatform) {
+      // App-level mute: the OS permission itself can only be revoked in
+      // system settings, so this stops us from posting and drops the
+      // scheduled reminders.
+      setNativeNotificationsEnabled(false);
+      await cancelDailyReminders();
+      setIsSubscribed(false);
+      return;
+    }
+
     if (!supported || !user) return;
 
     const swReg = await navigator.serviceWorker.ready;

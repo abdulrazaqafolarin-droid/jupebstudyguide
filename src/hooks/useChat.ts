@@ -111,6 +111,17 @@ export function useChat() {
     | { kind: 'image'; imageUrl: string }
     | { kind: 'file'; fileUrl: string; fileName: string; fileSize: number; fileType: string }
     | { kind: 'voice'; blob: Blob; senderId: string; duration: number }
+    | {
+        kind: 'forward';
+        content: string;
+        messageType: 'text' | 'image' | 'file' | 'video' | 'audio';
+        imageUrl?: string | null;
+        fileUrl?: string | null;
+        fileName?: string | null;
+        fileSize?: number | null;
+        fileType?: string | null;
+        forwardedFrom: NonNullable<Message['forwarded_from']>;
+      }
   );
   const offlineQueueRef = useRef<OfflineItem[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
@@ -118,6 +129,11 @@ export function useChat() {
   const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
   const pollCursorRef = useRef<string>('');
   const readReceiptPollRef = useRef<ReturnType<typeof setInterval>>();
+  // Messages deleted-for-me on THIS device (localStorage-backed).
+  const hiddenMsgIdsRef = useRef<Set<string>>(new Set());
+  // Shared by realtime INSERT / broadcast / poll so one incoming message
+  // can't increment the unread badge through more than one delivery path.
+  const seenIncomingRef = useRef<Set<string>>(new Set());
 
   const conversationsRef = useRef<Conversation[]>([]);
   // Keep refs in sync with state
@@ -131,6 +147,55 @@ export function useChat() {
     conversationsRef.current = conversations;
   }, [conversations]);
 
+  // Deleted-for-me messages live in localStorage so they stay hidden after
+  // reloads (this device only — other devices still show the message).
+  useEffect(() => {
+    if (!user) {
+      hiddenMsgIdsRef.current = new Set();
+      return;
+    }
+    try {
+      const raw = localStorage.getItem(`jupeb-hidden-msgs-${user.id}`);
+      hiddenMsgIdsRef.current = raw ? new Set<string>(JSON.parse(raw) as string[]) : new Set();
+    } catch {
+      hiddenMsgIdsRef.current = new Set();
+    }
+  }, [user]);
+
+  const hideMessage = useCallback((messageId: string) => {
+    const set = hiddenMsgIdsRef.current;
+    set.add(messageId);
+    if (set.size > 500) {
+      const oldest = set.values().next().value;
+      if (oldest !== undefined) set.delete(oldest);
+    }
+    try {
+      if (user) localStorage.setItem(`jupeb-hidden-msgs-${user.id}`, JSON.stringify([...set]));
+    } catch { /* storage unavailable */ }
+
+    const target = messagesRef.current.find(m => m.id === messageId);
+    setMessages(prev => prev.filter(m => m.id !== messageId));
+    setConversations(prev => prev.map(c => {
+      if (target && c.id !== target.conversation_id) return c;
+      let next = c;
+      if (!target && c.last_message?.id === messageId) {
+        // Unknown origin — still drop it from the preview if it matched.
+        const remaining = messagesRef.current.filter(m => m.id !== messageId);
+        next = { ...c, last_message: remaining[remaining.length - 1] ?? null };
+      }
+      if (target) {
+        if (c.last_message?.id === messageId) {
+          const remaining = messagesRef.current.filter(m => m.id !== messageId && m.conversation_id === c.id);
+          next = { ...next, last_message: remaining[remaining.length - 1] ?? null };
+        }
+        if (target.sender_id !== user?.id && !target.is_read && next.unread_count > 0) {
+          next = { ...next, unread_count: next.unread_count - 1 };
+        }
+      }
+      return next;
+    }));
+  }, [user]);
+
   const broadcastRead = useCallback((conversationId: string) => {
     try {
       broadcastRef.current?.postMessage({ type: 'read', conversationId });
@@ -139,23 +204,32 @@ export function useChat() {
     }
   }, []);
 
+  // Returns true only the FIRST time an incoming message id is seen, so
+  // realtime + broadcast + poll each deliver the message but only one of
+  // them increments the unread counter.
+  const markIncomingSeen = useCallback((id: string): boolean => {
+    const seen = seenIncomingRef.current;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    if (seen.size > 1000) {
+      const oldest = seen.values().next().value;
+      if (oldest !== undefined) seen.delete(oldest);
+    }
+    return true;
+  }, []);
+
   const processMarkReadQueue = useCallback(async () => {
     if (markReadProcessing.current) return;
     markReadProcessing.current = true;
     while (markReadQueue.current.length > 0) {
       const item = markReadQueue.current.shift()!;
       try {
+        // The old client-side UPDATE of messages.is_read is gone: RLS only
+        // lets you update your own rows, so it silently matched 0 rows.
+        // mark_conversation_read (SECURITY DEFINER) now flips is_read for
+        // the caller, and the on_message_read trigger fills read_at /
+        // delivered_at.
         await retryWithBackoff(async () => {
-          const { error: msgErr } = await supabase
-            .from('messages')
-            .update({
-              is_read: true,
-              read_at: new Date().toISOString(),
-            })
-            .eq('conversation_id', item.conversationId)
-            .neq('sender_id', item.userId)
-            .eq('is_read', false);
-          if (msgErr) throw msgErr;
           const { error: rpcErr } = await supabase
             .rpc('mark_conversation_read', {
               p_conversation_id: item.conversationId,
@@ -284,7 +358,7 @@ export function useChat() {
       // Single bounded query instead of one round-trip per conversation.
       const { data: recentMsgs } = await supabase
         .from('messages')
-        .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
+        .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
         .in('conversation_id', convIds)
         .order('created_at', { ascending: false })
         .limit(500);
@@ -434,15 +508,17 @@ export function useChat() {
     }
 
     if (gen === messagesFetchGenRef.current) {
+      // Drop messages the user deleted-for-me on this device.
+      const visible = msgs.filter(m => !hiddenMsgIdsRef.current.has(m.id));
       setMessages(prev => {
         if (loadMore) {
           const existingIds = new Set(prev.map(m => m.id));
-          const newMsgs = msgs.filter(m => !existingIds.has(m.id));
+          const newMsgs = visible.filter(m => !existingIds.has(m.id));
           return [...prev, ...newMsgs.reverse()].sort(
             (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           );
         }
-        return msgs.reverse();
+        return visible.reverse();
       });
     }
 
@@ -486,6 +562,7 @@ export function useChat() {
 
             if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
 
+            const firstIncoming = markIncomingSeen(newMsg.id);
             const currentConv = activeConvRef.current;
             if (newMsg.conversation_id === currentConv) {
               setMessages(prev =>
@@ -499,7 +576,7 @@ export function useChat() {
             setConversations(prev => {
               const updated = prev.map(c =>
                 c.id === newMsg.conversation_id
-                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg }
+                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + (firstIncoming ? 1 : 0), last_message: newMsg }
                   : c
               );
               return updated.sort((a, b) => {
@@ -529,13 +606,16 @@ export function useChat() {
           }
         )
         .on(
+          // No sender filter: the author must receive updates to THEIR rows —
+          // read receipts (is_read/read_at), reactions and edits made by the
+          // other side. The old `sender_id=neq.me` filter blocked all three.
           'postgres_changes',
-          { event: 'UPDATE', schema: 'public', table: 'messages', filter: `sender_id=neq.${user.id}` },
+          { event: 'UPDATE', schema: 'public', table: 'messages' },
           (payload) => {
             const newMsg = payload.new as Message & { is_deleted: boolean };
             const oldMsg = payload.old as Message & { is_deleted: boolean };
             if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
-            if (newMsg.is_deleted && !oldMsg.is_deleted && !newMsg.is_read) {
+            if (newMsg.sender_id !== user.id && newMsg.is_deleted && !oldMsg.is_deleted && !newMsg.is_read) {
               setConversations(prev => prev.map(c =>
                 c.id === newMsg.conversation_id && c.unread_count > 0
                   ? { ...c, unread_count: c.unread_count - 1 }
@@ -545,7 +625,16 @@ export function useChat() {
             if (newMsg.conversation_id === activeConvRef.current) {
               setMessages(prev => prev.map(m =>
                 m.id === newMsg.id
-                  ? { ...m, is_read: newMsg.is_read, read_at: newMsg.read_at, delivered_at: newMsg.delivered_at, is_deleted: newMsg.is_deleted, content: newMsg.is_deleted ? '' : newMsg.content }
+                  ? {
+                      ...m,
+                      is_read: newMsg.is_read,
+                      read_at: newMsg.read_at,
+                      delivered_at: newMsg.delivered_at,
+                      is_deleted: newMsg.is_deleted,
+                      content: newMsg.is_deleted ? '' : newMsg.content,
+                      reactions: newMsg.reactions ?? m.reactions,
+                      is_edited: newMsg.is_edited,
+                    }
                   : m
               ));
             }
@@ -580,6 +669,39 @@ export function useChat() {
                   }
                 : c
             ));
+          }
+        )
+        .on(
+          'postgres_changes',
+          { event: 'DELETE', schema: 'public', table: 'conversation_participants', filter: `user_id=eq.${user.id}` },
+          (payload) => {
+            const old = payload.old as { conversation_id?: string };
+            const convId = old.conversation_id;
+            if (!convId) return;
+            // Removed from (or left) a group: drop it from the desktop sidebar
+            // immediately — previously only mobile screens refreshed.
+            debug('[Realtime] removed from conversation:', convId);
+            setConversations(prev => prev.filter(c => c.id !== convId));
+            convIdsRef.current = convIdsRef.current.filter(id => id !== convId);
+            if (activeConvRef.current === convId) {
+              setActiveConversation(null);
+              setMessages([]);
+            }
+          }
+        )
+        .on(
+          'postgres_changes',
+          { event: 'DELETE', schema: 'public', table: 'conversations' },
+          (payload) => {
+            const old = payload.old as { id?: string };
+            if (!old.id) return;
+            debug('[Realtime] conversation deleted:', old.id);
+            setConversations(prev => prev.filter(c => c.id !== old.id));
+            convIdsRef.current = convIdsRef.current.filter(id => id !== old.id);
+            if (activeConvRef.current === old.id) {
+              setActiveConversation(null);
+              setMessages([]);
+            }
           }
         )
         .subscribe((status, err) => {
@@ -619,6 +741,7 @@ export function useChat() {
       .on('broadcast', { event: 'msg' }, (payload) => {
         const newMsg = payload.payload.message as Message;
         if (newMsg.sender_id === user.id) return;
+        const firstIncoming = markIncomingSeen(newMsg.id);
         if (!convIdsRef.current.includes(newMsg.conversation_id)) {
           void fetchConversations().then(() => {
             if (convIdsRef.current.includes(newMsg.conversation_id)) {
@@ -637,7 +760,7 @@ export function useChat() {
               } else {
                 setConversations(prev => prev.map(c =>
                   c.id === newMsg.conversation_id
-                    ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg as Message }
+                    ? { ...c, unread_count: c.unread_count + (firstIncoming ? 1 : 0), last_message: newMsg as Message }
                     : c
                 ));
               }
@@ -660,7 +783,7 @@ export function useChat() {
         } else {
           setConversations(prev => prev.map(c =>
             c.id === newMsg.conversation_id
-              ? { ...c, unread_count: c.unread_count + 1, last_message: newMsg as Message }
+              ? { ...c, unread_count: c.unread_count + (firstIncoming ? 1 : 0), last_message: newMsg as Message }
               : c
           ));
         }
@@ -697,7 +820,7 @@ export function useChat() {
       if (msgBroadcastBox.current) supabase.removeChannel(msgBroadcastBox.current);
       msgBroadcastRef.current = null;
     };
-  }, [user, fetchConversations]);
+  }, [user, fetchConversations, markIncomingSeen]);
 
   // Polling: runs continuously as primary message delivery mechanism
   useEffect(() => {
@@ -724,7 +847,7 @@ export function useChat() {
         try {
           const { data, error } = await supabase
             .from('messages')
-            .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, forwarded_from')
+            .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
             .in('conversation_id', convIds)
             .gt('created_at', pollCursorRef.current)
             .order('created_at', { ascending: true })
@@ -737,6 +860,7 @@ export function useChat() {
 
           for (const newMsg of data) {
             if (newMsg.sender_id === user.id) continue;
+            const firstIncoming = markIncomingSeen(newMsg.id);
 
             const currentConv = activeConvRef.current;
             if (newMsg.conversation_id === currentConv) {
@@ -751,7 +875,7 @@ export function useChat() {
             setConversations(prev => {
               const updated = prev.map(c =>
                 c.id === newMsg.conversation_id
-                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + 1, last_message: newMsg as Message }
+                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + (firstIncoming ? 1 : 0), last_message: newMsg as Message }
                   : c
               );
               return updated.sort((a, b) => {
@@ -780,7 +904,7 @@ export function useChat() {
       clearInterval(pollTimerRef.current);
       pollTimerRef.current = undefined;
     };
-  }, [user]);
+  }, [user, markIncomingSeen]);
 
   useEffect(() => {
     try {
@@ -858,6 +982,28 @@ export function useChat() {
         content: item.content.trim(),
         message_type: 'text',
         reply_to_id: item.replyToId || null,
+        client_msg_id: crypto.randomUUID(),
+      }).select();
+      if (error) return false;
+      if (data?.[0]) {
+        msgBroadcastRef.current?.send({
+          type: 'broadcast', event: 'msg', payload: { message: data[0] },
+        });
+      }
+      return true;
+    }
+    if (item.kind === 'forward') {
+      const { data, error } = await supabase.from('messages').insert({
+        conversation_id: item.conversationId,
+        sender_id: user.id,
+        content: item.content,
+        message_type: item.messageType,
+        image_url: item.imageUrl ?? null,
+        file_url: item.fileUrl ?? null,
+        file_name: item.fileName ?? null,
+        file_size: item.fileSize ?? null,
+        file_type: item.fileType ?? null,
+        forwarded_from: item.forwardedFrom,
         client_msg_id: crypto.randomUUID(),
       }).select();
       if (error) return false;
@@ -1239,11 +1385,22 @@ export function useChat() {
 
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions: updated } : m));
 
-    const { error } = await supabase.from('messages').update({ reactions: updated }).eq('id', messageId);
+    // SECURITY DEFINER toggle: the only messages UPDATE policy is
+    // "sender owns the row", so reacting to someone else's message used to
+    // silently match 0 rows — the reaction looked fine, then vanished on
+    // reload. The RPC toggles atomically and returns server-truth state.
+    const { data: serverReactions, error } = await supabase
+      .rpc('toggle_message_reaction', { p_message_id: messageId, p_emoji: emoji });
     if (error) {
       console.error('Reaction update error:', error);
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions: current } : m));
       toast.error('Reaction failed');
+      return;
+    }
+    if (serverReactions && typeof serverReactions === 'object') {
+      setMessages(prev => prev.map(m =>
+        m.id === messageId ? { ...m, reactions: serverReactions as Record<string, string[]> } : m
+      ));
     }
   }, [user]);
 
@@ -1273,8 +1430,9 @@ export function useChat() {
       forwarded_at: new Date().toISOString(),
     };
 
+    const clientId = crypto.randomUUID();
     const optimisticMsg: Message = {
-      id: crypto.randomUUID(),
+      id: clientId,
       conversation_id: targetConversationId,
       sender_id: user.id,
       content: msg.content || '',
@@ -1304,21 +1462,25 @@ export function useChat() {
       file_size: msg.file_size,
       file_type: msg.file_type,
       forwarded_from: forwardedFrom,
+      client_msg_id: clientId,
     }).select();
 
     if (error) {
-      // Queue a faithful copy: same kind, same target conversation.
-      if (msg.message_type === 'image' && msg.image_url) {
-        offlineQueueRef.current.push({ kind: 'image', conversationId: targetConversationId, imageUrl: msg.image_url });
-      } else if ((msg.message_type === 'file' || msg.message_type === 'video' || msg.message_type === 'audio') && msg.file_url) {
-        offlineQueueRef.current.push({
-          kind: 'file', conversationId: targetConversationId,
-          fileUrl: msg.file_url, fileName: msg.file_name || 'file',
-          fileSize: msg.file_size || 0, fileType: msg.file_type || 'application/octet-stream',
-        });
-      } else {
-        offlineQueueRef.current.push({ kind: 'text', conversationId: targetConversationId, content: msg.content || '' });
-      }
+      // Queue a faithful copy: same kind, same target, forwarded_from intact
+      // (the old fallback degraded everything to a plain text/image/file row
+      // and dropped the forward attribution).
+      offlineQueueRef.current.push({
+        kind: 'forward',
+        conversationId: targetConversationId,
+        content: msg.content || '',
+        messageType: msg.message_type === 'image' ? 'image' : msg.message_type === 'video' ? 'video' : msg.message_type === 'audio' ? 'audio' : 'text',
+        imageUrl: msg.image_url,
+        fileUrl: msg.file_url,
+        fileName: msg.file_name,
+        fileSize: msg.file_size,
+        fileType: msg.file_type,
+        forwardedFrom,
+      });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Message queued — will send when back online');
       return;
@@ -1532,6 +1694,7 @@ export function useChat() {
     forwardMessage,
     editMessage,
     deleteMessage,
+    hideMessage,
     sendImage,
     sendFile,
     sendReaction,

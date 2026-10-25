@@ -233,6 +233,8 @@ const Chat = () => {
               onStartConversation={handleStartConversation}
               searchUsers={chat.searchUsers}
               isOnline={presence.isOnline}
+              isTyping={presence.isTyping}
+              getLastSeen={presence.getLastSeen}
               friendRequestCount={friends.incomingRequests.length}
               onGroupCreated={(convId) => handleSelectConversation(convId)}
               onFriendRequestsClick={() => setTab('friends')}
@@ -509,6 +511,10 @@ const Chat = () => {
             onProfileClick={openProfile}
             onBroadcastMessage={chat.broadcastMessage}
             onQueueVoiceNote={chat.queueVoiceNote}
+            onDeleteForMe={chat.hideMessage}
+            pendingCount={chat.pendingCount}
+            onFlushOfflineQueue={chat.flushOfflineQueue}
+            onStartDm={handleStartConversation}
           />
         </div>
       )}

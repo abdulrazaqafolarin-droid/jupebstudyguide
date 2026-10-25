@@ -102,26 +102,46 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   const lastSeenInflight = useRef<Set<string>>(new Set());
   const visibilityHandlersRef = useRef<(() => void) | null>(null);
   const privacyFilterRef = useRef<Set<string>>(new Set());
+  // Full presence payload we last tracked (track() REPLACES the whole state,
+  // so partial updates must be merged, not sent raw).
+  const myStateRef = useRef<PresenceState | null>(null);
+  // Partial updates made before the channel subscribed, replayed on subscribe.
+  const pendingTrackRef = useRef<Partial<PresenceState> | null>(null);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const disposedRef = useRef(false);
 
-  // Sync to user_presence table for postgres_changes subscribers
+  const trackState = useCallback((partial: Partial<PresenceState>) => {
+    if (!user) return;
+    const merged: PresenceState = {
+      user_id: user.id,
+      online_at: myStateRef.current?.online_at ?? new Date().toISOString(),
+      typing_in: myStateRef.current?.typing_in ?? null,
+      recording_vn_in: myStateRef.current?.recording_vn_in ?? null,
+      ...partial,
+    };
+    myStateRef.current = merged;
+    const ch = channelRef.current;
+    if (ch) {
+      void ch.track(merged);
+    } else {
+      pendingTrackRef.current = { ...(pendingTrackRef.current ?? {}), ...partial };
+    }
+  }, [user]);
+
+  // Mirror presence into the user_presence table. Live schema is
+  // (user_id, status, last_seen, updated_at) — the earlier is_online /
+  // typing_in / online_at columns don't exist on the live table, so every
+  // write used to fail with an unknown-column error.
   const syncPresenceToDb = useCallback(async (data: {
     is_online?: boolean;
     last_seen_at?: string;
-    online_at?: string;
-    typing_in?: string | null;
-    recording_vn_in?: string | null;
   }) => {
     if (!user) return;
-    try {
-      await supabase.from('user_presence').upsert({
-        user_id: user.id,
-        is_online: data.is_online ?? true,
-        last_seen_at: data.last_seen_at ?? new Date().toISOString(),
-        online_at: data.online_at ?? null,
-        typing_in: data.typing_in ?? null,
-        recording_vn_in: data.recording_vn_in ?? null,
-      });
-    } catch { /* silent */ }
+    const row: { user_id: string; status?: string; last_seen?: string } = { user_id: user.id };
+    row.status = data.is_online === false ? 'offline' : 'online';
+    row.last_seen = data.last_seen_at ?? new Date().toISOString();
+    const { error } = await supabase.from('user_presence').upsert(row);
+    if (error) console.warn('[presence] user_presence upsert failed:', error.message);
   }, [user]);
 
   // Update last_seen_at in DB when user goes offline
@@ -145,14 +165,8 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
         syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
 
       } else {
-        channel.track({
-          user_id: user.id,
-          online_at: new Date().toISOString(),
-          typing_in: null,
-          recording_vn_in: null,
-        } as PresenceState);
-        syncPresenceToDb({ is_online: true, online_at: new Date().toISOString() });
-
+        trackState({ online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null });
+        syncPresenceToDb({ is_online: true });
       }
     };
     const handleBeforeUnload = () => {
@@ -207,13 +221,13 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
 
         if (status === 'SUBSCRIBED') {
           channelRef.current = channel;
-          await channel.track({
-            user_id: user.id,
-            online_at: new Date().toISOString(),
-            typing_in: null,
-            recording_vn_in: null,
-          } as PresenceState);
-          syncPresenceToDb({ is_online: true, online_at: new Date().toISOString() });
+          const now = new Date().toISOString();
+          const queued = pendingTrackRef.current;
+          pendingTrackRef.current = null;
+          // Re-apply anything queued while disconnected (typing/recording),
+          // otherwise start a clean online state.
+          trackState({ online_at: now, typing_in: null, recording_vn_in: null, ...(queued ?? {}) });
+          syncPresenceToDb({ is_online: true });
 
           document.addEventListener('visibilitychange', handleVisibilityChange);
           window.addEventListener('beforeunload', handleBeforeUnload);
@@ -222,62 +236,68 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
             window.removeEventListener('beforeunload', handleBeforeUnload);
           };
         } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
+          if (disposedRef.current) return;
+          // A channel we tore down ourselves reports CLOSED — ignore it.
+          if (channelRef.current !== null && channelRef.current !== channel) return;
+          if (reconnectTimerRef.current) return;
           console.warn('[presence] channel', status, '— reconnecting in 3s');
           channelRef.current = null;
-          setTimeout(() => reconnectPresence(), 3000);
+          visibilityHandlersRef.current?.();
+          visibilityHandlersRef.current = null;
+          void supabase.removeChannel(channel);
+          reconnectTimerRef.current = setTimeout(() => {
+            reconnectTimerRef.current = null;
+            reconnectPresence();
+          }, 3000);
         }
       });
-  }, [user, updateLastSeen]);
+  }, [user, updateLastSeen, syncPresenceToDb, trackState]);
 
   useEffect(() => {
     if (!user) return;
+    disposedRef.current = false;
     reconnectPresence();
     return () => {
+      disposedRef.current = true;
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
       if (channelRef.current) {
-        channelRef.current.unsubscribe();
+        void supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
       visibilityHandlersRef.current?.();
       visibilityHandlersRef.current = null;
+      myStateRef.current = null;
+      pendingTrackRef.current = null;
     };
   }, [user, reconnectPresence]);
 
   const setTyping = useCallback((isTyping: boolean) => {
-    if (!user || !channelRef.current) {
-
-      return;
-    }
+    if (!user) return;
 
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
 
-
-    channelRef.current.track({
-      user_id: user.id,
-      typing_in: isTyping ? activeConvRef.current : null,
-    } as PresenceState);
-    syncPresenceToDb({ typing_in: isTyping ? activeConvRef.current : null });
+    // trackState queues updates until the channel subscribes, so the first
+    // keystrokes in a conversation are no longer silently dropped.
+    trackState({ typing_in: isTyping ? activeConvRef.current : null });
+    syncPresenceToDb({ is_online: true });
 
     if (isTyping) {
       typingTimeoutRef.current = setTimeout(() => {
-        channelRef.current?.track({
-          user_id: user.id,
-          typing_in: null,
-        } as PresenceState);
-        syncPresenceToDb({ typing_in: null });
+        trackState({ typing_in: null });
       }, 3000);
     }
-  }, [user, syncPresenceToDb]);
+  }, [user, trackState, syncPresenceToDb]);
 
   const setRecordingVn = useCallback((isRecording: boolean) => {
-    if (!user || !channelRef.current) return;
-    channelRef.current.track({
-      user_id: user.id,
-      recording_vn_in: isRecording ? activeConvRef.current : null,
-    } as PresenceState);
-    syncPresenceToDb({ recording_vn_in: isRecording ? activeConvRef.current : null });
-  }, [user, syncPresenceToDb]);
+    if (!user) return;
+    trackState({ recording_vn_in: isRecording ? activeConvRef.current : null });
+    syncPresenceToDb({ is_online: true });
+  }, [user, trackState, syncPresenceToDb]);
 
   const setActiveConversation = useCallback((convId: string | null) => {
     activeConvRef.current = convId;
@@ -289,14 +309,16 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
 
   const getLastSeen = useCallback((userId: string) => {
     if (onlineUsers.has(userId)) return null;
-    if (lastSeenCache[userId]) return lastSeenCache[userId];
+    // '' = resolved-but-unavailable (privacy denied / never seen). Remember it
+    // so callers polling the header don't refetch forever.
+    if (userId in lastSeenCache) return lastSeenCache[userId] || null;
     // Dedupe in-flight lookups so group headers don't fan out N identical RPCs.
     if (!lastSeenInflight.current.has(userId)) {
       lastSeenInflight.current.add(userId);
       supabase.rpc('get_last_seen', { p_target_user_id: userId }).then(({ data, error }) => {
         lastSeenInflight.current.delete(userId);
-        if (data && !error) {
-          setLastSeenCache(prev => ({ ...prev, [userId]: data }));
+        if (!error) {
+          setLastSeenCache(prev => ({ ...prev, [userId]: data || '' }));
         }
       });
     }

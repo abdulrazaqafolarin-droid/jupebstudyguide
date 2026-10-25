@@ -26,11 +26,12 @@ interface GroupInfoPanelProps {
   groupAvatar?: string | null;
   onDeleted?: () => void;
   onLeft?: () => void;
+  onStartChatWith?: (userId: string) => void;
 }
 
 type ConfirmAction = 'kick' | 'leave' | 'delete' | 'promote' | 'demote' | null;
 
-export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, groupAvatar, onDeleted, onLeft }: GroupInfoPanelProps) {
+export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, groupAvatar, onDeleted, onLeft, onStartChatWith }: GroupInfoPanelProps) {
   const { user } = useAuth();
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -586,7 +587,7 @@ export function GroupInfoPanel({ isOpen, onClose, conversationId, groupName, gro
             userId={profileTarget}
             open={profileTarget !== null}
             onClose={() => setProfileTarget(null)}
-            onStartChat={(uid) => { setProfileTarget(null); onClose(); }}
+            onStartChat={(uid) => { setProfileTarget(null); onClose(); onStartChatWith?.(uid); }}
           />
 
           {/* Confirmation dialog overlay */}

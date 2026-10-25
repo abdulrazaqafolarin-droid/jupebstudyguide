@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react';
-import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File as FileIcon, Music, Trash2, Edit3, Download, Loader2, Camera, Image, FileText, MapPin, User as UserIcon, Sticker, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag } from 'lucide-react';
+import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File as FileIcon, Music, Trash2, Edit3, Download, Loader2, Camera, Image, FileText, MapPin, User as UserIcon, Smile, MessageCircle, Copy, Search, ChevronDown, ChevronUp, Phone, Mail, Info, Forward, Lock, Flag, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Message, Conversation } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
@@ -47,6 +47,10 @@ interface ChatAreaProps {
   onPushMessage?: (message: Message) => void;
   onBroadcastMessage?: (message: Message) => void;
   onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number) => void;
+  onDeleteForMe?: (messageId: string) => void;
+  pendingCount?: number;
+  onFlushOfflineQueue?: () => void;
+  onStartDm?: (userId: string) => void;
 }
 
 
@@ -223,7 +227,7 @@ const attachmentItems = [
   { key: 'document', icon: FileText, label: 'Document' },
   { key: 'location', icon: MapPin, label: 'Location' },
   { key: 'contact', icon: UserIcon, label: 'Contact' },
-  { key: 'sticker', icon: Sticker, label: 'Sticker' },
+  { key: 'emoji', icon: Smile, label: 'Emoji' },
 ] as const;
 
 export function ChatArea({
@@ -254,6 +258,10 @@ export function ChatArea({
   onPushMessage,
   onBroadcastMessage,
   onQueueVoiceNote,
+  onDeleteForMe,
+  pendingCount,
+  onFlushOfflineQueue,
+  onStartDm,
 }: ChatAreaProps) {
   const { user } = useAuth();
   const { compressImage } = useImageCompression();
@@ -300,6 +308,27 @@ export function ChatArea({
   const trackBlobUrl = useCallback((url: string) => {
     blobUrlsRef.current.add(url);
     return url;
+  }, []);
+
+  // Real download: fetch → blob → save. Browsers ignore the cross-origin
+  // `download` attribute, so the old icon only opened the file in a tab.
+  const handleDownloadFile = useCallback(async (msg: Message) => {
+    const url = safeMediaUrl(msg.file_url);
+    if (!url) return;
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = msg.file_name || 'download';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
+    } catch {
+      window.open(url, '_blank', 'noopener');
+    }
   }, []);
 
   // Voice note recording state
@@ -393,39 +422,28 @@ export function ChatArea({
 
   useEffect(() => {
     if (!otherUserId || otherOnline) { setLastSeenText(null); return; }
-    const cached = getLastSeen?.(otherUserId);
-    if (cached) {
-      const d = new Date(cached);
-      const now = new Date();
-      const diffMs = now.getTime() - d.getTime();
+    const formatSeen = (iso: string) => {
+      const d = new Date(iso);
+      const diffMs = Date.now() - d.getTime();
       const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
       const diffMins = Math.floor(diffMs / (1000 * 60));
-      if (diffMins < 1) setLastSeenText('just now');
-      else if (diffMins < 60) setLastSeenText(`${diffMins}m ago`);
-      else if (diffHrs < 24) setLastSeenText(`${diffHrs}h ago`);
-      else if (diffHrs < 48) setLastSeenText('yesterday');
-      else setLastSeenText(format(d, 'MMM d, HH:mm'));
-    } else {
-      // Poll for last_seen
-      const timer = setInterval(() => {
-        const fetched = getLastSeen?.(otherUserId);
-        if (fetched) {
-          const d = new Date(fetched);
-          const now = new Date();
-          const diffMs = now.getTime() - d.getTime();
-          const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-          const diffMins = Math.floor(diffMs / (1000 * 60));
-          if (diffMins < 1) setLastSeenText('just now');
-          else if (diffMins < 60) setLastSeenText(`${diffMins}m ago`);
-          else if (diffHrs < 24) setLastSeenText(`${diffHrs}h ago`);
-          else if (diffHrs < 48) setLastSeenText('yesterday');
-          else setLastSeenText(format(d, 'MMM d, HH:mm'));
-          clearInterval(timer);
-        }
-      }, 2000);
-      setTimeout(() => clearInterval(timer), 6000);
-      return () => clearInterval(timer);
-    }
+      if (diffMins < 1) return 'just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHrs < 24) return `${diffHrs}h ago`;
+      if (diffHrs < 48) return 'yesterday';
+      return format(d, 'MMM d, HH:mm');
+    };
+    const tick = () => {
+      // getLastSeen is inflight-deduped server-side and caches negative
+      // results, so a repeating tick is local-only once resolved.
+      const fetched = getLastSeen?.(otherUserId);
+      if (fetched) setLastSeenText(formatSeen(fetched));
+    };
+    tick();
+    // Keep refreshing so "2m ago" doesn't freeze — the old loop hard-stopped
+    // after 6s, leaving the header blank if the first lookup was slow.
+    const timer = setInterval(tick, 4000);
+    return () => clearInterval(timer);
   }, [otherUserId, otherOnline, getLastSeen]);
 
   const handleReportMessage = useCallback(async (msg: Message) => {
@@ -544,9 +562,15 @@ export function ChatArea({
     setSearchQuery('');
     setUnreadSinceScroll(0);
     setIsNearBottom(true);
-    // Clear VN recording
+    // Clear VN recording + typing so a peer's header never keeps showing
+    // "typing…" / "recording…" for a conversation you just left.
     vnCancelRecording();
     onRecordingVn?.(false);
+    onTyping(false);
+    if (typingTimerRef.current) {
+      clearTimeout(typingTimerRef.current);
+      typingTimerRef.current = null;
+    }
     if (cameraPreview) { revokeBlobUrl(cameraPreview); setCameraPreview(null); }
     galleryPreviews.forEach(u => revokeBlobUrl(u));
     setGalleryPreviews([]);
@@ -687,7 +711,7 @@ export function ChatArea({
       case 'contact':
         setShowContactForm(true);
         break;
-      case 'sticker':
+      case 'emoji':
         setShowStickers(true);
         break;
     }
@@ -717,14 +741,20 @@ export function ChatArea({
 
   const handleVnSendLocked = useCallback(async () => {
     if (!activeConversation || !user) return;
-    await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
-      onPushMessage?.(message);
-      onBroadcastMessage?.(message);
-    }, (blob, senderId, duration) => {
-      onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
-      toast.info('Voice note queued — will send when back online');
-    });
-  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote]);
+    try {
+      await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
+        onPushMessage?.(message);
+        onBroadcastMessage?.(message);
+      }, (blob, senderId, duration) => {
+        onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
+        toast.info('Voice note queued — will send when back online');
+      });
+    } finally {
+      // Always clear the presence flag — previously a successful send left
+      // peers seeing "Recording voice note…" forever.
+      onRecordingVn?.(false);
+    }
+  }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote, onRecordingVn]);
 
   useEffect(() => {
     if (!vnIsDragging) return;
@@ -1417,7 +1447,6 @@ export function ChatArea({
                                         src={safeMediaUrl(msg.file_url)!}
                                         isOwn={isOwn}
                                         fileName={msg.file_name || undefined}
-                                        hideControls
                                       />
                                     </div>
                                   </div>
@@ -1441,7 +1470,11 @@ export function ChatArea({
                                       </p>
                                       {msg.file_size && <p className="text-[10px] text-muted-foreground">{formatFileSize(msg.file_size)}</p>}
                                     </div>
-                                    <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <Download
+                                      className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                      aria-label="Download"
+                                      onClick={e => { e.stopPropagation(); e.preventDefault(); void handleDownloadFile(msg); }}
+                                    />
                                   </a>
                                 )}
 
@@ -1555,19 +1588,20 @@ export function ChatArea({
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className={cn(
-                                        'rounded-full h-6 w-6',
-                                        !canDeleteEveryone(msg) && 'opacity-40 cursor-not-allowed'
-                                      )}
+                                      className="rounded-full h-6 w-6"
                                       onClick={() => {
                                         if (canDeleteEveryone(msg)) {
                                           onDeleteMessage?.(msg.id);
+                                        } else if (onDeleteForMe) {
+                                          // 48h window expired: hide it from MY view
+                                          // instead of showing a dead button.
+                                          onDeleteForMe(msg.id);
                                         } else {
                                           toast.info('Delete window expired (48h)');
                                         }
                                       }}
-                                      title={canDeleteEveryone(msg) ? 'Delete' : 'Delete expired (48h)'}
-                                      aria-label="Delete message"
+                                      title={canDeleteEveryone(msg) ? 'Delete for everyone' : 'Delete for me'}
+                                      aria-label={canDeleteEveryone(msg) ? 'Delete for everyone' : 'Delete for me'}
                                     >
                                       <Trash2 className="w-3 h-3" />
                                     </Button>
@@ -1923,6 +1957,22 @@ export function ChatArea({
               Only admins can send messages in this group
             </div>
           )}
+          {(pendingCount ?? 0) > 0 && (
+            <div className="flex items-center justify-between text-[11px] text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5 mb-2">
+              <span>
+                {pendingCount} message{pendingCount === 1 ? '' : 's'} waiting to send
+              </span>
+              {onFlushOfflineQueue && (
+                <button
+                  type="button"
+                  className="font-semibold underline underline-offset-2"
+                  onClick={onFlushOfflineQueue}
+                >
+                  Retry now
+                </button>
+              )}
+            </div>
+          )}
           <div className="flex items-end gap-2">
             <input
               ref={fileInputRef}
@@ -1959,6 +2009,18 @@ export function ChatArea({
             >
               <Paperclip className="w-4 h-4" />
             </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="shrink-0 rounded-full"
+              onClick={() => { setShowStickers(v => !v); setShowAttachments(false); }}
+              disabled={!canSend}
+              title="Emoji"
+              aria-label="Emoji"
+            >
+              <Smile className="w-4 h-4" />
+            </Button>
             <div className="flex-1 relative">
               <textarea
                 ref={inputRef}
@@ -1973,16 +2035,31 @@ export function ChatArea({
                 style={{ minHeight: '40px' }}
               />
             </div>
-            <Button
-              type="button"
-              size="icon"
-              className="shrink-0 rounded-full"
-              onClick={handleSend}
-              disabled={!input.trim() || uploadingFile || !canSend}
-              aria-label={editingMessage ? 'Save edit' : 'Send message'}
-            >
-              {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-            </Button>
+            {!input.trim() && !editingMessage ? (
+              <Button
+                type="button"
+                size="icon"
+                className="shrink-0 rounded-full touch-none"
+                onPointerDown={handleVnPointerDown}
+                onContextMenu={e => e.preventDefault()}
+                disabled={uploadingFile || !canSend || recordingState !== 'idle'}
+                title="Hold to record a voice note"
+                aria-label="Hold to record a voice note"
+              >
+                <Mic className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                size="icon"
+                className="shrink-0 rounded-full"
+                onClick={handleSend}
+                disabled={!input.trim() || uploadingFile || !canSend}
+                aria-label={editingMessage ? 'Save edit' : 'Send message'}
+              >
+                {editingMessage ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+              </Button>
+            )}
           </div>
         </div>
         )}
@@ -2168,6 +2245,7 @@ export function ChatArea({
         groupAvatar={groupAvatar}
         onLeft={() => { onBack?.(); }}
         onDeleted={() => { onBack?.(); }}
+        onStartChatWith={onStartDm}
       />
 
     </div>

@@ -1341,6 +1341,10 @@ export type Database = {
         Returns: string
       }
       send_friend_request: { Args: { receiver_id: string }; Returns: Json }
+      toggle_message_reaction: {
+        Args: { p_emoji: string; p_message_id: string }
+        Returns: Json
+      }
       toggle_mute_conversation: {
         Args: { p_conversation_id: string }
         Returns: boolean

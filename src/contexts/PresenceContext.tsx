@@ -132,11 +132,23 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   // (user_id, status, last_seen, updated_at) — the earlier is_online /
   // typing_in / online_at columns don't exist on the live table, so every
   // write used to fail with an unknown-column error.
+  // Throttled: setTyping fires on every keystroke, and this write now
+  // actually succeeds, so without a cap each keystroke would be a DB write
+  // (and, since user_presence is in the realtime publication, a broadcast to
+  // every connected client). State transitions (offline/online/subscribe)
+  // pass immediate: true.
+  const lastPresenceWriteRef = useRef(0);
   const syncPresenceToDb = useCallback(async (data: {
     is_online?: boolean;
     last_seen_at?: string;
+    immediate?: boolean;
   }) => {
     if (!user) return;
+    if (!data.immediate) {
+      const now = Date.now();
+      if (now - lastPresenceWriteRef.current < 5000) return;
+    }
+    lastPresenceWriteRef.current = Date.now();
     const row: { user_id: string; status?: string; last_seen?: string } = { user_id: user.id };
     row.status = data.is_online === false ? 'offline' : 'online';
     row.last_seen = data.last_seen_at ?? new Date().toISOString();
@@ -162,17 +174,17 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       if (document.visibilityState === 'hidden') {
         channel.untrack();
         updateLastSeen();
-        syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
+        syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString(), immediate: true });
 
       } else {
         trackState({ online_at: new Date().toISOString(), typing_in: null, recording_vn_in: null });
-        syncPresenceToDb({ is_online: true });
+        syncPresenceToDb({ is_online: true, immediate: true });
       }
     };
     const handleBeforeUnload = () => {
       channel.untrack();
       updateLastSeen();
-      syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString() });
+      syncPresenceToDb({ is_online: false, last_seen_at: new Date().toISOString(), immediate: true });
     };
     channel
       .on('presence', { event: 'sync' }, () => {
@@ -227,7 +239,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
           // Re-apply anything queued while disconnected (typing/recording),
           // otherwise start a clean online state.
           trackState({ online_at: now, typing_in: null, recording_vn_in: null, ...(queued ?? {}) });
-          syncPresenceToDb({ is_online: true });
+          syncPresenceToDb({ is_online: true, immediate: true });
 
           document.addEventListener('visibilitychange', handleVisibilityChange);
           window.addEventListener('beforeunload', handleBeforeUnload);
@@ -273,6 +285,43 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
       pendingTrackRef.current = null;
     };
   }, [user, reconnectPresence]);
+
+  // Durable last-seen layer over Supabase Realtime: user_presence is in the
+  // supabase_realtime publication, so when a peer's app is backgrounded or
+  // closed their row flips to offline with a fresh last_seen and every open
+  // client's header updates immediately — no waiting for the presence-channel
+  // leave timeout or an RPC poll.
+  // Privacy-safe by construction: entries are only refreshed when the
+  // privacy-checked get_last_seen RPC already granted one (cache exists and
+  // non-empty). Denied ('') and unknown users never get an entry created
+  // here, so raw table events can't bypass profiles.privacy_last_seen.
+  useEffect(() => {
+    if (!user) return;
+    const tableChannel = supabase.channel(`jupeb-presence-table-${user.id}`);
+    const applyRow = (row: { user_id?: string; last_seen?: string | null }) => {
+      const peerId = row?.user_id;
+      const seenAt = row?.last_seen;
+      if (!peerId || peerId === user.id || !seenAt) return;
+      setLastSeenCache(prev => {
+        const existing = prev[peerId];
+        if (!existing) return prev; // unknown or privacy-denied ('') — leave alone
+        const nextMs = Date.parse(seenAt);
+        const curMs = Date.parse(existing);
+        // Newer-wins (numeric compare: DB emits +00:00 offsets, JS emits Z).
+        if (Number.isNaN(nextMs) || Number.isNaN(curMs) || nextMs <= curMs) return prev;
+        return { ...prev, [peerId]: seenAt };
+      });
+    };
+    tableChannel
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_presence' },
+        payload => applyRow(payload.new as { user_id?: string; last_seen?: string | null }))
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'user_presence' },
+        payload => applyRow(payload.new as { user_id?: string; last_seen?: string | null }))
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(tableChannel);
+    };
+  }, [user]);
 
   const setTyping = useCallback((isTyping: boolean) => {
     if (!user) return;

@@ -300,6 +300,10 @@ export function useChat() {
         .eq('user_id', user.id);
 
       if (!participantData?.length) {
+        // Membership is empty — reset the id list too, so consumers checking
+        // convIdsRef (e.g. the removed-from-conversation realtime handler)
+        // don't act on stale membership.
+        convIdsRef.current = [];
         setConversations([]);
         setLoading(false);
         return;
@@ -593,16 +597,13 @@ export function useChat() {
         .on(
           'postgres_changes',
           { event: 'DELETE', schema: 'public', table: 'messages', filter: `sender_id=neq.${user.id}` },
-          (payload) => {
-            const oldMsg = payload.old as { conversation_id: string; sender_id: string; is_read: boolean };
-            if (oldMsg.sender_id === user.id) return;
-            if (!oldMsg.is_read) {
-              setConversations(prev => prev.map(c =>
-                c.id === oldMsg.conversation_id && c.unread_count > 0
-                  ? { ...c, unread_count: c.unread_count - 1 }
-                  : c
-              ));
-            }
+          // RLS trims payload.old to the PK — sender/conversation/unread are
+          // never present. The server-side sender filter (needs replica
+          // identity full) already guarantees this is someone else's
+          // hard-deleted message: treat it as a signal and reconcile the
+          // list so unread counts and previews correct themselves.
+          () => {
+            void fetchConversations();
           }
         )
         .on(
@@ -612,10 +613,11 @@ export function useChat() {
           'postgres_changes',
           { event: 'UPDATE', schema: 'public', table: 'messages' },
           (payload) => {
+            // payload.old is PK-only under RLS (documented) — read all state
+            // from new.
             const newMsg = payload.new as Message & { is_deleted: boolean };
-            const oldMsg = payload.old as Message & { is_deleted: boolean };
             if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
-            if (newMsg.sender_id !== user.id && newMsg.is_deleted && !oldMsg.is_deleted && !newMsg.is_read) {
+            if (newMsg.sender_id !== user.id && newMsg.is_deleted && !newMsg.is_read) {
               setConversations(prev => prev.map(c =>
                 c.id === newMsg.conversation_id && c.unread_count > 0
                   ? { ...c, unread_count: c.unread_count - 1 }
@@ -675,18 +677,23 @@ export function useChat() {
           'postgres_changes',
           { event: 'DELETE', schema: 'public', table: 'conversation_participants', filter: `user_id=eq.${user.id}` },
           (payload) => {
-            const old = payload.old as { conversation_id?: string };
-            const convId = old.conversation_id;
-            if (!convId) return;
-            // Removed from (or left) a group: drop it from the desktop sidebar
-            // immediately — previously only mobile screens refreshed.
-            debug('[Realtime] removed from conversation:', convId);
-            setConversations(prev => prev.filter(c => c.id !== convId));
-            convIdsRef.current = convIdsRef.current.filter(id => id !== convId);
-            if (activeConvRef.current === convId) {
-              setActiveConversation(null);
-              setMessages([]);
-            }
+            const old = payload.old as { id?: string };
+            if (!old.id) return;
+            // RLS trims payload.old to the PK — conversation_id is never
+            // present on DELETE. The user_id filter already guarantees it's
+            // MY row, so reconcile the whole list (it drops the conversation
+            // from the desktop sidebar immediately — previously only mobile
+            // refreshed), then close the active view if I'm no longer a
+            // member.
+            debug('[Realtime] removed from a conversation (participant row):', old.id);
+            void fetchConversations().then(() => {
+              const active = activeConvRef.current;
+              if (active && !convIdsRef.current.includes(active)) {
+                debug('[Realtime] no longer member of active conversation:', active);
+                setActiveConversation(null);
+                setMessages([]);
+              }
+            });
           }
         )
         .on(

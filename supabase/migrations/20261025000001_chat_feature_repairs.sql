@@ -323,3 +323,13 @@ BEGIN
   END IF;
 END;
 $function$;
+
+-- ------------------------------------------------------------
+-- 5) Realtime: conversation_participants had REPLICA IDENTITY
+--    DEFAULT (PK `id` only), so DELETE events carried an OLD row
+--    without conversation_id/user_id — realtime filtered them out
+--    and no client could react to leaving/being removed from a
+--    group. FULL identity makes the DELETE/UPDATE payloads
+--    complete (tiny table, infrequent updates).
+-- ------------------------------------------------------------
+ALTER TABLE public.conversation_participants REPLICA IDENTITY FULL;

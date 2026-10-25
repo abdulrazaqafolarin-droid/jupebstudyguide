@@ -38,6 +38,14 @@ export interface RouterOpts {
   temperature?: number;
   maxTokens?: number;
   json?: boolean;
+  /**
+   * Skip the in-memory provider circuit breaker for this call. Used by the
+   * chat-proxy non-streaming fallback: when streaming just failed, gemini is
+   * necessarily in backoff, and without this the fallback would never get to
+   * test the (different) non-streaming endpoint within the same request.
+   * Per-key vault cooldowns still apply.
+   */
+  bypassBackoff?: boolean;
 }
 
 export interface RouterContext {
@@ -520,7 +528,7 @@ async function runProviderText(
 ): Promise<ProviderSuccess> {
   const t0 = performance.now();
   const label = providerLabel(provider);
-  if (!shouldTryProvider(label)) {
+  if (!opts.bypassBackoff && !shouldTryProvider(label)) {
     throw new ProviderFailure(label, [{ label: "-", kind: "transient", status: 0, detail: "provider in backoff" }]);
   }
   if (Date.now() >= deadline) {

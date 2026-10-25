@@ -203,7 +203,7 @@ Deno.serve(async (req) => {
       streamFailure = err instanceof Error ? err.message : String(err);
       console.warn("[chat-proxy] streaming election failed, trying non-streaming fallback:", streamFailure.slice(0, 300));
       try {
-        fallbackText = await aiChatText(Deno.env, systemMsg, chatMessages, { temperature: 0.7, maxTokens: 1024 });
+        fallbackText = await aiChatText(Deno.env, systemMsg, chatMessages, { temperature: 0.7, maxTokens: 1024, bypassBackoff: true });
         console.warn("[chat-proxy] non-streaming fallback succeeded");
       } catch (err2) {
         const textFailure = err2 instanceof Error ? err2.message : String(err2);

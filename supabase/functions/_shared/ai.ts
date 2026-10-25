@@ -32,9 +32,10 @@ export async function aiChatStream(
   _env: unknown,
   systemPrompt: string,
   messages: RouterMessage[],
-  opts?: RouterOpts
+  opts?: RouterOpts,
+  strict = false
 ): Promise<ReadableStream<Uint8Array>> {
-  return routerStream(systemPrompt, messages, opts);
+  return routerStream(systemPrompt, messages, opts, undefined, strict);
 }
 
 // Per-user AI abuse guard: requires an activated (or admin) account and

@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
+import { CORS_HEADERS, aiChatStream, aiChatText, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent, type RetrievedChunk } from "../_shared/textbook-retrieve.ts";
 import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent, type RetrievedQuestion } from "../_shared/question-retrieve.ts";
 import { generateEmbedding, generateEmbeddings, resolveEmbedKeys, lastEmbedError } from "../_shared/textbook-embed.ts";
@@ -159,37 +159,78 @@ Deno.serve(async (req) => {
 
     const chatMessages = (messages || []).filter((m: InboundMessage) => m.role !== "system").map((m: InboundMessage) => ({
       role: m.role === "assistant" ? "assistant" : "user",
-      content: m.content,
-      ...(m.attachment?.base64 ? { attachment: { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name } } : {}),
+      content: m.content ?? "",
+      ...(m.attachment?.base64 ? { attachment: { base64: m.attachment.base64, mimeType: m.attachment.mimeType ?? "application/octet-stream", name: m.attachment.name ?? "attachment" } } : {}),
     }));
 
-    const aiStream = await aiChatStream(
-      Deno.env,
-      systemMsg,
-      chatMessages,
-      { temperature: 0.7, maxTokens: 2048 }
-    );
+    // Prepend the RAG reference events to whichever payload stream we end up
+    // sending (streamed answer, non-stream fallback, or structured error).
+    const withReferenceEvents = (base: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> =>
+      new ReadableStream({
+        async start(controller) {
+          if (referencesEvent) {
+            controller.enqueue(encoder.encode(referencesEvent));
+          }
+          if (questionRefsEvent) {
+            controller.enqueue(encoder.encode(questionRefsEvent));
+          }
+          const reader = base.getReader();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+          controller.close();
+        },
+      });
 
-    const combinedStream = new ReadableStream({
-      async start(controller) {
-        if (referencesEvent) {
-          controller.enqueue(encoder.encode(referencesEvent));
-        }
-        if (questionRefsEvent) {
-          controller.enqueue(encoder.encode(questionRefsEvent));
-        }
-        const reader = aiStream.getReader();
-        const decoder = new TextDecoder();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          controller.enqueue(value);
-        }
-        controller.close();
+    // Try streaming first (strict → throws on total election failure so we can
+    // fall back). During Gemini capacity crunches the streaming endpoint can
+    // 503 or hang while plain generateContent still answers — this keeps the
+    // AI usable by delivering the whole answer as a single choices delta.
+    let aiStream: ReadableStream<Uint8Array> | null = null;
+    let fallbackText: string | null = null;
+    let streamFailure = "";
+    try {
+      aiStream = await aiChatStream(
+        Deno.env,
+        systemMsg,
+        chatMessages,
+        { temperature: 0.7, maxTokens: 2048 },
+        true
+      );
+    } catch (err) {
+      streamFailure = err instanceof Error ? err.message : String(err);
+      console.warn("[chat-proxy] streaming election failed, trying non-streaming fallback:", streamFailure.slice(0, 300));
+      try {
+        fallbackText = await aiChatText(Deno.env, systemMsg, chatMessages, { temperature: 0.7, maxTokens: 1024 });
+        console.warn("[chat-proxy] non-streaming fallback succeeded");
+      } catch (err2) {
+        const textFailure = err2 instanceof Error ? err2.message : String(err2);
+        const summary = `All AI providers unavailable (streaming: ${streamFailure}; non-streaming: ${textFailure})`;
+        console.error(`[chat-proxy] ${summary.slice(0, 600)}`);
+        const errStream = new ReadableStream<Uint8Array>({
+          start(c) {
+            c.enqueue(encoder.encode(`data: ${JSON.stringify({ error: summary })}\n\n`));
+            c.enqueue(encoder.encode("data: [DONE]\n\n"));
+            c.close();
+          },
+        });
+        return new Response(withReferenceEvents(errStream), {
+          headers: { ...CORS_HEADERS, "Content-Type": "text/event-stream" },
+        });
+      }
+    }
+
+    const base: ReadableStream<Uint8Array> = aiStream ?? new ReadableStream<Uint8Array>({
+      start(c) {
+        c.enqueue(encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: fallbackText ?? "" } }] })}\n\n`));
+        c.enqueue(encoder.encode("data: [DONE]\n\n"));
+        c.close();
       },
     });
 
-    return new Response(combinedStream, {
+    return new Response(withReferenceEvents(base), {
       headers: { ...CORS_HEADERS, "Content-Type": "text/event-stream" },
     });
   } catch (error) {

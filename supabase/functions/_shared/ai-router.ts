@@ -352,12 +352,19 @@ async function attemptText(
   key: ResolvedKey,
   systemPrompt: string,
   messages: RouterMessage[],
-  opts: RouterOpts
+  opts: RouterOpts,
+  deadline?: number
 ): Promise<TextAttemptOk | TextAttemptFail> {
   const fail = (status: number, detail: string): TextAttemptFail => ({
     ok: false,
     failure: { label: key.label, kind: classifyError(status, detail), status, detail },
   });
+  // Clamp the per-attempt timeout to the remaining election deadline when one
+  // is provided, so a late attempt can't overshoot the global cap by a full
+  // 55s window. Without a deadline (e.g. validateKey), keep the old behaviour.
+  const timeoutMs = deadline !== undefined
+    ? Math.max(1, Math.min(55_000, deadline - Date.now()))
+    : 55_000;
   try {
     if (provider === "gemini") {
       const model = modelFor(provider, opts);
@@ -367,7 +374,7 @@ async function attemptText(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(buildGeminiBody(systemPrompt, messages, opts)),
-          signal: AbortSignal.timeout(55_000),
+          signal: AbortSignal.timeout(timeoutMs),
         }
       );
       if (!res.ok) {
@@ -384,7 +391,7 @@ async function attemptText(
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key.apiKey}` },
       body: JSON.stringify(buildOpenAIBody(provider, systemPrompt, messages, opts, false)),
-      signal: AbortSignal.timeout(55_000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
     if (!res.ok) {
       const err = await res.text().catch(() => "unknown");
@@ -547,7 +554,7 @@ async function runProviderText(
       });
       break;
     }
-    const attempt = await attemptText(provider, key, systemPrompt, messages, opts);
+    const attempt = await attemptText(provider, key, systemPrompt, messages, opts, deadline);
     if (attempt.ok) {
       const ms = Math.round(performance.now() - t0);
       recordSuccess(label, ms);
@@ -782,7 +789,8 @@ export async function routerStream(
   systemPrompt: string,
   messages: RouterMessage[],
   opts: RouterOpts = {},
-  ctx: RouterContext = loadRouterContext()
+  ctx: RouterContext = loadRouterContext(),
+  strict = false
 ): Promise<ReadableStream<Uint8Array>> {
   const providers: VaultProvider[] = hasAttachment(messages) ? ["gemini"] : PROVIDER_ORDER;
   const deadline = Date.now() + ELECTION_DEADLINE_MS;
@@ -824,6 +832,9 @@ export async function routerStream(
 
   const summary = `All AI providers unavailable for streaming (${failures.join(" | ") || "no providers attempted"})`;
   console.error(`[Router] ${summary}`);
+  // strict callers (e.g. chat-proxy's non-streaming fallback) want the failure
+  // as an exception so they can try an alternative before formatting SSE.
+  if (strict) throw new Error(summary);
   return new ReadableStream<Uint8Array>({
     start(controller) {
       controller.enqueue(sseError(summary));

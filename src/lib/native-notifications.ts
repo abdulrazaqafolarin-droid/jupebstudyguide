@@ -31,6 +31,10 @@ export function setNativeNotificationsEnabled(enabled: boolean): void {
   } catch {
     /* storage may be full — the flag is best-effort */
   }
+  // Let NativeNotificationBridge re-sync this device's FCM token row —
+  // "mute everything" has to stop server-side pushes too, not just local
+  // posts, or the shade would keep popping after the switch goes off.
+  window.dispatchEvent(new CustomEvent('native-notifications-pref'));
 }
 
 let channelsReady = false;

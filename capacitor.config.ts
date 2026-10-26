@@ -9,7 +9,10 @@ const config: CapacitorConfig = {
   androidScheme: 'https',
   plugins: {
     PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert'],
+      // Empty: the plugin must NOT paint its own notification while the app
+      // is foregrounded — the in-app banner owns that moment (WhatsApp rule),
+      // and the system shade is FCM's job when backgrounded/closed.
+      presentationOptions: [],
     },
     LocalNotifications: {
       // Status-bar glyph (white mortarboard in res/drawable) + accent tint

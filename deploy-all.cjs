@@ -20,6 +20,7 @@ const ALL_FUNCTIONS = [
   "ai-tutor",
   "chat-proxy",
   "parse-document",
+  "push-fcm",
   "send-push",
   "textbook-ingest",
   "validate-activation",
@@ -146,10 +147,28 @@ async function deployFunction(name) {
   }
 
   try {
-    const res = await fetch(
-      `https://api.supabase.com/v1/projects/${PROJECT_REF}/functions/${name}`,
-      {
-        method: "PATCH",
+    const res = await (async () => {
+      const patchRes = await fetch(
+        `https://api.supabase.com/v1/projects/${PROJECT_REF}/functions/${name}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            slug: name,
+            name: name,
+            body: cleaned,
+            verify_jwt: false,
+          }),
+        }
+      );
+      if (patchRes.status !== 404) return patchRes;
+      // First deploy of this function — create it, then PATCH works forever.
+      console.log(`  ${name} not found — creating...`);
+      return fetch(`https://api.supabase.com/v1/projects/${PROJECT_REF}/functions`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -160,8 +179,8 @@ async function deployFunction(name) {
           body: cleaned,
           verify_jwt: false,
         }),
-      }
-    );
+      });
+    })();
 
     if (!res.ok) {
       const err = await res.text();

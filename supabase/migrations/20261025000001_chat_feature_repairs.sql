@@ -372,3 +372,108 @@ BEGIN
   END LOOP;
   RAISE NOTICE 'profiles user_id fix: % function(s) rewritten', replaced;
 END $$;
+
+-- ============================================================
+-- SECTION 7 — Closed-app push (FCM): device tokens + dispatch
+-- The APK registers its FCM token in device_tokens; a message INSERT
+-- fires pg_net -> the push-fcm Edge Function -> FCM HTTP v1, which pops
+-- a system notification even when Android has fully killed the app
+-- (the LocalNotifications path can't run then — FCM is the only wire
+-- that wakes a closed app, WhatsApp-style).
+-- Applied live separately (sections 1-6 already ran); idempotent.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.device_tokens (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
+  token text NOT NULL UNIQUE,
+  platform text NOT NULL DEFAULT 'android',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.device_tokens ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX IF NOT EXISTS device_tokens_user_id_idx
+  ON public.device_tokens (user_id);
+
+DROP POLICY IF EXISTS "device tokens insert own" ON public.device_tokens;
+CREATE POLICY "device tokens insert own"
+  ON public.device_tokens FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "device tokens select own" ON public.device_tokens;
+CREATE POLICY "device tokens select own"
+  ON public.device_tokens FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Claiming: an FCM token is physically bound to one device, so whoever is
+-- logged in on that device owns its row. Knowing the (unguessable) token is
+-- proof enough to re-point it at yourself — WITH CHECK still forbids
+-- pointing rows at anyone but yourself.
+DROP POLICY IF EXISTS "device tokens claim" ON public.device_tokens;
+CREATE POLICY "device tokens claim"
+  ON public.device_tokens FOR UPDATE
+  USING (true)
+  WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "device tokens delete own" ON public.device_tokens;
+CREATE POLICY "device tokens delete own"
+  ON public.device_tokens FOR DELETE
+  USING (auth.uid() = user_id);
+
+CREATE OR REPLACE FUNCTION public.dispatch_push_notification()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF TG_OP <> 'INSERT' THEN
+    RETURN NEW;
+  END IF;
+
+  -- Group events ("name changed", "member left", ...) are inline system
+  -- messages in the UI — popping them would be noise.
+  IF NEW.message_type IN (
+    'group_admin_promoted', 'group_created', 'group_member_left',
+    'group_name_changed', 'group_photo_changed'
+  ) THEN
+    RETURN NEW;
+  END IF;
+
+  -- StudyBot's signup welcome: the new user has no device token yet.
+  IF NEW.sender_id = '00000000-0000-0000-0000-000000000000' THEN
+    RETURN NEW;
+  END IF;
+
+  -- Nobody reachable on this device-less conversation -> no HTTP round trip.
+  IF NOT EXISTS (
+    SELECT 1
+    FROM public.device_tokens dt
+    JOIN public.conversation_participants cp ON cp.user_id = dt.user_id
+    WHERE cp.conversation_id = NEW.conversation_id
+      AND dt.user_id <> NEW.sender_id
+  ) THEN
+    RETURN NEW;
+  END IF;
+
+  PERFORM net.http_post(
+    url := 'https://gzyczowqqywesqhqqpdi.supabase.co/functions/v1/push-fcm',
+    body := jsonb_build_object('message_id', NEW.id),
+    params := '{}'::jsonb,
+    headers := jsonb_build_object('Content-Type', 'application/json'),
+    timeout_milliseconds := 8000
+  );
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS dispatch_push_notification ON public.messages;
+CREATE TRIGGER dispatch_push_notification
+AFTER INSERT ON public.messages
+FOR EACH ROW EXECUTE FUNCTION public.dispatch_push_notification();
+
+-- pg_net access for the SECURITY DEFINER definer (postgres).
+GRANT USAGE ON SCHEMA net TO postgres;
+GRANT EXECUTE ON FUNCTION net.http_post(text, jsonb, jsonb, jsonb, integer) TO postgres;

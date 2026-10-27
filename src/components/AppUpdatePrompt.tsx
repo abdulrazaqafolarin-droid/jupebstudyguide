@@ -61,18 +61,28 @@ export function AppUpdatePrompt() {
 
   const startDownload = useCallback(async (release: ReleaseInfo) => {
     setPhase({ kind: "downloading", release, progress: 0 });
+    let filePath: string;
     try {
-      const filePath = await downloadApk(release.url, release.versionCode, (fraction) =>
+      filePath = await downloadApk(release.url, release.versionCode, (fraction) =>
         setPhase({ kind: "downloading", release, progress: fraction }),
       );
-      setPhase({ kind: "ready", release, filePath });
-      // Hand straight to the system installer — it shows its own confirm UI.
-      await installDownloadedApk(filePath);
     } catch {
       setPhase({
         kind: "error",
         release,
         message: "Download failed. Check your connection and try again.",
+      });
+      return;
+    }
+    setPhase({ kind: "ready", release, filePath });
+    // Hand straight to the system installer — it shows its own confirm UI.
+    try {
+      await installDownloadedApk(filePath);
+    } catch {
+      setPhase({
+        kind: "error",
+        release,
+        message: "Couldn't open the installer. Check that installing unknown apps is allowed, then Retry.",
       });
     }
   }, []);

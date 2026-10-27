@@ -76,25 +76,12 @@ export async function getInstalledVersion(): Promise<{
   }
 }
 
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const url = String(reader.result || "");
-      const comma = url.indexOf(",");
-      if (comma < 0) {
-        reject(new Error("bad data URL"));
-        return;
-      }
-      resolve(url.slice(comma + 1));
-    };
-    reader.onerror = () => reject(reader.error ?? new Error("read failed"));
-    reader.readAsDataURL(blob);
-  });
-}
-
 /**
  * Downloads the APK into the app cache dir with progress callbacks.
+ * Uses the native downloader so the file streams straight to disk (the old
+ * fetch→base64→bridge path pushed ~16MB strings through the WebView and
+ * wrote into a non-existent `updates/` dir, which Filesystem.writeFile
+ * rejects unless `recursive` is set — that was the "Update failed" bug).
  * Returns the absolute file path for the native installer.
  */
 export async function downloadApk(
@@ -102,26 +89,34 @@ export async function downloadApk(
   versionCode: number,
   onProgress: (fraction: number) => void,
 ): Promise<string> {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok || !res.body) throw new Error(`download failed (${res.status})`);
-  const total = Number(res.headers.get("content-length") || 0);
-  const reader = res.body.getReader();
-  const chunks: BlobPart[] = [];
-  let received = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    received += value.byteLength;
-    if (total > 0) onProgress(Math.min(1, received / total));
+  const dir = "updates";
+  const path = `${dir}/${APK_FILE_NAME.replace(".apk", "")}-${versionCode}.apk`;
+  // downloadFile does not create missing parents — ensure the subdir exists.
+  try {
+    await Filesystem.mkdir({ path: dir, directory: Directory.Cache });
+  } catch {
+    /* already exists */
   }
-  onProgress(1);
-  const base64 = await blobToBase64(new Blob(chunks, { type: "application/vnd.android.package-archive" }));
-  const path = `updates/${APK_FILE_NAME.replace(".apk", "")}-${versionCode}.apk`;
-  await Filesystem.writeFile({ path, data: base64, directory: Directory.Cache });
-  const { uri } = await Filesystem.getUri({ path, directory: Directory.Cache });
-  // Native side needs a filesystem path, not a URI.
-  return uri.startsWith("file://") ? uri.slice("file://".length) : uri;
+  const handle = await Filesystem.addListener("progress", (status) => {
+    if (status.url !== url) return;
+    if (status.contentLength > 0) {
+      onProgress(Math.min(1, status.bytes / status.contentLength));
+    }
+  });
+  try {
+    const result = await Filesystem.downloadFile({
+      url,
+      path,
+      directory: Directory.Cache,
+      progress: true,
+    });
+    onProgress(1);
+    if (!result.path) throw new Error("download returned no path");
+    // Native side needs a plain filesystem path (result.path is absolute).
+    return result.path;
+  } finally {
+    await handle.remove();
+  }
 }
 
 export async function installDownloadedApk(absolutePath: string): Promise<void> {

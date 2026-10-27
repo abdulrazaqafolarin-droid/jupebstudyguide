@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
   Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library, Lock, Award,
-  Users, TrendingUp, Compass
+  Users, TrendingUp, Compass, Sparkles
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
@@ -21,12 +21,13 @@ const easeOut = [0.23, 1, 0.32, 1] as const;
 const navLinks = [
   { path: "/", label: "Home", icon: Home },
   { path: "/past-questions", label: "Past Questions", icon: BookOpen },
-  { path: "/chat", label: "Study Chat", icon: MessageSquare },
+  { path: "/chat", label: "Chat", icon: MessageSquare },
   { path: "/friends", label: "Friends", icon: Users },
   { path: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { path: "/achievements", label: "Achievements", icon: Award },
   { path: "/stats", label: "Study Stats", icon: TrendingUp },
   { path: "/syllabus", label: "Syllabus", icon: Library },
+  { path: "/study-chat", label: "Study Chat", icon: Sparkles },
   { path: "/discover", label: "Discover", icon: Compass },
   { path: "/profile", label: "Profile", icon: User },
   { path: "/download", label: "Get App", icon: Download },

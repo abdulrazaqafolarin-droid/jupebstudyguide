@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, ChevronDown, Clock, BarChart3, GraduationCap, ArrowLeft, Search } from 'lucide-react';
+import { BookOpen, ChevronDown, Clock, BarChart3, GraduationCap, ArrowLeft, Search, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { SYLLABUSES } from '@/types/syllabus';
@@ -219,15 +219,30 @@ export default function SyllabusPage() {
                                   >
                                     <div className="px-3.5 pb-3.5 space-y-2">
                                       <p className="text-sm text-muted-foreground">{topic.description}</p>
+                                      <button
+                                        type="button"
+                                        onClick={() => navigate(`/study-chat?topic=${topic.id}&subject=${subject}`)}
+                                        className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+                                      >
+                                        <Sparkles className="h-3.5 w-3.5" />
+                                        Study this topic with AI
+                                      </button>
                                       <div>
                                         <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1.5">
                                           <BarChart3 className="w-3 h-3" /> Subtopics:
                                         </p>
                                         <div className="flex flex-wrap gap-1.5">
                                           {topic.subtopics.map((st) => (
-                                            <span key={st} className="text-xs px-2 py-0.5 rounded-full bg-secondary/50 text-muted-foreground border border-border/30">
+                                            <button
+                                              key={st}
+                                              type="button"
+                                              onClick={() => navigate(`/study-chat?topic=${topic.id}&subject=${subject}&sub=${encodeURIComponent(st)}`)}
+                                              title={`Study "${st}" with AI`}
+                                              className="group/sub flex items-center gap-1 rounded-full bg-secondary/50 px-2 py-0.5 text-xs text-muted-foreground border border-border/30 transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-foreground"
+                                            >
+                                              <Sparkles className="h-2.5 w-2.5 text-primary opacity-0 transition-opacity group-hover/sub:opacity-100" />
                                               {st}
-                                            </span>
+                                            </button>
                                           ))}
                                         </div>
                                       </div>

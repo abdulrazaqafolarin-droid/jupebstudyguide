@@ -41,6 +41,7 @@ const DownloadApp = lazy(() => import("./pages/DownloadApp"));
 const ActivationCodes = lazy(() => import("./pages/admin/ActivationCodes"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const SyllabusPage = lazy(() => import("./pages/SyllabusPage"));
+const StudyChatPage = lazy(() => import("./pages/StudyChatPage"));
 
 
 const queryClient = new QueryClient();
@@ -233,6 +234,18 @@ function AnimatedRoutes() {
                 <ProtectedLayout>
                   <SyllabusPage />
                 </ProtectedLayout>
+              </ErrorBoundary>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/study-chat" 
+          element={
+            <ProtectedRoute>
+              <ErrorBoundary>
+                <ProtectedChatLayout>
+                  <StudyChatPage />
+                </ProtectedChatLayout>
               </ErrorBoundary>
             </ProtectedRoute>
           } 

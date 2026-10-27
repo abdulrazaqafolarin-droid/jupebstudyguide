@@ -1,5 +1,6 @@
-import { SYLLABUSES } from '@/types/syllabus';
+import { SYLLABUSES, type SyllabusTopic } from '@/types/syllabus';
 import type { Subject } from '@/types/question';
+import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
 
 const SUBJECT_LABELS: Record<Subject, string> = {
   physics: 'PHYSICS (Core Subject - Compulsory for all science students)',
@@ -47,4 +48,40 @@ export function getSyllabusSummary(): string {
     summary += `- ${subj.charAt(0).toUpperCase() + subj.slice(1)}: ${topicList.length} topics, ~${totalHours}h total\n`;
   }
   return summary;
+}
+
+/**
+ * System prompt for a Study Chat room opened from a syllabus topic or
+ * subtopic: the base tutor personality + a hard scope lock to this one
+ * topic (with the student's subtopic prioritised when given) + the full
+ * syllabus reference so cross-topic detours can steer back.
+ */
+export function buildTopicSystemPrompt(
+  topic: SyllabusTopic,
+  subject: Subject,
+  subtopic?: string | null,
+): string {
+  const scope: string[] = [
+    '',
+    '=== STUDY ROOM: TOPIC FOCUS ===',
+    'You are in a focused study room for ONE topic of the JUPEB syllabus.',
+    `Subject: ${SUBJECT_LABELS[subject] ?? subject}`,
+    `Topic: ${topic.name} (${topic.difficulty}, ~${topic.estimatedHours}h of syllabus time)`,
+    `What it covers: ${topic.description}`,
+    `Subtopics in this topic: ${topic.subtopics.join(' · ')}`,
+  ];
+  if (subtopic) {
+    scope.push(`Current focus: ${subtopic} — begin here and give this subtopic the most depth.`);
+  }
+  scope.push(
+    '',
+    'Rules for this session:',
+    '- Stay inside this topic. Briefly connect to prerequisites when it helps, then return to it.',
+    '- Teach in small steps and end each answer with a one-line comprehension check.',
+    '- Use worked examples in the JUPEB past-question style (state the question, then solve step by step).',
+    '- Put ALL math in LaTeX with $ delimiters exactly as specified above.',
+    '- If asked about a different subject, answer briefly, then steer back to this topic.',
+    '- Suggest which subtopic to tackle next based on how the conversation is going.',
+  );
+  return TUTOR_SYSTEM_PROMPT + scope.join('\n') + '\n' + getSyllabusContext();
 }

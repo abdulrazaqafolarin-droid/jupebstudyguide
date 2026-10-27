@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserStorage } from "@/hooks/useUserStorage";
@@ -35,6 +36,7 @@ export function useDailyMissions() {
   const loadedUserRef = useRef<string | null>(null);
   const lastSyncHash = useRef("");
   const syncQueueRef = useRef<Promise<unknown>>(Promise.resolve());
+  const syncFailedRef = useRef(false);
   const observedUserRef = useRef<string | null>(user?.id ?? null);
   const storageReadyForUserRef = useRef(false);
 
@@ -45,6 +47,7 @@ export function useDailyMissions() {
       storageReadyForUserRef.current = false;
       loadedUserRef.current = null;
       lastSyncHash.current = "";
+      syncFailedRef.current = false;
       setRemoteReady(false);
       return;
     }
@@ -117,6 +120,14 @@ export function useDailyMissions() {
           if (error) {
             console.error("Daily mission sync failed:", error);
             lastSyncHash.current = "";
+            // Tell the student once per outage instead of failing silently —
+            // cleared automatically on the next successful sync.
+            if (!syncFailedRef.current) {
+              syncFailedRef.current = true;
+              toast.error("Progress is saved on this device — it will sync automatically when you're back online.");
+            }
+          } else if (syncFailedRef.current) {
+            syncFailedRef.current = false;
           }
         });
     }, 700);

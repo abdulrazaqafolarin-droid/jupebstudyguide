@@ -175,8 +175,8 @@ export async function scheduleDailyReminders(): Promise<void> {
         {
           id: DAILY_REMINDER_ID,
           channelId: NOTIFICATION_CHANNELS.reminders,
-          title: '📚 Your daily study slot is ready',
-          body: 'Even 10 minutes of practice compounds. Tap to begin.',
+          title: '📚 Your Daily Mission is ready',
+          body: 'One lesson and a short question set — about 10 minutes. Keep your streak alive.',
           extra: { type: 'home' },
           schedule: { on: { hour: 9, minute: 0 } },
           isExactNotification: false,
@@ -185,8 +185,8 @@ export async function scheduleDailyReminders(): Promise<void> {
         {
           id: STREAK_REMINDER_ID,
           channelId: NOTIFICATION_CHANNELS.reminders,
-          title: "🔥 Don't break your streak!",
-          body: 'A few questions now will keep your streak alive.',
+          title: '🔥 Daily Mission check-in',
+          body: 'Not started yet? A few questions now keep your streak alive.',
           extra: { type: 'home' },
           schedule: { on: { hour: 18, minute: 0 } },
           isExactNotification: false,
@@ -196,6 +196,21 @@ export async function scheduleDailyReminders(): Promise<void> {
     });
   } catch (e) {
     console.warn('Could not schedule daily reminders:', e);
+  }
+}
+
+/**
+ * Called when today's mission completes: drop only the 18:00 evening
+ * check-in so a finished student isn't nagged tonight. The 09:00 alarm
+ * repeats under its own id, so tomorrow's "mission ready" prompt still
+ * fires, and the next app launch restores the evening one anyway.
+ */
+export async function suppressEveningReminder(): Promise<void> {
+  if (!isNativePlatform) return;
+  try {
+    await LocalNotifications.cancel({ notifications: [{ id: STREAK_REMINDER_ID }] });
+  } catch {
+    /* nothing scheduled / already gone */
   }
 }
 

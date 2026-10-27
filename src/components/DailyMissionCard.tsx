@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Checkbox } from "./ui/checkbox";
@@ -7,12 +7,11 @@ import { cn } from "@/lib/utils";
 import { SUBJECT_INFO, Subject } from "@/types/question";
 import type { DailyTask, StudySessionData } from "@/types/syllabus";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
-import { missionStreak } from "@/lib/daily-mission";
+import { missionRecordStreak, todayDateString } from "@/lib/daily-mission";
 import QuestionMath from "@/components/QuestionMath";
 import {
   CalendarDays,
   CheckCircle2,
-  ChevronRight,
   Flame,
   Play,
   Target,
@@ -27,7 +26,6 @@ interface DailyMissionCardProps {
   suggestedElectives: { biology: boolean; math: boolean };
   onStartMission: (subjects: Subject[]) => void;
   onOpenMission: () => void;
-  onViewPlan: () => void;
 }
 
 function TopicLine({ task }: { task: DailyTask }) {
@@ -45,7 +43,6 @@ export function DailyMissionCard({
   suggestedElectives,
   onStartMission,
   onOpenMission,
-  onViewPlan,
 }: DailyMissionCardProps) {
   const [hasBiology, setHasBiology] = useState(suggestedElectives.biology);
   const [hasMath, setHasMath] = useState(suggestedElectives.math);
@@ -63,6 +60,40 @@ export function DailyMissionCard({
   };
 
   const missionCompleted = todayMission?.stage === "completed";
+  const streak = missionRecordStreak(history);
+
+  // Last 7 local days with their best mission result (today included).
+  const week = useMemo(() => {
+    const byDate = new Map(history.map((mission) => [mission.localDate, mission]));
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const days: { date: string; label: string; accuracy: number | null; state: "done" | "partial" | "none" }[] = [];
+    for (let offset = 6; offset >= 0; offset--) {
+      const day = new Date();
+      day.setDate(day.getDate() - offset);
+      const date = todayDateString(day);
+      const mission = byDate.get(date);
+      const lastAttempt = mission?.attempts[mission.attempts.length - 1];
+      days.push({
+        date,
+        label: dayNames[day.getDay()],
+        accuracy: mission ? (mission.bestAccuracy ?? lastAttempt?.accuracy ?? null) : null,
+        state: !mission ? "none" : mission.stage === "completed" ? "done" : "partial",
+      });
+    }
+    return days;
+  }, [history]);
+
+  // Preview of what the syllabus holds after today (shown when the mission
+  // is already finished so the student knows what's coming next).
+  const nextTask = session
+    ? session.progress.dailyTasks.find((task) => task.day === session.progress.currentDay + 1) ?? null
+    : null;
+  const nextLabel = nextTask
+    ? nextTask.topics.length > 0
+      ? nextTask.topics.slice(0, 2).map((topic) => topic.name).join(" · ") +
+        (nextTask.topics.length > 2 ? ` +${nextTask.topics.length - 2} more` : "")
+      : nextTask.learningObjectives[0] ?? ""
+    : "";
 
   return (
     <section aria-label="Daily mission" className="mb-12 animate-in-up stagger-1">
@@ -126,8 +157,12 @@ export function DailyMissionCard({
                 <p className="text-3xl font-bold">{todayMission.bestAccuracy ?? 0}%</p>
                 <p className="text-sm text-muted-foreground">Best accuracy today · {todayMission.attempts.length} attempt(s)</p>
               </div>
-              <p className="text-sm text-muted-foreground">Your next daily mission will be ready on your next local calendar day. You can still review your syllabus plan.</p>
-              <Button variant="outline" onClick={onViewPlan} className="gap-2">View full plan <ChevronRight className="h-4 w-4" /></Button>
+              <p className="text-sm text-muted-foreground">Your next daily mission unlocks tomorrow — today's score is saved below.</p>
+              {nextTask && nextLabel && (
+                <p className="text-sm text-muted-foreground">
+                  Coming up next: <span className="font-medium text-foreground">Day {nextTask.day}</span> — <QuestionMath inline content={nextLabel} />
+                </p>
+              )}
             </div>
           )}
 
@@ -147,11 +182,6 @@ export function DailyMissionCard({
                 <span className={cn("rounded-full px-3 py-1.5 text-sm font-medium", `subject-${todayTask.subject}`)}>
                   {SUBJECT_INFO[todayTask.subject].icon} Day {todayTask.day} · {SUBJECT_INFO[todayTask.subject].name}
                 </span>
-                {missionStreak(session) > 0 && (
-                  <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-                    <Flame className="h-4 w-4 text-destructive" /> {missionStreak(session)} day mission streak
-                  </span>
-                )}
               </div>
               <p className="font-medium">{todayMission ? <QuestionMath inline content={todayMission.topicName} /> : <TopicLine task={todayTask} />}</p>
               <ul className="space-y-2">
@@ -166,9 +196,6 @@ export function DailyMissionCard({
                 <Button onClick={onOpenMission} className="gap-2">
                   <Play className="h-4 w-4" /> {todayMission ? "Continue today's mission" : "Start today's lesson"}
                 </Button>
-                <Button variant="outline" onClick={onViewPlan} className="gap-1.5">
-                  View full plan <ChevronRight className="h-4 w-4" />
-                </Button>
               </div>
               <Progress value={session.progress.overallProgress} className="h-2" aria-label="Syllabus progress" />
               <p className="text-xs text-muted-foreground">{Math.round(session.progress.overallProgress)}% of your 30-day syllabus plan complete</p>
@@ -181,8 +208,44 @@ export function DailyMissionCard({
                 <Trophy className="h-7 w-7 text-accent" />
               </div>
               <h3 className="text-lg font-bold">Syllabus plan complete!</h3>
-              <p className="text-sm text-muted-foreground">You finished the current 30-day plan. Review your history or start another plan.</p>
-              <Button variant="outline" onClick={onViewPlan}>View full plan</Button>
+              <p className="text-sm text-muted-foreground">You finished the current 30-day plan — your mission history is below.</p>
+            </div>
+          )}
+
+          {history.length > 0 && (
+            <div className="border-t border-border pt-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold">This week</h3>
+                {streak > 0 && (
+                  <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                    <Flame className="h-4 w-4 text-destructive" /> {streak} day streak
+                  </span>
+                )}
+              </div>
+              <div className="flex items-end justify-between gap-2" aria-label="Mission results for the last seven days">
+                {week.map(({ date, label, accuracy, state }) => (
+                  <div
+                    key={date}
+                    className="flex flex-1 flex-col items-center gap-1"
+                    title={
+                      state === "none"
+                        ? `${date} · no mission`
+                        : `${date} · ${accuracy == null ? "not attempted" : `${accuracy}%`}`
+                    }
+                  >
+                    <div className="flex h-14 w-full max-w-7 items-end rounded-md bg-muted/40 px-0.5">
+                      <div
+                        className={cn(
+                          "w-full rounded-sm",
+                          state === "done" ? "bg-emerald-500" : state === "partial" ? "bg-amber-500" : "bg-border",
+                        )}
+                        style={{ height: `${Math.max(8, accuracy ?? 0)}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-muted-foreground">{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

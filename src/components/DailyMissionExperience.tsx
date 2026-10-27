@@ -44,6 +44,16 @@ export function DailyMissionExperience({
   const latestAttempt = mission.attempts[mission.attempts.length - 1];
   const latestAnswers = new Map((latestAttempt?.answers ?? []).map((answer) => [answer.questionId, answer]));
 
+  // Everything that still needs review: wrong OR unanswered, numbered
+  // sequentially so skipping correct answers leaves no gaps in the list.
+  const reviewItems = mission.currentQuestionIds
+    .map((questionId) => ({ questionId, question: byId.get(questionId), answer: latestAnswers.get(questionId) }))
+    .filter((item) => Boolean(item.question) && !item.answer?.isCorrect);
+
+  const answeredCount = currentQuestions.filter(
+    (question) => (answers[question.id] ?? "").trim().length > 0,
+  ).length;
+
   const beginQuestions = () => {
     onUpdate(mission.id, (current) => ({
       ...current,
@@ -156,9 +166,12 @@ export function DailyMissionExperience({
                 </div>
               </fieldset>
             ))}
-            <Button onClick={submit} disabled={currentQuestions.length === 0} className="w-full gap-2 sm:w-auto">
+            <Button onClick={submit} disabled={currentQuestions.length === 0 || answeredCount === 0} className="w-full gap-2 sm:w-auto">
               <CheckCircle2 className="h-4 w-4" /> Submit answers
             </Button>
+            {currentQuestions.length > 0 && answeredCount === 0 && (
+              <p className="text-xs text-muted-foreground">Answer at least one question before submitting.</p>
+            )}
           </Card>
         )}
 
@@ -173,15 +186,13 @@ export function DailyMissionExperience({
                 </p>
               </div>
             </div>
-            {mission.currentQuestionIds.map((questionId, index) => {
-              const question = byId.get(questionId);
-              const answer = latestAnswers.get(questionId);
-              if (!question || answer?.isCorrect) return null;
+            {reviewItems.map(({ questionId, question, answer }, index) => {
+              if (!question) return null;
               const correctOption = question.options?.find((option) => option.label.toUpperCase() === question.correctAnswer.toUpperCase());
               const userOption = question.options?.find((option) => option.label.toUpperCase() === (answer?.selectedAnswer ?? "").toUpperCase());
               return (
                 <div key={questionId} className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Review question {index + 1}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Review question {index + 1} of {reviewItems.length}</p>
                   <p className="font-medium"><QuestionMath inline content={question.question} /></p>
                   {answer && (
                     <p className="text-sm"><span className="font-semibold">Your answer:</span> {answer.selectedAnswer || "—"}{userOption ? <> — <QuestionMath inline content={userOption.text} /></> : ""}</p>

@@ -1,5 +1,6 @@
 import { Subject } from "@/types/question";
 import type { DailyTask, StudySessionData } from "@/types/syllabus";
+import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
 
 export const CORE_SUBJECTS: Subject[] = ["physics", "chemistry"];
 export const ELECTIVE_SUBJECTS: Subject[] = ["biology", "math"];
@@ -40,6 +41,28 @@ export function missionStreak(session: StudySessionData): number {
   for (let day = session.progress.currentDay - 1; day >= 1; day--) {
     if (byDay.get(day)?.isCompleted) streak++;
     else break;
+  }
+  return streak;
+}
+
+/**
+ * Streak built from actual mission records: consecutive localDates where a
+ * mission reached 'completed', counting back from today. If today's mission
+ * isn't finished yet, the streak still counts through yesterday (grace day),
+ * so completing yesterday never shows a broken streak the moment midnight
+ * passes.
+ */
+export function missionRecordStreak(records: DailyMissionRecord[]): number {
+  const completed = new Set(
+    records.filter((mission) => mission.stage === "completed").map((mission) => mission.localDate),
+  );
+  if (completed.size === 0) return 0;
+  const cursor = new Date();
+  if (!completed.has(todayDateString(cursor))) cursor.setDate(cursor.getDate() - 1);
+  let streak = 0;
+  while (completed.has(todayDateString(cursor))) {
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
   }
   return streak;
 }

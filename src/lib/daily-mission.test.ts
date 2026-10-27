@@ -5,11 +5,13 @@ import {
   getActiveDailySession,
   getTodayTask,
   isSessionComplete,
+  missionRecordStreak,
   missionStreak,
   subjectsFromElectives,
   suggestElectives,
   todayDateString,
 } from "./daily-mission";
+import type { DailyMissionRecord } from "./daily-mission-engine";
 
 function makeSession(
   overrides: Partial<StudySessionData> & { tasks?: { day: number; completed: boolean }[] } = {}
@@ -147,5 +149,69 @@ describe("todayDateString", () => {
 
   it("zero-pads month and day", () => {
     expect(todayDateString(new Date(2026, 0, 5, 12, 0, 0))).toBe("2026-01-05");
+  });
+});
+
+function dateOffset(offset: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return todayDateString(date);
+}
+
+function makeMission(
+  localDate: string,
+  stage: DailyMissionRecord["stage"] = "completed",
+): DailyMissionRecord {
+  const completed = stage === "completed";
+  return {
+    id: `mission-${localDate}`,
+    localDate,
+    sessionId: "s1",
+    syllabusDay: 1,
+    subject: "physics",
+    topicId: "phy-topic",
+    topicName: "Topic",
+    lessonTitle: "Lesson",
+    lessonText: "Text",
+    stage,
+    attemptNumber: 1,
+    currentQuestionIds: [],
+    currentAnswers: [],
+    attempts: completed
+      ? [{ questionIds: [], answers: [], accuracy: 80, completedAt: new Date().toISOString() }]
+      : [],
+    bestAccuracy: completed ? 80 : null,
+    mistakeQuestionIds: [],
+    difficulty: "medium",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+describe("missionRecordStreak", () => {
+  it("counts consecutive completed days ending today", () => {
+    expect(
+      missionRecordStreak([
+        makeMission(dateOffset(0)),
+        makeMission(dateOffset(-1)),
+        makeMission(dateOffset(-2)),
+      ]),
+    ).toBe(3);
+  });
+
+  it("keeps yesterday's streak alive while today is still unfinished", () => {
+    expect(missionRecordStreak([makeMission(dateOffset(-1)), makeMission(dateOffset(-2))])).toBe(2);
+    expect(
+      missionRecordStreak([makeMission(dateOffset(-1)), makeMission(dateOffset(0), "quiz")]),
+    ).toBe(1);
+  });
+
+  it("breaks on a gap", () => {
+    expect(missionRecordStreak([makeMission(dateOffset(0)), makeMission(dateOffset(-2))])).toBe(1);
+  });
+
+  it("returns 0 without any completed mission", () => {
+    expect(missionRecordStreak([])).toBe(0);
+    expect(missionRecordStreak([makeMission(dateOffset(-1), "recovery")])).toBe(0);
   });
 });

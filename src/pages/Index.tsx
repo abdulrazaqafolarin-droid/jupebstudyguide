@@ -21,6 +21,7 @@ import DailyMissionCard from '@/components/DailyMissionCard';
 import { DailyMissionExperience } from '@/components/DailyMissionExperience';
 import { useDailyMissions } from '@/hooks/useDailyMissions';
 import type { DailyMissionRecord } from '@/lib/daily-mission-engine';
+import { suppressEveningReminder } from '@/lib/native-notifications';
 import {
   buildSessionName,
   getActiveDailySession,
@@ -306,6 +307,8 @@ const Index = () => {
     awardSyllabusDay(mission.syllabusDay);
     confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
     toast.success(`Daily mission complete — ${finalAttempt.accuracy}% accuracy!`);
+    // Finished for today — drop tonight's evening check-in reminder.
+    void suppressEveningReminder();
   }, [completeSessionDay, awardSyllabusDay, awardQuizComplete]);
 
   const documentsUploaded = documentUploadCount;
@@ -743,7 +746,6 @@ const Index = () => {
           suggestedElectives={missionElectives}
           onStartMission={handleStartDailyMission}
           onOpenMission={handleOpenDailyMission}
-          onViewPlan={() => setCurrentView('syllabus')}
         />
 
         {/* Overall Progress */}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
@@ -10,52 +10,114 @@ export interface ActivationStatus {
   checking: boolean;
 }
 
-export function useActivation() {
-  const { user } = useAuth();
-  const [status, setStatus] = useState<ActivationStatus>({ is_activated: false, is_admin: false, checking: true });
-  const [validating, setValidating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const fetchedRef = useRef(false);
+// ---------------------------------------------------------------------------
+// Session-level activation cache.
+//
+// The activation gate wraps every protected route, and routes remount on each
+// navigation — with a per-instance fetch that meant a full-screen network
+// spinner ("Checking activation...") stalled between EVERY page switch.
+// Activation rarely changes, so it is checked once per user: later mounts read
+// the cache synchronously (checking: false) and only revalidate in the
+// background after ACTIVATION_STALE_MS. Failures are never cached, so a
+// dropped connection still recovers on the next mount instead of pinning a
+// stale "not activated" result over a working account.
+// ---------------------------------------------------------------------------
+type ActivationCacheEntry = {
+  userId: string;
+  status: ActivationStatus; // always checking: false
+  fetchedAt: number;
+};
 
-  const checkStatus = useCallback(async () => {
-    if (!user) {
-      setStatus({ is_activated: false, is_admin: false, checking: false });
-      fetchedRef.current = false;
-      return;
+const ACTIVATION_STALE_MS = 5 * 60 * 1000;
+let activationCache: ActivationCacheEntry | null = null;
+let activationInFlight: { userId: string; promise: Promise<ActivationStatus> } | null = null;
+
+async function loadActivation(user: { id: string; email?: string }): Promise<{
+  status: ActivationStatus;
+  cacheable: boolean;
+}> {
+  const isAdminEmail = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("is_activated, is_admin")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error) throw error;
+
+    if (isAdminEmail && !data?.is_admin) {
+      await supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id);
     }
 
-    if (fetchedRef.current) return;
-    fetchedRef.current = true;
-
-    const isAdminEmail = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
-
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("is_activated, is_admin")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error) throw error;
-
-      if (isAdminEmail && !data?.is_admin) {
-        await supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id);
-      }
-
-      setStatus({
+    return {
+      status: {
         is_activated: data?.is_activated ?? false,
         is_admin: isAdminEmail || (data?.is_admin ?? false),
         checking: false,
+      },
+      cacheable: true,
+    };
+  } catch (err) {
+    console.error("Activation check error:", err);
+    return {
+      status: { is_activated: false, is_admin: isAdminEmail, checking: false },
+      cacheable: false,
+    };
+  }
+}
+
+/** One shared in-flight check per user (multiple mounts await the same promise). */
+function ensureActivationLoaded(user: { id: string; email?: string }): Promise<ActivationStatus> {
+  if (!activationInFlight || activationInFlight.userId !== user.id) {
+    const promise = loadActivation(user)
+      .then(({ status, cacheable }) => {
+        if (cacheable) {
+          activationCache = { userId: user.id, status, fetchedAt: Date.now() };
+        }
+        return status;
+      })
+      .finally(() => {
+        if (activationInFlight?.userId === user.id) activationInFlight = null;
       });
-    } catch (err) {
-      console.error("Activation check error:", err);
-      setStatus({
-        is_activated: false,
-        is_admin: isAdminEmail,
-        checking: false,
-      });
-    }
-  }, [user]);
+    activationInFlight = { userId: user.id, promise };
+  }
+  return activationInFlight.promise;
+}
+
+export function useActivation() {
+  const { user } = useAuth();
+  const cachedForUser = user && activationCache?.userId === user.id ? activationCache : null;
+  const [status, setStatus] = useState<ActivationStatus>(
+    cachedForUser
+      ? cachedForUser.status
+      : { is_activated: false, is_admin: false, checking: !!user },
+  );
+  const [validating, setValidating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const checkStatus = useCallback(
+    async (force = false) => {
+      if (!user) {
+        activationCache = null;
+        setStatus({ is_activated: false, is_admin: false, checking: false });
+        return;
+      }
+
+      const cached = activationCache?.userId === user.id ? activationCache : null;
+      if (cached && !force) {
+        // Instant read: navigation never waits on the network again.
+        setStatus(cached.status);
+        if (Date.now() - cached.fetchedAt < ACTIVATION_STALE_MS) return;
+        // Stale → fall through to a background revalidate (state updates if changed).
+      }
+
+      const fresh = await ensureActivationLoaded(user);
+      setStatus(fresh);
+    },
+    [user],
+  );
 
   useEffect(() => {
     checkStatus();
@@ -87,7 +149,9 @@ export function useActivation() {
 
       const result = data as Record<string, unknown> | null;
       if (result?.success) {
-        setStatus({ is_activated: true, is_admin: status.is_admin, checking: false });
+        const next: ActivationStatus = { is_activated: true, is_admin: status.is_admin, checking: false };
+        activationCache = { userId: user.id, status: next, fetchedAt: Date.now() };
+        setStatus(next);
         setValidating(false);
         return { success: true, plan_type: typeof result.plan_type === "string" ? result.plan_type : undefined };
       } else {
@@ -104,7 +168,9 @@ export function useActivation() {
     }
   }, [user, status.is_admin]);
 
-  return { status, validating, error, validateCode, refreshStatus: checkStatus };
+  const refreshStatus = useCallback(() => checkStatus(true), [checkStatus]);
+
+  return { status, validating, error, validateCode, refreshStatus };
 }
 
 export interface ActivationCodeResult {

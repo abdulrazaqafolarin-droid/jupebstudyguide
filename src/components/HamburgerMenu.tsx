@@ -203,7 +203,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                           to={path}
                           onClick={close}
                           className={cn(
-                            "flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg transition-colors",
+                            "flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg transition-[color,transform] duration-150 active:scale-[0.98]",
                             isActive
                               ? "bg-primary/10 text-primary font-medium"
                               : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"

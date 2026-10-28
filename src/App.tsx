@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
@@ -20,6 +20,7 @@ import AppUpdatePrompt from "./components/AppUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
+import { preloadHotRoutes } from "@/lib/route-preload";
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -46,30 +47,29 @@ const StudyChatPage = lazy(() => import("./pages/StudyChatPage"));
 
 const queryClient = new QueryClient();
 
+/**
+ * Presence + Notifications providers intentionally live at the router root
+ * (see App): mounting them per-route tore down and re-subscribed the realtime
+ * presence channels and refetched notification state on every navigation.
+ */
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <PageTransition>
-      <PresenceProvider>
-      <NotificationsProvider>
-        <AppNotificationBar />
-        <BottomNav />
-        <div className="pb-16">
-          {children}
-        </div>
-      </NotificationsProvider>
-      </PresenceProvider>
+      <AppNotificationBar />
+      <BottomNav />
+      <div className="pb-16">
+        {children}
+      </div>
     </PageTransition>
   );
 }
 
 function ProtectedChatLayout({ children }: { children: React.ReactNode }) {
   return (
-    <PresenceProvider>
-    <NotificationsProvider>
+    <>
       <AppNotificationBar />
       {children}
-    </NotificationsProvider>
-    </PresenceProvider>
+    </>
   );
 }
 
@@ -85,13 +85,29 @@ function AppNotificationBar() {
   );
 }
 
+/**
+ * Fresh pushes start at the top like a native screen. Back/forward (POP) is
+ * deliberately left alone — the browser restores scroll positions itself for
+ * history navigation, so resetting there would fight it.
+ */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  useEffect(() => {
+    if (navigationType !== "POP") window.scrollTo(0, 0);
+  }, [pathname, navigationType]);
+  return null;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    <AnimatePresence mode="wait">
-      <ErrorBoundary>
-      <Suspense fallback={<PageLoader />}>
-      <Routes location={location} key={location.pathname}>
+    <>
+      <ScrollToTop />
+      <AnimatePresence mode="wait">
+        <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+        <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
         <Route path="/download" element={<ErrorBoundary><DownloadApp /></ErrorBoundary>} />
         <Route 
@@ -278,17 +294,22 @@ function AnimatedRoutes() {
       </Routes>
       </Suspense>
       </ErrorBoundary>
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }
 
 function PageTransition({ children }: { children: React.ReactNode }) {
+  // No exit animation, deliberately: AnimatePresence runs in wait mode, so a
+  // fade-out would hold the previous page for its full duration before the
+  // next one could mount — a guaranteed stall on every tap. Native screens
+  // swap instantly; we only ease the incoming page in, short and subtle, so
+  // navigation feels immediate.
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
     >
       {children}
     </motion.div>
@@ -304,7 +325,27 @@ function PageLoader() {
 };
 
 const App = () => {
-  useEffect(() => { initDataLayer(); }, []);
+  useEffect(() => {
+    initDataLayer();
+    preloadHotRoutes();
+  }, []);
+
+  // next-themes drives the theme via a class on <html>, which a static meta
+  // tag can't follow with media queries alone — keep the browser toolbar
+  // painted in the active theme's background so the app reads as one surface.
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    const applyThemeColor = () => {
+      const dark = document.documentElement.classList.contains("dark");
+      meta.setAttribute("content", dark ? "#14171c" : "#f8f6f2");
+    };
+    applyThemeColor();
+    const observer = new MutationObserver(applyThemeColor);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -318,13 +359,20 @@ const App = () => {
             <SWUpdatePrompt />
             <AppUpdatePrompt />
             <BrowserRouter>
-              <NativeNotificationBridge />
-              <AnimatedRoutes />
-              <ErrorBoundary>
-              <Suspense fallback={null}>
-                <FloatingAITutor />
-              </Suspense>
-              </ErrorBoundary>
+              {/* Router-root providers: presence channels and notification
+                  state persist across route changes instead of churning on
+                  every navigation (see ProtectedLayout note). */}
+              <PresenceProvider>
+                <NotificationsProvider>
+                  <NativeNotificationBridge />
+                  <AnimatedRoutes />
+                  <ErrorBoundary>
+                  <Suspense fallback={null}>
+                    <FloatingAITutor />
+                  </Suspense>
+                  </ErrorBoundary>
+                </NotificationsProvider>
+              </PresenceProvider>
             </BrowserRouter>
           </ProfilePhotoViewerProvider>
         </ChatUnreadProvider>

@@ -35,7 +35,7 @@ export default function BottomNav() {
                 key={path}
                 to={path}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors min-w-0 relative",
+                  "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-[color,transform] duration-150 active:scale-90 min-w-0 relative",
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -63,7 +63,7 @@ export default function BottomNav() {
           })}
           <button
             onClick={() => menuRef.current?.open()}
-            className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+            className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-[color,transform] duration-150 active:scale-90"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" strokeWidth={2} />

@@ -463,3 +463,59 @@
     100% { background-position: 0% 50%; }
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Mobile platform polish — the "feels installed, not bookmarked" layer.
+ * Deliberately outside @layer: these shell-level rules must win over
+ * utilities, and none of them collide with utility-owned properties except
+ * the coarse-pointer font-size below, which is the point.
+ * ------------------------------------------------------------------------- */
+
+html {
+  /* Stop iOS inflating text after rotation. */
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  /* The app shell owns all scroll: no pull-to-refresh flash mid-scroll, no
+   * rubber-banding behind the fixed bottom bar. */
+  overscroll-behavior-y: none;
+}
+
+* {
+  /* Remove the translucent gray flash Android/Chrome paints over a tap. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role="button"],
+input,
+textarea,
+select,
+label,
+summary {
+  /* Skip double-tap-zoom heuristics on interactive elements — taps land on
+   * the first press, like a native control. */
+  touch-action: manipulation;
+}
+
+button,
+[role="button"],
+nav a {
+  /* Long-press on a nav label or icon shouldn't drag out selection handles;
+   * paragraph and inline-link text stays selectable. */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    /* Coarse-pointer fields under 16px trigger zoom-on-focus (iOS Safari) —
+     * sized up, they match native keyboards on every touch device. */
+    font-size: 16px;
+  }
+}

@@ -19,6 +19,7 @@ import SyllabusSetup from '@/components/SyllabusSetup';
 import SessionListView from '@/components/SessionListView';
 import DailyMissionCard from '@/components/DailyMissionCard';
 import { DailyMissionExperience } from '@/components/DailyMissionExperience';
+import { MissionReview } from '@/components/MissionReview';
 import { useDailyMissions } from '@/hooks/useDailyMissions';
 import type { DailyMissionRecord } from '@/lib/daily-mission-engine';
 import { suppressEveningReminder } from '@/lib/native-notifications';
@@ -59,7 +60,7 @@ const cardVariants: Variants = {
 };
 
 
-type View = 'home' | 'study' | 'quiz-setup' | 'quiz' | 'syllabus-setup' | 'syllabus' | 'daily-mission';
+type View = 'home' | 'study' | 'quiz-setup' | 'quiz' | 'syllabus-setup' | 'syllabus' | 'daily-mission' | 'mission-review';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ const Index = () => {
   const [quizPlan, setQuizPlan] = useState<QuizPlan | null>(null);
   const [currentQuizQuestions, setCurrentQuizQuestions] = useState<Question[]>([]);
   const [selectedDailyMissionId, setSelectedDailyMissionId] = useState<string | null>(null);
+  const [missionReviewId, setMissionReviewId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
 
   const { getStats, updateProgress, progress, isLoaded: studyProgressReady } = useStudyProgress();
@@ -249,6 +251,14 @@ const Index = () => {
     if (!activeDailySession || !todayMissionTask) return;
     void openMissionForSession(activeDailySession, todayMissionTask);
   }, [todayMission, activeDailySession, todayMissionTask, openMissionForSession]);
+
+  // Previous missions (and today's, after completion) open in a read-only
+  // review — a separate view so the pre-midnight guard for unfinished
+  // prior-day missions never ejects it.
+  const handleOpenMissionReview = useCallback((missionId: string) => {
+    setMissionReviewId(missionId);
+    setCurrentView('mission-review');
+  }, []);
 
   const autoMissionKeyRef = useRef<string | null>(null);
   useEffect(() => {
@@ -510,6 +520,21 @@ const Index = () => {
     setQuizPlan(null);
   };
 
+  // Read-only review of any saved mission (previous days, or today's after
+  // completion). Falls through to the dashboard if the id went stale.
+  if (currentView === 'mission-review') {
+    const reviewMission = dailyMissions.find((mission) => mission.id === missionReviewId);
+    if (reviewMission) {
+      return (
+        <MissionReview
+          mission={reviewMission}
+          questions={allQuestions}
+          onBack={() => setCurrentView('home')}
+        />
+      );
+    }
+  }
+
   // Daily mission experience
   if (currentView === 'daily-mission' && selectedDailyMission) {
     return (
@@ -746,6 +771,7 @@ const Index = () => {
           suggestedElectives={missionElectives}
           onStartMission={handleStartDailyMission}
           onOpenMission={handleOpenDailyMission}
+          onOpenMissionReview={handleOpenMissionReview}
         />
 
         {/* Overall Progress */}

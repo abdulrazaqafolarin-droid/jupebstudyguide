@@ -12,6 +12,7 @@ import QuestionMath from "@/components/QuestionMath";
 import {
   CalendarDays,
   CheckCircle2,
+  ClipboardList,
   Flame,
   Play,
   Target,
@@ -26,6 +27,7 @@ interface DailyMissionCardProps {
   suggestedElectives: { biology: boolean; math: boolean };
   onStartMission: (subjects: Subject[]) => void;
   onOpenMission: () => void;
+  onOpenMissionReview: (missionId: string) => void;
 }
 
 function TopicLine({ task }: { task: DailyTask }) {
@@ -43,9 +45,11 @@ export function DailyMissionCard({
   suggestedElectives,
   onStartMission,
   onOpenMission,
+  onOpenMissionReview,
 }: DailyMissionCardProps) {
   const [hasBiology, setHasBiology] = useState(suggestedElectives.biology);
   const [hasMath, setHasMath] = useState(suggestedElectives.math);
+  const [showAllPrevious, setShowAllPrevious] = useState(false);
 
   useEffect(() => {
     setHasBiology(suggestedElectives.biology);
@@ -94,6 +98,17 @@ export function DailyMissionCard({
         (nextTask.topics.length > 2 ? ` +${nextTask.topics.length - 2} more` : "")
       : nextTask.learningObjectives[0] ?? ""
     : "";
+
+  // Every mission except today's, newest first — each row opens a read-only
+  // review of that day's questions and answers.
+  const previousMissions = useMemo(
+    () =>
+      history
+        .filter((mission) => mission.id !== todayMission?.id)
+        .sort((a, b) => b.localDate.localeCompare(a.localDate)),
+    [history, todayMission],
+  );
+  const visiblePrevious = showAllPrevious ? previousMissions : previousMissions.slice(0, 3);
 
   return (
     <section aria-label="Daily mission" className="mb-12 animate-in-up stagger-1">
@@ -163,6 +178,13 @@ export function DailyMissionCard({
                   Coming up next: <span className="font-medium text-foreground">Day {nextTask.day}</span> — <QuestionMath inline content={nextLabel} />
                 </p>
               )}
+              <Button
+                variant="outline"
+                onClick={() => onOpenMissionReview(todayMission.id)}
+                className="w-full gap-2 sm:w-auto"
+              >
+                <ClipboardList className="h-4 w-4" /> Review today's questions
+              </Button>
             </div>
           )}
 
@@ -249,27 +271,41 @@ export function DailyMissionCard({
             </div>
           )}
 
-          {history.filter((mission) => mission.id !== todayMission?.id).length > 0 && (
+          {previousMissions.length > 0 && (
             <div className="border-t border-border pt-4">
-              <h3 className="mb-3 text-sm font-semibold">Previous missions</h3>
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Previous missions</h3>
+                {previousMissions.length > 3 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setShowAllPrevious((value) => !value)}
+                  >
+                    {showAllPrevious ? "Show fewer" : `View all ${previousMissions.length}`}
+                  </Button>
+                )}
+              </div>
               <div className="space-y-2">
-                {[...history]
-                  .filter((mission) => mission.id !== todayMission?.id)
-                  .sort((a, b) => b.localDate.localeCompare(a.localDate))
-                  .slice(0, 3)
-                  .map((mission) => (
-                    <div key={mission.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium"><QuestionMath inline content={mission.topicName} /></p>
-                        <p className="text-xs text-muted-foreground">{mission.localDate} · Day {mission.syllabusDay}</p>
-                      </div>
-                      <Badge variant={mission.stage === "completed" ? "secondary" : "outline"} className="shrink-0">
-                        {mission.stage === "completed"
-                          ? `Completed · ${mission.bestAccuracy ?? 0}%`
-                          : "Unfinished · saved"}
-                      </Badge>
+                {visiblePrevious.map((mission) => (
+                  <button
+                    key={mission.id}
+                    type="button"
+                    onClick={() => onOpenMissionReview(mission.id)}
+                    aria-label={`Review mission from ${mission.localDate}`}
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3 text-left transition-[transform,border-color] duration-150 hover:border-primary/40 active:scale-[0.99]"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium"><QuestionMath inline content={mission.topicName} /></p>
+                      <p className="text-xs text-muted-foreground">{mission.localDate} · Day {mission.syllabusDay}</p>
                     </div>
-                  ))}
+                    <Badge variant={mission.stage === "completed" ? "secondary" : "outline"} className="shrink-0">
+                      {mission.stage === "completed"
+                        ? `Completed · ${mission.bestAccuracy ?? 0}%`
+                        : "Unfinished · saved"}
+                    </Badge>
+                  </button>
+                ))}
               </div>
             </div>
           )}

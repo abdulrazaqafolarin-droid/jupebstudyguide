@@ -25,13 +25,26 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught:', error, errorInfo);
-    // Auto-reload on stale chunk load failures (PWA redeploy)
+    // Auto-reload on stale chunk load failures (PWA redeploy) — capped at
+    // 2 reloads per 10 minutes via sessionStorage so a permanently broken
+    // chunk or an offline reload can't loop forever.
     if (
       !reloading &&
       error.message?.includes('dynamically imported')
     ) {
-      reloading = true;
-      setTimeout(() => window.location.reload(), 100);
+      try {
+        const raw = sessionStorage.getItem('eb-auto-reload');
+        const state = raw ? (JSON.parse(raw) as { t: number; n: number }) : { t: 0, n: 0 };
+        const now = Date.now();
+        const n = now - state.t < 600_000 ? state.n + 1 : 1;
+        sessionStorage.setItem('eb-auto-reload', JSON.stringify({ t: now, n }));
+        if (n <= 2) {
+          reloading = true;
+          setTimeout(() => window.location.reload(), 100);
+        }
+      } catch {
+        // Storage blocked — skip auto-reload rather than risk a loop.
+      }
     }
   }
 

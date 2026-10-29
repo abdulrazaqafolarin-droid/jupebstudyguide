@@ -142,7 +142,6 @@ export default function AdminDashboard() {
     if (result.success && result.codes) {
       setGeneratedCodes(result.codes);
       toast.success(`Generated ${result.codes.length} codes`);
-      console.warn("Generated codes:", result.codes);
       listCodes();
       setStats(s => ({
         ...s,

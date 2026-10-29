@@ -17,6 +17,15 @@ const OAUTH_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const STALE_MS = 5 * 60_000;
 const PUSH_CHANNEL = "messages";
 
+// In-memory abuse guards (per warm isolate, best-effort): one dispatch per
+// message id per minute plus a global send budget, so forged public calls
+// cannot re-pop a conversation in a loop or burn FCM quota.
+const recentDispatches = new Map<string, number>();
+let dispatchWindowStartMs = 0;
+let dispatchesInWindow = 0;
+const DISPATCH_DEDUP_MS = 60_000;
+const MAX_DISPATCHES_PER_WINDOW = 120;
+
 interface ServiceAccount {
   project_id: string;
   client_email: string;
@@ -199,6 +208,19 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const title = (senderProfile?.display_name as string | null) || "New message";
     const body = buildPreview(message as MessageRow);
+
+    const nowMs = Date.now();
+    for (const [id, ts] of recentDispatches) {
+      if (nowMs - ts > 5 * 60_000) recentDispatches.delete(id);
+    }
+    if (recentDispatches.has(messageId)) return json({ skipped: "recently-dispatched" });
+    if (nowMs - dispatchWindowStartMs > 60_000) {
+      dispatchWindowStartMs = nowMs;
+      dispatchesInWindow = 0;
+    }
+    if (dispatchesInWindow >= MAX_DISPATCHES_PER_WINDOW) return json({ skipped: "rate-limited" });
+    recentDispatches.set(messageId, nowMs);
+    dispatchesInWindow++;
 
     const serviceAccount = loadServiceAccount();
     const accessToken = await getAccessToken(serviceAccount);

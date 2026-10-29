@@ -8,13 +8,18 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Best-effort brute-force throttle (per warm isolate): 10 validate attempts
+// per user per minute. The code space is huge, this is a second lock on the
+// door against credential-stuffing of leaked codes.
+const attemptBuckets = new Map<string, { count: number; resetAt: number }>();
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { code, action } = await req.json();
+    const { code, action, count, plan_type } = await req.json();
     const authHeader = req.headers.get("authorization");
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -39,6 +44,25 @@ Deno.serve(async (req) => {
     }
 
     if (action === "validate") {
+      const nowMs = Date.now();
+      const bucket = attemptBuckets.get(user.id);
+      if (bucket && bucket.resetAt > nowMs && bucket.count >= 10) {
+        return new Response(
+          JSON.stringify({ error: "Too many attempts. Please wait a minute and try again." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (!bucket || bucket.resetAt <= nowMs) {
+        attemptBuckets.set(user.id, { count: 1, resetAt: nowMs + 60_000 });
+      } else {
+        bucket.count += 1;
+      }
+      if (attemptBuckets.size > 5_000) {
+        for (const [id, entry] of attemptBuckets) {
+          if (entry.resetAt <= nowMs) attemptBuckets.delete(id);
+        }
+      }
+
       if (!code || typeof code !== "string") {
         return new Response(
           JSON.stringify({ error: "Activation code is required" }),
@@ -90,7 +114,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "generate-codes") {
-      const { count, plan_type } = await req.json();
+      // Admin check only — count/plan_type came from the single body parse.
 
       // Check admin status
       const { data: profile } = await supabase

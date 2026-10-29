@@ -106,9 +106,15 @@ export function ChatSidebar({
         setContextMenuConv(null);
       }
     };
-    setTimeout(() => document.addEventListener('click', handler), 0);
+    let active = true;
+    // Deferred add so the opening click can't immediately close the menu;
+    // `active` keeps a fast unmount from leaking the listener.
+    setTimeout(() => {
+      if (active) document.addEventListener('click', handler);
+    }, 0);
     document.addEventListener('touchstart', handler);
     return () => {
+      active = false;
       document.removeEventListener('click', handler);
       document.removeEventListener('touchstart', handler);
     };

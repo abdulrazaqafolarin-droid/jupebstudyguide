@@ -2,6 +2,8 @@ node_modules/
 dist/
 .env
 .env.local
+# Security reports stay local (skill policy)
+.gstack/
 # One-off ops/debug scripts — they have carried live credentials before.
 # Never commit these again.
 /_*.py

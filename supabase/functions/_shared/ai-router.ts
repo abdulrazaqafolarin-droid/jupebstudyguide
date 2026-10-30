@@ -14,8 +14,10 @@ import {
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const NVIDIA_BASE = "https://integrate.api.nvidia.com/v1";
 const GROQ_BASE = "https://api.groq.com/openai/v1";
-/** Max wait for stream response headers before trying the next key/provider. */
-const STREAM_HEADERS_TIMEOUT_MS = 12_000;
+/** Max wait for stream response headers before trying the next key/provider.
+ *  Free-tier Gemini regularly needs >12s to first byte under load; a 12s
+ *  window aborted every stream attempt before Google could answer. */
+const STREAM_HEADERS_TIMEOUT_MS = 22_000;
 /** Max silence between stream chunks before the SSE pipe gives up. */
 const STREAM_IDLE_TIMEOUT_MS = 45_000;
 /**
@@ -117,6 +119,31 @@ export function classifyError(status: number, bodyText: string): FailureKind {
     return "fatal";
   }
   return "transient";
+}
+
+/**
+ * Delays for automatic same-key retries after TRANSIENT failures (503/5xx,
+ * network, header timeouts). Google's own 503 message says spikes "are usually
+ * temporary. Please try again later" — one quick retry rides out short
+ * capacity spikes instead of failing the whole election. Quota and fatal
+ * failures are excluded: retrying those only burns deadline.
+ * Returns the delay in ms, or null to give up.
+ */
+export const TRANSIENT_RETRY_DELAYS_MS = [2_000];
+
+export function transientRetryDelayMs(
+  failure: KeyAttemptFailure,
+  retryCount: number,
+  deadline: number
+): number | null {
+  if (failure.kind !== "transient") return null;
+  if (retryCount >= TRANSIENT_RETRY_DELAYS_MS.length) return null;
+  const delay = TRANSIENT_RETRY_DELAYS_MS[retryCount];
+  return Date.now() + delay < deadline ? delay : null;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ============================================================
@@ -567,7 +594,15 @@ async function runProviderText(
       });
       break;
     }
-    const attempt = await attemptText(provider, key, systemPrompt, messages, opts, deadline);
+    let retryCount = 0;
+    let attempt = await attemptText(provider, key, systemPrompt, messages, opts, deadline);
+    while (!attempt.ok) {
+      const delay = transientRetryDelayMs(attempt.failure, retryCount, deadline);
+      if (delay === null) break;
+      retryCount++;
+      if (delay > 0) await sleep(delay);
+      attempt = await attemptText(provider, key, systemPrompt, messages, opts, deadline);
+    }
     if (attempt.ok) {
       const ms = Math.round(performance.now() - t0);
       recordSuccess(label, ms);
@@ -634,7 +669,15 @@ async function runProviderStream(
       });
       break;
     }
-    const attempt = await attemptStream(provider, key, systemPrompt, messages, opts, signal, deadline);
+    let retryCount = 0;
+    let attempt = await attemptStream(provider, key, systemPrompt, messages, opts, signal, deadline);
+    while (!attempt.ok) {
+      const delay = transientRetryDelayMs(attempt.failure, retryCount, deadline);
+      if (delay === null) break;
+      retryCount++;
+      if (delay > 0) await sleep(delay);
+      attempt = await attemptStream(provider, key, systemPrompt, messages, opts, signal, deadline);
+    }
     if (attempt.ok) {
       recordSuccess(label, 0);
       await recordAttempt(ctx, label, key, "success", "", feature, model);

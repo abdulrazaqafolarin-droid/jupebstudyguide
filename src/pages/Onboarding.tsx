@@ -154,15 +154,17 @@ export default function Onboarding() {
   }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal]);
 
   const handleSkip = useCallback(async () => {
-    await complete(false);
-    toast.success('Setup saved — finish it anytime from your home page.');
+    // In a replay the student already finalized once — skipping must not
+    // un-finalize them and re-trigger the home nudge.
+    await complete(isReplay);
+    if (!isReplay) toast.success('Setup saved — finish it anytime from your home page.');
     goHome();
-  }, [complete, goHome]);
+  }, [complete, goHome, isReplay]);
 
   const handleBrowseClassmates = useCallback(async () => {
-    await complete(false);
+    await complete(isReplay);
     navigate('/discover');
-  }, [complete, navigate]);
+  }, [complete, navigate, isReplay]);
 
   if (loading || !step) {
     return (
@@ -183,7 +185,7 @@ export default function Onboarding() {
       ctaLabel={ctaLabel}
       ctaDisabled={saving || requesting}
       onCta={handleCta}
-      onBack={stepIdx > 0 && !isReplay ? handleBack : undefined}
+      onBack={stepIdx > 0 ? handleBack : undefined}
       onSkip={step === 'finish' ? undefined : handleSkip}
       secondary={
         step === 'notify' && !notificationsGranted ? (

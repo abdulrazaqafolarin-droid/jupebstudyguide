@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#0f0f1a</color>
+    <!-- Matches the light-grey field of the Rutex logo (scripts/generate-icons.mjs
+         samples it from src/assets/rutex-logo.jpg) so the adaptive-icon background
+         blends seamlessly behind the foreground. -->
+    <color name="ic_launcher_background">#cbcdd0</color>
 </resources>

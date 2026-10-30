@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { shouldMarkReadOnArrival, applyPeerReadBroadcast } from '@/lib/read-receipts';
 
 const DEBUG = import.meta.env.DEV;
 
@@ -104,6 +105,14 @@ export function useChat() {
   const markReadProcessing = useRef(false);
   const activeConvRef = useRef<string | null>(null);
   const messagesRef = useRef<Message[]>([]);
+  // Latest-closure handle for markActiveRead, so the long-lived realtime
+  // handlers (created once per user) trigger mark-read without their
+  // channels being torn down whenever the callback identity changes.
+  const markActiveReadRef =
+    useRef<((conversationId: string, senderId?: string) => void) | null>(null);
+  // Which unread_count_a/b slot is mine, per DM — maps realtime
+  // `conversations` updates onto the sidebar badge.
+  const mySlotRef = useRef<Record<string, 'a' | 'b'>>({});
   const [globalChannelStatus, setGlobalChannelStatus] = useState<string>('idle');
   const [globalInsertCount, setGlobalInsertCount] = useState(0);
   type OfflineItem = { conversationId: string } & (
@@ -241,6 +250,21 @@ export function useChat() {
           c.id === item.conversationId ? { ...c, unread_count: 0 } : c
         ));
         broadcastRead(item.conversationId);
+        // Cross-client receipt: the moment this reader has entered the
+        // conversation, tell whoever is viewing that thread — the peer's
+        // double-tick turns blue instantly instead of waiting for the
+        // postgres UPDATE event (the 5s receipt poll stays as fallback).
+        try {
+          msgBroadcastRef.current?.send({
+            type: 'broadcast',
+            event: 'read',
+            payload: {
+              conversationId: item.conversationId,
+              readerId: item.userId,
+              at: new Date().toISOString(),
+            },
+          });
+        } catch { /* between reconnects — DB event + poll still cover it */ }
       } catch (err) {
         console.error('Mark-read failed after retries, badge unchanged:', err);
       } finally {
@@ -263,6 +287,22 @@ export function useChat() {
       processMarkReadQueue();
     });
   }, [processMarkReadQueue]);
+
+  // The "entered the conversation page" rule, in one place: anything that
+  // arrives while the user is VIEWING that conversation is read on arrival,
+  // and nothing else ever is. Messages in background conversations keep
+  // accumulating unread until openConversation runs the same RPC.
+  const markActiveRead = useCallback((conversationId: string, senderId?: string) => {
+    if (!user) return;
+    if (!shouldMarkReadOnArrival({
+      conversationId,
+      senderId: senderId ?? '',
+      activeConversationId: activeConvRef.current,
+      selfId: user.id,
+    })) return;
+    void enqueueMarkRead(conversationId, user.id);
+  }, [user, enqueueMarkRead]);
+  markActiveReadRef.current = markActiveRead;
 
   const saveUnreadCache = useCallback((counts: Record<string, number>, total: number) => {
     try {
@@ -383,8 +423,10 @@ export function useChat() {
         const partB = convParticipants.length >= 2 ? convParticipants[1] : null;
         if (user.id === partA) {
           unreadCountMap.set(conv.id, conv.unread_count_a);
+          mySlotRef.current[conv.id] = 'a';
         } else if (user.id === partB) {
           unreadCountMap.set(conv.id, conv.unread_count_b);
+          mySlotRef.current[conv.id] = 'b';
         }
       }
 
@@ -576,6 +618,10 @@ export function useChat() {
                       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                     )
               );
+              // Viewing this conversation + fresh incoming = read on arrival;
+              // the sender gets the blue double-tick via the UPDATE event and
+              // the `read` broadcast fired when the RPC commits.
+              if (firstIncoming) markActiveReadRef.current?.(newMsg.conversation_id, newMsg.sender_id);
             }
             setConversations(prev => {
               const updated = prev.map(c =>
@@ -656,21 +702,35 @@ export function useChat() {
             const updated = payload.new as {
               id: string; group_name?: string | null; group_avatar?: string | null;
               messages_policy?: string; updated_at?: string;
+              unread_count_a?: number; unread_count_b?: number;
             };
             if (!convIdsRef.current.includes(updated.id)) return;
             // Group renames / avatar / policy changes apply instantly —
             // previously they stayed stale until a full reload.
-            setConversations(prev => prev.map(c =>
-              c.id === updated.id
-                ? {
-                    ...c,
-                    group_name: updated.group_name ?? c.group_name,
-                    group_avatar: updated.group_avatar ?? c.group_avatar,
-                    messages_policy: updated.messages_policy ?? c.messages_policy,
-                    updated_at: updated.updated_at ?? c.updated_at,
-                  }
-                : c
-            ));
+            const slot = mySlotRef.current[updated.id];
+            setConversations(prev => prev.map(c => {
+              if (c.id !== updated.id) return c;
+              const merged = {
+                ...c,
+                group_name: updated.group_name ?? c.group_name,
+                group_avatar: updated.group_avatar ?? c.group_avatar,
+                messages_policy: updated.messages_policy ?? c.messages_policy,
+                updated_at: updated.updated_at ?? c.updated_at,
+              };
+              // DM badge follows the server slot live: mark_conversation_read
+              // (this device, another tab, or any other client of mine)
+              // zeroes unread_count_a/b and the bubble must go without
+              // waiting for a refetch. min() makes this a strictly-clearing
+              // signal so it can never double-count against the INSERT
+              // path's own +1 when a new message bumps the slot.
+              const mine = slot === 'a' ? updated.unread_count_a
+                : slot === 'b' ? updated.unread_count_b
+                : undefined;
+              if (typeof mine === 'number') {
+                merged.unread_count = Math.min(mine, c.unread_count);
+              }
+              return merged;
+            }));
           }
         )
         .on(
@@ -761,6 +821,7 @@ export function useChat() {
                         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                       )
                 );
+                if (firstIncoming) markActiveReadRef.current?.(newMsg.conversation_id, newMsg.sender_id);
                 setConversations(prev => prev.map(c =>
                   c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg as Message } : c
                 ));
@@ -784,6 +845,7 @@ export function useChat() {
                   (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                 )
           );
+          if (firstIncoming) markActiveReadRef.current?.(newMsg.conversation_id, newMsg.sender_id);
           setConversations(prev => prev.map(c =>
             c.id === newMsg.conversation_id ? { ...c, unread_count: 0, last_message: newMsg as Message } : c
           ));
@@ -794,6 +856,24 @@ export function useChat() {
               : c
           ));
         }
+      })
+      .on('broadcast', { event: 'read' }, (payload) => {
+        const p = payload.payload as { conversationId?: string; readerId?: string; at?: string };
+        const conversationId = p?.conversationId;
+        const readerId = p?.readerId;
+        // The recipient's client announces "I have entered this thread" the
+        // instant mark_conversation_read commits. Only the thread we are
+        // actively viewing reacts; everyone else reconciles via the
+        // postgres UPDATE event and the 5s receipt poll.
+        if (!conversationId || !readerId || readerId === user.id) return;
+        if (conversationId !== activeConvRef.current) return;
+        const at = p.at || new Date().toISOString();
+        setMessages(prev => applyPeerReadBroadcast(prev, {
+          conversationId,
+          readerId,
+          selfId: user.id,
+          readAt: at,
+        }));
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
@@ -878,6 +958,7 @@ export function useChat() {
                       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                     )
               );
+              if (firstIncoming) markActiveReadRef.current?.(newMsg.conversation_id, newMsg.sender_id);
             }
             setConversations(prev => {
               const updated = prev.map(c =>
@@ -1651,6 +1732,13 @@ export function useChat() {
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     });
+    // Per-conversation realtime and its poll fallback both funnel here.
+    // The shared seen-set dedupes against the global channel / broadcast /
+    // poll paths so a message is mark-read-queued exactly once, and only
+    // when the user is actually inside this conversation.
+    if (markIncomingSeen(message.id)) {
+      markActiveReadRef.current?.(message.conversation_id, message.sender_id);
+    }
     // Keep the sidebar preview in sync: per-conversation realtime only appends
     // to the message list, so bump last_message + ordering here as well.
     setConversations(prev => {
@@ -1667,7 +1755,7 @@ export function useChat() {
         return bTime.localeCompare(aTime);
       });
     });
-  }, []);
+  }, [markIncomingSeen]);
 
   const broadcastMessage = useCallback((message: Message) => {
     msgBroadcastRef.current?.send({

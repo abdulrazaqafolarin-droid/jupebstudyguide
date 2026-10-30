@@ -104,13 +104,19 @@ export function usePushNotifications() {
     const p256dh = btoa(String.fromCharCode(...new Uint8Array(rawKey)));
     const auth = btoa(String.fromCharCode(...new Uint8Array(rawAuth)));
 
-    const { error } = await supabase.from('notification_subscriptions').insert({
-      user_id: user.id,
-      endpoint: sub.endpoint,
-      p256dh,
-      auth,
-      user_agent: navigator.userAgent,
-    });
+    // Upsert, not insert: a re-subscribe reuses the same (user_id, endpoint).
+    // A plain insert would hit the UNIQUE constraint, error out, and leave the
+    // UI reading "unsubscribed" while the browser is in fact subscribed.
+    const { error } = await supabase.from('notification_subscriptions').upsert(
+      {
+        user_id: user.id,
+        endpoint: sub.endpoint,
+        p256dh,
+        auth,
+        user_agent: navigator.userAgent,
+      },
+      { onConflict: 'user_id,endpoint' },
+    );
 
     if (error) {
       console.error('Failed to save push subscription:', error);

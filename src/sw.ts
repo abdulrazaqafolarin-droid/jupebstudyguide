@@ -29,7 +29,19 @@ self.addEventListener('push', (event) => {
     requireInteraction: true,
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  // If a tab is already focused, the in-app banner (InAppNotificationBar)
+  // shows this arrival — skip the duplicate system notification. Mirrors the
+  // Android rule: foreground → in-app banner only.
+  event.waitUntil(
+    (async () => {
+      const wins = (await self.clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      })) as WindowClient[];
+      if (wins.some((c) => c.focused)) return;
+      await self.registration.showNotification(title, options);
+    })(),
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {

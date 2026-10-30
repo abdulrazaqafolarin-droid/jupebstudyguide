@@ -1,9 +1,12 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import webpush from "npm:web-push@3.6.7";
 
-// push-fcm — closed-app message push (FCM HTTP v1).
+// push-fcm — closed-app message push (FCM HTTP v1 + Web Push).
 // Invoked by the dispatch_push_notification trigger on messages INSERT via
 // pg_net. Unlike the old LocalNotifications path, FCM wakes an app that
 // Android has fully killed — this is the WhatsApp-style closed-app pop.
+// Web Push subscriptions (browser/PWA students) receive the same pop, so
+// delivery is consistent across every app and account.
 //
 // The body carries ONLY the message id; everything else (recipients, mute
 // state, preview) is re-read with the service role, so a forged request can
@@ -195,11 +198,23 @@ Deno.serve(async (req) => {
     const targets = recipients.filter((id) => !muted.has(id));
     if (targets.length === 0) return json({ skipped: "all-muted" });
 
-    const { data: tokenRows } = await admin
-      .from("device_tokens")
-      .select("user_id, token")
-      .in("user_id", targets);
-    if (!tokenRows || tokenRows.length === 0) return json({ skipped: "no-tokens" });
+    // Fan out to BOTH delivery wires for the same recipients: FCM device
+    // tokens (the Android APK) and Web Push subscriptions (the browser/PWA).
+    // Previously only device_tokens were consulted, so a web-only student
+    // never got a closed-app push — the "notifications aren't consistent
+    // across apps/accounts" bug.
+    const [tokenRowsRes, webSubsRes] = await Promise.all([
+      admin.from("device_tokens").select("user_id, token").in("user_id", targets),
+      admin
+        .from("notification_subscriptions")
+        .select("user_id, endpoint, p256dh, auth")
+        .in("user_id", targets),
+    ]);
+    const tokenRows = tokenRowsRes.data || [];
+    const webSubs = webSubsRes.data || [];
+    if (tokenRows.length === 0 && webSubs.length === 0) {
+      return json({ skipped: "no-targets" });
+    }
 
     const { data: senderProfile } = await admin
       .from("profiles")
@@ -230,6 +245,7 @@ Deno.serve(async (req) => {
     const deadTokens: string[] = [];
     const failures: { status: number; error: string }[] = [];
     let sent = 0;
+    let webSent = 0;
 
     await Promise.all(
       tokenRows.map(async (row) => {
@@ -289,11 +305,61 @@ Deno.serve(async (req) => {
       await admin.from("device_tokens").delete().in("token", deadTokens);
     }
 
+    // --- Wire 2: Web Push to browser/PWA subscriptions ---------------
+    // Same title/body and the same dead-subscription cleanup send-push used,
+    // but invoked from the message INSERT trigger (service role), which the
+    // client-authenticated send-push function can never be.
+    if (webSubs.length > 0) {
+      const vapidPublic = Deno.env.get("VAPID_PUBLIC_KEY") || "";
+      const vapidPrivate = Deno.env.get("VAPID_PRIVATE_KEY") || "";
+      const vapidSubject = Deno.env.get("VAPID_SUBJECT") || "mailto:push@jupebmaster.app";
+      if (!vapidPublic || !vapidPrivate) {
+        // Same secrets send-push uses; without them web delivery is skipped
+        // but the FCM path above is unaffected.
+        console.warn("[push-fcm] VAPID keys not set — skipping Web Push fanout");
+      } else {
+        webpush.setVapidDetails(vapidSubject, vapidPublic, vapidPrivate);
+        const webPayload = JSON.stringify({
+          title,
+          body,
+          data: {
+            type: "chat",
+            conversation_id: String(message.conversation_id),
+            message_id: String(message.id),
+            // The service worker's notificationclick handler routes on this.
+            url: `/chat?conversation=${encodeURIComponent(String(message.conversation_id))}`,
+          },
+        });
+        const deadEndpoints: string[] = [];
+        await Promise.all(
+          webSubs.map(async (sub) => {
+            try {
+              await webpush.sendNotification(
+                { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+                webPayload,
+              );
+              webSent++;
+            } catch (err) {
+              const status = (err as { statusCode?: number }).statusCode;
+              // 404/410 = the browser revoked this subscription; drop the row
+              // so we stop sending into the void.
+              if (status === 404 || status === 410) deadEndpoints.push(sub.endpoint);
+              else console.warn(`[push-fcm] web push failed (${status}): ${String(err)}`);
+            }
+          }),
+        );
+        if (deadEndpoints.length > 0) {
+          await admin.from("notification_subscriptions").delete().in("endpoint", deadEndpoints);
+        }
+      }
+    }
+
     return json({
       ok: true,
       message_id: messageId,
       targets: targets.length,
       sent,
+      web_sent: webSent,
       dead: deadTokens.length,
       failures: failures.slice(0, 5),
     });

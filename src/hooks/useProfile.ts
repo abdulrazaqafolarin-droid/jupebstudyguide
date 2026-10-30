@@ -9,6 +9,8 @@ export interface Profile {
   display_name: string | null;
   avatar_url: string | null;
   bio: string | null;
+  school_name: string | null;
+  exam_seat_number: string | null;
   privacy_avatar: string;
   privacy_profile: string;
   privacy_last_seen: string;
@@ -37,7 +39,7 @@ export function useProfile() {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('id, user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, privacy_last_seen, privacy_read_receipts, privacy_activity_status, privacy_online_status, privacy_groups, achievements, is_admin, onboarding_completed_at, onboarding_data')
+        .select('id, user_id, display_name, avatar_url, bio, school_name, exam_seat_number, privacy_avatar, privacy_profile, privacy_last_seen, privacy_read_receipts, privacy_activity_status, privacy_online_status, privacy_groups, achievements, is_admin, onboarding_completed_at, onboarding_data')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -85,7 +87,7 @@ export function useProfile() {
   }, [fetchProfile]);
 
   const updateProfile = useCallback(
-    async (patch: Partial<Pick<Profile, 'display_name' | 'avatar_url' | 'bio'>>) => {
+    async (patch: Partial<Pick<Profile, 'display_name' | 'avatar_url' | 'bio' | 'school_name' | 'exam_seat_number'>>) => {
       if (!user) return { error: new Error('Not authenticated') };
       const { data, error } = await supabase
         .from('profiles')

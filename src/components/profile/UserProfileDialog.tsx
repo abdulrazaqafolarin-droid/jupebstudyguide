@@ -18,6 +18,7 @@ export interface UserProfileData {
   display_name: string | null;
   avatar_url: string | null;
   bio: string | null;
+  school_name: string | null;
   privacy_avatar: string;
   privacy_profile: string;
 }
@@ -51,7 +52,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
     const [profileRes, relationRes] = await Promise.all([
       supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, achievements')
+        .select('user_id, display_name, avatar_url, bio, school_name, privacy_avatar, privacy_profile, achievements')
         .eq('user_id', userId)
         .maybeSingle(),
       supabase.rpc('get_relationship_status', {
@@ -374,7 +375,14 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
                   {/* Name + Username */}
                   <div className="text-center">
                     <h2 className="text-lg font-bold">{profile.display_name || 'User'}</h2>
-                    <p className="text-xs text-muted-foreground">@{profile.user_id.slice(0, 8)}</p>
+                    {profile.school_name && (
+                      <div className="mt-1.5">
+                        <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-xs font-medium px-2.5 py-0.5">
+                          {profile.school_name}
+                        </span>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">@{profile.user_id.slice(0, 8)}</p>
                   </div>
 
                   {/* Bio */}
@@ -470,6 +478,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
                       user_id: profile.user_id,
                       display_name: profile.display_name,
                       avatar_url: profile.avatar_url,
+                      school_name: profile.school_name,
                       achievements: otherAchievements,
                     } : null}
                     open={showAchievements}

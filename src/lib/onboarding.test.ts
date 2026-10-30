@@ -92,6 +92,24 @@ describe('normalizeOnboardingData', () => {
     expect(data.finalized).toBeUndefined();
     expect(data.chat).toEqual({ online: true, receipts: undefined, discover: undefined });
   });
+
+  it('normalizes school name and exam seat number', () => {
+    const data = normalizeOnboardingData({
+      schoolName: '  Baptist   High  School ',
+      examSeatNumber: ' 43-21 ',
+    });
+    expect(data.schoolName).toBe('Baptist High School');
+    expect(data.examSeatNumber).toBe('4321');
+  });
+
+  it('drops unusable school/seat input instead of storing it', () => {
+    const data = normalizeOnboardingData({
+      schoolName: '   ',
+      examSeatNumber: '42', // too short to be a seat number
+    });
+    expect(data.schoolName).toBeUndefined();
+    expect(data.examSeatNumber).toBeUndefined();
+  });
 });
 
 describe('shouldShowSetupNudge', () => {

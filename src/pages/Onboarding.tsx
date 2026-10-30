@@ -14,6 +14,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import { usePushNotificationsContext } from '@/contexts/PushNotificationsContext';
 import { useUserStorage } from '@/hooks/useUserStorage';
 import { firstIncompleteStep, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
+import { normalizeSchoolName, parseSeatNumber } from '@/lib/profile-fields';
 import type { Subject } from '@/types/question';
 import { Loader2 } from 'lucide-react';
 
@@ -38,7 +39,7 @@ export default function Onboarding() {
   const reduce = useReducedMotion();
   const { theme, setTheme } = useTheme();
   const { subscribe, permission, isSubscribed } = usePushNotificationsContext();
-  const { loading, flow, data, displayName, isReplay, saveStep, complete } = useOnboarding();
+  const { loading, flow, data, displayName, isReplay, profileSchoolName, profileSeatNumber, saveStep, complete } = useOnboarding();
   const [, setStoredElectives] = useUserStorage<string[]>('onboarding-subjects', []);
   const [, setStoredDailyGoal] = useUserStorage<number>('onboarding-daily-goal', 30);
 
@@ -56,6 +57,8 @@ export default function Onboarding() {
   const [electives, setElectives] = useState<Subject[]>([]);
   const [examTarget, setExamTarget] = useState('this-session');
   const [dailyGoal, setDailyGoal] = useState(30);
+  const [schoolName, setSchoolName] = useState('');
+  const [seatNumber, setSeatNumber] = useState('');
   const [chatOnline, setChatOnline] = useState(true);
   const [chatReceipts, setChatReceipts] = useState(true);
   const [chatDiscover, setChatDiscover] = useState(true);
@@ -72,10 +75,12 @@ export default function Onboarding() {
     setElectives((data.subjects ?? []).filter((s): s is Subject => s === 'biology' || s === 'math'));
     setExamTarget(data.examTarget ?? 'this-session');
     setDailyGoal(data.dailyGoalMinutes ?? 30);
+    setSchoolName(data.schoolName ?? profileSchoolName ?? '');
+    setSeatNumber(data.examSeatNumber ?? profileSeatNumber ?? '');
     setChatOnline(data.chat?.online ?? true);
     setChatReceipts(data.chat?.receipts ?? true);
     setChatDiscover(data.chat?.discover ?? true);
-  }, [loading, flow, data, isReplay]);
+  }, [loading, flow, data, isReplay, profileSchoolName, profileSeatNumber]);
 
   const step = flow[stepIdx];
   const goHome = useCallback(() => navigate('/', { replace: true }), [navigate]);
@@ -115,7 +120,30 @@ export default function Onboarding() {
         const subjects = ['physics', 'chemistry', ...electives];
         setStoredElectives(electives);
         setStoredDailyGoal(dailyGoal);
-        await persistAndAdvance('study', { subjects, examTarget, dailyGoalMinutes: dailyGoal });
+        // The seat field is optional, but a half-typed number must not be
+        // silently saved — stay on the step and say why.
+        const seat = parseSeatNumber(seatNumber);
+        if (seat.status === 'invalid') {
+          toast.error('Exam seat number should be the last 3 or 4 digits of your ID card.');
+          return;
+        }
+        const school = normalizeSchoolName(schoolName);
+        await persistAndAdvance(
+          'study',
+          {
+            subjects,
+            examTarget,
+            dailyGoalMinutes: dailyGoal,
+            schoolName: school ?? undefined,
+            examSeatNumber: seat.status === 'valid' ? seat.value : undefined,
+          },
+          // Same request also writes the real profile columns, so the tag
+          // and seat number exist the moment the tour ends.
+          {
+            school_name: school,
+            exam_seat_number: seat.status === 'valid' ? seat.value : null,
+          },
+        );
         break;
       }
       case 'chat': {
@@ -151,7 +179,7 @@ export default function Onboarding() {
         break;
       }
     }
-  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal]);
+  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, schoolName, seatNumber, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal]);
 
   const handleSkip = useCallback(async () => {
     // In a replay the student already finalized once — skipping must not
@@ -222,11 +250,15 @@ export default function Onboarding() {
               electives={electives}
               examTarget={examTarget}
               dailyGoalMinutes={dailyGoal}
+              schoolName={schoolName}
+              examSeatNumber={seatNumber}
               onToggleElective={(s) =>
                 setElectives((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]))
               }
               onExamTarget={setExamTarget}
               onDailyGoal={setDailyGoal}
+              onSchoolName={setSchoolName}
+              onExamSeatNumber={setSeatNumber}
             />
           )}
           {step === 'chat' && (

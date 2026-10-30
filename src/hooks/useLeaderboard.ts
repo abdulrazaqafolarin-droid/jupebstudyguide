@@ -8,6 +8,7 @@ export interface LeaderboardRow {
   event_count: number;
   display_name: string | null;
   avatar_url: string | null;
+  school_name: string | null;
   rank: number;
   achievements: string[];
 }
@@ -39,11 +40,11 @@ export function useLeaderboard(limit = 5) {
 
     const ids = sorted.map((r) => r.user_id);
 
-    const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; achievements: string[] }>();
+    const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; school_name: string | null; achievements: string[] }>();
     if (ids.length > 0) {
       const { data: profs, error: profsErr } = await supabase
         .from('profiles')
-        .select('user_id, display_name, avatar_url, achievements')
+        .select('user_id, display_name, avatar_url, school_name, achievements')
         .in('user_id', ids);
       if (profsErr) {
         console.error("Leaderboard profiles query:", profsErr);
@@ -52,6 +53,7 @@ export function useLeaderboard(limit = 5) {
         profileMap.set(p.user_id, {
           display_name: p.display_name,
           avatar_url: p.avatar_url,
+          school_name: p.school_name ?? null,
           achievements: (Array.isArray(p.achievements) ? p.achievements : []).filter((a): a is string => typeof a === 'string'),
         });
       }
@@ -64,6 +66,7 @@ export function useLeaderboard(limit = 5) {
         event_count: Number(r.event_count),
         display_name: profileMap.get(r.user_id)?.display_name || r.display_name || r.user_id.slice(0, 8),
         avatar_url: profileMap.get(r.user_id)?.avatar_url ?? r.avatar_url ?? null,
+        school_name: profileMap.get(r.user_id)?.school_name ?? null,
         achievements: profileMap.get(r.user_id)?.achievements ?? [],
         rank: Number(r.rank),
       }))

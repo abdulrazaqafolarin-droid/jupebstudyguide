@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { Check, Lock } from 'lucide-react';
 import { SUBJECT_INFO, type Subject } from '@/types/question';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { MAX_SCHOOL_NAME_LENGTH, parseSeatNumber } from '@/lib/profile-fields';
 
 const CORE: Subject[] = ['physics', 'chemistry'];
 const ELECTIVES: Subject[] = ['biology', 'math'];
@@ -30,24 +32,37 @@ interface StepStudySetupProps {
   electives: Subject[];
   examTarget: string;
   dailyGoalMinutes: number;
+  schoolName: string;
+  examSeatNumber: string;
   onToggleElective: (subject: Subject) => void;
   onExamTarget: (id: string) => void;
   onDailyGoal: (minutes: number) => void;
+  onSchoolName: (value: string) => void;
+  onExamSeatNumber: (value: string) => void;
 }
 
 /**
  * Step 2 — the study engine's inputs. Core subjects are locked on (the
  * 30-day syllabus requires them); electives, exam target and daily goal
- * are one-tap choices that pre-seed the syllabus and mission copy.
+ * are one-tap choices that pre-seed the syllabus and mission copy. School
+ * becomes the tag on the student's profile; the exam seat number is
+ * optional own-profile text (last 3-4 digits of the ID card).
  */
 export function StepStudySetup({
   electives,
   examTarget,
   dailyGoalMinutes,
+  schoolName,
+  examSeatNumber,
   onToggleElective,
   onExamTarget,
   onDailyGoal,
+  onSchoolName,
+  onExamSeatNumber,
 }: StepStudySetupProps) {
+  const seatInvalid =
+    examSeatNumber.trim().length > 0 && parseSeatNumber(examSeatNumber).status === 'invalid';
+
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -157,6 +172,36 @@ export function StepStudySetup({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* School tag + optional exam seat number */}
+      <div className="space-y-2.5">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Your school</p>
+        <Input
+          value={schoolName}
+          onChange={(e) => onSchoolName(e.target.value)}
+          placeholder="e.g. Baptist High School"
+          maxLength={MAX_SCHOOL_NAME_LENGTH}
+          aria-label="School name"
+          className="bg-background/50"
+        />
+        <p className="text-[10px] text-muted-foreground">
+          Shown as a tag on your profile everywhere it appears — leaderboard, chat, groups.
+        </p>
+        <Input
+          value={examSeatNumber}
+          onChange={(e) => onExamSeatNumber(e.target.value)}
+          placeholder="Exam seat number (optional)"
+          inputMode="numeric"
+          maxLength={12}
+          aria-label="Exam seat number"
+          className={cn('bg-background/50', seatInvalid && 'border-destructive')}
+        />
+        <p className={cn('text-[10px]', seatInvalid ? 'text-destructive' : 'text-muted-foreground')}>
+          {seatInvalid
+            ? 'Type the last 3 or 4 digits — e.g. 4321'
+            : 'Last 3 or 4 digits on your ID card. Optional — only you can see it.'}
+        </p>
       </div>
     </div>
   );

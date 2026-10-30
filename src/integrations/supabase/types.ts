@@ -772,6 +772,7 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          exam_seat_number: string | null
           id: string
           is_activated: boolean
           is_admin: boolean
@@ -789,6 +790,7 @@ export type Database = {
           privacy_profile: string
           privacy_read_receipts: string
           public_key: string | null
+          school_name: string | null
           theme_preference: string | null
           updated_at: string
           user_id: string
@@ -799,6 +801,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          exam_seat_number?: string | null
           id?: string
           is_activated?: boolean
           is_admin?: boolean
@@ -815,6 +818,7 @@ export type Database = {
           privacy_profile?: string
           privacy_read_receipts?: string
           public_key?: string | null
+          school_name?: string | null
           theme_preference?: string | null
           updated_at?: string
           user_id: string
@@ -825,6 +829,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          exam_seat_number?: string | null
           id?: string
           is_activated?: boolean
           is_admin?: boolean
@@ -841,6 +846,7 @@ export type Database = {
           privacy_profile?: string
           privacy_read_receipts?: string
           public_key?: string | null
+          school_name?: string | null
           theme_preference?: string | null
           updated_at?: string
           user_id?: string

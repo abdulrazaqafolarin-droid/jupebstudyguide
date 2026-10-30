@@ -12,6 +12,7 @@ interface UserData {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
+  school_name?: string | null;
   achievements: string[];
   week_score?: number;
   rank?: number;
@@ -87,7 +88,12 @@ export default function UserAchievementPreview({ user, open, onClose, onChat, st
               />
                 <div className="min-w-0 flex-1">
                   <p className="font-bold text-base truncate">{user.display_name || 'Anonymous'}</p>
-                  <p className="text-xs text-muted-foreground">
+                  {user.school_name && (
+                    <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-[10px] font-medium px-2 py-0.5 mt-1">
+                      {user.school_name}
+                    </span>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">
                     {unlockedAchievements.length} achievement{unlockedAchievements.length !== 1 ? 's' : ''}
                     {user.rank && ` · #${user.rank} on leaderboard`}
                   </p>

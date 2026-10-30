@@ -22,6 +22,9 @@ export interface OnboardingStatus {
   isNewStudent: boolean;
   displayName: string | null;
   themePreference: string | null;
+  /** Profile-column fallbacks so a replay prefills what Settings already saved. */
+  schoolName: string | null;
+  examSeatNumber: string | null;
   data: OnboardingData;
 }
 
@@ -33,6 +36,8 @@ const EMPTY: OnboardingStatus = {
   isNewStudent: true,
   displayName: null,
   themePreference: null,
+  schoolName: null,
+  examSeatNumber: null,
   data: {},
 };
 
@@ -51,7 +56,7 @@ export async function fetchOnboardingStatus(userId: string): Promise<OnboardingS
   const [profileRes, sessionsRes] = await Promise.all([
     supabase
       .from('profiles')
-      .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference')
+      .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
       .eq('user_id', userId)
       .maybeSingle(),
     supabase
@@ -78,6 +83,8 @@ export async function fetchOnboardingStatus(userId: string): Promise<OnboardingS
       profile?.theme_preference === 'light' || profile?.theme_preference === 'dark'
         ? profile.theme_preference
         : null,
+    schoolName: profile?.school_name ?? null,
+    examSeatNumber: profile?.exam_seat_number ?? null,
     data,
   };
   cache.set(userId, status);

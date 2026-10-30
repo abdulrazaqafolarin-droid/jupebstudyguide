@@ -39,6 +39,7 @@ export const LeaderboardPanel = ({ stats }: LeaderboardPanelProps) => {
     user_id: string;
     display_name: string | null;
     avatar_url: string | null;
+    school_name?: string | null;
     achievements: string[];
   } | null>(null);
 
@@ -116,6 +117,7 @@ export const LeaderboardPanel = ({ stats }: LeaderboardPanelProps) => {
                           user_id: r.user_id,
                           display_name: r.display_name,
                           avatar_url: r.avatar_url,
+                          school_name: r.school_name,
                           achievements: r.achievements,
                         });
                       } : undefined}
@@ -136,6 +138,7 @@ export const LeaderboardPanel = ({ stats }: LeaderboardPanelProps) => {
                           user_id: r.user_id,
                           display_name: r.display_name,
                           avatar_url: r.avatar_url,
+                          school_name: r.school_name,
                           achievements: r.achievements,
                         });
                       } : undefined}
@@ -202,6 +205,7 @@ export const LeaderboardPanel = ({ stats }: LeaderboardPanelProps) => {
                             user_id: r.user_id,
                             display_name: r.display_name,
                             avatar_url: r.avatar_url,
+                            school_name: r.school_name,
                             achievements: r.achievements,
                           });
                         }}

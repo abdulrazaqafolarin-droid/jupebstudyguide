@@ -12,6 +12,7 @@
  * never traps them) but finalized stays false — that is what makes the
  * home-page "Finish setup" nudge appear.
  */
+import { normalizeSchoolName, normalizeSeatNumber } from './profile-fields';
 
 export type OnboardingStepId = 'welcome' | 'theme' | 'study' | 'chat' | 'notify' | 'finish';
 
@@ -23,6 +24,8 @@ export interface OnboardingData {
   subjects?: string[];
   examTarget?: string;
   dailyGoalMinutes?: number;
+  schoolName?: string;
+  examSeatNumber?: string;
   finalized?: boolean;
   chat?: { online?: boolean; receipts?: boolean; discover?: boolean };
 }
@@ -40,6 +43,8 @@ export function normalizeOnboardingData(raw: unknown): OnboardingData {
   }
   if (typeof r.examTarget === 'string') data.examTarget = r.examTarget;
   if (typeof r.dailyGoalMinutes === 'number') data.dailyGoalMinutes = r.dailyGoalMinutes;
+  if (typeof r.schoolName === 'string') data.schoolName = normalizeSchoolName(r.schoolName) ?? undefined;
+  if (typeof r.examSeatNumber === 'string') data.examSeatNumber = normalizeSeatNumber(r.examSeatNumber) ?? undefined;
   if (typeof r.finalized === 'boolean') data.finalized = r.finalized;
   if (r.chat && typeof r.chat === 'object' && !Array.isArray(r.chat)) {
     const c = r.chat as Record<string, unknown>;

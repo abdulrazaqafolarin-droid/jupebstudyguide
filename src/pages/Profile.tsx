@@ -14,7 +14,7 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
 import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 import { ACHIEVEMENTS, Achievement } from '@/hooks/useAchievements';
@@ -172,6 +172,38 @@ export default function ProfilePage() {
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Save changes
             </Button>
+          </div>
+        </section>
+
+        {/* School tag + exam seat number */}
+        <section className="animate-in-up stagger-2">
+          <div className="bg-card rounded-2xl border border-border p-6 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-primary" />
+                School
+              </h3>
+              <Link to="/settings/profile" className="text-xs text-primary hover:underline">
+                Edit
+              </Link>
+            </div>
+            {profile?.school_name ? (
+              <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-xs font-medium px-3 py-1">
+                {profile.school_name}
+              </span>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Add your school — it shows as a tag on your profile everywhere.
+              </p>
+            )}
+            <div className="flex items-center justify-between gap-3 pt-3 border-t border-border/50">
+              <span className="text-xs text-muted-foreground">Exam seat number</span>
+              <span className="text-sm font-medium tabular-nums">
+                {profile?.exam_seat_number ?? (
+                  <span className="text-xs text-muted-foreground font-normal">Not set</span>
+                )}
+              </span>
+            </div>
           </div>
         </section>
 

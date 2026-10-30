@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, Save, Check, Sun, Moon, Shield, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Check, Sun, Moon, Shield, Sparkles, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,13 @@ import { PrivacySettings } from '@/components/profile/PrivacySettings';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import {
+  MAX_SCHOOL_NAME_LENGTH,
+  normalizeSchoolName,
+  normalizeSeatNumber,
+  parseSeatNumber,
+} from '@/lib/profile-fields';
 
 export default function SettingsProfile() {
   const { user } = useAuth();
@@ -24,6 +31,8 @@ export default function SettingsProfile() {
 
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
+  const [schoolName, setSchoolName] = useState('');
+  const [seatNumber, setSeatNumber] = useState('');
   const [avatarPrivacy, setAvatarPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
   const [profilePrivacy, setProfilePrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
   const [lastSeenPrivacy, setLastSeenPrivacy] = useState<'everyone' | 'friends' | 'nobody'>('everyone');
@@ -34,6 +43,10 @@ export default function SettingsProfile() {
   const { theme, setTheme } = useTheme();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  // Inline hint while typing: the field is optional, but a half-typed
+  // number must not be saved as-is.
+  const seatInvalid =
+    seatNumber.trim().length > 0 && parseSeatNumber(seatNumber).status === 'invalid';
 
   useEffect(() => {
     if (!profile) return;
@@ -41,6 +54,8 @@ export default function SettingsProfile() {
       v === 'friends' || v === 'nobody' ? v : 'everyone';
     setDisplayName(profile.display_name ?? '');
     setBio(profile.bio ?? '');
+    setSchoolName(profile.school_name ?? '');
+    setSeatNumber(profile.exam_seat_number ?? '');
     setAvatarPrivacy(asPrivacy(profile.privacy_avatar));
     setProfilePrivacy(asPrivacy(profile.privacy_profile));
     setLastSeenPrivacy(asPrivacy(profile.privacy_last_seen));
@@ -87,6 +102,11 @@ export default function SettingsProfile() {
 
   const handleSave = async () => {
     if (!user) return;
+    const seat = parseSeatNumber(seatNumber);
+    if (seat.status === 'invalid') {
+      toast.error('Exam seat number should be the last 3 or 4 digits of your ID card.');
+      return;
+    }
     setSaving(true);
     const { error: nameErr } = await updateProfile({ display_name: displayName.trim() });
     if (nameErr) { toast.error('Save failed'); setSaving(false); return; }
@@ -95,6 +115,8 @@ export default function SettingsProfile() {
       .from('profiles')
       .update({
         bio: bio.trim() || null,
+        school_name: normalizeSchoolName(schoolName),
+        exam_seat_number: seat.status === 'valid' ? seat.value : null,
         privacy_avatar: avatarPrivacy,
         privacy_profile: profilePrivacy,
         privacy_last_seen: lastSeenPrivacy,
@@ -207,6 +229,47 @@ export default function SettingsProfile() {
             className="bg-background resize-none"
           />
           <p className="text-[10px] text-muted-foreground text-right">{bio.length}/160</p>
+        </motion.section>
+
+        {/* School tag + exam seat number */}
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.115 }}
+          className="bg-card rounded-2xl border border-border p-6 space-y-5"
+        >
+          <div className="space-y-3">
+            <Label htmlFor="school" className="text-sm font-semibold flex items-center gap-1.5">
+              <GraduationCap className="w-4 h-4 text-primary" />
+              School
+            </Label>
+            <Input
+              id="school"
+              value={schoolName}
+              onChange={(e) => setSchoolName(e.target.value)}
+              placeholder="e.g. Baptist High School"
+              maxLength={MAX_SCHOOL_NAME_LENGTH}
+              className="bg-background"
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Shown as a tag on your profile everywhere it appears — leaderboard, chat, groups.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <Label htmlFor="seat" className="text-sm font-semibold">Exam seat number</Label>
+            <Input
+              id="seat"
+              value={seatNumber}
+              onChange={(e) => setSeatNumber(e.target.value)}
+              placeholder="Last 3 or 4 digits on your ID card"
+              inputMode="numeric"
+              maxLength={12}
+              className={cn('bg-background', seatInvalid && 'border-destructive focus-visible:ring-destructive')}
+            />
+            <p className={cn('text-[10px]', seatInvalid ? 'text-destructive' : 'text-muted-foreground')}>
+              {seatInvalid ? 'Type the last 3 or 4 digits — e.g. 4321' : 'Optional. Only you can see it.'}
+            </p>
+          </div>
         </motion.section>
 
         {/* Appearance */}

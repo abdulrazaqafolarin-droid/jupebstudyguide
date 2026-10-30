@@ -26,6 +26,10 @@ export function useOnboarding() {
   const [data, setData] = useState<OnboardingData>({});
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [isReplay, setIsReplay] = useState(false);
+  // Profile-column fallbacks: a student who set school/seat in Settings
+  // before (or since) a tour sees them prefilled on replay.
+  const [profileSchoolName, setProfileSchoolName] = useState<string | null>(null);
+  const [profileSeatNumber, setProfileSeatNumber] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -38,6 +42,8 @@ export function useOnboarding() {
       setData(d);
       setDisplayName(status.displayName);
       setIsReplay(status.finalized === true);
+      setProfileSchoolName(status.schoolName);
+      setProfileSeatNumber(status.examSeatNumber);
       setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -86,5 +92,5 @@ export function useOnboarding() {
     [user, data],
   );
 
-  return { loading, flow, data, displayName, isReplay, saveStep, complete };
+  return { loading, flow, data, displayName, isReplay, profileSchoolName, profileSeatNumber, saveStep, complete };
 }

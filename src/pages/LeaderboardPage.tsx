@@ -36,7 +36,7 @@ function RankIcon({ rank, className }: { rank: number; className?: string }) {
 }
 
 interface ChampionWithProfile extends LeaderboardWeek {
-  profile: { display_name: string | null; avatar_url: string | null } | null;
+  profile: { display_name: string | null; avatar_url: string | null; school_name?: string | null } | null;
 }
 
 const achievementNameMap = new Map(ACHIEVEMENTS.map(a => [a.id, a.name]));
@@ -54,6 +54,7 @@ export default function LeaderboardPage() {
     user_id: string;
     display_name: string | null;
     avatar_url: string | null;
+    school_name?: string | null;
     achievements: string[];
     week_score?: number;
     rank?: number;
@@ -69,7 +70,7 @@ export default function LeaderboardPage() {
       const ids = championEntries.map((w) => w.champion_user_id);
       const { data: profs } = await supabase
         .from("profiles")
-        .select("user_id, display_name, avatar_url")
+        .select("user_id, display_name, avatar_url, school_name")
         .in("user_id", ids);
       setChampionDetails(
         championEntries.map((w) => ({
@@ -168,6 +169,7 @@ export default function LeaderboardPage() {
                     user_id: user.id,
                     display_name: myRow.display_name,
                     avatar_url: myRow.avatar_url,
+                    school_name: myRow.school_name,
                     achievements: myRow.achievements,
                     week_score: myRow.week_score,
                     rank: myRow.rank,
@@ -278,6 +280,7 @@ export default function LeaderboardPage() {
                           user_id: r.user_id,
                           display_name: r.display_name,
                           avatar_url: r.avatar_url,
+                          school_name: r.school_name,
                           achievements: r.achievements,
                           week_score: r.week_score,
                           rank: r.rank,
@@ -355,6 +358,7 @@ export default function LeaderboardPage() {
                               user_id: r.user_id,
                               display_name: r.display_name,
                               avatar_url: r.avatar_url,
+                              school_name: r.school_name,
                               achievements: r.achievements,
                               week_score: r.week_score,
                               rank: r.rank,

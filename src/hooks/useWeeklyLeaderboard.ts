@@ -8,6 +8,7 @@ export interface WeeklyLeaderboardRow {
   event_count: number;
   display_name: string | null;
   avatar_url: string | null;
+  school_name: string | null;
   rank: number;
   achievements: string[];
 }
@@ -62,11 +63,11 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
     const top = (board ?? []).slice(0, limit);
     const userIds = top.map((r) => r.user_id);
 
-    const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; achievements: string[] }>();
+    const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null; school_name: string | null; achievements: string[] }>();
     if (userIds.length > 0) {
       const { data: profs, error: profsErr } = await supabase
         .from("profiles")
-        .select("user_id, display_name, avatar_url, achievements")
+        .select("user_id, display_name, avatar_url, school_name, achievements")
         .in("user_id", userIds);
       if (profsErr) {
         console.error("Failed to fetch profiles for leaderboard:", profsErr);
@@ -76,6 +77,7 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
         profileMap.set(p.user_id, {
           display_name: p.display_name,
           avatar_url: p.avatar_url,
+          school_name: p.school_name ?? null,
           achievements: (Array.isArray(p.achievements) ? p.achievements : []).filter((a): a is string => typeof a === 'string'),
         });
       }
@@ -89,6 +91,7 @@ export function useWeeklyLeaderboard(userId?: string | null, limit = 100) {
         event_count: Number(r.event_count),
         display_name: prof?.display_name || r.display_name || r.user_id.slice(0, 8),
         avatar_url: prof?.avatar_url ?? r.avatar_url ?? null,
+        school_name: prof?.school_name ?? null,
         achievements: prof?.achievements ?? [],
         rank: Number(r.rank),
       };

@@ -1,0 +1,8 @@
+# CLI upload exclusions (build gets VITE_* from the Vercel dashboard env)
+.env
+.env.local
+.env.*
+.gstack
+dist
+android
+ios

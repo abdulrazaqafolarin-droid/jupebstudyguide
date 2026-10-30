@@ -13,6 +13,9 @@ import { VoiceNotePlayer } from './VoiceNotePlayer';
 import { VoiceRecorder } from './VoiceRecorder';
 import { GroupInfoPanel } from './GroupInfoPanel';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
+import { useMicPermission } from '@/hooks/useMicPermission';
+import { MicPermissionDialog } from './MicPermissionDialog';
+import { useUserStorage } from '@/hooks/useUserStorage';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { linkify, getDocTypeIcon, formatFileSize } from '@/lib/linkify';
 import { safeMediaUrl, isValidUrl } from '@/lib/url';
@@ -344,6 +347,13 @@ export function ChatArea({
     lockRecording: vnLockRecording,
     uploadAndSend: vnUploadAndSend,
   } = useVoiceRecorder();
+
+  // Microphone permission: ask BEFORE the press-hold gesture so the system
+  // prompt has context, and guide to settings when already blocked.
+  const { state: micState, request: requestMic } = useMicPermission();
+  const [micPrimed, setMicPrimed] = useUserStorage<boolean>('mic-primed', false);
+  const [vnPermDialog, setVnPermDialog] = useState<'priming' | 'blocked' | null>(null);
+  const [vnPermRequesting, setVnPermRequesting] = useState(false);
   const [vnPreviewUrl, setVnPreviewUrl] = useState<string | null>(null);
   useEffect(() => {
     if (vnRecordedBlob) {
@@ -719,6 +729,16 @@ export function ChatArea({
 
   const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
     if (uploadingFile || recordingStateRef.current !== 'idle') return;
+    // Permission gate: hard-denied always opens guidance; never-asked opens
+    // the priming dialog once (mic-primed skips it afterwards).
+    if (micState === 'denied') {
+      setVnPermDialog('blocked');
+      return;
+    }
+    if (!micPrimed && micState !== 'granted') {
+      setVnPermDialog('priming');
+      return;
+    }
     e.preventDefault();
     vnGestureRef.current = { startX: e.clientX, startY: e.clientY, started: false, pointerId: e.pointerId };
     const el = e.currentTarget as HTMLElement;
@@ -728,12 +748,30 @@ export function ChatArea({
     setVnDragY(0);
     const ok = await vnStartRecording();
     vnGestureRef.current.started = ok;
-    if (ok) onRecordingVn?.(true);
+    if (ok) {
+      setMicPrimed(true);
+      onRecordingVn?.(true);
+    }
     if (!ok) {
       setVnIsDragging(false);
       try { el.releasePointerCapture(e.pointerId); } catch { void 0; }
+      // A permission-shaped failure surfaces via the vnError effect below,
+      // which opens the recovery dialog in addition to the toast.
     }
-  }, [uploadingFile, vnStartRecording, onRecordingVn]);
+  }, [uploadingFile, vnStartRecording, onRecordingVn, micState, micPrimed, setMicPrimed]);
+
+  const handleVnAllowMic = useCallback(async () => {
+    setVnPermRequesting(true);
+    const ok = await requestMic();
+    setVnPermRequesting(false);
+    if (ok) {
+      setMicPrimed(true);
+      setVnPermDialog(null);
+      toast.success('Microphone ready — hold the mic to record 🎙️');
+    } else {
+      setVnPermDialog('blocked');
+    }
+  }, [requestMic, setMicPrimed]);
 
   const handleVnLock = useCallback(async () => {
     await vnLockRecording();
@@ -794,6 +832,10 @@ export function ChatArea({
       lastVnErrorRef.current = vnError;
       onRecordingVn?.(false);
       toast.error(vnError);
+      // A permission-shaped failure gets the recovery dialog, not just a toast.
+      if (/permission denied|NotAllowedError/i.test(vnError)) {
+        setVnPermDialog('blocked');
+      }
     }
     if (!vnError) {
       lastVnErrorRef.current = null;
@@ -2246,6 +2288,14 @@ export function ChatArea({
         onLeft={() => { onBack?.(); }}
         onDeleted={() => { onBack?.(); }}
         onStartChatWith={onStartDm}
+      />
+
+      <MicPermissionDialog
+        open={vnPermDialog !== null}
+        variant={vnPermDialog ?? 'priming'}
+        requesting={vnPermRequesting}
+        onAllow={handleVnAllowMic}
+        onClose={() => setVnPermDialog(null)}
       />
 
     </div>

@@ -41,11 +41,12 @@ import { useScoreAwarder } from '@/hooks/useScoreAwarder';
 import LeaderboardPanel from '@/components/LeaderboardPanel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserStorage } from '@/hooks/useUserStorage';
-import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, FileText, Library } from 'lucide-react';
+import { BookOpen, Brain, Target, Flame, GraduationCap, CalendarDays, FileText, Library, Sparkles, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import rutexLogo from '@/assets/rutex-logo.jpg';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
+import { shouldShowSetupNudge } from '@/lib/onboarding';
 import { cn } from '@/lib/utils';
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
@@ -147,6 +148,12 @@ const Index = () => {
 
   // Track study session hours for Night Owl & Early Bird achievements
   const [sessionHours, setSessionHours] = useUserStorage<number[]>('session-hours', []);
+
+  // Onboarding: electives chosen in the welcome flow pre-seed the syllabus setup
+  const [onboardingElectives] = useUserStorage<Subject[]>('onboarding-subjects', []);
+  // Dismissible "finish setup" nudge for students who skipped the welcome flow
+  const [nudgeDismissed, setNudgeDismissed] = useUserStorage<boolean>('onboarding-nudge-dismissed', false);
+  const showSetupNudge = !nudgeDismissed && shouldShowSetupNudge(profile);
   const studiedAfterMidnight = useMemo(() =>
     sessionHours.some(h => h >= 0 && h < 5),
     [sessionHours],
@@ -349,6 +356,7 @@ const Index = () => {
     studiedAfterMidnight,
     studiedBefore6am,
     consecutiveCorrect,
+    onboardingCompleted: !!profile?.onboarding_completed_at,
   }, handleNewAchievement, profile?.achievements ?? []);
 
   // Sync unlocked achievements to profiles table
@@ -629,6 +637,7 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-background p-4 md:p-8 flex items-center justify-center">
         <SyllabusSetup
+          initialElectives={onboardingElectives}
           onStart={(combination) => {
             const allSubjects = [...combination.core, ...combination.elective];
             const today = new Date().toISOString().split('T')[0];
@@ -762,6 +771,35 @@ const Index = () => {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 pt-8">
+        {/* Finish-setup nudge — shown only when the welcome flow was skipped */}
+        {showSetupNudge && (
+          <section className="mb-6 animate-in-up">
+            <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl border border-primary/20 p-4 flex items-center gap-3">
+              <span className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">Finish setting up</p>
+                <p className="text-xs text-muted-foreground">Theme, study plan &amp; chat — about 1 minute.</p>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => navigate('/onboarding')}
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity rounded-lg h-9 px-3 text-xs shrink-0"
+              >
+                Finish
+              </Button>
+              <button
+                onClick={() => setNudgeDismissed(true)}
+                aria-label="Dismiss setup reminder"
+                className="p-1.5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* Daily Mission */}
         <DailyMissionCard
           session={activeDailySession}

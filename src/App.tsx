@@ -43,6 +43,7 @@ const ActivationCodes = lazy(() => import("./pages/admin/ActivationCodes"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const SyllabusPage = lazy(() => import("./pages/SyllabusPage"));
 const StudyChatPage = lazy(() => import("./pages/StudyChatPage"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 
 
 const queryClient = new QueryClient();
@@ -158,8 +159,8 @@ function AnimatedRoutes() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/settings/security" 
+        <Route
+          path="/settings/security"
           element={
             <ProtectedRoute>
               <ErrorBoundary>
@@ -169,6 +170,16 @@ function AnimatedRoutes() {
               </ErrorBoundary>
             </ProtectedRoute>
           } 
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <ErrorBoundary>
+                <Onboarding />
+              </ErrorBoundary>
+            </ProtectedRoute>
+          }
         />
         <Route 
           path="/friends" 

@@ -17,6 +17,9 @@ export interface Profile {
   privacy_online_status: string;
   privacy_groups: string;
   achievements: string[];
+  is_admin?: boolean;
+  onboarding_completed_at?: string | null;
+  onboarding_data?: unknown;
 }
 
 export function useProfile() {
@@ -34,7 +37,7 @@ export function useProfile() {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('id, user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, privacy_last_seen, privacy_read_receipts, privacy_activity_status, privacy_online_status, privacy_groups, achievements')
+        .select('id, user_id, display_name, avatar_url, bio, privacy_avatar, privacy_profile, privacy_last_seen, privacy_read_receipts, privacy_activity_status, privacy_online_status, privacy_groups, achievements, is_admin, onboarding_completed_at, onboarding_data')
         .eq('user_id', user.id)
         .maybeSingle();
 

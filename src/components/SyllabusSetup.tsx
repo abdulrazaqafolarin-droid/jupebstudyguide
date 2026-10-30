@@ -10,12 +10,14 @@ import { GraduationCap, BookOpen, Calendar, ChevronRight, Info } from 'lucide-re
 interface SyllabusSetupProps {
   onStart: (combination: UserSubjectCombination) => void;
   onCancel: () => void;
+  /** Electives pre-picked from the onboarding flow (biology/math). */
+  initialElectives?: Subject[];
 }
 
-export const SyllabusSetup: React.FC<SyllabusSetupProps> = ({ onStart, onCancel }) => {
+export const SyllabusSetup: React.FC<SyllabusSetupProps> = ({ onStart, onCancel, initialElectives = [] }) => {
   // Physics and Chemistry are mandatory for all JUPEB students
-  const [hasBiology, setHasBiology] = useState(false);
-  const [hasMath, setHasMath] = useState(false);
+  const [hasBiology, setHasBiology] = useState(initialElectives.includes('biology'));
+  const [hasMath, setHasMath] = useState(initialElectives.includes('math'));
 
   const handleStart = () => {
     const combination: UserSubjectCombination = {

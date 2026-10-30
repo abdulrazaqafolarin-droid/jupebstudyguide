@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Loader2, Save, Check, Sun, Moon, Shield } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Check, Sun, Moon, Shield, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -110,6 +110,20 @@ export default function SettingsProfile() {
     setSaving(false);
   };
 
+  const handleThemeChange = (t: 'dark' | 'light') => {
+    setTheme(t);
+    // Mirror to the profile so the choice follows the student across devices.
+    if (user) {
+      supabase
+        .from('profiles')
+        .update({ theme_preference: t })
+        .eq('user_id', user.id)
+        .then(({ error }) => {
+          if (error) console.warn('Theme preference not saved:', error.message);
+        });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -210,14 +224,14 @@ export default function SettingsProfile() {
             </div>
             <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
               <button
-                onClick={() => setTheme('dark')}
+                onClick={() => handleThemeChange('dark')}
                 className={`p-2 rounded-md transition-all ${theme === 'dark' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 title="Dark mode"
               >
                 <Moon className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setTheme('light')}
+                onClick={() => handleThemeChange('light')}
                 className={`p-2 rounded-md transition-all ${theme === 'light' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 title="Light mode"
               >
@@ -225,6 +239,29 @@ export default function SettingsProfile() {
               </button>
             </div>
           </div>
+        </motion.section>
+
+        {/* Replay welcome tour */}
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.14 }}
+        >
+          <button
+            onClick={() => navigate('/onboarding?replay=1')}
+            className="w-full flex items-center justify-between bg-card rounded-2xl border border-border p-5 hover:bg-accent/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold">Replay welcome tour</p>
+                <p className="text-xs text-muted-foreground"> revisit theme, study plan &amp; chat setup</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
         </motion.section>
 
         {/* Security */}

@@ -462,6 +462,64 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
+  /* ---- Onboarding ---- */
+
+  /* Scoped theme mirrors: the theme-step preview cards render real tokens in
+     BOTH themes regardless of the active global theme, so the preview never
+     lies. Only the vars the mini home actually uses are mirrored. */
+  .theme-scope-dark {
+    --background: 220 20% 10%;
+    --foreground: 45 20% 95%;
+    --card: 220 18% 14%;
+    --card-foreground: 45 20% 95%;
+    --border: 220 15% 22%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 220 20% 10%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 168 76% 42%;
+  }
+
+  .theme-scope-light {
+    --background: 45 30% 96%;
+    --foreground: 220 25% 12%;
+    --card: 45 25% 98%;
+    --card-foreground: 220 25% 12%;
+    --border: 220 12% 82%;
+    --primary: 38 92% 46%;
+    --primary-foreground: 45 30% 98%;
+    --muted-foreground: 220 15% 45%;
+    --accent: 168 65% 35%;
+  }
+
+  /* One-time gold sweep across the welcome headline (not a loop). */
+  .text-shimmer-sweep {
+    background-size: 200% 100%;
+    animation: shimmerSweep 1.2s ease-out 1 both;
+  }
+
+  @keyframes shimmerSweep {
+    from { background-position: 120% 0; }
+    to { background-position: -20% 0; }
+  }
+
+  /* Voice-note waveform bars in the chat-step mockup (loop, reduced-motion off). */
+  .wave-bar {
+    animation: waveBar 0.7s ease-in-out infinite alternate;
+    transform-origin: center;
+  }
+
+  @keyframes waveBar {
+    from { transform: scaleY(0.4); }
+    to { transform: scaleY(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .text-shimmer-sweep,
+    .wave-bar {
+      animation: none;
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------------

@@ -25,9 +25,19 @@ export interface AchievementStats {
   studiedAfterMidnight?: boolean;
   studiedBefore6am?: boolean;
   consecutiveCorrect?: number;
+  onboardingCompleted?: boolean;
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
+  {
+    id: 'welcome_aboard',
+    name: 'Welcome Aboard',
+    description: 'Set up your study space',
+    icon: '🎓',
+    condition: (s) => s.onboardingCompleted === true,
+    rarity: 'common',
+    getProgress: (s) => ({ current: s.onboardingCompleted ? 1 : 0, max: 1 }),
+  },
   {
     id: 'first_day',
     name: 'First Step',

@@ -779,6 +779,8 @@ export type Database = {
           // PENDING MIGRATION: see supabase/pending-migrations.sql (not yet applied live)
           mfa_enrolled: boolean
           mfa_enrolled_at: string | null
+          onboarding_completed_at: string | null
+          onboarding_data: Json
           privacy_activity_status: string
           privacy_avatar: string
           privacy_groups: string
@@ -787,6 +789,7 @@ export type Database = {
           privacy_profile: string
           privacy_read_receipts: string
           public_key: string | null
+          theme_preference: string | null
           updated_at: string
           user_id: string
         }
@@ -802,6 +805,8 @@ export type Database = {
           last_seen_at?: string | null
           mfa_enrolled?: boolean
           mfa_enrolled_at?: string | null
+          onboarding_completed_at?: string | null
+          onboarding_data?: Json
           privacy_activity_status?: string
           privacy_avatar?: string
           privacy_groups?: string
@@ -810,6 +815,7 @@ export type Database = {
           privacy_profile?: string
           privacy_read_receipts?: string
           public_key?: string | null
+          theme_preference?: string | null
           updated_at?: string
           user_id: string
         }
@@ -825,6 +831,8 @@ export type Database = {
           last_seen_at?: string | null
           mfa_enrolled?: boolean
           mfa_enrolled_at?: string | null
+          onboarding_completed_at?: string | null
+          onboarding_data?: Json
           privacy_activity_status?: string
           privacy_avatar?: string
           privacy_groups?: string
@@ -833,6 +841,7 @@ export type Database = {
           privacy_profile?: string
           privacy_read_receipts?: string
           public_key?: string | null
+          theme_preference?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -10,6 +10,7 @@ interface VoiceRecorderProps {
   isLocked: boolean;
   isSending: boolean;
   isStarting?: boolean;
+  error?: string | null;
   previewUrl?: string | null;
   dragX?: number;
   dragY?: number;
@@ -27,6 +28,7 @@ export function VoiceRecorder({
   isLocked,
   isSending,
   isStarting = false,
+  error,
   previewUrl,
   dragX = 0,
   dragY = 0,
@@ -156,6 +158,7 @@ export function VoiceRecorder({
 
   if (isLocked) {
     return (
+      <div className="space-y-1">
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
@@ -214,6 +217,17 @@ export function VoiceRecorder({
           </svg>
         </button>
       </motion.div>
+      {error && (
+        <motion.p
+          initial={{ opacity: 0, y: 3 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="px-4 pb-1 text-xs text-destructive"
+          role="alert"
+        >
+          {error} Your recording is safe. Tap send to retry.
+        </motion.p>
+      )}
+      </div>
     );
   }
 

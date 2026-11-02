@@ -2067,7 +2067,15 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
+        <AnimatePresence mode="wait" initial={false}>
         {isRecording || isSending || vnIsLocked ? (
+          <motion.div
+            key="voice-recorder"
+            initial={{ opacity: 0, y: 8, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.985 }}
+            transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+          >
           <VoiceRecorder
             waveform={vnWaveform}
             duration={vnDuration}
@@ -2081,7 +2089,15 @@ export function ChatArea({
             onCancel={() => { setVnIsDragging(false); vnCancelRecording(); onRecordingVn?.(false); }}
             onLock={handleVnLock}
           />
+          </motion.div>
         ) : (
+        <motion.div
+          key="chat-composer"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 6 }}
+          transition={{ duration: 0.16, ease: 'easeOut' }}
+        >
         <div className="px-3 py-2.5">
           {!canSend && (
             <div className="text-[11px] text-muted-foreground text-center pb-2">
@@ -2193,7 +2209,9 @@ export function ChatArea({
             )}
           </div>
         </div>
+        </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* Contact sharing form */}

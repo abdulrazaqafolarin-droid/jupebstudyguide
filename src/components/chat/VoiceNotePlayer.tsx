@@ -25,6 +25,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const isSeekingRef = useRef(false);
 
   const {
     waveform: liveWaveform,
@@ -46,6 +47,11 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    setIsLoaded(false);
+    setDuration(0);
+    setCurrentTime(0);
+    setIsPlaying(false);
+    setAudioError(false);
 
     const onLoaded = () => {
       setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
@@ -123,16 +129,38 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
     }
   }, [isPlaying, resume, suspend, audioError]);
 
-  const handleSeek = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  const seekToPointer = useCallback((clientX: number, element: HTMLDivElement) => {
     const audio = audioRef.current;
-    if (!audio || duration === 0) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
+    if (!audio || duration <= 0) return;
+    const rect = element.getBoundingClientRect();
     if (rect.width <= 0) return;
-    const pct = Math.max(0, Math.min(1, x / rect.width));
-    audio.currentTime = pct * duration;
+    const progress = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    audio.currentTime = progress * duration;
     setCurrentTime(audio.currentTime);
   }, [duration]);
+
+  const handleSeekPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isLoaded || hideControls || duration <= 0) return;
+    event.preventDefault();
+    isSeekingRef.current = true;
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* browser may not support capture */ }
+    seekToPointer(event.clientX, event.currentTarget);
+  }, [isLoaded, hideControls, duration, seekToPointer]);
+
+  const handleSeekPointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isSeekingRef.current) return;
+    seekToPointer(event.clientX, event.currentTarget);
+  }, [seekToPointer]);
+
+  const finishSeekPointer = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isSeekingRef.current) return;
+    isSeekingRef.current = false;
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+    } catch { /* pointer capture may already be released */ }
+  }, []);
 
   const handleSeekKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
     const audio = audioRef.current;
@@ -171,7 +199,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
       // downloads or is temporarily unable to fetch the media as a blob.
       window.open(src, '_blank', 'noopener,noreferrer');
     }
-  }, [src, fileName]);
+  }, [src, fileName, fileType]);
 
   const progress = duration > 0 ? currentTime / duration : 0;
   const remaining = Math.max(0, duration - currentTime);
@@ -206,10 +234,14 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
       <div className="flex-1 min-w-0">
         <motion.div
           ref={progressRef}
-          className="flex items-center gap-[2px] h-8 cursor-pointer group relative"
-          onClick={!hideControls && isLoaded ? handleSeek : undefined}
+          className="flex items-center gap-[2px] h-8 cursor-pointer select-none group relative rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          onPointerDown={!hideControls && isLoaded ? handleSeekPointerDown : undefined}
+          onPointerMove={!hideControls && isLoaded ? handleSeekPointerMove : undefined}
+          onPointerUp={handleSeekPointerUp}
+          onPointerCancel={handleSeekPointerUp}
           onKeyDown={!hideControls && isLoaded ? handleSeekKeyDown : undefined}
           tabIndex={!hideControls && isLoaded ? 0 : undefined}
+          style={{ touchAction: 'pan-y' }}
           role="slider"
           aria-label="Voice note playback position"
           aria-valuemin={0}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Play, Pause, Volume2, VolumeX, Download } from 'lucide-react';
+import { Play, Pause, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useAudioAnalyser } from '@/hooks/useAudioAnalyser';
@@ -18,7 +18,6 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [useSpeaker, setUseSpeaker] = useState(true);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -45,40 +44,37 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
     if (!audio) return;
 
     const onLoaded = () => {
-      setDuration(audio.duration);
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
       setIsLoaded(true);
       startFromAudio(audio);
     };
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
     const onEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
       resetWaveform();
       suspend();
     };
-    const onTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-    };
+    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
 
     if (audio.readyState >= 1) onLoaded();
     audio.addEventListener('loadedmetadata', onLoaded);
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('timeupdate', onTimeUpdate);
 
     return () => {
       audio.removeEventListener('loadedmetadata', onLoaded);
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('timeupdate', onTimeUpdate);
+      audio.pause();
       cleanupAnalyser();
     };
   }, [src, startFromAudio, cleanupAnalyser, resetWaveform, suspend]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (typeof (audio as HTMLAudioElement).setSinkId === 'function') {
-      (audio as HTMLAudioElement).setSinkId(useSpeaker ? 'default' : 'earpiece').catch(() => {});
-    }
-  }, [useSpeaker]);
 
   const togglePlay = useCallback(async () => {
     const audio = audioRef.current;
@@ -108,11 +104,39 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
     setCurrentTime(audio.currentTime);
   }, [duration]);
 
-  const handleDownload = useCallback(() => {
-    const a = document.createElement('a');
-    a.href = src;
-    a.download = fileName || 'voice-note';
-    a.click();
+  const handleSeekKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    if (!audio || duration <= 0) return;
+
+    let nextTime = audio.currentTime;
+    if (event.key === 'ArrowLeft') nextTime -= 5;
+    else if (event.key === 'ArrowRight') nextTime += 5;
+    else if (event.key === 'Home') nextTime = 0;
+    else if (event.key === 'End') nextTime = duration;
+    else return;
+
+    event.preventDefault();
+    audio.currentTime = Math.max(0, Math.min(duration, nextTime));
+    setCurrentTime(audio.currentTime);
+  }, [duration]);
+
+  const handleDownload = useCallback(async () => {
+    try {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error('Could not download this voice note');
+      const objectUrl = URL.createObjectURL(await response.blob());
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = fileName || 'voice-note';
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30_000);
+    } catch {
+      // A new tab is a useful fallback when the device blocks cross-origin
+      // downloads or is temporarily unable to fetch the media as a blob.
+      window.open(src, '_blank', 'noopener,noreferrer');
+    }
   }, [src, fileName]);
 
   const progress = duration > 0 ? currentTime / duration : 0;
@@ -154,11 +178,15 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
           ref={progressRef}
           className="flex items-center gap-[2px] h-8 cursor-pointer group relative"
           onClick={!hideControls && isLoaded ? handleSeek : undefined}
+          onKeyDown={!hideControls && isLoaded ? handleSeekKeyDown : undefined}
+          tabIndex={!hideControls && isLoaded ? 0 : undefined}
           role="slider"
-          aria-label="Seek"
+          aria-label="Voice note playback position"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progress * 100)}
+          aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
+          aria-disabled={hideControls || !isLoaded}
           initial="init"
           animate="in"
           variants={{ init: {}, in: { transition: { staggerChildren: 0.015 } } }}
@@ -215,25 +243,12 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
               >
                 <Download className="w-3 h-3" />
               </button>
-              {typeof HTMLAudioElement.prototype.setSinkId === 'function' && (
-                <button
-                  onClick={() => setUseSpeaker(v => !v)}
-                  className="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-foreground/5"
-                  title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
-                  aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
-                >
-                  {useSpeaker ? (
-                    <Volume2 className="w-3 h-3" />
-                  ) : (
-                    <VolumeX className="w-3 h-3" />
-                  )}
-                </button>
-              )}
+
             </div>
           </div>
          )}
       </div>
-      <audio ref={audioRef} src={src} preload="metadata" />
+      <audio key={src} ref={audioRef} crossOrigin="anonymous" src={src} preload="metadata" />
     </div>
   );
 }

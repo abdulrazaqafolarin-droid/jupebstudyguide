@@ -237,8 +237,8 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
           className="flex items-center gap-[2px] h-8 cursor-pointer select-none group relative rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           onPointerDown={!hideControls && isLoaded ? handleSeekPointerDown : undefined}
           onPointerMove={!hideControls && isLoaded ? handleSeekPointerMove : undefined}
-          onPointerUp={handleSeekPointerUp}
-          onPointerCancel={handleSeekPointerUp}
+          onPointerUp={finishSeekPointer}
+          onPointerCancel={finishSeekPointer}
           onKeyDown={!hideControls && isLoaded ? handleSeekKeyDown : undefined}
           tabIndex={!hideControls && isLoaded ? 0 : undefined}
           style={{ touchAction: 'pan-y' }}

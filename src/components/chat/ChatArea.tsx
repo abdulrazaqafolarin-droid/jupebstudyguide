@@ -894,13 +894,20 @@ export function ChatArea({
         onRecordingVn?.(false);
         return;
       }
+      // If the user released before the microphone/recorder actually
+      // started, there was no hold interval to record. Discard instead of
+      // accidentally sending a tiny clip after a delayed permission response.
+      if (gesture.released) {
+        gesture.finished = true;
+        vnGestureActiveRef.current = false;
+        vnCancelRecording();
+        onRecordingVn?.(false);
+        return;
+      }
+
       gesture.started = true;
       setMicPrimed(true);
-      if (gesture.released) {
-        void finishVnGesture(gesture);
-      } else {
-        onRecordingVn?.(true);
-      }
+      onRecordingVn?.(true);
     }).catch((err: unknown) => {
       gesture.finished = true;
       vnGestureActiveRef.current = false;

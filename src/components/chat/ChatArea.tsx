@@ -833,14 +833,7 @@ export function ChatArea({
     // Attach listeners before awaiting getUserMedia. The old effect-based
     // listeners could miss a quick pointer-up while the permission request
     // was still resolving, leaving the microphone recording after release.
-    const removeListeners = () => {
-      window.removeEventListener('pointermove', handleMove);
-      window.removeEventListener('pointerup', handleUp);
-      window.removeEventListener('pointercancel', handleCancel);
-      window.removeEventListener('blur', handleAbort);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (vnGestureCleanupRef.current === removeListeners) vnGestureCleanupRef.current = null;
-    };
+    let removeListeners = () => {};
     const handleMove = (event: PointerEvent) => {
       if (event.pointerId !== gesture.pointerId || gesture.released) return;
       gesture.lastX = event.clientX;
@@ -860,14 +853,22 @@ export function ChatArea({
       removeListeners();
       setVnIsDragging(false);
       if (gesture.started) void finishVnGesture(gesture);
-      // If capture is still being initialized, the start promise below will
-      // finish or cancel this gesture as soon as the microphone is ready.
+      // If the mic permission prompt is still pending, the start promise below
+      // will finish or cancel this gesture as soon as the stream becomes ready.
     };
     const handleUp = (event: PointerEvent) => complete(event, false);
     const handleCancel = (event: PointerEvent) => complete(event, true);
     const handleAbort = () => complete(undefined, true);
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') complete(undefined, true);
+    };
+    removeListeners = () => {
+      window.removeEventListener('pointermove', handleMove);
+      window.removeEventListener('pointerup', handleUp);
+      window.removeEventListener('pointercancel', handleCancel);
+      window.removeEventListener('blur', handleAbort);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (vnGestureCleanupRef.current === removeListeners) vnGestureCleanupRef.current = null;
     };
 
     window.addEventListener('pointermove', handleMove);

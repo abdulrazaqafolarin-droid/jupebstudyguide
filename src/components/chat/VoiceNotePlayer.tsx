@@ -4,17 +4,19 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useAudioAnalyser } from '@/hooks/useAudioAnalyser';
 import { claimVoiceNotePlayback, releaseVoiceNotePlayback } from '@/lib/voice-note-audio';
+import { getVoiceNoteFileExtension, formatVoiceNoteDuration } from '@/lib/voice-note';
 
 interface VoiceNotePlayerProps {
   src: string;
   isOwn?: boolean;
   fileName?: string;
+  fileType?: string;
   hideControls?: boolean;
 }
 
 const BAR_COUNT = 30;
 
-export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNotePlayerProps) {
+export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }: VoiceNotePlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -155,7 +157,11 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       const objectUrl = URL.createObjectURL(await response.blob());
       const anchor = document.createElement('a');
       anchor.href = objectUrl;
-      anchor.download = fileName || 'voice-note';
+      const name = fileName || 'voice-note';
+      const downloadName = /\.[a-z0-9]{2,5}$/i.test(name)
+        ? name
+        : `${name}.${getVoiceNoteFileExtension(fileType || response.headers.get('content-type') || '')}`;
+      anchor.download = downloadName;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -170,11 +176,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
   const progress = duration > 0 ? currentTime / duration : 0;
   const remaining = Math.max(0, duration - currentTime);
 
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, '0')}`;
-  };
+  const formatTime = formatVoiceNoteDuration;
 
   const waveform = isPlaying ? liveWaveform : staticBars;
 

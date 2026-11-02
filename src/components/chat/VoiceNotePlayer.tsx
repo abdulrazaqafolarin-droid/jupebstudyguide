@@ -18,6 +18,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [audioError, setAudioError] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
     const onLoaded = () => {
       setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
       setIsLoaded(true);
+      setAudioError(false);
       startFromAudio(audio);
     };
     const onPlay = () => setIsPlaying(true);
@@ -57,6 +59,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       suspend();
     };
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const onError = () => { setAudioError(true); setIsPlaying(false); };
 
     if (audio.readyState >= 1) onLoaded();
     audio.addEventListener('loadedmetadata', onLoaded);
@@ -64,6 +67,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
     audio.addEventListener('pause', onPause);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('timeupdate', onTimeUpdate);
+    audio.addEventListener('error', onError);
 
     return () => {
       audio.removeEventListener('loadedmetadata', onLoaded);
@@ -71,6 +75,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       audio.removeEventListener('pause', onPause);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('timeupdate', onTimeUpdate);
+      audio.removeEventListener('error', onError);
       audio.pause();
       cleanupAnalyser();
     };
@@ -84,21 +89,27 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       suspend();
       setIsPlaying(false);
     } else {
-      await resume();
       try {
+        await resume();
+        if (audioError) {
+          audio.load();
+          setAudioError(false);
+        }
         await audio.play();
         setIsPlaying(true);
       } catch {
         setIsPlaying(false);
+        setAudioError(true);
       }
     }
-  }, [isPlaying, resume, suspend]);
+  }, [isPlaying, resume, suspend, audioError]);
 
   const handleSeek = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const audio = audioRef.current;
     if (!audio || duration === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
+    if (rect.width <= 0) return;
     const pct = Math.max(0, Math.min(1, x / rect.width));
     audio.currentTime = pct * duration;
     setCurrentTime(audio.currentTime);
@@ -248,7 +259,10 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
           </div>
          )}
       </div>
-      <audio key={src} ref={audioRef} crossOrigin="anonymous" src={src} preload="metadata" />
+      {audioError && (
+        <span role="status" className="sr-only">This voice note could not be loaded. Tap play to retry.</span>
+      )}
+      <audio key={src} ref={audioRef} src={src} preload="metadata" />
     </div>
   );
 }

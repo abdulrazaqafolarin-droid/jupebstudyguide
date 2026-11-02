@@ -60,6 +60,7 @@ describe("voice note playback coordination", () => {
     const third = { pause: vi.fn() };
     claimVoiceNotePlayback(third);
     expect(second.pause).toHaveBeenCalledTimes(1);
+    releaseVoiceNotePlayback(third);
   });
 
   it("does not let an old player release a newer player's ownership", async () => {
@@ -74,5 +75,6 @@ describe("voice note playback coordination", () => {
     claimVoiceNotePlayback(next);
 
     expect(stale.pause).toHaveBeenCalledTimes(1);
+    releaseVoiceNotePlayback(next);
   });
 });

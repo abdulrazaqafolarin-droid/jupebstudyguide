@@ -46,3 +46,15 @@ export function isDuplicateStorageUploadError(
   return String(error.statusCode ?? "") === "409" ||
     /already exists|duplicate|resource exists/i.test(error.message ?? "");
 }
+
+export type VoiceNoteGestureAction = "cancel" | "lock" | "send";
+
+/** Resolve the release gesture consistently: left-to-cancel takes precedence over up-to-lock. */
+export function getVoiceNoteGestureAction(
+  deltaX: number,
+  deltaY: number,
+): VoiceNoteGestureAction {
+  if (deltaX <= -80) return "cancel";
+  if (deltaY <= -70) return "lock";
+  return "send";
+}

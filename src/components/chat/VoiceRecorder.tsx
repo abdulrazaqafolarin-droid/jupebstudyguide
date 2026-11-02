@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { formatVoiceNoteDuration } from '@/lib/voice-note';
 
 interface VoiceRecorderProps {
   waveform: number[];
@@ -16,11 +17,7 @@ interface VoiceRecorderProps {
   onLock: () => void;
 }
 
-const formatTime = (s: number) => {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${sec.toString().padStart(2, '0')}`;
-};
+const formatTime = formatVoiceNoteDuration;
 
 export function VoiceRecorder({
   waveform,
@@ -44,21 +41,28 @@ export function VoiceRecorder({
     if (isPlaying) {
       audioRef.current?.pause();
       setIsPlaying(false);
-    } else {
-      if (!audioRef.current) {
-        const audio = new Audio(previewUrl);
-        audio.addEventListener('timeupdate', () => {
-          if (audio.duration) setAudioProgress(audio.currentTime / audio.duration);
-        });
-        audio.addEventListener('ended', () => { setIsPlaying(false); setAudioProgress(0); });
-        audio.onerror = () => setIsPlaying(false);
-        audioRef.current = audio;
-      } else {
-        audioRef.current.currentTime = 0;
-      }
-      audioRef.current.play()?.catch(() => setIsPlaying(false));
-      setIsPlaying(true);
+      return;
     }
+
+    if (!audioRef.current) {
+      const audio = new Audio(previewUrl);
+      audio.preload = 'metadata';
+      audio.addEventListener('timeupdate', () => {
+        if (audio.duration) setAudioProgress(audio.currentTime / audio.duration);
+      });
+      audio.addEventListener('ended', () => {
+        setIsPlaying(false);
+        setAudioProgress(0);
+        audio.currentTime = 0;
+      });
+      audio.addEventListener('pause', () => setIsPlaying(false));
+      audio.onerror = () => setIsPlaying(false);
+      audioRef.current = audio;
+    }
+
+    const audio = audioRef.current;
+    if (audio.ended) audio.currentTime = 0;
+    void audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
   }, [previewUrl, isPlaying]);
 
   useEffect(() => {
@@ -81,7 +85,6 @@ export function VoiceRecorder({
   const cancelRatio = Math.min(1, Math.max(0, -dragX / 110));
   const lockRatio = Math.min(1, Math.max(0, -dragY / 90));
   const isCancelling = cancelRatio > 0.6;
-  const isLocking = lockRatio > 0.6;
 
   if (isSending) {
     return (
@@ -172,6 +175,7 @@ export function VoiceRecorder({
           opacity: 0.55 + (1 - cancelRatio) * 0.45,
           transform: 'scaleX(1) translateX(0)',
           x: `${Math.min(0, dragX * 0.55)}px`,
+          scale: isDragging ? 1.015 : 1,
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 24 }}
         className="flex items-center gap-2.5 h-[46px] rounded-2xl bg-card border border-border/30 shadow-md px-3.5 overflow-hidden relative mx-3"

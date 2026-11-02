@@ -1275,7 +1275,16 @@ export function ChatArea({
                     Recording voice note…
                   </span>
                 ) : isGroup ? (
-                  typingMemberNames.length > 0 ? (
+                  recordingMemberNames.length > 0 ? (
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                      <span className="text-accent font-medium">
+                        {recordingMemberNames.length === 1
+                          ? `${recordingMemberNames[0]} is recording…`
+                          : `${recordingMemberNames.slice(0, 2).join(', ')}${recordingMemberNames.length > 2 ? ` +${recordingMemberNames.length - 2}` : ''} recording…`}
+                      </span>
+                    </span>
+                  ) : typingMemberNames.length > 0 ? (
                     <span className="flex items-center gap-1">
                       <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                       <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />

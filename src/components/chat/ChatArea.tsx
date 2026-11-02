@@ -19,6 +19,7 @@ import { useUserStorage } from '@/hooks/useUserStorage';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { linkify, getDocTypeIcon, formatFileSize } from '@/lib/linkify';
 import { safeMediaUrl, isValidUrl } from '@/lib/url';
+import { getVoiceNoteGestureAction } from '@/lib/voice-note';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -377,6 +378,7 @@ export function ChatArea({
   const [vnDragX, setVnDragX] = useState(0);
   const [vnDragY, setVnDragY] = useState(0);
   const [vnIsDragging, setVnIsDragging] = useState(false);
+  const [vnIsStarting, setVnIsStarting] = useState(false);
   const recordingStateRef = useRef(recordingState);
   recordingStateRef.current = recordingState;
 
@@ -791,13 +793,18 @@ export function ChatArea({
     setVnDragY(0);
     onRecordingVn?.(false);
 
-    const deltaX = gesture.lastX - gesture.startX;
-    const deltaY = gesture.lastY - gesture.startY;
-    if (gesture.cancelled || deltaX <= -80) {
+    setVnIsStarting(false);
+    const action = gesture.cancelled
+      ? 'cancel'
+      : getVoiceNoteGestureAction(
+          gesture.lastX - gesture.startX,
+          gesture.lastY - gesture.startY,
+        );
+    if (action === 'cancel') {
       vnCancelRecording();
       return;
     }
-    if (deltaY <= -70) {
+    if (action === 'lock') {
       await vnLockRecording();
       return;
     }
@@ -834,6 +841,7 @@ export function ChatArea({
     };
     vnGestureRef.current = gesture;
     setVnIsDragging(true);
+    setVnIsStarting(true);
     setVnDragX(0);
     setVnDragY(0);
 
@@ -891,6 +899,7 @@ export function ChatArea({
         vnGestureActiveRef.current = false;
         removeListeners();
         setVnIsDragging(false);
+        setVnIsStarting(false);
         onRecordingVn?.(false);
         return;
       }
@@ -900,11 +909,13 @@ export function ChatArea({
       if (gesture.released) {
         gesture.finished = true;
         vnGestureActiveRef.current = false;
+        setVnIsStarting(false);
         vnCancelRecording();
         onRecordingVn?.(false);
         return;
       }
 
+      setVnIsStarting(false);
       gesture.started = true;
       setMicPrimed(true);
       onRecordingVn?.(true);
@@ -913,6 +924,7 @@ export function ChatArea({
       vnGestureActiveRef.current = false;
       removeListeners();
       setVnIsDragging(false);
+      setVnIsStarting(false);
       onRecordingVn?.(false);
       console.error('[voice] recording start failed:', err);
     });
@@ -2085,7 +2097,7 @@ export function ChatArea({
         </AnimatePresence>
 
         <AnimatePresence mode="wait" initial={false}>
-        {isRecording || isSending || vnIsLocked ? (
+        {vnIsStarting || isRecording || isSending || vnIsLocked ? (
           <motion.div
             key="voice-recorder"
             initial={{ opacity: 0, y: 8, scale: 0.985 }}

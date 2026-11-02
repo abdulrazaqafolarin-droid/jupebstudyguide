@@ -49,7 +49,7 @@ interface ChatAreaProps {
   onProfileClick?: (userId: string) => void;
   onPushMessage?: (message: Message) => void;
   onBroadcastMessage?: (message: Message) => void;
-  onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number) => void;
+  onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number, clientMessageId: string) => void;
   onDeleteForMe?: (messageId: string) => void;
   pendingCount?: number;
   onFlushOfflineQueue?: () => void;
@@ -367,7 +367,12 @@ export function ChatArea({
   const isSending = recordingState === 'sending';
 
   // WhatsApp-style press-hold gesture tracking (document-level)
-  const vnGestureRef = useRef({ startX: 0, startY: 0, started: false, pointerId: -1 });
+  const vnGestureRef = useRef({
+    startX: 0, startY: 0, lastX: 0, lastY: 0,
+    started: false, released: false, cancelled: false, finished: false,
+    pointerId: -1,
+  });
+  const vnGestureCleanupRef = useRef<(() => void) | null>(null);
   const [vnDragX, setVnDragX] = useState(0);
   const [vnDragY, setVnDragY] = useState(0);
   const [vnIsDragging, setVnIsDragging] = useState(false);
@@ -393,6 +398,8 @@ export function ChatArea({
 
   useEffect(() => {
     return () => {
+      vnGestureCleanupRef.current?.();
+      vnGestureCleanupRef.current = null;
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
       if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
       unsubRef.current?.();
@@ -416,6 +423,11 @@ export function ChatArea({
   const typingMemberNames = isGroup && activeConv?.participants
     ? activeConv.participants
         .filter(p => p.user_id !== user?.id && isTyping(p.user_id))
+        .map(p => p.display_name || 'Someone')
+    : [];
+  const recordingMemberNames = isGroup && activeConv?.participants
+    ? activeConv.participants
+        .filter(p => p.user_id !== user?.id && isRecordingVn?.(p.user_id))
         .map(p => p.display_name || 'Someone')
     : [];
   const [lastSeenText, setLastSeenText] = useState<string | null>(null);
@@ -574,6 +586,7 @@ export function ChatArea({
     setIsNearBottom(true);
     // Clear VN recording + typing so a peer's header never keeps showing
     // "typing…" / "recording…" for a conversation you just left.
+    vnGestureCleanupRef.current?.();
     vnCancelRecording();
     onRecordingVn?.(false);
     onTyping(false);
@@ -727,39 +740,6 @@ export function ChatArea({
     }
   }, []);
 
-  const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
-    if (uploadingFile || recordingStateRef.current !== 'idle') return;
-    // Permission gate: hard-denied always opens guidance; never-asked opens
-    // the priming dialog once (mic-primed skips it afterwards).
-    if (micState === 'denied') {
-      setVnPermDialog('blocked');
-      return;
-    }
-    if (!micPrimed && micState !== 'granted') {
-      setVnPermDialog('priming');
-      return;
-    }
-    e.preventDefault();
-    vnGestureRef.current = { startX: e.clientX, startY: e.clientY, started: false, pointerId: e.pointerId };
-    const el = e.currentTarget as HTMLElement;
-    try { el.setPointerCapture(e.pointerId); } catch { void 0; }
-    setVnIsDragging(true);
-    setVnDragX(0);
-    setVnDragY(0);
-    const ok = await vnStartRecording();
-    vnGestureRef.current.started = ok;
-    if (ok) {
-      setMicPrimed(true);
-      onRecordingVn?.(true);
-    }
-    if (!ok) {
-      setVnIsDragging(false);
-      try { el.releasePointerCapture(e.pointerId); } catch { void 0; }
-      // A permission-shaped failure surfaces via the vnError effect below,
-      // which opens the recovery dialog in addition to the toast.
-    }
-  }, [uploadingFile, vnStartRecording, onRecordingVn, micState, micPrimed, setMicPrimed]);
-
   const handleVnAllowMic = useCallback(async () => {
     setVnPermRequesting(true);
     const ok = await requestMic();
@@ -775,7 +755,8 @@ export function ChatArea({
 
   const handleVnLock = useCallback(async () => {
     await vnLockRecording();
-  }, [vnLockRecording]);
+    onRecordingVn?.(false);
+  }, [vnLockRecording, onRecordingVn]);
 
   const handleVnSendLocked = useCallback(async () => {
     if (!activeConversation || !user) return;
@@ -783,47 +764,145 @@ export function ChatArea({
       await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
         onPushMessage?.(message);
         onBroadcastMessage?.(message);
-      }, (blob, senderId, duration) => {
-        onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
+      }, (blob, senderId, duration, clientMessageId) => {
+        if (!onQueueVoiceNote) {
+          throw new Error('Offline voice-note queue is unavailable. Reconnect and retry.');
+        }
+        onQueueVoiceNote(activeConversation, blob, senderId, duration, clientMessageId);
         toast.info('Voice note queued — will send when back online');
       });
     } finally {
-      // Always clear the presence flag — previously a successful send left
-      // peers seeing "Recording voice note…" forever.
       onRecordingVn?.(false);
     }
   }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote, onRecordingVn]);
 
-  useEffect(() => {
-    if (!vnIsDragging) return;
-    const g = vnGestureRef.current;
-    const handleMove = (e: PointerEvent) => {
-      if (e.pointerId !== g.pointerId) return;
-      setVnDragX(e.clientX - g.startX);
-      setVnDragY(e.clientY - g.startY);
+  const finishVnGesture = useCallback(async (gesture: typeof vnGestureRef.current) => {
+    if (gesture.finished || !gesture.started) return;
+    gesture.finished = true;
+    vnGestureCleanupRef.current?.();
+    setVnIsDragging(false);
+    setVnDragX(0);
+    setVnDragY(0);
+    onRecordingVn?.(false);
+
+    const deltaX = gesture.lastX - gesture.startX;
+    const deltaY = gesture.lastY - gesture.startY;
+    if (gesture.cancelled || deltaX <= -80) {
+      vnCancelRecording();
+      return;
+    }
+    if (deltaY <= -70) {
+      await vnLockRecording();
+      return;
+    }
+    await handleVnSendLocked();
+  }, [vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
+
+  const handleVnPointerDown = useCallback((e: React.PointerEvent) => {
+    if (uploadingFile || recordingStateRef.current !== 'idle' || !canSend) return;
+
+    // Permission gate: explain the first request and guide students when access
+    // has already been blocked by the browser or Android app settings.
+    if (micState === 'denied') {
+      setVnPermDialog('blocked');
+      return;
+    }
+    if (!micPrimed && micState !== 'granted') {
+      setVnPermDialog('priming');
+      return;
+    }
+
+    e.preventDefault();
+    vnGestureCleanupRef.current?.();
+    const gesture = {
+      startX: e.clientX,
+      startY: e.clientY,
+      lastX: e.clientX,
+      lastY: e.clientY,
+      started: false,
+      released: false,
+      cancelled: false,
+      finished: false,
+      pointerId: e.pointerId,
     };
-    const handleUp = (e: PointerEvent) => {
-      if (e.pointerId !== g.pointerId) return;
-      setVnIsDragging(false);
-      const dx = e.clientX - g.startX;
-      const dy = e.clientY - g.startY;
-      if (!g.started) { onRecordingVn?.(false); return; }
-      if (dx < -80) {
-        vnCancelRecording();
-        onRecordingVn?.(false);
-      } else if (dy < -70) {
-        vnLockRecording().catch(console.error);
-      } else {
-        handleVnSendLocked().catch(console.error);
-      }
-    };
-    window.addEventListener('pointermove', handleMove);
-    window.addEventListener('pointerup', handleUp);
-    return () => {
+    vnGestureRef.current = gesture;
+    setVnIsDragging(true);
+    setVnDragX(0);
+    setVnDragY(0);
+
+    // Attach listeners before awaiting getUserMedia. The old effect-based
+    // listeners could miss a quick pointer-up while the permission request
+    // was still resolving, leaving the microphone recording after release.
+    const removeListeners = () => {
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('pointerup', handleUp);
+      window.removeEventListener('pointercancel', handleCancel);
+      window.removeEventListener('blur', handleAbort);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (vnGestureCleanupRef.current === removeListeners) vnGestureCleanupRef.current = null;
     };
-  }, [vnIsDragging, vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
+    const handleMove = (event: PointerEvent) => {
+      if (event.pointerId !== gesture.pointerId || gesture.released) return;
+      gesture.lastX = event.clientX;
+      gesture.lastY = event.clientY;
+      setVnDragX(event.clientX - gesture.startX);
+      setVnDragY(event.clientY - gesture.startY);
+    };
+    const complete = (event?: PointerEvent, cancelled = false) => {
+      if (gesture.released) return;
+      if (event && event.pointerId !== gesture.pointerId) return;
+      if (event) {
+        gesture.lastX = event.clientX;
+        gesture.lastY = event.clientY;
+      }
+      gesture.released = true;
+      gesture.cancelled = cancelled;
+      removeListeners();
+      setVnIsDragging(false);
+      if (gesture.started) void finishVnGesture(gesture);
+      // If capture is still being initialized, the start promise below will
+      // finish or cancel this gesture as soon as the microphone is ready.
+    };
+    const handleUp = (event: PointerEvent) => complete(event, false);
+    const handleCancel = (event: PointerEvent) => complete(event, true);
+    const handleAbort = () => complete(undefined, true);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') complete(undefined, true);
+    };
+
+    window.addEventListener('pointermove', handleMove);
+    window.addEventListener('pointerup', handleUp);
+    window.addEventListener('pointercancel', handleCancel);
+    window.addEventListener('blur', handleAbort);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    vnGestureCleanupRef.current = removeListeners;
+
+    void vnStartRecording().then((ok) => {
+      if (!ok) {
+        gesture.finished = true;
+        removeListeners();
+        setVnIsDragging(false);
+        onRecordingVn?.(false);
+        return;
+      }
+      gesture.started = true;
+      setMicPrimed(true);
+      if (gesture.released) {
+        void finishVnGesture(gesture);
+      } else {
+        onRecordingVn?.(true);
+      }
+    }).catch((err: unknown) => {
+      gesture.finished = true;
+      removeListeners();
+      setVnIsDragging(false);
+      onRecordingVn?.(false);
+      console.error('[voice] recording start failed:', err);
+    });
+  }, [
+    uploadingFile, canSend, micState, micPrimed, setMicPrimed,
+    vnStartRecording, finishVnGesture, onRecordingVn,
+  ]);
 
   const lastVnErrorRef = useRef<string | null>(null);
 

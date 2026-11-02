@@ -51,6 +51,10 @@ export function VoiceRecorder({
       audio.addEventListener('timeupdate', () => {
         if (audio.duration) setAudioProgress(audio.currentTime / audio.duration);
       });
+      audio.addEventListener('error', () => {
+        releaseVoiceNotePlayback(audio);
+        setIsPlaying(false);
+      });
       audio.addEventListener('ended', () => {
         releaseVoiceNotePlayback(audio);
         setIsPlaying(false);
@@ -68,7 +72,10 @@ export function VoiceRecorder({
     const audio = audioRef.current;
     if (audio.ended) audio.currentTime = 0;
     claimVoiceNotePlayback(audio);
-    void audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+    void audio.play().then(() => setIsPlaying(true)).catch(() => {
+      releaseVoiceNotePlayback(audio);
+      setIsPlaying(false);
+    });
   }, [previewUrl, isPlaying]);
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import { Play, Pause, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useAudioAnalyser } from '@/hooks/useAudioAnalyser';
+import { claimVoiceNotePlayback, releaseVoiceNotePlayback } from '@/lib/voice-note-audio';
 
 interface VoiceNotePlayerProps {
   src: string;
@@ -50,9 +51,16 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       setAudioError(false);
       startFromAudio(audio);
     };
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
+    const onPlay = () => {
+      claimVoiceNotePlayback(audio);
+      setIsPlaying(true);
+    };
+    const onPause = () => {
+      releaseVoiceNotePlayback(audio);
+      setIsPlaying(false);
+    };
     const onEnded = () => {
+      releaseVoiceNotePlayback(audio);
       setIsPlaying(false);
       setCurrentTime(0);
       resetWaveform();
@@ -77,6 +85,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('error', onError);
       audio.pause();
+      releaseVoiceNotePlayback(audio);
       cleanupAnalyser();
     };
   }, [src, startFromAudio, cleanupAnalyser, resetWaveform, suspend]);
@@ -90,6 +99,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       setIsPlaying(false);
     } else {
       try {
+        claimVoiceNotePlayback(audio);
         await resume();
         if (audioError) {
           audio.load();
@@ -98,6 +108,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
         await audio.play();
         setIsPlaying(true);
       } catch {
+        releaseVoiceNotePlayback(audio);
         setIsPlaying(false);
         setAudioError(true);
       }

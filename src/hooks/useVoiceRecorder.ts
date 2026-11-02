@@ -1,9 +1,19 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAudioAnalyser } from './useAudioAnalyser';
 import type { Message } from './useChat';
+import {
+  getVoiceNoteDurationSeconds,
+  getVoiceNoteFileExtension,
+  getVoiceRecorderMimeType,
+  isDuplicateStorageUploadError,
+} from '@/lib/voice-note';
 
 export type RecordingState = 'idle' | 'recording' | 'sending';
+
+function stopTracks(stream: MediaStream | null) {
+  stream?.getTracks().forEach((track) => track.stop());
+}
 
 export function useVoiceRecorder() {
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
@@ -17,7 +27,10 @@ export function useVoiceRecorder() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const startTimeRef = useRef<number>(0);
+  const recordedDurationRef = useRef(0);
   const cancelledRef = useRef(false);
+  const startingRef = useRef(false);
+  const clientMessageIdRef = useRef<string | null>(null);
 
   const {
     waveform,
@@ -26,122 +39,197 @@ export function useVoiceRecorder() {
     resetWaveform,
   } = useAudioAnalyser();
 
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const releaseStream = useCallback(() => {
+    stopTracks(streamRef.current);
+    streamRef.current = null;
+  }, []);
+
+  const resetDraft = useCallback(() => {
+    clearTimer();
+    releaseStream();
+    cleanupAnalyser();
+    resetWaveform();
+    chunksRef.current = [];
+    startTimeRef.current = 0;
+    recordedDurationRef.current = 0;
+    clientMessageIdRef.current = null;
+    setDuration(0);
+    setIsLocked(false);
+    setRecordedBlob(null);
+  }, [clearTimer, releaseStream, cleanupAnalyser, resetWaveform]);
+
   const startRecording = useCallback(async (): Promise<boolean> => {
+    if (startingRef.current || mediaRecorderRef.current?.state === 'recording') return false;
+
+    startingRef.current = true;
+    cancelledRef.current = false;
     setError(null);
     chunksRef.current = [];
     setDuration(0);
     setIsLocked(false);
     setRecordedBlob(null);
+    recordedDurationRef.current = 0;
+    clientMessageIdRef.current = null;
+    clearTimer();
+
+    let acquiredStream: MediaStream | null = null;
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+        throw new Error('Voice recording is not supported by this browser or app version.');
+      }
+
+      acquiredStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          sampleRate: 44100,
         },
         video: false,
       });
-      streamRef.current = stream;
 
-      await startFromStream(stream);
+      // A pointer-cancel, screen lock, or conversation switch may happen while
+      // the operating-system permission prompt is still open.
+      if (cancelledRef.current) {
+        stopTracks(acquiredStream);
+        return false;
+      }
 
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-        ? 'audio/webm;codecs=opus'
-        : MediaRecorder.isTypeSupported('audio/webm')
-        ? 'audio/webm'
-        : MediaRecorder.isTypeSupported('audio/mp4')
-        ? 'audio/mp4'
-        : 'audio/ogg';
+      streamRef.current = acquiredStream;
+      await startFromStream(acquiredStream);
 
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = mediaRecorder;
+      if (cancelledRef.current) {
+        releaseStream();
+        cleanupAnalyser();
+        return false;
+      }
 
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
+      const mimeType = getVoiceRecorderMimeType((type) => MediaRecorder.isTypeSupported(type));
+      const recorder = mimeType
+        ? new MediaRecorder(acquiredStream, { mimeType })
+        : new MediaRecorder(acquiredStream);
+
+      mediaRecorderRef.current = recorder;
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunksRef.current.push(event.data);
+      };
+      recorder.onerror = () => {
+        if (cancelledRef.current) return;
+        setError('Recording was interrupted. Please try recording again.');
+        setRecordingState('idle');
+        clearTimer();
+        releaseStream();
+        cleanupAnalyser();
+        mediaRecorderRef.current = null;
       };
 
-      mediaRecorder.start(100);
+      recorder.start(250);
       startTimeRef.current = Date.now();
       setRecordingState('recording');
 
       timerRef.current = setInterval(() => {
-        setDuration((d) => d + 1);
-      }, 1000);
+        if (startTimeRef.current) {
+          setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000));
+        }
+      }, 250);
 
       return true;
     } catch (err: unknown) {
+      stopTracks(acquiredStream);
+      releaseStream();
       cleanupAnalyser();
+      mediaRecorderRef.current = null;
       const name = err instanceof DOMException ? err.name : (err as { name?: unknown })?.name;
       const message = err instanceof Error ? err.message : String(err);
-      if (name === 'NotAllowedError') {
-        setError('Microphone permission denied. Please allow microphone in browser settings.');
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        setError('Microphone permission denied. Allow microphone access in your device or browser settings.');
       } else if (name === 'NotFoundError') {
-        setError('No microphone found on this device.');
+        setError('No microphone was found on this device.');
       } else {
         setError('Could not start recording: ' + message);
       }
       setRecordingState('idle');
       return false;
+    } finally {
+      startingRef.current = false;
     }
-  }, [startFromStream, cleanupAnalyser]);
+  }, [clearTimer, startFromStream, releaseStream, cleanupAnalyser]);
 
   const stopAndGetBlob = useCallback((): Promise<Blob | null> => {
     return new Promise((resolve) => {
       const recorder = mediaRecorderRef.current;
-      if (!recorder || cancelledRef.current) { resolve(null); return; }
+      if (!recorder || cancelledRef.current) {
+        resolve(null);
+        return;
+      }
 
-      if (timerRef.current) clearInterval(timerRef.current);
-
-      recorder.onstop = () => {
-        if (cancelledRef.current) { resolve(null); return; }
-        const mimeType = recorder.mimeType || 'audio/webm';
+      clearTimer();
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        recorder.onstop = null;
+        const actualDuration = getVoiceNoteDurationSeconds(startTimeRef.current);
+        recordedDurationRef.current = actualDuration;
+        setDuration(actualDuration);
+        const mimeType = recorder.mimeType || chunksRef.current[0]?.type || 'audio/webm';
         const blob = new Blob(chunksRef.current, { type: mimeType });
-        streamRef.current?.getTracks().forEach((t) => t.stop());
-        streamRef.current = null;
+        if (mediaRecorderRef.current === recorder) mediaRecorderRef.current = null;
+        releaseStream();
         cleanupAnalyser();
         resetWaveform();
         resolve(blob.size > 0 ? blob : null);
       };
 
-      if (recorder.state === 'recording') {
+      recorder.onstop = finish;
+      if (recorder.state === 'inactive') {
+        finish();
+        return;
+      }
+      try {
         recorder.stop();
-      } else {
-        recorder.onstop = null;
-        resolve(null);
+      } catch {
+        finish();
       }
     });
-  }, [cleanupAnalyser, resetWaveform]);
+  }, [clearTimer, releaseStream, cleanupAnalyser, resetWaveform]);
 
   const cancelRecording = useCallback(() => {
     cancelledRef.current = true;
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.onstop = null;
-      mediaRecorderRef.current.stop();
+    clearTimer();
+    const recorder = mediaRecorderRef.current;
+    if (recorder) {
+      recorder.ondataavailable = null;
+      recorder.onerror = null;
+      recorder.onstop = null;
+      if (recorder.state !== 'inactive') {
+        try { recorder.stop(); } catch { /* stream tracks are stopped below */ }
+      }
+      mediaRecorderRef.current = null;
     }
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    cleanupAnalyser();
-    resetWaveform();
+    resetDraft();
     setRecordingState('idle');
-    setDuration(0);
-    setIsLocked(false);
-    setRecordedBlob(null);
-    chunksRef.current = [];
-    cancelledRef.current = false;
-  }, [cleanupAnalyser, resetWaveform]);
+    setError(null);
+  }, [clearTimer, resetDraft]);
 
   const lockRecording = useCallback(async (): Promise<boolean> => {
-    cancelledRef.current = false;
+    if (cancelledRef.current) return false;
     const blob = await stopAndGetBlob();
-    if (blob) {
-      setRecordedBlob(blob);
-      setIsLocked(true);
+    if (!blob) {
+      setError('No audio was captured. Hold the microphone a little longer and try again.');
       setRecordingState('idle');
-      return true;
+      return false;
     }
-    return false;
+    setRecordedBlob(blob);
+    setIsLocked(true);
+    setRecordingState('idle');
+    return true;
   }, [stopAndGetBlob]);
 
   const uploadAndSend = useCallback(async (
@@ -149,51 +237,74 @@ export function useVoiceRecorder() {
     senderId: string,
     currentDuration: number,
     onSent: (message: Message) => void,
-    onQueueOffline?: (blob: Blob, senderId: string, duration: number) => void,
+    onQueueOffline?: (blob: Blob, senderId: string, duration: number, clientMessageId: string) => void,
   ) => {
+    if (recordingState === 'sending') return;
+
     let blob = recordedBlob;
     if (!blob) {
       blob = await stopAndGetBlob();
-      if (!blob) return;
+      if (!blob) {
+        setError('No audio was captured. Please try recording again.');
+        setRecordingState('idle');
+        return;
+      }
+      setRecordedBlob(blob);
+      setIsLocked(true);
     }
 
+    const finalDuration = recordedDurationRef.current || currentDuration ||
+      getVoiceNoteDurationSeconds(startTimeRef.current);
+    const clientMessageId = clientMessageIdRef.current ?? crypto.randomUUID();
+    clientMessageIdRef.current = clientMessageId;
+
     if (!navigator.onLine) {
-      onQueueOffline?.(blob, senderId, currentDuration);
-      setRecordingState('idle');
-      setDuration(0);
-      setIsLocked(false);
-      setRecordedBlob(null);
-      resetWaveform();
+      if (!onQueueOffline) {
+        setError('You are offline. Reconnect before sending this voice note.');
+        setRecordingState('idle');
+        setIsLocked(true);
+        return;
+      }
+      try {
+        onQueueOffline(blob, senderId, finalDuration, clientMessageId);
+        resetDraft();
+        setRecordingState('idle');
+        setError(null);
+      } catch (err) {
+        setError('Could not queue this voice note: ' + (err instanceof Error ? err.message : String(err)));
+        setRecordingState('idle');
+        setIsLocked(true);
+      }
       return;
     }
 
     setRecordingState('sending');
+    setError(null);
+    let delivered = false;
 
     try {
-      const ext = blob.type.includes('mp4') ? 'mp4'
-        : blob.type.includes('ogg') ? 'ogg'
-        : blob.type.includes('opus') ? 'webm'
-        : 'webm';
-
-      const fileName = `voice_${Date.now()}_${senderId}.${ext}`;
-      const filePath = `${senderId}/voice-notes/${conversationId}/${fileName}`;
+      const ext = getVoiceNoteFileExtension(blob.type);
+      // A stable object key lets a retry safely reuse an upload whose first
+      // request reached Storage but whose response was lost in transit.
+      const filePath = `${senderId}/voice-notes/${conversationId}/voice_${clientMessageId}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from('chat-files')
         .upload(filePath, blob, {
-          contentType: blob.type,
+          contentType: blob.type || 'application/octet-stream',
           cacheControl: '3600',
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError && !isDuplicateStorageUploadError(uploadError)) {
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('chat-files')
         .getPublicUrl(filePath);
 
-      const mins = Math.floor(currentDuration / 60);
-      const secs = currentDuration % 60;
-
+      const mins = Math.floor(finalDuration / 60);
+      const secs = finalDuration % 60;
       const { data: message, error: msgError } = await supabase
         .from('messages')
         .insert({
@@ -203,29 +314,60 @@ export function useVoiceRecorder() {
           message_type: 'audio',
           file_url: publicUrl,
           file_name: 'Voice note',
-          file_type: blob.type,
+          file_type: blob.type || 'application/octet-stream',
           file_size: blob.size,
-          // Idempotent like text/image/file sends — a retried upload
-          // after a timeout lands once instead of twice.
-          client_msg_id: crypto.randomUUID(),
+          client_msg_id: clientMessageId,
         })
         .select()
         .single();
 
-      if (msgError) throw msgError;
-
-      onSent(message as unknown as Message);
+      if (msgError) {
+        if ((msgError as { code?: string }).code !== '23505') throw msgError;
+        const { data: existing, error: lookupError } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('client_msg_id', clientMessageId)
+          .maybeSingle();
+        if (lookupError || !existing) throw msgError;
+        onSent(existing as unknown as Message);
+      } else if (message) {
+        onSent(message as unknown as Message);
+      }
+      delivered = true;
     } catch (err: unknown) {
       setError('Failed to send voice note: ' + (err instanceof Error ? err.message : String(err)));
       console.error('[voice] upload failed:', err);
     } finally {
       setRecordingState('idle');
-      setDuration(0);
-      setIsLocked(false);
-      setRecordedBlob(null);
-      resetWaveform();
+      if (delivered) {
+        resetDraft();
+        setError(null);
+      } else {
+        // Keep the audio and message id so the student can retry without
+        // recording again or creating a duplicate message.
+        setRecordedBlob(blob);
+        setIsLocked(true);
+        setDuration(finalDuration);
+      }
     }
-  }, [recordedBlob, stopAndGetBlob, resetWaveform]);
+  }, [recordingState, recordedBlob, stopAndGetBlob, resetDraft]);
+
+  useEffect(() => () => {
+    cancelledRef.current = true;
+    clearTimer();
+    const recorder = mediaRecorderRef.current;
+    if (recorder) {
+      recorder.ondataavailable = null;
+      recorder.onerror = null;
+      recorder.onstop = null;
+      if (recorder.state !== 'inactive') {
+        try { recorder.stop(); } catch { /* unmount cleanup */ }
+      }
+    }
+    stopTracks(streamRef.current);
+    streamRef.current = null;
+    cleanupAnalyser();
+  }, [clearTimer, cleanupAnalyser]);
 
   return {
     recordingState,

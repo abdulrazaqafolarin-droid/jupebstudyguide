@@ -78,3 +78,25 @@ describe("voice note playback coordination", () => {
     releaseVoiceNotePlayback(next);
   });
 });
+
+describe("voice note hold gestures", () => {
+  it("sends when released without crossing a gesture threshold", async () => {
+    const { getVoiceNoteGestureAction } = await import("./voice-note");
+    expect(getVoiceNoteGestureAction(0, 0)).toBe("send");
+    expect(getVoiceNoteGestureAction(-79, -69)).toBe("send");
+    expect(getVoiceNoteGestureAction(20, 40)).toBe("send");
+  });
+
+  it("cancels when the pointer slides left by the threshold", async () => {
+    const { getVoiceNoteGestureAction } = await import("./voice-note");
+    expect(getVoiceNoteGestureAction(-80, 0)).toBe("cancel");
+    expect(getVoiceNoteGestureAction(-120, -40)).toBe("cancel");
+    expect(getVoiceNoteGestureAction(-80, -90)).toBe("cancel");
+  });
+
+  it("locks the recording when the pointer slides upward by the threshold", async () => {
+    const { getVoiceNoteGestureAction } = await import("./voice-note");
+    expect(getVoiceNoteGestureAction(0, -70)).toBe("lock");
+    expect(getVoiceNoteGestureAction(-30, -100)).toBe("lock");
+  });
+});

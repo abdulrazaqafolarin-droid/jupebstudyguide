@@ -242,118 +242,135 @@ export function useVoiceRecorder() {
     onSent: (message: Message) => void,
     onQueueOffline?: (blob: Blob, senderId: string, duration: number, clientMessageId: string) => void,
   ) => {
+    // Lock before the first await so a second tap cannot stop/queue/send the
+    // same recording while the first handler is still preparing its Blob.
     if (sendingRef.current || recordingState === 'sending') return;
+    sendingRef.current = true;
 
     let blob = recordedBlob;
-    if (!blob) {
-      blob = await stopAndGetBlob();
-      if (!blob) {
-        setError('No audio was captured. Please try recording again.');
-        setRecordingState('idle');
-        return;
-      }
-      setRecordedBlob(blob);
-      setIsLocked(true);
-    }
-
-    const finalDuration = recordedDurationRef.current || currentDuration ||
-      getVoiceNoteDurationSeconds(startTimeRef.current);
-    const clientMessageId = clientMessageIdRef.current ?? crypto.randomUUID();
-    clientMessageIdRef.current = clientMessageId;
-
-    if (!navigator.onLine) {
-      if (!onQueueOffline) {
-        setError('You are offline. Reconnect before sending this voice note.');
-        setRecordingState('idle');
-        setIsLocked(true);
-        return;
-      }
-      try {
-        onQueueOffline(blob, senderId, finalDuration, clientMessageId);
-        resetDraft();
-        setRecordingState('idle');
-        setError(null);
-      } catch (err) {
-        setError('Could not queue this voice note: ' + (err instanceof Error ? err.message : String(err)));
-        setRecordingState('idle');
-        setIsLocked(true);
-      }
-      return;
-    }
-
-    sendingRef.current = true;
-    setRecordingState('sending');
-    setError(null);
-    let delivered = false;
+    let finalDuration = currentDuration;
 
     try {
-      const ext = getVoiceNoteFileExtension(blob.type);
-      // A stable object key lets a retry safely reuse an upload whose first
-      // request reached Storage but whose response was lost in transit.
-      const filePath = `${senderId}/voice-notes/${conversationId}/voice_${clientMessageId}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('chat-files')
-        .upload(filePath, blob, {
-          contentType: blob.type || 'application/octet-stream',
-          cacheControl: '3600',
-        });
-
-      if (uploadError && !isDuplicateStorageUploadError(uploadError)) {
-        throw uploadError;
+      if (!blob) {
+        blob = await stopAndGetBlob();
+        if (!blob) {
+          setError('No audio was captured. Please try recording again.');
+          setRecordingState('idle');
+          return;
+        }
+        setRecordedBlob(blob);
+        setIsLocked(true);
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('chat-files')
-        .getPublicUrl(filePath);
+      finalDuration = recordedDurationRef.current || currentDuration ||
+        getVoiceNoteDurationSeconds(startTimeRef.current);
+      const clientMessageId = clientMessageIdRef.current ?? crypto.randomUUID();
+      clientMessageIdRef.current = clientMessageId;
 
-      const mins = Math.floor(finalDuration / 60);
-      const secs = finalDuration % 60;
-      const { data: message, error: msgError } = await supabase
-        .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          sender_id: senderId,
-          content: `Voice note ${mins}:${secs.toString().padStart(2, '0')}`,
-          message_type: 'audio',
-          file_url: publicUrl,
-          file_name: 'Voice note',
-          file_type: blob.type || 'application/octet-stream',
-          file_size: blob.size,
-          client_msg_id: clientMessageId,
-        })
-        .select()
-        .single();
+      if (!navigator.onLine) {
+        if (!onQueueOffline) {
+          setError('You are offline. Reconnect before sending this voice note.');
+          setRecordingState('idle');
+          setIsLocked(true);
+          return;
+        }
+        try {
+          onQueueOffline(blob, senderId, finalDuration, clientMessageId);
+          resetDraft();
+          setRecordingState('idle');
+          setError(null);
+        } catch (err) {
+          setError('Could not queue this voice note: ' + (err instanceof Error ? err.message : String(err)));
+          setRecordingState('idle');
+          setRecordedBlob(blob);
+          setIsLocked(true);
+          setDuration(finalDuration);
+        }
+        return;
+      }
 
-      if (msgError) {
-        if ((msgError as { code?: string }).code !== '23505') throw msgError;
-        const { data: existing, error: lookupError } = await supabase
+      setRecordingState('sending');
+      setError(null);
+      let delivered = false;
+
+      try {
+        const ext = getVoiceNoteFileExtension(blob.type);
+        // A stable object key lets a retry safely reuse an upload whose first
+        // request reached Storage but whose response was lost in transit.
+        const filePath = `${senderId}/voice-notes/${conversationId}/voice_${clientMessageId}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('chat-files')
+          .upload(filePath, blob, {
+            contentType: blob.type || 'application/octet-stream',
+            cacheControl: '3600',
+          });
+
+        if (uploadError && !isDuplicateStorageUploadError(uploadError)) {
+          throw uploadError;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('chat-files')
+          .getPublicUrl(filePath);
+
+        const mins = Math.floor(finalDuration / 60);
+        const secs = finalDuration % 60;
+        const { data: message, error: msgError } = await supabase
           .from('messages')
-          .select('*')
-          .eq('client_msg_id', clientMessageId)
-          .maybeSingle();
-        if (lookupError || !existing) throw msgError;
-        onSent(existing as unknown as Message);
-      } else if (message) {
-        onSent(message as unknown as Message);
+          .insert({
+            conversation_id: conversationId,
+            sender_id: senderId,
+            content: `Voice note ${mins}:${secs.toString().padStart(2, '0')}`,
+            message_type: 'audio',
+            file_url: publicUrl,
+            file_name: 'Voice note',
+            file_type: blob.type || 'application/octet-stream',
+            file_size: blob.size,
+            client_msg_id: clientMessageId,
+          })
+          .select()
+          .single();
+
+        if (msgError) {
+          if ((msgError as { code?: string }).code !== '23505') throw msgError;
+          const { data: existing, error: lookupError } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('client_msg_id', clientMessageId)
+            .maybeSingle();
+          if (lookupError || !existing) throw msgError;
+          onSent(existing as unknown as Message);
+        } else if (message) {
+          onSent(message as unknown as Message);
+        }
+        delivered = true;
+      } catch (err: unknown) {
+        setError('Failed to send voice note: ' + (err instanceof Error ? err.message : String(err)));
+        console.error('[voice] upload failed:', err);
+      } finally {
+        setRecordingState('idle');
+        if (delivered) {
+          resetDraft();
+          setError(null);
+        } else {
+          // Keep the audio and message id so the student can retry without
+          // recording again or creating a duplicate message.
+          setRecordedBlob(blob);
+          setIsLocked(true);
+          setDuration(finalDuration);
+        }
       }
-      delivered = true;
     } catch (err: unknown) {
-      setError('Failed to send voice note: ' + (err instanceof Error ? err.message : String(err)));
-      console.error('[voice] upload failed:', err);
-    } finally {
-      sendingRef.current = false;
+      setError('Failed to prepare voice note: ' + (err instanceof Error ? err.message : String(err)));
       setRecordingState('idle');
-      if (delivered) {
-        resetDraft();
-        setError(null);
-      } else {
-        // Keep the audio and message id so the student can retry without
-        // recording again or creating a duplicate message.
+      if (blob) {
         setRecordedBlob(blob);
         setIsLocked(true);
         setDuration(finalDuration);
       }
+    } finally {
+      sendingRef.current = false;
     }
   }, [recordingState, recordedBlob, stopAndGetBlob, resetDraft]);
 

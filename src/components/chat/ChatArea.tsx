@@ -373,6 +373,7 @@ export function ChatArea({
     pointerId: -1,
   });
   const vnGestureCleanupRef = useRef<(() => void) | null>(null);
+  const vnGestureActiveRef = useRef(false);
   const [vnDragX, setVnDragX] = useState(0);
   const [vnDragY, setVnDragY] = useState(0);
   const [vnIsDragging, setVnIsDragging] = useState(false);
@@ -400,6 +401,7 @@ export function ChatArea({
     return () => {
       vnGestureCleanupRef.current?.();
       vnGestureCleanupRef.current = null;
+      vnGestureActiveRef.current = false;
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
       if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
       unsubRef.current?.();
@@ -587,6 +589,9 @@ export function ChatArea({
     // Clear VN recording + typing so a peer's header never keeps showing
     // "typing…" / "recording…" for a conversation you just left.
     vnGestureCleanupRef.current?.();
+    vnGestureActiveRef.current = false;
+    vnGestureRef.current.released = true;
+    vnGestureRef.current.cancelled = true;
     vnCancelRecording();
     onRecordingVn?.(false);
     onTyping(false);
@@ -779,6 +784,7 @@ export function ChatArea({
   const finishVnGesture = useCallback(async (gesture: typeof vnGestureRef.current) => {
     if (gesture.finished || !gesture.started) return;
     gesture.finished = true;
+    vnGestureActiveRef.current = false;
     vnGestureCleanupRef.current?.();
     setVnIsDragging(false);
     setVnDragX(0);
@@ -799,7 +805,7 @@ export function ChatArea({
   }, [vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
 
   const handleVnPointerDown = useCallback((e: React.PointerEvent) => {
-    if (uploadingFile || recordingStateRef.current !== 'idle' || !canSend) return;
+    if (vnGestureActiveRef.current || uploadingFile || recordingStateRef.current !== 'idle' || !canSend) return;
 
     // Permission gate: explain the first request and guide students when access
     // has already been blocked by the browser or Android app settings.
@@ -813,6 +819,7 @@ export function ChatArea({
     }
 
     e.preventDefault();
+    vnGestureActiveRef.current = true;
     vnGestureCleanupRef.current?.();
     const gesture = {
       startX: e.clientX,
@@ -881,6 +888,7 @@ export function ChatArea({
     void vnStartRecording().then((ok) => {
       if (!ok) {
         gesture.finished = true;
+        vnGestureActiveRef.current = false;
         removeListeners();
         setVnIsDragging(false);
         onRecordingVn?.(false);
@@ -895,6 +903,7 @@ export function ChatArea({
       }
     }).catch((err: unknown) => {
       gesture.finished = true;
+      vnGestureActiveRef.current = false;
       removeListeners();
       setVnIsDragging(false);
       onRecordingVn?.(false);

@@ -9,6 +9,7 @@ interface VoiceRecorderProps {
   duration: number;
   isLocked: boolean;
   isSending: boolean;
+  isStarting?: boolean;
   previewUrl?: string | null;
   dragX?: number;
   dragY?: number;
@@ -25,6 +26,7 @@ export function VoiceRecorder({
   duration,
   isLocked,
   isSending,
+  isStarting = false,
   previewUrl,
   dragX = 0,
   dragY = 0,
@@ -101,6 +103,37 @@ export function VoiceRecorder({
   const cancelRatio = Math.min(1, Math.max(0, -dragX / 110));
   const lockRatio = Math.min(1, Math.max(0, -dragY / 90));
   const isCancelling = cancelRatio > 0.6;
+
+  if (isStarting) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 4 }}
+        className="flex items-center gap-3 px-4 py-3 min-h-[62px]"
+        role="status"
+        aria-live="polite"
+      >
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+          className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium">Starting microphone…</p>
+          <p className="text-[11px] text-muted-foreground">Keep holding to record. Release to send.</p>
+        </div>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="shrink-0 rounded-full px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-secondary transition-colors"
+          aria-label="Cancel microphone start"
+        >
+          Cancel
+        </button>
+      </motion.div>
+    );
+  }
 
   if (isSending) {
     return (

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   formatVoiceNoteDuration,
   getVoiceNoteDurationSeconds,
@@ -40,5 +40,39 @@ describe("voice note helpers", () => {
     expect(isDuplicateStorageUploadError({ message: "The resource already exists" })).toBe(true);
     expect(isDuplicateStorageUploadError({ statusCode: 400, message: "Payload too large" })).toBe(false);
     expect(isDuplicateStorageUploadError(null)).toBe(false);
+  });
+});
+
+
+describe("voice note playback coordination", () => {
+  it("pauses the previous voice note when a new one starts", async () => {
+    const { claimVoiceNotePlayback, releaseVoiceNotePlayback } = await import("./voice-note-audio");
+    const first = { pause: vi.fn() };
+    const second = { pause: vi.fn() };
+
+    claimVoiceNotePlayback(first);
+    claimVoiceNotePlayback(second);
+
+    expect(first.pause).toHaveBeenCalledTimes(1);
+    expect(second.pause).not.toHaveBeenCalled();
+
+    releaseVoiceNotePlayback(first);
+    const third = { pause: vi.fn() };
+    claimVoiceNotePlayback(third);
+    expect(second.pause).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not let an old player release a newer player's ownership", async () => {
+    const { claimVoiceNotePlayback, releaseVoiceNotePlayback } = await import("./voice-note-audio");
+    const current = { pause: vi.fn() };
+    const stale = { pause: vi.fn() };
+    const next = { pause: vi.fn() };
+
+    claimVoiceNotePlayback(current);
+    claimVoiceNotePlayback(stale);
+    releaseVoiceNotePlayback(current);
+    claimVoiceNotePlayback(next);
+
+    expect(stale.pause).toHaveBeenCalledTimes(1);
   });
 });

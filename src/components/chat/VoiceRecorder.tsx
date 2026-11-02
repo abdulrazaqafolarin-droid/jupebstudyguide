@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { formatVoiceNoteDuration } from '@/lib/voice-note';
+import { claimVoiceNotePlayback, releaseVoiceNotePlayback } from '@/lib/voice-note-audio';
 
 interface VoiceRecorderProps {
   waveform: number[];
@@ -51,17 +52,22 @@ export function VoiceRecorder({
         if (audio.duration) setAudioProgress(audio.currentTime / audio.duration);
       });
       audio.addEventListener('ended', () => {
+        releaseVoiceNotePlayback(audio);
         setIsPlaying(false);
         setAudioProgress(0);
         audio.currentTime = 0;
       });
-      audio.addEventListener('pause', () => setIsPlaying(false));
+      audio.addEventListener('pause', () => {
+        releaseVoiceNotePlayback(audio);
+        setIsPlaying(false);
+      });
       audio.onerror = () => setIsPlaying(false);
       audioRef.current = audio;
     }
 
     const audio = audioRef.current;
     if (audio.ended) audio.currentTime = 0;
+    claimVoiceNotePlayback(audio);
     void audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
   }, [previewUrl, isPlaying]);
 
@@ -78,7 +84,10 @@ export function VoiceRecorder({
   useEffect(() => {
     const ref = audioRef;
     return () => {
-      ref.current?.pause();
+      if (ref.current) {
+        ref.current.pause();
+        releaseVoiceNotePlayback(ref.current);
+      }
       ref.current = null;
     };
   }, []);

@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Play, Pause, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useAudioAnalyser } from '@/hooks/useAudioAnalyser';
 import { claimVoiceNotePlayback, releaseVoiceNotePlayback } from '@/lib/voice-note-audio';
 import { getVoiceNoteFileExtension, formatVoiceNoteDuration } from '@/lib/voice-note';
 
@@ -27,15 +26,6 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
   const progressRef = useRef<HTMLDivElement>(null);
   const isSeekingRef = useRef(false);
 
-  const {
-    waveform: liveWaveform,
-    startFromAudio,
-    resume,
-    suspend,
-    cleanup: cleanupAnalyser,
-    resetWaveform,
-  } = useAudioAnalyser();
-
   const [staticBars] = useState(() =>
     Array.from({ length: BAR_COUNT }, (_, i) => {
       const mid = BAR_COUNT / 2;
@@ -57,7 +47,6 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
       setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
       setIsLoaded(true);
       setAudioError(false);
-      startFromAudio(audio);
     };
     const onPlay = () => {
       claimVoiceNotePlayback(audio);
@@ -65,20 +54,19 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
     };
     const onPause = () => {
       releaseVoiceNotePlayback(audio);
-      suspend();
+
       setIsPlaying(false);
     };
     const onEnded = () => {
       releaseVoiceNotePlayback(audio);
       setIsPlaying(false);
       setCurrentTime(0);
-      resetWaveform();
-      suspend();
+
     };
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
     const onError = () => {
       releaseVoiceNotePlayback(audio);
-      suspend();
+
       setAudioError(true);
       setIsPlaying(false);
     };
@@ -100,21 +88,20 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
       audio.removeEventListener('error', onError);
       audio.pause();
       releaseVoiceNotePlayback(audio);
-      cleanupAnalyser();
     };
-  }, [src, startFromAudio, cleanupAnalyser, resetWaveform, suspend]);
+  }, [src]);
 
   const togglePlay = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
     if (isPlaying) {
       audio.pause();
-      suspend();
+
       setIsPlaying(false);
     } else {
       try {
         claimVoiceNotePlayback(audio);
-        await resume();
+
         if (audioError) {
           audio.load();
           setAudioError(false);
@@ -127,7 +114,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
         setAudioError(true);
       }
     }
-  }, [isPlaying, resume, suspend, audioError]);
+  }, [isPlaying, audioError]);
 
   const seekToPointer = useCallback((clientX: number, element: HTMLDivElement) => {
     const audio = audioRef.current;
@@ -206,7 +193,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
 
   const formatTime = formatVoiceNoteDuration;
 
-  const waveform = isPlaying ? liveWaveform : staticBars;
+  const waveform = staticBars;
 
   return (
     <div className="flex items-center gap-2.5 py-1 min-w-[200px] max-w-full">
@@ -274,7 +261,12 @@ export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }
                     ? isPlayed ? 'bg-white shadow-[0_0_4px_rgba(255,255,255,0.4)]' : 'bg-white/30'
                     : isPlayed ? 'bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.4)]' : 'bg-foreground/20'
                 )}
-                style={isActive && isPlaying ? { transform: 'scaleY(1.25)', transition: 'transform 0.1s' } : undefined}
+                animate={isActive && isPlaying
+                  ? { scaleY: [1, 1.35, 1], opacity: [1, 0.82, 1] }
+                  : { scaleY: 1, opacity: 1 }}
+                transition={isActive && isPlaying
+                  ? { duration: 0.7, repeat: Infinity, ease: 'easeInOut' }
+                  : { duration: 0.12 }}
               />
             );
           })}

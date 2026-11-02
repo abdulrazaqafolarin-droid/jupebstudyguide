@@ -97,6 +97,8 @@ export function VoiceRecorder({
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
           className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent shrink-0"
+          role="status"
+          aria-label="Sending voice note"
         />
         <span className="text-sm text-muted-foreground">Sending voice note...</span>
       </motion.div>
@@ -170,10 +172,10 @@ export function VoiceRecorder({
     <div className="relative" style={{ touchAction: 'none' }}>
       {/* Recording capsule */}
       <motion.div
-        initial={{ opacity: 0, transform: 'scaleX(0.6) translateX(30%)' }}
+        initial={{ opacity: 0, scaleX: 0.6, x: '30%' }}
         animate={{
           opacity: 0.55 + (1 - cancelRatio) * 0.45,
-          transform: 'scaleX(1) translateX(0)',
+          scaleX: 1,
           x: `${Math.min(0, dragX * 0.55)}px`,
           scale: isDragging ? 1.015 : 1,
         }}

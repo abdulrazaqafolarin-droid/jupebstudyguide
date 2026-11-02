@@ -592,6 +592,8 @@ export function ChatArea({
     // "typing…" / "recording…" for a conversation you just left.
     vnGestureCleanupRef.current?.();
     vnGestureActiveRef.current = false;
+    setVnIsStarting(false);
+    setVnIsDragging(false);
     vnGestureRef.current.released = true;
     vnGestureRef.current.cancelled = true;
     vnCancelRecording();
@@ -2110,6 +2112,8 @@ export function ChatArea({
             duration={vnDuration}
             isLocked={vnIsLocked}
             isSending={isSending}
+            isStarting={vnIsStarting}
+            error={vnError}
             previewUrl={vnPreviewUrl}
             dragX={vnDragX}
             dragY={vnDragY}
@@ -2121,6 +2125,7 @@ export function ChatArea({
               vnGestureRef.current.released = true;
               vnGestureRef.current.cancelled = true;
               setVnIsDragging(false);
+              setVnIsStarting(false);
               vnCancelRecording();
               onRecordingVn?.(false);
             }}

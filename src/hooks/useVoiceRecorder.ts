@@ -30,6 +30,7 @@ export function useVoiceRecorder() {
   const recordedDurationRef = useRef(0);
   const cancelledRef = useRef(false);
   const startingRef = useRef(false);
+  const sendingRef = useRef(false);
   const clientMessageIdRef = useRef<string | null>(null);
 
   const {
@@ -110,7 +111,9 @@ export function useVoiceRecorder() {
         return false;
       }
 
-      const mimeType = getVoiceRecorderMimeType((type) => MediaRecorder.isTypeSupported(type));
+      const mimeType = typeof MediaRecorder.isTypeSupported === 'function'
+        ? getVoiceRecorderMimeType((type) => MediaRecorder.isTypeSupported(type))
+        : undefined;
       const recorder = mimeType
         ? new MediaRecorder(acquiredStream, { mimeType })
         : new MediaRecorder(acquiredStream);
@@ -239,7 +242,7 @@ export function useVoiceRecorder() {
     onSent: (message: Message) => void,
     onQueueOffline?: (blob: Blob, senderId: string, duration: number, clientMessageId: string) => void,
   ) => {
-    if (recordingState === 'sending') return;
+    if (sendingRef.current || recordingState === 'sending') return;
 
     let blob = recordedBlob;
     if (!blob) {
@@ -278,6 +281,7 @@ export function useVoiceRecorder() {
       return;
     }
 
+    sendingRef.current = true;
     setRecordingState('sending');
     setError(null);
     let delivered = false;
@@ -338,6 +342,7 @@ export function useVoiceRecorder() {
       setError('Failed to send voice note: ' + (err instanceof Error ? err.message : String(err)));
       console.error('[voice] upload failed:', err);
     } finally {
+      sendingRef.current = false;
       setRecordingState('idle');
       if (delivered) {
         resetDraft();

@@ -918,7 +918,7 @@ export function ChatArea({
     });
   }, [
     uploadingFile, canSend, micState, micPrimed, setMicPrimed,
-    vnStartRecording, finishVnGesture, onRecordingVn,
+    vnStartRecording, vnCancelRecording, finishVnGesture, onRecordingVn,
   ]);
 
   const lastVnErrorRef = useRef<string | null>(null);

@@ -111,12 +111,28 @@ export function useVoiceRecorder() {
         return false;
       }
 
-      const mimeType = typeof MediaRecorder.isTypeSupported === 'function'
-        ? getVoiceRecorderMimeType((type) => MediaRecorder.isTypeSupported(type))
-        : undefined;
-      const recorder = mimeType
-        ? new MediaRecorder(acquiredStream, { mimeType })
-        : new MediaRecorder(acquiredStream);
+      let mimeType: string | undefined;
+      if (typeof MediaRecorder.isTypeSupported === 'function') {
+        try {
+          mimeType = getVoiceRecorderMimeType((type) => MediaRecorder.isTypeSupported(type));
+        } catch {
+          // Older embedded browsers may expose but not implement the probe.
+          mimeType = undefined;
+        }
+      }
+
+      let recorder: MediaRecorder;
+      if (mimeType) {
+        try {
+          recorder = new MediaRecorder(acquiredStream, { mimeType });
+        } catch {
+          // Some Android WebViews report support but reject the MIME when
+          // constructing the recorder. Let the browser choose its default.
+          recorder = new MediaRecorder(acquiredStream);
+        }
+      } else {
+        recorder = new MediaRecorder(acquiredStream);
+      }
 
       mediaRecorderRef.current = recorder;
       recorder.ondataavailable = (event) => {

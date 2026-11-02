@@ -1578,6 +1578,7 @@ export function ChatArea({
                                         src={safeMediaUrl(msg.file_url)!}
                                         isOwn={isOwn}
                                         fileName={msg.file_name || undefined}
+                                        fileType={msg.file_type || undefined}
                                       />
                                     </div>
                                   </div>

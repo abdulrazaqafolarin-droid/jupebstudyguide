@@ -57,6 +57,7 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
     };
     const onPause = () => {
       releaseVoiceNotePlayback(audio);
+      suspend();
       setIsPlaying(false);
     };
     const onEnded = () => {
@@ -67,7 +68,12 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       suspend();
     };
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const onError = () => { setAudioError(true); setIsPlaying(false); };
+    const onError = () => {
+      releaseVoiceNotePlayback(audio);
+      suspend();
+      setAudioError(true);
+      setIsPlaying(false);
+    };
 
     if (audio.readyState >= 1) onLoaded();
     audio.addEventListener('loadedmetadata', onLoaded);
@@ -248,6 +254,11 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
             }}
           />
          </motion.div>
+         {audioError && !hideControls && (
+           <p role="status" className="text-[10px] text-destructive mt-1">
+             Couldn't load this voice note. Tap play to retry.
+           </p>
+         )}
          {!hideControls && (
            <div className="flex justify-between items-center mt-0.5">
             <span className="text-[10px] tabular-nums opacity-50 font-mono">
@@ -270,9 +281,6 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
           </div>
          )}
       </div>
-      {audioError && (
-        <span role="status" className="sr-only">This voice note could not be loaded. Tap play to retry.</span>
-      )}
       <audio key={src} ref={audioRef} src={src} preload="metadata" />
     </div>
   );

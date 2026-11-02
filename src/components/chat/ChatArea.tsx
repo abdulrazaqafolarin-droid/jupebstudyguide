@@ -2103,7 +2103,15 @@ export function ChatArea({
             dragY={vnDragY}
             isDragging={vnIsDragging}
             onSend={handleVnSendLocked}
-            onCancel={() => { setVnIsDragging(false); vnCancelRecording(); onRecordingVn?.(false); }}
+            onCancel={() => {
+              vnGestureCleanupRef.current?.();
+              vnGestureActiveRef.current = false;
+              vnGestureRef.current.released = true;
+              vnGestureRef.current.cancelled = true;
+              setVnIsDragging(false);
+              vnCancelRecording();
+              onRecordingVn?.(false);
+            }}
             onLock={handleVnLock}
           />
           </motion.div>

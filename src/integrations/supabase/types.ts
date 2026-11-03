@@ -1265,10 +1265,10 @@ export type Database = {
       find_or_create_dm: { Args: { other_user_id: string }; Returns: Json }
       generate_activation_codes: {
         Args: {
-          p_admin_email?: string
-          p_count?: number
           p_created_by: string
+          p_count?: number
           p_plan_type?: string
+          p_admin_email?: string
         }
         Returns: {
           code: string

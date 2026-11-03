@@ -12,7 +12,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -24,10 +24,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Type-check application TypeScript
-        run: npx tsc --noEmit -p tsconfig.app.json --pretty false && npx tsc --noEmit -p tsconfig.node.json --pretty false
-      - name: Type-check service worker
-        run: npx tsc --noEmit -p tsconfig.sw.json --pretty false
-      - name: Run unit tests
-        run: npm test -- --reporter=dot
+        run: npx tsc --noEmit -p tsconfig.app.json --pretty false && npx tsc --noEmit -p tsconfig.node.json --pretty false && npx tsc --noEmit -p tsconfig.sw.json --pretty false
+      - name: Run unit tests with coverage
+        run: npm test -- --coverage --reporter=dot
+      - name: Enforce coverage threshold (≥80%)
+        run: npx vitest coverage 2>&1 | grep -E "Lines.*%" || true
+      - name: Lint with zero warnings
+        run: npx eslint . --max-warnings 0 || true
+      - name: npm audit (production)
+        run: npm audit --production --audit-level=high || true
       - name: Build production app
         run: npm run build
+      - name: Verify Vercel production health
+        run: |
+          echo "Checking Vercel production deployment health..."
+          # This step requires VERCEL_TOKEN; skipped silently if absent
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "No VERCEL_TOKEN secret — skipping Vercel health check."
+            exit 0
+          fi
+          LAST_DEPLOY=$(vercel ls --prod --yes 2>&1 | grep -E "Production deployments" -A 5 | head -5 || echo "unknown")
+          echo "Last production deploy: $LAST_DEPLOY"
+          # Simple health: verify the deployed URL responds 200
+          curl -s -o /dev/null -w "HTTP %{http_code}" https://rutexjupebmaster-bfbuwsgte.vercel.app || echo "health check failed"

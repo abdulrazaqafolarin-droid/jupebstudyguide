@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { shouldMarkReadOnArrival, applyPeerReadBroadcast } from '@/lib/read-receipts';
+import { getVoiceNoteFileExtension, formatVoiceNoteDuration, isDuplicateStorageUploadError } from '@/lib/voice-note';
 
 const DEBUG = import.meta.env.DEV;
 
@@ -119,7 +120,7 @@ export function useChat() {
     | { kind: 'text'; content: string; replyToId?: string | null }
     | { kind: 'image'; imageUrl: string }
     | { kind: 'file'; fileUrl: string; fileName: string; fileSize: number; fileType: string }
-    | { kind: 'voice'; blob: Blob; senderId: string; duration: number }
+    | { kind: 'voice'; blob: Blob; senderId: string; duration: number; clientMessageId: string }
     | {
         kind: 'forward';
         content: string;
@@ -1142,40 +1143,50 @@ export function useChat() {
     }
     if (item.kind === 'voice') {
       try {
-        const ext = item.blob.type.includes('mp4') ? 'mp4'
-          : item.blob.type.includes('ogg') ? 'ogg'
-          : item.blob.type.includes('opus') ? 'webm'
-          : 'webm';
-        const fileName = `voice_${Date.now()}_${item.senderId}.${ext}`;
-        const filePath = `${item.senderId}/voice-notes/${item.conversationId}/${fileName}`;
+        const ext = getVoiceNoteFileExtension(item.blob.type);
+        // Keep the same storage object and message ID across every offline retry.
+        const filePath = `${item.senderId}/voice-notes/${item.conversationId}/voice_${item.clientMessageId}.${ext}`;
 
         const { error: uploadError } = await supabase.storage
           .from('chat-files')
           .upload(filePath, item.blob, {
-            contentType: item.blob.type,
+            contentType: item.blob.type || 'application/octet-stream',
             cacheControl: '3600',
           });
-        if (uploadError) return false;
+        if (uploadError && !isDuplicateStorageUploadError(uploadError)) return false;
 
         const { data: { publicUrl } } = supabase.storage
           .from('chat-files')
           .getPublicUrl(filePath);
 
-        const mins = Math.floor(item.duration / 60);
-        const secs = item.duration % 60;
-
         const { data, error } = await supabase.from('messages').insert({
           conversation_id: item.conversationId,
           sender_id: item.senderId,
-          content: `Voice note ${mins}:${secs.toString().padStart(2, '0')}`,
+          content: `Voice note ${formatVoiceNoteDuration(item.duration)}`,
           message_type: 'audio',
           file_url: publicUrl,
           file_name: 'Voice note',
-          file_type: item.blob.type,
+          file_type: item.blob.type || 'application/octet-stream',
           file_size: item.blob.size,
-          client_msg_id: crypto.randomUUID(),
+          client_msg_id: item.clientMessageId,
         }).select();
-        if (error) return false;
+
+        if (error) {
+          if ((error as { code?: string }).code !== '23505') return false;
+          // The previous attempt may have inserted successfully but lost its
+          // response. Reconcile by the stable client ID instead of sending twice.
+          const { data: existing, error: lookupError } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('client_msg_id', item.clientMessageId)
+            .maybeSingle();
+          if (lookupError || !existing) return false;
+          msgBroadcastRef.current?.send({
+            type: 'broadcast', event: 'msg', payload: { message: existing },
+          });
+          return true;
+        }
+
         if (data?.[0]) {
           msgBroadcastRef.current?.send({
             type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1770,8 +1781,16 @@ export function useChat() {
     blob: Blob,
     senderId: string,
     duration: number,
+    clientMessageId: string,
   ) => {
-    offlineQueueRef.current.push({ kind: 'voice', conversationId, blob, senderId, duration });
+    offlineQueueRef.current.push({
+      kind: 'voice',
+      conversationId,
+      blob,
+      senderId,
+      duration,
+      clientMessageId,
+    });
     setPendingCount(offlineQueueRef.current.length);
   }, []);
 

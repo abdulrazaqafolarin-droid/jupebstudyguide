@@ -1,459 +1,95 @@
-# MISSION: REBUILD VOICE NOTE UX TO MATCH WHATSAPP EXACTLY
+# Student Chat Voice Notes — Current Implementation
 
-## Current problems
-1. Recording triggers on tap — should be hold to record, release to send
-2. Recording UI overlaps other elements incorrectly
-3. Other user does not see "recording..." indicator while sender records
-4. Overall UX does not match WhatsApp voice note behaviour
+This document describes the voice-note system that is actually used by the student-to-student chat. It supersedes the earlier rebuild instructions in this file. **Extend the existing implementation; do not replace it with the simplified example recorder below.**
 
-Rebuild the entire voice note UX. Do not patch the old implementation.
-Replace it completely with the spec below.
+## Source of truth
 
----
+| Responsibility | File |
+|---|---|
+| Chat composer, gesture handling, recording presence, message bubble integration | `src/components/chat/ChatArea.tsx` |
+| Recording state, MediaRecorder lifecycle, Blob creation, upload, retry | `src/hooks/useVoiceRecorder.ts` |
+| Recording / locked-preview / sending presentation and animations | `src/components/chat/VoiceRecorder.tsx` |
+| Sent audio-message playback, waveform, seek, download | `src/components/chat/VoiceNotePlayer.tsx` |
+| Microphone state and permission preflight | `src/hooks/useMicPermission.ts` |
+| Live microphone waveform analysis | `src/hooks/useAudioAnalyser.ts` |
+| Live recording presence | `src/contexts/PresenceContext.tsx` |
+| Message creation and in-memory offline queue | `src/hooks/useChat.ts` |
+| Recorder format, MIME extension, duration and retry helpers | `src/lib/voice-note.ts` |
+| One-active-player coordination | `src/lib/voice-note-audio.ts` |
+| Helper tests | `src/lib/voice-note.test.ts` |
 
-## HOW IT MUST WORK — EXACT WHATSAPP BEHAVIOUR
+## Supported student journey
 
-1. User HOLDS DOWN the mic button → recording starts instantly
-2. While holding — the entire input bar transforms into recording UI
-3. User SLIDES LEFT while holding → recording cancels (no send)
-4. User RELEASES the mic button → recording stops and sends automatically
-5. While recording — the OTHER user sees "recording..." in the
-   conversation header or below the chat partner's name
-6. After send — voice note appears as an audio player bubble in chat
-7. No separate send button needed — release = send
+1. **Permission preparation.** The first use shows the in-app explanation. The user explicitly grants microphone access; a previously denied permission shows browser / Android settings guidance. Permission probing is separate from recording.
+2. **Press and hold.** A pointer-down begins microphone acquisition. Pointer listeners are attached immediately, before awaiting the microphone request, so a quick release cannot be lost during startup.
+3. **Recording state.** The normal message composer is replaced by the recording capsule. It shows elapsed time, a live waveform, a recording pulse, and gesture hints.
+4. **Slide left to cancel.** Moving left by the cancel threshold and releasing discards the draft and stops microphone tracks.
+5. **Release to send.** Releasing normally finalizes the audio Blob and sends it automatically.
+6. **Slide up to lock.** Moving up and releasing stops capture but keeps a preview. The student can listen, discard, or explicitly send it.
+7. **Sending and recovery.** The UI changes to a sending state. A failed send keeps the Blob and stable message ID so the student can retry without recording again.
+8. **Recipient playback.** The sent message appears as an audio bubble with an animated waveform, playback, seek, and download controls. Only one voice-note preview or message is allowed to play at once.
+9. **Presence.** While a user records, the existing PresenceContext publishes `recording_vn_in` for the active conversation. Direct-message and group headers render the appropriate recording state.
+10. **Offline.** If the device is offline at send time, the Blob and stable message ID enter the existing `useChat` queue. The queue flushes on the browser's `online` event and can also be retried from the chat UI.
 
----
+## Database and storage contract — do not change casually
 
-## STEP 1 — ADD SQL MIGRATION IF COLUMNS MISSING
+Voice notes use the same message schema as other chat attachments:
 
-First check if these columns exist on the messages table:
-- message_type (text)
-- audio_url (text)
-- duration_seconds (integer)
+- `messages.message_type = 'audio'`
+- `messages.file_url` contains the public URL in the existing `chat-files` bucket
+- `messages.file_name` is normally `Voice note`
+- `messages.file_type` stores the actual MediaRecorder MIME type
+- `messages.file_size` stores the Blob size
+- `messages.client_msg_id` is the stable idempotency key
+- `messages.content` contains a short duration label such as `Voice note 0:08`
 
-If any are missing run in Supabase SQL Editor:
+Storage keys are scoped to the sender's first path segment to comply with the existing chat-files storage policy:
 
-```sql
-ALTER TABLE messages
-ADD COLUMN IF NOT EXISTS message_type TEXT DEFAULT 'text',
-ADD COLUMN IF NOT EXISTS audio_url TEXT,
-ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;
+`{senderId}/voice-notes/{conversationId}/voice_{clientMessageId}.{extension}`
+
+The sender folder is required by the current upload RLS policy. The deterministic object key and stable `client_msg_id` let retries reconcile an upload or insert whose first response was lost.
+
+**Do not introduce `message_type = 'voice'`, `audio_url`, or `duration_seconds` without a separate schema migration and a deliberate migration of every existing chat reader, notification path, and queue.** Those columns are not the current voice-note contract.
+
+## Interaction rules
+
+- A normal release sends; a left swipe cancels; an upward swipe locks for preview.
+- Pointer-up, pointer-cancel, window blur, and app backgrounding must all be handled.
+- A conversation change or component unmount must stop capture, release tracks, clean up the analyser, and clear recording presence.
+- Recording and sending must not create duplicate message rows on rapid taps or network retries.
+- Microphone permission errors, unsupported recording APIs, missing microphones, and upload errors must leave the composer in a recoverable state.
+- Keep the existing permission onboarding and offline queue. Do not create a second parallel presence channel or message schema.
+- Keep recording animations compact, safe on narrow Android screens, and respectful of touch interaction. The recording capsule replaces the composer; it must not stack on top of it.
+
+## Important current boundary
+
+The offline queue is currently held in memory by `useChat`. It retries automatically when connectivity returns while the app is still running, but it is **not a durable queue across a full app/browser restart**. Durable IndexedDB persistence would be a separate enhancement; do not claim that an offline voice note survives force-stop or app data clearing.
+
+Playback is subject to the device/browser audio decoder and output routing. Do not expose an earpiece control unless a supported native audio-routing implementation is actually wired and verified on the target platform.
+
+## Verification before merge or release
+
+Run the repository checks:
+
+```sh
+npx tsc --noEmit -p tsconfig.app.json --pretty false
+npx tsc --noEmit -p tsconfig.node.json --pretty false
+npx tsc --noEmit -p tsconfig.sw.json --pretty false
+npm test -- --reporter=dot
+npm run build
 ```
 
----
-
-## STEP 2 — REBUILD useVoiceRecorder HOOK
-
-Replace the entire contents of `src/hooks/useVoiceRecorder.ts` with:
-
-```typescript
-import { useState, useRef, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-
-export type RecordingState = 'idle' | 'recording' | 'sending';
-
-export function useVoiceRecorder() {
-  const [recordingState, setRecordingState] = useState<RecordingState>('idle');
-  const [duration, setDuration] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const [isCancelled, setIsCancelled] = useState(false);
-
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const startTimeRef = useRef<number>(0);
-
-  const startRecording = useCallback(async () => {
-    setError(null);
-    setIsCancelled(false);
-    chunksRef.current = [];
-    setDuration(0);
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false,
-      });
-      streamRef.current = stream;
-
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm')
-        ? 'audio/webm'
-        : MediaRecorder.isTypeSupported('audio/mp4')
-        ? 'audio/mp4'
-        : 'audio/ogg';
-
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-
-      mediaRecorder.start(100);
-      startTimeRef.current = Date.now();
-      setRecordingState('recording');
-
-      timerRef.current = setInterval(() => {
-        setDuration((d) => d + 1);
-      }, 1000);
-    } catch (err: any) {
-      if (err.name === 'NotAllowedError') {
-        setError('Microphone permission denied. Please allow microphone in browser settings.');
-      } else if (err.name === 'NotFoundError') {
-        setError('No microphone found on this device.');
-      } else {
-        setError('Could not start recording: ' + err.message);
-      }
-      setRecordingState('idle');
-    }
-  }, []);
-
-  const stopAndGetBlob = useCallback((): Promise<Blob | null> => {
-    return new Promise((resolve) => {
-      if (!mediaRecorderRef.current) { resolve(null); return; }
-
-      if (timerRef.current) clearInterval(timerRef.current);
-
-      mediaRecorderRef.current.onstop = () => {
-        const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
-        const blob = new Blob(chunksRef.current, { type: mimeType });
-        streamRef.current?.getTracks().forEach((t) => t.stop());
-        streamRef.current = null;
-        resolve(blob.size > 0 ? blob : null);
-      };
-
-      mediaRecorderRef.current.stop();
-    });
-  }, []);
-
-  const cancelRecording = useCallback(() => {
-    setIsCancelled(true);
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.onstop = null;
-      mediaRecorderRef.current.stop();
-    }
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    setRecordingState('idle');
-    setDuration(0);
-    chunksRef.current = [];
-  }, []);
-
-  const uploadAndSend = useCallback(async (
-    blob: Blob,
-    conversationId: string,
-    senderId: string,
-    currentDuration: number,
-    onSent: (message: any) => void
-  ) => {
-    setRecordingState('sending');
-
-    try {
-      const ext = blob.type.includes('mp4') ? 'mp4'
-        : blob.type.includes('ogg') ? 'ogg' : 'webm';
-
-      const fileName = `voice_${Date.now()}_${senderId}.${ext}`;
-      const filePath = `voice-notes/${conversationId}/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('chat-files')
-        .upload(filePath, blob, { contentType: blob.type });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('chat-files')
-        .getPublicUrl(filePath);
-
-      const { data: message, error: msgError } = await supabase
-        .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          sender_id: senderId,
-          content: '[Voice message]',
-          message_type: 'voice',
-          audio_url: publicUrl,
-          duration_seconds: currentDuration,
-        })
-        .select()
-        .single();
-
-      if (msgError) throw msgError;
-
-      onSent(message);
-    } catch (err: any) {
-      setError('Failed to send voice note: ' + err.message);
-      console.error('[voice] upload failed:', err);
-    } finally {
-      setRecordingState('idle');
-      setDuration(0);
-    }
-  }, []);
-
-  return {
-    recordingState,
-    duration,
-    error,
-    startRecording,
-    stopAndGetBlob,
-    cancelRecording,
-    uploadAndSend,
-  };
-}
-```
-
----
-
-## STEP 3 — REBUILD THE MIC BUTTON WITH HOLD BEHAVIOUR
-
-Find the mic button in the chat input component.
-Replace it entirely with this hold-to-record implementation:
-
-```typescript
-const {
-  recordingState,
-  duration,
-  error: recordingError,
-  startRecording,
-  stopAndGetBlob,
-  cancelRecording,
-  uploadAndSend,
-} = useVoiceRecorder();
-
-const isRecording = recordingState === 'recording';
-const isSending = recordingState === 'sending';
-
-// Track if user slid left to cancel
-const slideRef = useRef(false);
-const startXRef = useRef(0);
-
-const handlePointerDown = async (e: React.PointerEvent) => {
-  slideRef.current = false;
-  startXRef.current = e.clientX;
-  e.preventDefault();
-  await startRecording();
-  // Broadcast recording indicator to other user
-  broadcastRecording(true);
-};
-
-const handlePointerMove = (e: React.PointerEvent) => {
-  if (!isRecording) return;
-  const diff = startXRef.current - e.clientX;
-  // If slid left more than 80px — mark as cancelled
-  if (diff > 80) {
-    slideRef.current = true;
-  }
-};
-
-const handlePointerUp = async (e: React.PointerEvent) => {
-  if (!isRecording) return;
-  // Stop broadcasting recording indicator
-  broadcastRecording(false);
-
-  if (slideRef.current) {
-    // Slid left — cancel
-    cancelRecording();
-    return;
-  }
-
-  // Release — stop and send
-  const blob = await stopAndGetBlob();
-  if (blob && conversationId && currentUserId) {
-    await uploadAndSend(
-      blob,
-      conversationId,
-      currentUserId,
-      duration,
-      (message) => {
-        setMessages((prev) => {
-          if (prev.some((m) => m.id === message.id)) return prev;
-          return [...prev, message];
-        });
-      }
-    );
-  }
-};
-```
-
-The mic button element:
-
-```tsx
-<button
-  onPointerDown={handlePointerDown}
-  onPointerMove={handlePointerMove}
-  onPointerUp={handlePointerUp}
-  onPointerLeave={handlePointerUp}
-  className={`p-2 rounded-full transition-all select-none touch-none
-    ${isRecording
-      ? 'bg-red-500 text-white scale-125'
-      : 'text-muted-foreground hover:text-foreground'
-    }`}
-  style={{ userSelect: 'none' }}
->
-  <Mic className="w-5 h-5" />
-</button>
-```
-
----
-
-## STEP 4 — RECORDING UI THAT REPLACES INPUT BAR
-
-When `isRecording` is true, the ENTIRE input bar must be replaced.
-Not overlaid — replaced. Use conditional rendering:
-
-```tsx
-{/* Input area */}
-<div className="border-t bg-background">
-  {isRecording ? (
-    // RECORDING STATE — replaces entire input bar
-    <div className="flex items-center gap-3 px-4 py-3 h-14">
-      {/* Cancel hint — slide left */}
-      <div className="flex items-center gap-1 text-muted-foreground">
-        <ChevronLeft className="w-4 h-4" />
-        <span className="text-xs">Slide to cancel</span>
-      </div>
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Duration */}
-      <span className="text-sm font-mono text-red-500 font-medium">
-        {Math.floor(duration / 60)}:{String(duration % 60).padStart(2, '0')}
-      </span>
-
-      {/* Pulsing dot */}
-      <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-
-      {/* Mic button — hold active */}
-      <button
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        className="p-2 rounded-full bg-red-500 text-white scale-125
-           select-none touch-none"
-        style={{ userSelect: 'none' }}
-      >
-        <Mic className="w-5 h-5" />
-      </button>
-    </div>
-  ) : isSending ? (
-    // SENDING STATE
-    <div className="flex items-center gap-3 px-4 py-3 h-14">
-      <span className="text-sm text-muted-foreground">Sending voice note...</span>
-    </div>
-  ) : (
-    // NORMAL INPUT STATE — your existing input bar here
-    <YourExistingInputBar />
-  )}
-</div>
-```
-
----
-
-## STEP 5 — BROADCAST RECORDING INDICATOR TO OTHER USER
-
-In `useRealtimeChat.ts` add a recording broadcast listener:
-
-```typescript
-// Listen for recording indicator from other user
-channel.on('broadcast', { event: 'recording' }, ({ payload }) => {
-  if (payload.user_id !== currentUserId) {
-    onRecordingUpdate(payload.is_recording);
-  }
-});
-```
-
-Add `onRecordingUpdate` to the hook props:
-
-```
-onRecordingUpdate: (isRecording: boolean) => void;
-```
-
-In the chat component add state and pass to hook:
-
-```typescript
-const [otherUserRecording, setOtherUserRecording] = useState(false);
-
-onRecordingUpdate: (isRecording) => {
-  setOtherUserRecording(isRecording);
-}
-```
-
-Add `broadcastRecording` function in the chat component:
-
-```typescript
-const broadcastRecording = (isRecording: boolean) => {
-  // Access the channel via a ref exposed from useRealtimeChat
-  channelRef.current?.send({
-    type: 'broadcast',
-    event: 'recording',
-    payload: {
-      user_id: currentUserId,
-      is_recording: isRecording,
-    },
-  });
-};
-```
-
-IMPORTANT: expose `channelRef` from `useRealtimeChat` hook:
-
-```typescript
-return { sendTypingIndicator, broadcastRecording, channelRef };
-```
-
-Show recording indicator to the other user — in the chat header or just above the message list:
-
-```tsx
-{otherUserRecording && (
-  <div className="flex items-center gap-2 px-4 py-1
-     bg-muted/50 text-xs text-muted-foreground">
-    <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-    <span>recording...</span>
-  </div>
-)}
-```
-
----
-
-## STEP 6 — VOICE NOTE AUDIO PLAYER IN CHAT BUBBLE
-
-Find where message bubbles are rendered. Add voice note player:
-
-```tsx
-{message.message_type === 'voice' && message.audio_url ? (
-  <div className="flex items-center gap-2 min-w-52 max-w-64 py-1">
-    <audio
-      controls
-      src={message.audio_url}
-      className="w-full h-8"
-      preload="metadata"
-    />
-    {message.duration_seconds && (
-      <span className="text-xs text-muted-foreground shrink-0">
-        {Math.floor(message.duration_seconds / 60)}:
-        {String(message.duration_seconds % 60).padStart(2, '0')}
-      </span>
-    )}
-  </div>
-) : (
-  // existing text message rendering
-  <p>{message.content}</p>
-)}
-```
-
----
-
-## VERIFICATION — DO NOT DEPLOY UNTIL ALL PASS
-
-1. Hold mic button → recording starts, input bar replaced with
-   recording UI, red pulsing dot and timer appear
-2. Slide left while holding → recording cancels, input bar returns
-3. Release mic button → recording stops, uploads, voice bubble
-   appears in chat without page reload
-4. Other user sees "recording..." indicator while first user records
-5. Voice bubble shows native audio player — recipient can play it
-6. No UI overlap — recording bar sits cleanly where input bar was
-7. Error message shows clearly if microphone permission is denied
+Then verify on a real Android device and a desktop browser:
+
+1. First-use permission explanation, allow, deny, and settings recovery.
+2. Press/hold, immediate release during startup, normal release-to-send.
+3. Swipe-left cancel and swipe-up lock, preview, discard, and send.
+4. Background the app, switch conversations, or unmount while recording; microphone capture and presence must stop.
+5. Confirm the other participant sees the live recording state in a DM and group.
+6. Confirm a sent message is an `audio` row with `file_url`, and that recipients can play, pause, seek, and download it.
+7. Start another voice note while one is playing; the first must pause.
+8. Simulate offline send, reconnect, flush the queue, and retry after an ambiguous upload/insert response; no duplicate message should appear.
+9. Verify microphone, storage, playback, and upload failures leave a clear recovery path.
+10. Check narrow mobile layout, touch targets, scroll behavior, and reduced-motion preferences.
+
+The current implementation uses the existing Supabase schema and storage bucket. A feature branch / draft PR is not a production deployment; merge and release are separate decisions.

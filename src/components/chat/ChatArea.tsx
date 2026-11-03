@@ -19,6 +19,7 @@ import { useUserStorage } from '@/hooks/useUserStorage';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { linkify, getDocTypeIcon, formatFileSize } from '@/lib/linkify';
 import { safeMediaUrl, isValidUrl } from '@/lib/url';
+import { getVoiceNoteGestureAction } from '@/lib/voice-note';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -49,7 +50,7 @@ interface ChatAreaProps {
   onProfileClick?: (userId: string) => void;
   onPushMessage?: (message: Message) => void;
   onBroadcastMessage?: (message: Message) => void;
-  onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number) => void;
+  onQueueVoiceNote?: (conversationId: string, blob: Blob, senderId: string, duration: number, clientMessageId: string) => void;
   onDeleteForMe?: (messageId: string) => void;
   pendingCount?: number;
   onFlushOfflineQueue?: () => void;
@@ -367,10 +368,17 @@ export function ChatArea({
   const isSending = recordingState === 'sending';
 
   // WhatsApp-style press-hold gesture tracking (document-level)
-  const vnGestureRef = useRef({ startX: 0, startY: 0, started: false, pointerId: -1 });
+  const vnGestureRef = useRef({
+    startX: 0, startY: 0, lastX: 0, lastY: 0,
+    started: false, released: false, cancelled: false, finished: false,
+    pointerId: -1,
+  });
+  const vnGestureCleanupRef = useRef<(() => void) | null>(null);
+  const vnGestureActiveRef = useRef(false);
   const [vnDragX, setVnDragX] = useState(0);
   const [vnDragY, setVnDragY] = useState(0);
   const [vnIsDragging, setVnIsDragging] = useState(false);
+  const [vnIsStarting, setVnIsStarting] = useState(false);
   const recordingStateRef = useRef(recordingState);
   recordingStateRef.current = recordingState;
 
@@ -393,6 +401,9 @@ export function ChatArea({
 
   useEffect(() => {
     return () => {
+      vnGestureCleanupRef.current?.();
+      vnGestureCleanupRef.current = null;
+      vnGestureActiveRef.current = false;
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
       if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
       unsubRef.current?.();
@@ -416,6 +427,11 @@ export function ChatArea({
   const typingMemberNames = isGroup && activeConv?.participants
     ? activeConv.participants
         .filter(p => p.user_id !== user?.id && isTyping(p.user_id))
+        .map(p => p.display_name || 'Someone')
+    : [];
+  const recordingMemberNames = isGroup && activeConv?.participants
+    ? activeConv.participants
+        .filter(p => p.user_id !== user?.id && isRecordingVn?.(p.user_id))
         .map(p => p.display_name || 'Someone')
     : [];
   const [lastSeenText, setLastSeenText] = useState<string | null>(null);
@@ -574,6 +590,12 @@ export function ChatArea({
     setIsNearBottom(true);
     // Clear VN recording + typing so a peer's header never keeps showing
     // "typing…" / "recording…" for a conversation you just left.
+    vnGestureCleanupRef.current?.();
+    vnGestureActiveRef.current = false;
+    setVnIsStarting(false);
+    setVnIsDragging(false);
+    vnGestureRef.current.released = true;
+    vnGestureRef.current.cancelled = true;
     vnCancelRecording();
     onRecordingVn?.(false);
     onTyping(false);
@@ -727,39 +749,6 @@ export function ChatArea({
     }
   }, []);
 
-  const handleVnPointerDown = useCallback(async (e: React.PointerEvent) => {
-    if (uploadingFile || recordingStateRef.current !== 'idle') return;
-    // Permission gate: hard-denied always opens guidance; never-asked opens
-    // the priming dialog once (mic-primed skips it afterwards).
-    if (micState === 'denied') {
-      setVnPermDialog('blocked');
-      return;
-    }
-    if (!micPrimed && micState !== 'granted') {
-      setVnPermDialog('priming');
-      return;
-    }
-    e.preventDefault();
-    vnGestureRef.current = { startX: e.clientX, startY: e.clientY, started: false, pointerId: e.pointerId };
-    const el = e.currentTarget as HTMLElement;
-    try { el.setPointerCapture(e.pointerId); } catch { void 0; }
-    setVnIsDragging(true);
-    setVnDragX(0);
-    setVnDragY(0);
-    const ok = await vnStartRecording();
-    vnGestureRef.current.started = ok;
-    if (ok) {
-      setMicPrimed(true);
-      onRecordingVn?.(true);
-    }
-    if (!ok) {
-      setVnIsDragging(false);
-      try { el.releasePointerCapture(e.pointerId); } catch { void 0; }
-      // A permission-shaped failure surfaces via the vnError effect below,
-      // which opens the recovery dialog in addition to the toast.
-    }
-  }, [uploadingFile, vnStartRecording, onRecordingVn, micState, micPrimed, setMicPrimed]);
-
   const handleVnAllowMic = useCallback(async () => {
     setVnPermRequesting(true);
     const ok = await requestMic();
@@ -775,7 +764,8 @@ export function ChatArea({
 
   const handleVnLock = useCallback(async () => {
     await vnLockRecording();
-  }, [vnLockRecording]);
+    onRecordingVn?.(false);
+  }, [vnLockRecording, onRecordingVn]);
 
   const handleVnSendLocked = useCallback(async () => {
     if (!activeConversation || !user) return;
@@ -783,47 +773,167 @@ export function ChatArea({
       await vnUploadAndSend(activeConversation, user.id, vnDuration, (message) => {
         onPushMessage?.(message);
         onBroadcastMessage?.(message);
-      }, (blob, senderId, duration) => {
-        onQueueVoiceNote?.(activeConversation, blob, senderId, duration);
+      }, (blob, senderId, duration, clientMessageId) => {
+        if (!onQueueVoiceNote) {
+          throw new Error('Offline voice-note queue is unavailable. Reconnect and retry.');
+        }
+        onQueueVoiceNote(activeConversation, blob, senderId, duration, clientMessageId);
         toast.info('Voice note queued — will send when back online');
       });
     } finally {
-      // Always clear the presence flag — previously a successful send left
-      // peers seeing "Recording voice note…" forever.
       onRecordingVn?.(false);
     }
   }, [activeConversation, user, vnUploadAndSend, vnDuration, onPushMessage, onBroadcastMessage, onQueueVoiceNote, onRecordingVn]);
 
-  useEffect(() => {
-    if (!vnIsDragging) return;
-    const g = vnGestureRef.current;
-    const handleMove = (e: PointerEvent) => {
-      if (e.pointerId !== g.pointerId) return;
-      setVnDragX(e.clientX - g.startX);
-      setVnDragY(e.clientY - g.startY);
+  const finishVnGesture = useCallback(async (gesture: typeof vnGestureRef.current) => {
+    if (gesture.finished || !gesture.started) return;
+    gesture.finished = true;
+    vnGestureActiveRef.current = false;
+    vnGestureCleanupRef.current?.();
+    setVnIsDragging(false);
+    setVnDragX(0);
+    setVnDragY(0);
+    onRecordingVn?.(false);
+
+    setVnIsStarting(false);
+    const action = gesture.cancelled
+      ? 'cancel'
+      : getVoiceNoteGestureAction(
+          gesture.lastX - gesture.startX,
+          gesture.lastY - gesture.startY,
+        );
+    if (action === 'cancel') {
+      vnCancelRecording();
+      return;
+    }
+    if (action === 'lock') {
+      await vnLockRecording();
+      return;
+    }
+    await handleVnSendLocked();
+  }, [vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
+
+  const handleVnPointerDown = useCallback((e: React.PointerEvent) => {
+    if (vnGestureActiveRef.current || uploadingFile || recordingStateRef.current !== 'idle' || !canSend) return;
+
+    // Permission gate: explain the first request and guide students when access
+    // has already been blocked by the browser or Android app settings.
+    if (micState === 'denied') {
+      setVnPermDialog('blocked');
+      return;
+    }
+    if (!micPrimed && micState !== 'granted') {
+      setVnPermDialog('priming');
+      return;
+    }
+
+    e.preventDefault();
+    vnGestureActiveRef.current = true;
+    vnGestureCleanupRef.current?.();
+    const gesture = {
+      startX: e.clientX,
+      startY: e.clientY,
+      lastX: e.clientX,
+      lastY: e.clientY,
+      started: false,
+      released: false,
+      cancelled: false,
+      finished: false,
+      pointerId: e.pointerId,
     };
-    const handleUp = (e: PointerEvent) => {
-      if (e.pointerId !== g.pointerId) return;
-      setVnIsDragging(false);
-      const dx = e.clientX - g.startX;
-      const dy = e.clientY - g.startY;
-      if (!g.started) { onRecordingVn?.(false); return; }
-      if (dx < -80) {
-        vnCancelRecording();
-        onRecordingVn?.(false);
-      } else if (dy < -70) {
-        vnLockRecording().catch(console.error);
-      } else {
-        handleVnSendLocked().catch(console.error);
+    vnGestureRef.current = gesture;
+    setVnIsDragging(true);
+    setVnIsStarting(true);
+    setVnDragX(0);
+    setVnDragY(0);
+
+    // Attach listeners before awaiting getUserMedia. The old effect-based
+    // listeners could miss a quick pointer-up while the permission request
+    // was still resolving, leaving the microphone recording after release.
+    let removeListeners = () => {};
+    const handleMove = (event: PointerEvent) => {
+      if (event.pointerId !== gesture.pointerId || gesture.released) return;
+      gesture.lastX = event.clientX;
+      gesture.lastY = event.clientY;
+      setVnDragX(event.clientX - gesture.startX);
+      setVnDragY(event.clientY - gesture.startY);
+    };
+    const complete = (event?: PointerEvent, cancelled = false) => {
+      if (gesture.released) return;
+      if (event && event.pointerId !== gesture.pointerId) return;
+      if (event) {
+        gesture.lastX = event.clientX;
+        gesture.lastY = event.clientY;
       }
+      gesture.released = true;
+      gesture.cancelled = cancelled;
+      removeListeners();
+      setVnIsDragging(false);
+      if (gesture.started) void finishVnGesture(gesture);
+      // If the mic permission prompt is still pending, the start promise below
+      // will finish or cancel this gesture as soon as the stream becomes ready.
     };
-    window.addEventListener('pointermove', handleMove);
-    window.addEventListener('pointerup', handleUp);
-    return () => {
+    const handleUp = (event: PointerEvent) => complete(event, false);
+    const handleCancel = (event: PointerEvent) => complete(event, true);
+    const handleAbort = () => complete(undefined, true);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') complete(undefined, true);
+    };
+    removeListeners = () => {
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('pointerup', handleUp);
+      window.removeEventListener('pointercancel', handleCancel);
+      window.removeEventListener('blur', handleAbort);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (vnGestureCleanupRef.current === removeListeners) vnGestureCleanupRef.current = null;
     };
-  }, [vnIsDragging, vnCancelRecording, vnLockRecording, handleVnSendLocked, onRecordingVn]);
+
+    window.addEventListener('pointermove', handleMove);
+    window.addEventListener('pointerup', handleUp);
+    window.addEventListener('pointercancel', handleCancel);
+    window.addEventListener('blur', handleAbort);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    vnGestureCleanupRef.current = removeListeners;
+
+    void vnStartRecording().then((ok) => {
+      if (!ok) {
+        gesture.finished = true;
+        vnGestureActiveRef.current = false;
+        removeListeners();
+        setVnIsDragging(false);
+        setVnIsStarting(false);
+        onRecordingVn?.(false);
+        return;
+      }
+      // If the user released before the microphone/recorder actually
+      // started, there was no hold interval to record. Discard instead of
+      // accidentally sending a tiny clip after a delayed permission response.
+      if (gesture.released) {
+        gesture.finished = true;
+        vnGestureActiveRef.current = false;
+        setVnIsStarting(false);
+        vnCancelRecording();
+        onRecordingVn?.(false);
+        return;
+      }
+
+      setVnIsStarting(false);
+      gesture.started = true;
+      setMicPrimed(true);
+      onRecordingVn?.(true);
+    }).catch((err: unknown) => {
+      gesture.finished = true;
+      vnGestureActiveRef.current = false;
+      removeListeners();
+      setVnIsDragging(false);
+      setVnIsStarting(false);
+      onRecordingVn?.(false);
+      console.error('[voice] recording start failed:', err);
+    });
+  }, [
+    uploadingFile, canSend, micState, micPrimed, setMicPrimed,
+    vnStartRecording, vnCancelRecording, finishVnGesture, onRecordingVn,
+  ]);
 
   const lastVnErrorRef = useRef<string | null>(null);
 
@@ -1196,7 +1306,16 @@ export function ChatArea({
                     Recording voice note…
                   </span>
                 ) : isGroup ? (
-                  typingMemberNames.length > 0 ? (
+                  recordingMemberNames.length > 0 ? (
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                      <span className="text-accent font-medium">
+                        {recordingMemberNames.length === 1
+                          ? `${recordingMemberNames[0]} is recording…`
+                          : `${recordingMemberNames.slice(0, 2).join(', ')}${recordingMemberNames.length > 2 ? ` +${recordingMemberNames.length - 2}` : ''} recording…`}
+                      </span>
+                    </span>
+                  ) : typingMemberNames.length > 0 ? (
                     <span className="flex items-center gap-1">
                       <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                       <span className="w-1 h-1 bg-accent rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -1489,6 +1608,7 @@ export function ChatArea({
                                         src={safeMediaUrl(msg.file_url)!}
                                         isOwn={isOwn}
                                         fileName={msg.file_name || undefined}
+                                        fileType={msg.file_type || undefined}
                                       />
                                     </div>
                                   </div>
@@ -1978,21 +2098,48 @@ export function ChatArea({
           )}
         </AnimatePresence>
 
-        {isRecording || isSending || vnIsLocked ? (
+        <AnimatePresence mode="wait" initial={false}>
+        {vnIsStarting || isRecording || isSending || vnIsLocked ? (
+          <motion.div
+            key="voice-recorder"
+            initial={{ opacity: 0, y: 8, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.985 }}
+            transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+          >
           <VoiceRecorder
             waveform={vnWaveform}
             duration={vnDuration}
             isLocked={vnIsLocked}
             isSending={isSending}
+            isStarting={vnIsStarting}
+            error={vnError}
             previewUrl={vnPreviewUrl}
             dragX={vnDragX}
             dragY={vnDragY}
             isDragging={vnIsDragging}
             onSend={handleVnSendLocked}
-            onCancel={() => { setVnIsDragging(false); vnCancelRecording(); onRecordingVn?.(false); }}
+            onCancel={() => {
+              vnGestureCleanupRef.current?.();
+              vnGestureActiveRef.current = false;
+              vnGestureRef.current.released = true;
+              vnGestureRef.current.cancelled = true;
+              setVnIsDragging(false);
+              setVnIsStarting(false);
+              vnCancelRecording();
+              onRecordingVn?.(false);
+            }}
             onLock={handleVnLock}
           />
+          </motion.div>
         ) : (
+        <motion.div
+          key="chat-composer"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 6 }}
+          transition={{ duration: 0.16, ease: 'easeOut' }}
+        >
         <div className="px-3 py-2.5">
           {!canSend && (
             <div className="text-[11px] text-muted-foreground text-center pb-2">
@@ -2104,7 +2251,9 @@ export function ChatArea({
             )}
           </div>
         </div>
+        </motion.div>
         )}
+        </AnimatePresence>
       </div>
 
       {/* Contact sharing form */}

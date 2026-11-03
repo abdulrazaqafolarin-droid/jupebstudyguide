@@ -1,36 +1,30 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Play, Pause, Volume2, VolumeX, Download } from 'lucide-react';
+import { Play, Pause, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useAudioAnalyser } from '@/hooks/useAudioAnalyser';
+import { claimVoiceNotePlayback, releaseVoiceNotePlayback } from '@/lib/voice-note-audio';
+import { getVoiceNoteFileExtension, formatVoiceNoteDuration } from '@/lib/voice-note';
 
 interface VoiceNotePlayerProps {
   src: string;
   isOwn?: boolean;
   fileName?: string;
+  fileType?: string;
   hideControls?: boolean;
 }
 
 const BAR_COUNT = 30;
 
-export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNotePlayerProps) {
+export function VoiceNotePlayer({ src, isOwn, fileName, fileType, hideControls }: VoiceNotePlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [useSpeaker, setUseSpeaker] = useState(true);
+  const [audioError, setAudioError] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-
-  const {
-    waveform: liveWaveform,
-    startFromAudio,
-    resume,
-    suspend,
-    cleanup: cleanupAnalyser,
-    resetWaveform,
-  } = useAudioAnalyser();
+  const isSeekingRef = useRef(false);
 
   const [staticBars] = useState(() =>
     Array.from({ length: BAR_COUNT }, (_, i) => {
@@ -43,88 +37,163 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    setIsLoaded(false);
+    setDuration(0);
+    setCurrentTime(0);
+    setIsPlaying(false);
+    setAudioError(false);
 
     const onLoaded = () => {
-      setDuration(audio.duration);
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
       setIsLoaded(true);
-      startFromAudio(audio);
+      setAudioError(false);
+    };
+    const onPlay = () => {
+      claimVoiceNotePlayback(audio);
+      setIsPlaying(true);
+    };
+    const onPause = () => {
+      releaseVoiceNotePlayback(audio);
+
+      setIsPlaying(false);
     };
     const onEnded = () => {
+      releaseVoiceNotePlayback(audio);
       setIsPlaying(false);
       setCurrentTime(0);
-      resetWaveform();
-      suspend();
+
     };
-    const onTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
+    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const onError = () => {
+      releaseVoiceNotePlayback(audio);
+
+      setAudioError(true);
+      setIsPlaying(false);
     };
 
     if (audio.readyState >= 1) onLoaded();
     audio.addEventListener('loadedmetadata', onLoaded);
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('timeupdate', onTimeUpdate);
+    audio.addEventListener('error', onError);
 
     return () => {
       audio.removeEventListener('loadedmetadata', onLoaded);
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('timeupdate', onTimeUpdate);
-      cleanupAnalyser();
+      audio.removeEventListener('error', onError);
+      audio.pause();
+      releaseVoiceNotePlayback(audio);
     };
-  }, [src, startFromAudio, cleanupAnalyser, resetWaveform, suspend]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (typeof (audio as HTMLAudioElement).setSinkId === 'function') {
-      (audio as HTMLAudioElement).setSinkId(useSpeaker ? 'default' : 'earpiece').catch(() => {});
-    }
-  }, [useSpeaker]);
+  }, [src]);
 
   const togglePlay = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
     if (isPlaying) {
       audio.pause();
-      suspend();
+
       setIsPlaying(false);
     } else {
-      await resume();
       try {
+        claimVoiceNotePlayback(audio);
+
+        if (audioError) {
+          audio.load();
+          setAudioError(false);
+        }
         await audio.play();
         setIsPlaying(true);
       } catch {
+        releaseVoiceNotePlayback(audio);
         setIsPlaying(false);
+        setAudioError(true);
       }
     }
-  }, [isPlaying, resume, suspend]);
+  }, [isPlaying, audioError]);
 
-  const handleSeek = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  const seekToPointer = useCallback((clientX: number, element: HTMLDivElement) => {
     const audio = audioRef.current;
-    if (!audio || duration === 0) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const pct = Math.max(0, Math.min(1, x / rect.width));
-    audio.currentTime = pct * duration;
+    if (!audio || duration <= 0) return;
+    const rect = element.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const progress = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    audio.currentTime = progress * duration;
     setCurrentTime(audio.currentTime);
   }, [duration]);
 
-  const handleDownload = useCallback(() => {
-    const a = document.createElement('a');
-    a.href = src;
-    a.download = fileName || 'voice-note';
-    a.click();
-  }, [src, fileName]);
+  const handleSeekPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isLoaded || hideControls || duration <= 0) return;
+    event.preventDefault();
+    isSeekingRef.current = true;
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* browser may not support capture */ }
+    seekToPointer(event.clientX, event.currentTarget);
+  }, [isLoaded, hideControls, duration, seekToPointer]);
+
+  const handleSeekPointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isSeekingRef.current) return;
+    seekToPointer(event.clientX, event.currentTarget);
+  }, [seekToPointer]);
+
+  const finishSeekPointer = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isSeekingRef.current) return;
+    isSeekingRef.current = false;
+    try {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+    } catch { /* pointer capture may already be released */ }
+  }, []);
+
+  const handleSeekKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    if (!audio || duration <= 0) return;
+
+    let nextTime = audio.currentTime;
+    if (event.key === 'ArrowLeft') nextTime -= 5;
+    else if (event.key === 'ArrowRight') nextTime += 5;
+    else if (event.key === 'Home') nextTime = 0;
+    else if (event.key === 'End') nextTime = duration;
+    else return;
+
+    event.preventDefault();
+    audio.currentTime = Math.max(0, Math.min(duration, nextTime));
+    setCurrentTime(audio.currentTime);
+  }, [duration]);
+
+  const handleDownload = useCallback(async () => {
+    try {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error('Could not download this voice note');
+      const objectUrl = URL.createObjectURL(await response.blob());
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      const name = fileName || 'voice-note';
+      const downloadName = /\.[a-z0-9]{2,5}$/i.test(name)
+        ? name
+        : `${name}.${getVoiceNoteFileExtension(fileType || response.headers.get('content-type') || '')}`;
+      anchor.download = downloadName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30_000);
+    } catch {
+      // A new tab is a useful fallback when the device blocks cross-origin
+      // downloads or is temporarily unable to fetch the media as a blob.
+      window.open(src, '_blank', 'noopener,noreferrer');
+    }
+  }, [src, fileName, fileType]);
 
   const progress = duration > 0 ? currentTime / duration : 0;
   const remaining = Math.max(0, duration - currentTime);
 
-  const formatTime = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, '0')}`;
-  };
+  const formatTime = formatVoiceNoteDuration;
 
-  const waveform = isPlaying ? liveWaveform : staticBars;
+  const waveform = staticBars;
 
   return (
     <div className="flex items-center gap-2.5 py-1 min-w-[200px] max-w-full">
@@ -152,13 +221,21 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
       <div className="flex-1 min-w-0">
         <motion.div
           ref={progressRef}
-          className="flex items-center gap-[2px] h-8 cursor-pointer group relative"
-          onClick={!hideControls && isLoaded ? handleSeek : undefined}
+          className="flex items-center gap-[2px] h-8 cursor-pointer select-none group relative rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          onPointerDown={!hideControls && isLoaded ? handleSeekPointerDown : undefined}
+          onPointerMove={!hideControls && isLoaded ? handleSeekPointerMove : undefined}
+          onPointerUp={finishSeekPointer}
+          onPointerCancel={finishSeekPointer}
+          onKeyDown={!hideControls && isLoaded ? handleSeekKeyDown : undefined}
+          tabIndex={!hideControls && isLoaded ? 0 : undefined}
+          style={{ touchAction: 'pan-y' }}
           role="slider"
-          aria-label="Seek"
+          aria-label="Voice note playback position"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progress * 100)}
+          aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
+          aria-disabled={hideControls || !isLoaded}
           initial="init"
           animate="in"
           variants={{ init: {}, in: { transition: { staggerChildren: 0.015 } } }}
@@ -184,7 +261,12 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
                     ? isPlayed ? 'bg-white shadow-[0_0_4px_rgba(255,255,255,0.4)]' : 'bg-white/30'
                     : isPlayed ? 'bg-primary shadow-[0_0_4px_hsl(var(--primary)/0.4)]' : 'bg-foreground/20'
                 )}
-                style={isActive && isPlaying ? { transform: 'scaleY(1.25)', transition: 'transform 0.1s' } : undefined}
+                animate={isActive && isPlaying
+                  ? { scaleY: [1, 1.35, 1], opacity: [1, 0.82, 1] }
+                  : { scaleY: 1, opacity: 1 }}
+                transition={isActive && isPlaying
+                  ? { duration: 0.7, repeat: Infinity, ease: 'easeInOut' }
+                  : { duration: 0.12 }}
               />
             );
           })}
@@ -198,6 +280,11 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
             }}
           />
          </motion.div>
+         {audioError && !hideControls && (
+           <p role="status" className="text-[10px] text-destructive mt-1">
+             Couldn't load this voice note. Tap play to retry.
+           </p>
+         )}
          {!hideControls && (
            <div className="flex justify-between items-center mt-0.5">
             <span className="text-[10px] tabular-nums opacity-50 font-mono">
@@ -215,25 +302,12 @@ export function VoiceNotePlayer({ src, isOwn, fileName, hideControls }: VoiceNot
               >
                 <Download className="w-3 h-3" />
               </button>
-              {typeof HTMLAudioElement.prototype.setSinkId === 'function' && (
-                <button
-                  onClick={() => setUseSpeaker(v => !v)}
-                  className="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-foreground/5"
-                  title={useSpeaker ? 'Switch to earpiece' : 'Switch to speaker'}
-                  aria-label={useSpeaker ? 'Earpiece' : 'Speaker'}
-                >
-                  {useSpeaker ? (
-                    <Volume2 className="w-3 h-3" />
-                  ) : (
-                    <VolumeX className="w-3 h-3" />
-                  )}
-                </button>
-              )}
+
             </div>
           </div>
          )}
       </div>
-      <audio ref={audioRef} src={src} preload="metadata" />
+      <audio key={src} ref={audioRef} src={src} preload="metadata" />
     </div>
   );
 }

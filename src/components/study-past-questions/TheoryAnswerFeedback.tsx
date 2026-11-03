@@ -475,15 +475,13 @@ export function TheoryAnswerFeedback({
                       })}
                     </div>
                   )}
-                  {msg.role === 'assistant' && (
-                    <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere] prose-p:my-0.5 prose-li:my-0 prose-ul:my-0.5">
-                      {msg.content ? (
-                        <MathRenderer content={msg.content} className="text-xs leading-relaxed" />
-                      ) : (
-                        <TypingDots />
-                      )}
-                    </div>
-                  )}
+                  <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere] prose-p:my-0.5 prose-li:my-0 prose-ul:my-0.5">
+                    {msg.content ? (
+                      <MathRenderer content={msg.content} className="text-xs leading-relaxed" />
+                    ) : msg.role === 'assistant' ? (
+                      <TypingDots />
+                    ) : null}
+                  </div>
                 </div>
               </div>
             ))}

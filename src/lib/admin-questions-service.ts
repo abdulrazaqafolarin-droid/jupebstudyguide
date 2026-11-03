@@ -20,6 +20,7 @@ interface QuestionInput {
   topic?: string | null;
   sortOrder?: number;
   imageUrl?: string | null;
+  imagePosition?: string | null;
 }
 
 function toDbRow(input: QuestionInput) {
@@ -36,6 +37,7 @@ function toDbRow(input: QuestionInput) {
     course: input.topic || null,
     sort_order: input.sortOrder ?? 0,
     image_url: input.imageUrl || null,
+    image_position: input.imagePosition || null,
   };
 }
 

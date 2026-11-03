@@ -45,57 +45,111 @@ const DEFAULT_IMPORT_RE = /^\s*import\s+(\w+)\s+from\s+['"]npm:(.+?)['"]\s*;?\s*
 const SHARED_IMPORT_RE = /^\s*import\s+(?:type\s+)?\{(.+?)\}\s+from\s+['"]\.\.\/_shared\/(.+?)['"]\s*;?\s*$/m;
 const LOCAL_IMPORT_RE = /^\s*import\s+(?:type\s+)?\{(.+?)\}\s+from\s+['"]\.\/(.+?)['"]\s*;?\s*$/m;
 
-function inlineShared(code, name) {
-  const lines = code.split("\n");
+// Join multi-line import statements into one line so the line-based
+// regexes below can match them (e.g. ai-router's import of ./keyVault.ts).
+function joinMultilineImports(src) {
+  const lines = src.split("\n");
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const t = lines[i].trim();
+    const isImportStart = /^import\s/.test(t);
+    const complete = /from\s+['"][^'"]+['"]\s*;?\s*$/.test(t) || /^import\s+['"][^'"]+['"]\s*;?\s*$/.test(t);
+    if (isImportStart && !complete) {
+      let acc = t;
+      i++;
+      while (i < lines.length) {
+        acc += " " + lines[i].trim();
+        if (/from\s+['"][^'"]+['"]\s*;?\s*$/.test(acc) || /^import\s+['"]/.test(acc)) break;
+        i++;
+      }
+      out.push(acc);
+      i++;
+      continue;
+    }
+    out.push(lines[i]);
+    i++;
+  }
+  return out.join("\n");
+}
+
+// ctx tracks state across the WHOLE inlining run (all recursions):
+//   inlined  — shared files already spliced in (no double inclusion)
+//   declared — top-level names already declared from npm imports (no dup const)
+function inlineShared(rawCode, name, ctx = { inlined: new Set(), declared: new Map() }) {
+  const lines = joinMultilineImports(rawCode).split("\n");
   const result = [];
-  const inlined = new Set();
 
   for (const line of lines) {
     const trimmed = line.trim();
 
-    // Match ../_shared/ imports
+    // Match ../_shared/ imports, and ./ imports that resolve to a _shared file
+    // (a shared file importing its sibling, e.g. ai.ts -> ./ai-router.ts).
     const sharedMatch = trimmed.match(SHARED_IMPORT_RE);
-    if (sharedMatch) {
-      const fname = sharedMatch[2];
-      if (!fname.endsWith(".ts")) continue;
-      if (inlined.has(fname)) continue;
-      inlined.add(fname);
+    const localMatch = trimmed.match(LOCAL_IMPORT_RE);
+    let target = null;
+    if (sharedMatch) target = sharedMatch[2];
+    else if (localMatch && Object.prototype.hasOwnProperty.call(sharedCache, localMatch[2])) target = localMatch[2];
 
-      const sharedCode = sharedCache[fname];
+    if (target !== null) {
+      if (!target.endsWith(".ts")) continue;
+      if (ctx.inlined.has(target)) continue;
+
+      const sharedCode = sharedCache[target];
       if (!sharedCode) {
-        console.warn(`  WARN: _shared/${fname} not found for ${name}`);
+        console.warn(`  WARN: _shared/${target} not found for ${name}`);
         continue;
       }
-      result.push(`// --- inlined from _shared/${fname} ---`);
+      ctx.inlined.add(target);
+      result.push(`// --- inlined from _shared/${target} ---`);
       // Recursively inline this shared file's own imports
-      const inlinedShared = inlineShared(sharedCode, `_shared/${fname}`);
-      result.push(inlinedShared);
-      result.push(`// --- end inlined from _shared/${fname} ---`);
+      result.push(inlineShared(sharedCode, `_shared/${target}`, ctx));
+      result.push(`// --- end inlined from _shared/${target} ---`);
       continue;
     }
 
-    // Match ./local imports (within the function itself)
-    const localMatch = trimmed.match(LOCAL_IMPORT_RE);
     if (localMatch) {
-      // These are typically embedded files, skip them
+      // A ./ import that is not a _shared file — cannot be bundled; drop loudly.
+      console.warn(`  WARN: dropping non-shared local import ./${localMatch[2]} in ${name}`);
       continue;
     }
 
-    // Convert npm imports to dynamic imports (compatible with Supabase runtime)
+    // Convert npm imports to dynamic imports (compatible with Supabase runtime),
+    // skipping symbols already declared earlier in the bundle (index.ts and
+    // inlined shared files both import createClient — a dup const is a
+    // boot-time SyntaxError).
     const npmMatch = trimmed.match(NPM_IMPORT_RE);
     if (npmMatch) {
-      result.push(`const { ${npmMatch[1]} } = await import("npm:${npmMatch[2]}");`);
+      const pkg = npmMatch[2];
+      const entries = npmMatch[1].split(",").map((s) => s.trim()).filter(Boolean);
+      const declName = (entry) => entry.split(/\s+as\s+/).pop().trim();
+      const fresh = entries.filter((e) => {
+        const prev = ctx.declared.get(declName(e));
+        if (prev !== undefined && prev !== pkg) {
+          console.warn(`  WARN: npm symbol "${declName(e)}" already declared from ${prev}; skipping ${pkg} import in ${name}`);
+        }
+        return prev === undefined;
+      });
+      for (const e of entries) {
+        if (!ctx.declared.has(declName(e))) ctx.declared.set(declName(e), pkg);
+      }
+      if (fresh.length === 0) continue;
+      result.push(`const { ${fresh.join(", ")} } = await import("npm:${pkg}");`);
       continue;
     }
 
     const starMatch = trimmed.match(STAR_IMPORT_RE);
     if (starMatch) {
+      if (ctx.declared.has(starMatch[1])) continue;
+      ctx.declared.set(starMatch[1], starMatch[2]);
       result.push(`const ${starMatch[1]} = await import("npm:${starMatch[2]}");`);
       continue;
     }
 
     const defaultMatch = trimmed.match(DEFAULT_IMPORT_RE);
     if (defaultMatch) {
+      if (ctx.declared.has(defaultMatch[1])) continue;
+      ctx.declared.set(defaultMatch[1], defaultMatch[2]);
       result.push(`const ${defaultMatch[1]} = (await import("npm:${defaultMatch[2]}")).default;`);
       continue;
     }

@@ -158,7 +158,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       Deno.env,
       systemContent,
       chatMessages,
-      { temperature: 0.7, maxTokens: 2048 }
+      { temperature: 0.7, maxTokens: 8192 }
     );
 
     const combinedStream = new ReadableStream({

@@ -58,6 +58,7 @@ export function AdminQuestionPanel({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
+  const [imagePosition, setImagePosition] = useState<string>("image-only");
   const [showPreview, setShowPreview] = useState(false);
   const [cropFileName, setCropFileName] = useState<string>("");
   const [editingQuestion, setEditingQuestion] = useState<StudyQuestion | null>(null);
@@ -81,6 +82,7 @@ export function AdminQuestionPanel({
     setImageUrl(q.imageUrl || null);
     setImagePreview(null);
     setImageFile(null);
+    setImagePosition(q.imagePosition || "image-only");
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
     setCorrectAnswer(q.correctAnswer || "");
     setExplanation(q.explanation || "");
@@ -96,6 +98,7 @@ export function AdminQuestionPanel({
     setImageUrl(null);
     setImagePreview(null);
     setImageFile(null);
+    setImagePosition("image-only");
     setOptions(isObjective ? [{ label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" }] : []);
     setCorrectAnswer("");
     setExplanation("");
@@ -246,6 +249,7 @@ export function AdminQuestionPanel({
           topic: topic.trim() || null,
           sortOrder: parseInt(sortOrder) || 0,
           imageUrl: resolvedImageUrl,
+          imagePosition: imagePosition,
         });
 
         if (!result.success) {
@@ -264,6 +268,7 @@ export function AdminQuestionPanel({
           difficulty: difficulty as "easy" | "medium" | "hard",
           topic: topic.trim() || undefined,
           sortOrder: parseInt(sortOrder) || 0,
+          imagePosition: imagePosition as StudyQuestion["imagePosition"],
         };
         if (resolvedImageUrl) updated.imageUrl = resolvedImageUrl;
         onQuestionUpdated(updated);
@@ -285,6 +290,7 @@ export function AdminQuestionPanel({
           topic: topic.trim() || null,
           sortOrder: parseInt(sortOrder) || 0,
           imageUrl: resolvedImageUrl,
+          imagePosition: imagePosition,
         });
 
         if (!result.success) {
@@ -306,6 +312,7 @@ export function AdminQuestionPanel({
           difficulty: difficulty as "easy" | "medium" | "hard",
           topic: topic.trim() || undefined,
           sortOrder: parseInt(sortOrder) || 0,
+          imagePosition: imagePosition as StudyQuestion["imagePosition"],
         };
         if (resolvedImageUrl) added.imageUrl = resolvedImageUrl;
         onQuestionAdded(added);
@@ -471,6 +478,7 @@ export function AdminQuestionPanel({
                     </label>
 
                     {(imagePreview || imageUrl) && (
+                      <>
                       <div className="relative mb-2 rounded-xl overflow-hidden border bg-muted/30 group">
                         <img
                           src={imagePreview || imageUrl}
@@ -495,6 +503,26 @@ export function AdminQuestionPanel({
                           </button>
                         </div>
                       </div>
+
+                      <div className="mt-3">
+                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                          Image Layout
+                        </label>
+                        <select
+                          value={imagePosition}
+                          onChange={e => setImagePosition(e.target.value)}
+                          className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        >
+                          <option value="image-only">Image Only</option>
+                          <option value="text-only">Text Only</option>
+                          <option value="image-above">Image Above Text</option>
+                          <option value="image-beside">Image Beside Text</option>
+                        </select>
+                        <p className="text-xs text-muted-foreground/60 mt-1">
+                          Controls how the image and question text are displayed together.
+                        </p>
+                      </div>
+                      </>
                     )}
 
                     {!imagePreview && !imageUrl && (

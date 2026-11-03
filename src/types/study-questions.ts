@@ -52,7 +52,7 @@ export interface StudyQuestion {
   subQuestions?: { id: string; text: string; answerGuide: string }[];
   difficulty?: Difficulty;
   imageUrl?: string;
-  imagePosition?: "image-only" | "image-above" | "image-beside";
+  imagePosition?: "text-only" | "image-only" | "image-above" | "image-beside";
 }
 
 export interface YearData {

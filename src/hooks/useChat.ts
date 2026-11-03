@@ -650,7 +650,13 @@ export function useChat() {
           // hard-deleted message: treat it as a signal and reconcile the
           // list so unread counts and previews correct themselves.
           () => {
-            void fetchConversations();
+            (async () => {
+              try {
+                await fetchConversations();
+              } catch {
+                // network error — keep UI running
+              }
+            })();
           }
         )
         .on(
@@ -747,14 +753,19 @@ export function useChat() {
             // refreshed), then close the active view if I'm no longer a
             // member.
             debug('[Realtime] removed from a conversation (participant row):', old.id);
-            void fetchConversations().then(() => {
+            void (async () => {
+              try {
+                await fetchConversations();
+              } catch {
+                // network error â€” keep UI running
+              }
               const active = activeConvRef.current;
               if (active && !convIdsRef.current.includes(active)) {
                 debug('[Realtime] no longer member of active conversation:', active);
                 setActiveConversation(null);
                 setMessages([]);
               }
-            });
+            })();
           }
         )
         .on(
@@ -811,7 +822,12 @@ export function useChat() {
         if (newMsg.sender_id === user.id) return;
         const firstIncoming = markIncomingSeen(newMsg.id);
         if (!convIdsRef.current.includes(newMsg.conversation_id)) {
-          void fetchConversations().then(() => {
+void (async () => {
+            try {
+              await fetchConversations();
+            } catch {
+              // network error – keep UI running
+            }
             if (convIdsRef.current.includes(newMsg.conversation_id)) {
               const currentConv = activeConvRef.current;
               if (newMsg.conversation_id === currentConv) {
@@ -1598,7 +1614,13 @@ export function useChat() {
       });
     }
 
-    void fetchConversations();
+      (async () => {
+        try {
+          await fetchConversations();
+        } catch {
+          // network error — keep UI running
+        }
+      })();
   }, [user, activeConversation]);
 
   const startConversation = useCallback(async (otherUserId: string): Promise<string | null> => {
@@ -1653,7 +1675,13 @@ export function useChat() {
         toast.error('Undo failed');
         return;
       }
-      void fetchConversations();
+      (async () => {
+        try {
+          await fetchConversations();
+        } catch {
+          // network error — keep UI running
+        }
+      })();
     };
   }, [user, fetchConversations]);
 
@@ -1831,3 +1859,4 @@ export function useChat() {
     queueVoiceNote,
   };
 }
+

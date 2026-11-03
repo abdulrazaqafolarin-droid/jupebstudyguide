@@ -5,6 +5,7 @@ import { Capacitor } from "@capacitor/core";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 const MAX_SIZE = 10 * 1024 * 1024;
+const MAX_IMAGES = 3;
 const VALID_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "application/pdf"];
 
 function base64ToFile(base64: string, filename: string, mime: string): File {
@@ -15,11 +16,15 @@ function base64ToFile(base64: string, filename: string, mime: string): File {
   return new File([byteArray], filename, { type: mime });
 }
 
+export interface ImageItem {
+  file: File;
+  preview: string;
+  publicUrl?: string;
+}
+
 export function useImageUpload(userId: string | undefined) {
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [images, setImages] = useState<ImageItem[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [publicUrl, setPublicUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -35,6 +40,35 @@ export function useImageUpload(userId: string | undefined) {
     setShowCamera(false);
   }, []);
 
+  const addImage = useCallback((file: File) => {
+    if (!VALID_TYPES.some((t) => file.type === t)) {
+      toast.error("Only PNG, JPG, WebP images and PDF files supported");
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      toast.error("Each file must be less than 10MB");
+      return;
+    }
+    setImages(prev => {
+      if (prev.length >= MAX_IMAGES) {
+        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+        return prev;
+      }
+      const preview = file.type === "application/pdf"
+        ? ""
+        : URL.createObjectURL(file);
+      return [...prev, { file, preview }];
+    });
+  }, []);
+
+  const removeImage = useCallback((index: number) => {
+    setImages(prev => {
+      const item = prev[index];
+      if (item.preview) URL.revokeObjectURL(item.preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  }, []);
+
   const startCamera = useCallback(async () => {
     if (isNative) {
       try {
@@ -45,8 +79,7 @@ export function useImageUpload(userId: string | undefined) {
         });
         if (photo.base64String) {
           const file = base64ToFile(photo.base64String, `capture-${Date.now()}.jpg`, "image/jpeg");
-          setImage(file);
-          setPreview(`data:image/jpeg;base64,${photo.base64String}`);
+          addImage(file);
         }
       } catch {
         toast.error("Camera cancelled or unavailable");
@@ -64,7 +97,7 @@ export function useImageUpload(userId: string | undefined) {
     } catch {
       toast.error("Camera not available. Use file upload instead.");
     }
-  }, [isNative]);
+  }, [isNative, addImage]);
 
   const handleNativeFilePick = useCallback(async () => {
     try {
@@ -76,14 +109,12 @@ export function useImageUpload(userId: string | undefined) {
       if (photo.base64String) {
         const mime = photo.format === "png" ? "image/png" : "image/jpeg";
         const file = base64ToFile(photo.base64String, `upload-${Date.now()}.${photo.format}`, mime);
-        if (file.size > MAX_SIZE) { toast.error("Image must be less than 10MB"); return; }
-        setImage(file);
-        setPreview(`data:${mime};base64,${photo.base64String}`);
+        addImage(file);
       }
     } catch {
       toast.error("Image picker cancelled");
     }
-  }, []);
+  }, [addImage]);
 
   const captureFrame = useCallback(() => {
     const video = videoRef.current;
@@ -95,30 +126,19 @@ export function useImageUpload(userId: string | undefined) {
     canvas.toBlob((blob) => {
       if (!blob) return;
       const file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
+      addImage(file);
       stopCamera();
     }, "image/jpeg", 0.85);
-  }, [stopCamera]);
-
-  const handleFileSelect = useCallback((file: File) => {
-    if (!VALID_TYPES.some((t) => file.type === t)) {
-      toast.error("Only PNG, JPG, WebP images and PDF files supported");
-      return;
-    }
-    if (file.size > MAX_SIZE) {
-      toast.error("Image must be less than 10MB");
-      return;
-    }
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
-  }, []);
+  }, [addImage, stopCamera]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFileSelect(file);
+    const files = e.target.files;
+    if (files) {
+      const clamped = Array.from(files).slice(0, MAX_IMAGES);
+      clamped.forEach(f => addImage(f));
+    }
     e.target.value = "";
-  }, [handleFileSelect]);
+  }, [addImage]);
 
   const handlePickImage = useCallback(() => {
     if (isNative) {
@@ -128,35 +148,43 @@ export function useImageUpload(userId: string | undefined) {
     }
   }, [isNative, handleNativeFilePick]);
 
-  const upload = useCallback(async (): Promise<string | null> => {
-    if (!image || !userId) return null;
+  const uploadAll = useCallback(async (): Promise<string[]> => {
+    if (!images.length || !userId) return [];
     setUploading(true);
+    const urls: string[] = [];
     try {
-      const ext = image.name.split(".").pop() || "jpg";
-      const fileName = `${userId}/${crypto.randomUUID()}.${ext}`;
-      const { data, error } = await supabase.storage.from("answer-images").upload(fileName, image, {
-        contentType: image.type,
-      });
-      if (error) { toast.error("Upload failed"); return null; }
-      const { data: { publicUrl: url } } = supabase.storage.from("answer-images").getPublicUrl(data.path);
-      setPublicUrl(url);
-      return url;
+      for (const item of images) {
+        const ext = item.file.name.split(".").pop() || "jpg";
+        const fileName = `${userId}/${crypto.randomUUID()}.${ext}`;
+        const { data, error } = await supabase.storage.from("answer-images").upload(fileName, item.file, {
+          contentType: item.file.type,
+        });
+        if (error) {
+          toast.error(`Upload failed for ${item.file.name}`);
+          urls.push("");
+          continue;
+        }
+        const { data: { publicUrl: url } } = supabase.storage.from("answer-images").getPublicUrl(data.path);
+        item.publicUrl = url;
+        urls.push(url);
+      }
+      return urls;
     } finally {
       setUploading(false);
     }
-  }, [image, userId]);
+  }, [images, userId]);
 
   const reset = useCallback(() => {
-    if (preview) URL.revokeObjectURL(preview);
-    setImage(null);
-    setPreview(null);
-    setPublicUrl(null);
+    images.forEach(item => {
+      if (item.preview) URL.revokeObjectURL(item.preview);
+    });
+    setImages([]);
     stopCamera();
-  }, [preview, stopCamera]);
+  }, [images, stopCamera]);
 
   return {
-    image, preview, uploading, publicUrl, showCamera, videoRef,
+    images, uploading, showCamera, videoRef,
     fileInputRef, startCamera, stopCamera, captureFrame, handleFileInput,
-    handlePickImage, upload, reset,
+    handlePickImage, addImage, removeImage, uploadAll, reset,
   };
 }

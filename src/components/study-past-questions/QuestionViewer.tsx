@@ -409,7 +409,6 @@ export function QuestionViewer({
                             question={{ ...question, id: sq.id, question: sq.text }}
                             questionId={sq.id}
                             subject={subject}
-                            year={question.year}
                             onSubmit={(text) => handleSubmitTheory(sq.id, text)}
                           />
                         )}
@@ -542,7 +541,6 @@ export function QuestionViewer({
                       question={question}
                       questionId={question.id}
                       subject={subject}
-                      year={question.year}
                       onSubmit={(text) => handleSubmitTheory(question.id, text)}
                     />
                   )}

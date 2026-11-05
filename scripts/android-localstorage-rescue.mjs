@@ -333,6 +333,15 @@ async function exportBackup(client, requestedUserId, outputPath) {
 }
 
 async function main() {
+  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+    console.log('JUPEB Master legacy localStorage rescue');
+    console.log('Usage:');
+    console.log('  node scripts/android-localstorage-rescue.mjs');
+    console.log('  node scripts/android-localstorage-rescue.mjs --user-id <uuid>');
+    console.log('  node scripts/android-localstorage-rescue.mjs --output <backup.json>');
+    console.log('The command only exports learning data. It never uninstalls or clears the app.');
+    return;
+  }
   assertAdbAvailable();
   const serial = selectDevice();
   ensureLegacyPackage(serial);

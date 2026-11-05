@@ -1,72 +1,48 @@
-# Android signing-key rotation and student-data preservation
+# Android signing-key rotation and JUPEB Master fresh installation
 
-## Current state
+## Current verified state
 
 - Android application ID: `com.jupeb.master`.
-- Historical release signing keystore: unavailable.
-- The archived production-build artifact from GitHub Actions run `42079370035` (artifact `13440460672`) was inspected. Its signer is `CN=Android Debug, O=Android, C=US`, with certificate SHA-256 `6bc12665dc9fbaa318b62e22394a19619a7a9a19cfa6847e9b3bf4e2112798c3`. The certificate was generated at build time on November 5, 2026; the ephemeral GitHub runner's private debug keystore was not included in the artifact and cannot be reconstructed from the APK.
-- New permanent release keystore: generated outside the repository. Its public certificate SHA-256 is `341744a3408e4f6b4178c083953100785eb21c985c0a8fa4f62592e0a9c53181`. Its private key is provided separately to the repository owner; it must never be committed.
-- The current manifest uses `android:allowBackup="false"`.
-- The Android updater recognizes `requiresReinstall: true`, warns the student, and does not offer an installer action. The download page also hides the APK link for such a release.
-- The release workflow compares the candidate APK certificate with the currently published APK. A mismatch remains artifact-only unless two separate workflow-dispatch acknowledgements are selected: `allow_signing_key_migration` and `confirm_legacy_device_data_loss`.
+- The historical installed APK (version 1.1.94 / versionCode 94) is a CI debug build. Its signing certificate SHA-256 is `6bc12665dc9fbaa318b62e22394a19619a7a9a19cfa6847e9b3bf4e2112798c3`; its ephemeral private debug keystore cannot be reconstructed from the APK.
+- The new permanent release certificate SHA-256 is `341744a3408e4f6b4178c083953100785eb21c985c0a8fa4f62592e0a9c53181`. The private keystore is intentionally not stored in Git.
+- The old manifest has `android:allowBackup="false"`; Android cloud/device backup is not a proven route for its WebView localStorage.
+- PR #14 adds account-scoped local export/import and private Supabase cloud backup/restore for a future app build. Those controls are not in the old APK.
+- PR #14 validation run #283 passed TypeScript, unit tests, lint (warnings only), web build, Capacitor sync, Android debug compilation, package identity/version, and read-only production health checks. This is not a signed release APK.
+- The production updater metadata was previously found to have a missing/invalid SHA-256 and must be replaced only with metadata computed from and verified against the exact release APK.
 
-## Why this cannot be treated as an ordinary update
+## Data implications of a fresh install
 
-Android does not accept an APK signed by a different certificate as an update to an already installed package. The old app would have to be uninstalled before the new key's APK can be installed under the same application ID.
+The old APK bundles its web app locally. Its private WebView localStorage is not readable by the website or Supabase. Some learning state may exist only on the phone, including spaced-repetition progress, legacy syllabus/session state, streak state, and older bookmarks.
 
-Uninstalling removes the old app's private local data. In this project, some learning state is still stored only in localStorage:
+The owner has now chosen a fresh installation and explicitly indicated willingness to remove the existing app. Uninstalling the old package will permanently remove any such local-only state that has not already synced. Existing records already stored in Supabase remain separate and must not be deleted or reset. Do not describe cloud records as a complete copy of phone-local records.
 
-- Spaced-repetition review state (`u:<userId>:study-progress`).
-- Legacy syllabus progress and local study sessions.
-- Streak state.
-- Legacy past-question bookmarks in the device-shared `jupeb_study_bookmarks` key.
+This is a clean-install migration, not an in-place update: Android rejects an APK signed with a different certificate for an existing package. The new app must use the same application ID and the permanent release signing key for all future releases.
 
-The old APK has Android backup disabled, but its manifest is also marked `android:debuggable=true`. The archived public APK came from the same successful CI job that uploaded `app-debug.apk` to the production Supabase `app-releases/jupeb-master.apk` object (version 1.1.94, run 94). Its exact installer build is therefore a candidate for ADB/Chrome DevTools localStorage export while it remains installed.
+## Release signing requirements
 
-A new helper, `scripts/android-localstorage-rescue.mjs`, now probes the installed package with `run-as`, connects to the local WebView DevTools socket through ADB, and exports only the current signed-in user's `u:<userId>:` namespace plus an explicit allowlist of legacy learning keys and the active account's hidden-message list. It deliberately excludes auth-token, password, secret, credential and API-key-like storage keys and writes the same versioned JSON format accepted by the new Settings restore panel. It does not uninstall, clear, or modify the app.
-
-To run it from the repository root, use Node.js 22+, install Android Platform Tools so `adb` is on PATH, enable USB debugging on the phone, approve the computer, unlock the phone and open JUPEB Master on the signed-in account. Then run:
-
-```bash
-node scripts/android-localstorage-rescue.mjs
-```
-
-The helper writes a timestamped `jupeb-device-backup-*.json` file in the current directory. Keep it private, make a second independent safe copy, and verify that the file exists and its SHA-256 matches the console output.
-
-Android will not install the new APK over the old package while their signing certificates differ. The safe future sequence is therefore: (1) export the backup from the old app; (2) verify it and preserve two copies before changing the old installation; (3) only when the owner authorizes migration and the approved new APK is available, uninstall the old app and install the new one; (4) sign into the same Supabase account; (5) restore from Settings → Study Data Backup → Restore Backup, explicitly selecting legacy-data restoration; and (6) verify study progress, syllabus sessions/days, bookmarks, streaks and achievements before continuing study.
-
-**Do not start this migration sequence now.** The production download UI intentionally blocks a signing migration, and the ADB export has not been proven on the actual phone. A successful export is a prerequisite, not permission to uninstall immediately. Android WebView debugging depends on the device's installed WebView version; the helper checks the real installation rather than assuming that the archived APK guarantees access.
-
-## Cloud data that already exists
-
-The production `study_sessions` table was inspected without changing it on 2026-11-05. It contained 69 account rows; 35 accounts had non-empty session arrays, with 37 session records in total. The existing cloud table and RLS policies remain in place.
-
-Other account data such as profiles, activation/entitlement state, score events, achievements and question content is stored in Supabase. The past-question bank remains server-delivered; do not bundle it in the APK or include it in a user backup.
-
-## Required release gates
-
-1. Keep the stable release keystore and its four GitHub Actions secrets outside Git history.
-2. Complete and merge the safe session hydration/restore and local backup changes only after repository validation passes.
-3. Decide and test how device-only data from already-installed legacy APKs will be recovered. The new backup UI alone does not satisfy this gate.
-4. Verify the latest production web deployment and Supabase state without deleting or replacing existing rows.
-5. Prepare clear student-facing instructions and an explicit support plan before any one-time reinstall release.
-6. Only after those gates, manually dispatch the Android release workflow on `main`. The workflow requires both `allow_signing_key_migration` and `confirm_legacy_device_data_loss` to be checked before it can mirror a different-signed APK. Even after that, a separate reviewed code change is required to re-enable download UI; do not bypass the current updater/download-page safety block. Inspect the APK checksum and certificate and verify the published `version.json` read-back.
-7. Confirm a later release using the same permanent keystore is accepted as an in-place update before advertising automatic updates again.
-
-## Permanent signing-key setup
-
-The separate signing kit contains the new private keystore and the values needed to create these GitHub repository Actions secrets:
+The stable signing workflow requires these GitHub Actions repository secrets:
 
 - `ANDROID_KEYSTORE_BASE64`
 - `ANDROID_KEYSTORE_PASSWORD`
 - `ANDROID_KEY_ALIAS`
 - `ANDROID_KEY_PASSWORD`
 
-Never put these values in source files, workflow logs, pull-request descriptions, issues, or commits. Keep at least two secure offline copies of the keystore and its passwords. Do not regenerate the key for later releases.
+Never commit the keystore or expose any of these values in source code, logs, PR comments, issues, or chat. Keep secure offline copies of the private keystore and passwords. If the secrets are not configured, the release workflow must fail closed; do not fall back to an ephemeral debug signing key.
 
-## Rollback and safety
+The workflow compares the new APK signer with the currently published APK. The signer mismatch is expected for this one-time migration. Publication of a different-signed APK requires both explicit workflow-dispatch acknowledgements: `allow_signing_key_migration` and `confirm_legacy_device_data_loss`. Do not remove those checks or publish a different-signed APK as an ordinary update.
 
-- Do not drop, truncate, or recreate `study_sessions`, `syllabus_progress`, profiles, or score tables to solve a client migration problem.
-- If cloud restoration fails, the app must retain local state and keep cloud writes disabled until it can safely retry.
-- Backup restore must validate the original signed-in user and merge known study data. Unknown preferences must not be overwritten automatically.
-- No production Supabase schema or data change is authorized by this document.
+## Fresh release checklist
+
+1. Confirm the four signing secrets are configured in the repository without printing their values.
+2. Build the release variant using the permanent key; verify its certificate fingerprint equals `341744a3408e4f6b4178c083953100785eb21c985c0a8fa4f62592e0a9c53181`.
+3. Install-test the APK in a clean Android environment; verify application ID, launch, sign-in, question delivery from Supabase, admin access, trial/activation behavior, and backup/restore screens.
+4. Confirm that the private cloud backup uses the existing private `documents` bucket and account-scoped storage paths; do not change production schema, policies, or learning records for this client release.
+5. Produce a SHA-256 checksum from the exact APK bytes and publish matching `version.json` metadata only after APK validation. Verify the public APK and metadata read back successfully and the checksum matches.
+6. Make the release available at the stable download page. Clearly mark it as a fresh install requiring removal of the older build; do not offer it as an in-place update.
+7. After installation, sign into the same Supabase account and verify cloud-backed sessions, profile, score events, achievements, entitlements and remote question delivery. Use the new in-app backup controls for future protection.
+
+## Production safety
+
+- Do not drop, truncate, recreate, or bulk-rewrite `study_sessions`, `syllabus_progress`, profiles, score tables, activation records, or question content.
+- Do not bundle past-question data in the APK; continue delivering it from Supabase as usual.
+- A client release must not be described as fully verified until the exact signed APK is installed and smoke-tested.

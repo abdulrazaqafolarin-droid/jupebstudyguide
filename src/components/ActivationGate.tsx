@@ -1,11 +1,11 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useActivation } from "@/hooks/useActivation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, MessageCircle, DollarSign } from "lucide-react";
+import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, MessageCircle, DollarSign, Clock } from "lucide-react";
 import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
 
@@ -16,6 +16,22 @@ interface ActivationGateProps {
 export const ActivationGate = ({ children }: ActivationGateProps) => {
   const { status } = useActivation();
   const { user, signOut } = useAuth();
+  const [clockNow, setClockNow] = useState(() => Date.now());
+  const trialExpiresAt = status.trial_expires_at ? Date.parse(status.trial_expires_at) : Number.NaN;
+
+  useEffect(() => {
+    if (!Number.isFinite(trialExpiresAt)) return;
+    const timeout = window.setTimeout(
+      () => setClockNow(Date.now()),
+      Math.max(0, trialExpiresAt - Date.now()) + 25,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [trialExpiresAt]);
+
+  const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
+  const trialDaysLeft = trialActive
+    ? Math.max(1, Math.ceil((trialExpiresAt - clockNow) / (24 * 60 * 60 * 1000)))
+    : 0;
 
   if (status.checking) {
     return (
@@ -28,8 +44,27 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.is_activated || status.is_admin) {
-    return <>{children}</>;
+  if (status.is_activated || status.is_admin || trialActive) {
+    return (
+      <>
+        {trialActive && !status.is_activated && !status.is_admin && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
+          >
+            <span className="inline-flex flex-wrap items-center justify-center gap-2">
+              <Clock className="h-3.5 w-3.5" />
+              <strong>5-day free trial active</strong>
+              <span aria-hidden="true">·</span>
+              <span>{trialDaysLeft} {trialDaysLeft === 1 ? "day" : "days"} remaining</span>
+              <span className="text-muted-foreground">Ends {new Date(trialExpiresAt).toLocaleDateString()}</span>
+            </span>
+          </div>
+        )}
+        {children}
+      </>
+    );
   }
 
   return <ActivationScreen email={user?.email || ""} onSignOut={signOut} />;

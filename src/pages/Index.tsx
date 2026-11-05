@@ -650,6 +650,19 @@ const Index = () => {
     );
   }
 
+  // Do not let a student create or edit a plan until their local sessions have
+  // hydrated and any legacy syllabus record has been safely converted.
+  if ((currentView === 'syllabus-setup' || currentView === 'syllabus') && !studySessionsReady) {
+    return (
+      <div role="status" aria-live="polite" className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="rounded-xl border border-border bg-card px-5 py-4 text-center shadow-sm">
+          <p className="text-sm font-medium">Restoring your saved study sessions…</p>
+          <p className="mt-1 text-xs text-muted-foreground">Your existing progress is being loaded before you continue.</p>
+        </div>
+      </div>
+    );
+  }
+
   // Syllabus setup view
   if (currentView === 'syllabus-setup') {
     return (

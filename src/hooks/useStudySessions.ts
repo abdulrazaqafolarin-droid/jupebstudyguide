@@ -103,7 +103,7 @@ export function useStudySessions() {
       migratedUserRef.current = null;
       console.error('Legacy syllabus migration failed; source data was retained.', err);
     }
-  }, [user, storageReady, stored.length, setStored]);
+  }, [user, storageReady, stored, setStored]);
 
   const isLoaded = Boolean(user && storageReady && migrationReadyUserId === user.id);
 

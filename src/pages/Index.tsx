@@ -386,16 +386,16 @@ const Index = () => {
     prevUnlockedRef.current = ids.length;
   }, [unlockedAchievements, syncAchievements]);
 
-  // Push current stats to public leaderboard (debounced upsert)
+  // Restore/merge the account's cloud sessions before writing aggregates derived from them.
+  const cloudStudySessionsReady = useStudySessionSync(sessions, setSessions, studySessionsReady);
+
+  // Push current stats to the public leaderboard only after the cloud read succeeds.
   useStatsSync({
     currentStreak,
     achievementsCount: unlockedAchievements.length,
     syllabus: sessions.length > 0 ? sessions[0].progress : null,
-    isReady: !profileLoading && streakReady && studySessionsReady,
+    isReady: !profileLoading && streakReady && studySessionsReady && cloudStudySessionsReady,
   });
-
-  // Sync study sessions to Supabase for cross-device persistence
-  useStudySessionSync(sessions, setSessions, studySessionsReady);
 
   // Shared notification center (single instance via NotificationsProvider)
   const {

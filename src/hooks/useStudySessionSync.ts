@@ -231,4 +231,8 @@ export function useStudySessionSync(
       if (pendingHash.current === hash) pendingHash.current = null;
     };
   }, [userId, isLoaded, readyUserId, sessions]);
+
+  // Consumers that write derived cloud aggregates must wait until this account's
+  // cloud session read/merge completed successfully (including a valid empty read).
+  return Boolean(userId && isLoaded && readyUserId === userId);
 }

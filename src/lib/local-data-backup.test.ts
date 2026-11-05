@@ -144,6 +144,30 @@ describe('user data backup', () => {
     expect(target.getItem('jupeb_achievements_unlocked')).toBe('["first-study"]');
   });
 
+  it('reopens the legacy syllabus migration after importing old syllabus progress', () => {
+    const storage = memoryStorage({
+      'u:user-a:study-sessions-legacy-migrated-v1': '1',
+    });
+    const backup = parseUserDataBackup(JSON.stringify({
+      format: 'jupeb-master-user-backup',
+      version: 1,
+      userId: 'user-a',
+      exportedAt: '2026-11-05T00:00:00.000Z',
+      entries: {
+        'u:user-a:syllabus-progress': JSON.stringify({
+          combination: { core: ['physics'], elective: [] },
+          currentDay: 5,
+          dailyTasks: [],
+          startedAt: '2026-11-01T00:00:00.000Z',
+        }),
+      },
+      deviceShared: { legacyBookmarks: null, legacyEntries: {} },
+    }));
+
+    restoreUserDataBackup(backup, 'user-a', false, storage);
+    expect(storage.getItem('u:user-a:study-sessions-legacy-migrated-v1')).toBe('0');
+  });
+
   it('rejects credential-like storage keys instead of restoring them', () => {
     const raw = JSON.stringify({
       format: 'jupeb-master-user-backup',

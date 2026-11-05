@@ -97,7 +97,7 @@ BEGIN
     VALUES (
       v_conv_id,
       '00000000-0000-0000-0000-000000000000',
-      E'👋 Welcome to JUPEB Study Guide! I''m StudyBot, your AI study assistant.\\n\\nUse me to practice past questions, track your streaks, and ace your exams! Tap "AI Tutor" on any question to get personalized help. Good luck! 🎓',
+      E'👋 Welcome to JUPEB Study Guide! I''m StudyBot, your AI study assistant.\n\nUse me to practice past questions, track your streaks, and ace your exams! Tap "AI Tutor" on any question to get personalized help. Good luck! 🎓',
       now()
     );
   END IF;

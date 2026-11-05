@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
-import { purgeForeignUserData } from '@/lib/storageCleanup';
 
 interface AuthContextType {
   user: User | null;
@@ -33,17 +32,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const prevUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     // Set up auth state listener BEFORE getting session
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const newUserId = session?.user?.id ?? null;
-        purgeForeignUserData(newUserId);
         setSession(session);
         setUser(session?.user ?? null);
-        prevUserIdRef.current = newUserId;
         // Set Realtime auth token so channels can connect
         if (session?.access_token) {
           supabase.realtime.setAuth(session.access_token);
@@ -61,7 +57,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Get initial session with timeout
     const sessionPromise = supabase.auth.getSession().then(({ data: { session } }) => {
       const newUserId = session?.user?.id ?? null;
-      purgeForeignUserData(newUserId);
       setSession(session);
       setUser(session?.user ?? null);
       // Set Realtime auth token for channels to connect
@@ -69,15 +64,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         supabase.realtime.setAuth(session.access_token);
       }
       setLoading(false);
-      prevUserIdRef.current = newUserId;
     }).catch((err) => {
       console.error('Failed to restore auth session:', err);
-      purgeForeignUserData(null);
       setLoading(false);
     });
 
     const timeoutId = setTimeout(() => {
-      purgeForeignUserData(null);
       setLoading(false);
     }, 10000);
 

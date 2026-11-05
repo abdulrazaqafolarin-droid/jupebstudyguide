@@ -195,8 +195,9 @@ export function parseUserDataBackup(raw: string): UserDataBackup {
   const prefix = `u:${value.userId}:`;
   const entries: Record<string, string> = {};
   for (const [key, entry] of Object.entries(value.entries as Record<string, unknown>)) {
-    if (!key.startsWith(prefix) || typeof entry !== 'string') {
-      throw new Error('The backup contains an invalid or foreign-account storage key.');
+    if (!key.startsWith(prefix) || typeof entry !== 'string'
+        || CREDENTIAL_KEY_PATTERN.test(key)) {
+      throw new Error('The backup contains an invalid, sensitive, or foreign-account storage key.');
     }
     entries[key] = entry;
   }
@@ -244,7 +245,9 @@ export function restoreUserDataBackup(
   let skipped = 0;
 
   for (const [key, incoming] of Object.entries(backup.entries)) {
-    if (!key.startsWith(prefix)) throw new Error('A foreign-account key was found in the backup.');
+    if (!key.startsWith(prefix) || CREDENTIAL_KEY_PATTERN.test(key)) {
+      throw new Error('A foreign-account or credential-like key was found in the backup.');
+    }
     const current = storage.getItem(key);
     if (current === null) {
       staged.set(key, { value: incoming, kind: 'restored' });

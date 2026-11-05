@@ -20,7 +20,6 @@ export function useUserStorage<T>(
   const [value, setValue] = useState<T>(defaultValue);
   const [loadedStorageKey, setLoadedStorageKey] = useState<string | null | undefined>(undefined);
   const isReady = !loading && loadedStorageKey === storageKey;
-  const lastUserId = useRef<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -28,7 +27,6 @@ export function useUserStorage<T>(
     if (!storageKey) {
       setValue(defaultValue);
       setLoadedStorageKey(null);
-      lastUserId.current = null;
       return;
     }
 
@@ -42,7 +40,6 @@ export function useUserStorage<T>(
       setValue(defaultValue);
     }
     setLoadedStorageKey(storageKey);
-    lastUserId.current = userId;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey, loading]);
 

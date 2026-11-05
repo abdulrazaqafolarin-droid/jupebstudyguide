@@ -140,10 +140,12 @@ function isStoredSession(value: unknown): value is StoredStudySession {
     && Number.isFinite(Date.parse(progress.startedAt))
     && Array.isArray(progress.dailyTasks)
     && progress.dailyTasks.every(isValidStoredTask)
-    && typeof progress.currentDay === 'number'
-    && Number.isFinite(progress.currentDay)
+    && Number.isInteger(progress.currentDay)
+    && Number(progress.currentDay) > 0
     && typeof progress.overallProgress === 'number'
     && Number.isFinite(progress.overallProgress)
+    && progress.overallProgress >= 0
+    && progress.overallProgress <= 100
     && isRecord(combination)
     && isValidSubjectList(combination.core)
     && isValidSubjectList(combination.elective)
@@ -206,7 +208,7 @@ function isValidStreak(value: unknown): boolean {
       && Number.isInteger(value[key]) && Number(value[key]) >= 0)
     && (value.lastStudyDate === null
       || (typeof value.lastStudyDate === 'string'
-        && /^\\d{4}-\\d{2}-\\d{2}$/.test(value.lastStudyDate)
+        && /^\d{4}-\d{2}-\d{2}$/.test(value.lastStudyDate)
         && Number.isFinite(Date.parse(value.lastStudyDate))));
 }
 
@@ -467,6 +469,12 @@ export function restoreUserDataBackup(
       skipped += 1;
       continue;
     }
+    if (!isValidKnownEntry(key, current)) {
+      // Do not attempt to merge against corrupt local state or silently
+      // replace it with a backup. Retain the current value for inspection.
+      skipped += 1;
+      continue;
+    }
     const merged = mergeEntry(key, current, incoming);
     if (merged !== null && merged !== current) {
       staged.set(key, { value: merged, kind: 'merged' });
@@ -499,6 +507,8 @@ export function restoreUserDataBackup(
       if (current === null) {
         staged.set(targetKey, { value, kind: 'restored' });
       } else if (current === value) {
+        skipped += 1;
+      } else if (!isValidKnownEntry(targetKey, current)) {
         skipped += 1;
       } else {
         const merged = mergeEntry(targetKey, current, value);

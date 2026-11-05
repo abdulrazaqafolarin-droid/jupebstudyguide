@@ -14,7 +14,7 @@
  *   node scripts/android-localstorage-rescue.mjs --output ./my-backup.json
  */
 import { createServer } from 'node:net';
-import { spawn, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { mkdir, writeFile, chmod } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -32,7 +32,6 @@ const LEGACY_DEVICE_DATA_KEYS = [
   'jupeb_syllabus_progress',
   'jupeb-chat-hub',
 ];
-const CREDENTIAL_KEY_PATTERN = /(token|secret|password|credential|api[-_]?key)/i;
 
 function argumentValue(name) {
   const index = process.argv.indexOf(name);

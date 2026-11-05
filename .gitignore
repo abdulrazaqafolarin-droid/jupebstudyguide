@@ -23,3 +23,12 @@ nul
 
 .vercel
 *.tsbuildinfo
+
+
+# Original question documents and extracted question text are private local inputs.
+# Keep them out of the public repository and out of APK/web builds.
+/Past questions/
+/extracted-text/
+/archive/study-questions/
+/private-question-sources/*
+!/private-question-sources/README.md

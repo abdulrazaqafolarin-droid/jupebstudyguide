@@ -3,7 +3,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const EXTRACTED_DIR = path.join(__dirname, '..', 'extracted-text');
+// Source question text stays in an ignored local folder, never in the public repository.
+const EXTRACTED_DIR = path.join(__dirname, '..', 'private-question-sources', 'extracted-text');
+if (!fs.existsSync(EXTRACTED_DIR)) {
+  console.error(
+    `Private question-source folder not found: ${EXTRACTED_DIR}. ` +
+    "Create it locally and place your extracted .txt files there; do not commit them.",
+  );
+  process.exit(1);
+}
 const OUTPUT_DIR = path.join(__dirname, '..', 'src', 'data', 'new-questions');
 
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });

@@ -34,8 +34,9 @@ COMMENT ON POLICY study_questions_select_policy ON public.study_questions IS
   'Allows active trials and activated accounts to read visible questions; admins can also read hidden questions.';
 
 -- Do not leave anonymous SELECT rights in place behind an RLS-only barrier.
-REVOKE SELECT ON TABLE public.study_questions FROM PUBLIC, anon;
-GRANT SELECT ON TABLE public.study_questions TO authenticated, service_role;
+REVOKE ALL PRIVILEGES ON TABLE public.study_questions FROM PUBLIC, anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.study_questions TO authenticated;
+GRANT ALL PRIVILEGES ON TABLE public.study_questions TO service_role;
 
 -- Vector rows are not needed by student clients: they retrieve matches through
 -- the guarded SECURITY DEFINER RPC below. Keep direct table maintenance admin-only.

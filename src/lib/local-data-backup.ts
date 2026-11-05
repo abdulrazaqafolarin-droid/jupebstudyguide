@@ -271,7 +271,8 @@ export function restoreUserDataBackup(
         // Continue attempting rollback for every key.
       }
     }
-    throw new Error('The device could not finish restoring the backup. Existing local values were kept wherever storage allowed rollback.', { cause: error });
+    console.error('Backup restore storage failure; rollback was attempted.', error);
+    throw new Error('The device could not finish restoring the backup. Existing local values were kept wherever storage allowed rollback.');
   }
 
   return {

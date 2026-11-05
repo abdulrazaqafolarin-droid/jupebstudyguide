@@ -14,6 +14,7 @@ import {
 } from '@/types/syllabus';
 import { useUserStorage } from './useUserStorage';
 import { useAuth } from '@/contexts/AuthContext';
+import { createLegacyStudySession } from '@/lib/legacy-syllabus-migration';
 
 const STORAGE_KEY = 'study-sessions';
 const OLD_STORAGE_KEY = 'syllabus-progress';
@@ -55,44 +56,42 @@ export function useStudySessions() {
 
     try {
       const alreadyMigrated = localStorage.getItem(markerKey) === '1';
-      if (!alreadyMigrated && stored.length === 0) {
-        const oldRaw = localStorage.getItem(oldKey);
-        if (oldRaw) {
-          const oldData = JSON.parse(oldRaw);
-          if (oldData && Array.isArray(oldData.dailyTasks) && oldData.combination) {
-            const allowedSubjects: Subject[] = ['physics', 'chemistry', 'biology', 'math'];
-            const subjects: Subject[] = [
-              ...(Array.isArray(oldData.combination.core) ? oldData.combination.core : []),
-              ...(Array.isArray(oldData.combination.elective) ? oldData.combination.elective : []),
-            ].filter((subject, index, all): subject is Subject =>
-              allowedSubjects.includes(subject) && all.indexOf(subject) === index
-            );
-
-            if (subjects.length > 0) {
-              const now = new Date().toISOString();
-              const session: StoredStudySession = {
-                id: generateId(),
-                name: subjects.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' + ') + ' Plan',
-                subjects,
-                status: Number(oldData.currentDay) > TOTAL_DAYS ? 'completed' : 'active',
-                progress: oldData,
-                startDate: typeof oldData.startedAt === 'string'
-                  ? oldData.startedAt.split('T')[0]
-                  : now.split('T')[0],
-                dailyGoalMinutes: 30,
-                createdAt: typeof oldData.startedAt === 'string' ? oldData.startedAt : now,
-                updatedAt: now,
-              };
-
-              // The old value is retained as a recovery copy. The marker makes
-              // this migration idempotent and prevents deleted sessions from
-              // being silently resurrected on a later visit.
-              setStored([session]);
-            }
-          }
-        }
+      if (alreadyMigrated) {
+        setMigrationReadyUserId(user.id);
+        return;
       }
 
+      const oldRaw = localStorage.getItem(oldKey);
+      if (!oldRaw) {
+        // Do not write the marker when no legacy record exists. A later backup
+        // import may restore this key, and the following app launch must still
+        // be able to convert it into a multi-session record.
+        setMigrationReadyUserId(user.id);
+        return;
+      }
+
+      if (stored.length > 0) {
+        // Current sessions already exist. Keep the old record intact rather
+        // than replacing the current plan; a later explicit migration can
+        // reconcile the two formats without losing either.
+        setMigrationReadyUserId(user.id);
+        return;
+      }
+
+      const legacySession = createLegacyStudySession(
+        JSON.parse(oldRaw),
+        generateId(),
+        new Date().toISOString(),
+      );
+      if (!legacySession) {
+        console.warn('Legacy syllabus data was retained but could not be converted safely.');
+        setMigrationReadyUserId(user.id);
+        return;
+      }
+
+      setStored([legacySession]);
+      // Keep the source value as a recovery copy. The marker only records that
+      // a valid destination session was generated.
       localStorage.setItem(markerKey, '1');
       setMigrationReadyUserId(user.id);
     } catch (err) {

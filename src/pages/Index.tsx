@@ -191,6 +191,7 @@ const Index = () => {
     deleteSession,
     updateSession,
     setSessions,
+    isLoaded: studySessionsReady,
   } = useStudySessions();
 
   // Syllabus completed progress (across all sessions)
@@ -392,7 +393,7 @@ const Index = () => {
   });
 
   // Sync study sessions to Supabase for cross-device persistence
-  useStudySessionSync(sessions, setSessions, sessions.length > 0);
+  useStudySessionSync(sessions, setSessions, studySessionsReady);
 
   // Shared notification center (single instance via NotificationsProvider)
   const {

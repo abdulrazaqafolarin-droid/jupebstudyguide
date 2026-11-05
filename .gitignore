@@ -25,6 +25,9 @@ nul
 *.tsbuildinfo
 
 
+# Generated Supabase import payloads are local staging files, not app assets.
+/src/data/new-questions/
+
 # Original question documents and extracted question text are private local inputs.
 # Keep them out of the public repository and out of APK/web builds.
 /Past questions/

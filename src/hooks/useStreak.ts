@@ -27,7 +27,7 @@ function parseLocalDateStr(str: string): Date {
 }
 
 export function useStreak() {
-  const [streakData, setStreakData] = useUserStorage<StreakData>('streak', INITIAL);
+  const [streakData, setStreakData, { isReady }] = useUserStorage<StreakData>('streak', INITIAL);
 
   // If the streak is stale (missed > 1 day), reset on load.
   useEffect(() => {
@@ -81,6 +81,7 @@ export function useStreak() {
 
   return {
     ...streakData,
+    isReady,
     recordStudySession,
     hasStudiedToday,
   };

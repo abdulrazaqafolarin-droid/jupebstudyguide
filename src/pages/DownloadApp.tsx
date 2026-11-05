@@ -34,9 +34,10 @@ export default function DownloadApp() {
         const migrationRequiresReinstall = release.requiresReinstall === true &&
           (!installed || isNewer(installed.versionCode, release.versionCode));
         setRequiresReinstall(migrationRequiresReinstall);
-        // Never offer a signing-key migration APK while legacy on-device data
-        // has no verified transfer path. Cloud data remains available online.
-        setReleaseAvailable(!migrationRequiresReinstall);
+        // The download page is the explicit clean-install path. The native
+        // updater still blocks this release from being installed over the old
+        // package; the page explains the data-loss consequence before download.
+        setReleaseAvailable(true);
         const date = release.builtAt ? new Date(release.builtAt) : null;
         setLatestVersion(
           `v${release.versionName}` +
@@ -88,12 +89,13 @@ export default function DownloadApp() {
 
               {requiresReinstall && (
                 <div role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
-                  <p className="font-semibold text-amber-800 dark:text-amber-200">Android update paused to protect your study data</p>
+                  <p className="font-semibold text-amber-800 dark:text-amber-200">Fresh installation required</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    This release uses a different signing key, so Android would require the older app to be uninstalled.
-                    The older app may contain learning progress and bookmarks stored only on this device, and it cannot export them
-                    to this release. Keep your current JUPEB Master app installed. Do not uninstall it or install this migration yet.
-                    Your Supabase account records remain online, but device-only records are not guaranteed to be synced.
+                    This release is signed with the new permanent key. Android will not install it over the older app.
+                    Download this APK first, then uninstall the old JUPEB Master app before installing the new one.
+                    Uninstalling permanently deletes any study progress, syllabus sessions, streaks or bookmarks saved only
+                    on that phone. Supabase account records remain online, but they are not a complete copy of phone-only data.
+                    Continue only if you accept that loss.
                   </p>
                 </div>
               )}
@@ -108,7 +110,7 @@ export default function DownloadApp() {
                   ) : (
                     <Download className="h-5 w-5" />
                   )}
-                  {downloading ? "Opening..." : "Download APK"}
+                  {downloading ? "Opening..." : requiresReinstall ? "Download Fresh APK" : "Download APK"}
                 </button>
               ) : (
                 <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
@@ -126,9 +128,15 @@ export default function DownloadApp() {
               {requiresReinstall ? (
                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
                   <p className="font-medium flex items-center gap-1.5 text-foreground">
-                    <Shield className="h-3 w-3" /> Keep your existing app installed
+                    <Shield className="h-3 w-3" /> Fresh-install steps
                   </p>
-                  <p className="mt-1">Do not uninstall the older JUPEB Master app. Wait for an official data-transfer and migration release.</p>
+                  <ol className="mt-1 list-decimal list-inside space-y-0.5">
+                    <li>Download the new APK above.</li>
+                    <li>Only when ready, uninstall the older JUPEB Master app.</li>
+                    <li>Open the downloaded APK and install it.</li>
+                    <li>Sign in with the same account to restore cloud-backed records.</li>
+                  </ol>
+                  <p className="mt-2">Do not uninstall until the APK has fully downloaded. Phone-only records that never synced will be lost.</p>
                 </div>
               ) : (
                 <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
@@ -209,7 +217,7 @@ export default function DownloadApp() {
               ) : (
                 <p role="status" className="text-xs text-muted-foreground">
                   {requiresReinstall
-                    ? "APK release is paused to protect local-only study data. Keep the older JUPEB Master app installed."
+                    ? "The fresh-install APK is not available yet. Keep the older app installed until the new APK download is ready."
                     : "The Android installer is temporarily unavailable while its signing and integrity details are verified."}
                 </p>
               )}

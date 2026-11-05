@@ -17,6 +17,20 @@ function isValidSubjectList(value: unknown): value is string[] {
       && (VALID_SUBJECTS as readonly string[]).includes(subject));
 }
 
+function isValidStoredTopic(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return typeof value.id === 'string'
+    && value.id.length > 0
+    && typeof value.name === 'string'
+    && typeof value.description === 'string'
+    && Array.isArray(value.subtopics)
+    && value.subtopics.every(item => typeof item === 'string')
+    && ['beginner', 'intermediate', 'advanced'].includes(String(value.difficulty))
+    && typeof value.estimatedHours === 'number'
+    && Number.isFinite(value.estimatedHours)
+    && value.estimatedHours >= 0;
+}
+
 function isValidStoredTask(value: unknown): boolean {
   if (!isRecord(value)) return false;
   return Number.isInteger(value.day)
@@ -24,13 +38,19 @@ function isValidStoredTask(value: unknown): boolean {
     && typeof value.subject === 'string'
     && (VALID_SUBJECTS as readonly string[]).includes(value.subject)
     && Array.isArray(value.topics)
+    && value.topics.every(isValidStoredTopic)
     && Array.isArray(value.learningObjectives)
+    && value.learningObjectives.every(item => typeof item === 'string')
     && Array.isArray(value.checkpointQuestions)
+    && value.checkpointQuestions.every(item => typeof item === 'string')
     && typeof value.isCompleted === 'boolean'
     && (value.completedAt === undefined
       || (typeof value.completedAt === 'string' && Number.isFinite(Date.parse(value.completedAt))))
     && (value.masteryScore === undefined
-      || (typeof value.masteryScore === 'number' && Number.isFinite(value.masteryScore)));
+      || (typeof value.masteryScore === 'number'
+        && Number.isFinite(value.masteryScore)
+        && value.masteryScore >= 0
+        && value.masteryScore <= 100));
 }
 
 function isStoredStudySession(value: unknown): value is StoredStudySession {
@@ -59,16 +79,22 @@ function isStoredStudySession(value: unknown): value is StoredStudySession {
     && Number.isFinite(Date.parse(progress.startedAt))
     && Array.isArray(progress.dailyTasks)
     && progress.dailyTasks.every(isValidStoredTask)
-    && typeof progress.currentDay === 'number'
-    && Number.isFinite(progress.currentDay)
+    && new Set(progress.dailyTasks.map(task => task.day)).size === progress.dailyTasks.length
+    && Number.isInteger(progress.currentDay)
+    && Number(progress.currentDay) > 0
     && typeof progress.overallProgress === 'number'
     && Number.isFinite(progress.overallProgress)
+    && progress.overallProgress >= 0
+    && progress.overallProgress <= 100
     && isRecord(combination)
     && isValidSubjectList(combination.core)
     && isValidSubjectList(combination.elective)
     && isRecord(subjectProgress)
-    && Object.values(subjectProgress).every(item =>
-      typeof item === 'number' && Number.isFinite(item));
+    && Object.entries(subjectProgress).every(([subject, item]) =>
+      (VALID_SUBJECTS as readonly string[]).includes(subject)
+      && typeof item === 'number' && Number.isFinite(item) && item >= 0 && item <= 100)
+    && (progress.lastStudiedAt === undefined
+      || (typeof progress.lastStudiedAt === 'string' && Number.isFinite(Date.parse(progress.lastStudiedAt))));
 }
 function hydrateSessions(raw: StoredStudySession[]): StudySessionData[] {
   return raw.map(session => ({

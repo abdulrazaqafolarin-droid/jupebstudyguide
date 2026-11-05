@@ -69,7 +69,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
         `Subject: ${question.subject}`,
         question.year ? `Exam year: ${question.year}` : '',
         `Theory question: ${question.question}`,
-      ].filter(Boolean).join('\\n'),
+      ].filter(Boolean).join('\n'),
     }];
 
     try {

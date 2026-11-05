@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+def signingPath = System.getenv("ANDROID_KEYSTORE_PATH")
+def signingStorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+def signingKeyAlias = System.getenv("ANDROID_KEY_ALIAS")
+def signingKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+def hasStableReleaseSigning = signingPath && signingStorePassword && signingKeyAlias && signingKeyPassword
+
 android {
     namespace = "com.jupeb.master"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -19,8 +25,23 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        stableRelease {
+            if (hasStableReleaseSigning) {
+                storeFile file(signingPath)
+                storePassword signingStorePassword
+                keyAlias signingKeyAlias
+                keyPassword signingKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // CI uses a private, stable keystore when configured. The debug
+            // fallback is only for initial/testing builds and is NOT suitable
+            // for reliable in-place updates across fresh GitHub runners.
+            signingConfig hasStableReleaseSigning ? signingConfigs.stableRelease : signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

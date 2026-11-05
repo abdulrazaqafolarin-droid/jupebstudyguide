@@ -1,9 +1,10 @@
-import { Capacitor, registerPlugin } from "@capacitor/core";
-import { Directory, Filesystem } from "@capacitor/filesystem";
+import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 
 export const VERSION_URL =
   "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/version.json";
 export const APK_FILE_NAME = "jupeb-master.apk";
+export const RELEASE_APK_URL =
+  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
 
 export interface ReleaseInfo {
   versionCode: number;
@@ -11,12 +12,34 @@ export interface ReleaseInfo {
   commit: string;
   builtAt: string;
   url: string;
+  sha256: string;
+  /** True only for the one-time transition away from the legacy debug signing key. */
+  requiresReinstall?: boolean;
+}
+
+interface DownloadProgress {
+  url: string;
+  bytes: number;
+  contentLength: number;
+  lengthComputable: boolean;
 }
 
 interface AppUpdaterPlugin {
   getInstalledVersion(): Promise<{ versionCode: number; versionName: string }>;
   canInstallPackages(): Promise<{ canInstall: boolean }>;
+  openInstallSettings(): Promise<void>;
+  downloadApk(options: { url: string; versionCode: number }): Promise<{
+    filePath: string;
+    bytes: number;
+    sha256: string;
+  }>;
+  deleteDownloadedApk(options: { filePath: string }): Promise<void>;
   installApk(options: { filePath: string }): Promise<void>;
+  getFileSha256(options: { filePath: string }): Promise<{ sha256: string }>;
+  addListener(
+    eventName: "downloadProgress",
+    listenerFunc: (status: DownloadProgress) => void,
+  ): Promise<PluginListenerHandle>;
 }
 
 const AppUpdater = registerPlugin<AppUpdaterPlugin>("AppUpdater");
@@ -38,9 +61,12 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
   const r = raw as Record<string, unknown>;
   if (
     typeof r.versionCode !== "number" ||
-    !Number.isFinite(r.versionCode) ||
+    !Number.isSafeInteger(r.versionCode) ||
+    r.versionCode < 1 ||
     typeof r.url !== "string" ||
-    !r.url.startsWith("https://")
+    r.url !== RELEASE_APK_URL ||
+    typeof r.sha256 !== "string" ||
+    !/^[a-f0-9]{64}$/i.test(r.sha256)
   ) {
     return null;
   }
@@ -50,16 +76,25 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     commit: typeof r.commit === "string" ? r.commit : "",
     builtAt: typeof r.builtAt === "string" ? r.builtAt : "",
     url: r.url,
+    sha256: r.sha256.toLowerCase(),
+    requiresReinstall: r.requiresReinstall === true,
   };
 }
 
 export async function fetchLatestRelease(): Promise<ReleaseInfo | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8_000);
   try {
-    const res = await fetch(VERSION_URL, { cache: "no-store" });
+    const res = await fetch(VERSION_URL, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
     if (!res.ok) return null;
     return parseReleaseInfo(await res.json());
   } catch {
     return null;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -77,46 +112,85 @@ export async function getInstalledVersion(): Promise<{
 }
 
 /**
- * Downloads the APK into the app cache dir with progress callbacks.
- * Uses the native downloader so the file streams straight to disk (the old
- * fetch→base64→bridge path pushed ~16MB strings through the WebView and
- * wrote into a non-existent `updates/` dir, which Filesystem.writeFile
- * rejects unless `recursive` is set — that was the "Update failed" bug).
- * Returns the absolute file path for the native installer.
+ * Streams a trusted APK directly into the app-private native cache. The
+ * background native downloader enforces HTTP/size limits, removes partial
+ * files, and calculates SHA-256 without passing APK bytes through the WebView.
  */
 export async function downloadApk(
   url: string,
   versionCode: number,
+  expectedSha256: string,
   onProgress: (fraction: number) => void,
 ): Promise<string> {
-  const dir = "updates";
-  const path = `${dir}/${APK_FILE_NAME.replace(".apk", "")}-${versionCode}.apk`;
-  // downloadFile does not create missing parents — ensure the subdir exists.
-  try {
-    await Filesystem.mkdir({ path: dir, directory: Directory.Cache });
-  } catch {
-    /* already exists */
+  if (url !== RELEASE_APK_URL) throw new Error("Untrusted APK download URL");
+  if (!Number.isSafeInteger(versionCode) || versionCode < 1) {
+    throw new Error("Release version code is invalid");
   }
-  const handle = await Filesystem.addListener("progress", (status) => {
-    if (status.url !== url) return;
-    if (status.contentLength > 0) {
-      onProgress(Math.min(1, status.bytes / status.contentLength));
+  if (!/^[a-f0-9]{64}$/i.test(expectedSha256)) {
+    throw new Error("Release checksum is missing or invalid");
+  }
+
+  let progressListener: PluginListenerHandle | null = null;
+  let downloadedPath: string | null = null;
+
+  try {
+    try {
+      progressListener = await AppUpdater.addListener("downloadProgress", (status) => {
+        if (status.url !== url || !status.lengthComputable || status.contentLength <= 0) return;
+        if (Number.isFinite(status.bytes) && Number.isFinite(status.contentLength)) {
+          onProgress(Math.min(1, Math.max(0, status.bytes / status.contentLength)));
+        }
+      });
+    } catch {
+      // The APK can still download safely if progress callbacks are unavailable.
     }
-  });
-  try {
-    const result = await Filesystem.downloadFile({
-      url,
-      path,
-      directory: Directory.Cache,
-      progress: true,
-    });
+
+    const result = await AppUpdater.downloadApk({ url, versionCode });
+    downloadedPath = result.filePath;
+    if (!downloadedPath || !Number.isFinite(result.bytes) || result.bytes <= 0) {
+      throw new Error("Download finished without a valid APK file");
+    }
+    if (result.sha256?.toLowerCase() !== expectedSha256.toLowerCase()) {
+      throw new Error("APK checksum verification failed");
+    }
+
+    // Re-read the finalized file to verify the bytes presented to Android's installer.
+    const checksum = await AppUpdater.getFileSha256({ filePath: downloadedPath });
+    if (checksum.sha256?.toLowerCase() !== expectedSha256.toLowerCase()) {
+      throw new Error("APK checksum verification failed");
+    }
+
     onProgress(1);
-    if (!result.path) throw new Error("download returned no path");
-    // Native side needs a plain filesystem path (result.path is absolute).
-    return result.path;
+    return downloadedPath;
+  } catch (error) {
+    if (downloadedPath) {
+      try {
+        await AppUpdater.deleteDownloadedApk({ filePath: downloadedPath });
+      } catch {
+        // Best-effort cleanup; a subsequent download removes the same version file.
+      }
+    }
+    throw error;
   } finally {
-    await handle.remove();
+    if (progressListener) {
+      try {
+        await progressListener.remove();
+      } catch {
+        // Listener cleanup must not turn a valid APK into a failed download.
+      }
+    }
   }
+}
+
+export async function canInstallPackages(): Promise<boolean> {
+  if (!isNativeApp()) return false;
+  const result = await AppUpdater.canInstallPackages();
+  return result.canInstall === true;
+}
+
+export async function openInstallSettings(): Promise<void> {
+  if (!isNativeApp()) throw new Error("APK updates are available only in the Android app");
+  await AppUpdater.openInstallSettings();
 }
 
 export async function installDownloadedApk(absolutePath: string): Promise<void> {

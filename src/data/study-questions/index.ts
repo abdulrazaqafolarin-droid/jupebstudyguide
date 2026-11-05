@@ -10,6 +10,7 @@ let currentData: StudyQuestion[] = [];
 const listeners: Set<() => void> = new Set();
 let fetchStarted = false;
 let _ready = false;
+let fetchInFlight: Promise<void> | null = null;
 
 function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
   const sq: StudyQuestion = {
@@ -39,39 +40,94 @@ function notifyListeners() {
 }
 
 async function fetchAll() {
-  const locallyDeleted = getPersistedDeletedIds();
-  const PAGE_SIZE = 1000;
+  // Concurrent route mounts share one live Supabase request. No question bank
+  // is bundled in the APK or persisted as an offline/downloadable file.
+  if (fetchInFlight) return fetchInFlight;
 
-  let allData: Record<string, unknown>[] = [];
-  let from = 0;
+  const task = (async () => {
+    const locallyDeleted = getPersistedDeletedIds();
+    const PAGE_SIZE = 1000;
+    const columns = [
+      "id", "subject", "year", "category", "question", "difficulty",
+      "options", "correct_answer", "explanation", "course", "sort_order",
+      "image_url", "image_position",
+    ].join(",");
 
-  while (true) {
-    const { data, error } = await supabase
-      .from("study_questions")
-      .select("*")
-      .eq("hidden", false)
-      .range(from, from + PAGE_SIZE - 1);
+    const allData: Record<string, unknown>[] = [];
+    let from = 0;
 
-    if (error) break;
-    if (!data || data.length === 0) break;
+    while (true) {
+      const { data, error } = await supabase
+        .from("study_questions")
+        .select(columns)
+        .eq("hidden", false)
+        .order("id", { ascending: true })
+        .range(from, from + PAGE_SIZE - 1);
 
-    allData = allData.concat(data);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
 
-    if (data.length < PAGE_SIZE) break;
-    from += PAGE_SIZE;
+      const page = data as unknown as Record<string, unknown>[];
+      allData.push(...page);
+      if (page.length < PAGE_SIZE) break;
+      from += PAGE_SIZE;
+    }
+
+    // Replace the in-memory snapshot only after every Supabase page succeeds.
+    currentData = allData
+      .filter(row => !locallyDeleted.has(row.id as string))
+      .map(rowToQuestion);
+    _ready = true;
+    notifyListeners();
+  })();
+
+  fetchInFlight = task;
+  try {
+    await task;
+  } catch (error) {
+    console.error("Failed to load study questions from Supabase:", error);
+    // Keep the last good snapshot if a refresh fails. A first-load failure
+    // can be retried when the device comes back online.
+    if (!_ready) fetchStarted = false;
+  } finally {
+    if (fetchInFlight === task) fetchInFlight = null;
   }
-
-  currentData = allData
-    .filter(row => !locallyDeleted.has(row.id as string))
-    .map(rowToQuestion);
-  _ready = true;
-  notifyListeners();
 }
 
-export function initDataLayer() {
-  if (fetchStarted) return;
+export function initDataLayer(priority: "idle" | "immediate" = "idle") {
+  if (fetchStarted || _ready) return;
   fetchStarted = true;
-  fetchAll();
+
+  const start = () => {
+    void fetchAll();
+  };
+
+  if (priority === "immediate") {
+    start();
+    return;
+  }
+
+  // Let the first screen paint before querying the question bank. The data is
+  // still fetched from Supabase normally as soon as the browser is idle.
+  if (typeof window === "undefined") {
+    start();
+    return;
+  }
+
+  const requestIdle = (window as unknown as {
+    requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+  }).requestIdleCallback;
+
+  if (typeof requestIdle === "function") {
+    requestIdle(start, { timeout: 900 });
+  } else {
+    globalThis.setTimeout(start, 400);
+  }
+
+  const retryWhenOnline = () => {
+    if (!_ready && !fetchStarted) initDataLayer("immediate");
+  };
+  window.addEventListener("online", retryWhenOnline, { once: true });
 }
 
 export function isDataReady(): boolean {

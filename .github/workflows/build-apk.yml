@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      allow_signing_key_migration:
+        description: "Allow a one-time signing-key change that requires users to uninstall the old app and install this APK manually."
+        required: false
+        default: false
+        type: boolean
 
 # Needed so the release step (softprops/action-gh-release) can create the
 # android-latest release with GITHUB_TOKEN.
@@ -55,53 +61,123 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build debug APK
+      - name: Build stable-signed release APK
         run: |
+          set -euo pipefail
           chmod +x android/gradlew
-          cd android
-          ./gradlew assembleDebug
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEYSTORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
+            echo "::error title=Persistent Android signing key required::Configure ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, and ANDROID_KEY_PASSWORD in GitHub Actions secrets. Production releases must never fall back to an ephemeral debug key."
+            exit 1
+          fi
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/ci-release-key.jks
+          export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/ci-release-key.jks"
+          (cd android && ./gradlew assembleRelease)
+          echo "APK_PATH=android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_ENV"
+          echo "Built a release APK with the configured persistent signing key."
         env:
-          # Monotonic per-workflow counter: every main-branch build gets a
-          # unique versionCode so installed APKs accept in-app updates.
           APK_VERSION_CODE: ${{ github.run_number }}
           APK_VERSION_NAME: 1.1.${{ github.run_number }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Verify signing compatibility with the currently published APK
+        id: update-signing
+        shell: bash
+        env:
+          ALLOW_SIGNING_KEY_MIGRATION: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_signing_key_migration }}
+        run: |
+          set -euo pipefail
+          echo "requires-reinstall=false" >> "$GITHUB_OUTPUT"
+          APK="$APK_PATH"
+          PREVIOUS_APK_URL="https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk"
+          PREVIOUS_APK="$RUNNER_TEMP/previous-jupeb-master.apk"
+
+          if ! curl --retry 2 --retry-all-errors --connect-timeout 10 --max-time 60 -fsS "$PREVIOUS_APK_URL" -o "$PREVIOUS_APK"; then
+            echo "compatible=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Update compatibility not verified::The previous public APK could not be downloaded for signing comparison. This build will be kept as an artifact but not advertised as an in-place update."
+            exit 0
+          fi
+
+          CURRENT_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$APK" 2>&1 || true)"
+          PREVIOUS_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$PREVIOUS_APK" 2>&1 || true)"
+          CURRENT_CERT="$(printf '%s\n' "$CURRENT_SIGNER_REPORT" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1 | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          PREVIOUS_CERT="$(printf '%s\n' "$PREVIOUS_SIGNER_REPORT" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1 | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+
+          if [ -z "$CURRENT_CERT" ] || [ -z "$PREVIOUS_CERT" ]; then
+            echo "compatible=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=APK signer could not be verified::A signer certificate could not be read from the new or currently published APK. This build will not be published as an in-place update."
+          elif [ "$CURRENT_CERT" = "$PREVIOUS_CERT" ]; then
+            echo "compatible=true" >> "$GITHUB_OUTPUT"
+            echo "APK signer matches the currently published installation."
+          elif [ "$ALLOW_SIGNING_KEY_MIGRATION" = "true" ]; then
+            echo "compatible=true" >> "$GITHUB_OUTPUT"
+            echo "requires-reinstall=true" >> "$GITHUB_OUTPUT"
+            echo "::warning title=One-time manual reinstall required::The persistent signing key differs from the legacy debug key. This explicitly authorized migration release can be published, but existing installs must be uninstalled before users install this APK. Future releases using this same persistent key will update in place."
+          else
+            echo "compatible=false" >> "$GITHUB_OUTPUT"
+            echo "::error title=APK signing key mismatch::The candidate APK is signed with a different certificate from the currently published APK. It will not be published as an in-place update. For the initial migration, run this workflow manually and check the one-time signing-key migration option only after notifying users that reinstall is required."
+          fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: jupeb-master-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        # Release every main-branch build under a stable tag so the in-app
-        # Download page (which reads /releases/latest) always finds an APK.
-        # Version tags (v*) still get their own release notes.
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-        with:
-          tag_name: android-latest
-          name: "Android APK (latest)"
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ env.APK_PATH }}
 
       - name: Mirror APK + version file to public storage
         # The installed app checks this version.json on launch to offer
         # in-app updates (the GitHub repo is private, so the app cannot
         # query releases directly). Requires a SUPABASE_SERVICE_ROLE_KEY
-        # repository secret; skipped silently when absent.
-        if: github.ref == 'refs/heads/main'
+        # repository secret; the build fails before creating the GitHub release if absent.
+        if: github.ref == 'refs/heads/main' && steps.update-signing.outputs.compatible == 'true'
         env:
           SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          REQUIRES_REINSTALL: ${{ steps.update-signing.outputs.requires-reinstall }}
         run: |
+          set -euo pipefail
           if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
-            echo "No SUPABASE_SERVICE_ROLE_KEY secret — skipping public mirror."
-            exit 0
+            echo "::error::SUPABASE_SERVICE_ROLE_KEY is required to publish the Android updater release. No GitHub release will be created."
+            exit 1
           fi
-          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          APK="$APK_PATH"
+          if [ ! -f "$APK" ]; then echo "APK output missing: $APK"; exit 1; fi
           BUILT_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk"}' \
-            "${{ github.run_number }}" "1.1.${{ github.run_number }}" "${{ github.sha }}" "$BUILT_AT" "$SUPABASE_URL" \
+          APK_SHA256=$(sha256sum "$APK" | cut -d ' ' -f1)
+          case "$REQUIRES_REINSTALL" in
+            true) REINSTALL_JSON=true ;;
+            false|"") REINSTALL_JSON=false ;;
+            *) echo "::error::Invalid requires-reinstall release flag"; exit 1 ;;
+          esac
+          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","requiresReinstall":%s}' \
+            "${{ github.run_number }}" "1.1.${{ github.run_number }}" "${{ github.sha }}" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$REINSTALL_JSON" \
             > version.json
+          python3 - "$APK" version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
+          import hashlib
+          import json
+          import re
+          import sys
+
+          apk_path, metadata_path, expected_hash, supabase_url = sys.argv[1:]
+          with open(metadata_path, encoding="utf-8") as f:
+              metadata = json.load(f)
+
+          actual_hash = hashlib.sha256()
+          with open(apk_path, "rb") as f:
+              for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                  actual_hash.update(chunk)
+
+          digest = actual_hash.hexdigest()
+          expected_url = f"{supabase_url.rstrip('/')}/storage/v1/object/public/app-releases/jupeb-master.apk"
+          assert isinstance(metadata.get("versionCode"), int) and metadata["versionCode"] > 0, "invalid versionCode"
+          assert metadata.get("url") == expected_url, "invalid APK URL"
+          assert isinstance(metadata.get("sha256"), str) and re.fullmatch(r"[a-fA-F0-9]{64}", metadata["sha256"]), "invalid SHA-256 format"
+          assert metadata["sha256"].lower() == digest, "metadata checksum does not match APK bytes"
+          assert metadata["sha256"].lower() == expected_hash.lower(), "metadata checksum does not match sha256sum"
+          print(f"Verified release metadata for version {metadata['versionCode']} ({digest})")
+          PY
           curl -sS --fail-with-body -X POST \
             "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master.apk" \
             -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
@@ -116,3 +192,44 @@ jobs:
             -H "Content-Type: application/json" \
             -H "x-upsert: true" \
             --data-binary "@version.json"
+
+          # Read the public metadata back and verify it still describes the
+          # exact APK bytes uploaded above before publishing the GitHub release.
+          PUBLISHED_APK_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master.apk"
+          PUBLISHED_VERSION_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/version.json"
+          curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -sS --fail-with-body "$PUBLISHED_VERSION_URL" -o published-version.json
+          python3 - "$APK" published-version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
+          import hashlib
+          import json
+          import re
+          import sys
+
+          apk_path, metadata_path, expected_hash, supabase_url = sys.argv[1:]
+          with open(metadata_path, encoding="utf-8") as f:
+              metadata = json.load(f)
+          with open(apk_path, "rb") as f:
+              actual_hash = hashlib.file_digest(f, "sha256").hexdigest()
+          expected_url = f"{supabase_url.rstrip('/')}/storage/v1/object/public/app-releases/jupeb-master.apk"
+          assert isinstance(metadata.get("versionCode"), int) and metadata["versionCode"] > 0, "published versionCode is invalid"
+          assert metadata.get("url") == expected_url, "published APK URL is invalid"
+          assert isinstance(metadata.get("sha256"), str) and re.fullmatch(r"[a-fA-F0-9]{64}", metadata["sha256"]), "published SHA-256 is invalid"
+          assert metadata["sha256"].lower() == actual_hash, "published metadata checksum does not match APK bytes"
+          assert metadata["sha256"].lower() == expected_hash.lower(), "published checksum differs from the build checksum"
+          print(f"Public metadata verified for version {metadata['versionCode']}")
+          PY
+          APK_HTTP_STATUS=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -sS -o /dev/null -w "%{http_code}" -I "$PUBLISHED_APK_URL")
+          echo "Published APK HTTP status: $APK_HTTP_STATUS"
+          test "$APK_HTTP_STATUS" = "200"
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        # Release every main-branch build under a stable tag so the in-app
+        # Download page (which reads /releases/latest) always finds an APK.
+        # Version tags (v*) still get their own release notes.
+        if: steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        with:
+          tag_name: android-latest
+          name: "Android APK (latest)"
+          files: ${{ env.APK_PATH }}
+

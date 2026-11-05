@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import confetti from "canvas-confetti";
 import {
   ArrowLeft,
   BookOpen,
@@ -20,7 +19,7 @@ import {
 import type { Subject } from "@/types/question";
 import type { StudyCategory, StudyQuestion } from "@/types/study-questions";
 import { STUDY_SUBJECT_INFO, STUDY_YEARS } from "@/types/study-questions";
-import { getStudyQuestionsBySubject, isDataReady, refreshData } from "@/data/study-questions";
+import { getStudyQuestionsBySubject, initDataLayer, isDataReady, refreshData } from "@/data/study-questions";
 import { useStudyQuestions } from "@/hooks/study-questions/useStudyQuestions";
 import { useQuestionTimer } from "@/hooks/study-questions/useQuestionTimer";
 import { useBookmarks } from "@/hooks/study-questions/useBookmarks";
@@ -70,6 +69,10 @@ function findQuestionById(id: string): StudyQuestion | null {
 }
 
 export default function StudyPastQuestions() {
+  useEffect(() => {
+    initDataLayer("idle");
+  }, []);
+
   const navigate = useNavigate();
   const {
     selectedSubject,
@@ -326,28 +329,38 @@ export default function StudyPastQuestions() {
   const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   useEffect(() => {
-    if (quizComplete && score >= 70) {
-      const duration = 2500;
-      const end = Date.now() + duration;
-      const frame = () => {
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.7 },
-          colors: ["#8b5cf6", "#6366f1", "#a78bfa"],
-        });
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.7 },
-          colors: ["#8b5cf6", "#6366f1", "#a78bfa"],
-        });
-        if (Date.now() < end) requestAnimationFrame(frame);
-      };
-      frame();
-    }
+    if (!quizComplete || score < 70) return;
+
+    let cancelled = false;
+    let secondBurst: number | undefined;
+    void import("canvas-confetti").then(({ default: confetti }) => {
+      if (cancelled || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      confetti({
+        particleCount: 26,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: ["#8b5cf6", "#6366f1", "#a78bfa"],
+      });
+      confetti({
+        particleCount: 26,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: ["#8b5cf6", "#6366f1", "#a78bfa"],
+      });
+      secondBurst = window.setTimeout(() => {
+        if (cancelled) return;
+        confetti({ particleCount: 12, spread: 45, origin: { x: 0.5, y: 0.65 } });
+      }, 180);
+    }).catch(() => {
+      // Keep quiz completion successful even if the optional effect fails.
+    });
+
+    return () => {
+      cancelled = true;
+      if (secondBurst) window.clearTimeout(secondBurst);
+    };
   }, [quizComplete, score]);
 
   const handleRestartQuiz = () => {

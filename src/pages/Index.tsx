@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import { motion, type Variants, type Transition } from 'framer-motion';
-import confetti from "canvas-confetti";
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
-import { getAllStudyQuestions, getAllStudyQuestionsForSubject, subscribe } from '@/data/study-questions';
+import { getAllStudyQuestions, getAllStudyQuestionsForSubject, initDataLayer, subscribe } from '@/data/study-questions';
+import { preloadHotRoutes } from '@/lib/route-preload';
 import { toQuestions } from '@/lib/question-adapter';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
 import type { DailyTask, StudySessionData } from '@/types/syllabus';
@@ -48,6 +48,17 @@ import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { shouldShowSetupNudge } from '@/lib/onboarding';
 import { cn } from '@/lib/utils';
+
+type ConfettiOptions = import("canvas-confetti").Options;
+let confettiLoader: Promise<(options?: ConfettiOptions) => void> | null = null;
+
+function fireConfetti(options: ConfettiOptions) {
+  if (typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  confettiLoader ??= import("canvas-confetti").then(({ default: confetti }) => confetti);
+  void confettiLoader.then((confetti) => confetti(options)).catch(() => {
+    // Celebrations are optional; a missing chunk must never affect study flows.
+  });
+}
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
 const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
@@ -97,7 +108,11 @@ const Index = () => {
     quizComplete: awardQuizComplete,
   } = useScoreAwarder();
 
-  useEffect(() => subscribe(() => setTick(t => t + 1)), []);
+  useEffect(() => {
+    initDataLayer("idle");
+    preloadHotRoutes();
+    return subscribe(() => setTick(t => t + 1));
+  }, []);
 
   // Combine study pipeline questions with custom questions (must be before subjectsStudied)
   const allStudyQuestions = useMemo(() => {
@@ -322,7 +337,7 @@ const Index = () => {
     completeSessionDay(mission.sessionId, mission.syllabusDay, finalAttempt.accuracy);
     awardQuizComplete(mission.id);
     awardSyllabusDay(mission.syllabusDay);
-    confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
+    fireConfetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
     toast.success(`Daily mission complete — ${finalAttempt.accuracy}% accuracy!`);
     // Finished for today — drop tonight's evening check-in reminder.
     void suppressEveningReminder();
@@ -438,9 +453,9 @@ const Index = () => {
       if (milestones.includes(currentStreak)) {
         const count = currentStreak >= 14 ? 60 : 30;
         const spread = currentStreak >= 14 ? 90 : 60;
-        confetti({ particleCount: count, spread, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
-        setTimeout(() => confetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.2 }, colors: ["#8b5cf6", "#a78bfa"] }), 150);
-        setTimeout(() => confetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.8 }, colors: ["#8b5cf6", "#a78bfa"] }), 300);
+        fireConfetti({ particleCount: count, spread, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
+        setTimeout(() => fireConfetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.2 }, colors: ["#8b5cf6", "#a78bfa"] }), 150);
+        setTimeout(() => fireConfetti({ particleCount: count / 2, spread, origin: { y: 0.5, x: 0.8 }, colors: ["#8b5cf6", "#a78bfa"] }), 300);
       }
     }
     prevStreakRef.current = currentStreak;

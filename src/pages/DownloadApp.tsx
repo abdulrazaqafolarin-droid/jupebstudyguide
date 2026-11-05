@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Download, Smartphone, Monitor, CheckCircle, Loader2, Shield, Zap } from "lucide-react";
-import { fetchLatestRelease } from "@/lib/app-updater";
+import { fetchLatestRelease, getInstalledVersion, isNewer } from "@/lib/app-updater";
 
 // Direct, no-login download (APK is mirrored to public Supabase storage on
 // every release; the GitHub repo is private so its release assets 404 for guests).
@@ -21,14 +21,21 @@ function getPlatform(): "android" | "ios" | "desktop" {
 export default function DownloadApp() {
   const [platform, setPlatform] = useState<"android" | "ios" | "desktop">("desktop");
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const [releaseAvailable, setReleaseAvailable] = useState(false);
+  const [requiresReinstall, setRequiresReinstall] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     setPlatform(getPlatform());
     // The mirror workflow publishes version.json next to the APK, so the
     // page can show the real version instead of a static label.
-    fetchLatestRelease().then((release) => {
+    void Promise.all([fetchLatestRelease(), getInstalledVersion()]).then(([release, installed]) => {
       if (release) {
+        setReleaseAvailable(true);
+        setRequiresReinstall(
+          release.requiresReinstall === true &&
+          (!installed || isNewer(installed.versionCode, release.versionCode)),
+        );
         const date = release.builtAt ? new Date(release.builtAt) : null;
         setLatestVersion(
           `v${release.versionName}` +
@@ -37,12 +44,17 @@ export default function DownloadApp() {
               : ""),
         );
       } else {
-        setLatestVersion("android-latest");
+        // Never offer an APK when its release metadata is missing, malformed,
+        // unsigned by a known key, or lacks the checksum required by the updater.
+        setReleaseAvailable(false);
+        setLatestVersion("Temporarily unavailable");
+        setRequiresReinstall(false);
       }
     });
   }, []);
 
   const downloadAPK = () => {
+    if (!releaseAvailable) return;
     setDownloading(true);
     window.open(APK_URL, "_blank");
     setTimeout(() => setDownloading(false), 3000);
@@ -73,33 +85,50 @@ export default function DownloadApp() {
                 </p>
               </div>
 
-              <button
-                onClick={downloadAPK}
-                disabled={downloading}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-all active:scale-[0.97] shadow-lg"
-              >
-                {downloading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Download className="h-5 w-5" />
-                )}
-                {downloading ? "Opening..." : "Download APK"}
-              </button>
+              {requiresReinstall && (
+                <div role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
+                  <p className="font-semibold text-amber-800 dark:text-amber-200">One-time manual reinstall required</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    This release uses a new Android signing key. Android will not install it over the older app.
+                    Make sure your account is synced, download the APK, uninstall the older JUPEB Master app,
+                    then install the new APK and sign in again. Your account-based study data remains in Supabase.
+                  </p>
+                </div>
+              )}
+              {releaseAvailable ? (
+                <button
+                  onClick={downloadAPK}
+                  disabled={downloading}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-all active:scale-[0.97] shadow-lg"
+                >
+                  {downloading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Download className="h-5 w-5" />
+                  )}
+                  {downloading ? "Opening..." : "Download APK"}
+                </button>
+              ) : (
+                <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
+                  The Android installer is temporarily unavailable while its signing and integrity details are verified. Your existing app and account data are unaffected. Use the web app below for now.
+                </div>
+              )}
 
               <div className="text-xs text-muted-foreground text-center space-y-1">
-                <p>Latest version: {latestVersion}</p>
-                <p>{APK_INFO}</p>
+                <p>Latest version: {latestVersion ?? "Checking…"}</p>
+                {releaseAvailable && <p>{APK_INFO}</p>}
               </div>
 
               <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
                 <p className="font-medium flex items-center gap-1.5">
-                  <Shield className="h-3 w-3" /> Installation steps:
+                  <Shield className="h-3 w-3" /> {requiresReinstall ? "One-time reinstall steps:" : "Installation steps:"}
                 </p>
                 <ol className="list-decimal list-inside text-muted-foreground space-y-0.5">
                   <li>Tap "Download APK" above</li>
+                  {requiresReinstall && <li>After the download finishes, uninstall the older JUPEB Master app</li>}
                   <li>Open the downloaded file when ready</li>
                   <li>Tap "Install anyway" if prompted by Play Protect</li>
-                  <li>Open JUPEB Master from your app drawer</li>
+                  <li>Open JUPEB Master and sign in again</li>
                 </ol>
               </div>
 
@@ -155,15 +184,21 @@ export default function DownloadApp() {
                   }}
                 />
               </div>
-              <a
-                href={APK_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                Download APK for Android
-              </a>
+              {releaseAvailable ? (
+                <a
+                  href={APK_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  Download APK for Android
+                </a>
+              ) : (
+                <p role="status" className="text-xs text-muted-foreground">
+                  The Android installer is temporarily unavailable while its signing and integrity details are verified.
+                </p>
+              )}
               <a
                 href="/"
                 className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl border border-border hover:bg-muted/50 transition-colors"

@@ -23,9 +23,12 @@ export default defineConfig(({ mode }) => ({
     react(),
     ...(mode === "development" && devTaggerPlugin ? [devTaggerPlugin()] : []),
     VitePWA({
-      registerType: "autoUpdate",
+      // Registration/update consent is managed by index.html + SWUpdatePrompt.
       // injectManifest: custom SW (precache + push notifications) in src/sw.ts.
       // generateSW would clobber the hand-written push handler.
+      // index.html registers the worker; SWUpdatePrompt owns update consent.
+      registerType: "prompt",
+      injectRegister: false,
       strategies: "injectManifest",
       srcDir: "src",
       filename: "sw.ts",
@@ -69,8 +72,6 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        skipWaiting: true,
-        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https?:\/\/.*\.supabase\.co\/.*/i,
@@ -97,43 +98,24 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/") || id.includes("node_modules/scheduler")) {
+          const moduleId = id.split(String.fromCharCode(92)).join("/");
+          // Keep framework/runtime boundaries stable, but let optional
+          // feature packages follow their importing lazy route. Group only
+          // the app's own shared layers to keep the entry point small without
+          // creating vendor-other ↔ radix/charts circular chunks.
+          if (moduleId.includes("/node_modules/react-dom/") || moduleId.includes("/node_modules/react/") || moduleId.includes("/node_modules/scheduler/")) {
             return "vendor-react";
           }
-          if (id.includes("node_modules/katex")) {
-            return "vendor-katex";
-          }
-          if (id.includes("node_modules/pdfjs-dist") || id.includes("node_modules/pdf-lib") || id.includes("node_modules/canvas")) {
-            return "vendor-pdf";
-          }
-          if (id.includes("node_modules/framer-motion")) {
-            return "vendor-framer";
-          }
-          if (id.includes("node_modules/@supabase")) {
-            return "vendor-supabase";
-          }
-          if (id.includes("node_modules/@tanstack")) {
-            return "vendor-query";
-          }
-          if (id.includes("src/lib/")) {
-            return "shared-lib";
-          }
-          if (id.includes("src/contexts/")) {
-            return "shared-context";
-          }
-          if (id.includes("src/components/ui/")) {
-            return "shared-ui";
-          }
-          if (id.includes("src/integrations/")) {
-            return "shared-integrations";
-          }
-          if (id.includes("src/data/study-questions")) {
-            return "study-data";
-          }
-          if (id.includes("node_modules")) {
-            return "vendor-other";
-          }
-        },
+          if (moduleId.includes("/node_modules/@supabase/")) return "vendor-supabase";
+          if (moduleId.includes("/node_modules/katex/")) return "vendor-katex";
+          if (moduleId.includes("/node_modules/framer-motion/")) return "vendor-framer";
+          if (moduleId.includes("/node_modules/canvas-confetti/")) return "vendor-effects";
+          if (moduleId.includes("/src/contexts/")) return "shared-context";
+          if (moduleId.includes("/src/components/ui/")) return "shared-ui";
+          if (moduleId.includes("/src/integrations/")) return "shared-integrations";
+          if (moduleId.includes("/src/data/study-questions/")) return "study-data";
+          if (moduleId.includes("/src/lib/")) return "shared-lib";
+        }
       },
     },
   },

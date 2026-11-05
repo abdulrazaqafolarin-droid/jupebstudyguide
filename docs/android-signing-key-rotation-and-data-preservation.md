@@ -31,9 +31,11 @@ To run it from the repository root, use Node.js 22+, install Android Platform To
 node scripts/android-localstorage-rescue.mjs
 ```
 
-The helper writes a timestamped `jupeb-device-backup-*.json` file in the current directory. Keep it private and make a second safe copy. When a newer build containing the Settings restore panel is available, sign into the same account, open Settings → Study Data Backup → Restore Backup, and explicitly select legacy-device-data restoration when you intend to import the old device-wide learning keys. The import reloads the app so the restored local data is rehydrated. The helper must still be tested against a real phone: WebView remote debugging availability depends on the device's installed WebView and must be confirmed by a successful live probe.
+The helper writes a timestamped `jupeb-device-backup-*.json` file in the current directory. Keep it private, make a second independent safe copy, and verify that the file exists and its SHA-256 matches the console output.
 
-**Do not uninstall the old app yet.** First export the backup from the old installation, verify the file, import it in a newer JUPEB build with the Settings restore panel, and confirm progress, sessions, streaks and bookmarks are present. Only after that end-to-end transfer succeeds on the actual device should a signing migration be considered. Android's WebView API reference documents automatic WebView debugging for WebView 113+ when the application manifest is debuggable; the helper still verifies the actual device rather than assuming that behavior.
+Android will not install the new APK over the old package while their signing certificates differ. The safe future sequence is therefore: (1) export the backup from the old app; (2) verify it and preserve two copies before changing the old installation; (3) only when the owner authorizes migration and the approved new APK is available, uninstall the old app and install the new one; (4) sign into the same Supabase account; (5) restore from Settings → Study Data Backup → Restore Backup, explicitly selecting legacy-data restoration; and (6) verify study progress, syllabus sessions/days, bookmarks, streaks and achievements before continuing study.
+
+**Do not start this migration sequence now.** The production download UI intentionally blocks a signing migration, and the ADB export has not been proven on the actual phone. A successful export is a prerequisite, not permission to uninstall immediately. Android WebView debugging depends on the device's installed WebView version; the helper checks the real installation rather than assuming that the archived APK guarantees access.
 
 ## Cloud data that already exists
 

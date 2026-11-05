@@ -58,4 +58,5 @@ describe('mergeStudySessions', () => {
 
     expect(local).toEqual(localBefore);
     expect(cloud).toEqual(cloudBefore);
-  });});
+  });
+});

@@ -11,30 +11,27 @@ function sessionTimestamp(session: StudySessionData): number {
   return timestamp(session.updatedAt || session.createdAt);
 }
 
-function mergeTask(local: DailyTask, cloud: DailyTask, preferLocal: boolean): DailyTask {
-  const preferred = preferLocal ? local : cloud;
-  if (local.isCompleted !== cloud.isCompleted) {
-    const completed = local.isCompleted ? local : cloud;
+function mergeTask(preferred: DailyTask, older: DailyTask): DailyTask {
+  if (preferred.isCompleted !== older.isCompleted) {
+    const completed = preferred.isCompleted ? preferred : older;
     return {
       ...preferred,
       ...completed,
       isCompleted: true,
-      completedAt: timestamp(local.completedAt) >= timestamp(cloud.completedAt)
-        ? local.completedAt
-        : cloud.completedAt,
-      masteryScore: Math.max(local.masteryScore ?? 0, cloud.masteryScore ?? 0) || undefined,
+      completedAt: completed.completedAt,
+      masteryScore: Math.max(preferred.masteryScore ?? 0, older.masteryScore ?? 0) || undefined,
     };
   }
 
-  if (!local.isCompleted) return { ...preferred };
+  if (!preferred.isCompleted) return { ...preferred };
 
   return {
     ...preferred,
     isCompleted: true,
-    completedAt: timestamp(local.completedAt) >= timestamp(cloud.completedAt)
-      ? local.completedAt
-      : cloud.completedAt,
-    masteryScore: Math.max(local.masteryScore ?? 0, cloud.masteryScore ?? 0) || undefined,
+    completedAt: timestamp(preferred.completedAt) >= timestamp(older.completedAt)
+      ? preferred.completedAt
+      : older.completedAt,
+    masteryScore: Math.max(preferred.masteryScore ?? 0, older.masteryScore ?? 0) || undefined,
   };
 }
 
@@ -52,7 +49,7 @@ function mergeStudySession(
     const previous = tasksByDay.get(task.day);
     tasksByDay.set(
       task.day,
-      previous ? mergeTask(task, previous, localIsNewer) : task,
+      previous ? mergeTask(task, previous) : task,
     );
   }
 

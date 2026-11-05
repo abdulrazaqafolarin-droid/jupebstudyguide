@@ -273,23 +273,29 @@ export function restoreUserDataBackup(
     const rawBookmarks = backup.deviceShared.legacyEntries[LEGACY_BOOKMARKS_KEY]
       ?? backup.deviceShared.legacyBookmarks;
     if (rawBookmarks) {
-    const backupBookmarks = parseJson<Array<Record<string, unknown>>>(rawBookmarks);
-    if (Array.isArray(backupBookmarks)) {
-      const currentRaw = storage.getItem(LEGACY_BOOKMARKS_KEY);
-      const currentBookmarks = currentRaw ? parseJson<Array<Record<string, unknown>>>(currentRaw) : [];
-      if (Array.isArray(currentBookmarks)) {
-        const byQuestion = new Map<string, Record<string, unknown>>();
-        for (const item of currentBookmarks) if (typeof item.questionId === 'string') byQuestion.set(item.questionId, item);
-        for (const item of backupBookmarks) {
-          if (typeof item.questionId !== 'string') continue;
-          const existing = byQuestion.get(item.questionId);
-          if (!existing || Number(item.createdAt) > Number(existing.createdAt)) byQuestion.set(item.questionId, item);
+      const backupBookmarks = parseJson<Array<Record<string, unknown>>>(rawBookmarks);
+      if (Array.isArray(backupBookmarks)) {
+        const currentRaw = storage.getItem(LEGACY_BOOKMARKS_KEY);
+        const currentBookmarks = currentRaw ? parseJson<Array<Record<string, unknown>>>(currentRaw) : [];
+        if (Array.isArray(currentBookmarks)) {
+          const byQuestion = new Map<string, Record<string, unknown>>();
+          for (const item of currentBookmarks) {
+            if (typeof item.questionId === 'string') byQuestion.set(item.questionId, item);
+          }
+          for (const item of backupBookmarks) {
+            if (typeof item.questionId !== 'string') continue;
+            const existing = byQuestion.get(item.questionId);
+            if (!existing || Number(item.createdAt) > Number(existing.createdAt)) {
+              byQuestion.set(item.questionId, item);
+            }
+          }
+          mergedBookmarks = JSON.stringify([...byQuestion.values()]);
+        } else {
+          legacyBookmarkSkipped += 1;
         }
-        mergedBookmarks = JSON.stringify([...byQuestion.values()]);
+      } else {
+        legacyBookmarkSkipped += 1;
       }
-    } else {
-      legacyBookmarkSkipped += 1;
-    }
     }
   }
 

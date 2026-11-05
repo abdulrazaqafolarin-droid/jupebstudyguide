@@ -70,7 +70,7 @@ export function LocalDataBackup() {
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="rounded-lg border border-border/60 bg-muted/30 p-3 text-xs text-muted-foreground">
-          Backups include your account-namespaced study progress, syllabus data, sessions and streak, plus allowlisted legacy learning keys. Login tokens, credentials and API-key-like entries are excluded. Keep the backup file private.
+          Backups include your account-namespaced study progress, syllabus data, sessions, bookmarks and streak, plus allowlisted legacy learning keys. Login tokens, credentials and API-key-like entries are excluded. Keep the backup file private.
         </div>
         <label className="flex items-start gap-2 text-xs text-muted-foreground">
           <Checkbox checked={restoreSharedBookmarks} onCheckedChange={(value) => setRestoreSharedBookmarks(value === true)} />

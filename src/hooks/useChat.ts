@@ -512,7 +512,7 @@ export function useChat() {
     if (gen === fetchGenRef.current) {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, loadUnreadCache, saveUnreadCache]);
 
   const fetchMessages = useCallback(async (conversationId: string, loadMore = false) => {
     const gen = ++messagesFetchGenRef.current;

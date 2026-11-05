@@ -2,7 +2,7 @@ name: JUPEB Repository Validation
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, fix/student-data-preservation-sync]
   push:
     branches: [main]
 

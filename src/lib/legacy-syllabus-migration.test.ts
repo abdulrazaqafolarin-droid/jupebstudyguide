@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createLegacyStudySession } from './legacy-syllabus-migration';
+import { areLegacyProgressEquivalent, createLegacyStudySession } from './legacy-syllabus-migration';
 
 const now = '2026-11-05T18:00:00.000Z';
 
@@ -59,8 +59,7 @@ describe('createLegacyStudySession', () => {
 });
 
 describe('areLegacyProgressEquivalent', () => {
-  it('treats the same legacy progress as equal when object key order differs', async () => {
-    const { areLegacyProgressEquivalent } = await import('./legacy-syllabus-migration');
+  it('treats the same legacy progress as equal when object key order differs', () => {
     const first = {
       combination: { core: ['physics'], elective: [] },
       currentDay: 4,

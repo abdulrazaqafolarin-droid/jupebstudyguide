@@ -23,7 +23,15 @@ Uninstalling removes the old app's private local data. In this project, some lea
 
 The old APK has Android backup disabled, but its manifest is also marked `android:debuggable=true`. The archived public APK came from the same successful CI job that uploaded `app-debug.apk` to the production Supabase `app-releases/jupeb-master.apk` object (version 1.1.94, run 94). Its exact installer build is therefore a candidate for ADB/Chrome DevTools localStorage export while it remains installed.
 
-A new helper, `scripts/android-localstorage-rescue.mjs`, now probes the installed package with `run-as`, connects to the local WebView DevTools socket through ADB, and exports only the current signed-in user's `u:<userId>:` namespace plus an explicit allowlist of legacy learning keys. It deliberately excludes auth-token, password, secret, credential and API-key-like storage keys and writes the same versioned JSON format accepted by the new Settings restore panel. It does not uninstall, clear, or modify the app. The helper must still be tested against a real phone: WebView remote debugging availability depends on the device's installed WebView and must be confirmed by a successful live probe.
+A new helper, `scripts/android-localstorage-rescue.mjs`, now probes the installed package with `run-as`, connects to the local WebView DevTools socket through ADB, and exports only the current signed-in user's `u:<userId>:` namespace plus an explicit allowlist of legacy learning keys. It deliberately excludes auth-token, password, secret, credential and API-key-like storage keys and writes the same versioned JSON format accepted by the new Settings restore panel. It does not uninstall, clear, or modify the app.
+
+To run it from the repository root, use Node.js 22+, install Android Platform Tools so `adb` is on PATH, enable USB debugging on the phone, approve the computer, unlock the phone and open JUPEB Master on the signed-in account. Then run:
+
+```bash
+node scripts/android-localstorage-rescue.mjs
+```
+
+The helper writes a timestamped `jupeb-device-backup-*.json` file in the current directory. Keep it private and make a second safe copy. When a newer build containing the Settings restore panel is available, sign into the same account, open Settings → Study Data Backup → Restore Backup, and explicitly select legacy-device-data restoration when you intend to import the old device-wide learning keys. The import reloads the app so the restored local data is rehydrated. The helper must still be tested against a real phone: WebView remote debugging availability depends on the device's installed WebView and must be confirmed by a successful live probe.
 
 **Do not uninstall the old app yet.** First export the backup from the old installation, verify the file, import it in a newer JUPEB build with the Settings restore panel, and confirm progress, sessions, streaks and bookmarks are present. Only after that end-to-end transfer succeeds on the actual device should a signing migration be considered. Android's WebView API reference documents automatic WebView debugging for WebView 113+ when the application manifest is debuggable; the helper still verifies the actual device rather than assuming that behavior.
 

@@ -51,6 +51,9 @@ export function createLegacyStudySession(
 /** Compare stored legacy progress independent of JSON object-key order. */
 export function areLegacyProgressEquivalent(left: unknown, right: unknown): boolean {
   const stableSerialize = (value: unknown): string => {
+    if (value instanceof Date) {
+      return JSON.stringify(value.toISOString());
+    }
     if (Array.isArray(value)) {
       return `[${value.map(stableSerialize).join(',')}]`;
     }

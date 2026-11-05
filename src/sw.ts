@@ -1,3 +1,4 @@
+import { clientsClaim } from 'workbox-core';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -5,9 +6,13 @@ declare const self: ServiceWorkerGlobalScope;
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
+// The page keeps the old bundle until the student confirms an update.
+// After SKIP_WAITING, claim existing tabs so the page can detect controlchange.
+clientsClaim();
+
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    void self.skipWaiting();
+    event.waitUntil(self.skipWaiting());
   }
 });
 

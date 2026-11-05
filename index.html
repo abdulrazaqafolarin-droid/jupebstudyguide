@@ -36,9 +36,8 @@
     <script>
       (function() {
         if (!('serviceWorker' in navigator)) return;
-        // Workbox (skipWaiting + clientsClaim, see vite.config.ts) handles
-        // updates. Never nuke registrations/caches here: that defeats
-        // offline support and forces full re-downloads.
+        // Keep one persistent registration. The app prompts before activating
+        // a waiting worker, so do not use auto-update or clear caches here.
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function(){});
         });

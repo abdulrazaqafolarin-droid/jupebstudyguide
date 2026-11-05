@@ -8,15 +8,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, MessageCircle, DollarSign, Clock } from "lucide-react";
 import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
+import { toast } from "sonner";
 
 interface ActivationGateProps {
   children: React.ReactNode;
 }
 
 export const ActivationGate = ({ children }: ActivationGateProps) => {
-  const { status } = useActivation();
+  const { status, validateCode, validating, error, refreshStatus } = useActivation();
   const { user, signOut } = useAuth();
   const [clockNow, setClockNow] = useState(() => Date.now());
+  const [showActivationEntry, setShowActivationEntry] = useState(false);
+  const [activationCode, setActivationCode] = useState("");
   const trialExpiresAt = status.trial_expires_at ? Date.parse(status.trial_expires_at) : Number.NaN;
 
   useEffect(() => {
@@ -33,6 +36,20 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     ? Math.max(1, Math.ceil((trialExpiresAt - clockNow) / (24 * 60 * 60 * 1000)))
     : 0;
 
+  const handleTrialActivation = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const normalized = activationCode.trim().toUpperCase();
+    if (normalized.length !== 14 || validating) return;
+
+    const result = await validateCode(normalized);
+    if (result.success) {
+      setActivationCode("");
+      setShowActivationEntry(false);
+      await refreshStatus();
+      toast.success(`Account activated with the ${result.plan_type || "basic"} plan.`);
+    }
+  }, [activationCode, validating, validateCode, refreshStatus]);
+
   if (status.checking) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -48,19 +65,66 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     return (
       <>
         {trialActive && !status.is_activated && !status.is_admin && (
-          <div
-            role="status"
-            aria-live="polite"
-            className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
-          >
-            <span className="inline-flex flex-wrap items-center justify-center gap-2">
-              <Clock className="h-3.5 w-3.5" />
-              <strong>5-day free trial active</strong>
-              <span aria-hidden="true">·</span>
-              <span>{trialDaysLeft} {trialDaysLeft === 1 ? "day" : "days"} remaining</span>
-              <span className="text-muted-foreground">Ends {new Date(trialExpiresAt).toLocaleDateString()}</span>
-            </span>
-          </div>
+          <>
+            <div
+              role="status"
+              aria-live="polite"
+              className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
+            >
+              <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
+                <Clock className="h-3.5 w-3.5" />
+                <strong>5-day free trial active</strong>
+                <span aria-hidden="true">·</span>
+                <span>{trialDaysLeft} {trialDaysLeft === 1 ? "day" : "days"} remaining</span>
+                <span className="text-muted-foreground">Ends {new Date(trialExpiresAt).toLocaleDateString()}</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-1 h-7 shrink-0 px-3 text-xs"
+                  onClick={() => setShowActivationEntry((open) => !open)}
+                  aria-expanded={showActivationEntry}
+                  aria-controls="trial-activation-entry"
+                >
+                  <Key className="mr-1.5 h-3 w-3" />
+                  Activate Now
+                </Button>
+              </div>
+            </div>
+            {showActivationEntry && (
+              <div id="trial-activation-entry" className="border-b border-primary/20 bg-card px-4 py-3">
+                <form onSubmit={handleTrialActivation} className="mx-auto flex max-w-2xl flex-col gap-2 sm:flex-row sm:items-end">
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <label htmlFor="trial-activation-code" className="text-xs font-medium text-foreground">
+                      Enter your activation code
+                    </label>
+                    <Input
+                      id="trial-activation-code"
+                      value={activationCode}
+                      onChange={(event) => setActivationCode(event.target.value.toUpperCase())}
+                      placeholder="XXXX-XXXX-XXXX"
+                      maxLength={14}
+                      autoComplete="off"
+                      disabled={validating}
+                      className="h-10 font-mono tracking-widest uppercase"
+                    />
+                    {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    <Button type="submit" size="sm" className="h-10" disabled={activationCode.trim().length !== 14 || validating}>
+                      {validating ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Key className="mr-1.5 h-4 w-4" />}
+                      {validating ? "Checking…" : "Activate Now"}
+                    </Button>
+                    <Button type="button" size="sm" variant="ghost" className="h-10" onClick={() => setShowActivationEntry(false)}>
+                      Later
+                    </Button>
+                  </div>
+                </form>
+                <p className="mx-auto mt-2 max-w-2xl text-[11px] text-muted-foreground">
+                  Your free trial remains active while you enter a code. You can keep studying if you close this panel.
+                </p>
+              </div>
+            )}
+          </>
         )}
         {children}
       </>

@@ -1,39 +1,43 @@
 /**
- * Warm the code-split chunks behind the bottom bar and side menu while the
- * app is idle.
- *
- * Every route is lazily imported, so the first visit to a page otherwise
- * trips React.Suspense and flashes the full-screen PageLoader (BottomNav and
- * all) while the chunk loads. Importing the same pages here shares Vite's
- * module cache with the router's `lazy(() => import(...))` calls, so by the
- * time a user taps the nav the module is already resolved and the route
- * renders synchronously — no spinner, no perceived wait.
- *
- * Only the hot paths are warmed (bottom bar + study/chat entry points); the
- * long tail of the menu still lazy-loads on first visit.
+ * Preload only the two most-used secondary routes, and do it slowly after the
+ * first screen has painted. Do not compete with the initial Supabase session,
+ * home data, or user interaction on metered/slow mobile connections.
  */
 const hotRouteModules = [
   () => import("@/pages/Chat"),
-  () => import("@/pages/StudyChatPage"),
   () => import("@/pages/StudyPastQuestions"),
-  () => import("@/pages/SyllabusPage"),
-  () => import("@/pages/LeaderboardPage"),
-  () => import("@/pages/Profile"),
-  () => import("@/pages/FriendsPage"),
 ];
 
 export function preloadHotRoutes(): void {
-  const warm = () => {
+  if (typeof window === "undefined") return;
+
+  const connection = (navigator as Navigator & {
+    connection?: { saveData?: boolean; effectiveType?: string };
+  }).connection;
+
+  if (connection?.saveData) return;
+  if (connection?.effectiveType && ["slow-2g", "2g"].includes(connection.effectiveType)) return;
+
+  const warm = async () => {
     for (const load of hotRouteModules) {
-      void load().catch(() => {
-        /* best-effort: a failed prefetch just loads on demand later */
-      });
+      if (document.visibilityState !== "visible") return;
+      try {
+        await load();
+      } catch {
+        // A failed warm-up is harmless; navigation retries the route import.
+      }
     }
   };
 
-  if (typeof window.requestIdleCallback === "function") {
-    window.requestIdleCallback(warm, { timeout: 4000 });
-  } else {
-    window.setTimeout(warm, 2500);
-  }
+  const schedule = () => {
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(() => void warm(), { timeout: 5000 });
+    } else {
+      window.setTimeout(() => void warm(), 3500);
+    }
+  };
+
+  // Do not prefetch while the app is still starting.
+  if (document.readyState === "complete") schedule();
+  else window.addEventListener("load", schedule, { once: true });
 }

@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect } from "react";
-import { initDataLayer } from "@/data/study-questions";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +19,6 @@ import AppUpdatePrompt from "./components/AppUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
-import { preloadHotRoutes } from "@/lib/route-preload";
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -336,11 +334,6 @@ function PageLoader() {
 };
 
 const App = () => {
-  useEffect(() => {
-    initDataLayer();
-    preloadHotRoutes();
-  }, []);
-
   // next-themes drives the theme via a class on <html>, which a static meta
   // tag can't follow with media queries alone — keep the browser toolbar
   // painted in the active theme's background so the app reads as one surface.

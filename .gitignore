@@ -35,3 +35,8 @@ nul
 /archive/study-questions/
 /private-question-sources/*
 !/private-question-sources/README.md
+
+# Private Android signing material must never be committed.
+android/app/*.jks
+android/app/*.keystore
+*.jks

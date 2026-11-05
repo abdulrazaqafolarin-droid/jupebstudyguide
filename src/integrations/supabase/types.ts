@@ -792,6 +792,8 @@ export type Database = {
           public_key: string | null
           school_name: string | null
           theme_preference: string | null
+          trial_expires_at: string | null
+          trial_started_at: string | null
           updated_at: string
           user_id: string
         }
@@ -820,6 +822,8 @@ export type Database = {
           public_key?: string | null
           school_name?: string | null
           theme_preference?: string | null
+          trial_expires_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -848,6 +852,8 @@ export type Database = {
           public_key?: string | null
           school_name?: string | null
           theme_preference?: string | null
+          trial_expires_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
           user_id?: string
         }

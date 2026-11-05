@@ -61,7 +61,7 @@ export function MicPermissionDialog({ open, variant, requesting, onAllow, onClos
             <DialogTitle className="text-center text-lg">Microphone is blocked</DialogTitle>
             <DialogDescription className="text-center text-sm">
               {isNative
-                ? "Microphone access is turned off for the app. Open your phone's Settings → Apps → JUPEB Master → Permissions → Microphone, choose Allow, then come back and try again."
+                ? "Android has not delivered microphone access to JUPEB's recording view. Check Settings → Apps → JUPEB Master → Permissions → Microphone and choose Allow. If it is already allowed, fully close and reopen JUPEB, then tap Try again."
                 : "Your browser is blocking the microphone for this site. Select the lock or mic icon near the address bar, set the microphone to Allow, then try again."}
             </DialogDescription>
             <div className="space-y-2 pt-1">

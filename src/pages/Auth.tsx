@@ -174,7 +174,7 @@ const Auth = () => {
                 </CardTitle>
                 <CardDescription>
                   {isLogin ? 'Sign in to continue your learning journey'
-                    : isSignup ? 'Start your JUPEB preparation today'
+                    : isSignup ? 'Create your account and get a 5-day free trial to start your JUPEB preparation'
                     : 'Enter your email and we\'ll send you a reset link'}
                 </CardDescription>
               </motion.div>

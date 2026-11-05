@@ -70,14 +70,6 @@ export function useStudySessions() {
         return;
       }
 
-      if (stored.length > 0) {
-        // Current sessions already exist. Keep the old record intact rather
-        // than replacing the current plan; a later explicit migration can
-        // reconcile the two formats without losing either.
-        setMigrationReadyUserId(user.id);
-        return;
-      }
-
       const legacySession = createLegacyStudySession(
         JSON.parse(oldRaw),
         generateId(),
@@ -89,9 +81,19 @@ export function useStudySessions() {
         return;
       }
 
-      setStored([legacySession]);
-      // Keep the source value as a recovery copy. The marker only records that
-      // a valid destination session was generated.
+      const alreadyRepresented = stored.some(session =>
+        session.name === legacySession.name
+        && session.startDate === legacySession.startDate
+        && session.progress.currentDay === legacySession.progress.currentDay
+        && session.progress.dailyTasks.length === legacySession.progress.dailyTasks.length
+      );
+      if (!alreadyRepresented) {
+        // Preserve both the already-present sessions and the legacy plan.
+        setStored(prev => [...prev, legacySession]);
+      }
+
+      // Keep the source value as a recovery copy. The marker prevents the old
+      // plan from being resurrected after a student later deletes its session.
       localStorage.setItem(markerKey, '1');
       setMigrationReadyUserId(user.id);
     } catch (err) {

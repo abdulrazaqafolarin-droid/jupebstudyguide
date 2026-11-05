@@ -312,7 +312,10 @@ export function restoreUserDataBackup(
   // A restored legacy syllabus record must be reconsidered by the next
   // app launch. The first launch may already have marked an empty store as
   // checked before the backup file was imported.
-  const restoredLegacySyllabus = staged.has(`${prefix}syllabus-progress`);
+  const restoredLegacySyllabus = Object.prototype.hasOwnProperty.call(
+    backup.entries,
+    `${prefix}syllabus-progress`,
+  );
   if (restoredLegacySyllabus) {
     staged.set(`${prefix}study-sessions-legacy-migrated-v1`, {
       value: '0',

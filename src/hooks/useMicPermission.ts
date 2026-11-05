@@ -49,7 +49,10 @@ export function useMicPermission() {
 
   const request = useCallback(async (): Promise<boolean> => {
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-      setState('denied');
+      // Missing WebView media support is not the same as a user denial.
+      // Keep this as unknown so the UI does not send the student to Android
+      // Settings for a permission that the current web runtime cannot request.
+      setState('unknown');
       return false;
     }
     try {

@@ -49,6 +49,7 @@ export function useStudySessionSync(
   const sessionsRef = useRef(sessions);
   sessionsRef.current = sessions;
   const [readyUserId, setReadyUserId] = useState<string | null>(null);
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
   const lastSuccessfulHash = useRef<string>('');
   const pendingHash = useRef<string | null>(null);
 
@@ -104,7 +105,29 @@ export function useStudySessionSync(
     return () => {
       active = false;
     };
-  }, [userId, isLoaded, setSessions]);
+  }, [userId, isLoaded, setSessions, restoreAttempt]);
+
+  // If the first cloud read failed while offline, retry when connectivity
+  // returns or the student brings the app back into the foreground. Once a
+  // read succeeds, this listener is removed and no extra reads are triggered.
+  useEffect(() => {
+    if (!userId || !isLoaded || readyUserId === userId) return;
+
+    const retryRestore = () => {
+      if (navigator.onLine && document.visibilityState === 'visible') {
+        setRestoreAttempt(attempt => attempt + 1);
+      }
+    };
+
+    window.addEventListener('online', retryRestore);
+    window.addEventListener('focus', retryRestore);
+    document.addEventListener('visibilitychange', retryRestore);
+    return () => {
+      window.removeEventListener('online', retryRestore);
+      window.removeEventListener('focus', retryRestore);
+      document.removeEventListener('visibilitychange', retryRestore);
+    };
+  }, [userId, isLoaded, readyUserId]);
 
   // Only sync after the cloud read/merge succeeds. Hash the complete payload,
   // not only IDs/status, so edits to individual progress fields are detected.

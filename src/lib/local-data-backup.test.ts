@@ -171,6 +171,20 @@ describe('user data backup', () => {
     expect(target.getItem('jupeb_study_bookmarks')).toBeNull();
   });
 
+  it('merges hidden-message choices without overwriting the current device list', () => {
+    const source = memoryStorage({
+      'jupeb-hidden-msgs-user-a': '["old-hidden"]',
+    });
+    const backup = parseUserDataBackup(JSON.stringify(createUserDataBackup('user-a', source)));
+    const target = memoryStorage({
+      'jupeb-hidden-msgs-user-a': '["new-hidden"]',
+    });
+
+    restoreUserDataBackup(backup, 'user-a', true, target);
+    expect(JSON.parse(target.getItem('jupeb-hidden-msgs-user-a') || '[]').sort())
+      .toEqual(['new-hidden', 'old-hidden']);
+  });
+
   it('restores legacy learning keys into the selected account namespace only', () => {
     const source = memoryStorage({
       jupeb_syllabus_progress: '{"currentDay":7}',

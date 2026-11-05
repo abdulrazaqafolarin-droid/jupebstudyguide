@@ -29,7 +29,7 @@ jobs:
         run: |
           python3 -m py_compile fix_all_questions.py
           node --check scripts/import-questions.mjs
-          if grep -Eq 'AQ\\.|AIza[0-9A-Za-z_-]{30,}' fix_all_questions.py; then
+          if grep -Eq 'AQ\.|AIza[0-9A-Za-z_-]{30,}' fix_all_questions.py; then
             echo "::error::A hard-coded Gemini API credential pattern was found."
             exit 1
           fi

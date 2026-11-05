@@ -29,7 +29,8 @@ export function LocalDataBackup() {
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
-      URL.revokeObjectURL(url);
+      // Give mobile browsers time to begin the download before revoking the URL.
+      window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
       toast.success('Your account backup has been created.');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Could not create the backup.');

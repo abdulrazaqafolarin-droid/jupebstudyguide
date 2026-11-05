@@ -59,6 +59,25 @@ describe('createLegacyStudySession', () => {
 });
 
 describe('areLegacyProgressEquivalent', () => {
+  it('treats hydrated Date values as equivalent to their original ISO strings', () => {
+    const fromStoredSession = {
+      combination: { core: ['physics'], elective: [] },
+      currentDay: 2,
+      dailyTasks: [{ day: 1, isCompleted: true, completedAt: new Date(now) }],
+      startedAt: new Date(now),
+      overallProgress: 50,
+    };
+    const fromLegacyLocalStorage = {
+      overallProgress: 50,
+      startedAt: now,
+      currentDay: 2,
+      dailyTasks: [{ isCompleted: true, completedAt: now, day: 1 }],
+      combination: { elective: [], core: ['physics'] },
+    };
+
+    expect(areLegacyProgressEquivalent(fromStoredSession, fromLegacyLocalStorage)).toBe(true);
+  });
+
   it('treats the same legacy progress as equal when object key order differs', () => {
     const first = {
       combination: { core: ['physics'], elective: [] },

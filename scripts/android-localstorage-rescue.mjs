@@ -311,7 +311,16 @@ async function exportBackup(client, requestedUserId, outputPath) {
 
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, json, { flag: 'wx', mode: 0o600 });
-  if (process.platform !== 'win32') await chmod(outputPath, 0o600);
+  if (process.platform !== 'win32') {
+    try {
+      await chmod(outputPath, 0o600);
+    } catch (error) {
+      // Android shared Downloads storage may not support POSIX chmod. The file
+      // is still exported successfully; warn so the owner keeps it private.
+      if (!['EPERM', 'ENOTSUP', 'EOPNOTSUPP'].includes(error?.code)) throw error;
+      console.warn('This storage location does not support private file permissions. Keep the backup in a private folder and do not share it.');
+    }
+  }
 
   return {
     userId: backup.userId,

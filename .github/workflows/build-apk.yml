@@ -6,7 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       allow_signing_key_migration:
-        description: "DANGEROUS: authorize a different signing key and required uninstall. This can erase device-only study progress/bookmarks from the old app. Use only after a verified transfer path or explicit owner acceptance of that loss."
+        description: "DANGEROUS: authorize a different signing key and required uninstall. This can erase device-only study progress/bookmarks from the old app."
+        required: false
+        default: false
+        type: boolean
+      confirm_legacy_device_data_loss:
+        description: "SECOND REQUIRED ACKNOWLEDGEMENT: explicitly accept permanent loss of device-only data on existing legacy installations. Do not select unless the owner has approved and students have been informed."
         required: false
         default: false
         type: boolean
@@ -87,6 +92,7 @@ jobs:
         shell: bash
         env:
           ALLOW_SIGNING_KEY_MIGRATION: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_signing_key_migration }}
+          CONFIRM_LEGACY_DEVICE_DATA_LOSS: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_legacy_device_data_loss }}
         run: |
           set -euo pipefail
           echo "requires-reinstall=false" >> "$GITHUB_OUTPUT"
@@ -111,13 +117,17 @@ jobs:
           elif [ "$CURRENT_CERT" = "$PREVIOUS_CERT" ]; then
             echo "compatible=true" >> "$GITHUB_OUTPUT"
             echo "APK signer matches the currently published installation."
-          elif [ "$ALLOW_SIGNING_KEY_MIGRATION" = "true" ]; then
+          elif [ "$ALLOW_SIGNING_KEY_MIGRATION" = "true" ] && [ "$CONFIRM_LEGACY_DEVICE_DATA_LOSS" = "true" ]; then
             echo "compatible=true" >> "$GITHUB_OUTPUT"
             echo "requires-reinstall=true" >> "$GITHUB_OUTPUT"
-            echo "::error title=Student data recovery required::The signing key differs from the legacy Android Debug certificate. Android requires uninstalling the old app, which can erase device-only learning data because the legacy app has no verified export path. Keep the migration blocked until data recovery is verified or the repository owner explicitly accepts and communicates that loss."
+            echo "::warning title=Destructive migration explicitly approved::The owner has explicitly acknowledged that uninstalling the legacy APK may permanently remove device-only study records. Publish only after the student notification and support plan are ready."
           else
             echo "compatible=false" >> "$GITHUB_OUTPUT"
-            echo "::error title=APK signing key mismatch::The candidate APK is signed with a different certificate from the currently published APK. It will not be published as an in-place update. For the initial migration, run this workflow manually and check the one-time signing-key migration option only after notifying users that reinstall is required."
+            if [ "$ALLOW_SIGNING_KEY_MIGRATION" = "true" ]; then
+              echo "::warning title=Signing migration remains blocked::Both allow_signing_key_migration and confirm_legacy_device_data_loss must be checked before the new signing key can be published. The candidate APK will remain an artifact only."
+            else
+              echo "::warning title=APK signing key mismatch::The candidate APK is signed with a different certificate from the currently published APK. It will remain an artifact and will not be advertised as an in-place update."
+            fi
           fi
 
       - name: Upload APK Artifact

@@ -111,7 +111,7 @@ export function useChat() {
   // channels being torn down whenever the callback identity changes.
   const markActiveReadRef =
     useRef<((conversationId: string, senderId?: string) => void) | null>(null);
-  // Which unread_count_a/b slot is mine, per DM â€” maps realtime
+  // Which unread_count_a/b slot is mine, per DM — maps realtime
   // `conversations` updates onto the sidebar badge.
   const mySlotRef = useRef<Record<string, 'a' | 'b'>>({});
   const [globalChannelStatus, setGlobalChannelStatus] = useState<string>('idle');
@@ -158,7 +158,7 @@ export function useChat() {
   }, [conversations]);
 
   // Deleted-for-me messages live in localStorage so they stay hidden after
-  // reloads (this device only â€” other devices still show the message).
+  // reloads (this device only — other devices still show the message).
   useEffect(() => {
     if (!user) {
       hiddenMsgIdsRef.current = new Set();
@@ -189,7 +189,7 @@ export function useChat() {
       if (target && c.id !== target.conversation_id) return c;
       let next = c;
       if (!target && c.last_message?.id === messageId) {
-        // Unknown origin â€” still drop it from the preview if it matched.
+        // Unknown origin — still drop it from the preview if it matched.
         const remaining = messagesRef.current.filter(m => m.id !== messageId);
         next = { ...c, last_message: remaining[remaining.length - 1] ?? null };
       }
@@ -253,7 +253,7 @@ export function useChat() {
         ));
         broadcastRead(item.conversationId);
         // Cross-client receipt: the moment this reader has entered the
-        // conversation, tell whoever is viewing that thread â€” the peer's
+        // conversation, tell whoever is viewing that thread — the peer's
         // double-tick turns blue instantly instead of waiting for the
         // postgres UPDATE event (the 5s receipt poll stays as fallback).
         try {
@@ -266,7 +266,7 @@ export function useChat() {
               at: new Date().toISOString(),
             },
           });
-        } catch { /* between reconnects â€” DB event + poll still cover it */ }
+        } catch { /* between reconnects — DB event + poll still cover it */ }
       } catch (err) {
         console.error('Mark-read failed after retries, badge unchanged:', err);
       } finally {
@@ -347,7 +347,7 @@ export function useChat() {
         .eq('user_id', user.id);
 
       if (!participantData?.length) {
-        // Membership is empty â€” reset the id list too, so consumers checking
+        // Membership is empty — reset the id list too, so consumers checking
         // convIdsRef (e.g. the removed-from-conversation realtime handler)
         // don't act on stale membership.
         convIdsRef.current = [];
@@ -650,7 +650,7 @@ export function useChat() {
         .on(
           'postgres_changes',
           { event: 'DELETE', schema: 'public', table: 'messages', filter: `sender_id=neq.${user.id}` },
-          // RLS trims payload.old to the PK â€” sender/conversation/unread are
+          // RLS trims payload.old to the PK — sender/conversation/unread are
           // never present. The server-side sender filter (needs replica
           // identity full) already guarantees this is someone else's
           // hard-deleted message: treat it as a signal and reconcile the
@@ -666,13 +666,13 @@ export function useChat() {
           }
         )
         .on(
-          // No sender filter: the author must receive updates to THEIR rows â€”
+          // No sender filter: the author must receive updates to THEIR rows —
           // read receipts (is_read/read_at), reactions and edits made by the
           // other side. The old `sender_id=neq.me` filter blocked all three.
           'postgres_changes',
           { event: 'UPDATE', schema: 'public', table: 'messages' },
           (payload) => {
-            // payload.old is PK-only under RLS (documented) â€” read all state
+            // payload.old is PK-only under RLS (documented) — read all state
             // from new.
             const newMsg = payload.new as Message & { is_deleted: boolean };
             if (!convIdsRef.current.includes(newMsg.conversation_id)) return;
@@ -718,7 +718,7 @@ export function useChat() {
               unread_count_a?: number; unread_count_b?: number;
             };
             if (!convIdsRef.current.includes(updated.id)) return;
-            // Group renames / avatar / policy changes apply instantly â€”
+            // Group renames / avatar / policy changes apply instantly —
             // previously they stayed stale until a full reload.
             const slot = mySlotRef.current[updated.id];
             setConversations(prev => prev.map(c => {
@@ -752,10 +752,10 @@ export function useChat() {
           (payload) => {
             const old = payload.old as { id?: string };
             if (!old.id) return;
-            // RLS trims payload.old to the PK â€” conversation_id is never
+            // RLS trims payload.old to the PK — conversation_id is never
             // present on DELETE. The user_id filter already guarantees it's
             // MY row, so reconcile the whole list (it drops the conversation
-            // from the desktop sidebar immediately â€” previously only mobile
+            // from the desktop sidebar immediately — previously only mobile
             // refreshed), then close the active view if I'm no longer a
             // member.
             debug('[Realtime] removed from a conversation (participant row):', old.id);
@@ -763,7 +763,7 @@ export function useChat() {
               try {
                 await fetchConversations();
               } catch {
-                // network error â€” keep UI running
+                // network error — keep UI running
               }
               const active = activeConvRef.current;
               if (active && !convIdsRef.current.includes(active)) {
@@ -1042,7 +1042,7 @@ void (async () => {
     };
   }, [user?.id]);
 
-  // Read receipts polling â€” polls own messages in active conversation for is_read updates
+  // Read receipts polling — polls own messages in active conversation for is_read updates
   // Realtime UPDATE handler (line ~542) is the primary path, but it can be unreliable.
   // This ensures the blue checkmark always updates within 5s.
   useEffect(() => {
@@ -1071,7 +1071,7 @@ void (async () => {
           }));
         }
       } catch {
-        // silent â€” don't spam console
+        // silent — don't spam console
       }
     }, 5000);
 
@@ -1250,7 +1250,7 @@ void (async () => {
     if (failed.length > 0) {
       offlineQueueRef.current = failed;
       setPendingCount(failed.length);
-      toast.error(`${failed.length} messages pending â€” still offline`);
+      toast.error(`${failed.length} messages pending — still offline`);
     } else {
       toast.success('Messages sent!');
     }
@@ -1289,7 +1289,7 @@ void (async () => {
     }).select();
 
     if (error) {
-      // Idempotency conflict (23505): a retry already landed â€” reconcile from server.
+      // Idempotency conflict (23505): a retry already landed — reconcile from server.
       if ((error as { code?: string }).code === '23505') {
         const { data: existing } = await supabase
           .from('messages')
@@ -1310,7 +1310,7 @@ void (async () => {
       }
       offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
       setPendingCount(offlineQueueRef.current.length);
-      toast.info('Message queued â€” will send when back online');
+      toast.info('Message queued — will send when back online');
       return;
     }
 
@@ -1410,7 +1410,7 @@ void (async () => {
       }
       offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
       setPendingCount(offlineQueueRef.current.length);
-      toast.info('Image queued â€” will send when back online');
+      toast.info('Image queued — will send when back online');
       return;
     }
 
@@ -1480,7 +1480,7 @@ void (async () => {
       }
       offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
       setPendingCount(offlineQueueRef.current.length);
-      toast.info('File queued â€” will send when back online');
+      toast.info('File queued — will send when back online');
       return;
     }
 
@@ -1518,7 +1518,7 @@ void (async () => {
 
     // SECURITY DEFINER toggle: the only messages UPDATE policy is
     // "sender owns the row", so reacting to someone else's message used to
-    // silently match 0 rows â€” the reaction looked fine, then vanished on
+    // silently match 0 rows — the reaction looked fine, then vanished on
     // reload. The RPC toggles atomically and returns server-truth state.
     const { data: serverReactions, error } = await supabase
       .rpc('toggle_message_reaction', { p_message_id: messageId, p_emoji: emoji });
@@ -1613,7 +1613,7 @@ void (async () => {
         forwardedFrom,
       });
       setPendingCount(offlineQueueRef.current.length);
-      toast.info('Message queued â€” will send when back online');
+      toast.info('Message queued — will send when back online');
       return;
     }
 

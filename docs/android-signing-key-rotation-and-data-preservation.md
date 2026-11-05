@@ -8,7 +8,7 @@
 - The old manifest has `android:allowBackup="false"`; Android cloud/device backup is not a proven route for its WebView localStorage.
 - PR #14 adds account-scoped local export/import and private Supabase cloud backup/restore for a future app build. Those controls are not in the old APK.
 - The preservation branch now also includes PR #15's tested dependency-security updates: PDF.js 6.5.438, Zod 4.6.7, KaTeX 0.19.1, and React Router 7.18.5.
-- Combined validation run #42117365890 is running against the current combined PR #14 head. The preceding PR #15 validation passed 278 tests across 26 files, TypeScript, ESLint (0 errors; 51 warnings), production web build, Capacitor sync, Android debug APK compilation, package identity check, production-site HTTP 200 and **0 production dependency vulnerabilities**.
+- Combined validation run #42117623306 passed against the current PR #14 head: 278 tests across 26 files, TypeScript, ESLint (0 errors; 51 warnings), production web build, Capacitor sync, Android debug APK compilation, package identity/version check, production-site HTTP 200, updater endpoint validation, and **0 production dependency vulnerabilities**.
 - A separate Android release-build attempt (Actions run #42114101174) completed the web build and Capacitor sync but stopped at `Build stable-signed release APK`. All four Android signing secret environment variables were empty. No APK artifact, GitHub Release, Supabase mirror upload, or `version.json` change was produced by that run.
 - The current production updater metadata was previously found to have a missing/invalid SHA-256. It must be replaced only with metadata computed from and verified against the exact signed release APK.
 

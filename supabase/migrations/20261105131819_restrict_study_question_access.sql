@@ -39,7 +39,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.study_questions TO authenti
 GRANT ALL PRIVILEGES ON TABLE public.study_questions TO service_role;
 
 -- Vector rows are not needed by student clients: they retrieve matches through
--- the guarded SECURITY DEFINER RPC below. Keep direct table maintenance admin-only.
+-- the server-only SECURITY INVOKER RPC below. Keep direct table maintenance admin-only.
 DROP POLICY IF EXISTS study_question_embeddings_select_all
   ON public.study_question_embeddings;
 DROP POLICY IF EXISTS study_question_embeddings_select_admin

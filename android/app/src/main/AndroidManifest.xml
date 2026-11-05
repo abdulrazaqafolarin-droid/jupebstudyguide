@@ -44,9 +44,8 @@
     <!-- Required so the in-app updater can fire the package installer for a downloaded APK (Android 8+). -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <!-- Voice notes: the WebView's getUserMedia(audio) auto-denies without this,
-         and no system prompt ever appears. Declared so Capacitor's WebChromeClient
-         can surface the runtime permission dialog. -->
+    <!-- Capacitor's WebChromeClient checks both permissions for WebView audio capture. -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

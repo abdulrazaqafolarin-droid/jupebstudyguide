@@ -144,6 +144,19 @@ describe('user data backup', () => {
     expect(target.getItem('jupeb_achievements_unlocked')).toBe('["first-study"]');
   });
 
+  it('rejects credential-like storage keys instead of restoring them', () => {
+    const raw = JSON.stringify({
+      format: 'jupeb-master-user-backup',
+      version: 1,
+      userId: 'user-a',
+      exportedAt: '2026-11-05T00:00:00.000Z',
+      entries: { 'u:user-a:api-key': 'must-not-restore' },
+      deviceShared: { legacyBookmarks: null, legacyEntries: {} },
+    });
+
+    expect(() => parseUserDataBackup(raw)).toThrow(/sensitive/i);
+  });
+
   it('preserves existing local data if a storage write fails', () => {
     const values = new Map<string, string>([['u:user-a:theme', 'dark']]);
     const storage = {

@@ -11,6 +11,7 @@ export const LEGACY_DEVICE_DATA_KEYS = [
   'jupeb-chat-hub',
 ] as const;
 const MAX_BACKUP_BYTES = 12 * 1024 * 1024;
+const CREDENTIAL_KEY_PATTERN = /(token|secret|password|credential|api[-_]?key)/i;
 
 export interface UserDataBackup {
   format: typeof USER_BACKUP_FORMAT;
@@ -153,7 +154,7 @@ export function createUserDataBackup(userId: string, storage: Storage = localSto
   for (let index = 0; index < storage.length; index += 1) {
     const key = storage.key(index);
     if (!key || !key.startsWith(prefix)) continue;
-    if (/(token|secret|password|credential|api[-_]?key)/i.test(key)) continue;
+    if (CREDENTIAL_KEY_PATTERN.test(key)) continue;
     const value = storage.getItem(key);
     if (value !== null) entries[key] = value;
   }

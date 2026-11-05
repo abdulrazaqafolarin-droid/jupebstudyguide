@@ -72,17 +72,38 @@ function isStoredSession(value: unknown): value is StoredStudySession {
   const progress = session.progress;
   if (!progress || typeof progress !== 'object' || Array.isArray(progress)) return false;
   const storedProgress = progress as Record<string, unknown>;
+  const combination = storedProgress.combination;
+  const subjectProgress = storedProgress.subjectProgress;
+  const validSubjects = (value: unknown) => Array.isArray(value)
+    && value.every(subject => ['physics', 'chemistry', 'biology', 'math'].includes(String(subject)));
+  const dailyTasks = storedProgress.dailyTasks;
   return typeof session.id === 'string'
     && session.id.length > 0
     && typeof session.name === 'string'
-    && Array.isArray(session.subjects)
+    && validSubjects(session.subjects)
     && ['active', 'paused', 'completed'].includes(String(session.status))
     && typeof session.createdAt === 'string'
+    && Number.isFinite(Date.parse(session.createdAt))
     && typeof session.updatedAt === 'string'
+    && Number.isFinite(Date.parse(session.updatedAt))
     && typeof storedProgress.startedAt === 'string'
-    && Array.isArray(storedProgress.dailyTasks)
+    && Number.isFinite(Date.parse(storedProgress.startedAt))
+    && Array.isArray(dailyTasks)
+    && dailyTasks.every(task => task && typeof task === 'object'
+      && typeof task.day === 'number'
+      && Number.isFinite(task.day)
+      && typeof task.isCompleted === 'boolean')
     && typeof storedProgress.currentDay === 'number'
-    && typeof storedProgress.overallProgress === 'number';
+    && Number.isFinite(storedProgress.currentDay)
+    && typeof storedProgress.overallProgress === 'number'
+    && Number.isFinite(storedProgress.overallProgress)
+    && combination !== null
+    && typeof combination === 'object'
+    && validSubjects((combination as Record<string, unknown>).core)
+    && validSubjects((combination as Record<string, unknown>).elective)
+    && subjectProgress !== null
+    && typeof subjectProgress === 'object'
+    && !Array.isArray(subjectProgress);
 }
 
 function mergeStringArray(current: string, incoming: string): string | null {

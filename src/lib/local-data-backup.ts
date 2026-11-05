@@ -66,46 +66,71 @@ function mergeProgressMap(current: string, incoming: string): string | null {
   return JSON.stringify(merged);
 }
 
+const VALID_SUBJECTS = ['physics', 'chemistry', 'biology', 'math'] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
+function isValidSubjectList(value: unknown): value is string[] {
+  return Array.isArray(value)
+    && value.every(subject => typeof subject === 'string'
+      && (VALID_SUBJECTS as readonly string[]).includes(subject));
+}
+
+function isValidStoredTask(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return Number.isInteger(value.day)
+    && Number(value.day) > 0
+    && typeof value.subject === 'string'
+    && (VALID_SUBJECTS as readonly string[]).includes(value.subject)
+    && Array.isArray(value.topics)
+    && Array.isArray(value.learningObjectives)
+    && Array.isArray(value.checkpointQuestions)
+    && typeof value.isCompleted === 'boolean'
+    && (value.completedAt === undefined
+      || (typeof value.completedAt === 'string' && Number.isFinite(Date.parse(value.completedAt))))
+    && (value.masteryScore === undefined
+      || (typeof value.masteryScore === 'number' && Number.isFinite(value.masteryScore)));
+}
+
 function isStoredSession(value: unknown): value is StoredStudySession {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
-  const session = value as Record<string, unknown>;
+  if (!isRecord(value)) return false;
+  const session = value;
   const progress = session.progress;
-  if (!progress || typeof progress !== 'object' || Array.isArray(progress)) return false;
-  const storedProgress = progress as Record<string, unknown>;
-  const combination = storedProgress.combination;
-  const subjectProgress = storedProgress.subjectProgress;
-  const validSubjects = (value: unknown) => Array.isArray(value)
-    && value.every(subject => ['physics', 'chemistry', 'biology', 'math'].includes(String(subject)));
-  const dailyTasks = storedProgress.dailyTasks;
+  if (!isRecord(progress)) return false;
+
+  const combination = progress.combination;
+  const subjectProgress = progress.subjectProgress;
   return typeof session.id === 'string'
     && session.id.length > 0
     && typeof session.name === 'string'
-    && validSubjects(session.subjects)
+    && isValidSubjectList(session.subjects)
     && ['active', 'paused', 'completed'].includes(String(session.status))
     && typeof session.createdAt === 'string'
     && Number.isFinite(Date.parse(session.createdAt))
     && typeof session.updatedAt === 'string'
     && Number.isFinite(Date.parse(session.updatedAt))
-    && typeof storedProgress.startedAt === 'string'
-    && Number.isFinite(Date.parse(storedProgress.startedAt))
-    && Array.isArray(dailyTasks)
-    && dailyTasks.every(task => task && typeof task === 'object'
-      && typeof task.day === 'number'
-      && Number.isFinite(task.day)
-      && typeof task.isCompleted === 'boolean')
-    && typeof storedProgress.currentDay === 'number'
-    && Number.isFinite(storedProgress.currentDay)
-    && typeof storedProgress.overallProgress === 'number'
-    && Number.isFinite(storedProgress.overallProgress)
-    && combination !== null
-    && typeof combination === 'object'
-    && validSubjects((combination as Record<string, unknown>).core)
-    && validSubjects((combination as Record<string, unknown>).elective)
-    && subjectProgress !== null
-    && typeof subjectProgress === 'object'
-    && !Array.isArray(subjectProgress);
+    && typeof session.startDate === 'string'
+    && Number.isFinite(Date.parse(session.startDate))
+    && typeof session.dailyGoalMinutes === 'number'
+    && Number.isFinite(session.dailyGoalMinutes)
+    && Number(session.dailyGoalMinutes) > 0
+    && typeof progress.startedAt === 'string'
+    && Number.isFinite(Date.parse(progress.startedAt))
+    && Array.isArray(progress.dailyTasks)
+    && progress.dailyTasks.every(isValidStoredTask)
+    && typeof progress.currentDay === 'number'
+    && Number.isFinite(progress.currentDay)
+    && typeof progress.overallProgress === 'number'
+    && Number.isFinite(progress.overallProgress)
+    && isRecord(combination)
+    && isValidSubjectList(combination.core)
+    && isValidSubjectList(combination.elective)
+    && isRecord(subjectProgress)
+    && Object.values(subjectProgress).every(item =>
+      typeof item === 'number' && Number.isFinite(item));
 }
-
 function mergeStringArray(current: string, incoming: string): string | null {
   const a = parseJson<unknown[]>(current);
   const b = parseJson<unknown[]>(incoming);

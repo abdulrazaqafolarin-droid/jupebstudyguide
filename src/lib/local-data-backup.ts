@@ -188,7 +188,8 @@ export function createUserDataBackup(userId: string, storage: Storage = localSto
   }
 
   const legacyEntries: Record<string, string> = {};
-  for (const key of LEGACY_DEVICE_DATA_KEYS) {
+  const legacyKeys = [...LEGACY_DEVICE_DATA_KEYS, `jupeb-hidden-msgs-${userId}`];
+  for (const key of legacyKeys) {
     const value = storage.getItem(key);
     if (value !== null) legacyEntries[key] = value;
   }
@@ -247,7 +248,9 @@ export function parseUserDataBackup(raw: string): UserDataBackup {
         const rawEntries = shared.legacyEntries;
         if (rawEntries && typeof rawEntries === 'object' && !Array.isArray(rawEntries)) {
           for (const [key, entry] of Object.entries(rawEntries as Record<string, unknown>)) {
-            if (!(LEGACY_DEVICE_DATA_KEYS as readonly string[]).includes(key) || typeof entry !== 'string') {
+            const allowed = (LEGACY_DEVICE_DATA_KEYS as readonly string[]).includes(key)
+              || key === `jupeb-hidden-msgs-${value.userId}`;
+            if (!allowed || typeof entry !== 'string') {
               throw new Error('The backup contains an invalid legacy device-data key.');
             }
             restored[key] = entry;

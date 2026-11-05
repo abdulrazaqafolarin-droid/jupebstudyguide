@@ -69,11 +69,11 @@ export function LocalDataBackup() {
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="rounded-lg border border-border/60 bg-muted/30 p-3 text-xs text-muted-foreground">
-          Backups include your account-namespaced study progress, syllabus data, sessions and streak. Login tokens, credentials and API-key-like entries are excluded. Keep the backup file private.
+          Backups include your account-namespaced study progress, syllabus data, sessions and streak, plus allowlisted legacy learning keys. Login tokens, credentials and API-key-like entries are excluded. Keep the backup file private.
         </div>
         <label className="flex items-start gap-2 text-xs text-muted-foreground">
           <Checkbox checked={restoreSharedBookmarks} onCheckedChange={(value) => setRestoreSharedBookmarks(value === true)} />
-          <span>Also restore legacy device-shared bookmarks. This old bookmark store was not separated by account.</span>
+          <span>Also restore legacy device-shared learning data, including old bookmarks. These older keys were not separated by account.</span>
         </label>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button type="button" variant="outline" className="flex-1" onClick={exportBackup} disabled={!user || busy}>

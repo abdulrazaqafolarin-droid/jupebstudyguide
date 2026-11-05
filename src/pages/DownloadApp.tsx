@@ -21,6 +21,7 @@ function getPlatform(): "android" | "ios" | "desktop" {
 export default function DownloadApp() {
   const [platform, setPlatform] = useState<"android" | "ios" | "desktop">("desktop");
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const [releaseAvailable, setReleaseAvailable] = useState(false);
   const [requiresReinstall, setRequiresReinstall] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
@@ -30,6 +31,7 @@ export default function DownloadApp() {
     // page can show the real version instead of a static label.
     void Promise.all([fetchLatestRelease(), getInstalledVersion()]).then(([release, installed]) => {
       if (release) {
+        setReleaseAvailable(true);
         setRequiresReinstall(
           release.requiresReinstall === true &&
           (!installed || isNewer(installed.versionCode, release.versionCode)),
@@ -42,12 +44,17 @@ export default function DownloadApp() {
               : ""),
         );
       } else {
-        setLatestVersion("android-latest");
+        // Never offer an APK when its release metadata is missing, malformed,
+        // unsigned by a known key, or lacks the checksum required by the updater.
+        setReleaseAvailable(false);
+        setLatestVersion("Temporarily unavailable");
+        setRequiresReinstall(false);
       }
     });
   }, []);
 
   const downloadAPK = () => {
+    if (!releaseAvailable) return;
     setDownloading(true);
     window.open(APK_URL, "_blank");
     setTimeout(() => setDownloading(false), 3000);
@@ -88,22 +95,28 @@ export default function DownloadApp() {
                   </p>
                 </div>
               )}
-              <button
-                onClick={downloadAPK}
-                disabled={downloading}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-all active:scale-[0.97] shadow-lg"
-              >
-                {downloading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Download className="h-5 w-5" />
-                )}
-                {downloading ? "Opening..." : "Download APK"}
-              </button>
+              {releaseAvailable ? (
+                <button
+                  onClick={downloadAPK}
+                  disabled={downloading}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-all active:scale-[0.97] shadow-lg"
+                >
+                  {downloading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Download className="h-5 w-5" />
+                  )}
+                  {downloading ? "Opening..." : "Download APK"}
+                </button>
+              ) : (
+                <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
+                  The Android installer is temporarily unavailable while its signing and integrity details are verified. Your existing app and account data are unaffected. Use the web app below for now.
+                </div>
+              )}
 
               <div className="text-xs text-muted-foreground text-center space-y-1">
-                <p>Latest version: {latestVersion}</p>
-                <p>{APK_INFO}</p>
+                <p>Latest version: {latestVersion ?? "Checking…"}</p>
+                {releaseAvailable && <p>{APK_INFO}</p>}
               </div>
 
               <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
@@ -171,15 +184,21 @@ export default function DownloadApp() {
                   }}
                 />
               </div>
-              <a
-                href={APK_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                Download APK for Android
-              </a>
+              {releaseAvailable ? (
+                <a
+                  href={APK_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  Download APK for Android
+                </a>
+              ) : (
+                <p role="status" className="text-xs text-muted-foreground">
+                  The Android installer is temporarily unavailable while its signing and integrity details are verified.
+                </p>
+              )}
               <a
                 href="/"
                 className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl border border-border hover:bg-muted/50 transition-colors"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findLatestCloudBackupFile } from "./cloud-data-backup";
+import { findLatestCloudBackupFile } from "./cloud-data-backup-utils";
 
 describe("findLatestCloudBackupFile", () => {
   it("selects the newest timestamped backup file", () => {

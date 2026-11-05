@@ -4,36 +4,15 @@ import {
   parseUserDataBackup,
   type UserDataBackup,
 } from "@/lib/local-data-backup";
+import {
+  CLOUD_BACKUP_FILE_PREFIX,
+  findLatestCloudBackupFile,
+  isCloudBackupFileName,
+} from "@/lib/cloud-data-backup-utils";
 
 const BACKUP_BUCKET = "documents";
 const BACKUP_FOLDER = "device-backups";
-const BACKUP_FILE_PREFIX = "jupeb-backup-";
 const MAX_RETAINED_BACKUPS = 3;
-
-export interface CloudBackupFileEntry {
-  id: string | null;
-  name: string;
-}
-
-function isBackupFileName(name: string): boolean {
-  if (!name.startsWith(BACKUP_FILE_PREFIX) || !name.endsWith(".json")) return false;
-  const timestamp = name.slice(BACKUP_FILE_PREFIX.length, -5);
-  return timestamp.length === 13
-    && [...timestamp].every(character => character >= "0" && character <= "9");
-}
-
-/**
- * The documents bucket is private. Existing storage RLS rules require the
- * first path segment to equal auth.uid(), so a backup can only be listed,
- * uploaded, downloaded or removed by its owning account.
- */
-export function findLatestCloudBackupFile(
-  files: CloudBackupFileEntry[],
-): CloudBackupFileEntry | null {
-  return files
-    .filter(file => file.id !== null && isBackupFileName(file.name))
-    .sort((a, b) => b.name.localeCompare(a.name))[0] ?? null;
-}
 
 function backupFolder(userId: string): string {
   if (!userId.trim()) throw new Error("A signed-in account is required.");
@@ -44,7 +23,7 @@ export async function saveUserDataBackupToCloud(userId: string): Promise<void> {
   const backup = createUserDataBackup(userId);
   const raw = JSON.stringify(backup);
   const blob = new Blob([raw], { type: "application/json" });
-  const fileName = `${BACKUP_FILE_PREFIX}${Date.now()}.json`;
+  const fileName = `${CLOUD_BACKUP_FILE_PREFIX}${Date.now()}.json`;
   const folder = backupFolder(userId);
   const path = `${folder}/${fileName}`;
 
@@ -74,7 +53,7 @@ export async function saveUserDataBackupToCloud(userId: string): Promise<void> {
     if (error || !data) return;
 
     const backups = data
-      .filter(entry => entry.id !== null && isBackupFileName(entry.name))
+      .filter(entry => entry.id !== null && isCloudBackupFileName(entry.name))
       .sort((a, b) => b.name.localeCompare(a.name));
     const oldPaths = backups
       .slice(MAX_RETAINED_BACKUPS)

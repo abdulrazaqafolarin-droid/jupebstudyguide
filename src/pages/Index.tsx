@@ -623,7 +623,7 @@ const Index = () => {
           questions={quizQuestions}
           subject={selectedSubject || undefined}
           onComplete={(result) => {
-            setCurrentQuizQuestions([]);
+            // Keep QuizMode mounted so its score screen can render after completion.
             handleQuizComplete(result);
           }}
           onExit={() => { setCurrentQuizQuestions([]); handleBack(); }}

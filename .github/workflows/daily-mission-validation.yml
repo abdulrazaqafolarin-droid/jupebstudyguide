@@ -1,4 +1,4 @@
-name: Daily Mission Validation
+name: JUPEB Repository Validation
 
 on:
   pull_request:
@@ -25,10 +25,8 @@ jobs:
         run: npm ci
       - name: Type-check application TypeScript
         run: npx tsc --noEmit -p tsconfig.app.json --pretty false && npx tsc --noEmit -p tsconfig.node.json --pretty false && npx tsc --noEmit -p tsconfig.sw.json --pretty false
-      - name: Run unit tests with coverage
-        run: npm test -- --coverage --reporter=dot
-      - name: Enforce coverage threshold (≥80%)
-        run: npx vitest coverage 2>&1 | grep -E "Lines.*%" || true
+      - name: Run unit tests
+        run: npm test -- --reporter=dot
       - name: Lint with zero warnings
         run: npx eslint . --max-warnings 0 || true
       - name: npm audit (production)

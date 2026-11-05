@@ -12,7 +12,7 @@ if (!fs.existsSync(EXTRACTED_DIR)) {
   );
   process.exit(1);
 }
-const OUTPUT_DIR = path.join(__dirname, '..', 'src', 'data', 'new-questions');
+const OUTPUT_DIR = path.join(__dirname, '..', 'private-question-sources', 'generated-json');
 
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 

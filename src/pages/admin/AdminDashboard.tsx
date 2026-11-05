@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AIKeyVault from "@/components/admin/AIKeyVault";
+import { LocalDataBackup } from "@/components/profile/LocalDataBackup";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -66,7 +67,7 @@ export default function AdminDashboard() {
   const { status } = useActivation();
   const { codes, loading, generateCodes, listCodes } = useAdminCodes();
   const navigate = useNavigate();
-  const [section, setSection] = useState<"dashboard" | "apikey">("dashboard");
+  const [section, setSection] = useState<"dashboard" | "apikey" | "recovery">("dashboard");
 
   const handleSignOut = useCallback(async () => {
     await signOut();
@@ -243,6 +244,17 @@ export default function AdminDashboard() {
               )}
             >
               Admin
+            </button>
+            <button
+              onClick={() => setSection("recovery")}
+              className={cn(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                section === "recovery"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Data Recovery
             </button>
             <button
               onClick={() => setSection("apikey")}
@@ -645,8 +657,10 @@ export default function AdminDashboard() {
               </Card>
             </motion.div>
           </>
-        ) : (
+        ) : section === "apikey" ? (
           <AIKeyVault />
+        ) : (
+          <LocalDataBackup />
         )}
       </main>
     </div>

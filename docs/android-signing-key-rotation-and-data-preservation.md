@@ -4,7 +4,8 @@
 
 - Android application ID: `com.jupeb.master`.
 - Historical release signing keystore: unavailable.
-- New permanent release keystore: generated outside the repository. Its private key is provided separately to the repository owner; it must never be committed.
+- The archived production-build artifact from GitHub Actions run `42079370035` (artifact `13440460672`) was inspected. Its signer is `CN=Android Debug, O=Android, C=US`, with certificate SHA-256 `6bc12665dc9fbaa318b62e22394a19619a7a9a19cfa6847e9b3bf4e2112798c3`. The certificate was generated at build time on November 5, 2026; the ephemeral GitHub runner's private debug keystore was not included in the artifact and cannot be reconstructed from the APK.
+- New permanent release keystore: generated outside the repository. Its public certificate SHA-256 is `341744a3408e4f6b4178c083953100785eb21c985c0a8fa4f62592e0a9c53181`. Its private key is provided separately to the repository owner; it must never be committed.
 - The current manifest uses `android:allowBackup="false"`.
 - The Android updater already recognizes `requiresReinstall: true` and sends the student to the download page instead of attempting an in-place update.
 - The release workflow compares the candidate APK certificate with the currently published APK. A certificate mismatch blocks publication unless the one-time workflow-dispatch migration option is explicitly selected.
@@ -22,7 +23,7 @@ Uninstalling removes the old app's private local data. In this project, some lea
 
 The old APK has backup disabled, and it cannot receive the new export UI as an in-place update because the signing key is lost. The new Settings backup panel protects future updates and fresh installs; it cannot execute inside an older installed APK.
 
-**Do not tell students to uninstall the old app until a separate, verified recovery path is available or the data-loss risk has been explicitly accepted and communicated.**
+**Do not tell students to uninstall the old app.** The old signer has been confirmed as an ephemeral Android Debug certificate from the hosted CI build; the private key is unavailable. The new signing certificate necessarily differs. Because the legacy APK cannot receive the new backup exporter as an in-place update, there is currently no verified way to export its local-only data before uninstalling. Keep the legacy app installed and keep its existing APK available. Use the web app/cloud-synced features where appropriate while a migration strategy is prepared. A reinstall migration is blocked until a real recovery route is verified or the owner explicitly accepts and communicates the loss of device-only records.
 
 ## Cloud data that already exists
 

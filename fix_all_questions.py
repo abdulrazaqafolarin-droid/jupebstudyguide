@@ -4,27 +4,14 @@
 import re, json, urllib.request, urllib.error, os, sys, time, random, threading
 from collections import defaultdict
 
-API_KEYS = [
-    'AQ.Ab8RN6K8-GWIeLzB48pPIGJI0DDnTmkMcfHpUrVzxxW6O2xJLA',
-    'AQ.Ab8RN6Iq_vlsVVO0rEfWB0nfNtOdl2eqE5dlzI9sOdjMHCPJ7g',
-    'AQ.Ab8RN6JHB7wu2MyiKtOXuUtYxKK1rqyMKZcKOmJilWytqMiS7w',
-    'AQ.Ab8RN6IQI03QOPzGDICxgcctI4tIP4LBBFgW3Ht8KR2Y3jqz_A',
-    'AQ.Ab8RN6Lw2EMl1BS9EpKVELbG8sHQ4u32XrUnYUgmVzSxmEkguA',
-    'AQ.Ab8RN6KSThNHk2DR_ttSVJo7H8eWesEDP2Dur5208166HkkqeQ',
-    'AQ.Ab8RN6J13WX6AJxLdxXLIr4QMkkbzLPD3hC-j30Bo-S3_SQeqQ',
-    'AQ.Ab8RN6I4pXZkZ6kp_UgejBW0jLJYbzza2sxL-5Z0f-quPSErAA',
-    'AQ.Ab8RN6IYe86cmGORKpeaFSTZGxAcVcjLAQTA1Nau19lMqT7P_A',
-    'AQ.Ab8RN6LjOXBhIiAucqtkpB5kLW62YrwYVOB-JMuV3TNcfCC73Q',
-    'AQ.Ab8RN6JcWVm5dlR3uZllW_s7x0Tz-jeTj4dVH-9cnhXbhMsnlw',
-    'AQ.Ab8RN6LIS4p9FD6_bHP-hmfAmzIq5SaZpp3k8I6IxNSsybjjyA',
-    'AQ.Ab8RN6JKkV-7d4WJt6ghX2zhEl7WOotTCYd0NGgVHcTtad9_2Q',
-    'AQ.Ab8RN6I3FA1WF0NFNKWxXIVFmApt0MKaeLXY_owGvLovYikLPA',
-    'AQ.Ab8RN6Jx_XPGzN8cKcWRDw8aDN7KbUXU-zIDDghP_LCxE71j8Q',
-    'AQ.Ab8RN6JercfBIfCCFHrKSvVr__2snH7V6rBgCZjQCSrnSXUCQw',
-    'AQ.Ab8RN6IKStlNUuvmfxa3faK7Ab2THwvMVVxn96Mby-ae8tFqFA',
-    'AQ.Ab8RN6IQFbvlJjEYe_fXD4wdjLdbbyukvO2GzNLuLRo0DiAZgQ',
-    'AQ.Ab8RN6IUihpkjN1buYPhN_ge_XPqcYjHtVCw4TAAUEBLR5N3hQ',
-]
+# Supply one or more keys locally; never commit API credentials.
+# GEMINI_API_KEYS accepts comma/semicolon/newline-separated keys. GEMINI_API_KEY
+# is also supported for a single key.
+_raw_api_keys = os.environ.get("GEMINI_API_KEYS") or os.environ.get("GEMINI_API_KEY", "")
+API_KEYS = [key.strip() for key in re.split(r"[,;\s]+", _raw_api_keys) if key.strip()]
+if not API_KEYS:
+    raise SystemExit("Set GEMINI_API_KEY or GEMINI_API_KEYS in your local environment before running this script.")
+
 KEY_LOCK = threading.Lock()
 KEY_INDEX = 0
 MODEL = 'gemini-flash-latest'

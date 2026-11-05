@@ -21,27 +21,112 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Set up Java for Android
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/dists
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Install dependencies
         run: npm ci
       - name: Type-check application TypeScript
         run: npx tsc --noEmit -p tsconfig.app.json --pretty false && npx tsc --noEmit -p tsconfig.node.json --pretty false && npx tsc --noEmit -p tsconfig.sw.json --pretty false
+      - name: Validate private question-source tooling
+        run: |
+          python3 -m py_compile fix_all_questions.py
+          node --check scripts/import-questions.mjs
+          if grep -Eq 'AQ[.]|AIza[0-9A-Za-z_-]{30,}' fix_all_questions.py; then
+            echo "::error::A hard-coded Gemini API credential pattern was found."
+            exit 1
+          fi
       - name: Run unit tests
         run: npm test -- --reporter=dot
-      - name: Lint with zero warnings
-        run: npx eslint . --max-warnings 0 || true
-      - name: npm audit (production)
-        run: npm audit --production --audit-level=high || true
+      - name: ESLint (warnings reported; errors fail)
+        run: npx eslint .
+      # Keep the security report visible without blocking compilation and
+      # smoke-build checks. Major dependency upgrades are handled separately.
+      - name: npm audit (production; report-only)
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
       - name: Build production app
         run: npm run build
+      - name: Sync Capacitor Android plugins
+        run: npx cap sync android
+      - name: Compile Android debug APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug --no-daemon
+      - name: Verify Android package identity and version
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          BADGING="$("$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK")"
+          APP_ID="$(printf '%s\n' "$BADGING" | sed -n "s/^package: name='\\([^']*\\)'.*/\\1/p")"
+          VERSION_CODE="$(printf '%s\n' "$BADGING" | sed -n "s/^package:.*versionCode='\\([0-9][0-9]*\\)'.*/\\1/p")"
+
+          test "$APP_ID" = "com.jupeb.master" || {
+            echo "::error::Unexpected Android application ID: $APP_ID"
+            exit 1
+          }
+          test -n "$VERSION_CODE" && test "$VERSION_CODE" -gt 0 || {
+            echo "::error::The Android APK has an invalid version code."
+            exit 1
+          }
+          echo "Android package verified: $APP_ID (versionCode $VERSION_CODE)."
+          echo "Signing compatibility is checked separately by the main-branch release workflow using the exact release APK and its configured signing key."
+
       - name: Verify Vercel production health
         run: |
-          echo "Checking Vercel production deployment health..."
-          # This step requires VERCEL_TOKEN; skipped silently if absent
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "No VERCEL_TOKEN secret — skipping Vercel health check."
-            exit 0
-          fi
-          LAST_DEPLOY=$(vercel ls --prod --yes 2>&1 | grep -E "Production deployments" -A 5 | head -5 || echo "unknown")
-          echo "Last production deploy: $LAST_DEPLOY"
-          # Simple health: verify the deployed URL responds 200
-          curl -s -o /dev/null -w "HTTP %{http_code}" https://rutexjupebmaster-bfbuwsgte.vercel.app || echo "health check failed"
+          status=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w "%{http_code}" https://rutexjupebmaster.vercel.app)
+          echo "Production HTTP status: $status"
+          test "$status" = "200"
+      - name: Verify public Android updater endpoint
+        run: |
+          node --input-type=module <<'NODE'
+          const versionUrl = "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/version.json";
+          const expectedApkUrl = "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
+          const metadataResponse = await fetch(versionUrl, { cache: "no-store", redirect: "manual" });
+          if (metadataResponse.status !== 200) {
+            throw new Error(`version.json returned HTTP ${metadataResponse.status}; native updater requires a direct 200 response`);
+          }
+          const metadata = await metadataResponse.json();
+          if (!Number.isSafeInteger(metadata.versionCode) || metadata.versionCode < 1) {
+            throw new Error("Published updater metadata has an invalid versionCode");
+          }
+          if (metadata.url !== expectedApkUrl) {
+            throw new Error("Published updater metadata points to an untrusted APK URL");
+          }
+          const metadataChecksumValid =
+            typeof metadata.sha256 === "string" && /^[a-f0-9]{64}$/i.test(metadata.sha256);
+          if (!metadataChecksumValid) {
+            console.warn("::warning::The currently published version.json has no valid SHA-256. Existing installs will not offer this stale release; the next main-branch APK publishing workflow must replace it with a verified checksum.");
+          }
+          const apkResponse = await fetch(expectedApkUrl, { method: "HEAD", redirect: "manual" });
+          if (apkResponse.status !== 200) {
+            throw new Error(`Published APK endpoint returned HTTP ${apkResponse.status}; native updater will not follow redirects`);
+          }
+          const size = Number(apkResponse.headers.get("content-length"));
+          if (Number.isFinite(size) && size > 200 * 1024 * 1024) {
+            throw new Error("Published APK exceeds the updater's 200 MiB limit");
+          }
+          const contentType = (apkResponse.headers.get("content-type") || "").toLowerCase();
+          if (contentType && !contentType.includes("application/vnd.android.package-archive")
+              && !contentType.includes("application/octet-stream")) {
+            throw new Error(`Unexpected APK content type: ${contentType}`);
+          }
+          console.log(`APK endpoint OK: v${metadata.versionCode}, ${size || "unknown"} bytes; published checksum metadata ${metadataChecksumValid ? "valid" : "stale"}`);
+          NODE

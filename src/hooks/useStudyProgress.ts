@@ -4,6 +4,7 @@ import { useUserStorage } from './useUserStorage';
 
 const MIN_EASE_FACTOR = 1.3;
 const INITIAL_EASE_FACTOR = 2.5;
+const EMPTY_PROGRESS: Record<string, StudyProgress> = {};
 
 type StoredProgress = Record<string, Omit<StudyProgress, 'lastReviewed' | 'nextReview'> & {
   lastReviewed: string;
@@ -20,6 +21,11 @@ export const useStudyProgress = () => {
   const [progress, setProgress] = useState<Record<string, StudyProgress>>({});
 
   useEffect(() => {
+    if (!isReady) {
+      setProgress(EMPTY_PROGRESS);
+      return;
+    }
+
     const hydrated: Record<string, StudyProgress> = {};
     for (const k in stored) {
       hydrated[k] = {
@@ -29,7 +35,7 @@ export const useStudyProgress = () => {
       };
     }
     setProgress(hydrated);
-  }, [stored]);
+  }, [stored, isReady]);
 
   const persist = useCallback(
     (next: Record<string, StudyProgress>) => {
@@ -47,6 +53,7 @@ export const useStudyProgress = () => {
   );
 
   const updateProgress = useCallback((questionId: string, quality: number) => {
+    if (!isReady || !questionId || !Number.isFinite(quality)) return;
     setProgress(prev => {
       const existing = prev[questionId];
       const now = new Date();
@@ -94,21 +101,23 @@ export const useStudyProgress = () => {
       persist(next);
       return next;
     });
-  }, [persist]);
+  }, [persist, isReady]);
+
+  const visibleProgress = isReady ? progress : EMPTY_PROGRESS;
 
   const getDueQuestions = useCallback(<T extends Pick<Question, 'id'>>(questions: T[]): T[] => {
     const now = new Date();
     return questions.filter(q => {
-      const p = progress[q.id];
+      const p = visibleProgress[q.id];
       if (!p) return true;
       return p.nextReview <= now;
     });
-  }, [progress]);
+  }, [visibleProgress]);
 
   const getStats = useCallback((questions: Pick<Question, 'id'>[]) => {
     const total = questions.length;
-    const studied = questions.filter(q => progress[q.id]).length;
-    const learned = questions.filter(q => progress[q.id]?.isLearned).length;
+    const studied = questions.filter(q => visibleProgress[q.id]).length;
+    const learned = questions.filter(q => visibleProgress[q.id]?.isLearned).length;
     const dueToday = getDueQuestions(questions).length;
     return {
       total,
@@ -118,11 +127,11 @@ export const useStudyProgress = () => {
       studiedPercentage: total > 0 ? (studied / total) * 100 : 0,
       learnedPercentage: total > 0 ? (learned / total) * 100 : 0,
     };
-  }, [progress, getDueQuestions]);
+  }, [visibleProgress, getDueQuestions]);
 
   const getQuestionProgress = useCallback(
-    (questionId: string): StudyProgress | undefined => progress[questionId],
-    [progress],
+    (questionId: string): StudyProgress | undefined => visibleProgress[questionId],
+    [visibleProgress],
   );
 
   const resetProgress = useCallback(() => {
@@ -131,7 +140,7 @@ export const useStudyProgress = () => {
   }, [resetStorage]);
 
   return {
-    progress,
+    progress: visibleProgress,
     updateProgress,
     getDueQuestions,
     getStats,

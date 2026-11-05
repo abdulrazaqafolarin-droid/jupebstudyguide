@@ -23,12 +23,14 @@ describe('user data backup', () => {
       'u:user-a:study-progress': '{"q1":{"lastReviewed":"2026-11-04T00:00:00.000Z"}}',
       'u:user-b:study-progress': '{"q2":{}}',
       jupeb_study_bookmarks: '[{"questionId":"q1","createdAt":1}]',
+      jupeb_syllabus_progress: '{"currentDay":4}',
       'sb-project-auth-token': 'must-not-export',
     });
 
     const backup = createUserDataBackup('user-a', storage);
     expect(Object.keys(backup.entries)).toEqual(['u:user-a:study-progress']);
     expect(backup.deviceShared.legacyBookmarks).toContain('q1');
+    expect(backup.deviceShared.legacyEntries.jupeb_syllabus_progress).toContain('currentDay');
     expect(JSON.stringify(backup)).not.toContain('must-not-export');
   });
 
@@ -123,6 +125,22 @@ describe('user data backup', () => {
     expect(target.getItem('jupeb_study_bookmarks')).toBeNull();
     restoreUserDataBackup(backup, 'user-a', true, target);
     expect(JSON.parse(target.getItem('jupeb_study_bookmarks') || '[]')).toHaveLength(1);
+  });
+
+  it('restores allowlisted legacy device data only after explicit opt-in and never overwrites an existing key', () => {
+    const source = memoryStorage({
+      jupeb_syllabus_progress: '{"currentDay":7}',
+      jupeb_achievements_unlocked: '["first-study"]',
+    });
+    const backup = parseUserDataBackup(JSON.stringify(createUserDataBackup('user-a', source)));
+    const target = memoryStorage({ jupeb_syllabus_progress: '{"currentDay":9}' });
+
+    restoreUserDataBackup(backup, 'user-a', false, target);
+    expect(target.getItem('jupeb_achievements_unlocked')).toBeNull();
+
+    restoreUserDataBackup(backup, 'user-a', true, target);
+    expect(target.getItem('jupeb_syllabus_progress')).toBe('{"currentDay":9}');
+    expect(target.getItem('jupeb_achievements_unlocked')).toBe('["first-study"]');
   });
 
   it('preserves existing local data if a storage write fails', () => {

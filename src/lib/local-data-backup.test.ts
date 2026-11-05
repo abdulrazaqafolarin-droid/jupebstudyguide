@@ -143,6 +143,30 @@ describe('user data backup', () => {
     expect(restored.find(item => item.id === 'backup-only')?.name).toBe('Recovered');
   });
 
+  it('does not replace current sessions with a malformed backup session', () => {
+    const existing = storedSession('existing', '2026-11-04T00:00:00Z', 'Current', [1]);
+    const storage = memoryStorage({
+      'u:user-a:study-sessions': JSON.stringify([existing]),
+    });
+    const backup = parseUserDataBackup(JSON.stringify({
+      format: 'jupeb-master-user-backup',
+      version: 1,
+      userId: 'user-a',
+      exportedAt: '2026-11-05T00:00:00.000Z',
+      entries: {
+        'u:user-a:study-sessions': JSON.stringify([
+          { id: 'existing', name: 'Malformed backup', progress: { dailyTasks: 'not-an-array' } },
+        ]),
+      },
+      deviceShared: { legacyBookmarks: null, legacyEntries: {} },
+    }));
+
+    const result = restoreUserDataBackup(backup, 'user-a', false, storage);
+    const restored = JSON.parse(storage.getItem('u:user-a:study-sessions') || '[]');
+    expect(restored[0].name).toBe('Current');
+    expect(result.skipped).toBe(1);
+  });
+
   it('does not overwrite unknown existing account preferences or settings', () => {
     const storage = memoryStorage({ 'u:user-a:theme': 'dark' });
     const backup = parseUserDataBackup(JSON.stringify({

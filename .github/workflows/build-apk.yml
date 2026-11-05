@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       allow_signing_key_migration:
-        description: "Allow a one-time signing-key change that requires users to uninstall the old app and install this APK manually."
+        description: "DANGEROUS: authorize a different signing key and required uninstall. This can erase device-only study progress/bookmarks from the old app. Use only after a verified transfer path or explicit owner acceptance of that loss."
         required: false
         default: false
         type: boolean
@@ -114,7 +114,7 @@ jobs:
           elif [ "$ALLOW_SIGNING_KEY_MIGRATION" = "true" ]; then
             echo "compatible=true" >> "$GITHUB_OUTPUT"
             echo "requires-reinstall=true" >> "$GITHUB_OUTPUT"
-            echo "::warning title=One-time manual reinstall required::The persistent signing key differs from the legacy debug key. This explicitly authorized migration release can be published, but existing installs must be uninstalled before users install this APK. Future releases using this same persistent key will update in place."
+            echo "::error title=Student data recovery required::The signing key differs from the legacy Android Debug certificate. Android requires uninstalling the old app, which can erase device-only learning data because the legacy app has no verified export path. Keep the migration blocked until data recovery is verified or the repository owner explicitly accepts and communicates that loss."
           else
             echo "compatible=false" >> "$GITHUB_OUTPUT"
             echo "::error title=APK signing key mismatch::The candidate APK is signed with a different certificate from the currently published APK. It will not be published as an in-place update. For the initial migration, run this workflow manually and check the one-time signing-key migration option only after notifying users that reinstall is required."

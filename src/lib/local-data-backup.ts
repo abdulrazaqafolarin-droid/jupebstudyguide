@@ -6,6 +6,12 @@ export const USER_BACKUP_FORMAT = 'jupeb-master-user-backup';
 export const USER_BACKUP_VERSION = 1;
 export const LEGACY_BOOKMARKS_KEY = 'jupeb_study_bookmarks';
 export const USER_BOOKMARKS_KEY = 'study-bookmarks';
+const LEGACY_USER_KEY_MAP: Record<string, string> = {
+  'jupeb-study-progress': 'study-progress',
+  jupeb_streak_data: 'streak',
+  jupeb_achievements_unlocked: 'achievements-unlocked',
+  jupeb_syllabus_progress: 'syllabus-progress',
+};
 export const LEGACY_DEVICE_DATA_KEYS = [
   LEGACY_BOOKMARKS_KEY,
   'jupeb-study-progress',
@@ -77,6 +83,15 @@ function isStoredSession(value: unknown): value is StoredStudySession {
     && Array.isArray(storedProgress.dailyTasks)
     && typeof storedProgress.currentDay === 'number'
     && typeof storedProgress.overallProgress === 'number';
+}
+
+function mergeStringArray(current: string, incoming: string): string | null {
+  const a = parseJson<unknown[]>(current);
+  const b = parseJson<unknown[]>(incoming);
+  if (!Array.isArray(a) || !Array.isArray(b)
+      || !a.every(value => typeof value === 'string')
+      || !b.every(value => typeof value === 'string')) return null;
+  return JSON.stringify([...new Set([...a, ...b])]);
 }
 
 function mergeSessions(current: string, incoming: string): string | null {
@@ -168,6 +183,7 @@ function mergeStreak(current: string, incoming: string): string | null {
 
 function mergeEntry(key: string, current: string, incoming: string): string | null {
   if (key.endsWith(':study-progress')) return mergeProgressMap(current, incoming);
+  if (key.endsWith(':achievements-unlocked')) return mergeStringArray(current, incoming);
   if (key.endsWith(':study-sessions')) return mergeSessions(current, incoming);
   if (key.endsWith(':syllabus-progress')) return mergeSyllabus(current, incoming);
   if (key.endsWith(':streak')) return mergeStreak(current, incoming);
@@ -300,12 +316,32 @@ export function restoreUserDataBackup(
 
   let legacyBookmarkSkipped = 0;
   if (restoreLegacyBookmarks) {
-    // Keep older global keys available for future migrations, but never turn
-    // them back into shared cross-account application state.
-    for (const [key, value] of Object.entries(backup.deviceShared.legacyEntries)) {
-      if (key === LEGACY_BOOKMARKS_KEY) continue;
-      if (storage.getItem(key) === null) staged.set(key, { value, kind: 'restored' });
-      else skipped += 1;
+    // Convert old device-global keys into the signed-in account namespace.
+    // Never write these historical keys back globally: another account on the
+    // same phone could otherwise read this student's restored learning data.
+    for (const [legacyKey, value] of Object.entries(backup.deviceShared.legacyEntries)) {
+      if (legacyKey === LEGACY_BOOKMARKS_KEY) continue;
+
+      const mappedKey = LEGACY_USER_KEY_MAP[legacyKey];
+      const targetKey = mappedKey
+        ? `${prefix}${mappedKey}`
+        : legacyKey === `jupeb-hidden-msgs-${currentUserId}`
+          ? legacyKey
+          : `${prefix}legacy-device-data:${legacyKey}`;
+
+      const current = storage.getItem(targetKey);
+      if (current === null) {
+        staged.set(targetKey, { value, kind: 'restored' });
+      } else if (current === value) {
+        skipped += 1;
+      } else {
+        const merged = mergeEntry(targetKey, current, value);
+        if (merged !== null && merged !== current) {
+          staged.set(targetKey, { value: merged, kind: 'merged' });
+        } else {
+          skipped += 1;
+        }
+      }
     }
 
     const rawBookmarks = backup.deviceShared.legacyEntries[LEGACY_BOOKMARKS_KEY]
@@ -346,6 +382,9 @@ export function restoreUserDataBackup(
   const restoredLegacySyllabus = Object.prototype.hasOwnProperty.call(
     backup.entries,
     `${prefix}syllabus-progress`,
+  ) || Object.prototype.hasOwnProperty.call(
+    backup.deviceShared.legacyEntries,
+    'jupeb_syllabus_progress',
   );
   if (restoredLegacySyllabus) {
     staged.set(`${prefix}study-sessions-legacy-migrated-v1`, {

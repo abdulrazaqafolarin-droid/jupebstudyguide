@@ -1,10 +1,23 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Question, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
-import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, ImageOff } from 'lucide-react';
+import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, ImageOff, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { AITutor } from './AITutor';
 import { QuestionMath } from './QuestionMath';
+import { MathRenderer } from './MathRenderer';
+import { streamChat } from '@/lib/ai-service';
+import type { AIChatMessage } from '@/lib/ai-service';
+
+const AI_THEORY_ANSWER_PROMPT = `
+You are an expert JUPEB exam coach. Write a clear, accurate model answer to the student's theory question.
+Use complete sentences and organise multi-part answers with short headings or numbered points.
+Include relevant definitions, explanations, equations, units, and examples when appropriate.
+For Chemistry, Physics, and Mathematics, show the working and use valid LaTeX for mathematical expressions.
+Be concise enough for a student to reproduce in an exam, but include every important marking point.
+Do not invent facts, data, or question details. If the wording is ambiguous, state the reasonable interpretation before answering.
+Return the answer only; do not repeat the question or mention that you are an AI.
+`;
 
 interface FlashcardProps {
   question: Question;
@@ -18,6 +31,76 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   const [showExplanation, setShowExplanation] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
   const [imageBroken, setImageBroken] = useState(false);
+  const [aiTheoryAnswer, setAiTheoryAnswer] = useState('');
+  const [aiTheoryError, setAiTheoryError] = useState<string | null>(null);
+  const [aiTheoryLoading, setAiTheoryLoading] = useState(false);
+  const aiAnswerAbortRef = useRef<AbortController | null>(null);
+  const aiAnswerAccumRef = useRef('');
+
+  // A card can be reused for the next question. Never carry an earlier AI
+  // answer into the next question, and abort any stream that belongs to it.
+  useEffect(() => {
+    aiAnswerAbortRef.current?.abort();
+    aiAnswerAbortRef.current = null;
+    aiAnswerAccumRef.current = '';
+    setAiTheoryAnswer('');
+    setAiTheoryError(null);
+    setAiTheoryLoading(false);
+    return () => {
+      aiAnswerAbortRef.current?.abort();
+      aiAnswerAbortRef.current = null;
+    };
+  }, [question.id]);
+
+  const handleAIRevealAnswer = useCallback(async () => {
+    if (aiTheoryLoading) return;
+
+    aiAnswerAbortRef.current?.abort();
+    const controller = new AbortController();
+    aiAnswerAbortRef.current = controller;
+    aiAnswerAccumRef.current = '';
+    setAiTheoryAnswer('');
+    setAiTheoryError(null);
+    setAiTheoryLoading(true);
+
+    const messages: AIChatMessage[] = [{
+      role: 'user',
+      content: [
+        `Subject: ${question.subject}`,
+        question.year ? `Exam year: ${question.year}` : '',
+        `Theory question: ${question.question}`,
+      ].filter(Boolean).join('\\n'),
+    }];
+
+    try {
+      await streamChat(AI_THEORY_ANSWER_PROMPT, messages, {
+        onDelta: (delta) => {
+          if (controller.signal.aborted) return;
+          aiAnswerAccumRef.current += delta;
+          setAiTheoryAnswer(aiAnswerAccumRef.current);
+        },
+        onDone: () => {
+          if (controller.signal.aborted) return;
+          setAiTheoryLoading(false);
+          if (!aiAnswerAccumRef.current.trim()) {
+            setAiTheoryError('The AI returned an empty answer. Please try again.');
+          }
+          if (aiAnswerAbortRef.current === controller) aiAnswerAbortRef.current = null;
+        },
+        onError: (message) => {
+          if (controller.signal.aborted) return;
+          setAiTheoryError(message || 'Could not generate an AI answer. Please try again.');
+          setAiTheoryLoading(false);
+          if (aiAnswerAbortRef.current === controller) aiAnswerAbortRef.current = null;
+        },
+      }, undefined, question.subject, controller.signal);
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      setAiTheoryError(error instanceof Error ? error.message : 'Could not generate an AI answer. Please try again.');
+      setAiTheoryLoading(false);
+      if (aiAnswerAbortRef.current === controller) aiAnswerAbortRef.current = null;
+    }
+  }, [question, aiTheoryLoading]);
 
   const subjectInfo = SUBJECT_INFO[question.subject];
 
@@ -174,13 +257,53 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </span>
                 </div>
 
-                <div className="flex-1 overflow-y-auto">
-                  <div className="text-base leading-relaxed">
-                    <QuestionMath content={question.explanation} />
-                  </div>
+                <div className="flex-1 min-h-0 overflow-y-auto space-y-4">
+                  {question.explanation ? (
+                    <div className="text-base leading-relaxed">
+                      <QuestionMath content={question.explanation} />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No written explanation is available for this question yet.</p>
+                  )}
+
+                  {aiTheoryAnswer && (
+                    <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm">
+                      <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary">
+                        <Bot className="h-4 w-4" />
+                        AI model answer
+                      </div>
+                      <MathRenderer content={aiTheoryAnswer} className="text-sm leading-relaxed text-foreground" />
+                    </div>
+                  )}
+
+                  {aiTheoryError && (
+                    <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
+                      {aiTheoryError}
+                    </p>
+                  )}
+
+                  {aiTheoryLoading ? (
+                    <div className="flex items-center justify-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground" aria-live="polite">
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      Generating a model answer…
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      aria-label="Generate an AI model answer for this theory question"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleAIRevealAnswer();
+                      }}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/15 active:scale-[0.99]"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      {aiTheoryAnswer || aiTheoryError ? 'Regenerate AI answer' : 'AI Reveal Answer'}
+                    </button>
+                  )}
                 </div>
 
-                <div className="mt-auto pt-4 text-center text-muted-foreground">
+                <div className="mt-3 pt-2 text-center text-muted-foreground">
                   <p className="text-sm">Click to see question again</p>
                 </div>
               </div>

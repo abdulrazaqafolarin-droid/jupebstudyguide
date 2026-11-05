@@ -1,6 +1,7 @@
 import { routerText, routerJSON, routerStream } from "./ai-router.ts";
 import type { RouterMessage, RouterOpts } from "./ai-router.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { hasAiAccountAccess } from "./trial-access.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 
@@ -38,21 +39,21 @@ export async function aiChatStream(
   return routerStream(systemPrompt, messages, opts, undefined, strict);
 }
 
-// Per-user AI abuse guard: requires an activated (or admin) account and
-// enforces a daily request cap. Returns an error Response when blocked,
-// or null when the request may proceed.
+// Per-user AI access guard: requires an activated, admin, or currently
+// trial-eligible account and enforces the same daily request cap for all
+// non-admin users. Trial expiry is read from the server-owned profile column.
 export async function guardAiAccess(
   supabase: ReturnType<typeof createClient>,
   user: { id: string }
 ): Promise<Response | null> {
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_activated, is_admin")
+    .select("is_activated, is_admin, trial_expires_at")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (!profile?.is_activated && !profile?.is_admin) {
+  if (!hasAiAccountAccess(profile)) {
     return new Response(
-      JSON.stringify({ error: "Account activation required to use AI features" }),
+      JSON.stringify({ error: "Your five-day free trial has ended. Enter an activation code to continue using AI features." }),
       { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }

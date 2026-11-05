@@ -5,6 +5,7 @@ import { Search, MessageCircle, User, Users, Trophy, Clock, ArrowLeft, Loader2, 
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserAvatar } from '@/components/UserAvatar';
+import { UserProfileDialog } from '@/components/profile/UserProfileDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,8 @@ export default function DiscoverPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [startingChat, setStartingChat] = useState<string | null>(null);
+  const [profileTarget, setProfileTarget] = useState<string | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -104,6 +107,21 @@ export default function DiscoverPage() {
     navigate(`/chat?conversation=${dm.id}`);
   };
 
+  const openProfile = (targetUserId: string) => {
+    // Keep the dedicated editable page for the signed-in user's own profile.
+    if (targetUserId === user?.id) {
+      navigate('/profile');
+      return;
+    }
+    setProfileTarget(targetUserId);
+    setShowProfile(true);
+  };
+
+  const closeProfile = () => {
+    setShowProfile(false);
+    setProfileTarget(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border">
@@ -150,7 +168,7 @@ export default function DiscoverPage() {
                   {onlineUsers.slice(0, 10).map((u) => (
                     <button
                       key={u.user_id}
-                      onClick={() => navigate(`/profile?userId=${u.user_id}`)}
+                      onClick={() => openProfile(u.user_id)}
                       className="flex flex-col items-center gap-1.5 min-w-[64px]"
                     >
                       <div className="relative">
@@ -191,7 +209,7 @@ export default function DiscoverPage() {
                       )}>
                         {i + 1}
                       </span>
-                      <button onClick={() => navigate(`/profile?userId=${u.user_id}`)} className="relative shrink-0">
+                      <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-9 h-9 ring-0" targetUserId={u.user_id} />
                         {u.is_online && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
@@ -199,7 +217,7 @@ export default function DiscoverPage() {
                       </button>
                       <div className="flex-1 min-w-0">
                         <button
-                          onClick={() => navigate(`/profile?userId=${u.user_id}`)}
+                          onClick={() => openProfile(u.user_id)}
                           className="text-sm font-medium truncate block text-left hover:underline"
                         >
                           {u.display_name || 'User'}
@@ -246,7 +264,7 @@ export default function DiscoverPage() {
                       animate={{ opacity: 1 }}
                       className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/50 transition-colors group"
                     >
-                      <button onClick={() => navigate(`/profile?userId=${u.user_id}`)} className="relative shrink-0">
+                      <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-10 h-10 ring-0" targetUserId={u.user_id} />
                         {u.is_online && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
@@ -254,7 +272,7 @@ export default function DiscoverPage() {
                       </button>
                       <div className="flex-1 min-w-0">
                         <button
-                          onClick={() => navigate(`/profile?userId=${u.user_id}`)}
+                          onClick={() => openProfile(u.user_id)}
                           className="text-sm font-medium truncate block text-left hover:underline"
                         >
                           {u.display_name || 'User'}
@@ -302,6 +320,16 @@ export default function DiscoverPage() {
           </>
         )}
       </main>
+
+      <UserProfileDialog
+        userId={profileTarget}
+        open={showProfile}
+        onClose={closeProfile}
+        onStartChat={(targetUserId) => {
+          closeProfile();
+          void handleChat(targetUserId);
+        }}
+      />
     </div>
   );
 }

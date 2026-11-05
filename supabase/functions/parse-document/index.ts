@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { CORS_HEADERS, aiChatJSON } from "../_shared/ai.ts";
+import { CORS_HEADERS, aiChatJSON, guardAiAccess } from "../_shared/ai.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -28,6 +28,8 @@ Deno.serve(async (req) => {
         { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
+    const blocked = await guardAiAccess(supabase, user);
+    if (blocked) return blocked;
     const userId = user.id;
 
     if (!documentName || !subject) {

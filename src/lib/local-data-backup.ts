@@ -1,6 +1,7 @@
 export const USER_BACKUP_FORMAT = 'jupeb-master-user-backup';
 export const USER_BACKUP_VERSION = 1;
 export const LEGACY_BOOKMARKS_KEY = 'jupeb_study_bookmarks';
+export const USER_BOOKMARKS_KEY = 'study-bookmarks';
 export const LEGACY_DEVICE_DATA_KEYS = [
   LEGACY_BOOKMARKS_KEY,
   'jupeb-study-progress',
@@ -262,37 +263,42 @@ export function restoreUserDataBackup(
     }
   }
 
-  let mergedBookmarks: string | null = null;
   let legacyBookmarkSkipped = 0;
   if (restoreLegacyBookmarks) {
+    // Keep older global keys available for future migrations, but never turn
+    // them back into shared cross-account application state.
     for (const [key, value] of Object.entries(backup.deviceShared.legacyEntries)) {
       if (key === LEGACY_BOOKMARKS_KEY) continue;
       if (storage.getItem(key) === null) staged.set(key, { value, kind: 'restored' });
       else skipped += 1;
     }
+
     const rawBookmarks = backup.deviceShared.legacyEntries[LEGACY_BOOKMARKS_KEY]
       ?? backup.deviceShared.legacyBookmarks;
     if (rawBookmarks) {
       const backupBookmarks = parseJson<Array<Record<string, unknown>>>(rawBookmarks);
-      if (Array.isArray(backupBookmarks)) {
-        const currentRaw = storage.getItem(LEGACY_BOOKMARKS_KEY);
-        const currentBookmarks = currentRaw ? parseJson<Array<Record<string, unknown>>>(currentRaw) : [];
-        if (Array.isArray(currentBookmarks)) {
-          const byQuestion = new Map<string, Record<string, unknown>>();
-          for (const item of currentBookmarks) {
-            if (typeof item.questionId === 'string') byQuestion.set(item.questionId, item);
-          }
-          for (const item of backupBookmarks) {
-            if (typeof item.questionId !== 'string') continue;
-            const existing = byQuestion.get(item.questionId);
-            if (!existing || Number(item.createdAt) > Number(existing.createdAt)) {
-              byQuestion.set(item.questionId, item);
-            }
-          }
-          mergedBookmarks = JSON.stringify([...byQuestion.values()]);
-        } else {
-          legacyBookmarkSkipped += 1;
+      const userBookmarksKey = `u:${currentUserId}:${USER_BOOKMARKS_KEY}`;
+      const currentRaw = storage.getItem(userBookmarksKey);
+      const currentBookmarks = currentRaw
+        ? parseJson<Array<Record<string, unknown>>>(currentRaw)
+        : [];
+      if (Array.isArray(backupBookmarks) && Array.isArray(currentBookmarks)) {
+        const byQuestion = new Map<string, Record<string, unknown>>();
+        for (const item of currentBookmarks) {
+          if (typeof item.questionId === 'string') byQuestion.set(item.questionId, item);
         }
+        for (const item of backupBookmarks) {
+          if (typeof item.questionId !== 'string') continue;
+          const existing = byQuestion.get(item.questionId);
+          if (!existing || Number(item.createdAt) > Number(existing.createdAt)) {
+            byQuestion.set(item.questionId, item);
+          }
+        }
+        const merged = JSON.stringify([...byQuestion.values()]);
+        staged.set(userBookmarksKey, {
+          value: merged,
+          kind: currentRaw === null ? 'restored' : 'merged',
+        });
       } else {
         legacyBookmarkSkipped += 1;
       }
@@ -304,10 +310,6 @@ export function restoreUserDataBackup(
     for (const [key, item] of staged) {
       before.set(key, storage.getItem(key));
       storage.setItem(key, item.value);
-    }
-    if (mergedBookmarks !== null) {
-      before.set(LEGACY_BOOKMARKS_KEY, storage.getItem(LEGACY_BOOKMARKS_KEY));
-      storage.setItem(LEGACY_BOOKMARKS_KEY, mergedBookmarks);
     }
   } catch (error) {
     for (const [key, value] of [...before.entries()].reverse()) {

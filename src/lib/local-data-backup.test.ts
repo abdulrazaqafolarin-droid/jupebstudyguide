@@ -62,6 +62,7 @@ describe('user data backup', () => {
       'u:user-b:study-progress': '{"q2":{}}',
       jupeb_study_bookmarks: '[{"questionId":"q1","createdAt":1}]',
       jupeb_syllabus_progress: '{"currentDay":4}',
+      'jupeb-hidden-msgs-user-a': '["message-1"]',
       'sb-project-auth-token': 'must-not-export',
     });
 
@@ -69,6 +70,7 @@ describe('user data backup', () => {
     expect(Object.keys(backup.entries)).toEqual(['u:user-a:study-progress']);
     expect(backup.deviceShared.legacyBookmarks).toContain('q1');
     expect(backup.deviceShared.legacyEntries.jupeb_syllabus_progress).toContain('currentDay');
+    expect(backup.deviceShared.legacyEntries['jupeb-hidden-msgs-user-a']).toContain('message-1');
     expect(JSON.stringify(backup)).not.toContain('must-not-export');
   });
 

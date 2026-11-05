@@ -21,17 +21,7 @@ import { createHash } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const PACKAGE_ID = 'com.jupeb.master';
-const BACKUP_FORMAT = 'jupeb-master-user-backup';
-const BACKUP_VERSION = 1;
 const MAX_BACKUP_BYTES = 12 * 1024 * 1024;
-const LEGACY_DEVICE_DATA_KEYS = [
-  'jupeb_study_bookmarks',
-  'jupeb-study-progress',
-  'jupeb_streak_data',
-  'jupeb_achievements_unlocked',
-  'jupeb_syllabus_progress',
-  'jupeb-chat-hub',
-];
 
 function argumentValue(name) {
   const index = process.argv.indexOf(name);

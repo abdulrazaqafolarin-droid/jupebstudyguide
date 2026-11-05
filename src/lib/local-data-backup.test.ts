@@ -124,7 +124,8 @@ describe('user data backup', () => {
     restoreUserDataBackup(backup, 'user-a', false, target);
     expect(target.getItem('jupeb_study_bookmarks')).toBeNull();
     restoreUserDataBackup(backup, 'user-a', true, target);
-    expect(JSON.parse(target.getItem('jupeb_study_bookmarks') || '[]')).toHaveLength(1);
+    expect(JSON.parse(target.getItem('u:user-a:study-bookmarks') || '[]')).toHaveLength(1);
+    expect(target.getItem('jupeb_study_bookmarks')).toBeNull();
   });
 
   it('restores allowlisted legacy device data only after explicit opt-in and never overwrites an existing key', () => {

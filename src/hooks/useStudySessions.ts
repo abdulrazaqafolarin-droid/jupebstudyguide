@@ -84,8 +84,7 @@ export function useStudySessions() {
       const alreadyRepresented = stored.some(session =>
         session.name === legacySession.name
         && session.startDate === legacySession.startDate
-        && session.progress.currentDay === legacySession.progress.currentDay
-        && session.progress.dailyTasks.length === legacySession.progress.dailyTasks.length
+        && JSON.stringify(session.progress) === JSON.stringify(legacySession.progress)
       );
       if (!alreadyRepresented) {
         // Persist synchronously before setting the marker. If storage is full

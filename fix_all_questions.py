@@ -8,7 +8,7 @@ from collections import defaultdict
 # GEMINI_API_KEYS accepts comma/semicolon/newline-separated keys. GEMINI_API_KEY
 # is also supported for a single key.
 _raw_api_keys = os.environ.get("GEMINI_API_KEYS") or os.environ.get("GEMINI_API_KEY", "")
-API_KEYS = [key.strip() for key in re.split(r"[,;\\s]+", _raw_api_keys) if key.strip()]
+API_KEYS = [key.strip() for key in re.split(r"[,;\s]+", _raw_api_keys) if key.strip()]
 if not API_KEYS:
     raise SystemExit("Set GEMINI_API_KEY or GEMINI_API_KEYS in your local environment before running this script.")
 

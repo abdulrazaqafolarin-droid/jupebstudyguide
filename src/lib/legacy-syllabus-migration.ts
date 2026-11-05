@@ -47,3 +47,20 @@ export function createLegacyStudySession(
     updatedAt: now,
   };
 }
+
+/** Compare stored legacy progress independent of JSON object-key order. */
+export function areLegacyProgressEquivalent(left: unknown, right: unknown): boolean {
+  const stableSerialize = (value: unknown): string => {
+    if (Array.isArray(value)) {
+      return `[${value.map(stableSerialize).join(',')}]`;
+    }
+    if (value && typeof value === 'object') {
+      const object = value as Record<string, unknown>;
+      const keys = Object.keys(object).sort();
+      return `{${keys.map(key => `${JSON.stringify(key)}:${stableSerialize(object[key])}`).join(',')}}`;
+    }
+    return JSON.stringify(value);
+  };
+
+  return stableSerialize(left) === stableSerialize(right);
+}

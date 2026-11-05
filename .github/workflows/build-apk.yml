@@ -50,7 +50,7 @@ jobs:
           VITE_SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
           VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX"
           VITE_SUPABASE_PROJECT_ID: "gzyczowqqywesqhqqpdi"
-          VITE_ADMIN_EMAIL: "admin@example.com"
+          VITE_ADMIN_EMAIL: "abdulrazaqafolarin@gmail.com"
 
       - name: Sync Capacitor
         run: npx cap sync android

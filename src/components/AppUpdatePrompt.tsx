@@ -190,7 +190,7 @@ export function AppUpdatePrompt() {
                 : phase.kind === "permission"
                   ? "Allow APK installation"
                   : phase.kind === "reinstall"
-                    ? "One-time reinstall required"
+                    ? "Update paused to protect your study data"
                     : "Update available · v" + (release?.versionName ?? "")}
             </p>
             <p className="text-xs text-muted-foreground">

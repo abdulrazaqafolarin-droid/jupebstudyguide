@@ -1,4 +1,4 @@
-name: Daily Mission Validation
+name: JUPEB Repository Validation
 
 on:
   pull_request:

@@ -55,6 +55,39 @@ function storedSession(
   };
 }
 
+function studyProgressEntry(questionId: string, lastReviewed: string, repetitions: number) {
+  return {
+    questionId,
+    lastReviewed,
+    nextReview: '2026-11-06T00:00:00.000Z',
+    repetitions,
+    easeFactor: 2.5,
+    interval: repetitions > 0 ? 6 : 0,
+    isLearned: false,
+  };
+}
+
+function storedSyllabusProgress(currentDay = 7) {
+  return {
+    combination: { core: ['physics'], elective: ['chemistry'] },
+    currentDay,
+    dailyTasks: [{
+      day: 1,
+      subject: 'physics',
+      topics: [],
+      learningObjectives: ['Review physics'],
+      checkpointQuestions: ['Explain the topic'],
+      isCompleted: true,
+      completedAt: '2026-11-04T00:00:00.000Z',
+      masteryScore: 80,
+    }],
+    startedAt: '2026-11-01T00:00:00.000Z',
+    lastStudiedAt: '2026-11-04T00:00:00.000Z',
+    overallProgress: 100,
+    subjectProgress: { physics: 100, chemistry: 0, biology: 0, math: 0 },
+  };
+}
+
 describe('user data backup', () => {
   it('exports only the current account namespace and retains legacy bookmarks separately', () => {
     const storage = memoryStorage({
@@ -87,8 +120,8 @@ describe('user data backup', () => {
   it('merges spaced-repetition progress by the most recent review per question', () => {
     const storage = memoryStorage({
       'u:user-a:study-progress': JSON.stringify({
-        q1: { questionId: 'q1', lastReviewed: '2026-11-03T00:00:00.000Z', repetitions: 1 },
-        q2: { questionId: 'q2', lastReviewed: '2026-11-04T00:00:00.000Z', repetitions: 2 },
+        q1: studyProgressEntry('q1', '2026-11-03T00:00:00.000Z', 1),
+        q2: studyProgressEntry('q2', '2026-11-04T00:00:00.000Z', 2),
       }),
     });
     const backup = parseUserDataBackup(JSON.stringify({
@@ -98,9 +131,9 @@ describe('user data backup', () => {
       exportedAt: '2026-11-05T00:00:00.000Z',
       entries: {
         'u:user-a:study-progress': JSON.stringify({
-          q1: { questionId: 'q1', lastReviewed: '2026-11-05T00:00:00.000Z', repetitions: 3 },
-          q2: { questionId: 'q2', lastReviewed: '2026-11-02T00:00:00.000Z', repetitions: 1 },
-          q3: { questionId: 'q3', lastReviewed: '2026-11-02T00:00:00.000Z', repetitions: 1 },
+          q1: studyProgressEntry('q1', '2026-11-05T00:00:00.000Z', 3),
+          q2: studyProgressEntry('q2', '2026-11-02T00:00:00.000Z', 1),
+          q3: studyProgressEntry('q3', '2026-11-02T00:00:00.000Z', 1),
         }),
       },
       deviceShared: { legacyBookmarks: null },
@@ -189,6 +222,79 @@ describe('user data backup', () => {
     expect(result.skipped).toBe(1);
   });
 
+  it('rejects malformed learning records when restoring into an empty installation', () => {
+    const malformedSession = {
+      id: 'broken',
+      name: 'Broken session',
+      subjects: ['physics'],
+      status: 'active',
+      startDate: '2026-11-01',
+      dailyGoalMinutes: 30,
+      createdAt: '2026-11-01T00:00:00.000Z',
+      updatedAt: '2026-11-05T00:00:00.000Z',
+      progress: {
+        combination: { core: ['physics'], elective: [] },
+        currentDay: 2,
+        dailyTasks: [{ day: 1, isCompleted: true, topics: 'not-an-array' }],
+        startedAt: '2026-11-01T00:00:00.000Z',
+        overallProgress: 100,
+        subjectProgress: { physics: 100 },
+      },
+    };
+    const backup = parseUserDataBackup(JSON.stringify({
+      format: 'jupeb-master-user-backup',
+      version: 1,
+      userId: 'user-a',
+      exportedAt: '2026-11-05T00:00:00.000Z',
+      entries: {
+        'u:user-a:study-sessions': JSON.stringify([malformedSession]),
+        'u:user-a:study-progress': JSON.stringify({ q1: { questionId: 'q1' } }),
+        'u:user-a:streak': JSON.stringify({ currentStreak: 'many' }),
+        'u:user-a:study-bookmarks': JSON.stringify([{ questionId: 'q1', createdAt: 'yesterday' }]),
+      },
+      deviceShared: { legacyBookmarks: null, legacyEntries: {} },
+    }));
+    const target = memoryStorage();
+
+    const result = restoreUserDataBackup(backup, 'user-a', false, target);
+
+    expect(result.restored).toBe(0);
+    expect(result.skipped).toBe(4);
+    expect(target.getItem('u:user-a:study-sessions')).toBeNull();
+    expect(target.getItem('u:user-a:study-progress')).toBeNull();
+    expect(target.getItem('u:user-a:streak')).toBeNull();
+    expect(target.getItem('u:user-a:study-bookmarks')).toBeNull();
+  });
+
+  it('does not mark a rejected legacy syllabus record as migrated', () => {
+    const backup = parseUserDataBackup(JSON.stringify({
+      format: 'jupeb-master-user-backup',
+      version: 1,
+      userId: 'user-a',
+      exportedAt: '2026-11-05T00:00:00.000Z',
+      entries: {},
+      deviceShared: {
+        legacyBookmarks: null,
+        legacyEntries: { jupeb_syllabus_progress: '{"currentDay":7}' },
+      },
+    }));
+    const target = memoryStorage();
+
+    const result = restoreUserDataBackup(backup, 'user-a', true, target);
+
+    expect(result.skipped).toBe(1);
+    expect(target.getItem('u:user-a:syllabus-progress')).toBeNull();
+    expect(target.getItem('u:user-a:study-sessions-legacy-migrated-v1')).toBeNull();
+  });
+
+  it('stops an export that would exceed the supported restore size', () => {
+    const storage = memoryStorage({
+      'u:user-a:large-learning-record': 'x'.repeat(12 * 1024 * 1024),
+    });
+
+    expect(() => createUserDataBackup('user-a', storage)).toThrow(/12 MiB restore limit/i);
+  });
+
   it('does not overwrite unknown existing account preferences or settings', () => {
     const storage = memoryStorage({ 'u:user-a:theme': 'dark' });
     const backup = parseUserDataBackup(JSON.stringify({
@@ -233,7 +339,7 @@ describe('user data backup', () => {
 
   it('restores legacy learning keys into the selected account namespace only', () => {
     const source = memoryStorage({
-      jupeb_syllabus_progress: '{"currentDay":7}',
+      jupeb_syllabus_progress: JSON.stringify(storedSyllabusProgress(7)),
       jupeb_achievements_unlocked: '["first-study"]',
       jupeb_streak_data: '{"currentStreak":4,"longestStreak":4,"totalDaysStudied":5,"totalQuestionsAnswered":20,"lastStudyDate":"2026-11-05"}',
       'jupeb-chat-hub': '{"threads":["old"]}',
@@ -303,7 +409,11 @@ describe('user data backup', () => {
       version: 1,
       userId: 'user-a',
       exportedAt: '2026-11-05T00:00:00.000Z',
-      entries: { 'u:user-a:study-progress': '{"q1":{}}' },
+      entries: {
+        'u:user-a:study-progress': JSON.stringify({
+          q1: studyProgressEntry('q1', '2026-11-05T00:00:00.000Z', 1),
+        }),
+      },
       deviceShared: { legacyBookmarks: null },
     }));
 

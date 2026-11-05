@@ -47,7 +47,8 @@ export function LocalDataBackup() {
         throw new Error('Sign in with the account that created this backup before restoring it.');
       }
       const result = restoreUserDataBackup(backup, user.id, restoreSharedBookmarks);
-      toast.success(`Backup restored: ${result.restored} added, ${result.merged} merged, ${result.skipped} kept unchanged.`);
+      toast.success(`Backup restored: ${result.restored} added, ${result.merged} merged, ${result.skipped} kept unchanged. Reloading your study data…`);
+      window.setTimeout(() => window.location.reload(), 1_000);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Could not restore this backup.');
     } finally {

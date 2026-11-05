@@ -167,6 +167,28 @@ describe('user data backup', () => {
     expect(result.skipped).toBe(1);
   });
 
+  it('rejects a session with an incomplete daily task instead of hydrating it', () => {
+    const current = storedSession('existing', '2026-11-04T00:00:00Z', 'Current', [1]);
+    const malformed = storedSession('existing', '2026-11-05T00:00:00Z', 'Malformed', [2]);
+    (malformed.progress.dailyTasks[0] as unknown as Record<string, unknown>).topics = 'not-an-array';
+    const storage = memoryStorage({
+      'u:user-a:study-sessions': JSON.stringify([current]),
+    });
+    const backup = parseUserDataBackup(JSON.stringify({
+      format: 'jupeb-master-user-backup',
+      version: 1,
+      userId: 'user-a',
+      exportedAt: '2026-11-05T00:00:00.000Z',
+      entries: { 'u:user-a:study-sessions': JSON.stringify([malformed]) },
+      deviceShared: { legacyBookmarks: null, legacyEntries: {} },
+    }));
+
+    const result = restoreUserDataBackup(backup, 'user-a', false, storage);
+    const restored = JSON.parse(storage.getItem('u:user-a:study-sessions') || '[]');
+    expect(restored[0].name).toBe('Current');
+    expect(result.skipped).toBe(1);
+  });
+
   it('does not overwrite unknown existing account preferences or settings', () => {
     const storage = memoryStorage({ 'u:user-a:theme': 'dark' });
     const backup = parseUserDataBackup(JSON.stringify({

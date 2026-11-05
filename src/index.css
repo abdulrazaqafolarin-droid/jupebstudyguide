@@ -577,3 +577,27 @@ nav a {
     font-size: 16px;
   }
 }
+
+
+/* Keyboard skip navigation: hidden by default, visible on keyboard focus. */
+.skip-link:focus-visible {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 9999;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
+  border: 1px solid hsl(var(--ring));
+  border-radius: 0.5rem;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: 0 8px 24px hsl(220 20% 5% / 0.2);
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}

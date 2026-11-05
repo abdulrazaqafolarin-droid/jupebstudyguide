@@ -78,6 +78,20 @@ function isValidSubjectList(value: unknown): value is string[] {
       && (VALID_SUBJECTS as readonly string[]).includes(subject));
 }
 
+function isValidStoredTopic(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return typeof value.id === 'string'
+    && value.id.length > 0
+    && typeof value.name === 'string'
+    && typeof value.description === 'string'
+    && Array.isArray(value.subtopics)
+    && value.subtopics.every(item => typeof item === 'string')
+    && ['beginner', 'intermediate', 'advanced'].includes(String(value.difficulty))
+    && typeof value.estimatedHours === 'number'
+    && Number.isFinite(value.estimatedHours)
+    && value.estimatedHours >= 0;
+}
+
 function isValidStoredTask(value: unknown): boolean {
   if (!isRecord(value)) return false;
   return Number.isInteger(value.day)
@@ -85,13 +99,19 @@ function isValidStoredTask(value: unknown): boolean {
     && typeof value.subject === 'string'
     && (VALID_SUBJECTS as readonly string[]).includes(value.subject)
     && Array.isArray(value.topics)
+    && value.topics.every(isValidStoredTopic)
     && Array.isArray(value.learningObjectives)
+    && value.learningObjectives.every(item => typeof item === 'string')
     && Array.isArray(value.checkpointQuestions)
+    && value.checkpointQuestions.every(item => typeof item === 'string')
     && typeof value.isCompleted === 'boolean'
     && (value.completedAt === undefined
       || (typeof value.completedAt === 'string' && Number.isFinite(Date.parse(value.completedAt))))
     && (value.masteryScore === undefined
-      || (typeof value.masteryScore === 'number' && Number.isFinite(value.masteryScore)));
+      || (typeof value.masteryScore === 'number'
+        && Number.isFinite(value.masteryScore)
+        && value.masteryScore >= 0
+        && value.masteryScore <= 100));
 }
 
 function isStoredSession(value: unknown): value is StoredStudySession {
@@ -128,9 +148,95 @@ function isStoredSession(value: unknown): value is StoredStudySession {
     && isValidSubjectList(combination.core)
     && isValidSubjectList(combination.elective)
     && isRecord(subjectProgress)
-    && Object.values(subjectProgress).every(item =>
-      typeof item === 'number' && Number.isFinite(item));
+    && Object.entries(subjectProgress).every(([subject, item]) =>
+      (VALID_SUBJECTS as readonly string[]).includes(subject)
+      && typeof item === 'number' && Number.isFinite(item) && item >= 0 && item <= 100)
+    && (progress.lastStudiedAt === undefined
+      || (typeof progress.lastStudiedAt === 'string' && Number.isFinite(Date.parse(progress.lastStudiedAt))));
 }
+
+function isValidSyllabusProgress(value: unknown): boolean {
+  if (!isRecord(value) || !isRecord(value.combination) || !isRecord(value.subjectProgress)) return false;
+  return isValidSubjectList(value.combination.core)
+    && isValidSubjectList(value.combination.elective)
+    && Number.isInteger(value.currentDay)
+    && Number(value.currentDay) > 0
+    && typeof value.startedAt === 'string'
+    && Number.isFinite(Date.parse(value.startedAt))
+    && (value.lastStudiedAt === undefined
+      || (typeof value.lastStudiedAt === 'string' && Number.isFinite(Date.parse(value.lastStudiedAt))))
+    && Array.isArray(value.dailyTasks)
+    && value.dailyTasks.every(isValidStoredTask)
+    && typeof value.overallProgress === 'number'
+    && Number.isFinite(value.overallProgress)
+    && value.overallProgress >= 0
+    && value.overallProgress <= 100
+    && Object.entries(value.subjectProgress).every(([subject, percent]) =>
+      (VALID_SUBJECTS as readonly string[]).includes(subject)
+      && typeof percent === 'number' && Number.isFinite(percent) && percent >= 0 && percent <= 100);
+}
+
+function isValidStudyProgressMap(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([questionId, entry]) => {
+    if (!isRecord(entry)) return false;
+    return typeof entry.questionId === 'string'
+      && entry.questionId === questionId
+      && typeof entry.lastReviewed === 'string'
+      && Number.isFinite(Date.parse(entry.lastReviewed))
+      && typeof entry.nextReview === 'string'
+      && Number.isFinite(Date.parse(entry.nextReview))
+      && typeof entry.repetitions === 'number'
+      && Number.isInteger(entry.repetitions)
+      && entry.repetitions >= 0
+      && typeof entry.easeFactor === 'number'
+      && Number.isFinite(entry.easeFactor)
+      && entry.easeFactor >= 1.3
+      && typeof entry.interval === 'number'
+      && Number.isFinite(entry.interval)
+      && entry.interval >= 0
+      && typeof entry.isLearned === 'boolean';
+  });
+}
+
+function isValidStreak(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  const counters = ['currentStreak', 'longestStreak', 'totalDaysStudied', 'totalQuestionsAnswered'];
+  return counters.every(key => typeof value[key] === 'number'
+      && Number.isInteger(value[key]) && Number(value[key]) >= 0)
+    && (value.lastStudyDate === null
+      || (typeof value.lastStudyDate === 'string'
+        && /^\\d{4}-\\d{2}-\\d{2}$/.test(value.lastStudyDate)
+        && Number.isFinite(Date.parse(value.lastStudyDate))));
+}
+
+function isValidBookmarks(value: unknown): boolean {
+  return Array.isArray(value) && value.every(item => isRecord(item)
+    && typeof item.questionId === 'string'
+    && item.questionId.length > 0
+    && typeof item.createdAt === 'number'
+    && Number.isFinite(item.createdAt)
+    && (item.notes === undefined || typeof item.notes === 'string'));
+}
+
+function isValidKnownEntry(key: string, raw: string): boolean {
+  const value = parseJson<unknown>(raw);
+  if (value === null) return false;
+  if (key.endsWith(':study-sessions')) {
+    return Array.isArray(value) && value.every(isStoredSession);
+  }
+  if (key.endsWith(':study-progress')) return isValidStudyProgressMap(value);
+  if (key.endsWith(':syllabus-progress')) return isValidSyllabusProgress(value);
+  if (key.endsWith(':streak')) return isValidStreak(value);
+  if (key.endsWith(':study-bookmarks')) return isValidBookmarks(value);
+  if (key.endsWith(':achievements-unlocked') || key.startsWith('jupeb-hidden-msgs-')) {
+    return Array.isArray(value) && value.every(item => typeof item === 'string');
+  }
+  // Unknown user preferences and app-specific values are preserved as opaque
+  // strings; they are never interpreted or overwritten when already present.
+  return true;
+}
+
 function mergeStringArray(current: string, incoming: string): string | null {
   const a = parseJson<unknown[]>(current);
   const b = parseJson<unknown[]>(incoming);
@@ -258,7 +364,7 @@ export function createUserDataBackup(userId: string, storage: Storage = localSto
     if (value !== null) legacyEntries[key] = value;
   }
 
-  return {
+  const backup: UserDataBackup = {
     format: USER_BACKUP_FORMAT,
     version: USER_BACKUP_VERSION,
     userId,
@@ -271,6 +377,10 @@ export function createUserDataBackup(userId: string, storage: Storage = localSto
       legacyEntries,
     },
   };
+  if (new Blob([JSON.stringify(backup)]).size > MAX_BACKUP_BYTES) {
+    throw new Error('This device backup exceeds the 12 MiB restore limit. Export is stopped before creating an unusable backup.');
+  }
+  return backup;
 }
 
 export function parseUserDataBackup(raw: string): UserDataBackup {
@@ -344,6 +454,10 @@ export function restoreUserDataBackup(
     if (!key.startsWith(prefix) || CREDENTIAL_KEY_PATTERN.test(key)) {
       throw new Error('A foreign-account or credential-like key was found in the backup.');
     }
+    if (!isValidKnownEntry(key, incoming)) {
+      skipped += 1;
+      continue;
+    }
     const current = storage.getItem(key);
     if (current === null) {
       staged.set(key, { value: incoming, kind: 'restored' });
@@ -377,6 +491,10 @@ export function restoreUserDataBackup(
           ? legacyKey
           : `${prefix}legacy-device-data:${legacyKey}`;
 
+      if (!isValidKnownEntry(targetKey, value)) {
+        skipped += 1;
+        continue;
+      }
       const current = storage.getItem(targetKey);
       if (current === null) {
         staged.set(targetKey, { value, kind: 'restored' });
@@ -395,13 +513,13 @@ export function restoreUserDataBackup(
     const rawBookmarks = backup.deviceShared.legacyEntries[LEGACY_BOOKMARKS_KEY]
       ?? backup.deviceShared.legacyBookmarks;
     if (rawBookmarks) {
-      const backupBookmarks = parseJson<Array<Record<string, unknown>>>(rawBookmarks);
+      const backupBookmarks = parseJson<unknown>(rawBookmarks);
       const userBookmarksKey = `u:${currentUserId}:${USER_BOOKMARKS_KEY}`;
       const currentRaw = storage.getItem(userBookmarksKey);
-      const currentBookmarks = currentRaw
-        ? parseJson<Array<Record<string, unknown>>>(currentRaw)
-        : [];
-      if (Array.isArray(backupBookmarks) && Array.isArray(currentBookmarks)) {
+      const currentBookmarks = currentRaw === null
+        ? []
+        : parseJson<unknown>(currentRaw);
+      if (isValidBookmarks(backupBookmarks) && isValidBookmarks(currentBookmarks)) {
         const byQuestion = new Map<string, Record<string, unknown>>();
         for (const item of currentBookmarks) {
           if (typeof item.questionId === 'string') byQuestion.set(item.questionId, item);
@@ -427,13 +545,7 @@ export function restoreUserDataBackup(
   // A restored legacy syllabus record must be reconsidered by the next
   // app launch. The first launch may already have marked an empty store as
   // checked before the backup file was imported.
-  const restoredLegacySyllabus = Object.prototype.hasOwnProperty.call(
-    backup.entries,
-    `${prefix}syllabus-progress`,
-  ) || Object.prototype.hasOwnProperty.call(
-    backup.deviceShared.legacyEntries,
-    'jupeb_syllabus_progress',
-  );
+  const restoredLegacySyllabus = staged.has(`${prefix}syllabus-progress`);
   if (restoredLegacySyllabus) {
     staged.set(`${prefix}study-sessions-legacy-migrated-v1`, {
       value: '0',

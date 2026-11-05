@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { StoredStudySession } from '@/types/syllabus';
 import {
   createUserDataBackup,
   parseUserDataBackup,
@@ -15,6 +16,43 @@ function memoryStorage(initial: Record<string, string> = {}): Storage {
     removeItem: key => { values.delete(key); },
     setItem: (key, value) => { values.set(String(key), String(value)); },
   } as Storage;
+}
+
+function storedSession(
+  id: string,
+  updatedAt: string,
+  name: string,
+  completedDays: number[],
+): StoredStudySession {
+  const dailyTasks = [1, 2].map(day => ({
+    day,
+    subject: day === 1 ? 'physics' as const : 'chemistry' as const,
+    topics: [],
+    learningObjectives: [],
+    checkpointQuestions: [],
+    isCompleted: completedDays.includes(day),
+    completedAt: completedDays.includes(day) ? updatedAt : undefined,
+    masteryScore: completedDays.includes(day) ? 80 + day : undefined,
+  }));
+  return {
+    id,
+    name,
+    subjects: ['physics', 'chemistry'],
+    status: 'active',
+    startDate: '2026-11-01',
+    dailyGoalMinutes: 30,
+    createdAt: '2026-11-01T00:00:00.000Z',
+    updatedAt,
+    progress: {
+      combination: { core: ['physics'], elective: ['chemistry'] },
+      currentDay: Math.max(1, ...completedDays) + 1,
+      dailyTasks,
+      startedAt: '2026-11-01T00:00:00.000Z',
+      lastStudiedAt: updatedAt,
+      overallProgress: (completedDays.length / 2) * 100,
+      subjectProgress: { physics: 50, chemistry: 50, biology: 0, math: 0 },
+    },
+  };
 }
 
 describe('user data backup', () => {
@@ -74,10 +112,10 @@ describe('user data backup', () => {
     expect(result.merged).toBe(1);
   });
 
-  it('restores missing sessions but merges duplicate sessions by updatedAt', () => {
+  it('merges duplicate session progress day-by-day and restores sessions absent locally', () => {
     const storage = memoryStorage({
       'u:user-a:study-sessions': JSON.stringify([
-        { id: 'existing', updatedAt: '2026-11-04T00:00:00Z', name: 'Current' },
+        storedSession('existing', '2026-11-04T00:00:00Z', 'Current', [1]),
       ]),
     });
     const backup = parseUserDataBackup(JSON.stringify({
@@ -87,17 +125,20 @@ describe('user data backup', () => {
       exportedAt: '2026-11-05T00:00:00.000Z',
       entries: {
         'u:user-a:study-sessions': JSON.stringify([
-          { id: 'existing', updatedAt: '2026-11-03T00:00:00Z', name: 'Older' },
-          { id: 'backup-only', updatedAt: '2026-11-05T00:00:00Z', name: 'Recovered' },
+          storedSession('existing', '2026-11-03T00:00:00Z', 'Older metadata', [2]),
+          storedSession('backup-only', '2026-11-05T00:00:00Z', 'Recovered', [1]),
         ]),
       },
-      deviceShared: { legacyBookmarks: null },
+      deviceShared: { legacyBookmarks: null, legacyEntries: {} },
     }));
 
     restoreUserDataBackup(backup, 'user-a', false, storage);
-    const restored = JSON.parse(storage.getItem('u:user-a:study-sessions') || '[]');
-    expect(restored.find((item: { id: string }) => item.id === 'existing').name).toBe('Current');
-    expect(restored.find((item: { id: string }) => item.id === 'backup-only').name).toBe('Recovered');
+    const restored = JSON.parse(storage.getItem('u:user-a:study-sessions') || '[]') as StoredStudySession[];
+    const existing = restored.find(item => item.id === 'existing');
+    expect(existing?.name).toBe('Current');
+    expect(existing?.progress.dailyTasks.filter(task => task.isCompleted).map(task => task.day)).toEqual([1, 2]);
+    expect(existing?.progress.overallProgress).toBe(100);
+    expect(restored.find(item => item.id === 'backup-only')?.name).toBe('Recovered');
   });
 
   it('does not overwrite unknown existing account preferences or settings', () => {

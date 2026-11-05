@@ -31,11 +31,12 @@ export default function DownloadApp() {
     // page can show the real version instead of a static label.
     void Promise.all([fetchLatestRelease(), getInstalledVersion()]).then(([release, installed]) => {
       if (release) {
-        setReleaseAvailable(true);
-        setRequiresReinstall(
-          release.requiresReinstall === true &&
-          (!installed || isNewer(installed.versionCode, release.versionCode)),
-        );
+        const migrationRequiresReinstall = release.requiresReinstall === true &&
+          (!installed || isNewer(installed.versionCode, release.versionCode));
+        setRequiresReinstall(migrationRequiresReinstall);
+        // Never offer a signing-key migration APK while legacy on-device data
+        // has no verified transfer path. Cloud data remains available online.
+        setReleaseAvailable(!migrationRequiresReinstall);
         const date = release.builtAt ? new Date(release.builtAt) : null;
         setLatestVersion(
           `v${release.versionName}` +
@@ -87,11 +88,12 @@ export default function DownloadApp() {
 
               {requiresReinstall && (
                 <div role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
-                  <p className="font-semibold text-amber-800 dark:text-amber-200">One-time manual reinstall required</p>
+                  <p className="font-semibold text-amber-800 dark:text-amber-200">Android update paused to protect your study data</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    This release uses a new Android signing key. Android will not install it over the older app.
-                    Make sure your account is synced, download the APK, uninstall the older JUPEB Master app,
-                    then install the new APK and sign in again. Your account-based study data remains in Supabase.
+                    This release uses a different signing key, so Android would require the older app to be uninstalled.
+                    The older app may contain learning progress and bookmarks stored only on this device, and it cannot export them
+                    to this release. Keep your current JUPEB Master app installed. Do not uninstall it or install this migration yet.
+                    Your Supabase account records remain online, but device-only records are not guaranteed to be synced.
                   </p>
                 </div>
               )}
@@ -110,7 +112,9 @@ export default function DownloadApp() {
                 </button>
               ) : (
                 <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
-                  The Android installer is temporarily unavailable while its signing and integrity details are verified. Your existing app and account data are unaffected. Use the web app below for now.
+                  {requiresReinstall
+                    ? "The APK download is intentionally disabled until device-only learning data can be transferred safely. Keep your current app installed and use the web app below when needed."
+                    : "The Android installer is temporarily unavailable while its signing and integrity details are verified. Your existing app and account data are unaffected. Use the web app below for now."}
                 </div>
               )}
 
@@ -119,18 +123,26 @@ export default function DownloadApp() {
                 {releaseAvailable && <p>{APK_INFO}</p>}
               </div>
 
-              <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
-                <p className="font-medium flex items-center gap-1.5">
-                  <Shield className="h-3 w-3" /> {requiresReinstall ? "One-time reinstall steps:" : "Installation steps:"}
-                </p>
-                <ol className="list-decimal list-inside text-muted-foreground space-y-0.5">
-                  <li>Tap "Download APK" above</li>
-                  {requiresReinstall && <li>After the download finishes, uninstall the older JUPEB Master app</li>}
-                  <li>Open the downloaded file when ready</li>
-                  <li>Tap "Install anyway" if prompted by Play Protect</li>
-                  <li>Open JUPEB Master and sign in again</li>
-                </ol>
-              </div>
+              {requiresReinstall ? (
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
+                  <p className="font-medium flex items-center gap-1.5 text-foreground">
+                    <Shield className="h-3 w-3" /> Keep your existing app installed
+                  </p>
+                  <p className="mt-1">Do not uninstall the older JUPEB Master app. Wait for an official data-transfer and migration release.</p>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
+                  <p className="font-medium flex items-center gap-1.5">
+                    <Shield className="h-3 w-3" /> Installation steps:
+                  </p>
+                  <ol className="list-decimal list-inside text-muted-foreground space-y-0.5">
+                    <li>Tap "Download APK" above</li>
+                    <li>Open the downloaded file when ready</li>
+                    <li>Tap "Install anyway" if prompted by Play Protect</li>
+                    <li>Open JUPEB Master and sign in again</li>
+                  </ol>
+                </div>
+              )}
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -196,7 +208,9 @@ export default function DownloadApp() {
                 </a>
               ) : (
                 <p role="status" className="text-xs text-muted-foreground">
-                  The Android installer is temporarily unavailable while its signing and integrity details are verified.
+                  {requiresReinstall
+                    ? "APK release is paused to protect local-only study data. Keep the older JUPEB Master app installed."
+                    : "The Android installer is temporarily unavailable while its signing and integrity details are verified."}
                 </p>
               )}
               <a

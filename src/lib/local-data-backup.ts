@@ -1,6 +1,14 @@
 export const USER_BACKUP_FORMAT = 'jupeb-master-user-backup';
 export const USER_BACKUP_VERSION = 1;
 export const LEGACY_BOOKMARKS_KEY = 'jupeb_study_bookmarks';
+export const LEGACY_DEVICE_DATA_KEYS = [
+  LEGACY_BOOKMARKS_KEY,
+  'jupeb-study-progress',
+  'jupeb_streak_data',
+  'jupeb_achievements_unlocked',
+  'jupeb_syllabus_progress',
+  'jupeb-chat-hub',
+] as const;
 const MAX_BACKUP_BYTES = 12 * 1024 * 1024;
 
 export interface UserDataBackup {
@@ -11,6 +19,7 @@ export interface UserDataBackup {
   entries: Record<string, string>;
   deviceShared: {
     legacyBookmarks: string | null;
+    legacyEntries: Record<string, string>;
   };
 }
 
@@ -148,6 +157,12 @@ export function createUserDataBackup(userId: string, storage: Storage = localSto
     if (value !== null) entries[key] = value;
   }
 
+  const legacyEntries: Record<string, string> = {};
+  for (const key of LEGACY_DEVICE_DATA_KEYS) {
+    const value = storage.getItem(key);
+    if (value !== null) legacyEntries[key] = value;
+  }
+
   return {
     format: USER_BACKUP_FORMAT,
     version: USER_BACKUP_VERSION,
@@ -155,9 +170,10 @@ export function createUserDataBackup(userId: string, storage: Storage = localSto
     exportedAt: new Date().toISOString(),
     entries,
     deviceShared: {
-      // This legacy key predates per-account namespacing. Keep it in the backup
-      // but never restore it silently into another account.
-      legacyBookmarks: storage.getItem(LEGACY_BOOKMARKS_KEY),
+      // These keys predate per-account namespacing. Keep them in the backup,
+      // but restore them only after an explicit user choice.
+      legacyBookmarks: legacyEntries[LEGACY_BOOKMARKS_KEY] ?? null,
+      legacyEntries,
     },
   };
 }
@@ -195,6 +211,19 @@ export function parseUserDataBackup(raw: string): UserDataBackup {
     entries,
     deviceShared: {
       legacyBookmarks: typeof shared.legacyBookmarks === 'string' ? shared.legacyBookmarks : null,
+      legacyEntries: (() => {
+        const restored: Record<string, string> = {};
+        const rawEntries = shared.legacyEntries;
+        if (rawEntries && typeof rawEntries === 'object' && !Array.isArray(rawEntries)) {
+          for (const [key, entry] of Object.entries(rawEntries as Record<string, unknown>)) {
+            if (!(LEGACY_DEVICE_DATA_KEYS as readonly string[]).includes(key) || typeof entry !== 'string') {
+              throw new Error('The backup contains an invalid legacy device-data key.');
+            }
+            restored[key] = entry;
+          }
+        }
+        return restored;
+      })(),
     },
   };
 }
@@ -234,8 +263,17 @@ export function restoreUserDataBackup(
   }
 
   let mergedBookmarks: string | null = null;
-  if (restoreLegacyBookmarks && backup.deviceShared.legacyBookmarks) {
-    const backupBookmarks = parseJson<Array<Record<string, unknown>>>(backup.deviceShared.legacyBookmarks);
+  let legacyBookmarkSkipped = 0;
+  if (restoreLegacyBookmarks) {
+    for (const [key, value] of Object.entries(backup.deviceShared.legacyEntries)) {
+      if (key === LEGACY_BOOKMARKS_KEY) continue;
+      if (storage.getItem(key) === null) staged.set(key, { value, kind: 'restored' });
+      else skipped += 1;
+    }
+    const rawBookmarks = backup.deviceShared.legacyEntries[LEGACY_BOOKMARKS_KEY]
+      ?? backup.deviceShared.legacyBookmarks;
+    if (rawBookmarks) {
+    const backupBookmarks = parseJson<Array<Record<string, unknown>>>(rawBookmarks);
     if (Array.isArray(backupBookmarks)) {
       const currentRaw = storage.getItem(LEGACY_BOOKMARKS_KEY);
       const currentBookmarks = currentRaw ? parseJson<Array<Record<string, unknown>>>(currentRaw) : [];
@@ -249,6 +287,9 @@ export function restoreUserDataBackup(
         }
         mergedBookmarks = JSON.stringify([...byQuestion.values()]);
       }
+    } else {
+      legacyBookmarkSkipped += 1;
+    }
     }
   }
 
@@ -278,6 +319,6 @@ export function restoreUserDataBackup(
   return {
     restored: [...staged.values()].filter(item => item.kind === 'restored').length,
     merged: [...staged.values()].filter(item => item.kind === 'merged').length,
-    skipped: skipped + (restoreLegacyBookmarks && backup.deviceShared.legacyBookmarks && mergedBookmarks === null ? 1 : 0),
+    skipped: skipped + legacyBookmarkSkipped,
   };
 }

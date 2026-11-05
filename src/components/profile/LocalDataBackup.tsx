@@ -74,7 +74,7 @@ export function LocalDataBackup() {
         </div>
         <label className="flex items-start gap-2 text-xs text-muted-foreground">
           <Checkbox checked={restoreSharedBookmarks} onCheckedChange={(value) => setRestoreSharedBookmarks(value === true)} />
-          <span>Also restore legacy device-shared learning data, including old bookmarks. Bookmarks are moved into this account's private storage; other legacy keys are retained separately.</span>
+          <span>Also restore legacy device-shared learning data, including old bookmarks. All restored legacy learning records are moved into this account's private namespace; none are written back to shared global keys.</span>
         </label>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button type="button" variant="outline" className="flex-1" onClick={exportBackup} disabled={!user || busy}>

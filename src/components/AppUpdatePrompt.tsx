@@ -196,7 +196,7 @@ export function AppUpdatePrompt() {
             <p className="text-xs text-muted-foreground">
               {phase.kind === "downloading" && "Downloading… " + Math.round(phase.progress * 100) + "%"}
               {phase.kind === "ready" && "Installer opened. Confirm the update in Android’s system prompt."}
-              {phase.kind === "reinstall" && "This release uses a new Android signing key, so Android cannot install it over the current app. Confirm your account is synced, download the APK, uninstall the older JUPEB Master app, then install the new APK and sign in again. Your Supabase account data stays online."}
+              {phase.kind === "reinstall" && "This release uses a different Android signing key. Android would require uninstalling the older app, which can erase device-only study progress and bookmarks. The older app cannot export that data to this release. The update is paused: keep your current app installed and do not uninstall it. Supabase account data remains online, but device-only records may not be synced."}
               {phase.kind === "available" && "A newer version is ready. Your study data stays on your account."}
               {phase.kind === "permission" && "Android needs install permission. Choose Allow in its system prompt, then return here."}
               {phase.kind === "error" && phase.message}
@@ -206,16 +206,6 @@ export function AppUpdatePrompt() {
             <Button size="sm" className="h-8 shrink-0 gap-1.5" onClick={() => void startDownload(release)}>
               <Download className="h-3.5 w-3.5" />
               Update
-            </Button>
-          )}
-          {phase.kind === "reinstall" && (
-            <Button
-              size="sm"
-              className="h-8 shrink-0 gap-1.5"
-              onClick={() => window.location.assign("/download")}
-            >
-              <Download className="h-3.5 w-3.5" />
-              Download page
             </Button>
           )}
           {phase.kind === "ready" && (

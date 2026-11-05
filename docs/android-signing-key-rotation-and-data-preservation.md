@@ -7,8 +7,8 @@
 - The archived production-build artifact from GitHub Actions run `42079370035` (artifact `13440460672`) was inspected. Its signer is `CN=Android Debug, O=Android, C=US`, with certificate SHA-256 `6bc12665dc9fbaa318b62e22394a19619a7a9a19cfa6847e9b3bf4e2112798c3`. The certificate was generated at build time on November 5, 2026; the ephemeral GitHub runner's private debug keystore was not included in the artifact and cannot be reconstructed from the APK.
 - New permanent release keystore: generated outside the repository. Its public certificate SHA-256 is `341744a3408e4f6b4178c083953100785eb21c985c0a8fa4f62592e0a9c53181`. Its private key is provided separately to the repository owner; it must never be committed.
 - The current manifest uses `android:allowBackup="false"`.
-- The Android updater already recognizes `requiresReinstall: true` and sends the student to the download page instead of attempting an in-place update.
-- The release workflow compares the candidate APK certificate with the currently published APK. A certificate mismatch blocks publication unless the one-time workflow-dispatch migration option is explicitly selected.
+- The Android updater recognizes `requiresReinstall: true`, warns the student, and does not offer an installer action. The download page also hides the APK link for such a release.
+- The release workflow compares the candidate APK certificate with the currently published APK. A mismatch remains artifact-only unless two separate workflow-dispatch acknowledgements are selected: `allow_signing_key_migration` and `confirm_legacy_device_data_loss`.
 
 ## Why this cannot be treated as an ordinary update
 
@@ -27,7 +27,7 @@ The old APK has backup disabled, and it cannot receive the new export UI as an i
 
 ## Cloud data that already exists
 
-The production `study_sessions` table was inspected without changing it on 2026-11-05. It contained 69 account rows with 37 nested session entries. The existing cloud table and RLS policies remain in place.
+The production `study_sessions` table was inspected without changing it on 2026-11-05. It contained 69 account rows; 35 accounts had non-empty session arrays, with 37 session records in total. The existing cloud table and RLS policies remain in place.
 
 Other account data such as profiles, activation/entitlement state, score events, achievements and question content is stored in Supabase. The past-question bank remains server-delivered; do not bundle it in the APK or include it in a user backup.
 
@@ -38,7 +38,7 @@ Other account data such as profiles, activation/entitlement state, score events,
 3. Decide and test how device-only data from already-installed legacy APKs will be recovered. The new backup UI alone does not satisfy this gate.
 4. Verify the latest production web deployment and Supabase state without deleting or replacing existing rows.
 5. Prepare clear student-facing instructions and an explicit support plan before any one-time reinstall release.
-6. Only after those gates, manually dispatch the Android release workflow on `main`, select the one-time signing-key migration input, inspect the APK checksum and certificate, and verify the published `version.json` read-back.
+6. Only after those gates, manually dispatch the Android release workflow on `main`. The workflow requires both `allow_signing_key_migration` and `confirm_legacy_device_data_loss` to be checked before it can mirror a different-signed APK. Even after that, a separate reviewed code change is required to re-enable download UI; do not bypass the current updater/download-page safety block. Inspect the APK checksum and certificate and verify the published `version.json` read-back.
 7. Confirm a later release using the same permanent keystore is accepted as an in-place update before advertising automatic updates again.
 
 ## Permanent signing-key setup

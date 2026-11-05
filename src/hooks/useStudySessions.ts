@@ -14,7 +14,7 @@ import {
 } from '@/types/syllabus';
 import { useUserStorage } from './useUserStorage';
 import { useAuth } from '@/contexts/AuthContext';
-import { createLegacyStudySession } from '@/lib/legacy-syllabus-migration';
+import { areLegacyProgressEquivalent, createLegacyStudySession } from '@/lib/legacy-syllabus-migration';
 
 const STORAGE_KEY = 'study-sessions';
 const OLD_STORAGE_KEY = 'syllabus-progress';
@@ -84,7 +84,7 @@ export function useStudySessions() {
       const alreadyRepresented = stored.some(session =>
         session.name === legacySession.name
         && session.startDate === legacySession.startDate
-        && JSON.stringify(session.progress) === JSON.stringify(legacySession.progress)
+        && areLegacyProgressEquivalent(session.progress, legacySession.progress)
       );
       if (!alreadyRepresented) {
         // Persist synchronously before setting the marker. If storage is full

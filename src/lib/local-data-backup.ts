@@ -1,3 +1,7 @@
+import type { StoredStudySession } from '@/types/syllabus';
+import { deserializeProgress, serializeProgress } from '@/types/syllabus';
+import { mergeStudySessions } from '@/lib/study-session-sync';
+
 export const USER_BACKUP_FORMAT = 'jupeb-master-user-backup';
 export const USER_BACKUP_VERSION = 1;
 export const LEGACY_BOOKMARKS_KEY = 'jupeb_study_bookmarks';
@@ -56,21 +60,45 @@ function mergeProgressMap(current: string, incoming: string): string | null {
   return JSON.stringify(merged);
 }
 
-function mergeSessions(current: string, incoming: string): string | null {
-  const a = parseJson<Array<Record<string, unknown>>>(current);
-  const b = parseJson<Array<Record<string, unknown>>>(incoming);
-  if (!Array.isArray(a) || !Array.isArray(b)) return null;
+function isStoredSession(value: unknown): value is StoredStudySession {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const session = value as Record<string, unknown>;
+  const progress = session.progress;
+  if (!progress || typeof progress !== 'object' || Array.isArray(progress)) return false;
+  const storedProgress = progress as Record<string, unknown>;
+  return typeof session.id === 'string'
+    && session.id.length > 0
+    && typeof session.name === 'string'
+    && Array.isArray(session.subjects)
+    && ['active', 'paused', 'completed'].includes(String(session.status))
+    && typeof session.createdAt === 'string'
+    && typeof session.updatedAt === 'string'
+    && typeof storedProgress.startedAt === 'string'
+    && Array.isArray(storedProgress.dailyTasks)
+    && typeof storedProgress.currentDay === 'number'
+    && typeof storedProgress.overallProgress === 'number';
+}
 
-  const byId = new Map<string, Record<string, unknown>>();
-  for (const item of a) {
-    if (typeof item?.id === 'string') byId.set(item.id, item);
+function mergeSessions(current: string, incoming: string): string | null {
+  const a = parseJson<unknown[]>(current);
+  const b = parseJson<unknown[]>(incoming);
+  if (!Array.isArray(a) || !Array.isArray(b)
+      || !a.every(isStoredSession) || !b.every(isStoredSession)) return null;
+
+  try {
+    const hydrate = (sessions: StoredStudySession[]) => sessions.map(session => ({
+      ...session,
+      progress: deserializeProgress(session.progress),
+    }));
+    const merged = mergeStudySessions(hydrate(a), hydrate(b));
+    return JSON.stringify(merged.map(session => ({
+      ...session,
+      progress: serializeProgress(session.progress),
+    })));
+  } catch {
+    // Invalid legacy session data must never be used to overwrite a good copy.
+    return null;
   }
-  for (const item of b) {
-    if (typeof item?.id !== 'string') return null;
-    const existing = byId.get(item.id);
-    if (!existing || timestamp(item.updatedAt) > timestamp(existing.updatedAt)) byId.set(item.id, item);
-  }
-  return JSON.stringify([...byId.values()]);
 }
 
 function mergeSyllabus(current: string, incoming: string): string | null {

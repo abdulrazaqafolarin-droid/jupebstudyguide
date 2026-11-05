@@ -88,10 +88,11 @@ const Index = () => {
   const { missions: dailyMissions, todayMission, todayDate: missionLocalDate, ready: dailyMissionsReady, startMission, updateMission } = useDailyMissions();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
-  const { profile, syncAchievements } = useProfile();
+  const { profile, loading: profileLoading, syncAchievements } = useProfile();
   const { push: pushNotification } = useNotificationsContext();
   const { 
     currentStreak, 
+    isReady: streakReady,
     longestStreak, 
     totalDaysStudied, 
     totalQuestionsAnswered,
@@ -390,6 +391,7 @@ const Index = () => {
     currentStreak,
     achievementsCount: unlockedAchievements.length,
     syllabus: sessions.length > 0 ? sessions[0].progress : null,
+    isReady: !profileLoading && streakReady && studySessionsReady,
   });
 
   // Sync study sessions to Supabase for cross-device persistence

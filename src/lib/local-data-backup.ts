@@ -143,6 +143,7 @@ export function createUserDataBackup(userId: string, storage: Storage = localSto
   for (let index = 0; index < storage.length; index += 1) {
     const key = storage.key(index);
     if (!key || !key.startsWith(prefix)) continue;
+    if (/(token|secret|password|credential|api[-_]?key)/i.test(key)) continue;
     const value = storage.getItem(key);
     if (value !== null) entries[key] = value;
   }

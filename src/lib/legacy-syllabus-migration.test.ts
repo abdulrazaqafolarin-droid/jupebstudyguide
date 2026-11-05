@@ -57,3 +57,26 @@ describe('createLegacyStudySession', () => {
     expect(session?.startDate).toBe('2026-11-05');
   });
 });
+
+describe('areLegacyProgressEquivalent', () => {
+  it('treats the same legacy progress as equal when object key order differs', async () => {
+    const { areLegacyProgressEquivalent } = await import('./legacy-syllabus-migration');
+    const first = {
+      combination: { core: ['physics'], elective: [] },
+      currentDay: 4,
+      dailyTasks: [{ day: 1, isCompleted: true }],
+      startedAt: now,
+      overallProgress: 3.33,
+    };
+    const reordered = {
+      overallProgress: 3.33,
+      startedAt: now,
+      dailyTasks: [{ isCompleted: true, day: 1 }],
+      currentDay: 4,
+      combination: { elective: [], core: ['physics'] },
+    };
+
+    expect(areLegacyProgressEquivalent(first, reordered)).toBe(true);
+    expect(areLegacyProgressEquivalent(first, { ...reordered, currentDay: 5 })).toBe(false);
+  });
+});

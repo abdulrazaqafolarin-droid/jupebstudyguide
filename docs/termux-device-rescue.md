@@ -16,7 +16,7 @@ This is an optional no-computer attempt for Android 11+ when the old JUPEB Maste
 Open Termux and paste this single command:
 
 ```bash
-pkg update -y && pkg install -y android-tools nodejs-lts curl && termux-setup-storage && curl -fsSL "https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/fix/student-data-preservation-sync/scripts/termux-android-localstorage-rescue.sh" -o "$HOME/jupeb-termux-rescue.sh" && bash "$HOME/jupeb-termux-rescue.sh"
+pkg update -y && pkg install -y android-tools nodejs-lts curl && termux-setup-storage && curl -fsSL "https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/5940ba9f7c9cb766484594313d93b40e929168fd/scripts/termux-android-localstorage-rescue.sh" -o "$HOME/jupeb-termux-rescue.sh" && bash "$HOME/jupeb-termux-rescue.sh"
 ```
 The script will ask for two different port numbers:
 

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -Eeuo pipefail
 
-RAW_RESCUE_URL="https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/fix/student-data-preservation-sync/scripts/android-localstorage-rescue.mjs"
+RAW_RESCUE_URL="https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/5940ba9f7c9cb766484594313d93b40e929168fd/scripts/android-localstorage-rescue.mjs"
 RESCUE_DIR="$HOME/jupeb-device-rescue"
 ADB_SERIAL=""
 

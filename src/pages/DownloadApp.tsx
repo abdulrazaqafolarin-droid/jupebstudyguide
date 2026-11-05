@@ -204,6 +204,13 @@ export default function DownloadApp() {
                   }}
                 />
               </div>
+              {requiresReinstall && (
+                <div role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-left text-xs text-muted-foreground">
+                  This is a fresh-install APK signed with the new permanent key. Download it first.
+                  Installing requires removing the older app, which permanently erases any progress stored only on that phone.
+                  Cloud account records remain available but may not include every local-only item.
+                </div>
+              )}
               {releaseAvailable ? (
                 <a
                   href={APK_URL}
@@ -212,7 +219,7 @@ export default function DownloadApp() {
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
                   <Download className="h-4 w-4" />
-                  Download APK for Android
+                  {requiresReinstall ? "Download Fresh APK" : "Download APK for Android"}
                 </a>
               ) : (
                 <p role="status" className="text-xs text-muted-foreground">

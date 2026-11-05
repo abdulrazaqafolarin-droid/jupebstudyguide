@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, build/fresh-install-apk-2026-11-05]
   workflow_dispatch:
     inputs:
       allow_signing_key_migration:

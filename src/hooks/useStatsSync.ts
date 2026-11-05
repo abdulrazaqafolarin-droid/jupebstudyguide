@@ -7,31 +7,44 @@ interface SyncInput {
   currentStreak: number;
   achievementsCount: number;
   syllabus: SyllabusProgress | null;
+  isReady: boolean;
 }
 
 /**
- * Syncs user stats to user_stats table for profile display.
- * Score tracking is now handled by useScoreAwarder + score_events table.
- * This only syncs metadata (streak, syllabus progress, achievements).
+ * Syncs user stats only after the account's profile, local streak and cloud-
+ * restored study sessions have loaded. Failed writes remain retryable.
  */
-export function useStatsSync({ currentStreak, achievementsCount, syllabus }: SyncInput) {
+export function useStatsSync({
+  currentStreak,
+  achievementsCount,
+  syllabus,
+  isReady,
+}: SyncInput) {
   const { user } = useAuth();
-  const lastHash = useRef<string>('');
+  const lastSuccessfulHash = useRef<string>('');
+  const pendingHash = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isReady) return;
+
     const completed = syllabus?.dailyTasks.filter(t => t.isCompleted) ?? [];
     const syllabusCompletedDays = completed.length;
     const masteryAvg = completed.length
-      ? completed.reduce((s, t) => s + (t.masteryScore ?? 0), 0) / completed.length
+      ? completed.reduce((sum, task) => sum + (task.masteryScore ?? 0), 0) / completed.length
       : 0;
 
-    const hash = `${currentStreak}|${syllabusCompletedDays}|${achievementsCount}|${masteryAvg.toFixed(2)}`;
-    if (hash === lastHash.current) return;
-    lastHash.current = hash;
+    const hash = [
+      user.id,
+      currentStreak,
+      syllabusCompletedDays,
+      achievementsCount,
+      masteryAvg.toFixed(2),
+    ].join('|');
+    if (hash === lastSuccessfulHash.current || hash === pendingHash.current) return;
 
-    const t = setTimeout(() => {
-      supabase
+    pendingHash.current = hash;
+    const timeout = window.setTimeout(async () => {
+      const { error } = await supabase
         .from('user_stats')
         .upsert(
           {
@@ -42,9 +55,19 @@ export function useStatsSync({ currentStreak, achievementsCount, syllabus }: Syn
             mastery_avg: Number(masteryAvg.toFixed(2)),
           },
           { onConflict: 'user_id' },
-        )
-        .then(({ error }) => { if (error) console.error('stats sync', error); });
+        );
+
+      if (pendingHash.current === hash) pendingHash.current = null;
+      if (error) {
+        console.error('Stats sync failed; a later state change can retry.', error);
+        return;
+      }
+      lastSuccessfulHash.current = hash;
     }, 600);
-    return () => clearTimeout(t);
-  }, [user, currentStreak, achievementsCount, syllabus]);
+
+    return () => {
+      window.clearTimeout(timeout);
+      if (pendingHash.current === hash) pendingHash.current = null;
+    };
+  }, [user, isReady, currentStreak, achievementsCount, syllabus]);
 }

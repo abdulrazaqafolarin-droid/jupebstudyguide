@@ -7,6 +7,7 @@ import { toast } from "sonner";
 export interface ActivationStatus {
   is_activated: boolean;
   is_admin: boolean;
+  trial_expires_at: string | null;
   checking: boolean;
 }
 
@@ -41,7 +42,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
   try {
     const { data, error } = await supabase
       .from("profiles")
-      .select("is_activated, is_admin")
+      .select("is_activated, is_admin, trial_expires_at")
       .eq("user_id", user.id)
       .single();
 
@@ -54,6 +55,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
       status: {
         is_activated: data?.is_activated ?? false,
         is_admin: isAdminEmail || (data?.is_admin ?? false),
+        trial_expires_at: data?.trial_expires_at ?? null,
         checking: false,
       },
       cacheable: true,
@@ -61,7 +63,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
   } catch (err) {
     console.error("Activation check error:", err);
     return {
-      status: { is_activated: false, is_admin: isAdminEmail, checking: false },
+      status: { is_activated: false, is_admin: isAdminEmail, trial_expires_at: null, checking: false },
       cacheable: false,
     };
   }
@@ -91,7 +93,7 @@ export function useActivation() {
   const [status, setStatus] = useState<ActivationStatus>(
     cachedForUser
       ? cachedForUser.status
-      : { is_activated: false, is_admin: false, checking: !!user },
+      : { is_activated: false, is_admin: false, trial_expires_at: null, checking: !!user },
   );
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -100,7 +102,7 @@ export function useActivation() {
     async (force = false) => {
       if (!user) {
         activationCache = null;
-        setStatus({ is_activated: false, is_admin: false, checking: false });
+        setStatus({ is_activated: false, is_admin: false, trial_expires_at: null, checking: false });
         return;
       }
 
@@ -148,7 +150,7 @@ export function useActivation() {
 
       const result = data as Record<string, unknown> | null;
       if (result?.success) {
-        const next: ActivationStatus = { is_activated: true, is_admin: status.is_admin, checking: false };
+        const next: ActivationStatus = { is_activated: true, is_admin: status.is_admin, trial_expires_at: status.trial_expires_at, checking: false };
         activationCache = { userId: user.id, status: next, fetchedAt: Date.now() };
         setStatus(next);
         setValidating(false);

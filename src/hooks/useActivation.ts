@@ -47,10 +47,9 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
 
     if (error) throw error;
 
-    if (isAdminEmail && !data?.is_admin) {
-      await supabase.from("profiles").update({ is_admin: true }).eq("user_id", user.id);
-    }
-
+    // Admin status is granted only by trusted server-side configuration or
+    // an administrator-managed profile flag. Never promote a profile from
+    // the client: users can update their own profile fields through RLS.
     return {
       status: {
         is_activated: data?.is_activated ?? false,
@@ -196,7 +195,6 @@ export function useAdminCodes() {
         p_created_by: user?.id,
         p_count: Math.min(count, 100),
         p_plan_type: plan_type,
-        p_admin_email: SUPER_ADMIN_EMAIL || null,
       });
 
       if (error) {

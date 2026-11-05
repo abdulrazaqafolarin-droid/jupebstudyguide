@@ -1268,7 +1268,6 @@ export type Database = {
           p_created_by: string
           p_count?: number
           p_plan_type?: string
-          p_admin_email?: string
         }
         Returns: {
           code: string

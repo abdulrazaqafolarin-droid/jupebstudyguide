@@ -88,8 +88,11 @@ export function useStudySessions() {
         && session.progress.dailyTasks.length === legacySession.progress.dailyTasks.length
       );
       if (!alreadyRepresented) {
-        // Preserve both the already-present sessions and the legacy plan.
-        setStored(prev => [...prev, legacySession]);
+        // Persist synchronously before setting the marker. If storage is full
+        // or unavailable, the catch below leaves migration open for a retry.
+        const nextStored = [...stored, legacySession];
+        localStorage.setItem(`u:${user.id}:${STORAGE_KEY}`, JSON.stringify(nextStored));
+        setStored(nextStored);
       }
 
       // Keep the source value as a recovery copy. The marker prevents the old

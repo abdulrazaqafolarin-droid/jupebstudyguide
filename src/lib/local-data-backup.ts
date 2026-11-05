@@ -212,7 +212,7 @@ function isValidStreak(value: unknown): boolean {
         && Number.isFinite(Date.parse(value.lastStudyDate))));
 }
 
-function isValidBookmarks(value: unknown): boolean {
+function isValidBookmarks(value: unknown): value is Array<Record<string, unknown>> {
   return Array.isArray(value) && value.every(item => isRecord(item)
     && typeof item.questionId === 'string'
     && item.questionId.length > 0

@@ -183,7 +183,9 @@ function mergeStreak(current: string, incoming: string): string | null {
 
 function mergeEntry(key: string, current: string, incoming: string): string | null {
   if (key.endsWith(':study-progress')) return mergeProgressMap(current, incoming);
-  if (key.endsWith(':achievements-unlocked')) return mergeStringArray(current, incoming);
+  if (key.endsWith(':achievements-unlocked') || key.startsWith('jupeb-hidden-msgs-')) {
+    return mergeStringArray(current, incoming);
+  }
   if (key.endsWith(':study-sessions')) return mergeSessions(current, incoming);
   if (key.endsWith(':syllabus-progress')) return mergeSyllabus(current, incoming);
   if (key.endsWith(':streak')) return mergeStreak(current, incoming);

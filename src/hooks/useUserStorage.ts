@@ -78,5 +78,7 @@ export function useUserStorage<T>(
     setValue(defaultValue);
   }, [storageKey, loadedStorageKey, defaultValue]);
 
-  return [value, update, { isReady, reset }];
+  // Hide the previous account's in-memory value until this account's storage
+  // has been read, preventing a one-render cross-account data flash.
+  return [isReady ? value : defaultValue, update, { isReady, reset }];
 }

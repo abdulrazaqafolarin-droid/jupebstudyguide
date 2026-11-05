@@ -37,7 +37,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Set up auth state listener BEFORE getting session
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        const newUserId = session?.user?.id ?? null;
         setSession(session);
         setUser(session?.user ?? null);
         // Set Realtime auth token so channels can connect
@@ -56,7 +55,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Get initial session with timeout
     const sessionPromise = supabase.auth.getSession().then(({ data: { session } }) => {
-      const newUserId = session?.user?.id ?? null;
       setSession(session);
       setUser(session?.user ?? null);
       // Set Realtime auth token for channels to connect

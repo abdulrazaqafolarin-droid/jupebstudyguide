@@ -59,7 +59,7 @@ export function areLegacyProgressEquivalent(left: unknown, right: unknown): bool
       const keys = Object.keys(object).sort();
       return `{${keys.map(key => `${JSON.stringify(key)}:${stableSerialize(object[key])}`).join(',')}}`;
     }
-    return JSON.stringify(value);
+    return JSON.stringify(value) ?? 'null';
   };
 
   return stableSerialize(left) === stableSerialize(right);

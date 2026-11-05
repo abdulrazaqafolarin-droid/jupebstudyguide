@@ -171,44 +171,45 @@ describe('user data backup', () => {
     expect(target.getItem('jupeb_study_bookmarks')).toBeNull();
   });
 
-  it('restores allowlisted legacy device data only after explicit opt-in and never overwrites an existing key', () => {
+  it('restores legacy learning keys into the selected account namespace only', () => {
     const source = memoryStorage({
       jupeb_syllabus_progress: '{"currentDay":7}',
       jupeb_achievements_unlocked: '["first-study"]',
+      jupeb_streak_data: '{"currentStreak":4,"longestStreak":4,"totalDaysStudied":5,"totalQuestionsAnswered":20,"lastStudyDate":"2026-11-05"}',
+      'jupeb-chat-hub': '{"threads":["old"]}',
     });
     const backup = parseUserDataBackup(JSON.stringify(createUserDataBackup('user-a', source)));
-    const target = memoryStorage({ jupeb_syllabus_progress: '{"currentDay":9}' });
+    const target = memoryStorage({
+      jupeb_syllabus_progress: '{"currentDay":9}',
+    });
 
     restoreUserDataBackup(backup, 'user-a', false, target);
-    expect(target.getItem('jupeb_achievements_unlocked')).toBeNull();
+    expect(target.getItem('u:user-a:syllabus-progress')).toBeNull();
 
     restoreUserDataBackup(backup, 'user-a', true, target);
+    expect(target.getItem('u:user-a:syllabus-progress')).toContain('"currentDay":7');
+    expect(JSON.parse(target.getItem('u:user-a:achievements-unlocked') || '[]')).toEqual(['first-study']);
+    expect(JSON.parse(target.getItem('u:user-a:streak') || '{}').currentStreak).toBe(4);
+    expect(target.getItem('u:user-a:legacy-device-data:jupeb-chat-hub')).toContain('threads');
     expect(target.getItem('jupeb_syllabus_progress')).toBe('{"currentDay":9}');
-    expect(target.getItem('jupeb_achievements_unlocked')).toBe('["first-study"]');
+    expect(target.getItem('jupeb_achievements_unlocked')).toBeNull();
+    expect(target.getItem('jupeb_streak_data')).toBeNull();
+    expect(target.getItem('jupeb-chat-hub')).toBeNull();
+    expect(target.getItem('u:user-a:study-sessions-legacy-migrated-v1')).toBe('0');
   });
 
-  it('reopens the legacy syllabus migration after importing old syllabus progress', () => {
-    const storage = memoryStorage({
-      'u:user-a:study-sessions-legacy-migrated-v1': '1',
+  it('does not expose restored legacy records to a different account on the same device', () => {
+    const source = memoryStorage({
+      jupeb_achievements_unlocked: '["private-achievement"]',
     });
-    const backup = parseUserDataBackup(JSON.stringify({
-      format: 'jupeb-master-user-backup',
-      version: 1,
-      userId: 'user-a',
-      exportedAt: '2026-11-05T00:00:00.000Z',
-      entries: {
-        'u:user-a:syllabus-progress': JSON.stringify({
-          combination: { core: ['physics'], elective: [] },
-          currentDay: 5,
-          dailyTasks: [],
-          startedAt: '2026-11-01T00:00:00.000Z',
-        }),
-      },
-      deviceShared: { legacyBookmarks: null, legacyEntries: {} },
-    }));
+    const backup = parseUserDataBackup(JSON.stringify(createUserDataBackup('user-a', source)));
+    const target = memoryStorage();
 
-    restoreUserDataBackup(backup, 'user-a', false, storage);
-    expect(storage.getItem('u:user-a:study-sessions-legacy-migrated-v1')).toBe('0');
+    restoreUserDataBackup(backup, 'user-a', true, target);
+
+    expect(target.getItem('u:user-a:achievements-unlocked')).toBe('["private-achievement"]');
+    expect(target.getItem('u:user-b:achievements-unlocked')).toBeNull();
+    expect(target.getItem('jupeb_achievements_unlocked')).toBeNull();
   });
 
   it('rejects credential-like storage keys instead of restoring them', () => {

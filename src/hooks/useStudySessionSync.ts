@@ -112,7 +112,7 @@ export function useStudySessionSync(
     if (!userId || !isLoaded || readyUserId !== userId) return;
 
     const serialized = dehydrateSessions(sessions);
-    const hash = JSON.stringify(serialized);
+    const hash = `${userId}:${JSON.stringify(serialized)}`;
     if (hash === lastSuccessfulHash.current || hash === pendingHash.current) return;
 
     pendingHash.current = hash;

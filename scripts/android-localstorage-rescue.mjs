@@ -252,7 +252,8 @@ const EXPORT_EXPRESSION = `(() => {
     'jupeb_streak_data',
     'jupeb_achievements_unlocked',
     'jupeb_syllabus_progress',
-    'jupeb-chat-hub'
+    'jupeb-chat-hub',
+    'jupeb-hidden-msgs-' + userId
   ];
   const legacyEntries = {};
   for (const key of legacyKeys) {

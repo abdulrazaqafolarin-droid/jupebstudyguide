@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { clientsClaim } from 'workbox-core';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
@@ -27,7 +28,10 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'JUPEB Master';
   const notificationData = data.data || {};
   const isChat = notificationData.type === 'chat';
-  const options: NotificationOptions & { vibrate?: number[] } = {
+  const options: NotificationOptions & {
+    vibrate?: number[];
+    actions?: Array<{ action: string; title: string; icon?: string }>;
+  } = {
     body: data.body || '',
     icon: '/pwa-192x192.png',
     badge: '/pwa-192x192.png',

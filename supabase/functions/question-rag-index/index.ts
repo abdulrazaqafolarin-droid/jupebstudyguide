@@ -188,7 +188,6 @@ Deno.serve(async (req) => {
       }
 
       const canonicalText = formatQuestionForEmbedding({
-        id: question.id,
         subject: question.subject,
         year: question.year,
         category: question.category,
@@ -196,9 +195,6 @@ Deno.serve(async (req) => {
         options: question.options,
         correct_answer: question.correct_answer,
         explanation: question.explanation,
-        course: question.course,
-        difficulty: question.difficulty,
-        image_url: question.image_url,
       });
       const embedding = await generateEmbedding(canonicalText, embedKeys, "RETRIEVAL_DOCUMENT");
       if (!embedding) {

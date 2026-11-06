@@ -140,7 +140,7 @@ ON CONFLICT (question_id) DO NOTHING;
 CREATE OR REPLACE FUNCTION public.claim_study_question_embedding_jobs(
   p_limit INTEGER DEFAULT 5
 )
-RETURNS TABLE (question_id TEXT, requested_at TIMESTAMPTZ)
+RETURNS TABLE (question_id TEXT, requested_at TIMESTAMPTZ, attempts INTEGER)
 LANGUAGE SQL
 SECURITY DEFINER
 SET search_path = public, pg_temp
@@ -161,7 +161,7 @@ AS $$
       attempts = j.attempts + 1
   FROM candidates AS c
   WHERE j.question_id = c.question_id
-  RETURNING j.question_id, j.requested_at;
+  RETURNING j.question_id, j.requested_at, j.attempts;
 $$;
 
 REVOKE ALL ON FUNCTION public.claim_study_question_embedding_jobs(INTEGER)

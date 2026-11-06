@@ -10,23 +10,16 @@ try {
   /* lovable-tagger not installed */
 }
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    hmr: {
-      overlay: false,
-    },
+    hmr: { overlay: false },
   },
   plugins: [
     react(),
     ...(mode === "development" && devTaggerPlugin ? [devTaggerPlugin()] : []),
     VitePWA({
-      // Registration/update consent is managed by index.html + SWUpdatePrompt.
-      // injectManifest: custom SW (precache + push notifications) in src/sw.ts.
-      // generateSW would clobber the hand-written push handler.
-      // index.html registers the worker; SWUpdatePrompt owns update consent.
       registerType: "prompt",
       injectRegister: false,
       strategies: "injectManifest",
@@ -44,78 +37,44 @@ export default defineConfig(({ mode }) => ({
         scope: "/",
         start_url: "/",
         icons: [
-          {
-            src: "/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "any",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any",
-          },
-          {
-            src: "/pwa-maskable-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable",
-          },
-          {
-            src: "/pwa-maskable-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
+          { src: "/pwa-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+          { src: "/pwa-maskable-192x192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
+          { src: "/pwa-maskable-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         runtimeCaching: [
-          {
-            urlPattern: /^https?:\/\/.*\.supabase\.co\/.*/i,
-            handler: 'NetworkOnly',
-          },
-          {
-            urlPattern: /^https?:\/\/.*\.googleapis\.com\/.*/i,
-            handler: 'NetworkOnly',
-          },
-          {
-            urlPattern: /^https?:\/\/.*\.groq\.com\/.*/i,
-            handler: 'NetworkOnly',
-          },
+          { urlPattern: /^https?:\/\/.*\.supabase\.co\/.*/i, handler: "NetworkOnly" },
+          { urlPattern: /^https?:\/\/.*\.googleapis\.com\/.*/i, handler: "NetworkOnly" },
+          { urlPattern: /^https?:\/\/.*\.groq\.com\/.*/i, handler: "NetworkOnly" },
         ],
       },
     }),
   ],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: { "@": path.resolve(__dirname, "./src") },
   },
   build: {
     rollupOptions: {
       output: {
+        // Keep only third-party chunks fixed. Forcing app contexts, integration
+        // clients and lib modules into separate chunks created a reported ESM
+        // cycle (shared-integrations <-> shared-lib). Let Rollup split app code
+        // according to its actual import graph to avoid fragile chunk cycles.
         manualChunks(id) {
           const moduleId = id.split(String.fromCharCode(92)).join("/");
-          // Keep framework/runtime boundaries stable, but let optional
-          // feature packages follow their importing lazy route. Group only
-          // the app's own shared layers to keep the entry point small without
-          // creating vendor-other ↔ radix/charts circular chunks.
-          if (moduleId.includes("/node_modules/react-dom/") || moduleId.includes("/node_modules/react/") || moduleId.includes("/node_modules/scheduler/")) {
-            return "vendor-react";
-          }
+          if (
+            moduleId.includes("/node_modules/react-dom/") ||
+            moduleId.includes("/node_modules/react/") ||
+            moduleId.includes("/node_modules/scheduler/")
+          ) return "vendor-react";
           if (moduleId.includes("/node_modules/@supabase/")) return "vendor-supabase";
           if (moduleId.includes("/node_modules/katex/")) return "vendor-katex";
           if (moduleId.includes("/node_modules/framer-motion/")) return "vendor-framer";
           if (moduleId.includes("/node_modules/canvas-confetti/")) return "vendor-effects";
-          if (moduleId.includes("/src/contexts/")) return "shared-context";
-          if (moduleId.includes("/src/components/ui/")) return "shared-ui";
-          if (moduleId.includes("/src/integrations/")) return "shared-integrations";
-          if (moduleId.includes("/src/data/study-questions/")) return "study-data";
-          if (moduleId.includes("/src/lib/")) return "shared-lib";
-        }
+        },
       },
     },
   },

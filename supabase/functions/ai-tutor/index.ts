@@ -161,7 +161,10 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
         ]);
       })().catch((ragError) => {
         console.warn("[ai-tutor] RAG retrieval failed; continuing without references:", String(ragError).slice(0, 180));
-        return [[], []] as const;
+        return [[], []] as [
+          Awaited<ReturnType<typeof retrieveRelevantChunks>>,
+          Awaited<ReturnType<typeof retrieveRelevantQuestions>>,
+        ];
       });
       let deadlineTimer: ReturnType<typeof setTimeout> | undefined;
       const [chunks, questions] = await Promise.race([

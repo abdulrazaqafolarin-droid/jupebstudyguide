@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo, type Variants } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat as aiStreamChat } from '@/lib/ai-service';
+import { streamChat as aiStreamChat, type QuestionRef } from '@/lib/ai-service';
 import QuestionRefChips from './QuestionRefChips';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
@@ -468,6 +468,7 @@ export const FloatingAITutor = () => {
 
     let acc = '';
     let firstToken = true;
+    let activeQuestionRefs: QuestionRef[] = [];
 
     const ac = new AbortController();
     abortRef.current = ac;
@@ -495,6 +496,7 @@ export const FloatingAITutor = () => {
         });
       },
       onQuestionReferences: (refs) => {
+        activeQuestionRefs = refs;
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length && arr[arr.length - 1].role === 'assistant') {
@@ -508,7 +510,7 @@ export const FloatingAITutor = () => {
         if (!firstToken && assistantContentRef.current) {
           try {
             const savedContent = assistantContentRef.current;
-            const saved = await saveAssistantMessage(chatId, savedContent);
+            const saved = await saveAssistantMessage(chatId, savedContent, activeQuestionRefs);
             // Stamp the local bubble with its DB timestamp so a later edit
             // can cut the stored thread at exactly this message.
             if (saved?.created_at && activeChatIdRef.current === chatId) {

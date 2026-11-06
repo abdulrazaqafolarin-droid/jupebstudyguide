@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS public.login_security_counters (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (scope, subject_hash)
 );
+CREATE INDEX IF NOT EXISTS idx_login_security_counters_updated_at
+  ON public.login_security_counters(updated_at);
 ALTER TABLE public.login_security_counters ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.login_security_counters FROM PUBLIC, anon, authenticated;
 
@@ -18,6 +20,8 @@ DECLARE
   v_ip public.login_security_counters%ROWTYPE;
   v_now TIMESTAMPTZ := now();
 BEGIN
+  -- Bound storage growth from one-off IPs and abandoned account identifiers.
+  DELETE FROM public.login_security_counters WHERE updated_at < v_now - interval '30 days';
   INSERT INTO public.login_security_counters(scope, subject_hash)
   VALUES ('account', p_account_hash), ('ip', p_ip_hash)
   ON CONFLICT (scope, subject_hash) DO NOTHING;

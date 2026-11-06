@@ -405,6 +405,13 @@ export function useStudyChat() {
       ragContext,
       subject,
       ac.signal,
+      [
+        subject || "",
+        topic?.topic.name || "",
+        topic?.topic.description || "",
+        topic?.subtopic || "",
+        userText,
+      ].filter(Boolean).join("\n"),
     );
   }, [user]);
 

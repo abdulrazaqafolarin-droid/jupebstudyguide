@@ -37,15 +37,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Configure Firebase Android client (optional for compilation)
-        env:
-          FIREBASE_GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}
-        shell: bash
+      - name: Validate Firebase Android client
         run: |
-          set -euo pipefail
-          if [ -n "${FIREBASE_GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
-            printf '%s' "$FIREBASE_GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/google-services.json
-            python3 - <<'PY'
+          test -s android/app/google-services.json
+          python3 - <<'PY'
           import json
           with open("android/app/google-services.json", encoding="utf-8") as source:
               config = json.load(source)
@@ -56,9 +51,6 @@ jobs:
           assert "com.jupeb.master" in packages, "Firebase config must include Android package com.jupeb.master"
           print("Firebase Android client config validated.")
           PY
-          else
-            echo "::warning::Firebase Android client config secret is not set. APK compilation will run, but FCM device registration cannot be runtime-verified."
-          fi
 
       - name: TypeScript
         run: npx tsc --noEmit

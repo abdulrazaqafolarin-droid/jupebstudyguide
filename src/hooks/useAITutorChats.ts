@@ -181,7 +181,12 @@ export function useAITutorChats() {
     if (!user || !content.trim()) return null;
     const { data } = await supabase
       .from('ai_chat_messages')
-      .insert({ chat_id: chatId, user_id: user.id, role: 'assistant', content, question_refs: questionRefs })
+      .insert({ chat_id: chatId, user_id: user.id, role: 'assistant', content, question_refs: questionRefs.map((ref) => ({
+          question_id: ref.question_id,
+          subject: ref.subject,
+          year: ref.year,
+          category: ref.category,
+        })) })
       .select('id,created_at').single();
     await supabase.from('ai_chats').update({ updated_at: new Date().toISOString() }).eq('id', chatId);
     return data ? { id: data.id, created_at: data.created_at } : null;

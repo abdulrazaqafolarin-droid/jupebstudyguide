@@ -246,7 +246,6 @@ export function useStudyChat() {
     if (persistUser) {
       const savedUserIdx = newMsgs.length - 1;
       try {
-        try {
           const { data: saved } = await supabase
             .from('ai_chat_messages')
             .insert({ chat_id: chatId, user_id: userId, role: 'user', content: userText, attachment: opts.attachment ?? null })

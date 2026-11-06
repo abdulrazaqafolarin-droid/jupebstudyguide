@@ -52,11 +52,17 @@ WHERE id = 'physics-2021-theory-08';
 -- The rectangular coil area is 0.030 m × 0.020 m = 0.0006 m².
 -- Torque = N B I A = 200 × 0.8 × 0.5 × 0.0006 = 0.048 N m.
 UPDATE public.study_questions
-SET options = jsonb_set(
-      options,
-      '{2,text}',
-      to_jsonb('0.048 Nm'::text)
-    ),
+SET options = CASE
+      WHEN jsonb_typeof(options) = 'string' THEN
+        to_jsonb(jsonb_set(
+          (options #>> '{}')::jsonb,
+          '{2,text}',
+          to_jsonb('0.048 Nm'::text)
+        )::text)
+      WHEN jsonb_typeof(options) = 'array' THEN
+        jsonb_set(options, '{2,text}', to_jsonb('0.048 Nm'::text))
+      ELSE options
+    END,
     explanation = 'The rectangular coil area is length × diameter = 0.030 × 0.020 = 0.0006 m². Torque = N B I A = 200 × 0.8 × 0.5 × 0.0006 = 0.048 N m. Therefore option C is correct.'
 WHERE id = 'physics-2020-objective-016';
 
@@ -73,11 +79,17 @@ WHERE id = 'physics-2020-objective-023';
 -- IV and V are the unsuitable properties.
 UPDATE public.study_questions
 SET question = 'I. It should be a good conductor of heat. II. It should be opaque. III. Its expansion should be regular. IV. It should wet glass. V. It should have a high melting point and low boiling point. Which of the above properties are NOT those of a suitable thermometric liquid?',
-    options = jsonb_set(
-      options,
-      '{2,text}',
-      to_jsonb('II and III'::text)
-    ),
+    options = CASE
+      WHEN jsonb_typeof(options) = 'string' THEN
+        to_jsonb(jsonb_set(
+          (options #>> '{}')::jsonb,
+          '{2,text}',
+          to_jsonb('II and III'::text)
+        )::text)
+      WHEN jsonb_typeof(options) = 'array' THEN
+        jsonb_set(options, '{2,text}', to_jsonb('II and III'::text))
+      ELSE options
+    END,
     correct_answer = 'D',
     explanation = 'A suitable thermometric liquid should conduct heat well, be visible in the tube, expand regularly, not wet the glass, and have a high boiling point with a low melting point. Statements IV and V are unsuitable, so option D is correct.'
 WHERE id = 'physics-2020-objective-049';

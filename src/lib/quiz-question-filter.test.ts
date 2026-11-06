@@ -27,6 +27,12 @@ describe("objective quiz question filter", () => {
     expect(isObjectiveQuizQuestion(theory)).toBe(false);
   });
 
+  it("excludes practical questions even when they contain options", () => {
+    const practical = { ...base, id: "practical", type: "practical" as const };
+    expect(isObjectiveQuizQuestion(practical)).toBe(false);
+    expect(filterObjectiveQuizQuestions([base, practical])).toEqual([base]);
+  });
+
   it("excludes questions without at least two usable options", () => {
     expect(filterObjectiveQuizQuestions([
       { ...base, id: "none", options: undefined },

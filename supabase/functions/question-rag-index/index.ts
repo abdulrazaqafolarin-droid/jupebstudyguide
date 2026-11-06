@@ -6,6 +6,7 @@ import { generateEmbedding, resolveEmbedKeys } from "../_shared/textbook-embed.t
 interface ClaimedJob {
   question_id: string;
   requested_at: string;
+  attempts: number;
 }
 
 interface QuestionRow {
@@ -88,14 +89,10 @@ Deno.serve(async (req) => {
     };
     const action = payload.action === "status" ? "status" : "process";
 
-    const [questionsCount, embeddingsCount, jobsCount, missingCount] = await Promise.all([
+    const [questionsCount, embeddingsCount, jobsCount] = await Promise.all([
       admin.from("study_questions").select("id", { count: "exact", head: true }).eq("hidden", false),
       admin.from("study_question_embeddings").select("question_id", { count: "exact", head: true }),
       admin.from("study_question_embedding_jobs").select("question_id", { count: "exact", head: true }),
-      admin.from("study_questions")
-        .select("id", { count: "exact", head: true })
-        .eq("hidden", false)
-        .is("study_question_embeddings.question_id", null),
     ]);
 
     if (action === "status") {
@@ -104,7 +101,7 @@ Deno.serve(async (req) => {
         visible_questions: questionsCount.count ?? 0,
         embeddings_stored: embeddingsCount.count ?? 0,
         queued_jobs: jobsCount.count ?? 0,
-        missing_embeddings: missingCount.count ?? 0,
+        missing_embeddings: Math.max(0, (questionsCount.count ?? 0) - (embeddingsCount.count ?? 0)),
       });
     }
 
@@ -145,7 +142,7 @@ Deno.serve(async (req) => {
       .eq("hidden", false);
 
     if (questionError || !questionRows) {
-      for (const job of jobs) await retryJob(admin, job, questionError?.message || "question-read-failed", 1);
+      for (const job of jobs) await retryJob(admin, job, questionError?.message || "question-read-failed", job.attempts);
       return json({ error: "could-not-load-question-records" }, 500);
     }
 
@@ -186,7 +183,7 @@ Deno.serve(async (req) => {
       if (!embedding) {
         const reason = "embedding-provider-failed";
         failed.push({ question_id: job.question_id, error: reason });
-        await retryJob(admin, job, reason, 1);
+        await retryJob(admin, job, reason, job.attempts);
         return;
       }
       embeddingRows.push({

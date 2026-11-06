@@ -92,11 +92,23 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
 
   useEffect(() => {
     if (prevQuestionId.current !== question.id) {
+      abortRef.current?.abort();
+      abortRef.current = null;
+      setIsLoading(false);
       setMessages([]);
       setInput('');
+      setEditingIndex(null);
       prevQuestionId.current = question.id;
     }
   }, [question.id]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      abortRef.current?.abort();
+      abortRef.current = null;
+      setIsLoading(false);
+    }
+  }, [isOpen]);
 
   const askTutor = useCallback(async (userMessage: string, editAt: number | null = editingIndex) => {
     const baseMessages = editAt !== null ? messages.slice(0, editAt) : messages;
@@ -120,6 +132,9 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
 
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
+    const ac = new AbortController();
+    abortRef.current = ac;
+
     const questionContext = `\n\n--- Current Question Being Studied ---\nSubject: ${question.subject}\nTopic: ${question.topic}\nQuestion: ${question.question}\n${question.options ? `Options: ${JSON.stringify(question.options)}` : ''}\nCorrect Answer: ${question.correctAnswer}\nExplanation: ${question.explanation}`;
     const systemPrompt = TUTOR_SYSTEM_PROMPT + questionContext + getSyllabusContext();
 
@@ -128,8 +143,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
       ragContext = await searchRelevantChunks(userMessage);
     } catch (e) { console.warn("RAG unavailable, continuing without it:", e); }
 
-    const ac = new AbortController();
-    abortRef.current = ac;
+    if (ac.signal.aborted) return;
 
     await streamChat(systemPrompt, allMessages, {
       onDelta: (text) => {
@@ -186,7 +200,19 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
 
   const handleCopyMessage = async (content: string) => {
     try {
-      await navigator.clipboard.writeText(content);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(content);
+      } else {
+        const area = document.createElement('textarea');
+        area.value = content;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        const copied = document.execCommand('copy');
+        area.remove();
+        if (!copied) throw new Error('Clipboard unavailable');
+      }
       toast.success('Message copied');
     } catch {
       toast.error('Could not copy message');

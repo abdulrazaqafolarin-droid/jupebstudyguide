@@ -96,7 +96,7 @@ function detectFilters(query: string, subject?: string, year?: number, category?
   const yearMatch = lower.match(/\b(201[4-9]|202[0-5])\b/);
   const foundCategory = /\bpractical\b/.test(lower)
     ? "practical"
-    : /\btheory|essay\b/.test(lower)
+    : /\b(?:theory|essay)\b/.test(lower)
       ? "theory"
       : /\b(?:objective|mcq|multiple.choice)\b/.test(lower)
         ? "objective"
@@ -230,7 +230,13 @@ export async function retrieveRelevantQuestions(
     : Promise.resolve([] as RetrievedQuestion[]);
 
   const [lexicalRows, vectorRows] = await Promise.all([lexicalPromise, vectorPromise]);
-  return mergeQuestionMatches(vectorRows, lexicalRows, maxQuestions);
+  // Keep explicit year/category/subject requests tight across both retrieval wires.
+  const filteredVectorRows = vectorRows.filter((question) =>
+    (!filters.subject || question.subject === filters.subject) &&
+    (!filters.year || question.year === filters.year) &&
+    (!filters.category || question.category === filters.category)
+  );
+  return mergeQuestionMatches(filteredVectorRows, lexicalRows, maxQuestions);
 }
 
 function formatOptions(options: unknown): string {

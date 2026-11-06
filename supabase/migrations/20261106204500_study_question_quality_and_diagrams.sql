@@ -24,12 +24,24 @@ WHERE id = 'physics-2020-theory-08' AND COALESCE(hidden, false) = false;
 -- These records depend on diagrams/graphs which are not present in the stored
 -- source and whose exact topology/values cannot safely be reconstructed.
 -- Hiding them prevents a student from being asked to calculate from absent data.
+-- Restore the two 2020 theory questions for which the official paper supplies
+-- the complete original figure descriptions and axes.
+UPDATE public.study_questions
+SET hidden = false,
+    image_url = 'https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/main/public/question-images/physics-2020-force-extension.svg'
+WHERE id = 'physics-2020-theory-01';
+
+UPDATE public.study_questions
+SET hidden = false,
+    image_url = 'https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/main/public/question-images/physics-2020-battery-circuit-vi.svg'
+WHERE id = 'physics-2020-theory-05';
+
+-- These records still depend on figures whose original source diagrams have
+-- not yet been recovered. Hide them, rather than showing incomplete prompts.
 UPDATE public.study_questions
 SET hidden = true
 WHERE id IN (
   'physics-2014-theory-01-005',
-  'physics-2020-theory-01',
-  'physics-2020-theory-05',
   'physics-2021-theory-08',
   'physics-2024-theory-06'
 );

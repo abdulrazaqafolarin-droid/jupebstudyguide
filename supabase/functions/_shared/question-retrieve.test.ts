@@ -60,13 +60,10 @@ Deno.test("question document text indexes the metadata and useful answer context
     difficulty: "medium",
     image_url: "https://example.com/diagram.png",
   });
-  assert(text.includes("chem-2024-theory-009"), "Question IDs must be searchable.");
   assert(text.includes("chemistry"), "Subject metadata must be searchable.");
   assert(text.includes("2024"), "Exam year must be searchable.");
-  assert(text.includes("Periodic table"), "Topic must be searchable.");
-  assert(text.includes("Atomic radius"), "Options must be searchable.");
+  assert(text.includes("Options: [{\"label\":\"A\",\"text\":\"Atomic radius\"}]"), "Options must retain the original embedding format.");
   assert(text.includes("Nuclear charge"), "Explanation must be searchable.");
-  assert(text.includes("accompanying question image"), "Image-backed question metadata must be indexed.");
 });
 
 Deno.test("hybrid RRF merges duplicate question IDs and keeps distinct candidates", () => {
@@ -113,4 +110,18 @@ Deno.test("subject, year and category filters are detected from natural question
   assert(filters.subject === "chemistry", "Subject should be detected.");
   assert(filters.year === 2026, "The current exam year should be supported.");
   assert(filters.category === "theory", "Question category should be detected.");
+});
+
+Deno.test("canonical embedding text stays compatible with the previous live vector index", () => {
+  const legacy = "physics (2021 objective)\\nQ: Find the force.\\nOptions: [{\\"label\\":\\"A\\",\\"text\\":\\"2 N\\"}]\\nAnswer: A\\nExplanation: Use F = ma.";
+  const current = formatQuestionForEmbedding({
+    subject: "physics",
+    year: 2021,
+    category: "objective",
+    question: "Find the force.",
+    options: [{ label: "A", text: "2 N" }],
+    correct_answer: "A",
+    explanation: "Use F = ma.",
+  });
+  assert(current === legacy, "Existing embeddings and re-indexed questions must share identical canonical text.");
 });

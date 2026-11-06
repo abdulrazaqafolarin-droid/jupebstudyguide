@@ -35,6 +35,10 @@ WHERE id = 'physics-2020-theory-01';
 
 UPDATE public.study_questions
 SET hidden = false,
+    question = replace(
+      replace(question, 'thermal resistance', 'internal resistance'),
+      'Kirchoff', 'Kirchhoff'
+    ),
     image_url = 'https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/main/public/question-images/physics-2020-battery-circuit-vi.svg'
 WHERE id = 'physics-2020-theory-05';
 
@@ -48,13 +52,17 @@ WHERE id = 'physics-2021-theory-08';
 -- The rectangular coil area is 0.030 m × 0.020 m = 0.0006 m².
 -- Torque = N B I A = 200 × 0.8 × 0.5 × 0.0006 = 0.048 N m.
 UPDATE public.study_questions
-SET options = to_jsonb(
-      jsonb_set(
-        (options #>> '{}')::jsonb,
-        '{2,text}',
-        to_jsonb('0.048 Nm'::text)
-      )::text
-    ),
+SET options = CASE
+      WHEN jsonb_typeof(options) = 'string' THEN
+        to_jsonb(jsonb_set(
+          (options #>> '{}')::jsonb,
+          '{2,text}',
+          to_jsonb('0.048 Nm'::text)
+        )::text)
+      WHEN jsonb_typeof(options) = 'array' THEN
+        jsonb_set(options, '{2,text}', to_jsonb('0.048 Nm'::text))
+      ELSE options
+    END,
     explanation = 'The rectangular coil area is length × diameter = 0.030 × 0.020 = 0.0006 m². Torque = N B I A = 200 × 0.8 × 0.5 × 0.0006 = 0.048 N m. Therefore option C is correct.'
 WHERE id = 'physics-2020-objective-016';
 
@@ -66,16 +74,24 @@ SET question = replace(question, '10^4', '10^6'),
     explanation = 'The de Broglie wavelength is lambda = h/(mv) = (6.63 × 10^-34)/(9.11 × 10^-31 × 3.0 × 10^6) = 2.43 × 10^-10 m. Therefore option B is correct.'
 WHERE id = 'physics-2020-objective-023';
 
--- Restore the official 2020 thermometric-liquid statements and option C.
+-- Restore the official 2020 thermometric-liquid options and answer.
+-- The official JUPEB paper lists C = "II and III" and D = "IV and V";
+-- IV and V are the unsuitable properties.
 UPDATE public.study_questions
 SET question = 'I. It should be a good conductor of heat. II. It should be opaque. III. Its expansion should be regular. IV. It should wet glass. V. It should have a high melting point and low boiling point. Which of the above properties are NOT those of a suitable thermometric liquid?',
-    options = to_jsonb(
-      jsonb_set(
-        (options #>> '{}')::jsonb,
-        '{2,text}',
-        to_jsonb('II and III'::text)
-      )::text
-    )
+    options = CASE
+      WHEN jsonb_typeof(options) = 'string' THEN
+        to_jsonb(jsonb_set(
+          (options #>> '{}')::jsonb,
+          '{2,text}',
+          to_jsonb('II and III'::text)
+        )::text)
+      WHEN jsonb_typeof(options) = 'array' THEN
+        jsonb_set(options, '{2,text}', to_jsonb('II and III'::text))
+      ELSE options
+    END,
+    correct_answer = 'D',
+    explanation = 'A suitable thermometric liquid should conduct heat well, be visible in the tube, expand regularly, not wet the glass, and have a high boiling point with a low melting point. Statements IV and V are unsuitable, so option D is correct.'
 WHERE id = 'physics-2020-objective-049';
 
 -- These figure-dependent records have no recoverable source diagram. Hide them
@@ -107,5 +123,34 @@ WHERE id = 'bio-2021-objective-r03'
       AND duplicate.category = public.study_questions.category
       AND lower(trim(duplicate.question)) = lower(trim(public.study_questions.question))
   );
+
+-- Hide the remaining visible objective records with duplicate answer-choice
+-- text. Their intended distractors cannot be recovered from the current bank
+-- transcription; keeping them visible would present ambiguous/duplicated MCQs.
+-- These rows are retained and can be restored after source wording is verified.
+UPDATE public.study_questions
+SET hidden = true
+WHERE id IN (
+  'bio-2019-objective-042',
+  'bio-2024-objective-032',
+  'chemistry-2014-objective-012',
+  'che-2017-q0036',
+  'chemistry-2025-objective-019',
+  'chemistry-2025-objective-024',
+  'mat-2016-mq-0009',
+  'mat-2016-mq-0011',
+  'mat-2016-mq-0040',
+  'mat-2017-mq-0003',
+  'mat-2019-mq-0025',
+  'mat-2019-mq-0028',
+  'mat-2019-objective-r11',
+  'mat-2020-mq-0038',
+  'mat-2022-obj-0001',
+  'physics-2014-objective-045',
+  'physics-2015-objective-011',
+  'physics-2016-objective-047',
+  'physics-2018-objective-020',
+  'physics-2018-objective-031'
+);
 
 NOTIFY pgrst, 'reload schema';

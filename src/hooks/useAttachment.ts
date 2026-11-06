@@ -72,7 +72,7 @@ export function useAttachment() {
     } finally {
       setIsProcessing(false);
     }
-  }, []);
+  }, [attachment]);
 
   const clearAttachment = useCallback(() => {
     if (attachment?.preview) {

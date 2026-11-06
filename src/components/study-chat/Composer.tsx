@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 interface ComposerProps {
   value: string;
   onChange: (value: string) => void;
-  onSend: () => void;
+  onSend: (attachment: { base64: string; mimeType: string; name: string } | null) => void;
   onStop: () => void;
   isStreaming: boolean;
   placeholder: string;

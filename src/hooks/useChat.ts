@@ -141,12 +141,9 @@ export function useChat() {
   const offlineQueueRef = useRef<OfflineItem[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const channelReadyRef = useRef(false);
-  const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
-  const pollCursorRef = useRef<string>('');
-  const readReceiptPollRef = useRef<ReturnType<typeof setInterval>>();
   // Messages deleted-for-me on THIS device (localStorage-backed).
   const hiddenMsgIdsRef = useRef<Set<string>>(new Set());
-  // Shared by realtime INSERT / broadcast / poll so one incoming message
+  // Shared by realtime INSERT / broadcast paths so one incoming message
   // can't increment the unread badge through more than one delivery path.
   const seenIncomingRef = useRef<Set<string>>(new Set());
 
@@ -221,7 +218,7 @@ export function useChat() {
   }, [user?.id]);
 
   // Returns true only the FIRST time an incoming message id is seen, so
-  // realtime + broadcast + poll each deliver the message but only one of
+  // realtime and broadcast can both deliver the message, but only one of
   // them increments the unread counter.
   const markIncomingSeen = useCallback((id: string): boolean => {
     const seen = seenIncomingRef.current;
@@ -909,7 +906,7 @@ void (async () => {
           msgBroadcastRetry = 0;
         } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
           debugWarn('[realtime] msg-broadcast', status, '- scheduling resubscribe');
-          // Polling already covers delivery; keep the channel retrying quietly
+          // The Postgres Changes channel covers new messages; keep this broadcast channel retrying quietly
           // with capped backoff instead of dying silently.
           clearTimeout(msgBroadcastTimer);
           const delay = Math.min(3000 * Math.pow(1.5, msgBroadcastRetry++), 30000);
@@ -937,91 +934,6 @@ void (async () => {
     };
   }, [user, fetchConversations, markIncomingSeen]);
 
-  // Polling: runs continuously as primary message delivery mechanism
-  useEffect(() => {
-    if (!user) return;
-
-    const startPoll = () => {
-      if (pollTimerRef.current) return;
-      pollTimerRef.current = setInterval(async () => {
-        // Initialize cursor only when conversations are loaded
-        if (!pollCursorRef.current) {
-          const convs = conversationsRef.current;
-          if (convs.length === 0) return;
-          const latestTs = convs.reduce((latest, c) => {
-            if (!c.last_message?.created_at) return latest;
-            return c.last_message.created_at > latest ? c.last_message.created_at : latest;
-          }, '');
-          pollCursorRef.current = latestTs || new Date().toISOString();
-          return;
-        }
-
-        const convIds = convIdsRef.current;
-        if (convIds.length === 0) return;
-
-        try {
-          const { data, error } = await supabase
-            .from('messages')
-            .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
-            .in('conversation_id', convIds)
-            .gt('created_at', pollCursorRef.current)
-            .order('created_at', { ascending: true })
-            .limit(100);
-
-          if (error) throw error;
-          if (!data || data.length === 0) return;
-
-          pollCursorRef.current = data[data.length - 1].created_at;
-
-          for (const newMsg of data) {
-            if (newMsg.sender_id === user.id) continue;
-            const firstIncoming = markIncomingSeen(newMsg.id);
-
-            const currentConv = activeConvRef.current;
-            if (newMsg.conversation_id === currentConv) {
-              setMessages(prev =>
-                prev.some(m => m.id === newMsg.id)
-                  ? prev
-                  : [...prev, newMsg as Message].sort(
-                      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-                    )
-              );
-              if (firstIncoming) markActiveReadRef.current?.(newMsg.conversation_id, newMsg.sender_id);
-            }
-            setConversations(prev => {
-              const updated = prev.map(c =>
-                c.id === newMsg.conversation_id
-                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + (firstIncoming ? 1 : 0), last_message: newMsg as Message }
-                  : c
-              );
-              return updated.sort((a, b) => {
-                const aTime = a.last_message?.created_at;
-                const bTime = b.last_message?.created_at;
-                if (!aTime && !bTime) return 0;
-                if (!aTime) return 1;
-                if (!bTime) return -1;
-                return bTime.localeCompare(aTime);
-              });
-            });
-
-            window.dispatchEvent(new CustomEvent('chat-new-message', {
-              detail: { message: newMsg },
-            }));
-          }
-        } catch (err) {
-          debugWarn('[useChat] poll fallback error:', err);
-        }
-      }, 3000);
-    };
-
-    startPoll();
-
-    return () => {
-      clearInterval(pollTimerRef.current);
-      pollTimerRef.current = undefined;
-    };
-  }, [user, markIncomingSeen]);
-
   useEffect(() => {
     if (!user?.id) {
       broadcastRef.current?.close();
@@ -1046,44 +958,6 @@ void (async () => {
       if (broadcastRef.current === channel) broadcastRef.current = null;
     };
   }, [user?.id]);
-
-  // Read receipts polling — polls own messages in active conversation for is_read updates
-  // Realtime UPDATE handler (line ~542) is the primary path, but it can be unreliable.
-  // This ensures the blue checkmark always updates within 5s.
-  useEffect(() => {
-    if (!user) return;
-
-    readReceiptPollRef.current = setInterval(async () => {
-      const convId = activeConvRef.current;
-      if (!convId) return;
-
-      try {
-        const { data } = await supabase
-          .from('messages')
-          .select('id, is_read, read_at, delivered_at')
-          .eq('conversation_id', convId)
-          .eq('sender_id', user.id)
-          .neq('is_read', true)
-          .limit(30);
-
-        if (data && data.length > 0) {
-          setMessages(prev => prev.map(m => {
-            const update = data.find(d => d.id === m.id);
-            if (update && (update.is_read !== m.is_read || update.read_at !== m.read_at || update.delivered_at !== m.delivered_at)) {
-              return { ...m, is_read: update.is_read, read_at: update.read_at, delivered_at: update.delivered_at };
-            }
-            return m;
-          }));
-        }
-      } catch {
-        // silent — don't spam console
-      }
-    }, 5000);
-
-    return () => {
-      clearInterval(readReceiptPollRef.current);
-    };
-  }, [user]);
 
   const openConversation = useCallback(async (conversationId: string) => {
     setActiveConversation(conversationId);
@@ -1793,7 +1667,7 @@ void (async () => {
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     });
-    // Per-conversation realtime and its poll fallback both funnel here.
+    // Per-conversation and global realtime deliveries both funnel here.
     // The shared seen-set dedupes against the global channel / broadcast /
     // poll paths so a message is mark-read-queued exactly once, and only
     // when the user is actually inside this conversation.

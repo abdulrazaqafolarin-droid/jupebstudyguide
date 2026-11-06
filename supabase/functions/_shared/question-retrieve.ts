@@ -100,7 +100,7 @@ export function formatQuestionForEmbedding(q: {
   return lines.join("\n");
 }
 
-function detectFilters(query: string, subject?: string, year?: number, category?: string) {
+export function detectQuestionFilters(query: string, subject?: string, year?: number, category?: string) {
   const lower = query.toLowerCase();
   const subjects = [
     ["physics", /\bphysics\b/],
@@ -109,7 +109,7 @@ function detectFilters(query: string, subject?: string, year?: number, category?
     ["math", /\b(?:math|mathematics)\b/],
   ] as const;
   const foundSubjects = subjects.filter(([, pattern]) => pattern.test(lower)).map(([name]) => name);
-  const yearMatch = lower.match(/\b(201[4-9]|202[0-5])\b/);
+  const yearMatch = lower.match(/\b(201[4-9]|202[0-6])\b/);
   const foundCategory = /\bpractical\b/.test(lower)
     ? "practical"
     : /\b(?:theory|essay)\b/.test(lower)
@@ -225,7 +225,7 @@ export async function retrieveRelevantQuestions(
   const maxQuestions = Math.min(Math.max(options.maxQuestions ?? 6, 1), 12);
   const candidateCount = Math.min(Math.max(maxQuestions * 3, 8), 24);
   const threshold = options.similarityThreshold ?? 0.35;
-  const filters = detectFilters(cleanQuery, options.subject, options.year, options.category);
+  const filters = detectQuestionFilters(cleanQuery, options.subject, options.year, options.category);
 
   const lexicalPromise = callQuestionRpc(supabaseUrl, supabaseKey, "match_study_questions_text", {
     query_text: cleanQuery,

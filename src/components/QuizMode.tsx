@@ -50,7 +50,12 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
   const [showResult, setShowResult] = useState(false);
   const [quizComplete, setQuizComplete] = useState(false);
   const [showTimerSelect, setShowTimerSelect] = useState(true);
+  const [imageBroken, setImageBroken] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setImageBroken(false);
+  }, [currentIndex]);
   const timer = useQuizTimer();
   const isMobile = useIsMobile();
 
@@ -363,7 +368,23 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
           </span>
         </div>
 
-        {/* Question */}
+        {/* Optional question image plus the complete text prompt. */}
+        {currentQuestion.imageUrl && !imageBroken && (
+          <div className="mb-5 rounded-xl border bg-muted/30 p-2">
+            <img
+              src={currentQuestion.imageUrl}
+              alt="Question illustration"
+              className="mx-auto max-h-64 w-full object-contain"
+              loading="lazy"
+              onError={() => setImageBroken(true)}
+            />
+          </div>
+        )}
+        {imageBroken && (
+          <p className="mb-4 text-xs text-muted-foreground" role="status">
+            The question image could not be loaded. The text question is still shown below.
+          </p>
+        )}
         <h3 className="text-lg font-medium mb-6 leading-relaxed">
           <QuestionMath content={currentQuestion.question} inline />
         </h3>

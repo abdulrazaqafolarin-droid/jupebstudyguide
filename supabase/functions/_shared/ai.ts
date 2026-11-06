@@ -53,7 +53,7 @@ export async function guardAiAccess(
     .maybeSingle();
   if (!hasAiAccountAccess(profile)) {
     return new Response(
-      JSON.stringify({ error: "Your five-day free trial has ended. Enter an activation code to continue using AI features." }),
+      JSON.stringify({ error: "Your one-day free trial has ended. Enter an activation code to continue using AI features." }),
       { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }

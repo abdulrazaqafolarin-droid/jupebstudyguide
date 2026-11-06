@@ -10,18 +10,15 @@ ALTER TABLE public.study_questions
   GENERATED ALWAYS AS (
     to_tsvector(
       'simple',
-      concat_ws(
-        ' ',
-        coalesce(id, ''),
-        coalesce(subject, ''),
-        coalesce(year::text, ''),
-        coalesce(category, ''),
-        coalesce(course, ''),
-        coalesce(question, ''),
-        coalesce(options::text, ''),
-        coalesce(correct_answer, ''),
-        coalesce(explanation, '')
-      )
+      coalesce(id, '') || ' ' ||
+      coalesce(subject, '') || ' ' ||
+      coalesce(year::text, '') || ' ' ||
+      coalesce(category, '') || ' ' ||
+      coalesce(course, '') || ' ' ||
+      coalesce(question, '') || ' ' ||
+      coalesce(options::text, '') || ' ' ||
+      coalesce(correct_answer, '') || ' ' ||
+      coalesce(explanation, '')
     )
   ) STORED;
 

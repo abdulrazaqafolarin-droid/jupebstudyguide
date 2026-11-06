@@ -14,5 +14,7 @@ describe("QuestionImage", () => {
     rerender(<QuestionImage imageUrl="https://example.com/broken.png" />);
     fireEvent.error(screen.getByRole("img"));
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    rerender(<QuestionImage imageUrl="https://example.com/next.png" />);
+    expect(screen.getByRole("img")).toHaveAttribute("src", "https://example.com/next.png");
   });
 });

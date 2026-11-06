@@ -20,6 +20,11 @@ const MAX_RETRIES = 3;
 const UNREAD_CACHE_KEY_PREFIX = 'jupeb-unread-cache:';
 const CACHE_TTL = 5 * 60 * 1000;
 
+async function alreadyPersistedMessage(clientMessageId: string): Promise<boolean> {
+  const { data, error } = await supabase.from('messages').select('id').eq('client_msg_id', clientMessageId).maybeSingle();
+  return !error && !!data?.id;
+}
+
 async function retryWithBackoff<T>(fn: () => Promise<T>, retries = MAX_RETRIES): Promise<T> {
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
@@ -116,11 +121,11 @@ export function useChat() {
   const mySlotRef = useRef<Record<string, 'a' | 'b'>>({});
   const [globalChannelStatus, setGlobalChannelStatus] = useState<string>('idle');
   const [globalInsertCount, setGlobalInsertCount] = useState(0);
-  type OfflineItem = { conversationId: string } & (
+  type OfflineItem = { conversationId: string; clientMessageId: string } & (
     | { kind: 'text'; content: string; replyToId?: string | null }
     | { kind: 'image'; imageUrl: string }
     | { kind: 'file'; fileUrl: string; fileName: string; fileSize: number; fileType: string }
-    | { kind: 'voice'; blob: Blob; senderId: string; duration: number; clientMessageId: string }
+    | { kind: 'voice'; blob: Blob; senderId: string; duration: number }
     | {
         kind: 'forward';
         content: string;
@@ -1103,9 +1108,9 @@ void (async () => {
         content: item.content.trim(),
         message_type: 'text',
         reply_to_id: item.replyToId || null,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1274,7 +1279,7 @@ void (async () => {
     setMessages(prev => [...prev, optimisticMsg]);
 
     if (!navigator.onLine) {
-      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
+      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, clientMessageId: clientId, content: content.trim(), replyToId });
       setPendingCount(offlineQueueRef.current.length);
       return;
     }
@@ -1380,7 +1385,7 @@ void (async () => {
     setMessages(prev => [...prev, optimisticMsg]);
 
     if (!navigator.onLine) {
-      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, clientMessageId: clientId, imageUrl });
       setPendingCount(offlineQueueRef.current.length);
       return;
     }
@@ -1447,7 +1452,7 @@ void (async () => {
     setMessages(prev => [...prev, optimisticMsg]);
 
     if (!navigator.onLine) {
-      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
+      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, clientMessageId: clientId, fileUrl, fileName, fileSize, fileType });
       setPendingCount(offlineQueueRef.current.length);
       return;
     }
@@ -1603,6 +1608,7 @@ void (async () => {
       offlineQueueRef.current.push({
         kind: 'forward',
         conversationId: targetConversationId,
+        clientMessageId: clientId,
         content: msg.content || '',
         messageType: msg.message_type === 'image' ? 'image' : msg.message_type === 'video' ? 'video' : msg.message_type === 'audio' ? 'audio' : 'text',
         imageUrl: msg.image_url,
@@ -1830,6 +1836,7 @@ void (async () => {
     offlineQueueRef.current.push({
       kind: 'voice',
       conversationId,
+      clientMessageId,
       blob,
       senderId,
       duration,

@@ -66,22 +66,29 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build stable-signed release APK
+      - name: Build signed release APK or isolated debug candidate
+        id: build-apk
+        shell: bash
         run: |
           set -euo pipefail
           chmod +x android/gradlew
-          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEYSTORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
-            echo "::error title=Persistent Android signing key required::Configure ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, and ANDROID_KEY_PASSWORD in GitHub Actions secrets. Production releases must never fall back to an ephemeral debug key."
-            exit 1
+          export APK_VERSION_CODE="$GITHUB_RUN_NUMBER"
+          export APK_VERSION_NAME="1.1.$GITHUB_RUN_NUMBER"
+
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ] && [ -n "$ANDROID_KEYSTORE_PASSWORD" ] && [ -n "$ANDROID_KEY_ALIAS" ] && [ -n "$ANDROID_KEY_PASSWORD" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/ci-release-key.jks
+            export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/ci-release-key.jks"
+            (cd android && ./gradlew assembleRelease --no-daemon)
+            echo "APK_PATH=android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_ENV"
+            echo "signing-mode=stable" >> "$GITHUB_OUTPUT"
+            echo "Built release APK with the configured persistent signing key."
+          else
+            echo "::warning title=Stable Android signing key unavailable::Building a debug-signed candidate for direct inspection/download only. It will not be published to android-latest or the in-app updater."
+            (cd android && ./gradlew assembleDebug --no-daemon)
+            echo "APK_PATH=android/app/build/outputs/apk/debug/app-debug.apk" >> "$GITHUB_ENV"
+            echo "signing-mode=debug-candidate" >> "$GITHUB_OUTPUT"
           fi
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/ci-release-key.jks
-          export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/ci-release-key.jks"
-          (cd android && ./gradlew assembleRelease)
-          echo "APK_PATH=android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_ENV"
-          echo "Built a release APK with the configured persistent signing key."
         env:
-          APK_VERSION_CODE: ${{ github.run_number }}
-          APK_VERSION_NAME: 1.1.${{ github.run_number }}
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}

@@ -995,7 +995,7 @@ const Index = () => {
                 >
                   <span className="text-2xl">{info.icon}</span>
                   <p className="font-medium mt-2">{info.name} Quiz</p>
-                  <p className="text-xs text-muted-foreground">{Math.min(10, objectiveCount)} objective questions available</p>
+                  <p className="text-xs text-muted-foreground">{objectiveCount} objective available · up to 10 per quiz</p>
                 </motion.button>
               );
             })}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { ProgressRing } from './ProgressRing';
@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
 import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
+import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 
 interface QuizModeProps {
   questions: Question[];
@@ -41,7 +42,9 @@ const TIMER_PRESETS = [
   { label: '1 hour', value: 60, gradient: 'from-violet-500/20 to-violet-600/10 hover:from-violet-500/30 hover:to-violet-600/20' },
 ];
 
-export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModeProps) => {
+export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, subject }: QuizModeProps) => {
+  // Defense in depth: this component itself refuses theory/practical questions.
+  const questions = useMemo(() => filterObjectiveQuizQuestions(incomingQuestions), [incomingQuestions]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Array<{ questionId: string; isCorrect: boolean; isGradable: boolean; timeSpent: number }>>([]);

@@ -136,21 +136,6 @@ async function getAccessToken(sa: ServiceAccount): Promise<string> {
   return cachedAccessToken.token;
 }
 
-async function createActionToken(admin: ReturnType<typeof createClient>, recipientId: string, conversationId: string, messageId: string, action: "reply" | "read"): Promise<string | null> {
-  const token = b64url(crypto.getRandomValues(new Uint8Array(32)));
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
-  const hash = Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-  const { error } = await admin.from("notification_action_tokens").insert({
-    token_hash: hash, recipient_id: recipientId, conversation_id: conversationId,
-    source_message_id: messageId, action,
-    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-  });
-  if (error) {
-    console.warn("[push-fcm] Could not create notification action token:", error.message);
-    return null;
-  }
-  return token;
-}
 
 function buildPreview(message: MessageRow): string {
   switch (message.message_type) {
@@ -183,6 +168,22 @@ Deno.serve(async (req) => {
     if (!messageId) return json({ error: "message_id required" }, 400);
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+const createActionToken = async (recipientId: string, conversationId: string, messageId: string, action: "reply" | "read"): Promise<string | null> => {
+  const token = b64url(crypto.getRandomValues(new Uint8Array(32)));
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  const hash = Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  const { error } = await admin.from("notification_action_tokens").insert({
+    token_hash: hash, recipient_id: recipientId, conversation_id: conversationId,
+    source_message_id: messageId, action,
+    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  });
+  if (error) {
+    console.warn("[push-fcm] Could not create notification action token:", error.message);
+    return null;
+  }
+  return token;
+};
 
     // Keep one-time action tokens bounded. Expired credentials can never be
     // redeemed, and this cleanup runs only when a new push dispatch occurs.
@@ -278,8 +279,8 @@ Deno.serve(async (req) => {
     const actionCapableRows = tokenRows.filter((row) => row.supports_notification_actions === true);
     await Promise.all(actionCapableRows.map(async (row) => {
       const [reply, read] = await Promise.all([
-        createActionToken(admin, String(row.user_id), String(message.conversation_id), String(message.id), "reply"),
-        createActionToken(admin, String(row.user_id), String(message.conversation_id), String(message.id), "read"),
+        createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "reply"),
+        createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "read"),
       ]);
       actionTokens.set(String(row.token), { reply, read });
     }));
@@ -370,7 +371,7 @@ Deno.serve(async (req) => {
           webSubs.map(async (sub) => {
             try {
               const readToken = await createActionToken(
-                admin, String(sub.user_id), String(message.conversation_id), String(message.id), "read",
+                String(sub.user_id), String(message.conversation_id), String(message.id), "read",
               );
               const webPayload = JSON.stringify({
                 title,

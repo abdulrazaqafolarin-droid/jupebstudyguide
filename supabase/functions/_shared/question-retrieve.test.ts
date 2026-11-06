@@ -1,6 +1,7 @@
 import {
   buildQuestionRAGContext,
   buildQuestionRetrievalQuery,
+  getRequestedQuestionCount,
   formatQuestionForEmbedding,
   mergeQuestionMatches,
   type RetrievedQuestion,
@@ -95,4 +96,11 @@ Deno.test("question RAG context carries precise year, subject, category and cita
   assert(context.promptBlock.includes("2022 chemistry (theory)"), "Citation context must preserve metadata.");
   assert(context.promptBlock.includes("[Q1]"), "The prompt must include the stable reference label.");
   assert(context.promptBlock.includes("without fabricating a source"), "The model must be told not to invent retrieved questions.");
+});
+
+Deno.test("requested question sets expand retrieval within the safe context cap", () => {
+  assert(getRequestedQuestionCount("Give me 10 Physics past questions from 2021") === 10, "Explicit question counts should be respected.");
+  assert(getRequestedQuestionCount("Show me all the objective questions in the 2020 Chemistry bank") === 12, "Broad all-question requests should retrieve the maximum supported context batch.");
+  assert(getRequestedQuestionCount("Explain Newton's second law") === 6, "Normal tutoring turns should retain the smaller default retrieval.");
+  assert(getRequestedQuestionCount("Give me 99 questions") === 12, "Question context must remain capped.");
 });

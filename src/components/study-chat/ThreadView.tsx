@@ -126,6 +126,7 @@ export function ThreadView({
               )}
               style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
             >
+              {msg.attachment && <div className="mb-2 flex items-center gap-2 rounded-lg border border-current/15 bg-black/5 px-2 py-1.5 text-xs"><span aria-hidden="true">📎</span><span className="truncate">{msg.attachment.name}</span></div>}
               {msg.role === 'assistant' ? (
                 <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere]">
                   <MathRenderer content={msg.content} className="text-sm leading-relaxed" />

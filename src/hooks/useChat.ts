@@ -257,7 +257,7 @@ export function useChat() {
         // Cross-client receipt: the moment this reader has entered the
         // conversation, tell whoever is viewing that thread — the peer's
         // double-tick turns blue instantly instead of waiting for the
-        // postgres UPDATE event (the 5s receipt poll stays as fallback).
+        // postgres UPDATE event remains the source of truth.
         try {
           msgBroadcastRef.current?.send({
             type: 'broadcast',
@@ -594,11 +594,12 @@ export function useChat() {
     if (!user) return;
 
     let retryCount = 0;
-    let retryTimer: ReturnType<typeof setTimeout>;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let activeGlobalChannel: ReturnType<typeof supabase.channel> | null = null;
     let disposed = false;
 
     const createGlobalChannel = () => {
-      if (disposed) return;
+      if (disposed || activeGlobalChannel) return;
 
       const channel = supabase
         .channel(`chat-global-${user.id}`)
@@ -796,27 +797,37 @@ export function useChat() {
           debug('[Realtime] chat-global status:', status);
           if (status === 'SUBSCRIBED') {
             retryCount = 0;
-            fetchConversations();
-          } else if (status === 'CHANNEL_ERROR') {
-            console.error('[useChat] global channel error:', err);
-            const delay = Math.min(3000 * Math.pow(2, retryCount), 30000);
+            void fetchConversations();
+            // Reconcile the active thread once after every connection/reconnect.
+            // This closes any realtime gap without a background polling loop.
+            const active = activeConvRef.current;
+            if (active) void fetchMessages(active);
+          } else if (
+            status === 'CHANNEL_ERROR' ||
+            status === 'TIMED_OUT' ||
+            status === 'CLOSED'
+          ) {
+            if (activeGlobalChannel !== channel || disposed) return;
+            console.warn('[useChat] global realtime channel reconnecting:', status, err);
+            activeGlobalChannel = null;
+            const delay = Math.min(1500 * Math.pow(1.7, retryCount), 30000);
             retryCount++;
-            clearTimeout(retryTimer);
+            if (retryTimer) clearTimeout(retryTimer);
             retryTimer = setTimeout(() => {
-              supabase.removeChannel(channel);
+              retryTimer = null;
+              void supabase.removeChannel(channel);
               createGlobalChannel();
-            }, delay);
-          } else if (status === 'CLOSED') {
-            debugWarn('[realtime] chat-global channel closed');
+            }, delay + Math.floor(Math.random() * 500));
           } else {
             debugWarn('[realtime] chat-global status:', status, err);
           }
         });
 
+      activeGlobalChannel = channel;
       return channel;
     };
 
-    const globalChannel = createGlobalChannel();
+    createGlobalChannel();
 
     let msgBroadcastRetry = 0;
     let msgBroadcastTimer: ReturnType<typeof setTimeout> | undefined;
@@ -926,13 +937,14 @@ void (async () => {
 
     return () => {
       disposed = true;
-      clearTimeout(retryTimer);
+      if (retryTimer) clearTimeout(retryTimer);
       clearTimeout(msgBroadcastTimer);
-      supabase.removeChannel(globalChannel);
-      if (msgBroadcastBox.current) supabase.removeChannel(msgBroadcastBox.current);
+      if (activeGlobalChannel) void supabase.removeChannel(activeGlobalChannel);
+      activeGlobalChannel = null;
+      if (msgBroadcastBox.current) void supabase.removeChannel(msgBroadcastBox.current);
       msgBroadcastRef.current = null;
     };
-  }, [user, fetchConversations, markIncomingSeen]);
+  }, [user, fetchConversations, fetchMessages, markIncomingSeen]);
 
   useEffect(() => {
     if (!user?.id) {

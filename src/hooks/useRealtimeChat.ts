@@ -70,6 +70,10 @@ export function useRealtimeChat({
         if (disposedRef.current || channelRef.current !== channel) return;
 
         if (status === 'SUBSCRIBED') {
+          if (reconnectTimerRef.current) {
+            clearTimeout(reconnectTimerRef.current);
+            reconnectTimerRef.current = null;
+          }
           reconnectAttemptsRef.current = 0;
           return;
         }

@@ -19,7 +19,7 @@ async function sha256(value: string): Promise<string> {
 }
 
 Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersFor(req.headers.get("origin"));\n  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");

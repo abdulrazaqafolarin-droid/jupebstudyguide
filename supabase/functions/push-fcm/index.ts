@@ -263,8 +263,19 @@ Deno.serve(async (req) => {
     let sent = 0;
     let webSent = 0;
 
+    const actionTokens = new Map<string, { reply: string | null; read: string | null }>();
+    const androidRecipients = [...new Set(tokenRows.map((row) => String(row.user_id)))];
+    await Promise.all(androidRecipients.map(async (recipientId) => {
+      const [reply, read] = await Promise.all([
+        createActionToken(admin, recipientId, String(message.conversation_id), String(message.id), "reply"),
+        createActionToken(admin, recipientId, String(message.conversation_id), String(message.id), "read"),
+      ]);
+      actionTokens.set(recipientId, { reply, read });
+    }));
+
     await Promise.all(
       tokenRows.map(async (row) => {
+        const actions = actionTokens.get(String(row.user_id));
         const res = await fetch(endpoint, {
           method: "POST",
           headers: {
@@ -274,23 +285,19 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             message: {
               token: row.token,
-              notification: { title, body },
+              // Data-only pushes are required so our native service can add
+              // Android RemoteInput reply and Mark as read actions.
               data: {
                 type: "chat",
+                title,
+                body,
+                channel_id: PUSH_CHANNEL,
                 conversation_id: String(message.conversation_id),
                 message_id: String(message.id),
+                reply_token: actions?.reply ?? "",
+                read_token: actions?.read ?? "",
               },
-              android: {
-                priority: "HIGH",
-                notification: {
-                  channel_id: PUSH_CHANNEL,
-                  // One shade entry per conversation; newest replaces it.
-                  tag: String(message.conversation_id),
-                  icon: "ic_stat_rutex",
-                  color: "#E19209",
-                  sound: "default",
-                },
-              },
+              android: { priority: "HIGH", ttl: "86400s" },
             },
           }),
         });

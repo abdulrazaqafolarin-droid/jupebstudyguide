@@ -1,0 +1,81 @@
+/**
+ * Fetches a public question illustration in the browser and packages it as
+ * an image attachment for the vision-capable AI route. The server never has
+ * to fetch an arbitrary URL (avoids turning this feature into an SSRF proxy).
+ */
+export interface QuestionImageAttachment {
+  base64: string;
+  mimeType: string;
+  name: string;
+}
+
+export const MAX_QUESTION_IMAGE_BYTES = 1_500_000;
+
+const SUPPORTED_MIME_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
+  "image/gif",
+]);
+
+export async function fetchQuestionImageAttachment(
+  imageUrl: string,
+  signal?: AbortSignal,
+): Promise<QuestionImageAttachment> {
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(imageUrl);
+  } catch {
+    throw new Error("The question image URL is invalid.");
+  }
+
+  if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
+    throw new Error("The question image must use a secure web address.");
+  }
+
+  const response = await fetch(parsedUrl.href, {
+    method: "GET",
+    mode: "cors",
+    credentials: "omit",
+    referrerPolicy: "no-referrer",
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(`The question image could not be downloaded (HTTP ${response.status}).`);
+  }
+
+  const declaredLength = response.headers.get("content-length");
+  if (declaredLength && Number(declaredLength) > MAX_QUESTION_IMAGE_BYTES) {
+    throw new Error("The question image is too large to send for AI analysis (maximum 1.5 MB).");
+  }
+
+  const blob = await response.blob();
+  const mimeType = (blob.type || response.headers.get("content-type") || "")
+    .split(";")[0]
+    .trim()
+    .toLowerCase();
+
+  if (!SUPPORTED_MIME_TYPES.has(mimeType)) {
+    throw new Error("This question image format cannot be analysed. Use PNG, JPEG, WebP, or GIF.");
+  }
+  if (blob.size === 0) {
+    throw new Error("The question image is empty.");
+  }
+  if (blob.size > MAX_QUESTION_IMAGE_BYTES) {
+    throw new Error("The question image is too large to send for AI analysis (maximum 1.5 MB).");
+  }
+
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+
+  const rawName = decodeURIComponent(parsedUrl.pathname.split("/").filter(Boolean).pop() || "question-image");
+  const name = rawName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-100) || "question-image";
+
+  return { base64: btoa(binary), mimeType, name };
+}

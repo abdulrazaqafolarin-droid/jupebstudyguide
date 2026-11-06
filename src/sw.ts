@@ -76,30 +76,32 @@ self.addEventListener('push', (event) => {
 });
 
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
   const raw = event.notification.data as { url?: string; read_token?: string } | null;
 
-  // The browser notification API has buttons but no native inline text input.
-  // "Reply" opens the chat composer; "Mark as read" is processed here.
+  // Browser notifications have action buttons but no editable inline text
+  // field. "Reply" opens the exact conversation; Android provides RemoteInput.
   if (event.action === 'read' && raw?.read_token) {
     event.waitUntil((async () => {
       try {
-        await fetch(`${SUPABASE_URL}/functions/v1/notification-action`, {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/notification-action`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             apikey: SUPABASE_PUBLISHABLE_KEY,
-            Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({ token: raw.read_token, action: 'read' }),
         });
+        // Keep the notification visible on network/server errors so the user
+        // can retry. 410 means the one-time action was already used or expired.
+        if (response.ok || response.status === 410) event.notification.close();
       } catch {
-        // The in-app conversation remains the authoritative recovery path.
+        // Leave the notification available for retry when connectivity returns.
       }
     })());
     return;
   }
 
+  event.notification.close();
   const url = raw?.url || '/';
   event.waitUntil((async () => {
     const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });

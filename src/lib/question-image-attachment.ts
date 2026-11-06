@@ -51,8 +51,7 @@ export async function fetchQuestionImageAttachment(
     throw new Error("The question image is too large to send for AI analysis (maximum 1.5 MB).");
   }
 
-  const blob = await response.blob();
-  const mimeType = (blob.type || response.headers.get("content-type") || "")
+  const mimeType = (response.headers.get("content-type") || "")
     .split(";")[0]
     .trim()
     .toLowerCase();
@@ -60,14 +59,16 @@ export async function fetchQuestionImageAttachment(
   if (!SUPPORTED_MIME_TYPES.has(mimeType)) {
     throw new Error("This question image format cannot be analysed. Use PNG, JPEG, WebP, or GIF.");
   }
-  if (blob.size === 0) {
+
+  // Read bytes directly rather than converting through Blob: this also
+  // avoids cross-realm Blob coercion in embedded WebViews and test runtimes.
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.byteLength === 0) {
     throw new Error("The question image is empty.");
   }
-  if (blob.size > MAX_QUESTION_IMAGE_BYTES) {
+  if (bytes.byteLength > MAX_QUESTION_IMAGE_BYTES) {
     throw new Error("The question image is too large to send for AI analysis (maximum 1.5 MB).");
   }
-
-  const bytes = new Uint8Array(await blob.arrayBuffer());
   let binary = "";
   const chunkSize = 0x8000;
   for (let offset = 0; offset < bytes.length; offset += chunkSize) {

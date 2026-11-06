@@ -265,3 +265,48 @@ REVOKE ALL ON FUNCTION public.match_study_questions_text(TEXT, INT, TEXT, INT, T
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.match_study_questions_text(TEXT, INT, TEXT, INT, TEXT)
   TO service_role;
+
+
+-- Preserve the separate shared-textbook RAG, but use an explicit subject
+-- parameter for the RPC instead of passing a query-string filter to PostgREST.
+-- This is a distinct four-argument overload; existing three-argument callers
+-- remain compatible while the current server switches to the new signature.
+CREATE OR REPLACE FUNCTION public.match_textbook_chunks(
+  query_embedding extensions.vector(768),
+  match_threshold FLOAT,
+  match_count INT,
+  filter_subject TEXT
+)
+RETURNS TABLE (
+  id UUID,
+  textbook_id UUID,
+  textbook_title TEXT,
+  content TEXT,
+  similarity FLOAT
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    tc.id,
+    tc.textbook_id,
+    t.title,
+    tc.content,
+    1 - (tc.embedding <=> query_embedding) AS similarity
+  FROM public.textbook_chunks AS tc
+  JOIN public.textbooks AS t ON t.id = tc.textbook_id
+  WHERE tc.embedding IS NOT NULL
+    AND (filter_subject IS NULL OR t.subject = filter_subject)
+    AND 1 - (tc.embedding <=> query_embedding) > match_threshold
+  ORDER BY tc.embedding <=> query_embedding
+  LIMIT LEAST(GREATEST(match_count, 1), 20);
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.match_textbook_chunks(extensions.vector, DOUBLE PRECISION, INTEGER, TEXT)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.match_textbook_chunks(extensions.vector, DOUBLE PRECISION, INTEGER, TEXT)
+  TO service_role;

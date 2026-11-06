@@ -16,6 +16,12 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check Supabase Edge Functions
+        run: deno check supabase/functions/push-fcm/index.ts supabase/functions/notification-action/index.ts
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:

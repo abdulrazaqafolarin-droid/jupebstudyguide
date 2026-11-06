@@ -5,7 +5,7 @@ import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 import { toast } from "sonner";
 import { resolveActivationFailure, type ActivationStatusSnapshot } from "@/lib/activation-status";
 
-export interface ActivationStatus extends ActivationStatusSnapshot {}
+export type ActivationStatus = ActivationStatusSnapshot;
 
 // ---------------------------------------------------------------------------
 // Session-level activation cache.

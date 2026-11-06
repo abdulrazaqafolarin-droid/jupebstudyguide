@@ -10,6 +10,7 @@ ALTER TABLE public.study_questions
   GENERATED ALWAYS AS (
     to_tsvector(
       'simple',
+      'JUPEB past questions past question question bank ' ||
       coalesce(id, '') || ' ' ||
       coalesce(subject, '') || ' ' ||
       coalesce(year::text, '') || ' ' ||

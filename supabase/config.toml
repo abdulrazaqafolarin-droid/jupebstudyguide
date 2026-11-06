@@ -8,3 +8,5 @@ verify_jwt = false
 
 [functions.push-fcm]
 verify_jwt = false
+[functions.secure-login]
+verify_jwt = false

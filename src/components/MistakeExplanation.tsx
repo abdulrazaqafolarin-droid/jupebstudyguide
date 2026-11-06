@@ -17,6 +17,8 @@ const SYSTEM_PROMPT = [
   "In under 180 words: (1) why their chosen option looks tempting but is wrong,",
   "(2) the single key idea that makes the correct option right.",
   "Use LaTeX $...$ for ALL mathematical expressions.",
+  "If an image is attached, inspect the visible diagram, labels, values, and relationships before explaining.",
+  "If any part of the image is unclear, say so instead of guessing.",
   "Plain, encouraging tone. Never discuss anything beyond this question.",
 ].join(" ");
 

@@ -36,13 +36,19 @@ SET hidden = false,
     image_url = 'https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/main/public/question-images/physics-2020-battery-circuit-vi.svg'
 WHERE id = 'physics-2020-theory-05';
 
--- These records still depend on figures whose original source diagrams have
--- not yet been recovered. Hide them, rather than showing incomplete prompts.
+-- Restore the 2021 wire/current figure using the source circuit layout.
+UPDATE public.study_questions
+SET hidden = false,
+    image_url = 'https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/main/public/question-images/physics-2021-wire-current.svg'
+WHERE id = 'physics-2021-theory-08';
+
+-- The 2014 vector diagram and 2024 capacitor-network topology are still absent
+-- from the source records. Hide these prompts until their exact figures are
+-- recovered rather than supplying a guessed diagram.
 UPDATE public.study_questions
 SET hidden = true
 WHERE id IN (
   'physics-2014-theory-01-005',
-  'physics-2021-theory-08',
   'physics-2024-theory-06'
 );
 

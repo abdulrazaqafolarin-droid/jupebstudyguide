@@ -49,6 +49,29 @@ jobs:
           # `tools` package, which makes sdkmanager exit 1. Override it.
           packages: "platform-tools platforms;android-36 build-tools;36.0.0"
 
+      - name: Configure Firebase Android client
+        env:
+          FIREBASE_GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${FIREBASE_GOOGLE_SERVICES_JSON_BASE64:-}" ]; then
+            echo "::error::FIREBASE_GOOGLE_SERVICES_JSON_BASE64 is required for Android chat push notifications. Add the base64-encoded google-services.json for package com.jupeb.master."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/google-services.json
+          python3 - <<'PY'
+          import json
+          with open("android/app/google-services.json", encoding="utf-8") as source:
+              config = json.load(source)
+          packages = {
+              item.get("client_info", {}).get("android_client_info", {}).get("package_name")
+              for item in config.get("client", [])
+          }
+          assert "com.jupeb.master" in packages, "Firebase config must include Android package com.jupeb.master"
+          print("Firebase Android client config validated.")
+          PY
+
       - name: Install npm dependencies
         run: npm ci
 

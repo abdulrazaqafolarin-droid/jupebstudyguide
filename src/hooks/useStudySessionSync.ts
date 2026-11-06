@@ -1,67 +1,238 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import type { StudySessionData, StoredStudySession } from '@/types/syllabus';
+import { deserializeProgress, serializeProgress } from '@/types/syllabus';
+import { mergeStudySessions } from '@/lib/study-session-sync';
+
+const VALID_SUBJECTS = ['physics', 'chemistry', 'biology', 'math'] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
+function isValidSubjectList(value: unknown): value is string[] {
+  return Array.isArray(value)
+    && value.every(subject => typeof subject === 'string'
+      && (VALID_SUBJECTS as readonly string[]).includes(subject));
+}
+
+function isValidStoredTopic(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return typeof value.id === 'string'
+    && value.id.length > 0
+    && typeof value.name === 'string'
+    && typeof value.description === 'string'
+    && Array.isArray(value.subtopics)
+    && value.subtopics.every(item => typeof item === 'string')
+    && ['beginner', 'intermediate', 'advanced'].includes(String(value.difficulty))
+    && typeof value.estimatedHours === 'number'
+    && Number.isFinite(value.estimatedHours)
+    && value.estimatedHours >= 0;
+}
+
+function isValidStoredTask(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  return Number.isInteger(value.day)
+    && Number(value.day) > 0
+    && typeof value.subject === 'string'
+    && (VALID_SUBJECTS as readonly string[]).includes(value.subject)
+    && Array.isArray(value.topics)
+    && value.topics.every(isValidStoredTopic)
+    && Array.isArray(value.learningObjectives)
+    && value.learningObjectives.every(item => typeof item === 'string')
+    && Array.isArray(value.checkpointQuestions)
+    && value.checkpointQuestions.every(item => typeof item === 'string')
+    && typeof value.isCompleted === 'boolean'
+    && (value.completedAt === undefined
+      || (typeof value.completedAt === 'string' && Number.isFinite(Date.parse(value.completedAt))))
+    && (value.masteryScore === undefined
+      || (typeof value.masteryScore === 'number'
+        && Number.isFinite(value.masteryScore)
+        && value.masteryScore >= 0
+        && value.masteryScore <= 100));
+}
+
+function isStoredStudySession(value: unknown): value is StoredStudySession {
+  if (!isRecord(value)) return false;
+  const session = value;
+  const progress = session.progress;
+  if (!isRecord(progress)) return false;
+
+  const combination = progress.combination;
+  const subjectProgress = progress.subjectProgress;
+  return typeof session.id === 'string'
+    && session.id.length > 0
+    && typeof session.name === 'string'
+    && isValidSubjectList(session.subjects)
+    && ['active', 'paused', 'completed'].includes(String(session.status))
+    && typeof session.createdAt === 'string'
+    && Number.isFinite(Date.parse(session.createdAt))
+    && typeof session.updatedAt === 'string'
+    && Number.isFinite(Date.parse(session.updatedAt))
+    && typeof session.startDate === 'string'
+    && Number.isFinite(Date.parse(session.startDate))
+    && typeof session.dailyGoalMinutes === 'number'
+    && Number.isFinite(session.dailyGoalMinutes)
+    && Number(session.dailyGoalMinutes) > 0
+    && typeof progress.startedAt === 'string'
+    && Number.isFinite(Date.parse(progress.startedAt))
+    && Array.isArray(progress.dailyTasks)
+    && progress.dailyTasks.every(isValidStoredTask)
+    && new Set(progress.dailyTasks.map(task => task.day)).size === progress.dailyTasks.length
+    && Number.isInteger(progress.currentDay)
+    && Number(progress.currentDay) > 0
+    && typeof progress.overallProgress === 'number'
+    && Number.isFinite(progress.overallProgress)
+    && progress.overallProgress >= 0
+    && progress.overallProgress <= 100
+    && isRecord(combination)
+    && isValidSubjectList(combination.core)
+    && isValidSubjectList(combination.elective)
+    && isRecord(subjectProgress)
+    && Object.entries(subjectProgress).every(([subject, item]) =>
+      (VALID_SUBJECTS as readonly string[]).includes(subject)
+      && typeof item === 'number' && Number.isFinite(item) && item >= 0 && item <= 100)
+    && (progress.lastStudiedAt === undefined
+      || (typeof progress.lastStudiedAt === 'string' && Number.isFinite(Date.parse(progress.lastStudiedAt))));
+}
+function hydrateSessions(raw: StoredStudySession[]): StudySessionData[] {
+  return raw.map(session => ({
+    ...session,
+    progress: deserializeProgress(session.progress),
+  }));
+}
+
+function dehydrateSessions(sessions: StudySessionData[]): StoredStudySession[] {
+  return sessions.map(session => ({
+    ...session,
+    progress: serializeProgress(session.progress),
+  }));
+}
 
 export function useStudySessionSync(
   sessions: StudySessionData[],
   setSessions: (updater: StudySessionData[] | ((prev: StudySessionData[]) => StudySessionData[])) => void,
-  hasLocalData: boolean,
+  isLoaded: boolean,
 ) {
   const { user } = useAuth();
-  const lastHash = useRef<string>('');
-  const hasAttemptedRestore = useRef(false);
+  const userId = user?.id ?? null;
+  const sessionsRef = useRef(sessions);
+  sessionsRef.current = sessions;
+  const [readyUserId, setReadyUserId] = useState<string | null>(null);
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
+  const lastSuccessfulHash = useRef<string>('');
+  const pendingHash = useRef<string | null>(null);
 
+  // Fetch before permitting writes. A failed read deliberately leaves sync
+  // locked so a transient error cannot make an empty local array overwrite a
+  // previously saved cloud record.
   useEffect(() => {
-    if (!user || hasAttemptedRestore.current) return;
-    if (hasLocalData) {
-      hasAttemptedRestore.current = true;
+    if (!userId || !isLoaded) {
+      setReadyUserId(null);
       return;
     }
-    hasAttemptedRestore.current = true;
 
-    supabase
-      .from('study_sessions')
-      .select('sessions')
-      .eq('user_id', user.id)
-      .single()
-      .then(({ data, error }) => {
-        if (error || !data) return;
-        const raw = data.sessions as unknown as StoredStudySession[];
-        if (Array.isArray(raw) && raw.length > 0) {
-          const hydrated: StudySessionData[] = raw.map((s) => ({
-            ...s,
-            progress: {
-              ...s.progress,
-              startedAt: new Date(s.progress.startedAt),
-              lastStudiedAt: s.progress.lastStudiedAt ? new Date(s.progress.lastStudiedAt) : undefined,
-              dailyTasks: (s.progress.dailyTasks ?? []).map((t) => ({
-                ...t,
-                completedAt: t.completedAt ? new Date(t.completedAt) : undefined,
-              })),
-            },
-          }));
-          setSessions(hydrated);
+    let active = true;
+    setReadyUserId(null);
+
+    const restoreAndMerge = async () => {
+      const { data, error } = await supabase
+        .from('study_sessions')
+        .select('sessions')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!active) return;
+      if (error) {
+        console.error('Could not restore study sessions; local data was retained.', error);
+        return;
+      }
+
+      const raw = data?.sessions;
+      if (data && !Array.isArray(raw)) {
+        console.error('Cloud study-session record has an invalid shape; no overwrite was attempted.');
+        return;
+      }
+      const storedCloudSessions = (raw ?? []) as unknown[];
+      if (!storedCloudSessions.every(isStoredStudySession)) {
+        console.error('Cloud study-session record contains invalid entries; no overwrite was attempted.');
+        return;
+      }
+
+      try {
+        const cloudSessions = hydrateSessions(storedCloudSessions as StoredStudySession[]);
+        const merged = mergeStudySessions(sessionsRef.current, cloudSessions);
+        if (JSON.stringify(merged) !== JSON.stringify(sessionsRef.current)) {
+          setSessions(merged);
         }
-      });
-  }, [user, hasLocalData, setSessions]);
+        setReadyUserId(userId);
+      } catch (err) {
+        console.error('Could not safely merge cloud study sessions; local data was retained.', err);
+      }
+    };
 
+    void restoreAndMerge();
+    return () => {
+      active = false;
+    };
+  }, [userId, isLoaded, setSessions, restoreAttempt]);
+
+  // If the first cloud read failed while offline, retry when connectivity
+  // returns or the student brings the app back into the foreground. Once a
+  // read succeeds, this listener is removed and no extra reads are triggered.
   useEffect(() => {
-    if (!user) return;
-    const hash = JSON.stringify(sessions.map(s => ({ id: s.id, updatedAt: s.updatedAt, status: s.status })));
-    if (hash === lastHash.current) return;
-    lastHash.current = hash;
+    if (!userId || !isLoaded || readyUserId === userId) return;
 
-    const t = setTimeout(() => {
-      const serialized = JSON.parse(JSON.stringify(sessions));
-      supabase
+    const retryRestore = () => {
+      if (navigator.onLine && document.visibilityState === 'visible') {
+        setRestoreAttempt(attempt => attempt + 1);
+      }
+    };
+
+    window.addEventListener('online', retryRestore);
+    window.addEventListener('focus', retryRestore);
+    document.addEventListener('visibilitychange', retryRestore);
+    return () => {
+      window.removeEventListener('online', retryRestore);
+      window.removeEventListener('focus', retryRestore);
+      document.removeEventListener('visibilitychange', retryRestore);
+    };
+  }, [userId, isLoaded, readyUserId]);
+
+  // Only sync after the cloud read/merge succeeds. Hash the complete payload,
+  // not only IDs/status, so edits to individual progress fields are detected.
+  useEffect(() => {
+    if (!userId || !isLoaded || readyUserId !== userId) return;
+
+    const serialized = dehydrateSessions(sessions);
+    const hash = `${userId}:${JSON.stringify(serialized)}`;
+    if (hash === lastSuccessfulHash.current || hash === pendingHash.current) return;
+
+    pendingHash.current = hash;
+    const timeout = window.setTimeout(async () => {
+      const { error } = await supabase
         .from('study_sessions')
         .upsert(
-          { user_id: user.id, sessions: serialized },
+          { user_id: userId, sessions: serialized as unknown as import('@/integrations/supabase/types').Json },
           { onConflict: 'user_id' },
-        )
-        .then(({ error }) => { if (error) console.error('study sessions sync', error); });
-    }, 600);
-    return () => clearTimeout(t);
-  }, [user, sessions]);
+        );
+
+      if (pendingHash.current === hash) pendingHash.current = null;
+      if (error) {
+        console.error('Study-session sync failed; local data remains available.', error);
+        return;
+      }
+      lastSuccessfulHash.current = hash;
+    }, 800);
+
+    return () => {
+      window.clearTimeout(timeout);
+      if (pendingHash.current === hash) pendingHash.current = null;
+    };
+  }, [userId, isLoaded, readyUserId, sessions]);
+
+  // Consumers that write derived cloud aggregates must wait until this account's
+  // cloud session read/merge completed successfully (including a valid empty read).
+  return Boolean(userId && isLoaded && readyUserId === userId);
 }

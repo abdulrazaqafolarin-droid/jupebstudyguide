@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { Subject } from '@/types/question';
 import {
   StudySessionData,
@@ -14,9 +14,11 @@ import {
 } from '@/types/syllabus';
 import { useUserStorage } from './useUserStorage';
 import { useAuth } from '@/contexts/AuthContext';
+import { areLegacyProgressEquivalent, createLegacyStudySession } from '@/lib/legacy-syllabus-migration';
 
 const STORAGE_KEY = 'study-sessions';
 const OLD_STORAGE_KEY = 'syllabus-progress';
+const MIGRATION_MARKER = 'study-sessions-legacy-migrated-v1';
 const TOTAL_DAYS = 30;
 
 function generateId(): string {
@@ -38,64 +40,77 @@ function dehydrateSession(session: StudySessionData): StoredStudySession {
 }
 
 export function useStudySessions() {
-  const [stored, setStored] = useUserStorage<StoredStudySession[]>(STORAGE_KEY, []);
+  const [stored, setStored, { isReady: storageReady }] = useUserStorage<StoredStudySession[]>(STORAGE_KEY, []);
   const { user } = useAuth();
-  const migratedRef = useRef(false);
+  const [migrationReadyUserId, setMigrationReadyUserId] = useState<string | null>(null);
+  const migratedUserRef = useRef<string | null>(null);
 
-  // Migrate old single-session data to multi-session format on first load
+  // Do the legacy local migration only after the current account's storage has
+  // hydrated. Keep the original key as a recovery copy; do not delete it here.
   useEffect(() => {
-    if (migratedRef.current || !user) return;
-    migratedRef.current = true;
+    if (!user || !storageReady || migratedUserRef.current === user.id) return;
 
-    // Only migrate if we have no sessions yet
-    if (stored.length > 0) return;
-
+    migratedUserRef.current = user.id;
     const oldKey = `u:${user.id}:${OLD_STORAGE_KEY}`;
-    const oldRaw = localStorage.getItem(oldKey);
-    if (!oldRaw) return;
+    const markerKey = `u:${user.id}:${MIGRATION_MARKER}`;
 
     try {
-      const oldData = JSON.parse(oldRaw);
-      if (!oldData || !oldData.dailyTasks) return;
-
-      const subjects: Subject[] = [];
-      if (oldData.combination?.core) {
-        for (const s of oldData.combination.core) {
-          if (!subjects.includes(s)) subjects.push(s);
-        }
-      }
-      if (oldData.combination?.elective) {
-        for (const s of oldData.combination.elective) {
-          if (!subjects.includes(s)) subjects.push(s);
-        }
-      }
-      if (subjects.length === 0) {
-        subjects.push('physics', 'chemistry');
+      const alreadyMigrated = localStorage.getItem(markerKey) === '1';
+      if (alreadyMigrated) {
+        setMigrationReadyUserId(user.id);
+        return;
       }
 
-      const now = new Date().toISOString();
-      const session: StoredStudySession = {
-        id: generateId(),
-        name: subjects.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' + ') + ' Plan',
-        subjects,
-        status: oldData.currentDay > 30 ? 'completed' : 'active',
-        progress: oldData,
-        startDate: oldData.startedAt?.split('T')[0] || now.split('T')[0],
-        dailyGoalMinutes: 30,
-        createdAt: oldData.startedAt || now,
-        updatedAt: now,
-      };
+      const oldRaw = localStorage.getItem(oldKey);
+      if (!oldRaw) {
+        // Do not write the marker when no legacy record exists. A later backup
+        // import may restore this key, and the following app launch must still
+        // be able to convert it into a multi-session record.
+        setMigrationReadyUserId(user.id);
+        return;
+      }
 
-      setStored([session]);
-      localStorage.removeItem(oldKey);
-    } catch {
-      // Migration failed silently
+      const legacySession = createLegacyStudySession(
+        JSON.parse(oldRaw),
+        generateId(),
+        new Date().toISOString(),
+      );
+      if (!legacySession) {
+        console.warn('Legacy syllabus data was retained but could not be converted safely.');
+        setMigrationReadyUserId(user.id);
+        return;
+      }
+
+      const alreadyRepresented = stored.some(session =>
+        session.name === legacySession.name
+        && session.startDate === legacySession.startDate
+        && areLegacyProgressEquivalent(session.progress, legacySession.progress)
+      );
+      if (!alreadyRepresented) {
+        // Persist synchronously before setting the marker. If storage is full
+        // or unavailable, the catch below leaves migration open for a retry.
+        const nextStored = [...stored, legacySession];
+        localStorage.setItem(`u:${user.id}:${STORAGE_KEY}`, JSON.stringify(nextStored));
+        setStored(nextStored);
+      }
+
+      // Keep the source value as a recovery copy. The marker prevents the old
+      // plan from being resurrected after a student later deletes its session.
+      localStorage.setItem(markerKey, '1');
+      setMigrationReadyUserId(user.id);
+    } catch (err) {
+      // Do not mark migration complete when reading/conversion/storage fails.
+      migratedUserRef.current = null;
+      console.error('Legacy syllabus migration failed; source data was retained.', err);
     }
-  }, [user, stored.length, setStored]);
+  }, [user, storageReady, stored, setStored]);
+
+  const isLoaded = Boolean(user && storageReady && migrationReadyUserId === user.id);
 
   const sessions: StudySessionData[] = useMemo(() => {
+    if (!storageReady) return [];
     return stored.map(hydrateSession);
-  }, [stored]);
+  }, [stored, storageReady]);
 
   const sortedSessions = useMemo(() => {
     return [...sessions].sort((a, b) =>
@@ -154,27 +169,21 @@ export function useStudySessions() {
   );
 
   const getSession = useCallback(
-    (id: string): StudySessionData | undefined => {
-      return sessions.find(s => s.id === id);
-    },
+    (id: string): StudySessionData | undefined => sessions.find(s => s.id === id),
     [sessions],
   );
 
   const updateSession = useCallback(
     (id: string, updates: Partial<Pick<StudySessionData, 'name' | 'status' | 'dailyGoalMinutes'>>) => {
       setSessions(prev => prev.map(s =>
-        s.id === id
-          ? { ...s, ...updates, updatedAt: new Date().toISOString() }
-          : s
+        s.id === id ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s
       ));
     },
     [setSessions],
   );
 
   const deleteSession = useCallback(
-    (id: string) => {
-      setSessions(prev => prev.filter(s => s.id !== id));
-    },
+    (id: string) => setSessions(prev => prev.filter(s => s.id !== id)),
     [setSessions],
   );
 
@@ -182,7 +191,6 @@ export function useStudySessions() {
     (sessionId: string, day: number, masteryScore: number) => {
       setSessions(prev => prev.map(s => {
         if (s.id !== sessionId) return s;
-        // A day is not complete until the learner reaches the required threshold.
         if (!Number.isFinite(masteryScore) || masteryScore < 70 || masteryScore > 100) return s;
         const updatedTasks = s.progress.dailyTasks.map(task =>
           task.day === day
@@ -231,26 +239,9 @@ export function useStudySessions() {
     [sessions],
   );
 
-  const renameSession = useCallback(
-    (id: string, newName: string) => {
-      updateSession(id, { name: newName });
-    },
-    [updateSession],
-  );
-
-  const pauseSession = useCallback(
-    (id: string) => {
-      updateSession(id, { status: 'paused' });
-    },
-    [updateSession],
-  );
-
-  const resumeSession = useCallback(
-    (id: string) => {
-      updateSession(id, { status: 'active' });
-    },
-    [updateSession],
-  );
+  const renameSession = useCallback((id: string, newName: string) => updateSession(id, { name: newName }), [updateSession]);
+  const pauseSession = useCallback((id: string) => updateSession(id, { status: 'paused' }), [updateSession]);
+  const resumeSession = useCallback((id: string) => updateSession(id, { status: 'active' }), [updateSession]);
 
   return {
     sessions: sortedSessions,
@@ -265,5 +256,6 @@ export function useStudySessions() {
     pauseSession,
     resumeSession,
     setSessions,
+    isLoaded,
   };
 }

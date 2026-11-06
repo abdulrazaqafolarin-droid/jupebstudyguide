@@ -1,32 +1,31 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
+import { useUserStorage } from "@/hooks/useUserStorage";
 import type { StudyBookmark } from "@/types/study-questions";
 
-const STORAGE_KEY = "jupeb_study_bookmarks";
-
-function loadBookmarks(): StudyBookmark[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-  catch { return []; }
-}
-
-function saveBookmarks(b: StudyBookmark[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(b));
-}
-
+/**
+ * Bookmarks are account data, not device-global preferences. The old key
+ * remains available only as a migration source for the explicit backup flow.
+ */
 export function useBookmarks() {
-  const [bookmarks, setBookmarks] = useState<StudyBookmark[]>(loadBookmarks);
+  const [bookmarks, setBookmarks, { isReady }] = useUserStorage<StudyBookmark[]>(
+    "study-bookmarks",
+    [],
+  );
 
   const toggle = useCallback((questionId: string) => {
-    setBookmarks((prev) => {
-      const exists = prev.find((b) => b.questionId === questionId);
-      const next = exists
-        ? prev.filter((b) => b.questionId !== questionId)
+    if (!isReady || !questionId) return;
+    setBookmarks(prev => {
+      const exists = prev.some(bookmark => bookmark.questionId === questionId);
+      return exists
+        ? prev.filter(bookmark => bookmark.questionId !== questionId)
         : [...prev, { questionId, createdAt: Date.now() }];
-      saveBookmarks(next);
-      return next;
     });
-  }, []);
+  }, [isReady, setBookmarks]);
 
-  const isBookmarked = useCallback((questionId: string) => bookmarks.some((b) => b.questionId === questionId), [bookmarks]);
+  const isBookmarked = useCallback(
+    (questionId: string) => bookmarks.some(bookmark => bookmark.questionId === questionId),
+    [bookmarks],
+  );
 
-  return { bookmarks, toggle, isBookmarked };
+  return { bookmarks, toggle, isBookmarked, isReady };
 }

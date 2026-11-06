@@ -8,7 +8,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp
 import { GraduationCap, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, ShieldAlert, Smartphone } from 'lucide-react';
 import rutexLogo from '@/assets/rutex-logo.jpg';
 import { useToast } from '@/hooks/use-toast';
-import { z } from 'zod';
+import * as z from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const authSchema = z.object({
@@ -36,7 +36,7 @@ const Auth = () => {
     const result = authSchema.safeParse({ email, password });
     if (!result.success) {
       const fieldErrors: { email?: string; password?: string } = {};
-      result.error.errors.forEach((err) => {
+      result.error.issues.forEach((err) => {
         if (err.path[0] === 'email') fieldErrors.email = err.message;
         if (err.path[0] === 'password') fieldErrors.password = err.message;
       });

@@ -290,7 +290,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   // supabase_realtime publication, so when a peer's app is backgrounded or
   // closed their row flips to offline with a fresh last_seen and every open
   // client's header updates immediately — no waiting for the presence-channel
-  // leave timeout or an RPC poll.
+  // leave timeout or a periodic RPC check.
   // Privacy-safe by construction: entries are only refreshed when the
   // privacy-checked get_last_seen RPC already granted one (cache exists and
   // non-empty). Denied ('') and unknown users never get an entry created
@@ -359,7 +359,7 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   const getLastSeen = useCallback((userId: string) => {
     if (onlineUsers.has(userId)) return null;
     // '' = resolved-but-unavailable (privacy denied / never seen). Remember it
-    // so callers polling the header don't refetch forever.
+    // so rerendering header components don't refetch forever.
     if (userId in lastSeenCache) return lastSeenCache[userId] || null;
     // Dedupe in-flight lookups so group headers don't fan out N identical RPCs.
     if (!lastSeenInflight.current.has(userId)) {

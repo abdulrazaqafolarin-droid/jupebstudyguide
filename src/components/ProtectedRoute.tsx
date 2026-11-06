@@ -32,15 +32,36 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<OnboardingStatus | null>(() =>
     user ? getCachedOnboardingStatus(user.id) : null,
   );
+  const [loadError, setLoadError] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
-    if (!user) { setStatus(null); return; }
+    if (!user) {
+      setStatus(null);
+      setLoadError(false);
+      return;
+    }
     const cached = getCachedOnboardingStatus(user.id);
-    if (cached) { setStatus(cached); return; }
+    if (cached) {
+      setStatus(cached);
+      setLoadError(false);
+      return;
+    }
     let cancelled = false;
-    fetchOnboardingStatus(user.id).then((s) => { if (!cancelled) setStatus(s); });
+    setLoadError(false);
+    fetchOnboardingStatus(user.id)
+      .then((next) => {
+        if (!cancelled) setStatus(next);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.error('[onboarding] status load failed:', error);
+        const fallback = getCachedOnboardingStatus(user.id);
+        if (fallback) setStatus(fallback);
+        else setLoadError(true);
+      });
     return () => { cancelled = true; };
-  }, [user]);
+  }, [user?.id, retry]);
 
   // Restore the student's chosen appearance on a fresh device — but only when
   // this browser has no stored theme, so a live toggle made here always wins.
@@ -48,10 +69,30 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     if (!user || !status?.loaded) return;
     if (localStorage.getItem('theme') != null) return;
     if (status.themePreference) setTheme(status.themePreference);
-  }, [user, status, setTheme]);
+  }, [user?.id, status, setTheme]);
 
   const onOnboardingPage = location.pathname === '/onboarding';
   const wantsReplay = new URLSearchParams(location.search).get('replay') === '1';
+
+  if (loadError && !status) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="w-full max-w-sm space-y-3 text-center">
+          <p className="font-semibold text-foreground">Couldn't load your study profile</p>
+          <p className="text-sm text-muted-foreground">
+            Check your connection and try again. Your saved study data has not been changed.
+          </p>
+          <button
+            type="button"
+            className="rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
+            onClick={() => setRetry((value) => value + 1)}
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!user || !status || !status.loaded) {
     return (
@@ -75,6 +116,16 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
+
+  // Activation and onboarding are independent backend reads. Start onboarding
+  // while ActivationGate is checking, rather than serializing both network
+  // requests before the first protected screen can appear.
+  useEffect(() => {
+    if (!user?.id) return;
+    void fetchOnboardingStatus(user.id).catch(() => {
+      // OnboardingGuard renders a retry state if the shared request fails.
+    });
+  }, [user?.id]);
 
   if (loading) {
     return (

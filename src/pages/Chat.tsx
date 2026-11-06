@@ -17,7 +17,6 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
-import { useChatUnreadCount } from '@/contexts/ChatUnreadContext';
 import { toast } from 'sonner';
 
 let faviconOriginalHref: string | null = null;
@@ -91,12 +90,6 @@ const Chat = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-
-  const { setStaleUnread } = useChatUnreadCount();
-
-  useEffect(() => {
-    setStaleUnread(chat.staleUnread);
-  }, [chat.staleUnread, setStaleUnread]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleRealtimeMessage = useCallback((message: Message) => {

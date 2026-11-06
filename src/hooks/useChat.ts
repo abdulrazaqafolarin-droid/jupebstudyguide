@@ -15,10 +15,15 @@ function debugWarn(...args: unknown[]) {
   if (DEBUG) console.warn(...args);
 }
 
-const CROSS_TAB_CHANNEL = 'jupeb-unread-sync';
+const CROSS_TAB_CHANNEL_PREFIX = 'jupeb-unread-sync:';
 const MAX_RETRIES = 3;
-const UNREAD_CACHE_KEY = 'jupeb-unread-cache';
+const UNREAD_CACHE_KEY_PREFIX = 'jupeb-unread-cache:';
 const CACHE_TTL = 5 * 60 * 1000;
+
+async function alreadyPersistedMessage(clientMessageId: string): Promise<boolean> {
+  const { data, error } = await supabase.from('messages').select('id').eq('client_msg_id', clientMessageId).maybeSingle();
+  return !error && !!data?.id;
+}
 
 async function retryWithBackoff<T>(fn: () => Promise<T>, retries = MAX_RETRIES): Promise<T> {
   for (let attempt = 0; attempt < retries; attempt++) {
@@ -116,11 +121,11 @@ export function useChat() {
   const mySlotRef = useRef<Record<string, 'a' | 'b'>>({});
   const [globalChannelStatus, setGlobalChannelStatus] = useState<string>('idle');
   const [globalInsertCount, setGlobalInsertCount] = useState(0);
-  type OfflineItem = { conversationId: string } & (
+  type OfflineItem = { conversationId: string; clientMessageId: string } & (
     | { kind: 'text'; content: string; replyToId?: string | null }
     | { kind: 'image'; imageUrl: string }
     | { kind: 'file'; fileUrl: string; fileName: string; fileSize: number; fileType: string }
-    | { kind: 'voice'; blob: Blob; senderId: string; duration: number; clientMessageId: string }
+    | { kind: 'voice'; blob: Blob; senderId: string; duration: number }
     | {
         kind: 'forward';
         content: string;
@@ -136,12 +141,9 @@ export function useChat() {
   const offlineQueueRef = useRef<OfflineItem[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const channelReadyRef = useRef(false);
-  const pollTimerRef = useRef<ReturnType<typeof setInterval>>();
-  const pollCursorRef = useRef<string>('');
-  const readReceiptPollRef = useRef<ReturnType<typeof setInterval>>();
   // Messages deleted-for-me on THIS device (localStorage-backed).
   const hiddenMsgIdsRef = useRef<Set<string>>(new Set());
-  // Shared by realtime INSERT / broadcast / poll so one incoming message
+  // Shared by realtime INSERT / broadcast paths so one incoming message
   // can't increment the unread badge through more than one delivery path.
   const seenIncomingRef = useRef<Set<string>>(new Set());
 
@@ -207,15 +209,16 @@ export function useChat() {
   }, [user]);
 
   const broadcastRead = useCallback((conversationId: string) => {
+    if (!user?.id) return;
     try {
       broadcastRef.current?.postMessage({ type: 'read', conversationId });
     } catch {
       /* silently fail */
     }
-  }, []);
+  }, [user?.id]);
 
   // Returns true only the FIRST time an incoming message id is seen, so
-  // realtime + broadcast + poll each deliver the message but only one of
+  // realtime and broadcast can both deliver the message, but only one of
   // them increments the unread counter.
   const markIncomingSeen = useCallback((id: string): boolean => {
     const seen = seenIncomingRef.current;
@@ -254,7 +257,7 @@ export function useChat() {
         // Cross-client receipt: the moment this reader has entered the
         // conversation, tell whoever is viewing that thread — the peer's
         // double-tick turns blue instantly instead of waiting for the
-        // postgres UPDATE event (the 5s receipt poll stays as fallback).
+        // the postgres UPDATE event is the authoritative read-receipt source.
         try {
           msgBroadcastRef.current?.send({
             type: 'broadcast',
@@ -265,7 +268,7 @@ export function useChat() {
               at: new Date().toISOString(),
             },
           });
-        } catch { /* between reconnects — DB event + poll still cover it */ }
+        } catch { /* the next successful realtime subscription reconciles missed updates */ }
       } catch (err) {
         console.error('Mark-read failed after retries, badge unchanged:', err);
       } finally {
@@ -306,24 +309,29 @@ export function useChat() {
   markActiveReadRef.current = markActiveRead;
 
   const saveUnreadCache = useCallback((counts: Record<string, number>, total: number) => {
+    if (!user?.id) return;
     try {
-      localStorage.setItem(UNREAD_CACHE_KEY, JSON.stringify({
+      localStorage.setItem(`${UNREAD_CACHE_KEY_PREFIX}${user.id}`, JSON.stringify({
         timestamp: Date.now(),
         counts,
         total,
       }));
     } catch { /* storage full or unavailable */ }
-  }, []);
+  }, [user?.id]);
 
   const loadUnreadCache = useCallback((): { counts: Record<string, number>; total: number } | null => {
+    if (!user?.id) return null;
     try {
-      const raw = localStorage.getItem(UNREAD_CACHE_KEY);
+      const raw = localStorage.getItem(`${UNREAD_CACHE_KEY_PREFIX}${user.id}`);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      if (Date.now() - parsed.timestamp > CACHE_TTL) return null;
-      return { counts: parsed.counts ?? {}, total: parsed.total ?? 0 };
+      if (!Number.isFinite(parsed.timestamp) || Date.now() - parsed.timestamp > CACHE_TTL) return null;
+      return {
+        counts: parsed.counts && typeof parsed.counts === 'object' ? parsed.counts : {},
+        total: Number.isFinite(parsed.total) ? parsed.total : 0,
+      };
     } catch { return null; }
-  }, []);
+  }, [user?.id]);
 
   const totalUnreadCount = useMemo(
     () => conversations.filter(c => c.unread_count > 0).length,
@@ -506,7 +514,7 @@ export function useChat() {
     if (gen === fetchGenRef.current) {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, loadUnreadCache, saveUnreadCache]);
 
   const fetchMessages = useCallback(async (conversationId: string, loadMore = false) => {
     const gen = ++messagesFetchGenRef.current;
@@ -586,11 +594,12 @@ export function useChat() {
     if (!user) return;
 
     let retryCount = 0;
-    let retryTimer: ReturnType<typeof setTimeout>;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let activeGlobalChannel: ReturnType<typeof supabase.channel> | null = null;
     let disposed = false;
 
     const createGlobalChannel = () => {
-      if (disposed) return;
+      if (disposed || activeGlobalChannel) return;
 
       const channel = supabase
         .channel(`chat-global-${user.id}`)
@@ -654,7 +663,7 @@ export function useChat() {
               try {
                 await fetchConversations();
               } catch {
-                // network error � keep UI running
+                // network error — keep UI running
               }
             })();
           }
@@ -784,31 +793,46 @@ export function useChat() {
           }
         )
         .subscribe((status, err) => {
+          if (disposed || activeGlobalChannel !== channel) return;
           setGlobalChannelStatus(status);
           debug('[Realtime] chat-global status:', status);
           if (status === 'SUBSCRIBED') {
+            if (retryTimer) {
+              clearTimeout(retryTimer);
+              retryTimer = null;
+            }
             retryCount = 0;
-            fetchConversations();
-          } else if (status === 'CHANNEL_ERROR') {
-            console.error('[useChat] global channel error:', err);
-            const delay = Math.min(3000 * Math.pow(2, retryCount), 30000);
+            void fetchConversations();
+            // Reconcile the active thread once after every connection/reconnect.
+            // This closes any realtime gap without a background polling loop.
+            const active = activeConvRef.current;
+            if (active) void fetchMessages(active);
+          } else if (
+            status === 'CHANNEL_ERROR' ||
+            status === 'TIMED_OUT' ||
+            status === 'CLOSED'
+          ) {
+            if (activeGlobalChannel !== channel || disposed) return;
+            console.warn('[useChat] global realtime channel reconnecting:', status, err);
+            activeGlobalChannel = null;
+            const delay = Math.min(1500 * Math.pow(1.7, retryCount), 30000);
             retryCount++;
-            clearTimeout(retryTimer);
+            if (retryTimer) clearTimeout(retryTimer);
             retryTimer = setTimeout(() => {
-              supabase.removeChannel(channel);
+              retryTimer = null;
+              void supabase.removeChannel(channel);
               createGlobalChannel();
-            }, delay);
-          } else if (status === 'CLOSED') {
-            debugWarn('[realtime] chat-global channel closed');
+            }, delay + Math.floor(Math.random() * 500));
           } else {
             debugWarn('[realtime] chat-global status:', status, err);
           }
         });
 
+      activeGlobalChannel = channel;
       return channel;
     };
 
-    const globalChannel = createGlobalChannel();
+    createGlobalChannel();
 
     let msgBroadcastRetry = 0;
     let msgBroadcastTimer: ReturnType<typeof setTimeout> | undefined;
@@ -818,6 +842,7 @@ export function useChat() {
       const ch = supabase
         .channel('msg-broadcast', { config: { broadcast: { self: false } } })
       .on('broadcast', { event: 'msg' }, (payload) => {
+        if (disposed || (msgBroadcastBox.current && msgBroadcastBox.current !== ch)) return;
         const newMsg = payload.payload.message as Message;
         if (newMsg.sender_id === user.id) return;
         const firstIncoming = markIncomingSeen(newMsg.id);
@@ -826,7 +851,7 @@ void (async () => {
             try {
               await fetchConversations();
             } catch {
-              // network error � keep UI running
+              // network error – keep UI running
             }
             if (convIdsRef.current.includes(newMsg.conversation_id)) {
               const currentConv = activeConvRef.current;
@@ -875,13 +900,14 @@ void (async () => {
         }
       })
       .on('broadcast', { event: 'read' }, (payload) => {
+        if (disposed || (msgBroadcastBox.current && msgBroadcastBox.current !== ch)) return;
         const p = payload.payload as { conversationId?: string; readerId?: string; at?: string };
         const conversationId = p?.conversationId;
         const readerId = p?.readerId;
         // The recipient's client announces "I have entered this thread" the
         // instant mark_conversation_read commits. Only the thread we are
         // actively viewing reacts; everyone else reconciles via the
-        // postgres UPDATE event and the 5s receipt poll.
+        // postgres UPDATE event and the reconnect snapshot.
         if (!conversationId || !readerId || readerId === user.id) return;
         if (conversationId !== activeConvRef.current) return;
         const at = p.at || new Date().toISOString();
@@ -893,12 +919,13 @@ void (async () => {
         }));
       })
       .subscribe((status) => {
+        if (disposed || (msgBroadcastBox.current && msgBroadcastBox.current !== ch)) return;
         if (status === 'SUBSCRIBED') {
           msgBroadcastRef.current = ch;
           msgBroadcastRetry = 0;
         } else if (status === 'CHANNEL_ERROR' || status === 'CLOSED' || status === 'TIMED_OUT') {
           debugWarn('[realtime] msg-broadcast', status, '- scheduling resubscribe');
-          // Polling already covers delivery; keep the channel retrying quietly
+          // The Postgres Changes channel covers new messages; keep this broadcast channel retrying quietly
           // with capped backoff instead of dying silently.
           clearTimeout(msgBroadcastTimer);
           const delay = Math.min(3000 * Math.pow(1.5, msgBroadcastRetry++), 30000);
@@ -918,104 +945,27 @@ void (async () => {
 
     return () => {
       disposed = true;
-      clearTimeout(retryTimer);
+      if (retryTimer) clearTimeout(retryTimer);
       clearTimeout(msgBroadcastTimer);
-      supabase.removeChannel(globalChannel);
-      if (msgBroadcastBox.current) supabase.removeChannel(msgBroadcastBox.current);
+      if (activeGlobalChannel) void supabase.removeChannel(activeGlobalChannel);
+      activeGlobalChannel = null;
+      if (msgBroadcastBox.current) void supabase.removeChannel(msgBroadcastBox.current);
       msgBroadcastRef.current = null;
     };
-  }, [user, fetchConversations, markIncomingSeen]);
-
-  // Polling: runs continuously as primary message delivery mechanism
-  useEffect(() => {
-    if (!user) return;
-
-    const startPoll = () => {
-      if (pollTimerRef.current) return;
-      pollTimerRef.current = setInterval(async () => {
-        // Initialize cursor only when conversations are loaded
-        if (!pollCursorRef.current) {
-          const convs = conversationsRef.current;
-          if (convs.length === 0) return;
-          const latestTs = convs.reduce((latest, c) => {
-            if (!c.last_message?.created_at) return latest;
-            return c.last_message.created_at > latest ? c.last_message.created_at : latest;
-          }, '');
-          pollCursorRef.current = latestTs || new Date().toISOString();
-          return;
-        }
-
-        const convIds = convIdsRef.current;
-        if (convIds.length === 0) return;
-
-        try {
-          const { data, error } = await supabase
-            .from('messages')
-            .select('id, conversation_id, content, created_at, sender_id, message_type, is_deleted, is_read, delivered_at, read_at, image_url, file_url, file_name, file_size, file_type, reply_to_id, is_edited, reactions, forwarded_from')
-            .in('conversation_id', convIds)
-            .gt('created_at', pollCursorRef.current)
-            .order('created_at', { ascending: true })
-            .limit(100);
-
-          if (error) throw error;
-          if (!data || data.length === 0) return;
-
-          pollCursorRef.current = data[data.length - 1].created_at;
-
-          for (const newMsg of data) {
-            if (newMsg.sender_id === user.id) continue;
-            const firstIncoming = markIncomingSeen(newMsg.id);
-
-            const currentConv = activeConvRef.current;
-            if (newMsg.conversation_id === currentConv) {
-              setMessages(prev =>
-                prev.some(m => m.id === newMsg.id)
-                  ? prev
-                  : [...prev, newMsg as Message].sort(
-                      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-                    )
-              );
-              if (firstIncoming) markActiveReadRef.current?.(newMsg.conversation_id, newMsg.sender_id);
-            }
-            setConversations(prev => {
-              const updated = prev.map(c =>
-                c.id === newMsg.conversation_id
-                  ? { ...c, unread_count: c.id === currentConv ? 0 : c.unread_count + (firstIncoming ? 1 : 0), last_message: newMsg as Message }
-                  : c
-              );
-              return updated.sort((a, b) => {
-                const aTime = a.last_message?.created_at;
-                const bTime = b.last_message?.created_at;
-                if (!aTime && !bTime) return 0;
-                if (!aTime) return 1;
-                if (!bTime) return -1;
-                return bTime.localeCompare(aTime);
-              });
-            });
-
-            window.dispatchEvent(new CustomEvent('chat-new-message', {
-              detail: { message: newMsg },
-            }));
-          }
-        } catch (err) {
-          debugWarn('[useChat] poll fallback error:', err);
-        }
-      }, 3000);
-    };
-
-    startPoll();
-
-    return () => {
-      clearInterval(pollTimerRef.current);
-      pollTimerRef.current = undefined;
-    };
-  }, [user, markIncomingSeen]);
+  }, [user, fetchConversations, fetchMessages, markIncomingSeen]);
 
   useEffect(() => {
+    if (!user?.id) {
+      broadcastRef.current?.close();
+      broadcastRef.current = null;
+      return;
+    }
+
+    let channel: BroadcastChannel | null = null;
     try {
-      const bc = new BroadcastChannel(CROSS_TAB_CHANNEL);
-      broadcastRef.current = bc;
-      bc.onmessage = (event) => {
+      channel = new BroadcastChannel(`${CROSS_TAB_CHANNEL_PREFIX}${user.id}`);
+      broadcastRef.current = channel;
+      channel.onmessage = (event) => {
         if (event.data?.type === 'read') {
           setConversations(prev => prev.map(c =>
             c.id === event.data.conversationId ? { ...c, unread_count: 0 } : c
@@ -1023,46 +973,11 @@ void (async () => {
         }
       };
     } catch { /* BroadcastChannel not available */ }
-    return () => { broadcastRef.current?.close(); };
-  }, []);
-
-  // Read receipts polling — polls own messages in active conversation for is_read updates
-  // Realtime UPDATE handler (line ~542) is the primary path, but it can be unreliable.
-  // This ensures the blue checkmark always updates within 5s.
-  useEffect(() => {
-    if (!user) return;
-
-    readReceiptPollRef.current = setInterval(async () => {
-      const convId = activeConvRef.current;
-      if (!convId) return;
-
-      try {
-        const { data } = await supabase
-          .from('messages')
-          .select('id, is_read, read_at, delivered_at')
-          .eq('conversation_id', convId)
-          .eq('sender_id', user.id)
-          .neq('is_read', true)
-          .limit(30);
-
-        if (data && data.length > 0) {
-          setMessages(prev => prev.map(m => {
-            const update = data.find(d => d.id === m.id);
-            if (update && (update.is_read !== m.is_read || update.read_at !== m.read_at || update.delivered_at !== m.delivered_at)) {
-              return { ...m, is_read: update.is_read, read_at: update.read_at, delivered_at: update.delivered_at };
-            }
-            return m;
-          }));
-        }
-      } catch {
-        // silent — don't spam console
-      }
-    }, 5000);
-
     return () => {
-      clearInterval(readReceiptPollRef.current);
+      channel?.close();
+      if (broadcastRef.current === channel) broadcastRef.current = null;
     };
-  }, [user]);
+  }, [user?.id]);
 
   const openConversation = useCallback(async (conversationId: string) => {
     setActiveConversation(conversationId);
@@ -1087,9 +1002,9 @@ void (async () => {
         content: item.content.trim(),
         message_type: 'text',
         reply_to_id: item.replyToId || null,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1109,9 +1024,9 @@ void (async () => {
         file_size: item.fileSize ?? null,
         file_type: item.fileType ?? null,
         forwarded_from: item.forwardedFrom,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1126,9 +1041,9 @@ void (async () => {
         content: '',
         message_type: 'image',
         image_url: item.imageUrl,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1147,9 +1062,9 @@ void (async () => {
         file_name: item.fileName,
         file_size: item.fileSize,
         file_type: item.fileType,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1258,7 +1173,7 @@ void (async () => {
     setMessages(prev => [...prev, optimisticMsg]);
 
     if (!navigator.onLine) {
-      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
+      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, clientMessageId: clientId, content: content.trim(), replyToId });
       setPendingCount(offlineQueueRef.current.length);
       return;
     }
@@ -1292,7 +1207,7 @@ void (async () => {
           return;
         }
       }
-      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
+      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, clientMessageId: clientId, content: content.trim(), replyToId });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Message queued — will send when back online');
       return;
@@ -1364,7 +1279,7 @@ void (async () => {
     setMessages(prev => [...prev, optimisticMsg]);
 
     if (!navigator.onLine) {
-      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, clientMessageId: clientId, imageUrl });
       setPendingCount(offlineQueueRef.current.length);
       return;
     }
@@ -1392,7 +1307,7 @@ void (async () => {
           return;
         }
       }
-      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, clientMessageId: clientId, imageUrl });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Image queued — will send when back online');
       return;
@@ -1431,7 +1346,7 @@ void (async () => {
     setMessages(prev => [...prev, optimisticMsg]);
 
     if (!navigator.onLine) {
-      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
+      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, clientMessageId: clientId, fileUrl, fileName, fileSize, fileType });
       setPendingCount(offlineQueueRef.current.length);
       return;
     }
@@ -1462,7 +1377,7 @@ void (async () => {
           return;
         }
       }
-      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
+      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, clientMessageId: clientId, fileUrl, fileName, fileSize, fileType });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('File queued — will send when back online');
       return;
@@ -1587,6 +1502,7 @@ void (async () => {
       offlineQueueRef.current.push({
         kind: 'forward',
         conversationId: targetConversationId,
+        clientMessageId: clientId,
         content: msg.content || '',
         messageType: msg.message_type === 'image' ? 'image' : msg.message_type === 'video' ? 'video' : msg.message_type === 'audio' ? 'audio' : 'text',
         imageUrl: msg.image_url,
@@ -1618,7 +1534,7 @@ void (async () => {
         try {
           await fetchConversations();
         } catch {
-          // network error � keep UI running
+          // network error — keep UI running
         }
       })();
   }, [user, activeConversation]);
@@ -1679,7 +1595,7 @@ void (async () => {
         try {
           await fetchConversations();
         } catch {
-          // network error � keep UI running
+          // network error — keep UI running
         }
       })();
     };
@@ -1771,9 +1687,9 @@ void (async () => {
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     });
-    // Per-conversation realtime and its poll fallback both funnel here.
+    // Per-conversation and global realtime deliveries both funnel here.
     // The shared seen-set dedupes against the global channel / broadcast /
-    // poll paths so a message is mark-read-queued exactly once, and only
+    // realtime paths so a message is mark-read-queued exactly once, and only
     // when the user is actually inside this conversation.
     if (markIncomingSeen(message.id)) {
       markActiveReadRef.current?.(message.conversation_id, message.sender_id);
@@ -1814,10 +1730,10 @@ void (async () => {
     offlineQueueRef.current.push({
       kind: 'voice',
       conversationId,
+      clientMessageId,
       blob,
       senderId,
       duration,
-      clientMessageId,
     });
     setPendingCount(offlineQueueRef.current.length);
   }, []);

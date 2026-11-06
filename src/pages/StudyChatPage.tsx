@@ -77,16 +77,16 @@ export default function StudyChatPage() {
 
   const activeChat = chats.find((c) => c.id === activeChatId) ?? null;
 
-  const handleSend = useCallback(() => {
+  const handleSend = useCallback((attachment: { base64: string; mimeType: string; name: string } | null) => {
     const text = input.trim();
-    if (!text || isStreaming) return;
+    if ((!text && !attachment) || isStreaming) return;
     setInput('');
     if (editingIndex !== null) {
       const index = editingIndex;
       setEditingIndex(null);
       void sendEdited(text, index);
     } else {
-      void sendMessage(text);
+      void sendMessage(text, attachment);
     }
   }, [input, isStreaming, editingIndex, sendEdited, sendMessage]);
 

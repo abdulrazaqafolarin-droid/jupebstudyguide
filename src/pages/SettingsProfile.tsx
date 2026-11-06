@@ -12,6 +12,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { useImageCompression } from '@/hooks/useImageCompression';
 import { AvatarCropper } from '@/components/profile/AvatarCropper';
 import { PrivacySettings } from '@/components/profile/PrivacySettings';
+import { LocalDataBackup } from '@/components/profile/LocalDataBackup';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
@@ -303,6 +304,8 @@ export default function SettingsProfile() {
             </div>
           </div>
         </motion.section>
+
+        <LocalDataBackup />
 
         {/* Replay welcome tour */}
         <motion.section

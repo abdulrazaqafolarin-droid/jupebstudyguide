@@ -61,6 +61,36 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
+  if (status.check_error && !status.is_activated && !status.is_admin && !trialActive) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-border/50 shadow-xl">
+          <CardHeader className="text-center">
+            <AlertCircle className="mx-auto h-9 w-9 text-muted-foreground" />
+            <CardTitle>Couldn't verify your account</CardTitle>
+            <CardDescription>
+              The activation service could not be reached. This does not mean your account is inactive, and your saved study data has not been changed.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button
+              type="button"
+              className="w-full"
+              onClick={() => { void refreshStatus(); }}
+              disabled={status.checking}
+            >
+              {status.checking ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {status.checking ? "Checking…" : "Retry verification"}
+            </Button>
+            <Button type="button" variant="ghost" className="w-full" onClick={() => { void signOut(); }}>
+              Sign out
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (status.is_activated || status.is_admin || trialActive) {
     return (
       <>

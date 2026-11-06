@@ -4,19 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 /**
  * Per-user namespaced localStorage hook.
  *
- * Why this exists:
- * Multiple users can sign in on the same browser/device. If we use a global
- * localStorage key like "jupeb_streak_data", User B will see User A's data
- * after sign-in. This hook namespaces every key by the authenticated user's
- * id, and returns the `defaultValue` whenever no user is signed in.
- *
- * Guarantees:
- *  - Reading before auth resolves returns `defaultValue` (no leak from any prior user).
- *  - Switching accounts in the same tab automatically loads the new user's data.
- *  - Signing out clears in-memory state back to `defaultValue`.
- *  - Writes are scoped to the current user only.
- *
  * Storage key shape:  `u:<userId>:<key>`
+ *
+ * isReady is scoped to the current storage key, not just to the first successful
+ * read. This prevents a previous account's in-memory state from being treated
+ * as hydrated data after the user changes.
  */
 export function useUserStorage<T>(
   key: string,
@@ -24,24 +16,22 @@ export function useUserStorage<T>(
 ): [T, (value: T | ((prev: T) => T)) => void, { isReady: boolean; reset: () => void }] {
   const { user, loading } = useAuth();
   const userId = user?.id ?? null;
-
   const storageKey = userId ? `u:${userId}:${key}` : null;
   const [value, setValue] = useState<T>(defaultValue);
-  const [isReady, setIsReady] = useState(false);
-  const lastUserId = useRef<string | null>(null);
+  const [loadedStorageKey, setLoadedStorageKey] = useState<string | null | undefined>(undefined);
+  const isReady = !loading && loadedStorageKey === storageKey;
 
-  // Hydrate when the active user changes.
   useEffect(() => {
     if (loading) return;
 
-    // No user signed in → reset to defaults, never touch storage.
     if (!storageKey) {
       setValue(defaultValue);
-      setIsReady(true);
-      lastUserId.current = null;
+      setLoadedStorageKey(null);
       return;
     }
 
+    // The previous account's value must not be considered ready for this key.
+    setLoadedStorageKey(undefined);
     try {
       const raw = localStorage.getItem(storageKey);
       setValue(raw ? (JSON.parse(raw) as T) : defaultValue);
@@ -49,14 +39,17 @@ export function useUserStorage<T>(
       console.warn('Failed to read user storage:', err);
       setValue(defaultValue);
     }
-    setIsReady(true);
-    lastUserId.current = userId;
+    setLoadedStorageKey(storageKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey, loading]);
 
   const update = useCallback(
     (next: T | ((prev: T) => T)) => {
       setValue(prev => {
+        // Never persist a previous account's stale in-memory value under a
+        // newly selected account's key while that account is still hydrating.
+        if (storageKey && loadedStorageKey !== storageKey) return prev;
+
         const resolved =
           typeof next === 'function' ? (next as (p: T) => T)(prev) : next;
         if (storageKey) {
@@ -69,15 +62,23 @@ export function useUserStorage<T>(
         return resolved;
       });
     },
-    [storageKey],
+    [storageKey, loadedStorageKey],
   );
 
   const reset = useCallback(() => {
-    if (storageKey) localStorage.removeItem(storageKey);
+    if (storageKey && loadedStorageKey !== storageKey) return;
+    if (storageKey) {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (err) {
+        console.warn('Failed to reset user storage:', err);
+        return;
+      }
+    }
     setValue(defaultValue);
-  }, [storageKey, defaultValue]);
+  }, [storageKey, loadedStorageKey, defaultValue]);
 
-  return [value, update, { isReady, reset }];
+  // Hide the previous account's in-memory value until this account's storage
+  // has been read, preventing a one-render cross-account data flash.
+  return [isReady ? value : defaultValue, update, { isReady, reset }];
 }
-
-

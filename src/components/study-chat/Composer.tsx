@@ -1,11 +1,12 @@
 import { useEffect, useRef, type FormEvent } from 'react';
-import { Pencil, Send, Square, X } from 'lucide-react';
+import { Pencil, Send, Square, X, Plus, FileText } from 'lucide-react';
+import { useAttachment } from '@/hooks/useAttachment';
 import { cn } from '@/lib/utils';
 
 interface ComposerProps {
   value: string;
   onChange: (value: string) => void;
-  onSend: () => void;
+  onSend: (attachment: { base64: string; mimeType: string; name: string } | null) => void;
   onStop: () => void;
   isStreaming: boolean;
   placeholder: string;
@@ -29,6 +30,8 @@ export function Composer({
   onCancelEdit,
 }: ComposerProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { attachment, isProcessing, addAttachment, clearAttachment } = useAttachment();
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -44,8 +47,9 @@ export function Composer({
 
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
-    if (!value.trim() || isStreaming) return;
-    onSend();
+    if ((!value.trim() && !attachment) || isStreaming || isProcessing) return;
+    onSend(attachment ? { base64: attachment.base64, mimeType: attachment.mimeType, name: attachment.name } : null);
+    clearAttachment();
   };
 
   return (
@@ -68,7 +72,10 @@ export function Composer({
             </button>
           </div>
         )}
+        {attachment && <div className="mb-2 flex items-center gap-2 rounded-lg border border-border/70 bg-card px-3 py-2 text-xs"><FileText className="h-4 w-4"/><span className="min-w-0 flex-1 truncate">{attachment.name}</span><button type="button" onClick={clearAttachment} aria-label="Remove attachment"><X className="h-3.5 w-3.5"/></button></div>}
         <form onSubmit={submit} className="flex items-end gap-2">
+          <input ref={fileInputRef} type="file" accept=".pdf,.txt,.png,.jpg,.jpeg,.webp,.gif" className="hidden" onChange={e => { const file=e.target.files?.[0]; if(file) void addAttachment(file); e.target.value=''; }} />
+          <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isStreaming || isProcessing || editing} aria-label="Attach a file" title="Attach a file" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-foreground disabled:opacity-50"><Plus className="h-5 w-5"/></button>
           <textarea
             ref={textareaRef}
             rows={1}
@@ -98,7 +105,7 @@ export function Composer({
           ) : (
             <button
               type="submit"
-              disabled={!value.trim()}
+              disabled={(!value.trim() && !attachment) || isProcessing}
               title="Send message"
               aria-label="Send message"
               className={cn(

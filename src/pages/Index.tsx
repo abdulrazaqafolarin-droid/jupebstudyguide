@@ -88,10 +88,11 @@ const Index = () => {
   const { missions: dailyMissions, todayMission, todayDate: missionLocalDate, ready: dailyMissionsReady, startMission, updateMission } = useDailyMissions();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
-  const { profile, syncAchievements } = useProfile();
+  const { profile, loading: profileLoading, syncAchievements } = useProfile();
   const { push: pushNotification } = useNotificationsContext();
   const { 
     currentStreak, 
+    isReady: streakReady,
     longestStreak, 
     totalDaysStudied, 
     totalQuestionsAnswered,
@@ -191,6 +192,7 @@ const Index = () => {
     deleteSession,
     updateSession,
     setSessions,
+    isLoaded: studySessionsReady,
   } = useStudySessions();
 
   // Syllabus completed progress (across all sessions)
@@ -384,15 +386,16 @@ const Index = () => {
     prevUnlockedRef.current = ids.length;
   }, [unlockedAchievements, syncAchievements]);
 
-  // Push current stats to public leaderboard (debounced upsert)
+  // Restore/merge the account's cloud sessions before writing aggregates derived from them.
+  const cloudStudySessionsReady = useStudySessionSync(sessions, setSessions, studySessionsReady);
+
+  // Push current stats to the public leaderboard only after the cloud read succeeds.
   useStatsSync({
     currentStreak,
     achievementsCount: unlockedAchievements.length,
     syllabus: sessions.length > 0 ? sessions[0].progress : null,
+    isReady: !profileLoading && streakReady && studySessionsReady && cloudStudySessionsReady,
   });
-
-  // Sync study sessions to Supabase for cross-device persistence
-  useStudySessionSync(sessions, setSessions, sessions.length > 0);
 
   // Shared notification center (single instance via NotificationsProvider)
   const {
@@ -643,6 +646,19 @@ const Index = () => {
           }}
           onExit={() => { setCurrentQuizQuestions([]); handleBack(); }}
         />
+      </div>
+    );
+  }
+
+  // Do not let a student create or edit a plan until their local sessions have
+  // hydrated and any legacy syllabus record has been safely converted.
+  if ((currentView === 'syllabus-setup' || currentView === 'syllabus') && !studySessionsReady) {
+    return (
+      <div role="status" aria-live="polite" className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="rounded-xl border border-border bg-card px-5 py-4 text-center shadow-sm">
+          <p className="text-sm font-medium">Restoring your saved study sessions…</p>
+          <p className="mt-1 text-xs text-muted-foreground">Your existing progress is being loaded before you continue.</p>
+        </div>
       </div>
     );
   }

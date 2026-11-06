@@ -31,11 +31,13 @@ export default function DownloadApp() {
     // page can show the real version instead of a static label.
     void Promise.all([fetchLatestRelease(), getInstalledVersion()]).then(([release, installed]) => {
       if (release) {
+        const migrationRequiresReinstall = release.requiresReinstall === true &&
+          (!installed || isNewer(installed.versionCode, release.versionCode));
+        setRequiresReinstall(migrationRequiresReinstall);
+        // The download page is the explicit clean-install path. The native
+        // updater still blocks this release from being installed over the old
+        // package; the page explains the data-loss consequence before download.
         setReleaseAvailable(true);
-        setRequiresReinstall(
-          release.requiresReinstall === true &&
-          (!installed || isNewer(installed.versionCode, release.versionCode)),
-        );
         const date = release.builtAt ? new Date(release.builtAt) : null;
         setLatestVersion(
           `v${release.versionName}` +
@@ -87,11 +89,13 @@ export default function DownloadApp() {
 
               {requiresReinstall && (
                 <div role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
-                  <p className="font-semibold text-amber-800 dark:text-amber-200">One-time manual reinstall required</p>
+                  <p className="font-semibold text-amber-800 dark:text-amber-200">Fresh installation required</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    This release uses a new Android signing key. Android will not install it over the older app.
-                    Make sure your account is synced, download the APK, uninstall the older JUPEB Master app,
-                    then install the new APK and sign in again. Your account-based study data remains in Supabase.
+                    This release is signed with the new permanent key. Android will not install it over the older app.
+                    Download this APK first, then uninstall the old JUPEB Master app before installing the new one.
+                    Uninstalling permanently deletes any study progress, syllabus sessions, streaks or bookmarks saved only
+                    on that phone. Supabase account records remain online, but they are not a complete copy of phone-only data.
+                    Continue only if you accept that loss.
                   </p>
                 </div>
               )}
@@ -106,11 +110,13 @@ export default function DownloadApp() {
                   ) : (
                     <Download className="h-5 w-5" />
                   )}
-                  {downloading ? "Opening..." : "Download APK"}
+                  {downloading ? "Opening..." : requiresReinstall ? "Download Fresh APK" : "Download APK"}
                 </button>
               ) : (
                 <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
-                  The Android installer is temporarily unavailable while its signing and integrity details are verified. Your existing app and account data are unaffected. Use the web app below for now.
+                  {requiresReinstall
+                    ? "The APK download is intentionally disabled until device-only learning data can be transferred safely. Keep your current app installed and use the web app below when needed."
+                    : "The Android installer is temporarily unavailable while its signing and integrity details are verified. Your existing app and account data are unaffected. Use the web app below for now."}
                 </div>
               )}
 
@@ -119,18 +125,32 @@ export default function DownloadApp() {
                 {releaseAvailable && <p>{APK_INFO}</p>}
               </div>
 
-              <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
-                <p className="font-medium flex items-center gap-1.5">
-                  <Shield className="h-3 w-3" /> {requiresReinstall ? "One-time reinstall steps:" : "Installation steps:"}
-                </p>
-                <ol className="list-decimal list-inside text-muted-foreground space-y-0.5">
-                  <li>Tap "Download APK" above</li>
-                  {requiresReinstall && <li>After the download finishes, uninstall the older JUPEB Master app</li>}
-                  <li>Open the downloaded file when ready</li>
-                  <li>Tap "Install anyway" if prompted by Play Protect</li>
-                  <li>Open JUPEB Master and sign in again</li>
-                </ol>
-              </div>
+              {requiresReinstall ? (
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
+                  <p className="font-medium flex items-center gap-1.5 text-foreground">
+                    <Shield className="h-3 w-3" /> Fresh-install steps
+                  </p>
+                  <ol className="mt-1 list-decimal list-inside space-y-0.5">
+                    <li>Download the new APK above.</li>
+                    <li>Only when ready, uninstall the older JUPEB Master app.</li>
+                    <li>Open the downloaded APK and install it.</li>
+                    <li>Sign in with the same account to restore cloud-backed records.</li>
+                  </ol>
+                  <p className="mt-2">Do not uninstall until the APK has fully downloaded. Phone-only records that never synced will be lost.</p>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-muted/50 border text-xs space-y-1.5">
+                  <p className="font-medium flex items-center gap-1.5">
+                    <Shield className="h-3 w-3" /> Installation steps:
+                  </p>
+                  <ol className="list-decimal list-inside text-muted-foreground space-y-0.5">
+                    <li>Tap "Download APK" above</li>
+                    <li>Open the downloaded file when ready</li>
+                    <li>Tap "Install anyway" if prompted by Play Protect</li>
+                    <li>Open JUPEB Master and sign in again</li>
+                  </ol>
+                </div>
+              )}
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -184,6 +204,13 @@ export default function DownloadApp() {
                   }}
                 />
               </div>
+              {requiresReinstall && (
+                <div role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-left text-xs text-muted-foreground">
+                  This is a fresh-install APK signed with the new permanent key. Download it first.
+                  Installing requires removing the older app, which permanently erases any progress stored only on that phone.
+                  Cloud account records remain available but may not include every local-only item.
+                </div>
+              )}
               {releaseAvailable ? (
                 <a
                   href={APK_URL}
@@ -192,11 +219,13 @@ export default function DownloadApp() {
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
                   <Download className="h-4 w-4" />
-                  Download APK for Android
+                  {requiresReinstall ? "Download Fresh APK" : "Download APK for Android"}
                 </a>
               ) : (
                 <p role="status" className="text-xs text-muted-foreground">
-                  The Android installer is temporarily unavailable while its signing and integrity details are verified.
+                  {requiresReinstall
+                    ? "The fresh-install APK is not available yet. Keep the older app installed until the new APK download is ready."
+                    : "The Android installer is temporarily unavailable while its signing and integrity details are verified."}
                 </p>
               )}
               <a

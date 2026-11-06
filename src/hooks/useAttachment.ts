@@ -42,7 +42,8 @@ export function useAttachment() {
     if (attachment?.preview) {
       URL.revokeObjectURL(attachment.preview);
     }
-    const isValid = VALID_TYPES.some(type => file.type === type || file.type.startsWith(type.split('/')[0] + '/'));
+    const normalizedType = file.type.toLowerCase();
+    const isValid = VALID_TYPES.includes(normalizedType) || (normalizedType === 'image/jpg');
     if (!isValid) {
       toast.error('Supported: PDF, text, images (PNG, JPG, WebP)');
       return;
@@ -72,7 +73,7 @@ export function useAttachment() {
     } finally {
       setIsProcessing(false);
     }
-  }, []);
+  }, [attachment]);
 
   const clearAttachment = useCallback(() => {
     if (attachment?.preview) {

@@ -1130,9 +1130,9 @@ void (async () => {
         file_size: item.fileSize ?? null,
         file_type: item.fileType ?? null,
         forwarded_from: item.forwardedFrom,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1147,9 +1147,9 @@ void (async () => {
         content: '',
         message_type: 'image',
         image_url: item.imageUrl,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },
@@ -1168,9 +1168,9 @@ void (async () => {
         file_name: item.fileName,
         file_size: item.fileSize,
         file_type: item.fileType,
-        client_msg_id: crypto.randomUUID(),
+        client_msg_id: item.clientMessageId,
       }).select();
-      if (error) return false;
+      if (error) return error.code === '23505' && await alreadyPersistedMessage(item.clientMessageId);
       if (data?.[0]) {
         msgBroadcastRef.current?.send({
           type: 'broadcast', event: 'msg', payload: { message: data[0] },

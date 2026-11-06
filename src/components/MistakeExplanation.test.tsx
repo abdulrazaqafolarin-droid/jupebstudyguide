@@ -37,7 +37,7 @@ const question = {
 describe("MistakeExplanation image context", () => {
   it("sends the question image as a real image attachment with the mistake context", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
-      new Response(new Blob(["circuit-data"], { type: "image/png" }), {
+      new Response(new TextEncoder().encode("circuit-data"), {
         status: 200,
         headers: { "content-type": "image/png" },
       }),

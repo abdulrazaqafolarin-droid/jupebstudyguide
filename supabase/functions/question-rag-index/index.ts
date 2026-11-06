@@ -44,7 +44,7 @@ function sha256(text: string): Promise<string> {
 }
 
 async function retryJob(
-  admin: ReturnType<typeof createClient>,
+  admin: { from: (table: string) => any },
   job: ClaimedJob,
   errorMessage: string,
   attempt: number,

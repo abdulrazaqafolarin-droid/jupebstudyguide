@@ -87,6 +87,10 @@ export function useStudyChat() {
 
   /** Point the UI at a row (selection without a lookup). */
   const adoptChat = useCallback(async (row: StudyChatMeta | null) => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    isStreamingRef.current = false;
+    setIsStreaming(false);
     setActiveChatId(row?.id ?? null);
     setStreamError(null);
     if (!row) {
@@ -317,6 +321,7 @@ export function useStudyChat() {
       trimMessagesForContext(newMsgs).map((m) => ({ role: m.role, content: m.content, attachment: m.attachment?.base64 ? { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name } : undefined })),
       {
         onDelta: (text) => {
+          if (activeChatIdRef.current !== chatId) return;
           if (firstToken) {
             firstToken = false;
             setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
@@ -336,6 +341,7 @@ export function useStudyChat() {
           });
         },
         onQuestionReferences: (refs) => {
+          if (activeChatIdRef.current !== chatId) return;
           setMessages((prev) => {
             const arr = [...prev];
             if (arr.length && arr[arr.length - 1].role === 'assistant') {
@@ -371,10 +377,13 @@ export function useStudyChat() {
               console.warn('Assistant message save failed (chat may have been deleted mid-stream)');
             }
           }
-          setIsStreaming(false);
-          isStreamingRef.current = false;
+          if (activeChatIdRef.current === chatId) {
+            setIsStreaming(false);
+            isStreamingRef.current = false;
+          }
         },
         onError: (err) => {
+          if (activeChatIdRef.current !== chatId) return;
           if (abortRef.current === ac) abortRef.current = null;
           toast.error(err);
           if (firstToken) {

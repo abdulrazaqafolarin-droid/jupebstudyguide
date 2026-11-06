@@ -268,7 +268,7 @@ export function useChat() {
               at: new Date().toISOString(),
             },
           });
-        } catch { /* between reconnects — DB event + poll still cover it */ }
+        } catch { /* the next successful realtime subscription reconciles missed updates */ }
       } catch (err) {
         console.error('Mark-read failed after retries, badge unchanged:', err);
       } finally {
@@ -1681,7 +1681,7 @@ void (async () => {
     });
     // Per-conversation and global realtime deliveries both funnel here.
     // The shared seen-set dedupes against the global channel / broadcast /
-    // poll paths so a message is mark-read-queued exactly once, and only
+    // realtime paths so a message is mark-read-queued exactly once, and only
     // when the user is actually inside this conversation.
     if (markIncomingSeen(message.id)) {
       markActiveReadRef.current?.(message.conversation_id, message.sender_id);

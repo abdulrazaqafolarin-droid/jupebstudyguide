@@ -58,7 +58,7 @@ export function AdminQuestionPanel({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
-  const [imagePosition, setImagePosition] = useState<string>("image-only");
+  const [imagePosition, setImagePosition] = useState<string>("image-above");
   const [showPreview, setShowPreview] = useState(false);
   const [cropFileName, setCropFileName] = useState<string>("");
   const [editingQuestion, setEditingQuestion] = useState<StudyQuestion | null>(null);
@@ -82,7 +82,7 @@ export function AdminQuestionPanel({
     setImageUrl(q.imageUrl || null);
     setImagePreview(null);
     setImageFile(null);
-    setImagePosition(q.imagePosition || "image-only");
+    setImagePosition(q.imagePosition || (q.imageUrl ? "image-above" : "image-only"));
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
     setCorrectAnswer(q.correctAnswer || "");
     setExplanation(q.explanation || "");
@@ -98,7 +98,7 @@ export function AdminQuestionPanel({
     setImageUrl(null);
     setImagePreview(null);
     setImageFile(null);
-    setImagePosition("image-only");
+    setImagePosition("image-above");
     setOptions(isObjective ? [{ label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" }] : []);
     setCorrectAnswer("");
     setExplanation("");

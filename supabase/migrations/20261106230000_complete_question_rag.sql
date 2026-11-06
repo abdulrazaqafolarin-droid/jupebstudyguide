@@ -65,7 +65,7 @@ CREATE OR REPLACE FUNCTION public.touch_study_question_updated_at()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SET search_path = ''
-AS $
+AS $$
 BEGIN
   IF ROW(
     NEW.subject, NEW.year, NEW.category, NEW.question, NEW.options,
@@ -199,7 +199,7 @@ RETURNS TABLE (
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
-AS $
+AS $$
 BEGIN
   RETURN QUERY
   SELECT

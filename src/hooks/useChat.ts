@@ -1313,7 +1313,7 @@ void (async () => {
           return;
         }
       }
-      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, content: content.trim(), replyToId });
+      offlineQueueRef.current.push({ kind: 'text', conversationId: activeConversation, clientMessageId: clientId, content: content.trim(), replyToId });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Message queued — will send when back online');
       return;
@@ -1413,7 +1413,7 @@ void (async () => {
           return;
         }
       }
-      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, imageUrl });
+      offlineQueueRef.current.push({ kind: 'image', conversationId: activeConversation, clientMessageId: clientId, imageUrl });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('Image queued — will send when back online');
       return;
@@ -1483,7 +1483,7 @@ void (async () => {
           return;
         }
       }
-      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, fileUrl, fileName, fileSize, fileType });
+      offlineQueueRef.current.push({ kind: 'file', conversationId: activeConversation, clientMessageId: clientId, fileUrl, fileName, fileSize, fileType });
       setPendingCount(offlineQueueRef.current.length);
       toast.info('File queued — will send when back online');
       return;
@@ -1840,7 +1840,6 @@ void (async () => {
       blob,
       senderId,
       duration,
-      clientMessageId,
     });
     setPendingCount(offlineQueueRef.current.length);
   }, []);

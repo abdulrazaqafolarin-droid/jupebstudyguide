@@ -74,7 +74,9 @@ export async function fetchQuestionImageAttachment(
     binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
   }
 
-  const rawName = decodeURIComponent(parsedUrl.pathname.split("/").filter(Boolean).pop() || "question-image");
+  const encodedName = parsedUrl.pathname.split("/").filter(Boolean).pop() || "question-image";
+  let rawName = encodedName;
+  try { rawName = decodeURIComponent(encodedName); } catch { /* keep the safe encoded path segment */ }
   const name = rawName.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-100) || "question-image";
 
   return { base64: btoa(binary), mimeType, name };

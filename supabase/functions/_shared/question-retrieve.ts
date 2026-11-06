@@ -237,6 +237,8 @@ export async function retrieveRelevantQuestions(
         match_threshold: threshold,
         match_count: candidateCount,
         filter_subject: filters.subject || null,
+        filter_year: filters.year || null,
+        filter_category: filters.category || null,
       })
     : Promise.resolve([] as RetrievedQuestion[]);
 

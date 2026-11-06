@@ -41,11 +41,25 @@ function TypingDots() {
   );
 }
 
-function copyMessage(content: string) {
-  navigator.clipboard
-    .writeText(content)
-    .then(() => toast.success('Copied'))
-    .catch(() => toast.error('Could not copy'));
+async function copyMessage(content: string) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(content);
+    } else {
+      const area = document.createElement('textarea');
+      area.value = content;
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      const copied = document.execCommand('copy');
+      area.remove();
+      if (!copied) throw new Error('Clipboard unavailable');
+    }
+    toast.success('Copied');
+  } catch {
+    toast.error('Could not copy');
+  }
 }
 
 /**

@@ -46,7 +46,9 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check Supabase Edge Functions
-        run: deno check supabase/functions/push-fcm/index.ts supabase/functions/notification-action/index.ts
+        run: deno check supabase/functions/push-fcm/index.ts supabase/functions/notification-action/index.ts supabase/functions/question-rag-index/index.ts supabase/functions/chat-proxy/index.ts supabase/functions/ai-tutor/index.ts
+      - name: Test question RAG retrieval and ranking
+        run: deno test supabase/functions/_shared/question-retrieve.test.ts
       - name: Type-check application TypeScript
         run: npx tsc --noEmit -p tsconfig.app.json --pretty false && npx tsc --noEmit -p tsconfig.node.json --pretty false && npx tsc --noEmit -p tsconfig.sw.json --pretty false
       - name: Validate private question-source tooling

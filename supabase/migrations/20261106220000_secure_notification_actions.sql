@@ -73,6 +73,13 @@ BEGIN
     FROM public.conversation_participants cp
     WHERE cp.conversation_id = v_token.conversation_id
       AND cp.user_id = v_token.recipient_id
+  ) OR NOT EXISTS (
+    SELECT 1
+    FROM public.messages source_message
+    WHERE source_message.id = v_token.source_message_id
+      AND source_message.conversation_id = v_token.conversation_id
+      AND source_message.sender_id <> v_token.recipient_id
+      AND COALESCE(source_message.is_deleted, false) = false
   ) THEN
     UPDATE public.notification_action_tokens
       SET consumed_at = now()

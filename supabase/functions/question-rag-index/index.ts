@@ -173,6 +173,7 @@ Deno.serve(async (req) => {
       }
 
       const canonicalText = formatQuestionForEmbedding({
+        id: question.id,
         subject: question.subject,
         year: question.year,
         category: question.category,

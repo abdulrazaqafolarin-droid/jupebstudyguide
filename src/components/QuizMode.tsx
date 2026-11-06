@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { ProgressRing } from './ProgressRing';
@@ -8,7 +8,9 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
+import { QuestionImage } from '@/components/QuestionImage';
 import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
+import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 
 interface QuizModeProps {
   questions: Question[];
@@ -41,7 +43,9 @@ const TIMER_PRESETS = [
   { label: '1 hour', value: 60, gradient: 'from-violet-500/20 to-violet-600/10 hover:from-violet-500/30 hover:to-violet-600/20' },
 ];
 
-export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModeProps) => {
+export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, subject }: QuizModeProps) => {
+  // Defense in depth: this component itself refuses theory/practical questions.
+  const questions = useMemo(() => filterObjectiveQuizQuestions(incomingQuestions), [incomingQuestions]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Array<{ questionId: string; isCorrect: boolean; isGradable: boolean; timeSpent: number }>>([]);
@@ -51,6 +55,7 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
   const [quizComplete, setQuizComplete] = useState(false);
   const [showTimerSelect, setShowTimerSelect] = useState(true);
   const cardRef = useRef<HTMLDivElement>(null);
+
   const timer = useQuizTimer();
   const isMobile = useIsMobile();
 
@@ -363,7 +368,8 @@ export const QuizMode = ({ questions, onComplete, onExit, subject }: QuizModePro
           </span>
         </div>
 
-        {/* Question */}
+        {/* Image is shown alongside the complete written prompt when available. */}
+        <QuestionImage imageUrl={currentQuestion.imageUrl} />
         <h3 className="text-lg font-medium mb-6 leading-relaxed">
           <QuestionMath content={currentQuestion.question} inline />
         </h3>

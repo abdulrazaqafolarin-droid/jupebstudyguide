@@ -1,11 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Question, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
-import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, ImageOff, Loader2 } from 'lucide-react';
+import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { AITutor } from './AITutor';
 import { QuestionMath } from './QuestionMath';
 import { MathRenderer } from './MathRenderer';
+import { QuestionImage } from './QuestionImage';
 import { streamChat } from '@/lib/ai-service';
 import type { AIChatMessage } from '@/lib/ai-service';
 
@@ -30,7 +31,6 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
-  const [imageBroken, setImageBroken] = useState(false);
   const [aiTheoryAnswer, setAiTheoryAnswer] = useState('');
   const [aiTheoryError, setAiTheoryError] = useState<string | null>(null);
   const [aiTheoryLoading, setAiTheoryLoading] = useState(false);
@@ -166,22 +166,12 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 </span>
               </div>
 
-              {/* Question - Scrollable */}
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {question.imageUrl && !imageBroken ? (
-                  <div className="mb-4 rounded-xl overflow-hidden border bg-muted/30">
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-48 object-contain" loading="lazy" onError={() => setImageBroken(true)} />
-                  </div>
-                ) : imageBroken ? (
-                  <div className="mb-4 flex flex-col items-center justify-center gap-2 p-6 rounded-xl border border-dashed bg-muted/20 text-muted-foreground">
-                    <ImageOff className="h-8 w-8" />
-                    <p className="text-xs">Image failed to load</p>
-                  </div>
-                ) : (
-                  <div className="text-lg font-medium mb-4 leading-relaxed overflow-y-auto max-h-[140px] scrollbar-thin">
-                    <QuestionMath content={question.question} />
-                  </div>
-                )}
+              {/* The image is supplementary; always show the written question too. */}
+              <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
+                <QuestionImage imageUrl={question.imageUrl} />
+                <div className="text-lg font-medium mb-4 leading-relaxed">
+                  <QuestionMath content={question.question} />
+                </div>
 
                 {/* MCQ Options - Scrollable container */}
                 {question.options && (

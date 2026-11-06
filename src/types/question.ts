@@ -1,5 +1,5 @@
 export type Subject = 'physics' | 'chemistry' | 'biology' | 'math';
-export type QuestionType = 'mcq' | 'essay';
+export type QuestionType = 'mcq' | 'essay' | 'practical';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export interface MCQOption {
@@ -19,6 +19,7 @@ export interface Question {
   explanation: string;
   difficulty?: Difficulty;
   imageUrl?: string;
+  imagePosition?: 'text-only' | 'image-only' | 'image-above' | 'image-beside';
   document_name?: string;
 }
 

@@ -136,6 +136,7 @@ async function getAccessToken(sa: ServiceAccount): Promise<string> {
   return cachedAccessToken.token;
 }
 
+
 function buildPreview(message: MessageRow): string {
   switch (message.message_type) {
     case "image":
@@ -167,6 +168,30 @@ Deno.serve(async (req) => {
     if (!messageId) return json({ error: "message_id required" }, 400);
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+const createActionToken = async (recipientId: string, conversationId: string, messageId: string, action: "reply" | "read"): Promise<string | null> => {
+  const token = b64url(crypto.getRandomValues(new Uint8Array(32)));
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  const hash = Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  const { error } = await admin.from("notification_action_tokens").insert({
+    token_hash: hash, recipient_id: recipientId, conversation_id: conversationId,
+    source_message_id: messageId, action,
+    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  });
+  if (error) {
+    console.warn("[push-fcm] Could not create notification action token:", error.message);
+    return null;
+  }
+  return token;
+};
+
+    // Keep one-time action tokens bounded. Expired credentials can never be
+    // redeemed, and this cleanup runs only when a new push dispatch occurs.
+    const { error: cleanupError } = await admin
+      .from("notification_action_tokens")
+      .delete()
+      .lt("expires_at", new Date().toISOString());
+    if (cleanupError) console.warn("[push-fcm] action-token cleanup failed:", cleanupError.message);
 
     const { data: message } = await admin
       .from("messages")
@@ -204,7 +229,7 @@ Deno.serve(async (req) => {
     // never got a closed-app push — the "notifications aren't consistent
     // across apps/accounts" bug.
     const [tokenRowsRes, webSubsRes] = await Promise.all([
-      admin.from("device_tokens").select("user_id, token").in("user_id", targets),
+      admin.from("device_tokens").select("user_id, token, supports_notification_actions").in("user_id", targets),
       admin
         .from("notification_subscriptions")
         .select("user_id, endpoint, p256dh, auth")
@@ -247,16 +272,42 @@ Deno.serve(async (req) => {
     let sent = 0;
     let webSent = 0;
 
+    // Create separate single-use action tokens for each upgraded device.
+    // Older app versions keep the legacy notification payload until they
+    // register again from a build that advertises action support.
+    const actionTokens = new Map<string, { reply: string | null; read: string | null }>();
+    const actionCapableRows = tokenRows.filter((row) => row.supports_notification_actions === true);
+    await Promise.all(actionCapableRows.map(async (row) => {
+      const [reply, read] = await Promise.all([
+        createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "reply"),
+        createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "read"),
+      ]);
+      actionTokens.set(String(row.token), { reply, read });
+    }));
+
     await Promise.all(
       tokenRows.map(async (row) => {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            message: {
+        const actions = actionTokens.get(String(row.token));
+        const supportsActions = row.supports_notification_actions === true && Boolean(actions?.reply && actions?.read);
+        const notificationMessage = supportsActions
+          ? {
+              token: row.token,
+              // Data-only is required for our native service to add Android RemoteInput actions.
+              data: {
+                type: "chat",
+                title,
+                body,
+                channel_id: PUSH_CHANNEL,
+                conversation_id: String(message.conversation_id),
+                message_id: String(message.id),
+                reply_token: actions!.reply!,
+                read_token: actions!.read!,
+              },
+              android: { priority: "HIGH", ttl: "86400s" },
+            }
+          : {
+              // Backward compatibility: older installed APKs do not contain
+              // our custom FirebaseMessagingService, so retain OS-rendered notifications.
               token: row.token,
               notification: { title, body },
               data: {
@@ -264,19 +315,15 @@ Deno.serve(async (req) => {
                 conversation_id: String(message.conversation_id),
                 message_id: String(message.id),
               },
-              android: {
-                priority: "HIGH",
-                notification: {
-                  channel_id: PUSH_CHANNEL,
-                  // One shade entry per conversation; newest replaces it.
-                  tag: String(message.conversation_id),
-                  icon: "ic_stat_rutex",
-                  color: "#E19209",
-                  sound: "default",
-                },
-              },
-            },
-          }),
+              android: { priority: "HIGH", ttl: "86400s" },
+            };
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ message: notificationMessage }),
         });
         if (res.ok) {
           sent++;
@@ -319,21 +366,25 @@ Deno.serve(async (req) => {
         console.warn("[push-fcm] VAPID keys not set — skipping Web Push fanout");
       } else {
         webpush.setVapidDetails(vapidSubject, vapidPublic, vapidPrivate);
-        const webPayload = JSON.stringify({
-          title,
-          body,
-          data: {
-            type: "chat",
-            conversation_id: String(message.conversation_id),
-            message_id: String(message.id),
-            // The service worker's notificationclick handler routes on this.
-            url: `/chat?conversation=${encodeURIComponent(String(message.conversation_id))}`,
-          },
-        });
         const deadEndpoints: string[] = [];
         await Promise.all(
           webSubs.map(async (sub) => {
             try {
+              const readToken = await createActionToken(
+                String(sub.user_id), String(message.conversation_id), String(message.id), "read",
+              );
+              const webPayload = JSON.stringify({
+                title,
+                body,
+                data: {
+                  type: "chat",
+                  conversation_id: String(message.conversation_id),
+                  message_id: String(message.id),
+                  read_token: readToken ?? "",
+                  // The service worker's click actions route into the exact thread.
+                  url: `/chat?conversation=${encodeURIComponent(String(message.conversation_id))}`,
+                },
+              });
               await webpush.sendNotification(
                 { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
                 webPayload,

@@ -96,7 +96,7 @@ export function NativeNotificationBridge() {
       // logged in on it now (RLS "claim" policy allows exactly that).
       const { error } = await supabase
         .from('device_tokens')
-        .upsert({ user_id: user.id, token, platform: 'android' }, { onConflict: 'token' });
+        .upsert({ user_id: user.id, token, platform: 'android', supports_notification_actions: true }, { onConflict: 'token' });
       if (error) console.warn('[push] token upsert failed:', error.message);
     };
 

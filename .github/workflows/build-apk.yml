@@ -49,6 +49,23 @@ jobs:
           # `tools` package, which makes sdkmanager exit 1. Override it.
           packages: "platform-tools platforms;android-36 build-tools;36.0.0"
 
+      - name: Validate Firebase Android client
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s android/app/google-services.json
+          python3 - <<'PY'
+          import json
+          with open("android/app/google-services.json", encoding="utf-8") as source:
+              config = json.load(source)
+          packages = {
+              item.get("client_info", {}).get("android_client_info", {}).get("package_name")
+              for item in config.get("client", [])
+          }
+          assert "com.jupeb.master" in packages, "Firebase config must include Android package com.jupeb.master"
+          print("Firebase Android client config validated.")
+          PY
+
       - name: Install npm dependencies
         run: npm ci
 

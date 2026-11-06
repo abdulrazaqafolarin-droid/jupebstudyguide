@@ -49,14 +49,14 @@ describe("ActivationGate active-trial banner", () => {
     });
   });
 
-  it("always displays Activate Now while a five-day trial is active", () => {
+  it("always displays Activate Now while a one-day trial is active", () => {
     render(
       <ActivationGate>
         <div>Protected study content</div>
       </ActivationGate>,
     );
 
-    expect(screen.getByText("5-day free trial active")).toBeInTheDocument();
+    expect(screen.getByText("1-day free trial active")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Activate Now" })).toBeVisible();
     expect(screen.getByText("Protected study content")).toBeInTheDocument();
   });

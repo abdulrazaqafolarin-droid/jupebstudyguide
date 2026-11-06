@@ -8,8 +8,7 @@
  *  2. The sender's client learns about it in realtime: the recipient's
  *     client pushes a lightweight `read` broadcast the instant the
  *     mark-read RPC commits, and this module applies it to the sender's
- *     open thread (the DB UPDATE event and the 5s poll remain as truth
- *     sources behind it).
+ *     open thread (the DB UPDATE event is the authoritative fallback).
  */
 
 export interface ReadReceiptMessage {

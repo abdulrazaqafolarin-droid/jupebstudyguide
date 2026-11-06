@@ -1,7 +1,13 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, aiChatText, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent, type RetrievedChunk } from "../_shared/textbook-retrieve.ts";
-import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent, type RetrievedQuestion } from "../_shared/question-retrieve.ts";
+import {
+  retrieveRelevantQuestions,
+  buildQuestionRAGContext,
+  serializeQuestionReferencesEvent,
+  buildQuestionRetrievalQuery,
+  type RetrievedQuestion,
+} from "../_shared/question-retrieve.ts";
 import { generateEmbedding, generateEmbeddings, resolveEmbedKeys, lastEmbedError } from "../_shared/textbook-embed.ts";
 
 interface InboundMessage {
@@ -47,7 +53,7 @@ Deno.serve(async (req) => {
 
   try {
     const encoder = new TextEncoder();
-    const { action, systemPrompt, messages, text, texts, subject } = await req.json();
+    const { action, systemPrompt, messages, text, texts, subject, retrievalQuery } = await req.json();
 
     // Single embedding (client use). Vault keys first, env fallback.
     if (action === "embed") {
@@ -114,17 +120,21 @@ Deno.serve(async (req) => {
     let questionRefsEvent = "";
 
     const lastUserMsg = [...messages].reverse().find((m: InboundMessage) => m.role === "user");
-    if (lastUserMsg?.content) {
+    const questionSearchQuery = buildQuestionRetrievalQuery(
+      typeof retrievalQuery === "string" ? retrievalQuery : undefined,
+      messages as InboundMessage[],
+    );
+    if (questionSearchQuery) {
       const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
       // Hard deadline: retrieval must never stall the chat. If embedding or
       // vector search misbehaves we drop RAG and still stream an answer.
       const ragPromise: Promise<RagOutcome> = Promise.all([
-        retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
+        retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
           subject: subject || undefined,
           maxChunks: 3,
           embedKeys,
         }),
-        retrieveRelevantQuestions(supabaseUrl, supabaseKey, lastUserMsg.content, {
+        retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
           subject: subject || undefined,
           maxQuestions: 5,
           embedKey: embedKeys,

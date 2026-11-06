@@ -46,8 +46,7 @@ WHERE id = 'bio-2021-objective-r03'
       AND duplicate.subject = public.study_questions.subject
       AND duplicate.year = public.study_questions.year
       AND duplicate.category = public.study_questions.category
-      AND lower(regexp_replace(trim(duplicate.question), '\\s+', ' ', 'g'))
-          = lower(regexp_replace(trim(public.study_questions.question), '\\s+', ' ', 'g'))
+      AND lower(trim(duplicate.question)) = lower(trim(public.study_questions.question))
   );
 
 NOTIFY pgrst, 'reload schema';

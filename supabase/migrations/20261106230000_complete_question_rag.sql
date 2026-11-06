@@ -325,3 +325,8 @@ REVOKE ALL ON FUNCTION public.match_textbook_chunks(extensions.vector, DOUBLE PR
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.match_textbook_chunks(extensions.vector, DOUBLE PRECISION, INTEGER, TEXT)
   TO service_role;
+
+-- Persist retrieved JUPEB question references with assistant messages so
+-- reopened Study Chats retain their source citations.
+ALTER TABLE public.ai_chat_messages
+  ADD COLUMN IF NOT EXISTS question_refs JSONB NOT NULL DEFAULT '[]'::jsonb;

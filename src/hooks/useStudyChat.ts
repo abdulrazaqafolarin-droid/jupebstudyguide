@@ -228,14 +228,14 @@ export function useStudyChat() {
   const runTurn = useCallback(async (
     base: AIMessage[],
     userText: string,
-    opts: { persistUser?: boolean } = {},
+    opts: { persistUser?: boolean; attachment?: { base64: string; mimeType: string; name: string } | null } = {},
   ) => {
     const chatId = activeChatIdRef.current;
     if (!chatId || !user || !userText.trim() || isStreamingRef.current) return;
     const userId = user.id; // captured: auth may change while the stream runs
     const persistUser = opts.persistUser !== false;
 
-    const userMsg: AIMessage = { role: 'user', content: userText };
+    const userMsg: AIMessage = { role: 'user', content: userText, attachment: opts.attachment ?? null };
     const newMsgs = [...base, userMsg];
     setMessages(newMsgs);
     setIsStreaming(true);
@@ -245,14 +245,15 @@ export function useStudyChat() {
 
     if (persistUser) {
       const savedUserIdx = newMsgs.length - 1;
-      void (async () => {
+      try {
         try {
           const { data: saved } = await supabase
             .from('ai_chat_messages')
-            .insert({ chat_id: chatId, user_id: userId, role: 'user', content: userText, attachment: null })
+            .insert({ chat_id: chatId, user_id: userId, role: 'user', content: userText, attachment: opts.attachment ?? null })
             .select('id,created_at')
             .single();
-          if (!saved || activeChatIdRef.current !== chatId) return;
+          if (!saved) throw new Error('Message save returned no row');
+          if (activeChatIdRef.current !== chatId) return;
           // Stamp the local bubble so a later edit can cut at this message.
           setMessages((prev) => {
             const m = prev[savedUserIdx];
@@ -263,10 +264,14 @@ export function useStudyChat() {
             }
             return prev;
           });
-        } catch (e) {
-          console.error('Could not persist user message:', e);
-        }
-      })();
+      } catch (e) {
+        console.error('Could not persist user message:', e);
+        setMessages((prev) => prev.filter((m) => m !== userMsg));
+        setIsStreaming(false);
+        isStreamingRef.current = false;
+        setStreamError('Your message could not be saved. Check your connection and try again.');
+        return;
+      }
 
       // Auto-title only generic chats (topic threads are titled at creation).
       const chat = chatsRef.current.find((c) => c.id === chatId);
@@ -310,7 +315,7 @@ export function useStudyChat() {
 
     await streamChat(
       systemPrompt,
-      trimMessagesForContext(newMsgs).map((m) => ({ role: m.role, content: m.content })),
+      trimMessagesForContext(newMsgs).map((m) => ({ role: m.role, content: m.content, attachment: m.attachment?.base64 ? { base64: m.attachment.base64, mimeType: m.attachment.mimeType, name: m.attachment.name } : undefined })),
       {
         onDelta: (text) => {
           if (firstToken) {
@@ -392,8 +397,8 @@ export function useStudyChat() {
     );
   }, [user]);
 
-  const sendMessage = useCallback(async (text: string) => {
-    await runTurn(messagesRef.current, text);
+  const sendMessage = useCallback(async (text: string, attachment?: { base64: string; mimeType: string; name: string } | null) => {
+    await runTurn(messagesRef.current, text || (attachment ? `[Attached: ${attachment.name}]` : ''), { attachment });
   }, [runTurn]);
 
   /** Edit: rewind the thread to the edited message, then re-run the turn. */
@@ -415,7 +420,7 @@ export function useStudyChat() {
     const list = messagesRef.current;
     for (let i = list.length - 1; i >= 0; i--) {
       if (list[i].role === 'user') {
-        await runTurn(list.slice(0, i), list[i].content, { persistUser: false });
+        await runTurn(list.slice(0, i), list[i].content, { persistUser: false, attachment: list[i].attachment?.base64 ? list[i].attachment as { base64: string; mimeType: string; name: string } : null });
         return;
       }
     }

@@ -842,6 +842,7 @@ export function useChat() {
       const ch = supabase
         .channel('msg-broadcast', { config: { broadcast: { self: false } } })
       .on('broadcast', { event: 'msg' }, (payload) => {
+        if (disposed || (msgBroadcastBox.current && msgBroadcastBox.current !== ch)) return;
         const newMsg = payload.payload.message as Message;
         if (newMsg.sender_id === user.id) return;
         const firstIncoming = markIncomingSeen(newMsg.id);
@@ -899,6 +900,7 @@ void (async () => {
         }
       })
       .on('broadcast', { event: 'read' }, (payload) => {
+        if (disposed || (msgBroadcastBox.current && msgBroadcastBox.current !== ch)) return;
         const p = payload.payload as { conversationId?: string; readerId?: string; at?: string };
         const conversationId = p?.conversationId;
         const readerId = p?.readerId;
@@ -917,7 +919,7 @@ void (async () => {
         }));
       })
       .subscribe((status) => {
-        if (disposed) return;
+        if (disposed || (msgBroadcastBox.current && msgBroadcastBox.current !== ch)) return;
         if (status === 'SUBSCRIBED') {
           msgBroadcastRef.current = ch;
           msgBroadcastRetry = 0;

@@ -136,6 +136,22 @@ async function getAccessToken(sa: ServiceAccount): Promise<string> {
   return cachedAccessToken.token;
 }
 
+async function createActionToken(admin: ReturnType<typeof createClient>, recipientId: string, conversationId: string, messageId: string, action: "reply" | "read"): Promise<string | null> {
+  const token = b64url(crypto.getRandomValues(new Uint8Array(32)));
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  const hash = Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  const { error } = await admin.from("notification_action_tokens").insert({
+    token_hash: hash, recipient_id: recipientId, conversation_id: conversationId,
+    source_message_id: messageId, action,
+    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  });
+  if (error) {
+    console.warn("[push-fcm] Could not create notification action token:", error.message);
+    return null;
+  }
+  return token;
+}
+
 function buildPreview(message: MessageRow): string {
   switch (message.message_type) {
     case "image":

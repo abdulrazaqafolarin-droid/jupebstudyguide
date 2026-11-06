@@ -43,7 +43,7 @@ export async function aiChatStream(
 // trial-eligible account and enforces the same daily request cap for all
 // non-admin users. Trial expiry is read from the server-owned profile column.
 export async function guardAiAccess(
-  supabase: ReturnType<typeof createClient>,
+  supabase: { from: (table: string) => any; rpc: (fn: string, args: any) => any },
   user: { id: string }
 ): Promise<Response | null> {
   const { data: profile } = await supabase

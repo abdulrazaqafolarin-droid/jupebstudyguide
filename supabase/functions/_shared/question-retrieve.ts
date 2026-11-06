@@ -40,12 +40,12 @@ export interface QuestionChatMessage {
 /** Expand on-demand retrieval when the student explicitly requests a question set. */
 export function getRequestedQuestionCount(query: string, defaultCount = 6): number {
   const clean = query.trim().toLowerCase();
-  const explicitCount = clean.match(/\b(?:show|give|list|find|fetch|generate|practice|quiz me with|set of)\s+(?:me\s+)?(?:the\s+)?(\d{1,2})\s+(?:jupeb\s+)?(?:past\s+)?questions?\b/);
+  const explicitCount = clean.match(/\b(\d{1,2})\s+(?:(?:physics|chemistry|biology|math(?:ematics)?|objective|theory|practical|past|jupeb|201[4-9]|202[0-6])\s+){0,6}questions?\b);
   if (explicitCount) {
     return Math.min(Math.max(Number(explicitCount[1]), 1), 12);
   }
   if (/\b(?:all|every|complete list|full set)\b/.test(clean) &&
-      /\b(?:question|past questions|question bank|objective|theory|practical)\b/.test(clean)) {
+      /\b(?:questions?|question bank|objective|theory|practical)\b/.test(clean)) {
     return 12;
   }
   return Math.min(Math.max(defaultCount, 1), 12);

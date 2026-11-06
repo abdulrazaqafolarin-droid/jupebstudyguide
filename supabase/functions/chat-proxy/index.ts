@@ -119,7 +119,6 @@ Deno.serve(async (req) => {
     let referencesEvent = "";
     let questionRefsEvent = "";
 
-    const lastUserMsg = [...messages].reverse().find((m: InboundMessage) => m.role === "user");
     const questionSearchQuery = buildQuestionRetrievalQuery(
       typeof retrievalQuery === "string" ? retrievalQuery : undefined,
       messages as InboundMessage[],

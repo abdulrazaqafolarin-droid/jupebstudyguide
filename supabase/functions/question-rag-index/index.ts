@@ -8,6 +8,20 @@ interface ClaimedJob {
   attempts: number;
 }
 
+interface RetryQueueClient {
+  from: (table: "study_question_embedding_jobs") => {
+    update: (values: {
+      locked_at: null;
+      next_attempt_at: string;
+      last_error: string;
+    }) => {
+      eq: (column: "question_id", value: string) => {
+        eq: (column: "requested_at", value: string) => PromiseLike<unknown>;
+      };
+    };
+  };
+}
+
 interface QuestionRow {
   id: string;
   subject: string;
@@ -43,14 +57,15 @@ function sha256(text: string): Promise<string> {
   );
 }
 
-async function retryJob(
-  admin: { from: (table: string) => any },
+async function retryJob<T>(
+  admin: T,
   job: ClaimedJob,
   errorMessage: string,
   attempt: number,
 ): Promise<void> {
   const delaySeconds = Math.min(3600, 30 * (2 ** Math.min(Math.max(attempt - 1, 0), 6)));
-  await admin
+  const queue = admin as RetryQueueClient;
+  await queue
     .from("study_question_embedding_jobs")
     .update({
       locked_at: null,

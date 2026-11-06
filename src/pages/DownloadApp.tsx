@@ -9,7 +9,7 @@ import { fetchLatestRelease, getInstalledVersion, isNewer } from "@/lib/app-upda
 const APK_URL =
   "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
 const APK_INFO = "Latest build • ~10 MB • Android 8.0+";
-const APP_URL = "https://jupebstudyguide-main.vercel.app";
+const APP_URL = "https://rutexjupebmaster.vercel.app";
 
 function getPlatform(): "android" | "ios" | "desktop" {
   const ua = navigator.userAgent;

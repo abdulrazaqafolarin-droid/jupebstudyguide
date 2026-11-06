@@ -25,6 +25,27 @@ async function keyedHash(value: string, secret: string): Promise<string> {
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+const LOGIN_UPSTREAM_TIMEOUT_MS = 12_000;
+
+async function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const parentSignal = init?.signal;
+  const abortFromCaller = () => controller.abort(parentSignal?.reason);
+  if (parentSignal?.aborted) abortFromCaller();
+  else parentSignal?.addEventListener("abort", abortFromCaller, { once: true });
+
+  const timeoutId = setTimeout(
+    () => controller.abort(new DOMException("Login request timed out", "TimeoutError")),
+    LOGIN_UPSTREAM_TIMEOUT_MS,
+  );
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+    parentSignal?.removeEventListener("abort", abortFromCaller);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -56,6 +77,7 @@ Deno.serve(async (req) => {
   ]);
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: fetchWithTimeout },
   });
 
   const { data: gate, error: gateError } = await admin.rpc("check_login_allowed", {
@@ -75,7 +97,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authResponse = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+    const authResponse = await fetchWithTimeout(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
       method: "POST",
       headers: { "apikey": anonKey, "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

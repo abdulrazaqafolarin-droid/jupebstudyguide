@@ -22,9 +22,14 @@ function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
     difficulty: (row.difficulty as StudyQuestion["difficulty"]) || "medium",
   };
   if (row.options) {
-    sq.options = typeof row.options === "string"
-      ? JSON.parse(row.options as string)
-      : (row.options as StudyQuestion["options"]);
+    try {
+      sq.options = typeof row.options === "string"
+        ? JSON.parse(row.options as string)
+        : (row.options as StudyQuestion["options"]);
+    } catch (error) {
+      // One malformed legacy row must not prevent the rest of the question bank loading.
+      console.error(`Invalid options JSON for study question ${String(row.id)}:`, error);
+    }
   }
   if (row.correct_answer) sq.correctAnswer = row.correct_answer as string;
   if (row.explanation) sq.explanation = row.explanation as string;
@@ -62,7 +67,8 @@ async function fetchAll() {
         .select(columns)
         .eq("hidden", false)
         .order("id", { ascending: true })
-        .range(from, from + PAGE_SIZE - 1);
+        .range(from, from + PAGE_SIZE - 1)
+        .abortSignal(AbortSignal.timeout(15_000));
 
       if (error) throw error;
       if (!data || data.length === 0) break;
@@ -88,7 +94,10 @@ async function fetchAll() {
     console.error("Failed to load study questions from Supabase:", error);
     // Keep the last good snapshot if a refresh fails. A first-load failure
     // can be retried when the device comes back online.
-    if (!_ready) fetchStarted = false;
+    if (!_ready) {
+      fetchStarted = false;
+      notifyListeners();
+    }
   } finally {
     if (fetchInFlight === task) fetchInFlight = null;
   }

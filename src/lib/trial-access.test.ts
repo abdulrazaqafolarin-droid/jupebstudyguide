@@ -3,7 +3,7 @@ import { hasAiAccountAccess, isTrialActive } from '../../supabase/functions/_sha
 
 const NOW = Date.parse('2026-11-05T12:00:00.000Z');
 
-describe('five-day trial AI access', () => {
+describe('one-day trial AI access', () => {
   it('allows an account whose server-issued trial has not expired', () => {
     expect(hasAiAccountAccess({
       is_activated: false,

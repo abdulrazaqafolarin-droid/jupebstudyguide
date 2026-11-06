@@ -6,7 +6,7 @@ export function toQuestion(sq: StudyQuestion): Question {
     id: sq.id,
     subject: sq.subject,
     year: sq.year,
-    type: sq.category === "objective" ? "mcq" : "essay",
+    type: sq.category === "objective" ? "mcq" : sq.category === "practical" ? "practical" : "essay",
     topic: sq.topic,
     question: sq.question,
     options: sq.options,
@@ -14,6 +14,7 @@ export function toQuestion(sq: StudyQuestion): Question {
     explanation: sq.explanation ?? sq.answerGuide ?? "",
     difficulty: sq.difficulty,
     imageUrl: sq.imageUrl,
+    imagePosition: sq.imagePosition,
   };
 }
 

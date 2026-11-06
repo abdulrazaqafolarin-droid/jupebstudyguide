@@ -103,7 +103,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
             >
               <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
                 <Clock className="h-3.5 w-3.5" />
-                <strong>5-day free trial active</strong>
+                <strong>1-day free trial active</strong>
                 <span aria-hidden="true">·</span>
                 <span>{trialDaysLeft} {trialDaysLeft === 1 ? "day" : "days"} remaining</span>
                 <span className="text-muted-foreground">Ends {new Date(trialExpiresAt).toLocaleDateString()}</span>

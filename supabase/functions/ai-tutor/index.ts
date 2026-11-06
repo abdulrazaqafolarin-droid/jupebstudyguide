@@ -139,7 +139,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
               question.question,
               JSON.stringify(question.options || ""),
               lastUserMsg?.content || "",
-            ].join("\\n")
+            ].join("\n")
           : undefined,
       messages || [],
     );

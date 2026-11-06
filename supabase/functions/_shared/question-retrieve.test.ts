@@ -48,7 +48,6 @@ Deno.test("short follow-ups retain the previous question or topic", () => {
 
 Deno.test("question document text indexes the metadata and useful answer context", () => {
   const text = formatQuestionForEmbedding({
-    id: "chem-2024-theory-009",
     subject: "chemistry",
     year: 2024,
     category: "theory",
@@ -56,9 +55,6 @@ Deno.test("question document text indexes the metadata and useful answer context
     options: [{ label: "A", text: "Atomic radius" }],
     correct_answer: "A",
     explanation: "Nuclear charge changes across a period.",
-    course: "Periodic table",
-    difficulty: "medium",
-    image_url: "https://example.com/diagram.png",
   });
   assert(text.includes("chemistry"), "Subject metadata must be searchable.");
   assert(text.includes("2024"), "Exam year must be searchable.");

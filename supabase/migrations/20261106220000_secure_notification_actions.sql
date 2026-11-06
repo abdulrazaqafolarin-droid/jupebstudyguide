@@ -35,7 +35,7 @@ CREATE OR REPLACE FUNCTION public.consume_notification_action(
 )
 RETURNS JSONB
 LANGUAGE plpgsql
-SECURITY DEFINER
+SECURITY INVOKER
 SET search_path = public, pg_temp
 AS $$
 DECLARE
@@ -137,6 +137,8 @@ $$;
 REVOKE ALL ON FUNCTION public.consume_notification_action(TEXT, TEXT, TEXT)
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.consume_notification_action(TEXT, TEXT, TEXT)
+  TO service_role;
+GRANT EXECUTE ON FUNCTION public.mark_conversation_read(UUID, UUID)
   TO service_role;
 
 -- Bound table growth; old/consumed rows are no longer redeemable.

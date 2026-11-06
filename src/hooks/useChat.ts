@@ -793,7 +793,7 @@ export function useChat() {
           }
         )
         .subscribe((status, err) => {
-          if (disposed) return;
+          if (disposed || activeGlobalChannel !== channel) return;
           setGlobalChannelStatus(status);
           debug('[Realtime] chat-global status:', status);
           if (status === 'SUBSCRIBED') {

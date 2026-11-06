@@ -166,22 +166,29 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 </span>
               </div>
 
-              {/* Question - Scrollable */}
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {question.imageUrl && !imageBroken ? (
-                  <div className="mb-4 rounded-xl overflow-hidden border bg-muted/30">
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-48 object-contain" loading="lazy" onError={() => setImageBroken(true)} />
-                  </div>
-                ) : imageBroken ? (
-                  <div className="mb-4 flex flex-col items-center justify-center gap-2 p-6 rounded-xl border border-dashed bg-muted/20 text-muted-foreground">
-                    <ImageOff className="h-8 w-8" />
-                    <p className="text-xs">Image failed to load</p>
-                  </div>
-                ) : (
-                  <div className="text-lg font-medium mb-4 leading-relaxed overflow-y-auto max-h-[140px] scrollbar-thin">
-                    <QuestionMath content={question.question} />
+              {/* Text and image are independent: never hide the question text
+                  just because an illustration is attached to the record. */}
+              <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
+                {question.imageUrl && !imageBroken && (
+                  <div className="mb-4 shrink-0 rounded-xl overflow-hidden border bg-muted/30">
+                    <img
+                      src={question.imageUrl}
+                      alt="Question illustration"
+                      className="w-full max-h-48 object-contain"
+                      loading="lazy"
+                      onError={() => setImageBroken(true)}
+                    />
                   </div>
                 )}
+                {imageBroken && (
+                  <div className="mb-4 shrink-0 flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed bg-muted/20 text-muted-foreground">
+                    <ImageOff className="h-7 w-7" />
+                    <p className="text-xs">Question image could not be loaded</p>
+                  </div>
+                )}
+                <div className="text-lg font-medium mb-4 leading-relaxed">
+                  <QuestionMath content={question.question} />
+                </div>
 
                 {/* MCQ Options - Scrollable container */}
                 {question.options && (

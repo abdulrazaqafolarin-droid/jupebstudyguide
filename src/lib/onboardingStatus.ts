@@ -1,15 +1,10 @@
 /**
  * Per-user onboarding status cache.
  *
- * The guard wraps every protected route and remounts on each navigation —
- * fetching per navigation would flash a spinner on every tap. This module
- * caches the status for the lifetime of the app load (one fetch per signed-in
- * user per tab) and lets the onboarding page update it synchronously when the
- * student finishes, so the very next render already knows onboarding is done.
- *
- * The same fetch also restores theme_preference on a fresh device — but only
- * when next-themes has no stored choice, so a live toggle on this device is
- * never overridden.
+ * Protected routes remount during navigation. A successful result is cached
+ * for this app session, while concurrent route guards share one in-flight
+ * request. ProtectedRoute starts this fetch alongside activation validation
+ * so the two independent checks do not create a serial navigation delay.
  */
 import { supabase } from '@/integrations/supabase/client';
 import { normalizeOnboardingData, type OnboardingData } from './onboarding';
@@ -42,6 +37,7 @@ const EMPTY: OnboardingStatus = {
 };
 
 const cache = new Map<string, OnboardingStatus>();
+const inFlight = new Map<string, Promise<OnboardingStatus>>();
 
 export function getCachedOnboardingStatus(userId: string): OnboardingStatus | null {
   return cache.get(userId) ?? null;
@@ -52,41 +48,64 @@ export function patchCachedOnboardingStatus(userId: string, patch: Partial<Onboa
   cache.set(userId, { ...current, ...patch });
 }
 
-export async function fetchOnboardingStatus(userId: string): Promise<OnboardingStatus> {
-  const [profileRes, sessionsRes] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
-      .eq('user_id', userId)
-      .maybeSingle(),
-    supabase
-      .from('study_sessions')
-      .select('sessions')
-      .eq('user_id', userId)
-      .maybeSingle(),
-  ]);
+/**
+ * One profile + study-session snapshot per user per app session.
+ * Failed reads are deliberately not cached: a temporary network failure must
+ * not turn into a false "new student" decision on the next route mount.
+ */
+export function fetchOnboardingStatus(userId: string): Promise<OnboardingStatus> {
+  const cached = cache.get(userId);
+  if (cached?.loaded) return Promise.resolve(cached);
 
-  const profile = profileRes.data;
-  const sessions = sessionsRes.data;
-  const data = normalizeOnboardingData(profile?.onboarding_data);
-  const rawSessions = (sessions as { sessions?: unknown } | null)?.sessions;
-  const isNewStudent = !Array.isArray(rawSessions) || rawSessions.length === 0;
+  const pending = inFlight.get(userId);
+  if (pending) return pending;
 
-  const status: OnboardingStatus = {
-    loaded: true,
-    completedAt: profile?.onboarding_completed_at ?? null,
-    finalized: data.finalized === true,
-    isAdmin: profile?.is_admin ?? false,
-    isNewStudent,
-    displayName: profile?.display_name ?? null,
-    themePreference:
-      profile?.theme_preference === 'light' || profile?.theme_preference === 'dark'
-        ? profile.theme_preference
-        : null,
-    schoolName: profile?.school_name ?? null,
-    examSeatNumber: profile?.exam_seat_number ?? null,
-    data,
-  };
-  cache.set(userId, status);
-  return status;
+  const request = (async () => {
+    try {
+      const [profileRes, sessionsRes] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
+          .eq('user_id', userId)
+          .maybeSingle(),
+        supabase
+          .from('study_sessions')
+          .select('sessions')
+          .eq('user_id', userId)
+          .maybeSingle(),
+      ]);
+
+      if (profileRes.error) throw profileRes.error;
+      if (sessionsRes.error) throw sessionsRes.error;
+
+      const profile = profileRes.data;
+      const sessions = sessionsRes.data;
+      const data = normalizeOnboardingData(profile?.onboarding_data);
+      const rawSessions = (sessions as { sessions?: unknown } | null)?.sessions;
+      const isNewStudent = !Array.isArray(rawSessions) || rawSessions.length === 0;
+
+      const status: OnboardingStatus = {
+        loaded: true,
+        completedAt: profile?.onboarding_completed_at ?? null,
+        finalized: data.finalized === true,
+        isAdmin: profile?.is_admin ?? false,
+        isNewStudent,
+        displayName: profile?.display_name ?? null,
+        themePreference:
+          profile?.theme_preference === 'light' || profile?.theme_preference === 'dark'
+            ? profile.theme_preference
+            : null,
+        schoolName: profile?.school_name ?? null,
+        examSeatNumber: profile?.exam_seat_number ?? null,
+        data,
+      };
+      cache.set(userId, status);
+      return status;
+    } finally {
+      inFlight.delete(userId);
+    }
+  })();
+
+  inFlight.set(userId, request);
+  return request;
 }

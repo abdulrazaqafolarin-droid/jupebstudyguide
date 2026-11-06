@@ -3,13 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 import { toast } from "sonner";
+import { resolveActivationFailure, type ActivationStatusSnapshot } from "@/lib/activation-status";
 
-export interface ActivationStatus {
-  is_activated: boolean;
-  is_admin: boolean;
-  trial_expires_at: string | null;
-  checking: boolean;
-}
+export interface ActivationStatus extends ActivationStatusSnapshot {}
 
 // ---------------------------------------------------------------------------
 // Session-level activation cache.
@@ -62,8 +58,9 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
     };
   } catch (err) {
     console.error("Activation check error:", err);
+    const cached = activationCache?.userId === user.id ? activationCache.status : null;
     return {
-      status: { is_activated: false, is_admin: isAdminEmail, trial_expires_at: null, checking: false },
+      status: resolveActivationFailure(isAdminEmail, cached),
       cacheable: false,
     };
   }
@@ -107,11 +104,15 @@ export function useActivation() {
       }
 
       const cached = activationCache?.userId === user.id ? activationCache : null;
-      if (cached && !force) {
+      if (cached) {
         // Instant read: navigation never waits on the network again.
         setStatus(cached.status);
-        if (Date.now() - cached.fetchedAt < ACTIVATION_STALE_MS) return;
-        // Stale → fall through to a background revalidate (state updates if changed).
+        if (!force && Date.now() - cached.fetchedAt < ACTIVATION_STALE_MS) return;
+        // Stale → revalidate in the background without hiding trusted access.
+      } else {
+        // No verified snapshot exists yet. Show a loader while the first
+        // request is in flight, then render a retry state if it fails.
+        setStatus((previous) => ({ ...previous, checking: true, check_error: false }));
       }
 
       const fresh = await ensureActivationLoaded(user);

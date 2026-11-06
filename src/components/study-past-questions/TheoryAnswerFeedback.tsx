@@ -386,13 +386,14 @@ export function TheoryAnswerFeedback({
   }, []);
 
   const handleEditEvaluationAnswer = useCallback(() => {
+    if (isLoading || isChatLoading) return;
     setEvaluationDraft(evaluationAnswer);
     setIsEditingEvaluationAnswer(true);
-  }, [evaluationAnswer]);
+  }, [evaluationAnswer, isLoading, isChatLoading]);
 
   const handleSaveEvaluationAnswer = useCallback(() => {
     const nextAnswer = evaluationDraft.trim();
-    if (!nextAnswer || isLoading) return;
+    if (!nextAnswer || isLoading || isChatLoading) return;
     evaluationAnswerRef.current = nextAnswer;
     setEvaluationAnswer(nextAnswer);
     setIsEditingEvaluationAnswer(false);
@@ -409,7 +410,7 @@ export function TheoryAnswerFeedback({
     hasStarted.current = false;
     completedRef.current = false;
     void startEvaluation();
-  }, [evaluationDraft, isLoading, startEvaluation]);
+  }, [evaluationDraft, isLoading, isChatLoading, startEvaluation]);
 
   const handleEditChatMessage = useCallback((index: number) => {
     if (isChatLoading) return;
@@ -584,7 +585,7 @@ export function TheoryAnswerFeedback({
                   >
                     <Copy className="h-3 w-3" />
                   </button>
-                  {!isReadOnly && !isLoading && !isEditingEvaluationAnswer && (
+                  {!isReadOnly && !isLoading && !isChatLoading && !isEditingEvaluationAnswer && (
                     <button
                       type="button"
                       onClick={handleEditEvaluationAnswer}

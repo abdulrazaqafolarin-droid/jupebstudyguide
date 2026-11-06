@@ -60,6 +60,11 @@ BEGIN
 END;
 $function$;
 
+-- This migration runs with database-owner privileges; set the transaction-local
+-- service_role claim only for this controlled data correction so the existing
+-- profile trigger continues rejecting ordinary client trial edits.
+SELECT set_config('request.jwt.claim', '{"role":"service_role"}', true);
+
 UPDATE public.profiles
 SET trial_expires_at = trial_started_at + interval '1 day'
 WHERE trial_started_at IS NOT NULL

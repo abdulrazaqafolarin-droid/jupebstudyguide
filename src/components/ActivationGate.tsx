@@ -9,6 +9,7 @@ import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, Me
 import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
 import { toast } from "sonner";
+import { formatTrialCountdown } from "@/lib/trial-countdown";
 
 interface ActivationGateProps {
   children: React.ReactNode;
@@ -24,17 +25,14 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
 
   useEffect(() => {
     if (!Number.isFinite(trialExpiresAt)) return;
-    const timeout = window.setTimeout(
-      () => setClockNow(Date.now()),
-      Math.max(0, trialExpiresAt - Date.now()) + 25,
-    );
-    return () => window.clearTimeout(timeout);
+    const tick = () => setClockNow(Date.now());
+    tick();
+    if (trialExpiresAt <= Date.now()) return;
+    const interval = window.setInterval(tick, 1000);
+    return () => window.clearInterval(interval);
   }, [trialExpiresAt]);
 
   const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
-  const trialDaysLeft = trialActive
-    ? Math.max(1, Math.ceil((trialExpiresAt - clockNow) / (24 * 60 * 60 * 1000)))
-    : 0;
 
   const handleTrialActivation = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -97,16 +95,18 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
         {trialActive && !status.is_activated && !status.is_admin && (
           <>
             <div
-              role="status"
-              aria-live="polite"
+              role="group"
+              aria-label="Free trial status"
+              aria-live="off"
               className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
             >
               <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
                 <Clock className="h-3.5 w-3.5" />
                 <strong>1-day free trial active</strong>
                 <span aria-hidden="true">·</span>
-                <span>{trialDaysLeft} {trialDaysLeft === 1 ? "day" : "days"} remaining</span>
-                <span className="text-muted-foreground">Ends {new Date(trialExpiresAt).toLocaleDateString()}</span>
+                <span className="font-mono tabular-nums" aria-live="off">
+                  {formatTrialCountdown(trialExpiresAt - clockNow)} remaining
+                </span>
                 <Button
                   type="button"
                   size="sm"

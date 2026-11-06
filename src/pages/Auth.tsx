@@ -53,8 +53,12 @@ const Auth = () => {
       if (!email.trim()) { setErrors({ email: 'Email is required' }); return; }
       setErrors({});
       setLoading(true);
-      const { error } = await resetPassword(email);
-      setLoading(false);
+      let error: Error | null;
+      try {
+        ({ error } = await resetPassword(email));
+      } finally {
+        setLoading(false);
+      }
       if (error) {
         toast({
           title: "Failed to send reset email",
@@ -90,19 +94,25 @@ const Auth = () => {
           navigate('/');
         }
       } else {
-        const { error } = await signUp(email, password);
+        const { error, needsEmailConfirmation } = await signUp(email, password);
         if (error) {
           toast({
             title: "Sign up failed",
             description: error.message,
             variant: "destructive",
           });
+        } else if (needsEmailConfirmation) {
+          toast({
+            title: "Confirm your email",
+            description: `We sent a confirmation link to ${email}. Open it to finish signing up and start your 1-day free trial.`,
+          });
+          setMode('login');
         } else {
           toast({
             title: "Account created!",
-            description: "You can now log in with the credentials you just created.",
+            description: "Your 1-day free trial is ready. Let's start studying.",
           });
-          setMode('login');
+          navigate('/');
         }
       }
     } finally {
@@ -118,21 +128,24 @@ const Auth = () => {
   const handleMfaVerify = async () => {
     if (mfaCode.length !== 6) return;
     setMfaVerifying(true);
-    const { error } = await verifyMfa(mfaCode);
-    if (error) {
+    try {
+      const { error } = await verifyMfa(mfaCode);
+      if (error) {
+        toast({
+          title: "Verification failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
       toast({
-        title: "Verification failed",
-        description: error.message,
-        variant: "destructive",
+        title: "Welcome back!",
+        description: "Two-factor verification successful.",
       });
+      navigate('/');
+    } finally {
       setMfaVerifying(false);
-      return;
     }
-    toast({
-      title: "Welcome back!",
-      description: "Two-factor verification successful.",
-    });
-    navigate('/');
   };
 
   const isLogin = mode === 'login';
@@ -174,7 +187,7 @@ const Auth = () => {
                 </CardTitle>
                 <CardDescription>
                   {isLogin ? 'Sign in to continue your learning journey'
-                    : isSignup ? 'Create your account and get a 5-day free trial to start your JUPEB preparation'
+                    : isSignup ? 'Create your account and get a 1-day free trial to start your JUPEB preparation'
                     : 'Enter your email and we\'ll send you a reset link'}
                 </CardDescription>
               </motion.div>

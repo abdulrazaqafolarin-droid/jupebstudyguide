@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: Error | null; needsEmailConfirmation?: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null; needsMfa?: boolean }>;
   verifyMfa: (code: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -15,6 +15,33 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const AUTH_REQUEST_TIMEOUT_MS = 15_000;
+
+function withAuthRequestTimeout<T>(request: PromiseLike<T>, action: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    let settled = false;
+    const timeoutId = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error(`${action} timed out. Check your connection and try again.`));
+    }, AUTH_REQUEST_TIMEOUT_MS);
+    Promise.resolve(request).then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
+        resolve(value);
+      },
+      (error: unknown) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
+        reject(error);
+      },
+    );
+  });
+}
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -81,17 +108,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-          data: { display_name: email.split('@')[0] },
-        },
-      });
-      return { error };
+      const { data, error } = await withAuthRequestTimeout(
+        supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { display_name: email.split('@')[0] },
+          },
+        }),
+        "Sign up",
+      );
+      return { error, needsEmailConfirmation: !error && !data.session };
     } catch (error) {
-      return { error: error as Error };
+      return { error: error as Error, needsEmailConfirmation: false };
     }
   };
 
@@ -99,6 +129,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const { data: loginData, error: loginError } = await supabase.functions.invoke('secure-login', {
         body: { email, password },
+        timeout: AUTH_REQUEST_TIMEOUT_MS,
       });
       if (loginError) {
         const context = (loginError as { context?: Response }).context;
@@ -114,15 +145,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!loginData?.access_token || !loginData?.refresh_token) {
         return { error: new Error(typeof loginData?.error === 'string' ? loginData.error : 'Login response was incomplete.'), needsMfa: false };
       }
-      const { data, error } = await supabase.auth.setSession({
-        access_token: loginData.access_token,
-        refresh_token: loginData.refresh_token,
-      });
+      const { data, error } = await withAuthRequestTimeout(
+        supabase.auth.setSession({
+          access_token: loginData.access_token,
+          refresh_token: loginData.refresh_token,
+        }),
+        "Completing sign in",
+      );
       if (error) return { error, needsMfa: false };
       if (data.session?.access_token) {
         supabase.realtime.setAuth(data.session.access_token);
       }
-      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      const { data: aal } = await withAuthRequestTimeout(
+        supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+        "Checking two-factor authentication",
+      );
       if (aal && aal.nextLevel === 'aal2' && aal.currentLevel === 'aal1') {
         return { error: null, needsMfa: true };
       }
@@ -134,18 +171,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const verifyMfa = async (code: string) => {
     try {
-      const { data: factors } = await supabase.auth.mfa.listFactors();
+      const { data: factors } = await withAuthRequestTimeout(
+        supabase.auth.mfa.listFactors(),
+        "Checking your authenticator",
+      );
       const totpFactor = factors?.all.find(f => f.factor_type === 'totp' && f.status === 'verified');
       if (!totpFactor) return { error: new Error('No verified TOTP factor found') };
-      const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
-        factorId: totpFactor.id,
-      });
+      const { data: challenge, error: challengeError } = await withAuthRequestTimeout(
+        supabase.auth.mfa.challenge({ factorId: totpFactor.id }),
+        "Requesting two-factor challenge",
+      );
       if (challengeError) return { error: challengeError };
-      const { error: verifyError } = await supabase.auth.mfa.verify({
-        factorId: totpFactor.id,
-        challengeId: challenge.id,
-        code,
-      });
+      const { error: verifyError } = await withAuthRequestTimeout(
+        supabase.auth.mfa.verify({
+          factorId: totpFactor.id,
+          challengeId: challenge.id,
+          code,
+        }),
+        "Verifying two-factor code",
+      );
       if (verifyError) return { error: verifyError };
       return { error: null };
     } catch (error) {
@@ -165,9 +209,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const resetPassword = async (email: string) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`,
-      });
+      const { error } = await withAuthRequestTimeout(
+        supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth`,
+        }),
+        "Sending password reset email",
+      );
       return { error };
     } catch (error) {
       return { error: error as Error };

@@ -119,6 +119,13 @@ BEGIN
     gen_random_uuid()
   );
 
+  -- Bump the conversation ordering for both direct and group chats.
+  -- Group unread-count triggers do not update the conversation row for every
+  -- participant, so the notification reply path must do this explicitly.
+  UPDATE public.conversations
+    SET updated_at = now()
+    WHERE id = v_token.conversation_id;
+
   -- A reply means the conversation has been opened/responded to, so mark
   -- the incoming thread read as part of the same transaction.
   PERFORM public.mark_conversation_read(

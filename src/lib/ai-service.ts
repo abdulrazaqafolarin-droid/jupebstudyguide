@@ -72,7 +72,9 @@ export async function streamChat(
   subject?: string,
   /** Caller-initiated stop (stop button). When aborted, the partial answer
    * is kept and the stream resolves via onDone — never as an error. */
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  /** Full active question/topic context for question-bank retrieval (not just the short prompt). */
+  retrievalQuery?: string,
 ): Promise<void> {
   const ac = new AbortController();
   let timedOut = false;
@@ -91,7 +93,12 @@ export async function streamChat(
         "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ systemPrompt, messages: msgs, subject: subject || undefined }),
+      body: JSON.stringify({
+        systemPrompt,
+        messages: msgs,
+        subject: subject || undefined,
+        retrievalQuery: retrievalQuery?.trim() || undefined,
+      }),
       signal: ac.signal,
     });
     // Headers in: the body is governed by the stall watchdog, not the timer.

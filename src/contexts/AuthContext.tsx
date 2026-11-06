@@ -97,9 +97,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { data: loginData, error: loginError } = await supabase.functions.invoke('secure-login', {
+        body: { email, password },
+      });
+      if (loginError) {
+        const context = (loginError as { context?: Response }).context;
+        let message = 'Unable to sign in. Please try again.';
+        if (context) {
+          try {
+            const body = await context.clone().json();
+            if (typeof body?.error === 'string') message = body.error;
+          } catch { /* retain safe fallback */ }
+        }
+        return { error: new Error(message), needsMfa: false };
+      }
+      if (!loginData?.access_token || !loginData?.refresh_token) {
+        return { error: new Error(typeof loginData?.error === 'string' ? loginData.error : 'Login response was incomplete.'), needsMfa: false };
+      }
+      const { data, error } = await supabase.auth.setSession({
+        access_token: loginData.access_token,
+        refresh_token: loginData.refresh_token,
       });
       if (error) return { error, needsMfa: false };
       if (data.session?.access_token) {

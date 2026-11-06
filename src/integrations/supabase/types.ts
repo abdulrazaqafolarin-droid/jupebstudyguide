@@ -139,6 +139,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          question_refs: Json
           role: string
           user_id: string
         }
@@ -148,6 +149,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          question_refs?: Json
           role: string
           user_id: string
         }
@@ -157,6 +159,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          question_refs?: Json
           role?: string
           user_id?: string
         }

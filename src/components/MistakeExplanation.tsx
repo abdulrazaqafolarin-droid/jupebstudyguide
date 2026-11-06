@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import MathRenderer from "@/components/MathRenderer";
 import { useUserStorage } from "@/hooks/useUserStorage";
 import { streamChat } from "@/lib/ai-service";
+import { fetchQuestionImageAttachment } from "@/lib/question-image-attachment";
 import type { Question } from "@/types/question";
 
 const CACHE_KEY = "mistake-explanations";
@@ -21,6 +22,9 @@ const SYSTEM_PROMPT = [
 
 function friendlyError(raw: string): string {
   const lower = raw.toLowerCase();
+  if (lower.includes("image analysis") || lower.includes("vision") || lower.includes("attachment request")) {
+    return "The AI image-analysis service is unavailable right now. Your answer is saved; try again later. The image was not replaced with text-only context.";
+  }
   if (lower.includes("401") || lower.includes("session")) {
     return "Your session expired. Sign in again, then retry.";
   }
@@ -48,7 +52,8 @@ interface MistakeExplanationProps {
  * and re-taps cost nothing.
  */
 export function MistakeExplanation({ subject, topicName, question, selectedAnswer }: MistakeExplanationProps) {
-  const cacheKey = `${question.id}::${selectedAnswer.toUpperCase()}`;
+  // Keep old text-only explanations from being reused after image support is enabled.
+  const cacheKey = `${question.id}::${selectedAnswer.toUpperCase()}::${question.imageUrl ?? "text-only"}`;
   const [cache, setCache] = useUserStorage<Record<string, string>>(CACHE_KEY, {});
   const [open, setOpen] = useState(false);
   const [text, setText] = useState<string | null>(null);
@@ -65,7 +70,7 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
     if (!text && !loading && cache[cacheKey]) setText(cache[cacheKey]);
   }, [cache, cacheKey, text, loading]);
 
-  const start = () => {
+  const start = async () => {
     setOpen(true);
     setError(null);
     if (cache[cacheKey]) {
@@ -76,55 +81,78 @@ export function MistakeExplanation({ subject, topicName, question, selectedAnswe
     setLoading(true);
     setStopped(false);
     stoppedRef.current = false;
-    const options = (question.options ?? [])
-      .map((o) => `${o.label}. ${o.text}`)
-      .join("\n");
-    const userMessage = [
-      `Subject: ${subject}`,
-      `Topic: ${topicName}`,
-      `Question: ${question.question}`,
-      `Options:\n${options}`,
-      `Correct answer: ${question.correctAnswer}`,
-      `The student chose: ${selectedAnswer}`,
-      question.explanation ? `Bank explanation: ${question.explanation}` : "",
-    ].filter(Boolean).join("\n\n");
-    let full = "";
+
     const ac = new AbortController();
     abortRef.current = ac;
-    void streamChat(
-      SYSTEM_PROMPT,
-      [{ role: "user", content: userMessage }],
-      {
-        onDelta: (delta) => {
-          full += delta;
-          setText(full);
+
+    try {
+      // The visible image is not automatically part of the AI prompt. Fetch
+      // it in the client and attach its bytes so chat-proxy routes it to Gemini
+      // Vision. Fail closed: never silently ask a text-only model instead.
+      const attachment = question.imageUrl
+        ? await fetchQuestionImageAttachment(question.imageUrl, ac.signal)
+        : undefined;
+      if (ac.signal.aborted) return;
+
+      const options = (question.options ?? [])
+        .map((o) => `${o.label}. ${o.text}`)
+        .join("\n");
+      const userMessage = [
+        `Subject: ${subject}`,
+        `Topic: ${topicName}`,
+        `Question: ${question.question}`,
+        `Options:\n${options}`,
+        `Correct answer: ${question.correctAnswer}`,
+        `The student chose: ${selectedAnswer}`,
+        question.explanation ? `Bank explanation: ${question.explanation}` : "",
+        attachment ? "An image of this exact question is attached. Inspect it as part of your explanation." : "",
+      ].filter(Boolean).join("\n\n");
+      let full = "";
+      void streamChat(
+        SYSTEM_PROMPT,
+        [{ role: "user", content: userMessage, attachment }],
+        {
+          onDelta: (delta) => {
+            full += delta;
+            setText(full);
+          },
+          onDone: () => {
+            if (abortRef.current === ac) abortRef.current = null;
+            setLoading(false);
+            // Stopped by the user: keep the partial text on screen, but never
+            // cache it — a later tap should regenerate the full explanation.
+            if (stoppedRef.current) return;
+            const finalText = full;
+            setCache((prev) => {
+              const next = { ...prev, [cacheKey]: finalText };
+              const keys = Object.keys(next);
+              if (keys.length > MAX_CACHE_ENTRIES) {
+                for (const old of keys.slice(0, keys.length - MAX_CACHE_ENTRIES)) delete next[old];
+              }
+              return next;
+            });
+          },
+          onError: (err) => {
+            if (abortRef.current === ac) abortRef.current = null;
+            setLoading(false);
+            setError(friendlyError(err));
+          },
         },
-        onDone: () => {
-          if (abortRef.current === ac) abortRef.current = null;
-          setLoading(false);
-          // Stopped by the user: keep the partial text on screen, but never
-          // cache it — a later tap should regenerate the full explanation.
-          if (stoppedRef.current) return;
-          const finalText = full;
-          setCache((prev) => {
-            const next = { ...prev, [cacheKey]: finalText };
-            const keys = Object.keys(next);
-            if (keys.length > MAX_CACHE_ENTRIES) {
-              for (const old of keys.slice(0, keys.length - MAX_CACHE_ENTRIES)) delete next[old];
-            }
-            return next;
-          });
-        },
-        onError: (err) => {
-          if (abortRef.current === ac) abortRef.current = null;
-          setLoading(false);
-          setError(friendlyError(err));
-        },
-      },
-      undefined,
-      undefined,
-      ac.signal,
-    );
+        undefined,
+        undefined,
+        ac.signal,
+      );
+    } catch (err) {
+      if (abortRef.current === ac) abortRef.current = null;
+      if (ac.signal.aborted) return;
+      setLoading(false);
+      if (question.imageUrl) {
+        const detail = err instanceof Error ? err.message : "The image could not be loaded.";
+        setError(`Couldn't load the question image for AI analysis. ${detail} No text-only explanation was sent.`);
+      } else {
+        setError(friendlyError(err instanceof Error ? err.message : String(err)));
+      }
+    }
   };
 
   /** Stop the response; partial text stays visible (uncached). */

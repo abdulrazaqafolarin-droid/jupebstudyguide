@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Sparkles, X, RefreshCw, ChevronDown, Loader2, Check, Send, User, ImagePlus } from 'lucide-react';
+import { Bot, Sparkles, X, RefreshCw, ChevronDown, Loader2, Check, Send, User, ImagePlus, Copy, Pencil, Square } from 'lucide-react';
 import { MathRenderer } from '@/components/MathRenderer';
 import { streamChat, type AIChatMessage } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
@@ -101,6 +101,11 @@ export function TheoryAnswerFeedback({
   const [content, setContent] = useState(initialContent ?? '');
   const [evalData, setEvalData] = useState<EvalData | null>(initialEvalData ?? null);
   const [isLoading, setIsLoading] = useState(true);
+  const [evaluationAnswer, setEvaluationAnswer] = useState(userAnswer);
+  const [isEditingEvaluationAnswer, setIsEditingEvaluationAnswer] = useState(false);
+  const [evaluationDraft, setEvaluationDraft] = useState(userAnswer);
+  const [evaluationInterrupted, setEvaluationInterrupted] = useState(false);
+  const [editingChatIndex, setEditingChatIndex] = useState<number | null>(null);
 
   const [isAtBottom, setIsAtBottom] = useState(true);
   const contentRef = useRef(initialContent ?? '');
@@ -108,6 +113,10 @@ export function TheoryAnswerFeedback({
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasStarted = useRef(false);
   const completedRef = useRef(false);
+  const evaluationAbortRef = useRef<AbortController | null>(null);
+  const chatAbortRef = useRef<AbortController | null>(null);
+  const evaluationAnswerRef = useRef(userAnswer);
+  evaluationAnswerRef.current = evaluationAnswer;
   const isReadOnly = initialContent !== undefined;
   // Keep the latest question in a ref so parent re-renders (e.g. the inline
   // spread used for practical sub-questions) can't restart a running evaluation.
@@ -119,6 +128,8 @@ export function TheoryAnswerFeedback({
     role: 'user' | 'assistant';
     content: string;
     attachments?: { base64: string; mimeType: string; name: string }[];
+    historyStart?: number;
+    historyCount?: number;
   };
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
@@ -175,7 +186,13 @@ export function TheoryAnswerFeedback({
     hasStarted.current = true;
     completedRef.current = false;
     setIsLoading(true);
+    setEvaluationInterrupted(false);
+    setContent('');
+    setEvalData(null);
+    evalRef.current = null;
     contentRef.current = '';
+    const ac = new AbortController();
+    evaluationAbortRef.current = ac;
 
     try {
     const q = questionRef.current;
@@ -203,7 +220,7 @@ export function TheoryAnswerFeedback({
     }
     msgs.push({
       role: 'user',
-      content: `Student's answer: ${userAnswer}${attachNote}`,
+      content: `Student's answer: ${evaluationAnswerRef.current}${attachNote}`,
     });
 
     // Additional messages: each image as a separate user message
@@ -227,6 +244,7 @@ export function TheoryAnswerFeedback({
         setContent(display);
       },
       onDone: () => {
+        if (evaluationAbortRef.current === ac) evaluationAbortRef.current = null;
         const { display, data } = parseScoreBlock(fullText);
         const clean = display;
         contentRef.current = clean;
@@ -234,6 +252,8 @@ export function TheoryAnswerFeedback({
         evalRef.current = data;
         if (data) setEvalData(data);
         setIsLoading(false);
+        setEvaluationInterrupted(!data);
+        if (!data) hasStarted.current = false;
         // Keep every message (text answer + image attachments) so the AI still
         // sees the student's written work during the follow-up chat.
         chatHistoryRef.current = [
@@ -255,17 +275,23 @@ export function TheoryAnswerFeedback({
         }
       },
       onError: (err) => {
+        if (evaluationAbortRef.current === ac) evaluationAbortRef.current = null;
+        hasStarted.current = false;
+        setEvaluationInterrupted(true);
         contentRef.current += `\n\n*AI Error: ${err}*`;
         setContent(contentRef.current);
         setIsLoading(false);
       },
-    });
+    }, undefined, undefined, ac.signal);
     } catch (err) {
+      if (evaluationAbortRef.current === ac) evaluationAbortRef.current = null;
+      hasStarted.current = false;
+      setEvaluationInterrupted(true);
       contentRef.current += `\n\n*Error: ${err instanceof Error ? err.message : String(err)}*`;
       setContent(contentRef.current);
       setIsLoading(false);
     }
-  }, [userAnswer, imageAttachments, isReadOnly]);
+  }, [imageAttachments, isReadOnly]);
 
   useEffect(() => {
     if (isReadOnly) {

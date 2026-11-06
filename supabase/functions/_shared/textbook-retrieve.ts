@@ -39,15 +39,31 @@ export async function retrieveRelevantChunks(
   const maxChunks = options.maxChunks ?? 5;
   const threshold = options.similarityThreshold ?? 0.5;
 
+  // Do not spend a Gemini embedding call on an empty textbook index. The
+  // question-bank RAG is independent and continues even when no PDFs are
+  // stored in the shared textbook table.
+  try {
+    const availability = await fetch(
+      `${supabaseUrl}/rest/v1/textbook_chunks?select=id&limit=1`,
+      {
+        headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` },
+        signal: AbortSignal.timeout(2_000),
+      },
+    );
+    if (availability.ok) {
+      const rows = await availability.json();
+      if (!Array.isArray(rows) || rows.length === 0) return [];
+    }
+  } catch {
+    // A transient availability check failure must not disable textbook RAG.
+  }
+
   const embedding = await generateEmbedding(query, options.embedKeys, "RETRIEVAL_QUERY");
   if (!embedding) return [];
 
   const vectorStr = `[${embedding.join(",")}]`;
 
-  let url = `${supabaseUrl}/rest/v1/rpc/match_textbook_chunks`;
-  if (options.subject) {
-    url += `?subject=eq.${encodeURIComponent(options.subject)}`;
-  }
+  const url = `${supabaseUrl}/rest/v1/rpc/match_textbook_chunks`;
 
   let res: Response;
   try {
@@ -62,6 +78,7 @@ export async function retrieveRelevantChunks(
         query_embedding: vectorStr,
         match_threshold: threshold,
         match_count: maxChunks,
+        filter_subject: options.subject || null,
       }),
       signal: AbortSignal.timeout(10_000),
     });

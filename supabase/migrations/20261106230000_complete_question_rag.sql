@@ -64,8 +64,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.study_question_embedding_jo
 CREATE OR REPLACE FUNCTION public.touch_study_question_updated_at()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-SET search_path = public, pg_temp
-AS $$
+SET search_path = ''
+AS $
 BEGIN
   IF ROW(
     NEW.subject, NEW.year, NEW.category, NEW.question, NEW.options,
@@ -178,7 +178,7 @@ GRANT EXECUTE ON FUNCTION public.claim_study_question_embedding_jobs(INTEGER)
 DROP FUNCTION IF EXISTS public.match_study_questions(extensions.vector, DOUBLE PRECISION, INTEGER, TEXT);
 
 CREATE OR REPLACE FUNCTION public.match_study_questions(
-  query_embedding VECTOR(768),
+  query_embedding extensions.VECTOR(768),
   match_threshold FLOAT,
   match_count INT,
   filter_subject TEXT DEFAULT NULL,
@@ -198,8 +198,8 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, extensions
-AS $$
+SET search_path = ''
+AS $
 BEGIN
   RETURN QUERY
   SELECT
@@ -211,7 +211,7 @@ BEGIN
     sq.options,
     sq.correct_answer,
     sq.explanation,
-    1 - (sqe.embedding <=> query_embedding) AS similarity
+    1 - (sqe.embedding OPERATOR(extensions.<=>) query_embedding) AS similarity
   FROM public.study_question_embeddings AS sqe
   JOIN public.study_questions AS sq ON sq.id = sqe.question_id
   WHERE sq.hidden IS NOT TRUE
@@ -219,8 +219,8 @@ BEGIN
     AND (filter_subject IS NULL OR sq.subject = filter_subject)
     AND (filter_year IS NULL OR sq.year = filter_year)
     AND (filter_category IS NULL OR sq.category = filter_category)
-    AND 1 - (sqe.embedding <=> query_embedding) > match_threshold
-  ORDER BY sqe.embedding <=> query_embedding
+    AND 1 - (sqe.embedding OPERATOR(extensions.<=>) query_embedding) > match_threshold
+  ORDER BY sqe.embedding OPERATOR(extensions.<=>) query_embedding
   LIMIT LEAST(GREATEST(match_count, 1), 30);
 END;
 $$;
@@ -284,13 +284,17 @@ GRANT EXECUTE ON FUNCTION public.match_study_questions_text(TEXT, INT, TEXT, INT
 
 -- Preserve the separate shared-textbook RAG, but use an explicit subject
 -- parameter for the RPC instead of passing a query-string filter to PostgREST.
--- This is a distinct four-argument overload; existing three-argument callers
--- remain compatible while the current server switches to the new signature.
+-- Replace the old three-argument function instead of creating an overload.
+-- The optional fourth argument preserves existing three-argument callers.
+DROP FUNCTION IF EXISTS public.match_textbook_chunks(
+  extensions.vector, DOUBLE PRECISION, INTEGER
+);
+
 CREATE OR REPLACE FUNCTION public.match_textbook_chunks(
   query_embedding extensions.vector(768),
   match_threshold FLOAT,
   match_count INT,
-  filter_subject TEXT
+  filter_subject TEXT DEFAULT NULL
 )
 RETURNS TABLE (
   id UUID,
@@ -310,13 +314,13 @@ BEGIN
     tc.textbook_id,
     t.title,
     tc.content,
-    1 - (tc.embedding <=> query_embedding) AS similarity
+    1 - (tc.embedding OPERATOR(extensions.<=>) query_embedding) AS similarity
   FROM public.textbook_chunks AS tc
   JOIN public.textbooks AS t ON t.id = tc.textbook_id
   WHERE tc.embedding IS NOT NULL
     AND (filter_subject IS NULL OR t.subject = filter_subject)
-    AND 1 - (tc.embedding <=> query_embedding) > match_threshold
-  ORDER BY tc.embedding <=> query_embedding
+    AND 1 - (tc.embedding OPERATOR(extensions.<=>) query_embedding) > match_threshold
+  ORDER BY tc.embedding OPERATOR(extensions.<=>) query_embedding
   LIMIT LEAST(GREATEST(match_count, 1), 20);
 END;
 $$;

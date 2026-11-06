@@ -5,6 +5,7 @@ import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { getAllStudyQuestions, getAllStudyQuestionsForSubject, initDataLayer, subscribe } from '@/data/study-questions';
 import { preloadHotRoutes } from '@/lib/route-preload';
 import { toQuestions } from '@/lib/question-adapter';
+import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
 import type { DailyTask, StudySessionData } from '@/types/syllabus';
 import { SubjectCard } from '@/components/SubjectCard';
@@ -129,6 +130,12 @@ const Index = () => {
     const custom = customQuestions.filter(q => q.subject === subject);
     return [...builtIn, ...custom];
   }, [customQuestions, tick]);
+
+  // Quick Actions and Quiz use objective MCQs only. The full Subject study
+  // route continues to include theory and practical material.
+  const getQuizQuestionsBySubject = useCallback((subject: Subject): Question[] => {
+    return filterObjectiveQuizQuestions(getAllQuestionsBySubject(subject));
+  }, [getAllQuestionsBySubject]);
 
   // Track previous streak to detect new streak days
   const prevStreakRef = useRef(currentStreak);
@@ -492,10 +499,15 @@ const Index = () => {
 
   const handleStartQuiz = (subject?: Subject) => {
     if (subject) {
-      const pool = getAllQuestionsBySubject(subject);
-      const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+      const pool = getQuizQuestionsBySubject(subject);
+      if (pool.length === 0) {
+        toast.error('No objective multiple-choice questions are available for this subject yet.');
+        return;
+      }
+      const count = Math.min(10, pool.length);
+      const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, count);
       setSelectedSubject(subject);
-      setQuizPlan({ perSubject: { [subject]: 10 }, uniform: false });
+      setQuizPlan({ perSubject: { [subject]: count }, uniform: false });
       setCurrentQuizQuestions(shuffled);
       setCurrentView('quiz');
     } else {
@@ -594,10 +606,10 @@ const Index = () => {
   // Quiz setup
   if (currentView === 'quiz-setup') {
     const available = {
-      physics: getAllQuestionsBySubject('physics').length,
-      chemistry: getAllQuestionsBySubject('chemistry').length,
-      biology: getAllQuestionsBySubject('biology').length,
-      math: getAllQuestionsBySubject('math').length,
+      physics: getQuizQuestionsBySubject('physics').length,
+      chemistry: getQuizQuestionsBySubject('chemistry').length,
+      biology: getQuizQuestionsBySubject('biology').length,
+      math: getQuizQuestionsBySubject('math').length,
     } as Record<Subject, number>;
 
     // Pre-seed: when user came in via a subject quick action, only that subject is on.
@@ -629,8 +641,8 @@ const Index = () => {
       : quizPlan
         ? (Object.entries(quizPlan.perSubject) as Array<[Subject, number]>)
             .flatMap(([subject, count]) => {
-              const pool = getAllQuestionsBySubject(subject);
-              return [...pool].sort(() => Math.random() - 0.5).slice(0, count);
+              const pool = getQuizQuestionsBySubject(subject);
+              return [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(count, pool.length));
             })
             .sort(() => Math.random() - 0.5)
         : [];

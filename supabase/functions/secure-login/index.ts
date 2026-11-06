@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
 
   // Supabase's edge gateway supplies x-real-ip; do not trust a client-provided
   // X-Forwarded-For chain. Missing IP fails into a shared conservative bucket.
-  const clientIp = req.headers.get("x-real-ip")?.trim() || "unknown";
+  const clientIp = req.headers.get("cf-connecting-ip")?.trim() || req.headers.get("x-real-ip")?.trim() || "unknown";
   const [accountHash, ipHash] = await Promise.all([
     sha256(`account:${email}`),
     sha256(`ip:${clientIp}`),
@@ -66,9 +66,7 @@ Deno.serve(async (req) => {
   if (!gate?.allowed) {
     const retry = Math.max(1, Number(gate.retry_after) || 60);
     return new Response(JSON.stringify({
-      error: gate.reason === "account_locked"
-        ? "Too many unsuccessful attempts. This account is temporarily locked."
-        : "Too many login attempts from this network. Please try again later.",
+      error: "Too many login attempts. Please try again later.",
       retryAfter: retry,
     }), {
       status: 429,

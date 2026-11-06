@@ -51,8 +51,8 @@ Deno.serve(async (req) => {
   // X-Forwarded-For chain. Missing IP fails into a shared conservative bucket.
   const clientIp = req.headers.get("cf-connecting-ip")?.trim() || req.headers.get("x-real-ip")?.trim() || "unknown";
   const [accountHash, ipHash] = await Promise.all([
-    sha256(`account:${email}`),
-    sha256(`ip:${clientIp}`),
+    keyedHash(`account:${email}`, serviceKey),
+    keyedHash(`ip:${clientIp}`, serviceKey),
   ]);
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },

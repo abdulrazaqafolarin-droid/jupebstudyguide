@@ -52,6 +52,61 @@ WHERE id IN (
   'physics-2024-theory-06'
 );
 
+-- Correct two 2020 Physics objective items against the official June 2020
+-- JUPEB paper: the coil's rectangular turn area is 0.03 m × 0.02 m, and the
+-- de Broglie item gives 3.0 × 10^6 m/s (not 10^4 m/s).
+UPDATE public.study_questions
+SET options = to_jsonb(
+      jsonb_set(
+        (options #>> '{}')::jsonb,
+        '{2,text}',
+        to_jsonb('$0.048\\,Nm
+UPDATE public.study_questions
+SET hidden = true
+WHERE id = 'bio-2021-objective-r03'
+  AND EXISTS (
+    SELECT 1
+    FROM public.study_questions duplicate
+    WHERE duplicate.id = 'bio-2021-objective-r12'
+      AND duplicate.hidden = false
+      AND duplicate.subject = public.study_questions.subject
+      AND duplicate.year = public.study_questions.year
+      AND duplicate.category = public.study_questions.category
+      AND lower(trim(duplicate.question)) = lower(trim(public.study_questions.question))
+  );
+
+NOTIFY pgrst, 'reload schema';
+::text)
+      )::text
+    ),
+    explanation = 'The coil is rectangular: area A = length × diameter = 0.030 × 0.020 = 6.0 × 10⁻⁴ m². Torque τ = N B I A = 200 × 0.8 × 0.5 × 6.0 × 10⁻⁴ = 0.048 N·m. Therefore option C is correct.'
+WHERE id = 'physics-2020-objective-016';
+
+UPDATE public.study_questions
+SET question = replace(question, '10^4', '10^6'),
+    correct_answer = 'B',
+    explanation = 'The de Broglie wavelength is λ = h/(mv) = (6.63 × 10⁻³⁴)/(9.11 × 10⁻³¹ × 3.0 × 10⁶) = 2.43 × 10⁻¹⁰ m. Therefore option B is correct.'
+WHERE id = 'physics-2020-objective-023';
+
+-- Restore the official 2020 thermometric-liquid statements and option C.
+UPDATE public.study_questions
+SET question = 'I. It should be a good conductor of heat. II. It should be opaque. III. Its expansion should be regular. IV. It should wet glass. V. It should have a high melting point and low boiling point. Which of the above properties are NOT those of a suitable thermometric liquid?',
+    options = to_jsonb(
+      jsonb_set(
+        (options #>> '{}')::jsonb,
+        '{2,text}',
+        to_jsonb('II and III'::text)
+      )::text
+    )
+WHERE id = 'physics-2020-objective-049';
+
+-- Question 10's stored options contain duplicate answer text for C and D.
+-- Do not let students face two identical choices while the official option
+-- transcription is incomplete.
+UPDATE public.study_questions
+SET hidden = true
+WHERE id = 'physics-2020-objective-014';
+
 -- Keep one clean copy of the repeated 2021 Biology photosynthesis objective.
 UPDATE public.study_questions
 SET hidden = true

@@ -25,12 +25,23 @@ self.addEventListener('push', (event) => {
   }
 
   const title = data.title || 'JUPEB Master';
+  const notificationData = data.data || {};
+  const isChat = notificationData.type === 'chat';
   const options: NotificationOptions & { vibrate?: number[] } = {
     body: data.body || '',
     icon: '/pwa-192x192.png',
     badge: '/pwa-192x192.png',
     vibrate: [200, 100, 200],
-    data: data.data || {},
+    data: notificationData,
+    tag: isChat && typeof notificationData.conversation_id === 'string'
+      ? `chat:${notificationData.conversation_id}`
+      : undefined,
+    actions: isChat
+      ? [
+          { action: 'reply', title: 'Reply' },
+          { action: 'read', title: 'Mark as read' },
+        ]
+      : [],
     requireInteraction: true,
   };
 

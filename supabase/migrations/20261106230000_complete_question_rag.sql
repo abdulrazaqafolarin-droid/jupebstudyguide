@@ -175,11 +175,15 @@ GRANT EXECUTE ON FUNCTION public.claim_study_question_embedding_jobs(INTEGER)
 
 -- Vector results are returned only when their embedding matches the current
 -- question version. A stale vector is never cited while a re-index is queued.
+DROP FUNCTION IF EXISTS public.match_study_questions(VECTOR(768), FLOAT, INT, TEXT);
+
 CREATE OR REPLACE FUNCTION public.match_study_questions(
   query_embedding VECTOR(768),
   match_threshold FLOAT,
   match_count INT,
-  filter_subject TEXT DEFAULT NULL
+  filter_subject TEXT DEFAULT NULL,
+  filter_year INT DEFAULT NULL,
+  filter_category TEXT DEFAULT NULL
 )
 RETURNS TABLE (
   question_id TEXT,
@@ -213,6 +217,8 @@ BEGIN
   WHERE sq.hidden IS NOT TRUE
     AND sqe.source_updated_at = sq.updated_at
     AND (filter_subject IS NULL OR sq.subject = filter_subject)
+    AND (filter_year IS NULL OR sq.year = filter_year)
+    AND (filter_category IS NULL OR sq.category = filter_category)
     AND 1 - (sqe.embedding <=> query_embedding) > match_threshold
   ORDER BY sqe.embedding <=> query_embedding
   LIMIT LEAST(GREATEST(match_count, 1), 30);
@@ -264,6 +270,11 @@ AS $$
            q.id
   LIMIT LEAST(GREATEST(COALESCE(match_count, 8), 1), 30);
 $$;
+
+REVOKE ALL ON FUNCTION public.match_study_questions(VECTOR(768), FLOAT, INT, TEXT, INT, TEXT)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.match_study_questions(VECTOR(768), FLOAT, INT, TEXT, INT, TEXT)
+  TO service_role;
 
 REVOKE ALL ON FUNCTION public.match_study_questions_text(TEXT, INT, TEXT, INT, TEXT)
   FROM PUBLIC, anon, authenticated;

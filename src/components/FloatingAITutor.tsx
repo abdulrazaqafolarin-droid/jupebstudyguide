@@ -431,6 +431,8 @@ export const FloatingAITutor = () => {
     setEditingIndex(null);
     setMessages(newMsgs);
     setIsLoading(true);
+    const ac = new AbortController();
+    abortRef.current = ac;
     setInput('');
     clearAttachment();
     assistantContentRef.current = '';
@@ -466,12 +468,11 @@ export const FloatingAITutor = () => {
       ragContext = await searchRelevantChunks(userMessage);
     } catch (e) { console.warn('RAG search failed:', e); }
 
+    if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
+
     let acc = '';
     let firstToken = true;
     let activeQuestionRefs: QuestionRef[] = [];
-
-    const ac = new AbortController();
-    abortRef.current = ac;
 
     await aiStreamChat(systemPrompt, newMsgs.map(m => ({
       role: m.role,

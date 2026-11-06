@@ -11,7 +11,7 @@ afterEach(() => {
 describe("fetchQuestionImageAttachment", () => {
   it("downloads a supported question image and returns a base64 AI attachment", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(new Blob(["diagram-bytes"], { type: "image/png" }), {
+      new Response(new TextEncoder().encode("diagram-bytes"), {
         status: 200,
         headers: { "content-type": "image/png" },
       }),

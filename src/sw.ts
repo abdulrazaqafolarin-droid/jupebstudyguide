@@ -4,6 +4,17 @@ import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
 declare const self: ServiceWorkerGlobalScope;
 
+interface ActionNotificationOptions extends NotificationOptions {
+  vibrate?: number[];
+  actions?: Array<{ action: string; title: string; icon?: string }>;
+}
+
+// Public client configuration is safe to bundle in a service worker. The
+// action endpoint uses an unguessable, expiring token for authorization; the
+// publishable key is not a service-role credential.
+const SUPABASE_URL = "https://gzyczowqqywesqhqqpdi.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX";
+
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
@@ -73,12 +84,12 @@ self.addEventListener('notificationclick', (event) => {
   if (event.action === 'read' && raw?.read_token) {
     event.waitUntil((async () => {
       try {
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notification-action`, {
+        await fetch(`${SUPABASE_URL}/functions/v1/notification-action`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            apikey: SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({ token: raw.read_token, action: 'read' }),
         });

@@ -299,6 +299,14 @@ export function TheoryAnswerFeedback({
       return;
     }
     if (isOpen) {
+      evaluationAnswerRef.current = userAnswer;
+      setEvaluationAnswer(userAnswer);
+      setEvaluationDraft(userAnswer);
+      setIsEditingEvaluationAnswer(false);
+      setEvaluationInterrupted(false);
+      setEditingChatIndex(null);
+      evaluationAbortRef.current?.abort();
+      chatAbortRef.current?.abort();
       contentRef.current = '';
       setContent('');
       setEvalData(null);
@@ -312,9 +320,15 @@ export function TheoryAnswerFeedback({
       chatMsgIndexRef.current = 0;
       setIsLoading(true);
       const timer = setTimeout(() => startEvaluation(), 300);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        evaluationAbortRef.current?.abort();
+        chatAbortRef.current?.abort();
+        evaluationAbortRef.current = null;
+        chatAbortRef.current = null;
+      };
     }
-  }, [isOpen, startEvaluation, isReadOnly]);
+  }, [isOpen, startEvaluation, isReadOnly, userAnswer]);
 
   const handleDone = useCallback(() => {
     if (completedRef.current) return;
@@ -325,6 +339,77 @@ export function TheoryAnswerFeedback({
     );
   }, [onComplete]);
 
+  const copyMessage = useCallback(async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Clipboard permissions can be unavailable in embedded webviews.
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      const copied = document.execCommand('copy');
+      area.remove();
+      if (!copied) throw new Error('Clipboard unavailable');
+    }
+  }, []);
+
+  const stopEvaluation = useCallback(() => {
+    const controller = evaluationAbortRef.current;
+    if (!controller) return;
+    hasStarted.current = false;
+    evaluationAbortRef.current = null;
+    controller.abort();
+    setIsLoading(false);
+    setEvaluationInterrupted(true);
+  }, []);
+
+  const stopFollowupChat = useCallback(() => {
+    const controller = chatAbortRef.current;
+    if (!controller) return;
+    chatAbortRef.current = null;
+    controller.abort();
+    setIsChatLoading(false);
+    setEditingChatIndex(null);
+  }, []);
+
+  const handleEditEvaluationAnswer = useCallback(() => {
+    setEvaluationDraft(evaluationAnswer);
+    setIsEditingEvaluationAnswer(true);
+  }, [evaluationAnswer]);
+
+  const handleSaveEvaluationAnswer = useCallback(() => {
+    const nextAnswer = evaluationDraft.trim();
+    if (!nextAnswer || isLoading) return;
+    evaluationAnswerRef.current = nextAnswer;
+    setEvaluationAnswer(nextAnswer);
+    setIsEditingEvaluationAnswer(false);
+    setEvaluationInterrupted(false);
+    setContent('');
+    setEvalData(null);
+    contentRef.current = '';
+    evalRef.current = null;
+    setChatMessages([]);
+    setChatInput('');
+    setChatAttachments([]);
+    setEditingChatIndex(null);
+    chatHistoryRef.current = [];
+    chatMsgIndexRef.current = 0;
+    hasStarted.current = false;
+    completedRef.current = false;
+    void startEvaluation();
+  }, [evaluationDraft, isLoading, startEvaluation]);
+
+  const handleEditChatMessage = useCallback((index: number) => {
+    if (isChatLoading) return;
+    const message = chatMessages[index];
+    if (message?.role !== 'user' || message.historyStart === undefined) return;
+    setEditingChatIndex(index);
+    setChatInput(message.content);
+  }, [chatMessages, isChatLoading]);
+
   const handleChatSubmit = useCallback(async () => {
     const text = chatInput.trim();
     if ((!text && chatAttachments.length === 0) || isChatLoading) return;
@@ -333,66 +418,97 @@ export function TheoryAnswerFeedback({
     const snapAttachments = [...chatAttachments];
     setChatAttachments([]);
 
-    // For API: send each image as a separate message (edge function limitation)
-    const imgMsgs: AIChatMessage[] = snapAttachments.map((att, i) => ({
+    const editTarget = editingChatIndex !== null ? chatMessages[editingChatIndex] : undefined;
+    const historyStart = editTarget?.historyStart ?? chatHistoryRef.current.length;
+    const previousSegment = editTarget
+      ? chatHistoryRef.current.slice(historyStart, historyStart + (editTarget.historyCount ?? 1))
+      : [];
+    const preservedAttachments = previousSegment
+      .slice(1)
+      .filter((message) => message.attachment)
+      .map((message) => message.attachment!)
+      .filter((attachment) => !!attachment.base64);
+    const attachmentsToSend = snapAttachments.length > 0 ? snapAttachments : preservedAttachments;
+
+    // For API: send each image as a separate message (edge function limitation).
+    const imgMsgs: AIChatMessage[] = attachmentsToSend.map((att, i) => ({
       role: 'user',
-      content: `[Follow-up image ${i + 1} of ${snapAttachments.length}]`,
+      content: `[Follow-up image ${i + 1} of ${attachmentsToSend.length}]`,
       attachment: att,
     }));
 
     const userText = text || '[Image(s) attached]';
     const userMsg: AIChatMessage = { role: 'user', content: userText };
     const allNewMsgs: AIChatMessage[] = [userMsg, ...imgMsgs];
-    const updatedHistory = [...chatHistoryRef.current, ...allNewMsgs] as AIChatMessage[];
+    const baseHistory = chatHistoryRef.current.slice(0, historyStart);
+    const updatedHistory = [...baseHistory, ...allNewMsgs];
     chatHistoryRef.current = updatedHistory;
 
-    const aiIndex = chatMsgIndexRef.current;
-    chatMsgIndexRef.current += allNewMsgs.length + 1;
-
-    // For display: keep separate entries per image so updateChatDisplay index stays correct
-    const displayUserMsg: ChatMessage = { role: 'user', content: userText };
-    const displayImgMsgs: ChatMessage[] = snapAttachments.map((att, i) => ({
+    const baseDisplay = editingChatIndex !== null
+      ? chatMessages.slice(0, editingChatIndex)
+      : chatMessages;
+    const displayUserMsg: ChatMessage = {
       role: 'user',
-      content: snapAttachments.length > 1 ? `[Image ${i + 1} of ${snapAttachments.length}]` : '[Image]',
+      content: userText,
+      historyStart,
+      historyCount: allNewMsgs.length,
+    };
+    const displayImgMsgs: ChatMessage[] = attachmentsToSend.map((att, i) => ({
+      role: 'user',
+      content: attachmentsToSend.length > 1 ? `[Image ${i + 1} of ${attachmentsToSend.length}]` : '[Image]',
       attachments: [{ base64: att.base64, mimeType: att.mimeType, name: att.name }],
+      historyStart: historyStart + i + 1,
+      historyCount: 1,
     }));
-    setChatMessages(prev => [...prev, displayUserMsg, ...displayImgMsgs, { role: 'assistant', content: '' }]);
+    const assistantDisplayIndex = baseDisplay.length + 1 + displayImgMsgs.length;
+    setChatMessages([
+      ...baseDisplay,
+      displayUserMsg,
+      ...displayImgMsgs,
+      { role: 'assistant', content: '' },
+    ]);
+    setEditingChatIndex(null);
     setIsChatLoading(true);
 
     let botText = '';
     const systemMsg = chatSystemRef.current;
-    const apiMessages = updatedHistory;
+    const ac = new AbortController();
+    chatAbortRef.current = ac;
 
-    const updateChatDisplay = (text: string) => {
-      setChatMessages(prev => {
-        const arr = [...prev];
-        arr[aiIndex + allNewMsgs.length] = {
-          role: 'assistant',
-          content: text,
-        };
-        return arr;
+    const updateChatDisplay = (responseText: string) => {
+      setChatMessages((prev) => {
+        const next = [...prev];
+        if (assistantDisplayIndex < next.length) {
+          next[assistantDisplayIndex] = { role: 'assistant', content: responseText };
+        }
+        return next;
       });
     };
 
-    await streamChat(systemMsg, apiMessages, {
+    await streamChat(systemMsg, updatedHistory, {
       onDelta: (delta) => {
         botText += delta;
         updateChatDisplay(botText);
       },
       onDone: () => {
+        if (chatAbortRef.current === ac) chatAbortRef.current = null;
         setIsChatLoading(false);
         chatHistoryRef.current = [
           ...updatedHistory,
           { role: 'assistant', content: botText },
-        ] as AIChatMessage[];
+        ];
+        chatMsgIndexRef.current = assistantDisplayIndex + 1;
+        if (!botText) {
+          setChatMessages((prev) => prev.filter((_, index) => index !== assistantDisplayIndex));
+        }
       },
       onError: (err) => {
+        if (chatAbortRef.current === ac) chatAbortRef.current = null;
         setIsChatLoading(false);
-        // Surface the error in the pending bubble instead of leaving it as typing dots
         updateChatDisplay(`*AI Error: ${err}*`);
       },
-    });
-  }, [chatInput, chatAttachments, isChatLoading]);
+    }, undefined, undefined, ac.signal);
+  }, [chatInput, chatAttachments, isChatLoading, editingChatIndex, chatMessages]);
 
   if (!isOpen) return null;
 

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="460" viewBox="0 0 760 460">
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172033}.title{font-size:25px;font-weight:700}.sub{font-size:13px;fill:#46536a}.track{stroke:#1d4ed8;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}.mark{fill:#dc2626;stroke:#fff;stroke-width:2}.label{font-size:17px;font-weight:700}.small{font-size:13px;fill:#536176}</style>
+<rect width="760" height="460" fill="white"/>
+<text x="28" y="36" class="title">2020 Physics — Objective Question 9</text>
+<text x="28" y="60" class="sub">Frictionless track • schematic reconstructed from the official paper description; not to scale</text>
+<path d="M55 360H710" stroke="#172033" stroke-width="2"/>
+<path class="track" d="M90 100 C145 105 175 245 258 360 C325 345 360 245 430 270 C485 295 500 350 555 330 C615 310 625 120 680 100"/>
+<circle cx="90" cy="100" r="8" class="mark"/><circle cx="258" cy="360" r="8" class="mark"/><circle cx="430" cy="270" r="8" class="mark"/><circle cx="680" cy="100" r="8" class="mark"/>
+<g class="label"><text x="74" y="82">A</text><text x="245" y="388">B</text><text x="420" y="250">C</text><text x="684" y="82">D</text></g>
+<path d="M45 100V360 M38 100H52 M38 360H52" stroke="#172033" stroke-width="2" fill="none"/>
+<path d="M45 270H418" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 5"/>
+<g class="small"><text x="5" y="235" transform="rotate(-90 5 235)">60 m above baseline</text><text x="438" y="264">20 m</text><text x="620" y="92">60 m</text></g>
+<text x="32" y="433" class="small">A and D: 60 m • B: lowest point • C: 20 m • maximum KE occurs at B: mgh = 150 × 10 × 60 = 90 kJ.</text>
+</svg>

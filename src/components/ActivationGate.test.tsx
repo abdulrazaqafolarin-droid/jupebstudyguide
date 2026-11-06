@@ -61,6 +61,36 @@ describe("ActivationGate active-trial banner", () => {
     expect(screen.getByText("Protected study content")).toBeInTheDocument();
   });
 
+  it("shows a live hours-minutes-seconds countdown that updates every second", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-06T12:00:00.000Z"));
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: false,
+        is_admin: false,
+        trial_expires_at: new Date(Date.now() + 60_000).toISOString(),
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    try {
+      render(
+        <ActivationGate>
+          <div>Protected study content</div>
+        </ActivationGate>,
+      );
+      expect(screen.getByText("00:01:00 remaining")).toBeInTheDocument();
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(screen.getByText("00:00:59 remaining")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("opens the inline activation form without interrupting the trial session", () => {
     render(
       <ActivationGate>

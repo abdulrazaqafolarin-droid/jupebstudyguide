@@ -7,6 +7,26 @@ import { resolveActivationFailure, type ActivationStatusSnapshot } from "@/lib/a
 
 export type ActivationStatus = ActivationStatusSnapshot;
 
+const ACTIVATION_REQUEST_TIMEOUT_MS = 15_000;
+
+async function withActivationTimeout<T>(
+  request: (signal: AbortSignal) => PromiseLike<T>,
+  action: string,
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), ACTIVATION_REQUEST_TIMEOUT_MS);
+  try {
+    return await request(controller.signal);
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error(`${action} timed out. Check your connection and retry.`);
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Session-level activation cache.
 //
@@ -36,11 +56,15 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
   const isAdminEmail = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
 
   try {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("is_activated, is_admin, trial_expires_at")
-      .eq("user_id", user.id)
-      .single();
+    const { data, error } = await withActivationTimeout(
+      (signal) => supabase
+        .from("profiles")
+        .select("is_activated, is_admin, trial_expires_at")
+        .eq("user_id", user.id)
+        .abortSignal(signal)
+        .single(),
+      "Activation check",
+    );
 
     if (error) throw error;
 
@@ -137,10 +161,13 @@ export function useActivation() {
 
     try {
       const normalized = code.trim().toUpperCase();
-      const { data, error: rpcError } = await supabase.rpc("consume_activation_code", {
-        p_code: normalized,
-        p_user_id: user.id,
-      });
+      const { data, error: rpcError } = await withActivationTimeout(
+        (signal) => supabase.rpc("consume_activation_code", {
+          p_code: normalized,
+          p_user_id: user.id,
+        }).abortSignal(signal),
+        "Activation code validation",
+      );
 
       if (rpcError) {
         const msg = rpcError.message;

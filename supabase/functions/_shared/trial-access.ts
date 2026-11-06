@@ -1,6 +1,6 @@
 /**
  * Server-authoritative access check for AI-backed features.
- * The five-day trial is granted by the auth.users trigger and stored on the
+ * The one-day trial is granted by the auth.users trigger and stored on the
  * profile. Only the database value is trusted here; client metadata is ignored.
  */
 export interface AiAccessProfile {

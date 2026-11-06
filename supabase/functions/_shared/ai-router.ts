@@ -700,7 +700,17 @@ export async function routerText(
   opts: RouterOpts = {},
   ctx: RouterContext = loadRouterContext()
 ): Promise<ProviderSuccess> {
-  // Attachments REQUIRE Gemini (vision). Without attachments, race all providers.
+  // Images require Gemini Vision. Never strip an image and silently obtain
+  // a text-only answer. Preserve the established PDF/file fallback behaviour.
+  if (hasImageAttachment(messages)) {
+    const deadline = Date.now() + ELECTION_DEADLINE_MS;
+    try {
+      return await runProviderText(ctx, "gemini", systemPrompt, messages, opts, "ai-router", deadline);
+    } catch (err) {
+      const detail = err instanceof ProviderFailure ? err.message : String(err);
+      throw new Error(`Image analysis unavailable: Gemini Vision could not process the attached image. No text-only fallback was used. (${detail})`);
+    }
+  }
   if (hasAttachment(messages)) {
     return geminiFirstScope(ctx, systemPrompt, messages, opts);
   }
@@ -721,6 +731,7 @@ export async function routerText(
   throw new Error(`All AI providers failed (${reasons})`);
 }
 
+
 async function geminiFirstScope(
   ctx: RouterContext,
   systemPrompt: string,
@@ -731,17 +742,17 @@ async function geminiFirstScope(
   try {
     return await runProviderText(ctx, "gemini", systemPrompt, messages, opts, "ai-router", deadline);
   } catch (err) {
-    console.warn("[Router] Gemini failed for attachment request, falling back to text-only providers");
+    console.warn("[Router] Gemini failed for non-image attachment request, falling back to text-only providers");
     const textOnly = stripAttachments(messages);
     const settled = await Promise.allSettled(
       (["groq", "nvidia"] as VaultProvider[]).map((p) => runProviderText(ctx, p, systemPrompt, textOnly, opts, "ai-router", deadline))
     );
-    for (const s of settled) {
-      if (s.status === "fulfilled") return s.value;
+    for (const result of settled) {
+      if (result.status === "fulfilled") return result.value;
     }
     const reasons = settled
-      .filter((s): s is PromiseRejectedResult => s.status === "rejected")
-      .map((s) => (s.reason instanceof ProviderFailure ? s.reason.message : String(s.reason)))
+      .filter((result): result is PromiseRejectedResult => result.status === "rejected")
+      .map((result) => (result.reason instanceof ProviderFailure ? result.reason.message : String(result.reason)))
       .join(" | ");
     throw new Error(`All AI providers failed for attachment request (Gemini: ${err instanceof ProviderFailure ? err.message : String(err)} | ${reasons})`);
   }
@@ -768,11 +779,25 @@ function hasAttachment(messages: RouterMessage[]): boolean {
   return messages.some((m) => m.attachment?.base64 != null);
 }
 
+function hasImageAttachment(messages: RouterMessage[]): boolean {
+  return messages.some((m) => m.attachment?.base64 != null && m.attachment.mimeType.toLowerCase().startsWith("image/"));
+}
+
+/** Image attachments must never be stripped and sent to a text-only provider. */
+export function canUseTextFallback(messages: RouterMessage[]): boolean {
+  return !hasImageAttachment(messages);
+}
+
 function stripAttachments(messages: RouterMessage[]): RouterMessage[] {
   return messages.map((m) => {
     const { attachment: _attachment, ...rest } = m;
     return rest;
   });
+}
+
+/** Exported for regression tests: an attachment is initially routed to Gemini. */
+export function providerOrderForMessages(messages: RouterMessage[]): VaultProvider[] {
+  return hasAttachment(messages) ? ["gemini"] : PROVIDER_ORDER;
 }
 
 function sseError(message: string): Uint8Array {
@@ -848,7 +873,7 @@ export async function routerStream(
   ctx: RouterContext = loadRouterContext(),
   strict = false
 ): Promise<ReadableStream<Uint8Array>> {
-  const providers: VaultProvider[] = hasAttachment(messages) ? ["gemini"] : PROVIDER_ORDER;
+  const providers = providerOrderForMessages(messages);
   const deadline = Date.now() + ELECTION_DEADLINE_MS;
   const failures: string[] = [];
 
@@ -867,8 +892,8 @@ export async function routerStream(
     }
   }
 
-  if (hasAttachment(messages)) {
-    // Gemini (vision) failed — fall back to text-only providers.
+  if (hasAttachment(messages) && canUseTextFallback(messages)) {
+    // Preserve the existing fallback for non-image documents only.
     const textOnly = stripAttachments(messages);
     for (const provider of ["groq", "nvidia"] as VaultProvider[]) {
       const ac = new AbortController();
@@ -886,7 +911,9 @@ export async function routerStream(
     }
   }
 
-  const summary = `All AI providers unavailable for streaming (${failures.join(" | ") || "no providers attempted"})`;
+  const summary = hasImageAttachment(messages)
+    ? `Image analysis unavailable: Gemini Vision could not process the attached image. No text-only fallback was used. (${failures.join(" | ") || "Gemini was unavailable"})`
+    : `All AI providers unavailable for streaming (${failures.join(" | ") || "no providers attempted"})`;
   console.error(`[Router] ${summary}`);
   // strict callers (e.g. chat-proxy's non-streaming fallback) want the failure
   // as an exception so they can try an alternative before formatting SSE.

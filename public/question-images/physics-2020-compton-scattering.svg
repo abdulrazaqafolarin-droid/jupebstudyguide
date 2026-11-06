@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="460" viewBox="0 0 760 460">
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172033}.title{font-size:25px;font-weight:700}.sub{font-size:13px;fill:#46536a}.label{font-size:17px;font-weight:700}.small{font-size:14px;fill:#536176}</style>
+<defs><marker id="ray" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0L7 3L0 6Z" fill="#1d4ed8"/></marker></defs>
+<rect width="760" height="460" fill="white"/>
+<text x="28" y="38" class="title">2020 Physics Theory — Question 8(b)</text>
+<text x="28" y="63" class="sub">Compton scattering • schematic of the official paper description</text>
+<circle cx="350" cy="255" r="13" fill="#fbbf24" stroke="#a16207" stroke-width="2"/>
+<path d="M72 255H330" stroke="#1d4ed8" stroke-width="4" marker-end="url(#ray)" fill="none"/>
+<path d="M370 247L620 115" stroke="#1d4ed8" stroke-width="4" marker-end="url(#ray)" fill="none"/>
+<path d="M390 255H620" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 6"/>
+<path d="M425 255A75 75 0 0 0 415 220" stroke="#dc2626" stroke-width="2.5" fill="none"/>
+<text x="82" y="222" class="label">Incident photon</text>
+<text x="82" y="285" class="small">λ = 0.0033 nm</text>
+<text x="486" y="95" class="label">Deflected photon</text>
+<text x="486" y="137" class="small">λ′ = 0.0038 nm</text>
+<text x="318" y="291" class="label">Electron</text>
+<text x="435" y="232" class="label">θ</text>
+<text x="28" y="430" class="small">The photon changes direction and wavelength after scattering from the stationary electron.</text>
+</svg>

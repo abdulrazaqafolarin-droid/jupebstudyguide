@@ -145,19 +145,35 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
       messages || [],
     );
     if (questionSearchQuery) {
-      const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
-      const [chunks, questions] = await Promise.all([
-        retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
-          subject: subject || undefined,
-          maxChunks: 3,
-          embedKeys,
-        }),
-        retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
-          subject: subject || undefined,
-          maxQuestions: getRequestedQuestionCount(questionSearchQuery),
-          embedKey: embedKeys,
+      const ragPromise = (async () => {
+        const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
+        return await Promise.all([
+          retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
+            subject: subject || undefined,
+            maxChunks: 3,
+            embedKeys,
+          }),
+          retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
+            subject: subject || undefined,
+            maxQuestions: getRequestedQuestionCount(questionSearchQuery),
+            embedKey: embedKeys,
+          }),
+        ]);
+      })().catch((ragError) => {
+        console.warn("[ai-tutor] RAG retrieval failed; continuing without references:", String(ragError).slice(0, 180));
+        return [[], []] as const;
+      });
+      let deadlineTimer: ReturnType<typeof setTimeout> | undefined;
+      const [chunks, questions] = await Promise.race([
+        ragPromise,
+        new Promise<[
+          Awaited<ReturnType<typeof retrieveRelevantChunks>>,
+          Awaited<ReturnType<typeof retrieveRelevantQuestions>>,
+        ]>((resolve) => {
+          deadlineTimer = setTimeout(() => resolve([[], []]), 12_000);
         }),
       ]);
+      if (deadlineTimer) clearTimeout(deadlineTimer);
       const rag = buildRAGContext(chunks);
       if (rag.promptBlock) {
         systemContent += rag.promptBlock;

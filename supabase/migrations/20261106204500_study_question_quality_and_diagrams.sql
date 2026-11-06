@@ -108,4 +108,33 @@ WHERE id = 'bio-2021-objective-r03'
       AND lower(trim(duplicate.question)) = lower(trim(public.study_questions.question))
   );
 
+-- Hide the remaining visible objective records with duplicate answer-choice
+-- text. Their intended distractors cannot be recovered from the current bank
+-- transcription; keeping them visible would present ambiguous/duplicated MCQs.
+-- These rows are retained and can be restored after source wording is verified.
+UPDATE public.study_questions
+SET hidden = true
+WHERE id IN (
+  'bio-2019-objective-042',
+  'bio-2024-objective-032',
+  'chemistry-2014-objective-012',
+  'che-2017-q0036',
+  'chemistry-2025-objective-019',
+  'chemistry-2025-objective-024',
+  'mat-2016-mq-0009',
+  'mat-2016-mq-0011',
+  'mat-2016-mq-0040',
+  'mat-2017-mq-0003',
+  'mat-2019-mq-0025',
+  'mat-2019-mq-0028',
+  'mat-2019-objective-r11',
+  'mat-2020-mq-0038',
+  'mat-2022-obj-0001',
+  'physics-2014-objective-045',
+  'physics-2015-objective-011',
+  'physics-2016-objective-047',
+  'physics-2018-objective-020',
+  'physics-2018-objective-031'
+);
+
 NOTIFY pgrst, 'reload schema';

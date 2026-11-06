@@ -30,6 +30,11 @@ ALTER TABLE public.study_question_embeddings
   ADD COLUMN IF NOT EXISTS source_updated_at TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS content_hash TEXT;
 
+ALTER TABLE public.study_question_embeddings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "study_question_embeddings_select_all" ON public.study_question_embeddings;
+REVOKE ALL ON TABLE public.study_question_embeddings FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.study_question_embeddings TO service_role;
+
 -- Existing vector entries were generated from the then-current question bank.
 -- Mark them current now; future edits are invalidated by the trigger below.
 UPDATE public.study_question_embeddings AS e

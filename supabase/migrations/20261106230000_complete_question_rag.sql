@@ -91,7 +91,7 @@ CREATE OR REPLACE FUNCTION public.enqueue_study_question_embedding()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, pg_temp
+SET search_path = ''
 AS $$
 BEGIN
   IF TG_OP = 'UPDATE' AND ROW(
@@ -147,7 +147,7 @@ CREATE OR REPLACE FUNCTION public.claim_study_question_embedding_jobs(
 RETURNS TABLE (question_id TEXT, requested_at TIMESTAMPTZ, attempts INTEGER)
 LANGUAGE SQL
 SECURITY DEFINER
-SET search_path = public, pg_temp
+SET search_path = ''
 AS $$
   WITH candidates AS (
     SELECT j.question_id
@@ -246,7 +246,7 @@ RETURNS TABLE (
 LANGUAGE SQL
 STABLE
 SECURITY DEFINER
-SET search_path = public, pg_temp
+SET search_path = ''
 AS $$
   SELECT
     q.id,
@@ -305,7 +305,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, extensions
+SET search_path = ''
 AS $$
 BEGIN
   RETURN QUERY

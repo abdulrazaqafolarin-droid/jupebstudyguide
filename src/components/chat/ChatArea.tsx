@@ -447,29 +447,29 @@ export function ChatArea({
   }, [otherUserId, isGroup]);
 
   useEffect(() => {
-    if (!otherUserId || otherOnline) { setLastSeenText(null); return; }
-    const formatSeen = (iso: string) => {
-      const d = new Date(iso);
-      const diffMs = Date.now() - d.getTime();
-      const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-      const diffMins = Math.floor(diffMs / (1000 * 60));
-      if (diffMins < 1) return 'just now';
-      if (diffMins < 60) return `${diffMins}m ago`;
-      if (diffHrs < 24) return `${diffHrs}h ago`;
-      if (diffHrs < 48) return 'yesterday';
-      return format(d, 'MMM d, HH:mm');
-    };
-    const tick = () => {
-      // getLastSeen is inflight-deduped server-side and caches negative
-      // results, so a repeating tick is local-only once resolved.
-      const fetched = getLastSeen?.(otherUserId);
-      if (fetched) setLastSeenText(formatSeen(fetched));
-    };
-    tick();
-    // Keep refreshing so "2m ago" doesn't freeze — the old loop hard-stopped
-    // after 6s, leaving the header blank if the first lookup was slow.
-    const timer = setInterval(tick, 4000);
-    return () => clearInterval(timer);
+    if (!otherUserId || otherOnline) {
+      setLastSeenText(null);
+      return;
+    }
+
+    // The presence provider caches this privacy-checked lookup and updates
+    // it from user_presence Realtime events. No periodic chat-header polling
+    // is needed: this effect reruns when the realtime cache changes.
+    const fetched = getLastSeen?.(otherUserId);
+    if (!fetched) {
+      setLastSeenText(null);
+      return;
+    }
+
+    const d = new Date(fetched);
+    const diffMs = Date.now() - d.getTime();
+    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    if (diffMins < 1) setLastSeenText('just now');
+    else if (diffMins < 60) setLastSeenText(`${diffMins}m ago`);
+    else if (diffHrs < 24) setLastSeenText(`${diffHrs}h ago`);
+    else if (diffHrs < 48) setLastSeenText('yesterday');
+    else setLastSeenText(format(d, 'MMM d, HH:mm'));
   }, [otherUserId, otherOnline, getLastSeen]);
 
   const handleReportMessage = useCallback(async (msg: Message) => {

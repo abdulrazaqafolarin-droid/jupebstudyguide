@@ -175,7 +175,7 @@ GRANT EXECUTE ON FUNCTION public.claim_study_question_embedding_jobs(INTEGER)
 
 -- Vector results are returned only when their embedding matches the current
 -- question version. A stale vector is never cited while a re-index is queued.
-DROP FUNCTION IF EXISTS public.match_study_questions(VECTOR(768), FLOAT, INT, TEXT);
+DROP FUNCTION IF EXISTS public.match_study_questions(extensions.vector, DOUBLE PRECISION, INTEGER, TEXT);
 
 CREATE OR REPLACE FUNCTION public.match_study_questions(
   query_embedding VECTOR(768),
@@ -271,9 +271,9 @@ AS $$
   LIMIT LEAST(GREATEST(COALESCE(match_count, 8), 1), 30);
 $$;
 
-REVOKE ALL ON FUNCTION public.match_study_questions(VECTOR(768), FLOAT, INT, TEXT, INT, TEXT)
+REVOKE ALL ON FUNCTION public.match_study_questions(extensions.vector, DOUBLE PRECISION, INTEGER, TEXT, INTEGER, TEXT)
   FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.match_study_questions(VECTOR(768), FLOAT, INT, TEXT, INT, TEXT)
+GRANT EXECUTE ON FUNCTION public.match_study_questions(extensions.vector, DOUBLE PRECISION, INTEGER, TEXT, INTEGER, TEXT)
   TO service_role;
 
 REVOKE ALL ON FUNCTION public.match_study_questions_text(TEXT, INT, TEXT, INT, TEXT)

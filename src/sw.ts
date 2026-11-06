@@ -39,10 +39,7 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'JUPEB Master';
   const notificationData = data.data || {};
   const isChat = notificationData.type === 'chat';
-  const options: NotificationOptions & {
-    vibrate?: number[];
-    actions?: Array<{ action: string; title: string; icon?: string }>;
-  } = {
+  const options: ActionNotificationOptions = {
     body: data.body || '',
     icon: '/pwa-192x192.png',
     badge: '/pwa-192x192.png',

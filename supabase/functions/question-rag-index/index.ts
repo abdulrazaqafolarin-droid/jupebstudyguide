@@ -1,5 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { CORS_HEADERS } from "../_shared/ai.ts";
 import { formatQuestionForEmbedding } from "../_shared/question-retrieve.ts";
 import { generateEmbedding, resolveEmbedKeys } from "../_shared/textbook-embed.ts";
 
@@ -24,6 +23,12 @@ interface QuestionRow {
   updated_at: string;
   hidden: boolean;
 }
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

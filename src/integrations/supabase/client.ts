@@ -8,10 +8,37 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Bound auth HTTP requests so signup/login/MFA/reset cannot leave a WebView
+// spinner running indefinitely. Non-auth requests retain their own timeouts.
+const AUTH_FETCH_TIMEOUT_MS = 15_000;
+
+const authAwareFetch: typeof fetch = async (input, init) => {
+  const requestUrl = input instanceof Request ? input.url : String(input);
+  if (!requestUrl.includes("/auth/v1/")) return fetch(input, init);
+
+  const parentSignal = init?.signal ?? (input instanceof Request ? input.signal : undefined);
+  const controller = new AbortController();
+  const abortFromCaller = () => controller.abort(parentSignal?.reason);
+  if (parentSignal?.aborted) abortFromCaller();
+  else parentSignal?.addEventListener("abort", abortFromCaller, { once: true });
+
+  const timeoutId = globalThis.setTimeout(
+    () => controller.abort(new DOMException("Authentication request timed out", "TimeoutError")),
+    AUTH_FETCH_TIMEOUT_MS,
+  );
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    globalThis.clearTimeout(timeoutId);
+    parentSignal?.removeEventListener("abort", abortFromCaller);
+  }
+};
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
-  }
+  },
+  global: { fetch: authAwareFetch },
 });

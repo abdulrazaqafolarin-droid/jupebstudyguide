@@ -33,6 +33,24 @@ describe("fetchQuestionImageAttachment", () => {
     });
   });
 
+  it("aborts a stalled image download after the safety timeout", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn((_url: string, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {
+      init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    try {
+      const pending = fetchQuestionImageAttachment("https://cdn.example.org/slow.png");
+      const assertion = expect(pending).rejects.toThrow("too long to load");
+      await vi.advanceTimersByTimeAsync(12_000);
+      await assertion;
+      expect(fetchMock).toHaveBeenCalledOnce();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("rejects non-image responses instead of sending text-only context", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
       new Response("not an image", {

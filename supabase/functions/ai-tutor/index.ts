@@ -6,6 +6,7 @@ import {
   buildQuestionRAGContext,
   serializeQuestionReferencesEvent,
   buildQuestionRetrievalQuery,
+  getRequestedQuestionCount,
 } from "../_shared/question-retrieve.ts";
 import { resolveEmbedKeys } from "../_shared/textbook-embed.ts";
 
@@ -153,7 +154,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
         }),
         retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
           subject: subject || undefined,
-          maxQuestions: 5,
+          maxQuestions: getRequestedQuestionCount(questionSearchQuery),
           embedKey: embedKeys,
         }),
       ]);

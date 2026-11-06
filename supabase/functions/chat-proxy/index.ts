@@ -6,6 +6,7 @@ import {
   buildQuestionRAGContext,
   serializeQuestionReferencesEvent,
   buildQuestionRetrievalQuery,
+  getRequestedQuestionCount,
   type RetrievedQuestion,
 } from "../_shared/question-retrieve.ts";
 import { generateEmbedding, generateEmbeddings, resolveEmbedKeys, lastEmbedError } from "../_shared/textbook-embed.ts";
@@ -135,7 +136,7 @@ Deno.serve(async (req) => {
         }),
         retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
           subject: subject || undefined,
-          maxQuestions: 5,
+          maxQuestions: getRequestedQuestionCount(questionSearchQuery),
           embedKey: embedKeys,
         }),
       ])

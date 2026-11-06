@@ -303,6 +303,10 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
         .subscribe((status, error) => {
           if (disposed) return;
           if (status === "SUBSCRIBED") {
+            if (retryTimer) {
+              clearTimeout(retryTimer);
+              retryTimer = null;
+            }
             reconnectAttempts = 0;
             void refreshSnapshot();
             return;

@@ -8,6 +8,7 @@ import {
   transientRetryDelayMs,
   TRANSIENT_RETRY_DELAYS_MS,
   type KeyAttemptFailure,
+  canUseTextFallback,
   providerOrderForMessages,
   type RouterMessage,
 } from "./ai-router.ts";
@@ -73,4 +74,23 @@ Deno.test("text-only messages retain normal provider failover", () => {
     content: "Explain Newton's second law.",
   }];
   assertEquals(providerOrderForMessages(messages).join(","), "gemini,groq,nvidia", "text provider order");
+});
+
+
+Deno.test("image attachments cannot use text-only provider fallback", () => {
+  const messages: RouterMessage[] = [{
+    role: "user",
+    content: "Explain this diagram.",
+    attachment: { base64: "aGVsbG8=", mimeType: "image/jpeg", name: "question.jpg" },
+  }];
+  assertEquals(canUseTextFallback(messages), false, "image fallback must be blocked");
+});
+
+Deno.test("non-image document attachments retain their existing text fallback", () => {
+  const messages: RouterMessage[] = [{
+    role: "user",
+    content: "Summarize this document.",
+    attachment: { base64: "aGVsbG8=", mimeType: "application/pdf", name: "notes.pdf" },
+  }];
+  assertEquals(canUseTextFallback(messages), true, "document fallback remains available");
 });

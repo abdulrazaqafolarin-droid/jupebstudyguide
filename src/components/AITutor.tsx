@@ -154,7 +154,14 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
         toast.error(err);
         setIsLoading(false);
       },
-    }, ragContext, question.subject, ac.signal);
+    }, ragContext, question.subject, ac.signal, [
+      question.subject,
+      question.year,
+      question.topic || "",
+      question.question,
+      question.options?.map((option) => option.text).join(" ") || "",
+      userMessage,
+    ].filter(Boolean).join("\n"));
   }, [question, attachment, clearAttachment, messages]);
 
   const handleSubmit = (e: React.FormEvent) => {

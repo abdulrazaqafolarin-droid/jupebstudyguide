@@ -47,6 +47,7 @@ export function useStudyChat() {
   const isStreamingRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef('');
+  const messageLoadGenerationRef = useRef(0);
 
   useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => { chatsRef.current = chats; }, [chats]);
@@ -67,6 +68,7 @@ export function useStudyChat() {
   }, [user]);
 
   const loadMessages = useCallback(async (chatId: string) => {
+    const generation = ++messageLoadGenerationRef.current;
     const { data } = await supabase
       .from('ai_chat_messages')
       .select('id,role,content,attachment,created_at')
@@ -82,7 +84,7 @@ export function useStudyChat() {
       content: m.content,
       attachment: m.attachment,
     }));
-    setMessages(msgs);
+    if (generation === messageLoadGenerationRef.current && activeChatIdRef.current === chatId) setMessages(msgs);
   }, []);
 
   /** Point the UI at a row (selection without a lookup). */
@@ -91,6 +93,7 @@ export function useStudyChat() {
     abortRef.current = null;
     isStreamingRef.current = false;
     setIsStreaming(false);
+    activeChatIdRef.current = row?.id ?? null;
     setActiveChatId(row?.id ?? null);
     setStreamError(null);
     if (!row) {

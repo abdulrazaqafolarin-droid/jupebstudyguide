@@ -3,6 +3,7 @@ import {
   buildQuestionRetrievalQuery,
   getRequestedQuestionCount,
   formatQuestionForEmbedding,
+  detectQuestionFilters,
   mergeQuestionMatches,
   type RetrievedQuestion,
 } from "./question-retrieve.ts";
@@ -105,4 +106,11 @@ Deno.test("requested question sets expand retrieval within the safe context cap"
   assert(getRequestedQuestionCount("Show me all the objective questions in the 2020 Chemistry bank") === 12, "Broad all-question requests should retrieve the maximum supported context batch.");
   assert(getRequestedQuestionCount("Explain Newton's second law") === 6, "Normal tutoring turns should retain the smaller default retrieval.");
   assert(getRequestedQuestionCount("Give me 99 questions") === 12, "Question context must remain capped.");
+});
+
+Deno.test("subject, year and category filters are detected from natural questions", () => {
+  const filters = detectQuestionFilters("Find the 2026 Chemistry theory past questions.");
+  assert(filters.subject === "chemistry", "Subject should be detected.");
+  assert(filters.year === 2026, "The current exam year should be supported.");
+  assert(filters.category === "theory", "Question category should be detected.");
 });

@@ -315,6 +315,7 @@ Deno.serve(async (req) => {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ message: notificationMessage }),
+        });
         if (res.ok) {
           sent++;
           return;

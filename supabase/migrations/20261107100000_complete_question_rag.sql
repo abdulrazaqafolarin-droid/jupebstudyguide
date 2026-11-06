@@ -12,6 +12,7 @@ ALTER TABLE public.study_questions
       'simple',
       concat_ws(
         ' ',
+        coalesce(id, ''),
         coalesce(subject, ''),
         coalesce(year::text, ''),
         coalesce(category, ''),

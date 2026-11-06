@@ -976,6 +976,7 @@ const Index = () => {
           >
             {(['physics', 'chemistry', 'biology', 'math'] as Subject[]).map(subject => {
               const info = SUBJECT_INFO[subject];
+              const objectiveCount = getQuizQuestionsBySubject(subject).length;
               return (
                 <motion.button
                   key={subject}
@@ -994,7 +995,7 @@ const Index = () => {
                 >
                   <span className="text-2xl">{info.icon}</span>
                   <p className="font-medium mt-2">{info.name} Quiz</p>
-                  <p className="text-xs text-muted-foreground">10 random questions</p>
+                  <p className="text-xs text-muted-foreground">{Math.min(10, objectiveCount)} objective questions available</p>
                 </motion.button>
               );
             })}

@@ -374,7 +374,12 @@ export function useStudyChat() {
                   user_id: userId,
                   role: 'assistant',
                   content: savedContent,
-                  question_refs: activeQuestionRefs,
+                  question_refs: activeQuestionRefs.map((ref) => ({
+                    question_id: ref.question_id,
+                    subject: ref.subject,
+                    year: ref.year,
+                    category: ref.category,
+                  })),
                 })
                 .select('id,created_at')
                 .single();

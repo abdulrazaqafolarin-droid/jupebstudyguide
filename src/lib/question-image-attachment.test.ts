@@ -33,6 +33,62 @@ describe("fetchQuestionImageAttachment", () => {
     });
   });
 
+  it("rasterizes SVG question diagrams to PNG before sending them to Gemini", async () => {
+    const nativeUrl = URL;
+    const createObjectURL = vi.fn().mockReturnValue("blob:question-svg");
+    const revokeObjectURL = vi.fn();
+    class TestImage {
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      naturalWidth = 760;
+      naturalHeight = 470;
+      width = 760;
+      height = 470;
+      set src(_value: string) {
+        queueMicrotask(() => this.onload?.());
+      }
+    }
+    const drawImage = vi.fn();
+    const canvas = {
+      width: 0,
+      height: 0,
+      getContext: vi.fn().mockReturnValue({ drawImage }),
+      toBlob: vi.fn((callback: BlobCallback) => {
+        callback(new Blob(["png-diagram"], { type: "image/png" }));
+      }),
+    };
+    const createElement = vi.fn().mockReturnValue(canvas);
+    class URLWithObjectUrls extends nativeUrl {
+      static createObjectURL = createObjectURL;
+      static revokeObjectURL = revokeObjectURL;
+    }
+    vi.stubGlobal("URL", URLWithObjectUrls);
+    vi.stubGlobal("Image", TestImage);
+    vi.stubGlobal("document", { createElement });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+      new Response("<svg></svg>", {
+        status: 200,
+        headers: { "content-type": "image/svg+xml" },
+      }),
+    ));
+
+    const result = await fetchQuestionImageAttachment(
+      "https://cdn.example.org/questions/circuit.svg",
+    );
+
+    expect(result).toEqual({
+      base64: "cG5nLWRpYWdyYW0=",
+      mimeType: "image/png",
+      name: "circuit.png",
+    });
+    expect(createElement).toHaveBeenCalledWith("canvas");
+    expect(canvas.width).toBe(760);
+    expect(canvas.height).toBe(470);
+    expect(drawImage).toHaveBeenCalledOnce();
+    expect(createObjectURL).toHaveBeenCalledOnce();
+    expect(revokeObjectURL).toHaveBeenCalledWith("blob:question-svg");
+  });
+
   it("aborts a stalled image download after the safety timeout", async () => {
     vi.useFakeTimers();
     const fetchMock = vi.fn((_url: string, init?: RequestInit) => new Promise<Response>((_resolve, reject) => {

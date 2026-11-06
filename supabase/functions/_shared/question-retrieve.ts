@@ -78,25 +78,20 @@ export function formatQuestionForEmbedding(q: {
   year: number | string;
   category: string;
   question: string;
-  id?: string;
   options?: unknown;
   correct_answer?: string | null;
   explanation?: string | null;
-  course?: string | null;
-  difficulty?: string | null;
-  image_url?: string | null;
 }): string {
+  // Keep this byte-for-byte compatible with the original live question
+  // embedding format so old vectors and newly indexed vectors are comparable.
+  // Metadata/IDs are indexed separately by the PostgreSQL full-text document.
   const lines = [
-    q.id ? `Question ID: ${q.id}` : "",
-    `JUPEB ${q.subject} past question, ${q.year}, ${q.category}`,
-    q.course ? `Topic: ${q.course}` : "",
-    q.difficulty ? `Difficulty: ${q.difficulty}` : "",
-    `Question: ${q.question || ""}`,
-  ].filter(Boolean);
+    `${q.subject} (${q.year} ${q.category})`,
+    `Q: ${q.question || ""}`,
+  ];
   if (q.options) lines.push(`Options: ${JSON.stringify(q.options)}`);
-  if (q.correct_answer) lines.push(`Correct answer: ${q.correct_answer}`);
+  if (q.correct_answer) lines.push(`Answer: ${q.correct_answer}`);
   if (q.explanation) lines.push(`Explanation: ${q.explanation}`);
-  if (q.image_url) lines.push("An accompanying question image/diagram is available in the study app.");
   return lines.join("\n");
 }
 

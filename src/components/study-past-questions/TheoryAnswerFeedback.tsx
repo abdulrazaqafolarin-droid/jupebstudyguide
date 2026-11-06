@@ -5,6 +5,7 @@ import { MathRenderer } from '@/components/MathRenderer';
 import { streamChat, type AIChatMessage } from '@/lib/ai-service';
 import { TUTOR_SYSTEM_PROMPT } from '@/lib/prompts';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import type { StudyQuestion } from '@/types/study-questions';
 
 export interface EvalData {
@@ -341,18 +342,22 @@ export function TheoryAnswerFeedback({
 
   const copyMessage = useCallback(async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        const copied = document.execCommand('copy');
+        area.remove();
+        if (!copied) throw new Error('Clipboard unavailable');
+      }
+      toast.success('Message copied');
     } catch {
-      // Clipboard permissions can be unavailable in embedded webviews.
-      const area = document.createElement('textarea');
-      area.value = text;
-      area.style.position = 'fixed';
-      area.style.opacity = '0';
-      document.body.appendChild(area);
-      area.select();
-      const copied = document.execCommand('copy');
-      area.remove();
-      if (!copied) throw new Error('Clipboard unavailable');
+      toast.error('Could not copy message');
     }
   }, []);
 
@@ -562,9 +567,82 @@ export function TheoryAnswerFeedback({
             onScroll={handleScroll}
             className="overflow-y-auto max-h-[60vh] min-h-[120px] p-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent space-y-3"
           >
+            {/* Student's original answer — editable and re-evaluable. */}
+            <div className="group rounded-xl border border-primary/10 bg-primary/[0.04] px-3 py-2">
+              <div className="mb-1 flex items-center justify-between gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Your submitted answer</span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => void copyMessage(evaluationAnswer)}
+                    className="rounded p-1.5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                    title="Copy your answer"
+                    aria-label="Copy your answer"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </button>
+                  {!isReadOnly && !isLoading && !isEditingEvaluationAnswer && (
+                    <button
+                      type="button"
+                      onClick={handleEditEvaluationAnswer}
+                      className="rounded p-1.5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                      title="Edit answer and evaluate again"
+                      aria-label="Edit submitted answer"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+              </div>
+              {isEditingEvaluationAnswer ? (
+                <div className="space-y-2">
+                  <textarea
+                    value={evaluationDraft}
+                    onChange={(event) => setEvaluationDraft(event.target.value)}
+                    rows={5}
+                    className="w-full resize-y rounded-lg border border-border bg-background/80 p-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/40"
+                    aria-label="Edit submitted theory answer"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingEvaluationAnswer(false)}
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-accent"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveEvaluationAnswer}
+                      disabled={!evaluationDraft.trim()}
+                      className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-40"
+                    >
+                      <RefreshCw className="h-3 w-3" />
+                      Re-evaluate answer
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere]">
+                  <MathRenderer content={evaluationAnswer || '(No text answer submitted)'} className="text-xs leading-relaxed" />
+                </div>
+              )}
+            </div>
+
             {/* Initial evaluation */}
             {content ? (
-              <div className="rounded-xl px-3 py-2 bg-white/[0.06] border border-white/5">
+              <div className="group relative rounded-xl px-3 py-2 bg-white/[0.06] border border-white/5">
+                <div className="absolute right-1 top-1 flex items-center rounded-md border border-white/10 bg-background/90 px-1 py-0.5 opacity-100 shadow-sm backdrop-blur-md sm:opacity-0 sm:group-hover:opacity-100">
+                  <button
+                    type="button"
+                    onClick={() => void copyMessage(content)}
+                    className="rounded p-1 hover:bg-white/10"
+                    title="Copy evaluation"
+                    aria-label="Copy evaluation"
+                  >
+                    <Copy className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                </div>
                 <div className="prose prose-sm prose-invert max-w-full min-w-0 break-words [overflow-wrap:anywhere] prose-p:my-1 prose-li:my-0.5 prose-ul:my-1 prose-headings:my-1">
                   <MathRenderer content={content} className="text-xs leading-relaxed" />
                 </div>
@@ -580,7 +658,7 @@ export function TheoryAnswerFeedback({
 
             {/* Follow-up chat messages */}
             {chatMessages.map((msg, i) => (
-              <div key={i} className={cn("flex flex-col gap-1", msg.role === 'user' ? 'items-end' : 'items-start')}>
+              <div key={i} className={cn("group flex flex-col gap-1", msg.role === 'user' ? 'items-end' : 'items-start')}>
                 <div className="flex items-center gap-1.5 px-1">
                   {msg.role === 'user' ? (
                     <>
@@ -595,10 +673,11 @@ export function TheoryAnswerFeedback({
                   )}
                 </div>
                 <div className={cn(
-                  "max-w-[90%] rounded-xl px-3 py-2",
+                  "relative max-w-[90%] rounded-xl px-3 py-2",
                   msg.role === 'user'
                     ? 'bg-primary/15 border border-primary/10'
-                    : 'bg-white/[0.06] border border-white/5'
+                    : 'bg-white/[0.06] border border-white/5',
+                  editingChatIndex === i && 'ring-2 ring-primary/70 ring-offset-1 ring-offset-background'
                 )}>
                   {msg.attachments && msg.attachments.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-2">
@@ -624,6 +703,30 @@ export function TheoryAnswerFeedback({
                       <TypingDots />
                     ) : null}
                   </div>
+                  {msg.content && (
+                    <div className="absolute -top-2 right-1 flex items-center gap-0.5 rounded-md border border-white/10 bg-background/90 px-1 py-0.5 opacity-100 shadow-sm backdrop-blur-md sm:opacity-0 sm:group-hover:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => void copyMessage(msg.content)}
+                        className="rounded p-1 hover:bg-white/10"
+                        title="Copy message"
+                        aria-label="Copy message"
+                      >
+                        <Copy className="h-3 w-3 text-muted-foreground" />
+                      </button>
+                      {msg.role === 'user' && msg.historyStart !== undefined && !isChatLoading && (
+                        <button
+                          type="button"
+                          onClick={() => handleEditChatMessage(i)}
+                          className="rounded p-1 hover:bg-white/10"
+                          title="Edit message and rewind this chat"
+                          aria-label="Edit chat message"
+                        >
+                          <Pencil className="h-3 w-3 text-muted-foreground" />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -653,6 +756,21 @@ export function TheoryAnswerFeedback({
           {/* Chat input & actions */}
           {!isLoading && !isReadOnly && (
             <div className="px-3 py-2 bg-muted/10 space-y-2">
+              {editingChatIndex !== null && (
+                <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-2.5 py-1.5 text-[10px] text-muted-foreground">
+                  <Pencil className="h-3 w-3 shrink-0" />
+                  <span className="min-w-0 flex-1 truncate">Editing message — later replies will be removed when you send</span>
+                  <button
+                    type="button"
+                    onClick={() => { setEditingChatIndex(null); setChatInput(''); }}
+                    className="rounded p-1 hover:bg-white/10"
+                    title="Cancel edit"
+                    aria-label="Cancel edit"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
               {chatAttachments.length > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {chatAttachments.map((att, i) => (
@@ -692,13 +810,19 @@ export function TheoryAnswerFeedback({
                   className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/30 disabled:opacity-40"
                 />
                 <motion.button
+                  type="button"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handleChatSubmit}
-                  disabled={(!chatInput.trim() && chatAttachments.length === 0) || isChatLoading}
-                  className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 transition-all flex-shrink-0"
+                  onClick={isChatLoading ? stopFollowupChat : () => void handleChatSubmit()}
+                  disabled={!isChatLoading && (!chatInput.trim() && chatAttachments.length === 0)}
+                  title={isChatLoading ? "Stop response" : "Send message"}
+                  aria-label={isChatLoading ? "Stop response" : "Send message"}
+                  className={cn(
+                    "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg transition-all disabled:opacity-40",
+                    isChatLoading ? "bg-foreground text-background hover:opacity-90" : "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
                 >
-                  {isChatLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  {isChatLoading ? <Square className="h-3 w-3" fill="currentColor" /> : <Send className="h-3.5 w-3.5" />}
                 </motion.button>
               </div>
             </div>
@@ -710,6 +834,32 @@ export function TheoryAnswerFeedback({
               Powered by AI
             </span>
             <div className="flex items-center gap-2">
+              {isLoading && !isReadOnly && (
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={stopEvaluation}
+                  className="flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium hover:bg-accent"
+                  title="Stop evaluation"
+                  aria-label="Stop evaluation"
+                >
+                  <Square className="h-3 w-3" fill="currentColor" />
+                  Stop
+                </motion.button>
+              )}
+              {evaluationInterrupted && !isLoading && !isReadOnly && (
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => void startEvaluation()}
+                  className="flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium hover:bg-accent"
+                >
+                  <RefreshCw className="h-3 w-3" />
+                  Retry evaluation
+                </motion.button>
+              )}
               {isReadOnly ? (
                 <motion.button
                   whileHover={{ scale: 1.03 }}

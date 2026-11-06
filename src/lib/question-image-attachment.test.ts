@@ -54,7 +54,12 @@ describe("fetchQuestionImageAttachment", () => {
       height: 0,
       getContext: vi.fn().mockReturnValue({ drawImage }),
       toBlob: vi.fn((callback: BlobCallback) => {
-        callback(new Blob(["png-diagram"], { type: "image/png" }));
+        const pngBlob = {
+          arrayBuffer: vi.fn().mockResolvedValue(
+            new TextEncoder().encode("png-diagram").buffer,
+          ),
+        } as unknown as Blob;
+        callback(pngBlob);
       }),
     };
     const createElement = vi.fn().mockReturnValue(canvas);

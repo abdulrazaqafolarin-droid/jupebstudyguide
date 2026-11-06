@@ -77,6 +77,7 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
     let snapshotInFlight = false;
     let refreshAgain = false;
     let hasSnapshot = false;
+    const seenMessageIds = new Set<string>();
 
     const lastReadAtByConversation = new Map<string, string | null>();
     const unreadByConversation = new Map<string, number>();
@@ -114,7 +115,7 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
 
     const scheduleSnapshot = (delay = 100) => {
       if (disposed) return;
-      if (snapshotInFlight || !hasSnapshot) {
+      if (snapshotInFlight) {
         refreshAgain = true;
         return;
       }
@@ -132,6 +133,10 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      if (refreshTimer) {
+        clearTimeout(refreshTimer);
+        refreshTimer = null;
+      }
       snapshotInFlight = true;
       refreshAgain = false;
       try {
@@ -181,8 +186,16 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
 
     const handleIncomingMessage = (message: IncomingChatMessage) => {
       if (disposed) return;
+      if (message.id) {
+        if (seenMessageIds.has(message.id)) return;
+        seenMessageIds.add(message.id);
+        if (seenMessageIds.size > 2000) {
+          const oldest = seenMessageIds.values().next().value;
+          if (oldest !== undefined) seenMessageIds.delete(oldest);
+        }
+      }
       if (!hasSnapshot || snapshotInFlight) {
-        refreshAgain = true;
+        scheduleSnapshot(80);
         return;
       }
       if (!lastReadAtByConversation.has(message.conversation_id)) {
@@ -205,7 +218,7 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
       if (disposed) return;
       if (!row?.conversation_id) return;
       if (!hasSnapshot || snapshotInFlight) {
-        refreshAgain = true;
+        scheduleSnapshot(80);
         return;
       }
 
@@ -318,6 +331,7 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
             status === "CLOSED"
           ) {
             if (channel !== nextChannel) return;
+            setStaleUnread(true);
             channel = null;
             void supabase.removeChannel(nextChannel);
             if (error) console.warn("[chat-unread] realtime channel reconnecting:", error);
@@ -328,10 +342,18 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
       channel = nextChannel;
     };
 
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void refreshSnapshot();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     connect();
 
     return () => {
       disposed = true;
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       if (retryTimer) clearTimeout(retryTimer);
       if (refreshTimer) clearTimeout(refreshTimer);
       if (channel) void supabase.removeChannel(channel);

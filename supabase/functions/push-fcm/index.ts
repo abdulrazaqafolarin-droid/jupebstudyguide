@@ -184,6 +184,14 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // Keep one-time action tokens bounded. Expired credentials can never be
+    // redeemed, and this cleanup runs only when a new push dispatch occurs.
+    const { error: cleanupError } = await admin
+      .from("notification_action_tokens")
+      .delete()
+      .lt("expires_at", new Date().toISOString());
+    if (cleanupError) console.warn("[push-fcm] action-token cleanup failed:", cleanupError.message);
+
     const { data: message } = await admin
       .from("messages")
       .select("id, conversation_id, sender_id, content, message_type, created_at")

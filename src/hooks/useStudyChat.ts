@@ -252,6 +252,8 @@ export function useStudyChat() {
     isStreamingRef.current = true;
     setStreamError(null);
     assistantContentRef.current = '';
+    const ac = new AbortController();
+    abortRef.current = ac;
 
     if (persistUser) {
       const savedUserIdx = newMsgs.length - 1;
@@ -302,12 +304,16 @@ export function useStudyChat() {
       })();
     }
 
+    if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
+
     let ragContext = '';
     try {
       ragContext = await searchRelevantChunks(userText);
     } catch (e) {
       console.warn('RAG search failed:', e);
     }
+
+    if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
 
     const topic = activeTopicRef.current;
     const systemPrompt = topic
@@ -319,9 +325,6 @@ export function useStudyChat() {
     let acc = '';
     let firstToken = true;
     let activeQuestionRefs: QuestionRef[] = [];
-
-    const ac = new AbortController();
-    abortRef.current = ac;
 
     await streamChat(
       systemPrompt,

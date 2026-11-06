@@ -314,7 +314,7 @@ export function ChatUnreadProvider({ children }: { children: ReactNode }) {
           () => scheduleSnapshot(),
         )
         .subscribe((status, error) => {
-          if (disposed) return;
+          if (disposed || channel !== nextChannel) return;
           if (status === "SUBSCRIBED") {
             if (retryTimer) {
               clearTimeout(retryTimer);

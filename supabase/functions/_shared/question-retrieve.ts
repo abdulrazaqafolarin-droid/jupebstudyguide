@@ -37,6 +37,20 @@ export interface QuestionChatMessage {
   content?: string | null;
 }
 
+/** Expand on-demand retrieval when the student explicitly requests a question set. */
+export function getRequestedQuestionCount(query: string, defaultCount = 6): number {
+  const clean = query.trim().toLowerCase();
+  const explicitCount = clean.match(/\b(?:show|give|list|find|fetch|generate|practice|quiz me with|set of)\s+(?:me\s+)?(?:the\s+)?(\d{1,2})\s+(?:jupeb\s+)?(?:past\s+)?questions?\b/);
+  if (explicitCount) {
+    return Math.min(Math.max(Number(explicitCount[1]), 1), 12);
+  }
+  if (/\b(?:all|every|complete list|full set)\b/.test(clean) &&
+      /\b(?:question|past questions|question bank|objective|theory|practical)\b/.test(clean)) {
+    return 12;
+  }
+  return Math.min(Math.max(defaultCount, 1), 12);
+}
+
 /** Preserve the current question for short follow-ups such as "why?" or "explain it". */
 export function buildQuestionRetrievalQuery(
   explicitQuery: string | null | undefined,
@@ -206,7 +220,7 @@ export async function retrieveRelevantQuestions(
   const cleanQuery = query.trim().slice(0, 2000);
   if (!cleanQuery) return [];
 
-  const maxQuestions = Math.min(Math.max(options.maxQuestions ?? 5, 1), 12);
+  const maxQuestions = Math.min(Math.max(options.maxQuestions ?? 6, 1), 12);
   const candidateCount = Math.min(Math.max(maxQuestions * 3, 8), 24);
   const threshold = options.similarityThreshold ?? 0.35;
   const filters = detectFilters(cleanQuery, options.subject, options.year, options.category);

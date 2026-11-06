@@ -793,9 +793,14 @@ export function useChat() {
           }
         )
         .subscribe((status, err) => {
+          if (disposed) return;
           setGlobalChannelStatus(status);
           debug('[Realtime] chat-global status:', status);
           if (status === 'SUBSCRIBED') {
+            if (retryTimer) {
+              clearTimeout(retryTimer);
+              retryTimer = null;
+            }
             retryCount = 0;
             void fetchConversations();
             // Reconcile the active thread once after every connection/reconnect.
@@ -912,6 +917,7 @@ void (async () => {
         }));
       })
       .subscribe((status) => {
+        if (disposed) return;
         if (status === 'SUBSCRIBED') {
           msgBroadcastRef.current = ch;
           msgBroadcastRetry = 0;

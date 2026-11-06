@@ -257,7 +257,7 @@ export function useChat() {
         // Cross-client receipt: the moment this reader has entered the
         // conversation, tell whoever is viewing that thread — the peer's
         // double-tick turns blue instantly instead of waiting for the
-        // postgres UPDATE event remains the source of truth.
+        // the postgres UPDATE event is the authoritative read-receipt source.
         try {
           msgBroadcastRef.current?.send({
             type: 'broadcast',
@@ -900,7 +900,7 @@ void (async () => {
         // The recipient's client announces "I have entered this thread" the
         // instant mark_conversation_read commits. Only the thread we are
         // actively viewing reacts; everyone else reconciles via the
-        // postgres UPDATE event and the 5s receipt poll.
+        // postgres UPDATE event and the reconnect snapshot.
         if (!conversationId || !readerId || readerId === user.id) return;
         if (conversationId !== activeConvRef.current) return;
         const at = p.at || new Date().toISOString();

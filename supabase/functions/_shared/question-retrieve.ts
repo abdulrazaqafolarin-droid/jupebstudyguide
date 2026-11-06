@@ -78,6 +78,7 @@ export function formatQuestionForEmbedding(q: {
   year: number | string;
   category: string;
   question: string;
+  id?: string;
   options?: unknown;
   correct_answer?: string | null;
   explanation?: string | null;
@@ -86,6 +87,7 @@ export function formatQuestionForEmbedding(q: {
   image_url?: string | null;
 }): string {
   const lines = [
+    q.id ? `Question ID: ${q.id}` : "",
     `JUPEB ${q.subject} past question, ${q.year}, ${q.category}`,
     q.course ? `Topic: ${q.course}` : "",
     q.difficulty ? `Difficulty: ${q.difficulty}` : "",
@@ -314,7 +316,7 @@ export function buildQuestionRAGContext(questions: RetrievedQuestion[]): {
     return parts.join("\n");
   });
 
-  const promptBlock = `\n\n=== RETRIEVED QUESTIONS FROM THE LIVE JUPEB QUESTION BANK ===\n${sections.join("\n\n")}\n\n=== HOW TO USE THESE REFERENCES ===\n- These are retrieved records from the app's live question bank, not invented examples.\n- Prefer the student's selected/current question when one is supplied. Use these related questions as additional past-question examples.\n- Cite the exact year, subject and category using [Q1], [Q2], etc. Do not invent a year or claim an unrelated result is an exact match.\n- Restate the relevant question before solving it. Explain the reasoning step by step.\n- For theory and practical questions, explain the marking points or procedure when those details are present.\n- For objective questions, explain why the correct option is right and why likely alternatives are wrong.\n- If retrieval returns no relevant match, say so briefly and teach from reliable subject knowledge without fabricating a source.`;
+  const promptBlock = `\n\n=== RETRIEVED QUESTIONS FROM THE LIVE JUPEB QUESTION BANK ===\n${sections.join("\n\n")}\n\n=== HOW TO USE THESE REFERENCES ===\n- These are retrieved records from the app's live question bank, not invented examples.\n- Prefer the student's selected/current question when one is supplied. Use these related questions as additional past-question examples.\n- Cite the exact year, subject and category using [Q1], [Q2], etc. Do not invent a year or claim an unrelated result is an exact match.\n- Restate the relevant question before solving it. Explain the reasoning step by step.\n- For theory and practical questions, explain the marking points or procedure when those details are present.\n- For objective questions, explain why the correct option is right and why likely alternatives are wrong.\n- At most 12 question records are retrieved in one reply. If the student asks for the entire bank or more than 12 records, be transparent that this answer shows the strongest retrieved batch and invite them to request the next batch or narrow by subject/year/category. Never imply that a 12-question result is the entire bank.\n- If retrieval returns no relevant match, say so briefly and teach from reliable subject knowledge without fabricating a source.`;
 
   return { promptBlock, references };
 }

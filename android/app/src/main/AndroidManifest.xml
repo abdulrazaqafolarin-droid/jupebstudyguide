@@ -10,6 +10,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Higher-priority FCM service wins intent resolution over
+             Capacitor's default service; it forwards events back to Capacitor. -->
+        <service
+            android:name=".JupebMessagingService"
+            android:exported="false">
+            <intent-filter android:priority="100">
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name=".NotificationActionReceiver"
+            android:exported="false" />
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"

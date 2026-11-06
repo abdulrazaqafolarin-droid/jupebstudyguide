@@ -1,4 +1,5 @@
 export interface IncomingChatMessage {
+  id?: string;
   conversation_id: string;
   sender_id: string;
   created_at: string;

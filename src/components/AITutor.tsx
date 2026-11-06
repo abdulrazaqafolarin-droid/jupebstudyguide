@@ -59,6 +59,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,14 +98,20 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
     }
   }, [question.id]);
 
-  const askTutor = useCallback(async (userMessage: string) => {
-    const userMsg: Message = { 
-      role: 'user', 
+  const askTutor = useCallback(async (userMessage: string, editAt: number | null = editingIndex) => {
+    const baseMessages = editAt !== null ? messages.slice(0, editAt) : messages;
+    const previousMessage = editAt !== null ? messages[editAt] : undefined;
+    const messageAttachment = attachment
+      ? { base64: attachment.base64, mimeType: attachment.mimeType, name: attachment.name }
+      : previousMessage?.attachment;
+    const userMsg: Message = {
+      role: 'user',
       content: userMessage,
-      ...(attachment ? { attachment: { base64: attachment.base64, mimeType: attachment.mimeType, name: attachment.name } } : {}),
+      ...(messageAttachment ? { attachment: messageAttachment } : {}),
     };
-    
-    const allMessages = [...messages, userMsg];
+
+    const allMessages = [...baseMessages, userMsg];
+    setEditingIndex(null);
     setMessages(allMessages);
     setIsLoading(true);
     setInput('');
@@ -162,12 +169,33 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
       question.options?.map((option) => option.text).join(" ") || "",
       userMessage,
     ].filter(Boolean).join("\n"));
-  }, [question, attachment, clearAttachment, messages]);
+  }, [question, attachment, clearAttachment, messages, editingIndex]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if ((!input.trim() && !attachment) || isLoading) return;
-    askTutor(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''));
+    askTutor(input.trim() || (attachment ? `[Attached: ${attachment.name}]` : ''), editingIndex);
+  };
+
+  const handleEditMessage = (index: number) => {
+    if (isLoading || messages[index]?.role !== 'user') return;
+    setEditingIndex(index);
+    setInput(messages[index].content);
+    inputRef.current?.focus();
+  };
+
+  const handleCopyMessage = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      toast.success('Message copied');
+    } catch {
+      toast.error('Could not copy message');
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null);
+    setInput('');
   };
 
   /** ChatGPT-style stop: abort the stream, keep whatever already streamed. */
@@ -185,7 +213,8 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
 
   const handleQuickPrompt = (prompt: string) => {
     if (isLoading) return;
-    askTutor(prompt);
+    setEditingIndex(null);
+    askTutor(prompt, null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -303,7 +332,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
                         animate="animate"
                         transition={springMessage}
                         className={cn(
-                          "flex gap-2 w-full",
+                          "group flex gap-2 w-full",
                           msg.role === 'user' ? "justify-end" : "justify-start"
                         )}
                       >
@@ -314,8 +343,9 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
                         )}
                         <div
                           className={cn(
-                            "rounded-xl px-3 py-2 min-w-0",
+                            "rounded-xl px-3 py-2 min-w-0 relative",
                             "max-w-[85%]",
+                            editingIndex === i && "ring-2 ring-primary/70 ring-offset-1 ring-offset-background",
                             msg.role === 'assistant'
                               ? "bg-white/[0.06] border border-white/5 text-foreground"
                               : "bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-sm shadow-primary/20"
@@ -337,6 +367,30 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
                           )}
                           {msg.role === 'assistant' && msg.questionRefs && msg.questionRefs.length > 0 && (
                             <QuestionRefChips refs={msg.questionRefs} />
+                          )}
+                          {msg.content && (
+                            <div className="absolute -top-2 right-1 flex items-center gap-0.5 rounded-md border border-white/10 bg-background/90 px-1 py-0.5 opacity-100 shadow-sm backdrop-blur-md transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+                              <button
+                                type="button"
+                                onClick={() => void handleCopyMessage(msg.content)}
+                                className="rounded p-1 hover:bg-white/10"
+                                title="Copy message"
+                                aria-label="Copy message"
+                              >
+                                <Copy className="h-3 w-3 text-muted-foreground" />
+                              </button>
+                              {msg.role === 'user' && !isLoading && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleEditMessage(i)}
+                                  className="rounded p-1 hover:bg-white/10"
+                                  title="Edit message"
+                                  aria-label="Edit message"
+                                >
+                                  <Pencil className="h-3 w-3 text-muted-foreground" />
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                         {msg.role === 'user' && (
@@ -404,6 +458,15 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
 
           {/* Input */}
           <form onSubmit={handleSubmit} className="shrink-0 border-t border-white/5 bg-background/30 px-3 py-2.5">
+            {editingIndex !== null && (
+              <div className="mb-2 flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs text-muted-foreground">
+                <Pencil className="h-3 w-3 shrink-0" />
+                <span className="flex-1 truncate">Editing message — the conversation rewinds when you send</span>
+                <button type="button" onClick={cancelEdit} className="rounded p-1 hover:bg-white/10" title="Cancel edit" aria-label="Cancel edit">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
             <div className="flex gap-2 items-end">
               <input
                 ref={fileInputRef}

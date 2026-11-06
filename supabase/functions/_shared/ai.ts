@@ -1,6 +1,7 @@
 import { routerText, routerJSON, routerStream } from "./ai-router.ts";
 import type { RouterMessage, RouterOpts } from "./ai-router.ts";
 import { hasAiAccountAccess } from "./trial-access.ts";
+import type { AiAccessProfile } from "./trial-access.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 
@@ -22,7 +23,7 @@ interface AiAccessClient {
   rpc: (
     fn: "check_ai_rate_limit",
     args: { p_user_id: string; p_limit: number },
-  ) => Promise<{ data: boolean | null }>;
+  ) => PromiseLike<{ data: boolean | null }>;
 }
 
 export async function aiChatText(

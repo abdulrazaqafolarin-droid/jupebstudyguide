@@ -289,7 +289,14 @@ export function TheoryAnswerFeedback({
         setContent(contentRef.current);
         setIsLoading(false);
       },
-    }, undefined, undefined, ac.signal);
+    }, undefined, typeof q.subject === 'string' ? q.subject : undefined, ac.signal, [
+      q.subject,
+      q.year,
+      q.category,
+      q.topic || '',
+      questionText,
+      evaluationAnswerRef.current,
+    ].filter(Boolean).join("\n"));
     } catch (err) {
       if (evaluationAbortRef.current === ac) evaluationAbortRef.current = null;
       hasStarted.current = false;
@@ -516,7 +523,14 @@ export function TheoryAnswerFeedback({
         setIsChatLoading(false);
         updateChatDisplay(`*AI Error: ${err}*`);
       },
-    }, undefined, undefined, ac.signal);
+    }, undefined, typeof questionRef.current.subject === 'string' ? questionRef.current.subject : undefined, ac.signal, [
+      questionRef.current.subject,
+      questionRef.current.year,
+      questionRef.current.category,
+      questionRef.current.topic || '',
+      questionRef.current.question || questionRef.current.title || '',
+      userText,
+    ].filter(Boolean).join("\n"));
   }, [chatInput, chatAttachments, isChatLoading, editingChatIndex, chatMessages]);
 
   if (!isOpen) return null;

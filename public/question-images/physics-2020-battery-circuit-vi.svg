@@ -6,10 +6,12 @@
 <text x="55" y="112" class="label">Fig. 2a — Circuit</text>
 <!-- outer circuit -->
 <path d="M90 170H135 M305 170H410V355H90V170" stroke="#172033" stroke-width="3.5" fill="none"/>
-<!-- dashed battery box on top branch -->
+<!-- dashed battery box on the top branch -->
 <rect x="135" y="132" width="170" height="76" rx="5" fill="none" stroke="#172033" stroke-width="2" stroke-dasharray="6 5"/>
-<path d="M165 170H192 M208 145V195 M222 155V185 M222 170H250" stroke="#172033" stroke-width="3"/>
-<text x="159" y="125" class="label">Battery E</text><text x="235" y="155" class="small">r</text>
+<path d="M135 170H174 M190 170H220 M270 170H305" stroke="#172033" stroke-width="3"/>
+<path d="M174 145V195 M190 155V185" stroke="#172033" stroke-width="3"/>
+<rect x="220" y="154" width="50" height="32" fill="white" stroke="#172033" stroke-width="3"/>
+<text x="169" y="125" class="label">E</text><text x="238" y="147" class="small">r</text>
 <!-- ammeter left branch -->
 <circle cx="90" cy="260" r="23" fill="white" stroke="#172033" stroke-width="3"/>
 <text x="82" y="266" class="label">A</text>
@@ -18,8 +20,7 @@
 <path d="M90 355H190 M295 355H410" stroke="#172033" stroke-width="3.5" fill="none"/>
 <text x="202" y="329" class="label">Variable R</text>
 <!-- voltmeter in parallel -->
-<path d="M190 355V410H170 M295 355V410H315" stroke="#172033" stroke-width="2.5" fill="none"/>
-<path d="M170 410H185 M300 410H315" stroke="#172033" stroke-width="2.5"/>
+<path d="M190 355V410H218 M295 355V410H267" stroke="#172033" stroke-width="2.5" fill="none"/>
 <circle cx="242" cy="410" r="24" fill="white" stroke="#172033" stroke-width="3"/>
 <text x="234" y="416" class="label">V</text>
 <!-- direction current arrow -->

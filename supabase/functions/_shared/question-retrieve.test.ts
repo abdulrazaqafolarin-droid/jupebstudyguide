@@ -109,7 +109,13 @@ Deno.test("subject, year and category filters are detected from natural question
 });
 
 Deno.test("canonical embedding text stays compatible with the previous live vector index", () => {
-  const legacy = "physics (2021 objective)\nQ: Find the force.\nOptions: [{\\"label\\":\\"A\\",\\"text\\":\\"2 N\\"}]\nAnswer: A\nExplanation: Use F = ma.";
+  const legacy = [
+    "physics (2021 objective)",
+    "Q: Find the force.",
+    "Options: " + JSON.stringify([{ label: "A", text: "2 N" }]),
+    "Answer: A",
+    "Explanation: Use F = ma.",
+  ].join(String.fromCharCode(10));
   const current = formatQuestionForEmbedding({
     subject: "physics",
     year: 2021,

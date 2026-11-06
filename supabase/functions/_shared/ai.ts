@@ -1,7 +1,7 @@
 import { routerText, routerJSON, routerStream } from "./ai-router.ts";
 import type { RouterMessage, RouterOpts } from "./ai-router.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
 import { hasAiAccountAccess } from "./trial-access.ts";
+import type { AiAccessProfile } from "./trial-access.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 
@@ -9,6 +9,22 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+interface AiAccessClient {
+  from: (table: "profiles") => {
+    select: (columns: string) => {
+      eq: (column: "user_id", value: string) => {
+        maybeSingle: () => PromiseLike<{
+          data: AiAccessProfile | null;
+        }>;
+      };
+    };
+  };
+  rpc: (
+    fn: "check_ai_rate_limit",
+    args: { p_user_id: string; p_limit: number },
+  ) => PromiseLike<{ data: boolean | null }>;
+}
 
 export async function aiChatText(
   _env: unknown,
@@ -43,9 +59,11 @@ export async function aiChatStream(
 // trial-eligible account and enforces the same daily request cap for all
 // non-admin users. Trial expiry is read from the server-owned profile column.
 export async function guardAiAccess(
-  supabase: ReturnType<typeof createClient>,
+  supabaseClient: unknown,
   user: { id: string }
 ): Promise<Response | null> {
+  // Narrow the SDK's deeply generic client at this shared boundary only.
+  const supabase = supabaseClient as AiAccessClient;
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_activated, is_admin, trial_expires_at")
@@ -53,7 +71,7 @@ export async function guardAiAccess(
     .maybeSingle();
   if (!hasAiAccountAccess(profile)) {
     return new Response(
-      JSON.stringify({ error: "Your five-day free trial has ended. Enter an activation code to continue using AI features." }),
+      JSON.stringify({ error: "Your one-day free trial has ended. Enter an activation code to continue using AI features." }),
       { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }

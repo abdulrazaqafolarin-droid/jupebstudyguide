@@ -4,6 +4,7 @@ const EMBED_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const EMBED_MODEL = "gemini-embedding-001";
 // Must match VECTOR(768) in textbook_chunks / study_question_embeddings.
 export const EMBED_DIMS = 768;
+type EmbedTaskType = "RETRIEVAL_QUERY" | "RETRIEVAL_DOCUMENT";
 
 /** Last Gemini embedding error (diagnostics for admin embed-batch). */
 export let lastEmbedError: string | null = null;

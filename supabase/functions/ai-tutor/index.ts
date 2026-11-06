@@ -1,7 +1,13 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS, aiChatStream, guardAiAccess } from "../_shared/ai.ts";
 import { retrieveRelevantChunks, buildRAGContext, serializeReferencesEvent } from "../_shared/textbook-retrieve.ts";
-import { retrieveRelevantQuestions, buildQuestionRAGContext, serializeQuestionReferencesEvent } from "../_shared/question-retrieve.ts";
+import {
+  retrieveRelevantQuestions,
+  buildQuestionRAGContext,
+  serializeQuestionReferencesEvent,
+  buildQuestionRetrievalQuery,
+  getRequestedQuestionCount,
+} from "../_shared/question-retrieve.ts";
 import { resolveEmbedKeys } from "../_shared/textbook-embed.ts";
 
 interface InboundMessage {
@@ -93,7 +99,10 @@ Deno.serve(async (req) => {
 
   try {
     const encoder = new TextEncoder();
-    const { messages, question, generalChat, syllabusTeaching, topic, subject, day, learningObjectives, attachment } = await req.json();
+    const {
+      messages, question, generalChat, syllabusTeaching, topic, subject,
+      day, learningObjectives, attachment, retrievalQuery,
+    } = await req.json();
 
     let systemContent = TUTOR_SYSTEM_PROMPT;
 
@@ -120,20 +129,54 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
     let questionRefsEvent = "";
 
     const lastUserMsg = [...(messages || [])].reverse().find((m: InboundMessage) => m.role === "user");
-    if (lastUserMsg?.content) {
-      const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
-      const [chunks, questions] = await Promise.all([
-        retrieveRelevantChunks(supabaseUrl, supabaseKey, lastUserMsg.content, {
-          subject: subject || undefined,
-          maxChunks: 3,
-          embedKeys,
-        }),
-        retrieveRelevantQuestions(supabaseUrl, supabaseKey, lastUserMsg.content, {
-          subject: subject || undefined,
-          maxQuestions: 5,
-          embedKey: embedKeys,
+    const questionSearchQuery = buildQuestionRetrievalQuery(
+      typeof retrievalQuery === "string"
+        ? retrievalQuery
+        : question
+          ? [
+              question.subject,
+              question.year,
+              question.topic || "",
+              question.question,
+              JSON.stringify(question.options || ""),
+              lastUserMsg?.content || "",
+            ].join("\n")
+          : undefined,
+      messages || [],
+    );
+    if (questionSearchQuery) {
+      const ragPromise = (async () => {
+        const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
+        return await Promise.all([
+          retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
+            subject: subject || undefined,
+            maxChunks: 3,
+            embedKeys,
+          }),
+          retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
+            subject: subject || undefined,
+            maxQuestions: getRequestedQuestionCount(questionSearchQuery),
+            embedKey: embedKeys,
+          }),
+        ]);
+      })().catch((ragError) => {
+        console.warn("[ai-tutor] RAG retrieval failed; continuing without references:", String(ragError).slice(0, 180));
+        return [[], []] as [
+          Awaited<ReturnType<typeof retrieveRelevantChunks>>,
+          Awaited<ReturnType<typeof retrieveRelevantQuestions>>,
+        ];
+      });
+      let deadlineTimer: ReturnType<typeof setTimeout> | undefined;
+      const [chunks, questions] = await Promise.race([
+        ragPromise,
+        new Promise<[
+          Awaited<ReturnType<typeof retrieveRelevantChunks>>,
+          Awaited<ReturnType<typeof retrieveRelevantQuestions>>,
+        ]>((resolve) => {
+          deadlineTimer = setTimeout(() => resolve([[], []]), 12_000);
         }),
       ]);
+      if (deadlineTimer) clearTimeout(deadlineTimer);
       const rag = buildRAGContext(chunks);
       if (rag.promptBlock) {
         systemContent += rag.promptBlock;

@@ -13,3 +13,6 @@ verify_jwt = false
 
 [functions.notification-action]
 verify_jwt = false
+
+[functions.question-rag-index]
+verify_jwt = false

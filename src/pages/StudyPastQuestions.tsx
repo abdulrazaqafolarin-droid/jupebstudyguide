@@ -34,6 +34,7 @@ import { AdminQuestionPanel } from "@/components/study-past-questions/AdminQuest
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { gradeAnswer } from "@/lib/answer-scoring";
+import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 
 type View = "subjects" | "years" | "questions" | "bookmarks";
 
@@ -108,6 +109,17 @@ export default function StudyPastQuestions() {
   const [searchSubjectFilter, setSearchSubjectFilter] = useState<Subject[]>(SUBJECTS);
 
   const isAdmin = activationStatus.is_admin;
+
+  // As soon as an administrator opens the question bank, resume any queued
+  // initial backfill or previously deferred Gemini indexing jobs.
+  useEffect(() => {
+    if (isAdmin) {
+      void processPendingQuestionEmbeddings().catch((indexError) => {
+        console.warn("[Question RAG] Could not resume pending index jobs:", indexError);
+      });
+    }
+  }, [isAdmin]);
+
   const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const [selectedAdminQuestion, setSelectedAdminQuestion] = useState<StudyQuestion | null>(null);
   const [overrideQuestions, setOverrideQuestions] = useState<Map<string, StudyQuestion>>(new Map());

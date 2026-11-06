@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
 import { QuestionMath } from "@/components/QuestionMath";
+import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 
 interface AdminQuestionPanelProps {
   question: StudyQuestion | null;
@@ -73,6 +74,17 @@ export function AdminQuestionPanel({
       setMode(null);
       setConfirmDelete(false);
       setError(null);
+    }
+  }, [isOpen]);
+
+  // Opening the admin question bank also resumes any queued initial backfill
+  // or failed indexing jobs. Queueing is server-side, so no question data is
+  // bundled into the app and edits remain saved if Gemini is unavailable.
+  useEffect(() => {
+    if (isOpen) {
+      void processPendingQuestionEmbeddings().catch((indexError) => {
+        console.warn("[Question RAG] Could not resume indexing:", indexError);
+      });
     }
   }, [isOpen]);
 

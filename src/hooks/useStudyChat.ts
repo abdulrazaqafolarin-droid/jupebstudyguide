@@ -3,6 +3,8 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { streamChat } from '@/lib/ai-service';
+import type { QuestionRef } from '@/lib/ai-service';
+import { normalizeQuestionRefs } from '@/lib/question-references';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext, buildTopicSystemPrompt } from '@/lib/syllabus-context';
 import { searchRelevantChunks } from '@/lib/rag';
@@ -71,18 +73,19 @@ export function useStudyChat() {
     const generation = ++messageLoadGenerationRef.current;
     const { data } = await supabase
       .from('ai_chat_messages')
-      .select('id,role,content,attachment,created_at')
+      .select('id,role,content,attachment,created_at,question_refs')
       .eq('chat_id', chatId)
       .order('created_at', { ascending: true });
     const msgs: AIMessage[] = ((data ?? []) as Array<{
       id: string; role: string; content: string;
-      attachment: AIMessage['attachment']; created_at: string;
+      attachment: AIMessage['attachment']; created_at: string; question_refs: unknown;
     }>).map((m) => ({
       id: m.id,
       created_at: m.created_at,
       role: m.role as 'user' | 'assistant',
       content: m.content,
       attachment: m.attachment,
+      questionRefs: normalizeQuestionRefs(m.question_refs),
     }));
     if (generation === messageLoadGenerationRef.current && activeChatIdRef.current === chatId) setMessages(msgs);
   }, []);
@@ -249,6 +252,8 @@ export function useStudyChat() {
     isStreamingRef.current = true;
     setStreamError(null);
     assistantContentRef.current = '';
+    const ac = new AbortController();
+    abortRef.current = ac;
 
     if (persistUser) {
       const savedUserIdx = newMsgs.length - 1;
@@ -299,12 +304,16 @@ export function useStudyChat() {
       })();
     }
 
+    if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
+
     let ragContext = '';
     try {
       ragContext = await searchRelevantChunks(userText);
     } catch (e) {
       console.warn('RAG search failed:', e);
     }
+
+    if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
 
     const topic = activeTopicRef.current;
     const systemPrompt = topic
@@ -315,9 +324,7 @@ export function useStudyChat() {
 
     let acc = '';
     let firstToken = true;
-
-    const ac = new AbortController();
-    abortRef.current = ac;
+    let activeQuestionRefs: QuestionRef[] = [];
 
     await streamChat(
       systemPrompt,
@@ -327,7 +334,11 @@ export function useStudyChat() {
           if (activeChatIdRef.current !== chatId) return;
           if (firstToken) {
             firstToken = false;
-            setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+            setMessages((prev) => [...prev, {
+              role: 'assistant',
+              content: '',
+              questionRefs: activeQuestionRefs,
+            }]);
           }
           acc += text;
           assistantContentRef.current = acc;
@@ -337,7 +348,7 @@ export function useStudyChat() {
               arr[arr.length - 1] = {
                 role: 'assistant',
                 content: acc,
-                questionRefs: arr[arr.length - 1].questionRefs,
+                questionRefs: arr[arr.length - 1].questionRefs ?? activeQuestionRefs,
               };
             }
             return arr;
@@ -345,6 +356,7 @@ export function useStudyChat() {
         },
         onQuestionReferences: (refs) => {
           if (activeChatIdRef.current !== chatId) return;
+          activeQuestionRefs = normalizeQuestionRefs(refs);
           setMessages((prev) => {
             const arr = [...prev];
             if (arr.length && arr[arr.length - 1].role === 'assistant') {
@@ -360,7 +372,18 @@ export function useStudyChat() {
               const savedContent = assistantContentRef.current;
               const { data: saved } = await supabase
                 .from('ai_chat_messages')
-                .insert({ chat_id: chatId, user_id: userId, role: 'assistant', content: savedContent })
+                .insert({
+                  chat_id: chatId,
+                  user_id: userId,
+                  role: 'assistant',
+                  content: savedContent,
+                  question_refs: activeQuestionRefs.map((ref) => ({
+                    question_id: ref.question_id,
+                    subject: ref.subject,
+                    year: ref.year,
+                    category: ref.category,
+                  })),
+                })
                 .select('id,created_at')
                 .single();
               if (saved?.created_at && activeChatIdRef.current === chatId) {
@@ -405,6 +428,13 @@ export function useStudyChat() {
       ragContext,
       subject,
       ac.signal,
+      [
+        subject || "",
+        topic?.topic.name || "",
+        topic?.topic.description || "",
+        topic?.subtopic || "",
+        userText,
+      ].filter(Boolean).join("\n"),
     );
   }, [user]);
 

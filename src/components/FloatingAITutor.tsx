@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence, animate, useMotionValue, useMotionValueEvent, type PanInfo, type Variants } from 'framer-motion';
 import { toast } from 'sonner';
-import { streamChat as aiStreamChat } from '@/lib/ai-service';
+import { streamChat as aiStreamChat, type QuestionRef } from '@/lib/ai-service';
 import QuestionRefChips from './QuestionRefChips';
 import { TUTOR_SYSTEM_PROMPT, GENERAL_CHAT_PROMPT } from '@/lib/prompts';
 import { getSyllabusContext } from '@/lib/syllabus-context';
@@ -189,9 +189,25 @@ export const FloatingAITutor = () => {
 
   const { attachment, isProcessing, addAttachment, clearAttachment } = useAttachment();
 
-  const copyMessage = useCallback((content: string) => {
-    navigator.clipboard.writeText(content);
-    toast.success('Copied to clipboard');
+  const copyMessage = useCallback(async (content: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(content);
+      } else {
+        const area = document.createElement('textarea');
+        area.value = content;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        const copied = document.execCommand('copy');
+        area.remove();
+        if (!copied) throw new Error('Clipboard unavailable');
+      }
+      toast.success('Copied to clipboard');
+    } catch {
+      toast.error('Could not copy message');
+    }
   }, []);
 
   /** Stage an edit: copy the message into the input, but keep it (and the
@@ -431,6 +447,8 @@ export const FloatingAITutor = () => {
     setEditingIndex(null);
     setMessages(newMsgs);
     setIsLoading(true);
+    const ac = new AbortController();
+    abortRef.current = ac;
     setInput('');
     clearAttachment();
     assistantContentRef.current = '';
@@ -466,11 +484,11 @@ export const FloatingAITutor = () => {
       ragContext = await searchRelevantChunks(userMessage);
     } catch (e) { console.warn('RAG search failed:', e); }
 
+    if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
+
     let acc = '';
     let firstToken = true;
-
-    const ac = new AbortController();
-    abortRef.current = ac;
+    let activeQuestionRefs: QuestionRef[] = [];
 
     await aiStreamChat(systemPrompt, newMsgs.map(m => ({
       role: m.role,
@@ -495,6 +513,7 @@ export const FloatingAITutor = () => {
         });
       },
       onQuestionReferences: (refs) => {
+        activeQuestionRefs = refs;
         setMessages(prev => {
           const arr = [...prev];
           if (arr.length && arr[arr.length - 1].role === 'assistant') {
@@ -508,7 +527,7 @@ export const FloatingAITutor = () => {
         if (!firstToken && assistantContentRef.current) {
           try {
             const savedContent = assistantContentRef.current;
-            const saved = await saveAssistantMessage(chatId, savedContent);
+            const saved = await saveAssistantMessage(chatId, savedContent, activeQuestionRefs);
             // Stamp the local bubble with its DB timestamp so a later edit
             // can cut the stored thread at exactly this message.
             if (saved?.created_at && activeChatIdRef.current === chatId) {

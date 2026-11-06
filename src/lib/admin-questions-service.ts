@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 import type { Subject } from "@/types/question";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 
@@ -48,6 +49,9 @@ export async function addQuestion(input: QuestionInput): Promise<{ success: bool
       .from("study_questions")
       .insert(dbRow);
     if (error) return { success: false, error: error.message };
+    void processPendingQuestionEmbeddings().catch((indexError) => {
+      console.warn("[Question RAG] New question saved; indexing will retry:", indexError);
+    });
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Unknown error" };
@@ -64,6 +68,9 @@ export async function updateQuestion(
       .upsert(dbRow, { onConflict: "id" });
 
     if (error) return { success: false, error: error.message };
+    void processPendingQuestionEmbeddings().catch((indexError) => {
+      console.warn("[Question RAG] Updated question saved; indexing will retry:", indexError);
+    });
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Unknown error" };

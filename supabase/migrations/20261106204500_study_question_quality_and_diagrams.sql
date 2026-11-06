@@ -35,6 +35,10 @@ WHERE id = 'physics-2020-theory-01';
 
 UPDATE public.study_questions
 SET hidden = false,
+    question = replace(
+      replace(question, 'thermal resistance', 'internal resistance'),
+      'Kirchoff', 'Kirchhoff'
+    ),
     image_url = 'https://raw.githubusercontent.com/abdulrazaqafolarin-droid/jupebstudyguide/main/public/question-images/physics-2020-battery-circuit-vi.svg'
 WHERE id = 'physics-2020-theory-05';
 

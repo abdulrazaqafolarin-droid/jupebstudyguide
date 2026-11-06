@@ -8,6 +8,8 @@ import {
   transientRetryDelayMs,
   TRANSIENT_RETRY_DELAYS_MS,
   type KeyAttemptFailure,
+  providerOrderForMessages,
+  type RouterMessage,
 } from "./ai-router.ts";
 
 function assertEquals(actual: unknown, expected: unknown, msg: string): void {
@@ -53,4 +55,22 @@ Deno.test("classifyError: Google 503 UNAVAILABLE is transient", () => {
 Deno.test("classifyError: 429 quota text is quota even on odd statuses", () => {
   const body = `{"error":{"code":429,"message":"You exceeded your current quota"}}`;
   assertEquals(classifyError(429, body), "quota", "429 classification");
+});
+
+
+Deno.test("image attachments are routed exclusively through Gemini Vision", () => {
+  const messages: RouterMessage[] = [{
+    role: "user",
+    content: "Explain the circuit in this question.",
+    attachment: { base64: "aGVsbG8=", mimeType: "image/png", name: "question.png" },
+  }];
+  assertEquals(providerOrderForMessages(messages).join(","), "gemini", "vision-only provider order");
+});
+
+Deno.test("text-only messages retain normal provider failover", () => {
+  const messages: RouterMessage[] = [{
+    role: "user",
+    content: "Explain Newton's second law.",
+  }];
+  assertEquals(providerOrderForMessages(messages).join(","), "gemini,groq,nvidia", "text provider order");
 });

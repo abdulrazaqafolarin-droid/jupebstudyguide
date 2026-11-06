@@ -10,3 +10,6 @@ verify_jwt = false
 verify_jwt = false
 [functions.secure-login]
 verify_jwt = false
+
+[functions.notification-action]
+verify_jwt = false

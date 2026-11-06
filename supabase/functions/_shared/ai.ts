@@ -14,8 +14,8 @@ interface AiAccessClient {
   from: (table: "profiles") => {
     select: (columns: string) => {
       eq: (column: "user_id", value: string) => {
-        maybeSingle: () => Promise<{
-          data: import("./trial-access.ts").AiAccessProfile | null;
+        maybeSingle: () => PromiseLike<{
+          data: AiAccessProfile | null;
         }>;
       };
     };

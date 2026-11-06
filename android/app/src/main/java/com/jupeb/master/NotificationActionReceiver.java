@@ -97,7 +97,7 @@ public class NotificationActionReceiver extends BroadcastReceiver {
                 output.flush();
             }
             int status = connection.getResponseCode();
-            return status >= 200 && status < 300;
+            return (status >= 200 && status < 300) || status == 410;
         } finally {
             if (connection != null) connection.disconnect();
         }

@@ -8,8 +8,8 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
+import { QuestionImage } from '@/components/QuestionImage';
 import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
-import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 
 interface QuizModeProps {
@@ -54,12 +54,8 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
   const [showResult, setShowResult] = useState(false);
   const [quizComplete, setQuizComplete] = useState(false);
   const [showTimerSelect, setShowTimerSelect] = useState(true);
-  const [imageBroken, setImageBroken] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setImageBroken(false);
-  }, [currentIndex]);
   const timer = useQuizTimer();
   const isMobile = useIsMobile();
 
@@ -372,23 +368,8 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
           </span>
         </div>
 
-        {/* Optional question image plus the complete text prompt. */}
-        {currentQuestion.imageUrl && !imageBroken && (
-          <div className="mb-5 rounded-xl border bg-muted/30 p-2">
-            <img
-              src={currentQuestion.imageUrl}
-              alt="Question illustration"
-              className="mx-auto max-h-64 w-full object-contain"
-              loading="lazy"
-              onError={() => setImageBroken(true)}
-            />
-          </div>
-        )}
-        {imageBroken && (
-          <p className="mb-4 text-xs text-muted-foreground" role="status">
-            The question image could not be loaded. The text question is still shown below.
-          </p>
-        )}
+        {/* Image is shown alongside the complete written prompt when available. */}
+        <QuestionImage imageUrl={currentQuestion.imageUrl} />
         <h3 className="text-lg font-medium mb-6 leading-relaxed">
           <QuestionMath content={currentQuestion.question} inline />
         </h3>

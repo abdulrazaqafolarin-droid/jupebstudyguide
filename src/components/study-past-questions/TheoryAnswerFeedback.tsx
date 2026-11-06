@@ -138,7 +138,6 @@ export function TheoryAnswerFeedback({
   const [chatAttachments, setChatAttachments] = useState<{ base64: string; mimeType: string; name: string }[]>([]);
   const chatSystemRef = useRef('');
   const chatHistoryRef = useRef<AIChatMessage[]>([]);
-  const chatMsgIndexRef = useRef(0);
   const chatFileRef = useRef<HTMLInputElement>(null);
 
   const fileToBase64 = async (file: File): Promise<string> => {
@@ -192,6 +191,14 @@ export function TheoryAnswerFeedback({
     setEvalData(null);
     evalRef.current = null;
     contentRef.current = '';
+    chatAbortRef.current?.abort();
+    chatAbortRef.current = null;
+    setIsChatLoading(false);
+    setChatMessages([]);
+    setChatInput('');
+    setChatAttachments([]);
+    setEditingChatIndex(null);
+    chatHistoryRef.current = [];
     const ac = new AbortController();
     evaluationAbortRef.current = ac;
 
@@ -272,7 +279,6 @@ export function TheoryAnswerFeedback({
           // The image bubbles occupy the first slots of the chat list — advance
           // the index so the first follow-up reply lands on its own bubble
           // instead of overwriting the student's question.
-          chatMsgIndexRef.current = initialImageMsgs.length;
         }
       },
       onError: (err) => {
@@ -318,7 +324,6 @@ export function TheoryAnswerFeedback({
       setChatInput('');
       setChatAttachments([]);
       chatHistoryRef.current = [];
-      chatMsgIndexRef.current = 0;
       setIsLoading(true);
       const timer = setTimeout(() => startEvaluation(), 300);
       return () => {
@@ -401,7 +406,6 @@ export function TheoryAnswerFeedback({
     setChatAttachments([]);
     setEditingChatIndex(null);
     chatHistoryRef.current = [];
-    chatMsgIndexRef.current = 0;
     hasStarted.current = false;
     completedRef.current = false;
     void startEvaluation();
@@ -502,7 +506,6 @@ export function TheoryAnswerFeedback({
           ...updatedHistory,
           { role: 'assistant', content: botText },
         ];
-        chatMsgIndexRef.current = assistantDisplayIndex + 1;
         if (!botText) {
           setChatMessages((prev) => prev.filter((_, index) => index !== assistantDisplayIndex));
         }
@@ -714,7 +717,7 @@ export function TheoryAnswerFeedback({
                       >
                         <Copy className="h-3 w-3 text-muted-foreground" />
                       </button>
-                      {msg.role === 'user' && msg.historyStart !== undefined && !isChatLoading && (
+                      {msg.role === 'user' && !msg.attachments?.length && msg.historyStart !== undefined && !isChatLoading && (
                         <button
                           type="button"
                           onClick={() => handleEditChatMessage(i)}

@@ -62,21 +62,38 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const raw = event.notification.data as { url?: string; read_token?: string } | null;
 
-  const raw = event.notification.data as { url?: string } | null;
+  // The browser notification API has buttons but no native inline text input.
+  // "Reply" opens the chat composer; "Mark as read" is processed here.
+  if (event.action === 'read' && raw?.read_token) {
+    event.waitUntil((async () => {
+      try {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notification-action`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ token: raw.read_token, action: 'read' }),
+        });
+      } catch {
+        // The in-app conversation remains the authoritative recovery path.
+      }
+    })());
+    return;
+  }
+
   const url = raw?.url || '/';
-
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      for (const client of windowClients) {
-        if ('focus' in client && (client as WindowClient).url === url) {
-          return (client as WindowClient).focus();
-        }
-      }
-      if (self.clients.openWindow) {
-        return self.clients.openWindow(url);
-      }
-      return undefined;
-    })
-  );
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const client of windows) {
+      if (!('focus' in client)) continue;
+      if ('navigate' in client) await client.navigate(url);
+      await client.focus();
+      return;
+    }
+    if (self.clients.openWindow) await self.clients.openWindow(url);
+  })());
 });

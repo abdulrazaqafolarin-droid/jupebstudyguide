@@ -10,6 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
 import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
 import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
+import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 
 interface QuizModeProps {
   questions: Question[];

@@ -8,7 +8,7 @@
 -- database functions. This also protects projects where the earlier hardening
 -- migration was not applied.
 DROP POLICY IF EXISTS "Users insert own score events" ON public.score_events;
-REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER, MAINTAIN
   ON TABLE public.score_events
   FROM PUBLIC, anon, authenticated;
 

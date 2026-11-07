@@ -79,6 +79,10 @@ describe("Google OAuth platform handling", () => {
   });
 
   it("starts Apple OAuth using the native iOS callback and opens the system browser", async () => {
+    mocks.supabase.auth.signInWithOAuth.mockResolvedValueOnce({
+      data: { url: "https://project.supabase.co/auth/v1/authorize?provider=apple" },
+      error: null,
+    });
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
     let outcome: { error: Error | null } | undefined;
     await act(async () => {
@@ -93,8 +97,32 @@ describe("Google OAuth platform handling", () => {
       },
     });
     expect(mocks.browserOpen).toHaveBeenCalledWith({
-      url: "https://project.supabase.co/auth/v1/authorize?provider=google",
+      url: "https://project.supabase.co/auth/v1/authorize?provider=apple",
     });
+  });
+
+  it("uses the standard web redirect for Apple OAuth without opening a native browser", async () => {
+    mocks.getPlatform.mockReturnValue("web");
+    mocks.supabase.auth.signInWithOAuth.mockResolvedValueOnce({
+      data: { url: "https://project.supabase.co/auth/v1/authorize?provider=apple" },
+      error: null,
+    });
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    let outcome: { error: Error | null } | undefined;
+    await act(async () => {
+      outcome = await result.current.signInWithApple();
+    });
+
+    expect(outcome?.error).toBeNull();
+    expect(mocks.supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: "apple",
+      options: {
+        redirectTo: window.location.origin,
+        skipBrowserRedirect: false,
+      },
+    });
+    expect(mocks.browserOpen).not.toHaveBeenCalled();
   });
 
   it("keeps the standard browser OAuth redirect for web users", async () => {

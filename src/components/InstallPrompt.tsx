@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Smartphone, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Capacitor } from '@capacitor/core';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -9,12 +10,16 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const InstallPrompt: React.FC = () => {
+  const isNativeApp = Capacitor.isNativePlatform();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(() => window.matchMedia('(display-mode: standalone)').matches);
 
   useEffect(() => {
+    // Native iOS/Android apps are already installed; the PWA install guide is
+    // only relevant in a browser tab.
+    if (isNativeApp) return;
 
     // Check if iOS
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -45,7 +50,7 @@ const InstallPrompt: React.FC = () => {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
     };
-  }, []);
+  }, [isNativeApp]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -65,7 +70,7 @@ const InstallPrompt: React.FC = () => {
   };
 
   // Don't show if already installed
-  if (isStandalone) return null;
+  if (isNativeApp || isStandalone) return null;
 
   return (
     <AnimatePresence>

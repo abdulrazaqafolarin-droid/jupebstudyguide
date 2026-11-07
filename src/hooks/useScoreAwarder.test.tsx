@@ -108,6 +108,32 @@ describe("useScoreAwarder", () => {
     expect(awarded).toBe(false);
   });
 
+
+  it("does not report points for a question outside the official bank", async () => {
+    mocks.rpc.mockResolvedValue({
+      data: {
+        success: false,
+        eligible_for_points: false,
+        attempt_awarded: false,
+        correct_awarded: false,
+        duplicate: false,
+      },
+      error: null,
+    });
+    const { result } = renderHook(() => useScoreAwarder());
+
+    let awarded = true;
+    await act(async () => {
+      awarded = await result.current.recordQuestionAttempt("custom-question-uuid", "A");
+    });
+
+    expect(awarded).toBe(false);
+    expect(mocks.rpc).toHaveBeenCalledWith("record_question_attempt", {
+      p_question_id: "custom-question-uuid",
+      p_answer: "A",
+    });
+  });
+
   it("fails closed when the database rejects a reward request", async () => {
     mocks.rpc.mockResolvedValue({
       data: null,

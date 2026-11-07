@@ -16,7 +16,10 @@
     "cap:open": "npx cap open android",
     "cap:build": "npm run build && npx cap copy",
     "apk:debug": "npm run cap:build && cd android && .\\gradlew.bat assembleDebug",
-    "apk:release": "npm run cap:build && cd android && .\\gradlew.bat bundleRelease"
+    "apk:release": "npm run cap:build && cd android && .\\gradlew.bat bundleRelease",
+    "cap:open:ios": "npx cap open ios",
+    "ios:add": "npx cap add ios",
+    "ios:sync": "npm run build && npx cap sync ios"
   },
   "dependencies": {
     "@capacitor/camera": "^8.2.6",
@@ -114,7 +117,8 @@
     "pg": "^8.21.0",
     "vercel": "^54.1.0",
     "vite-plugin-pwa": "^1.2.0",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "@capacitor/ios": "^8.6.0"
   },
   "overrides": {
     "katex": "0.19.1"

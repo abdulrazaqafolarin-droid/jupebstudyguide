@@ -4,9 +4,11 @@
 -- intentionally does not delete or rewrite historical score_events rows.
 -- Existing question rewards are backfilled into a private claim ledger.
 
--- Clients must not insert score events directly.
+-- Client roles retain read-only access. In particular, TRUNCATE bypasses
+-- row-level security, so it must not be granted to anon or authenticated.
 DROP POLICY IF EXISTS "Users insert own score events" ON public.score_events;
-REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM PUBLIC, anon, authenticated;
+REVOKE ALL PRIVILEGES ON TABLE public.score_events FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON TABLE public.score_events TO anon, authenticated;
 ALTER TABLE public.score_events ENABLE ROW LEVEL SECURITY;
 
 -- Private idempotency ledger. It is not exposed through the Supabase Data API.

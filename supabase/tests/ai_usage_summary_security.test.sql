@@ -25,58 +25,34 @@ SELECT ok(
   'the verified admin edge function retains service-role RPC access'
 );
 
--- Create two isolated users without invoking signup's welcome-message flow.
-ALTER TABLE auth.users DISABLE TRIGGER USER;
-
-INSERT INTO auth.users (
-  id, aud, role, email, encrypted_password, email_confirmed_at,
-  raw_app_meta_data, raw_user_meta_data, created_at, updated_at
-)
-VALUES
-  (
-    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-    'authenticated', 'authenticated', 'usage-summary-admin@example.invalid', '',
-    now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
-    now(), now()
-  ),
-  (
-    'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
-    'authenticated', 'authenticated', 'usage-summary-student@example.invalid', '',
-    now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
-    now(), now()
-  );
-
-ALTER TABLE auth.users ENABLE TRIGGER USER;
-
--- The profile security trigger deliberately allows trusted service operations
--- to seed the admin fixture, but never ordinary authenticated profile writes.
+-- supabase/seed.sql creates this local-only system identity. Promote its
+-- disposable profile only inside this rolled-back test transaction.
 SET LOCAL ROLE service_role;
 SET LOCAL "request.jwt.claim.role" = 'service_role';
 SET LOCAL "request.jwt.claims" = '{"role":"service_role"}';
 
-INSERT INTO public.profiles (user_id, display_name, is_admin)
-VALUES
-  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'Usage Summary Test Admin', true),
-  ('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', 'Usage Summary Test Student', false);
+UPDATE public.profiles
+SET is_admin = true
+WHERE user_id = '00000000-0000-0000-0000-000000000000';
 
 SELECT lives_ok(
-  $$SELECT public.get_ai_usage_summary('usage-summary-admin@example.invalid')$$,
+  $$SELECT public.get_ai_usage_summary('studybot@jupebstudyguide.app')$$,
   'the admin-key-manager service-role request succeeds for a profile admin'
 );
 
 SELECT throws_ok(
-  $$SELECT public.get_ai_usage_summary('usage-summary-student@example.invalid')$$,
+  $$SELECT public.get_ai_usage_summary('not-an-admin@example.invalid')$$,
   '42501',
   NULL,
-  'the service-role path still rejects an email without profiles.is_admin'
+  'the service-role path rejects an email without profiles.is_admin'
 );
 
 RESET ROLE;
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claim.sub" = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+SET LOCAL "request.jwt.claim.sub" = '00000000-0000-0000-0000-000000000000';
 SET LOCAL "request.jwt.claim.role" = 'authenticated';
 SET LOCAL "request.jwt.claims" =
-  '{"sub":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","role":"authenticated"}';
+  '{"sub":"00000000-0000-0000-0000-000000000000","role":"authenticated"}';
 
 SELECT lives_ok(
   $$SELECT public.get_ai_usage_summary('ignored-client-email@example.invalid')$$,
@@ -89,7 +65,7 @@ SET LOCAL "request.jwt.claims" =
   '{"sub":"bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb","role":"authenticated"}';
 
 SELECT throws_ok(
-  $$SELECT public.get_ai_usage_summary('usage-summary-admin@example.invalid')$$,
+  $$SELECT public.get_ai_usage_summary('studybot@jupebstudyguide.app')$$,
   '42501',
   NULL,
   'an authenticated non-admin cannot impersonate an admin by email'

@@ -133,9 +133,15 @@ jobs:
         env:
           ALLOW_SIGNING_KEY_MIGRATION: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_signing_key_migration }}
           CONFIRM_LEGACY_DEVICE_DATA_LOSS: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_legacy_device_data_loss }}
+          SIGNING_MODE: ${{ steps.build-apk.outputs.signing-mode }}
         run: |
           set -euo pipefail
           echo "requires-reinstall=false" >> "$GITHUB_OUTPUT"
+          if [ "$SIGNING_MODE" != "stable" ]; then
+            echo "compatible=false" >> "$GITHUB_OUTPUT"
+            echo "Preview/debug candidates are never eligible for the production updater or GitHub release."
+            exit 0
+          fi
           APK="$APK_PATH"
           PREVIOUS_APK_URL="https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk"
           PREVIOUS_APK="$RUNNER_TEMP/previous-jupeb-master.apk"
@@ -177,7 +183,7 @@ jobs:
           path: ${{ env.APK_PATH }}
 
       - name: Mirror APK + version file to public storage
-        if: github.ref == 'refs/heads/main' && steps.update-signing.outputs.compatible == 'true'
+        if: github.ref == 'refs/heads/main' && steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true'
         env:
           SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -241,7 +247,7 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        if: steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
         with:
           tag_name: android-latest
           name: "Android APK (latest)"

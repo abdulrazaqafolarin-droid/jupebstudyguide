@@ -26,11 +26,10 @@ describe("getNativeAuthCallbackError", () => {
 
   it("sanitizes control characters and limits provider descriptions", () => {
     const raw = "A%0AB%00" + "x".repeat(260);
-    const message = getNativeAuthCallbackError(
-      \`com.jupeb.master://auth?error=server_error&error_description=\${raw}\`,
-    );
+    const callbackUrl = "com.jupeb.master://auth?error=server_error&error_description=" + raw;
+    const message = getNativeAuthCallbackError(callbackUrl);
 
-    expect(message).toBe(`A B xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`);
+    expect(message).toBe("A B " + "x".repeat(236));
     expect(message).toHaveLength(240);
   });
 

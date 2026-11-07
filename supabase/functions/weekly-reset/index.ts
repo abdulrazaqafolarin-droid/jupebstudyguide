@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getPreviousCompletedWeek } from "./period.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 
@@ -13,156 +14,114 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Weekly reset service configuration is missing");
+    }
+
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Fail closed: require service_role key or a valid admin user JWT.
-    // (Previously a missing Authorization header skipped auth entirely.)
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new Response(
         JSON.stringify({ error: "Authentication required" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
-    const token = authHeader.replace("Bearer ", "");
+
+    const token = authHeader.slice("Bearer ".length);
     if (token !== supabaseKey) {
       const { data: { user }, error } = await supabase.auth.getUser(token);
       if (error || !user) {
         return new Response(
           JSON.stringify({ error: "Invalid authentication" }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
-      const { data: profile } = await supabase
+
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("is_admin")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) {
+        throw new Error(`Unable to verify admin access: ${profileError.message}`);
+      }
+
       if (!profile?.is_admin && user.email !== Deno.env.get("ADMIN_EMAIL")) {
         return new Response(
           JSON.stringify({ error: "Admin access required" }),
-          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
     }
 
-    // Calculate current week boundaries
-    const now = new Date();
-    const day = now.getDay();
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() + diffToMonday);
-    monday.setHours(0, 0, 0, 0);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-
-    const weekStart = monday.toISOString().split("T")[0];
-    const weekEnd = sunday.toISOString().split("T")[0];
-
-    // Check if this week already processed
-    const { data: existing } = await supabase
-      .from("leaderboard_weeks")
-      .select("id, champion_user_id")
-      .eq("week_start", weekStart)
-      .single();
-
-    if (existing) {
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "Week already processed",
-          champion: existing.champion_user_id,
-        }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // Keep one source of truth: the database function calculates the previous
+    // completed UTC week, locks it, records its champion and writes the badge.
+    const { error: processError } = await supabase.rpc("auto_weekly_champion");
+    if (processError) {
+      throw new Error(`Failed to process completed week: ${processError.message}`);
     }
 
-    // Find this week's champion
-    const { data: scores } = await supabase
-      .from("score_events")
-      .select("user_id, amount")
-      .gte("created_at", monday.toISOString())
-      .lt("created_at", sunday.toISOString());
-
-    if (!scores || scores.length === 0) {
-      // No scores yet — create the week entry without a champion
-      const { data: week } = await supabase
-        .from("leaderboard_weeks")
-        .insert({ week_start: weekStart, week_end: weekEnd })
-        .select()
-        .single();
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: "No scores this week, created empty week entry",
-          week,
-        }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Aggregate scores and find champion
-    const scoreMap = new Map<string, number>();
-    for (const s of scores) {
-      scoreMap.set(s.user_id, (scoreMap.get(s.user_id) ?? 0) + s.amount);
-    }
-    const sorted = [...scoreMap.entries()].sort((a, b) => b[1] - a[1]);
-    const championId = sorted[0][0];
-
-    // Create week entry with champion
+    const period = getPreviousCompletedWeek(new Date());
     const { data: week, error: weekError } = await supabase
       .from("leaderboard_weeks")
-      .insert({
-        week_start: weekStart,
-        week_end: weekEnd,
-        champion_user_id: championId,
-        champion_badge_awarded: true,
-      })
-      .select()
+      .select("id, week_start, week_end, champion_user_id, champion_badge_awarded")
+      .eq("week_start", period.startDate)
       .single();
 
-    if (weekError) {
-      throw new Error(`Failed to create week entry: ${weekError.message}`);
+    if (weekError || !week) {
+      throw new Error(weekError?.message || "Completed week record was not found");
     }
 
-    // Send honorary badge notification via chat or notification system
-    // We create a notification by inserting into the notifications table
-    // Since we don't have a notifications DB table (it's localStorage), we
-    // create a score event for the badge itself, visible on the leaderboard
-    const badgeRef = `champion_badge:${weekStart}:${championId}`;
-    const { error: badgeError } = await supabase.from("score_events").insert({
-      user_id: championId,
-      amount: 0,
-      reason: "champion_badge",
-      reference_id: badgeRef,
-    });
+    let championScore = 0;
+    if (week.champion_user_id) {
+      const { data: rankings, error: rankingError } = await supabase.rpc(
+        "get_weekly_leaderboard",
+        { p_week_start: period.startDate },
+      );
 
-    if (badgeError) {
-      console.error("Failed to insert champion badge event:", badgeError);
+      if (rankingError) {
+        // The champion record is already committed by the transaction above.
+        // Keep the admin response successful and report a score of zero only
+        // when this optional display lookup cannot be completed.
+        console.warn("Could not load completed-week champion score:", rankingError);
+      } else {
+        const weeklyRows = (rankings ?? []) as Array<{
+          user_id: string;
+          week_score: number | string;
+        }>;
+        const champion = weeklyRows.find(
+          (row) => row.user_id === week.champion_user_id,
+        );
+        championScore = Number(champion?.week_score ?? 0);
+      }
     }
 
+    const hasChampion = Boolean(week.champion_user_id);
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Week processed successfully",
+        message: hasChampion
+          ? "Completed week processed successfully"
+          : "No scores in the completed week; an empty week record was created",
         week: {
           id: week.id,
-          week_start: weekStart,
-          week_end: weekEnd,
-          champion: championId,
-          champion_score: sorted[0][1],
+          week_start: week.week_start,
+          week_end: week.week_end,
+          champion: week.champion_user_id,
+          champion_score: championScore,
         },
       }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });

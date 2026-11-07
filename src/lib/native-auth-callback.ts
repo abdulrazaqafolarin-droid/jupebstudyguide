@@ -10,10 +10,15 @@ function readParam(search: URLSearchParams, hash: URLSearchParams, key: string):
  */
 export function sanitizeNativeAuthMessage(message: string | null | undefined): string {
   const safeMessage = message
-    ?.replace(/[\u0000-\u001F\u007F]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 240);
+    ? Array.from(message, (character) => {
+        const code = character.charCodeAt(0);
+        return code <= 0x1f || code === 0x7f ? " " : character;
+      })
+        .join("")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 240)
+    : "";
 
   return safeMessage || "Sign-in could not be completed. Please try again.";
 }

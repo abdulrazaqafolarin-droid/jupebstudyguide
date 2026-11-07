@@ -14,6 +14,7 @@ APP_PATH = Path(sys.argv[1])
 SCREENSHOT_PATH = Path(sys.argv[2])
 RUNTIME_LOG_PATH = Path(sys.argv[3])
 BUNDLE_ID = "com.jupeb.master"
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 
 def run(
@@ -36,6 +37,23 @@ def run(
         raise RuntimeError(
             f"Simulator command exceeded {timeout_seconds} seconds: {' '.join(command)}"
         ) from error
+
+
+def is_valid_png_screenshot(path: Path) -> bool:
+    """Reject truncated or non-PNG simulator output before uploading an artifact."""
+    try:
+        if path.stat().st_size < 10_000:
+            return False
+        with path.open("rb") as screenshot_file:
+            header = screenshot_file.read(24)
+    except OSError:
+        return False
+
+    return (
+        len(header) == 24
+        and header[:8] == PNG_SIGNATURE
+        and header[12:16] == b"IHDR"
+    )
 
 
 def main() -> int:
@@ -87,7 +105,7 @@ def main() -> int:
             screenshot_errors.append(str(error))
             print(f"Screenshot attempt {attempt} did not return cleanly: {error}", flush=True)
 
-        if SCREENSHOT_PATH.is_file() and SCREENSHOT_PATH.stat().st_size >= 10_000:
+        if is_valid_png_screenshot(SCREENSHOT_PATH):
             screenshot_verified = True
             break
 
@@ -96,7 +114,7 @@ def main() -> int:
 
     if not screenshot_verified:
         raise RuntimeError(
-            "Simulator screenshot was missing or unexpectedly small after retries. "
+            "Simulator screenshot was missing, invalid, or unexpectedly small after retries. "
             + " | ".join(screenshot_errors)
         )
 

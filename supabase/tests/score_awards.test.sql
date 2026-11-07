@@ -54,13 +54,15 @@ SELECT ok(
 
 SET LOCAL ROLE service_role;
 SELECT throws_ok(
-  $INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+  $insert$
+    INSERT INTO public.score_events (user_id, amount, reason, reference_id)
     VALUES (
       'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
       100,
       'achievement',
       NULL
-    )$,
+    )
+  $insert$,
   '23514',
   NULL,
   'table-level guard rejects a direct score insert without a reference'

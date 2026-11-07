@@ -44,7 +44,8 @@ interface AppUpdaterPlugin {
 
 const AppUpdater = registerPlugin<AppUpdaterPlugin>("AppUpdater");
 
-export const isNativeApp = () => Capacitor.isNativePlatform();
+/** The APK updater is an Android-only capability; never expose it in the iOS shell. */
+export const isAndroidApp = () => Capacitor.getPlatform() === "android";
 
 /** Plain numeric comparison: any higher published code is an update. */
 export function isNewer(installedCode: number, latestCode: number): boolean {
@@ -102,7 +103,7 @@ export async function getInstalledVersion(): Promise<{
   versionCode: number;
   versionName: string;
 } | null> {
-  if (!isNativeApp()) return null;
+  if (!isAndroidApp()) return null;
   try {
     const v = await AppUpdater.getInstalledVersion();
     return Number.isFinite(v.versionCode) ? v : null;
@@ -183,13 +184,13 @@ export async function downloadApk(
 }
 
 export async function canInstallPackages(): Promise<boolean> {
-  if (!isNativeApp()) return false;
+  if (!isAndroidApp()) return false;
   const result = await AppUpdater.canInstallPackages();
   return result.canInstall === true;
 }
 
 export async function openInstallSettings(): Promise<void> {
-  if (!isNativeApp()) throw new Error("APK updates are available only in the Android app");
+  if (!isAndroidApp()) throw new Error("APK updates are available only in the Android app");
   await AppUpdater.openInstallSettings();
 }
 

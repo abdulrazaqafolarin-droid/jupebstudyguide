@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getPreviousCompletedWeek } from "./period.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 
@@ -6,30 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-function getPreviousCompletedWeek(now: Date) {
-  // Use UTC, matching the database function and the Monday 01:00 UTC cron.
-  const currentWeekStart = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-  ));
-  const daysSinceMonday = (currentWeekStart.getUTCDay() + 6) % 7;
-  currentWeekStart.setUTCDate(currentWeekStart.getUTCDate() - daysSinceMonday);
-
-  const previousWeekStart = new Date(currentWeekStart);
-  previousWeekStart.setUTCDate(previousWeekStart.getUTCDate() - 7);
-
-  const previousWeekEnd = new Date(currentWeekStart);
-  previousWeekEnd.setUTCDate(previousWeekEnd.getUTCDate() - 1);
-
-  return {
-    startDate: previousWeekStart.toISOString().slice(0, 10),
-    endDate: previousWeekEnd.toISOString().slice(0, 10),
-    startIso: previousWeekStart.toISOString(),
-    endExclusiveIso: currentWeekStart.toISOString(),
-  };
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {

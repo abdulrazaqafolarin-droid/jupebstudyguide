@@ -3,14 +3,12 @@
 -- across 10 accounts. This migration preserves every existing row and only blocks
 -- invalid or repeated awards going forward.
 
-ALTER TABLE public.score_events
-  ADD CONSTRAINT score_events_reference_required
-  CHECK (reference_id IS NOT NULL AND btrim(reference_id) <> '') NOT VALID;
-
--- Existing production data has no NULL/blank references, so validate the guard
--- while keeping this safe for environments that may still contain legacy rows.
-ALTER TABLE public.score_events
-  VALIDATE CONSTRAINT score_events_reference_required;
+-- Do not rely on an RLS INSERT policy or client table grants for reward writes.
+-- Remove the legacy policy and keep all score-event mutations behind trusted
+-- database functions. This also protects projects where the earlier hardening
+-- migration was not applied.
+DROP POLICY IF EXISTS "Users insert own score events" ON public.score_events;
+REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM PUBLIC, anon, authenticated;
 
 CREATE OR REPLACE FUNCTION public.prevent_duplicate_score_event()
 RETURNS trigger
@@ -19,6 +17,11 @@ SECURITY DEFINER
 SET search_path = pg_catalog, public, pg_temp
 AS $$
 BEGIN
+  IF NEW.user_id IS NULL OR NEW.reference_id IS NULL OR btrim(NEW.reference_id) = '' THEN
+    RAISE EXCEPTION 'A non-empty score event user and reference are required'
+      USING ERRCODE = '23514';
+  END IF;
+
   -- Serialize identical user/reference writes to close the concurrent-RPC race.
   PERFORM pg_advisory_xact_lock(
     hashtextextended(NEW.user_id::text || ':' || NEW.reference_id, 0)
@@ -96,16 +99,14 @@ BEGIN
       USING ERRCODE = '22023';
   END IF;
 
-  -- The client uses reason:reference:userId. Reject mismatched ownership tags.
-  IF left(p_reference_id, length(p_reason) + 1) <> p_reason || ':'
-     OR right(p_reference_id, length(p_user_id::TEXT)) <> p_user_id::TEXT THEN
-    RAISE EXCEPTION 'Invalid reward reference'
-      USING ERRCODE = '22023';
-  END IF;
-
+  -- The app generates exactly reason:referenceKey:userId. Require that
+  -- canonical three-part form; prefix/suffix-only checks let extra segments
+  -- bypass idempotency for an otherwise valid achievement or question key.
   v_reference_key := split_part(p_reference_id, ':', 2);
-  IF v_reference_key IS NULL OR btrim(v_reference_key) = '' THEN
-    RAISE EXCEPTION 'A non-empty reward reference key is required'
+  IF v_reference_key IS NULL
+     OR btrim(v_reference_key) = ''
+     OR p_reference_id <> (p_reason || ':' || v_reference_key || ':' || p_user_id::TEXT) THEN
+    RAISE EXCEPTION 'Reward reference must be exactly reason:key:userId'
       USING ERRCODE = '22023';
   END IF;
 
@@ -182,6 +183,13 @@ BEGIN
         USING ERRCODE = '22023';
     END IF;
   ELSIF p_reason = 'quiz_complete' THEN
+    -- Different quiz session IDs use different reference locks. Serialize all
+    -- quiz rewards for this user before counting so concurrent sessions cannot
+    -- race past the per-24-hour limit.
+    PERFORM pg_advisory_xact_lock(
+      hashtextextended('quiz_complete:' || p_user_id::TEXT, 0)
+    );
+
     SELECT COUNT(*)::INTEGER INTO v_quiz_awards_last_24h
     FROM public.score_events
     WHERE user_id = p_user_id

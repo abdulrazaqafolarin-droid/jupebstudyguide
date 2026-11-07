@@ -163,7 +163,7 @@ const Auth = () => {
         <CardHeader className="text-center pb-6">
           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mx-auto mb-4">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">JUPEB Study Guide</span>
+            <span className="text-sm font-medium text-primary">Rutex Master(Jupeb)</span>
           </div>
           <AnimatePresence mode="wait">
             {isMfa ? (

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Capacitor } from "@capacitor/core";
 
 /**
  * Prompt-driven PWA updater for the hand-written injectManifest worker.
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
  * messages SKIP_WAITING and reloads only after the new worker claims this tab.
  */
 export function SWUpdatePrompt() {
+  const isNativeApp = Capacitor.isNativePlatform();
   const [updateReady, setUpdateReady] = useState(false);
   const [applying, setApplying] = useState(false);
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
@@ -15,7 +17,9 @@ export function SWUpdatePrompt() {
   const fallbackTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
+    // Native bundles update through a newly signed app release, not a PWA
+    // service-worker refresh of the bundled WKWebView assets.
+    if (isNativeApp || !("serviceWorker" in navigator)) return;
 
     let disposed = false;
     let interval: number | undefined;
@@ -100,7 +104,7 @@ export function SWUpdatePrompt() {
       const registration = registrationRef.current;
       registration?.removeEventListener("updatefound", onUpdateFound);
     };
-  }, []);
+  }, [isNativeApp]);
 
   const applyUpdate = useCallback(() => {
     const registration = registrationRef.current;
@@ -119,7 +123,7 @@ export function SWUpdatePrompt() {
     }, 8_000);
   }, []);
 
-  if (!updateReady) return null;
+  if (isNativeApp || !updateReady) return null;
 
   return (
     <div role="status" aria-live="polite" className="fixed bottom-20 left-1/2 z-[9998] w-[92vw] max-w-sm -translate-x-1/2">

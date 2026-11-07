@@ -14,7 +14,7 @@ permissions:
 jobs:
   ios:
     name: Configure and build Rutex Master for iOS Simulator
-    runs-on: xcode-27
+    runs-on: macos-26
     timeout-minutes: 45
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
@@ -34,8 +34,9 @@ jobs:
         run: |
           set -euo pipefail
           xcodebuild -version
-          xcodebuild -showsdks | grep -q 'iOS'
-          xcrun simctl list devices available | head -40
+          xcodebuild -showsdks > "$RUNNER_TEMP/available-sdks.txt"
+          grep -q 'iOS' "$RUNNER_TEMP/available-sdks.txt"
+          xcrun simctl list devices available
 
       - name: Refresh lockfile for the new native platform
         run: npm install --package-lock-only --ignore-scripts

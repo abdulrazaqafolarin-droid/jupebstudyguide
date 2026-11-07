@@ -79,6 +79,8 @@ DECLARE
   v_question_id TEXT := btrim(COALESCE(p_question_id, ''));
   v_answer TEXT := btrim(COALESCE(p_answer, ''));
   v_correct_answer TEXT;
+  v_question_found BOOLEAN := false;
+  v_custom_question_id UUID;
   v_is_correct BOOLEAN := false;
   v_attempt_awarded BOOLEAN := false;
   v_correct_awarded BOOLEAN := false;
@@ -113,7 +115,87 @@ BEGIN
   WHERE q.id = v_question_id
     AND q.hidden = false;
 
-  IF NOT FOUND THEN
+  v_question_found := FOUND;
+
+  -- Uploaded questions are stored separately and must belong to the caller.
+  -- Only UUID-shaped identifiers are cast, so arbitrary input cannot raise
+  -- an invalid UUID exception or probe another student's custom questions.
+  IF NOT v_question_found
+     AND v_question_id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
+  v_is_correct :=
+    v_correct_answer IS NOT NULL
+    AND btrim(v_correct_answer) <> ''
+    AND upper(btrim(v_correct_answer)) <> 'TBD'
+    AND upper(v_answer) = upper(btrim(v_correct_answer));
+
+  -- One attempt reward per student/question. A later correct submission can
+  -- still earn the separate correctness reward if the first attempt was wrong.
+  INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
+  VALUES (v_user_id, v_question_id, 'attempt')
+  ON CONFLICT (user_id, question_id, reward_type) DO NOTHING
+  RETURNING true INTO v_attempt_awarded;
+
+  v_attempt_awarded := COALESCE(v_attempt_awarded, false);
+
+  IF v_attempt_awarded THEN
+    INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+    VALUES (
+      v_user_id,
+      5,
+      'answered_question',
+      'answered_question:' || v_question_id || ':' || v_user_id::TEXT
+    );
+  END IF;
+
+  -- One correctness reward per student/question, checked by this function.
+  IF v_is_correct THEN
+    INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
+    VALUES (v_user_id, v_question_id, 'correct')
+    ON CONFLICT (user_id, question_id, reward_type) DO NOTHING
+    RETURNING true INTO v_correct_awarded;
+
+    v_correct_awarded := COALESCE(v_correct_awarded, false);
+
+    IF v_correct_awarded THEN
+      INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+      VALUES (
+        v_user_id,
+        10,
+        'correct_answer',
+        'correct_answer:' || v_question_id || ':' || v_user_id::TEXT
+      );
+    END IF;
+  END IF;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'attempt_awarded', v_attempt_awarded,
+    'correct_awarded', v_correct_awarded,
+    'is_correct', v_is_correct,
+    'duplicate', NOT (v_attempt_awarded OR v_correct_awarded)
+  );
+END;
+$function$;
+
+REVOKE ALL PRIVILEGES ON FUNCTION public.record_question_attempt(TEXT, TEXT)
+  FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.record_question_attempt(TEXT, TEXT)
+  TO authenticated;
+
+COMMENT ON FUNCTION public.record_question_attempt(TEXT, TEXT) IS
+  'Awards the fixed 5-point attempt and 10-point correctness rewards after checking the official answer key and a private per-user claim ledger.';
+ THEN
+    v_custom_question_id := v_question_id::UUID;
+    SELECT q.correct_answer
+      INTO v_correct_answer
+    FROM public.custom_questions AS q
+    WHERE q.id = v_custom_question_id
+      AND q.user_id = v_user_id;
+
+    v_question_found := FOUND;
+  END IF;
+
+  IF NOT v_question_found THEN
     RAISE EXCEPTION 'Question is unavailable for scoring'
       USING ERRCODE = '22023';
   END IF;

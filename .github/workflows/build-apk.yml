@@ -16,8 +16,6 @@ on:
         default: false
         type: boolean
 
-# Needed so the release step (softprops/action-gh-release) can create the
-# android-latest release with GITHUB_TOKEN.
 permissions:
   contents: write
 
@@ -39,14 +37,11 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          # Capacitor 8 / AGP 8.x requires JDK 21 to compile.
           java-version: 21
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          # NOTE: the action's default `packages` includes the long-removed
-          # `tools` package, which makes sdkmanager exit 1. Override it.
           packages: "platform-tools platforms;android-36 build-tools;36.0.0"
 
       - name: Validate Firebase Android client
@@ -73,8 +68,6 @@ jobs:
         run: npm run build
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
-          # Public, non-secret build values (also on Vercel). The bundled app
-          # boots blank without these since Vite inlines them at build time.
           VITE_SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
           VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX"
           VITE_SUPABASE_PROJECT_ID: "gzyczowqqywesqhqqpdi"
@@ -83,7 +76,7 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build signed release APK or isolated debug candidate
+      - name: Build signed release APK or isolated debug preview
         id: build-apk
         shell: bash
         run: |
@@ -100,9 +93,20 @@ jobs:
             echo "signing-mode=stable" >> "$GITHUB_OUTPUT"
             echo "Built release APK with the configured persistent signing key."
           else
-            echo "::warning title=Stable Android signing key unavailable::Building a debug-signed candidate for direct inspection/download only. It will not be published to android-latest or the in-app updater."
+          PACKAGE="$( "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK_PATH" | awk -F"'" '/^package:/{print $2; exit}')" 
+            mkdir -p android/app/src/debug/res/values
+            cat > android/app/src/debug/res/values/strings.xml <<'XML'
+          <resources>
+              <string name="app_name">JUPEB Master Preview</string>
+              <string name="title_activity_main">JUPEB Master Preview</string>
+              <string name="package_name">com.jupeb.master.preview</string>
+              <string name="custom_url_scheme">com.jupeb.master.preview</string>
+          </resources>
+          XML
+            echo "::warning title=Stable Android signing key unavailable::Building an isolated preview APK. It is a separate app and will not replace installed JUPEB Master."
             (cd android && ./gradlew assembleDebug --no-daemon)
-            echo "APK_PATH=android/app/build/outputs/apk/debug/app-debug.apk" >> "$GITHUB_ENV"
+            cp android/app/build/outputs/apk/debug/app-debug.apk jupeb-master-preview.apk
+            echo "APK_PATH=jupeb-master-preview.apk" >> "$GITHUB_ENV"
             echo "signing-mode=debug-candidate" >> "$GITHUB_OUTPUT"
           fi
         env:
@@ -110,6 +114,18 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Verify isolated preview package identity
+        if: steps.build-apk.outputs.signing-mode == 'debug-candidate'
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE="$( "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK_PATH" | awk -F"'" '/^package:/{print $2; exit}')" 
+          if [ "$PACKAGE" != "com.jupeb.master.preview" ]; then
+            echo "::error::Expected isolated package com.jupeb.master.preview, got '$PACKAGE'"
+            exit 1
+          fi
+          echo "Preview package verified: $PACKAGE"
 
       - name: Verify signing compatibility with the currently published APK
         id: update-signing
@@ -132,8 +148,8 @@ jobs:
 
           CURRENT_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$APK" 2>&1 || true)"
           PREVIOUS_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$PREVIOUS_APK" 2>&1 || true)"
-          CURRENT_CERT="$(printf '%s\n' "$CURRENT_SIGNER_REPORT" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1 | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
-          PREVIOUS_CERT="$(printf '%s\n' "$PREVIOUS_SIGNER_REPORT" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1 | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          CURRENT_CERT="$(echo "$CURRENT_SIGNER_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          PREVIOUS_CERT="$(echo "$PREVIOUS_SIGNER_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
 
           if [ -z "$CURRENT_CERT" ] || [ -z "$PREVIOUS_CERT" ]; then
             echo "compatible=false" >> "$GITHUB_OUTPUT"
@@ -161,10 +177,6 @@ jobs:
           path: ${{ env.APK_PATH }}
 
       - name: Mirror APK + version file to public storage
-        # The installed app checks this version.json on launch to offer
-        # in-app updates (the GitHub repo is private, so the app cannot
-        # query releases directly). Requires a SUPABASE_SERVICE_ROLE_KEY
-        # repository secret; the build fails before creating the GitHub release if absent.
         if: github.ref == 'refs/heads/main' && steps.update-signing.outputs.compatible == 'true'
         env:
           SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
@@ -185,85 +197,52 @@ jobs:
             false|"") REINSTALL_JSON=false ;;
             *) echo "::error::Invalid requires-reinstall release flag"; exit 1 ;;
           esac
-          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","requiresReinstall":%s}' \
-            "${{ github.run_number }}" "1.1.${{ github.run_number }}" "${{ github.sha }}" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$REINSTALL_JSON" \
-            > version.json
+          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","requiresReinstall":%s}' "$GITHUB_RUN_NUMBER" "1.1.$GITHUB_RUN_NUMBER" "$GITHUB_SHA" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$REINSTALL_JSON" > version.json
           python3 - "$APK" version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
           import hashlib
           import json
           import re
           import sys
-
           apk_path, metadata_path, expected_hash, supabase_url = sys.argv[1:]
           with open(metadata_path, encoding="utf-8") as f:
               metadata = json.load(f)
-
           actual_hash = hashlib.sha256()
           with open(apk_path, "rb") as f:
               for chunk in iter(lambda: f.read(1024 * 1024), b""):
                   actual_hash.update(chunk)
-
           digest = actual_hash.hexdigest()
           expected_url = f"{supabase_url.rstrip('/')}/storage/v1/object/public/app-releases/jupeb-master.apk"
-          assert isinstance(metadata.get("versionCode"), int) and metadata["versionCode"] > 0, "invalid versionCode"
-          assert metadata.get("url") == expected_url, "invalid APK URL"
-          assert isinstance(metadata.get("sha256"), str) and re.fullmatch(r"[a-fA-F0-9]{64}", metadata["sha256"]), "invalid SHA-256 format"
-          assert metadata["sha256"].lower() == digest, "metadata checksum does not match APK bytes"
-          assert metadata["sha256"].lower() == expected_hash.lower(), "metadata checksum does not match sha256sum"
+          assert isinstance(metadata.get("versionCode"), int) and metadata["versionCode"] > 0
+          assert metadata.get("url") == expected_url
+          assert isinstance(metadata.get("sha256"), str) and re.fullmatch(r"[a-fA-F0-9]{64}", metadata["sha256"])
+          assert metadata["sha256"].lower() == digest == expected_hash.lower()
           print(f"Verified release metadata for version {metadata['versionCode']} ({digest})")
           PY
-          curl -sS --fail-with-body -X POST \
-            "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master.apk" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Content-Type: application/vnd.android.package-archive" \
-            -H "x-upsert: true" \
-            --data-binary "@$APK"
-          curl -sS --fail-with-body -X POST \
-            "$SUPABASE_URL/storage/v1/object/app-releases/version.json" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Content-Type: application/json" \
-            -H "x-upsert: true" \
-            --data-binary "@version.json"
-
-          # Read the public metadata back and verify it still describes the
-          # exact APK bytes uploaded above before publishing the GitHub release.
-          PUBLISHED_APK_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master.apk"
+          curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master.apk" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/vnd.android.package-archive" -H "x-upsert: true" --data-binary "@$APK"
+          curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/version.json" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/json" -H "x-upsert: true" --data-binary "@version.json"
           PUBLISHED_VERSION_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/version.json"
-          curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
-            -sS --fail-with-body "$PUBLISHED_VERSION_URL" -o published-version.json
+          curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS --fail-with-body "$PUBLISHED_VERSION_URL" -o published-version.json
           python3 - "$APK" published-version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
-          import hashlib
-          import json
-          import re
-          import sys
-
+          import hashlib, json, re, sys
           apk_path, metadata_path, expected_hash, supabase_url = sys.argv[1:]
           with open(metadata_path, encoding="utf-8") as f:
               metadata = json.load(f)
           with open(apk_path, "rb") as f:
               actual_hash = hashlib.file_digest(f, "sha256").hexdigest()
           expected_url = f"{supabase_url.rstrip('/')}/storage/v1/object/public/app-releases/jupeb-master.apk"
-          assert isinstance(metadata.get("versionCode"), int) and metadata["versionCode"] > 0, "published versionCode is invalid"
-          assert metadata.get("url") == expected_url, "published APK URL is invalid"
-          assert isinstance(metadata.get("sha256"), str) and re.fullmatch(r"[a-fA-F0-9]{64}", metadata["sha256"]), "published SHA-256 is invalid"
-          assert metadata["sha256"].lower() == actual_hash, "published metadata checksum does not match APK bytes"
-          assert metadata["sha256"].lower() == expected_hash.lower(), "published checksum differs from the build checksum"
+          assert metadata.get("url") == expected_url
+          assert re.fullmatch(r"[a-fA-F0-9]{64}", metadata.get("sha256", ""))
+          assert metadata["sha256"].lower() == actual_hash == expected_hash.lower()
           print(f"Public metadata verified for version {metadata['versionCode']}")
           PY
-          APK_HTTP_STATUS=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
-            -sS -o /dev/null -w "%{http_code}" -I "$PUBLISHED_APK_URL")
+          APK_HTTP_STATUS=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w "%{http_code}" -I "$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master.apk")
           echo "Published APK HTTP status: $APK_HTTP_STATUS"
           test "$APK_HTTP_STATUS" = "200"
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        # Release every main-branch build under a stable tag so the in-app
-        # Download page (which reads /releases/latest) always finds an APK.
-        # Version tags (v*) still get their own release notes.
         if: steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
         with:
           tag_name: android-latest
           name: "Android APK (latest)"
           files: ${{ env.APK_PATH }}
-

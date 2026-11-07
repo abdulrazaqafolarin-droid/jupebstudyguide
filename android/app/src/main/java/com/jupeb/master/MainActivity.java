@@ -7,7 +7,10 @@ public class MainActivity extends BridgeActivity {
     public static volatile boolean isAppForeground = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        registerPlugin(AppUpdaterPlugin.class);
+        // The preview package must never offer the production APK as an update.
+        if (!getPackageName().endsWith(".preview")) {
+            registerPlugin(AppUpdaterPlugin.class);
+        }
         super.onCreate(savedInstanceState);
     }
 

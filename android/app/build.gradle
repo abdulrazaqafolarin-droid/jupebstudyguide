@@ -5,6 +5,7 @@ def signingStorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
 def signingKeyAlias = System.getenv("ANDROID_KEY_ALIAS")
 def signingKeyPassword = System.getenv("ANDROID_KEY_PASSWORD")
 def hasStableReleaseSigning = signingPath && signingStorePassword && signingKeyAlias && signingKeyPassword
+def isolatedPreviewBuild = System.getenv("APK_PREVIEW_PACKAGE") == "true"
 
 android {
     namespace = "com.jupeb.master"
@@ -37,6 +38,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            if (isolatedPreviewBuild) {
+                // A debug-only side-by-side package prevents a test APK from
+                // replacing the student's production installation or its data.
+                applicationIdSuffix ".preview"
+                versionNameSuffix "-preview"
+            }
+        }
         release {
             // CI uses a private, stable keystore when configured. The debug
             // fallback is only for initial/testing builds and is NOT suitable
@@ -74,8 +83,10 @@ apply from: 'capacitor.build.gradle'
 
 try {
     def servicesJSON = file('google-services.json')
-    if (servicesJSON.text) {
+    if (servicesJSON.text && !isolatedPreviewBuild) {
         apply plugin: 'com.google.gms.google-services'
+    } else if (isolatedPreviewBuild) {
+        logger.lifecycle("Firebase Google Services plugin skipped for isolated preview APK.")
     }
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")

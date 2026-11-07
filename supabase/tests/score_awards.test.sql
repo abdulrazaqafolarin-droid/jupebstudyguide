@@ -2,7 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 SET LOCAL search_path = extensions, public;
 
-SELECT plan(12);
+SELECT plan(14);
 
 -- These IDs exist only inside this rolled-back local test transaction.
 INSERT INTO auth.users (
@@ -23,6 +23,17 @@ VALUES
     now(), now()
   );
 
+SELECT ok(
+  EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conrelid = 'public.score_events'::regclass
+      AND conname = 'score_events_reference_nonempty'
+      AND NOT convalidated
+  ),
+  'non-empty reference constraint is installed without rewriting legacy rows'
+);
+
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claim.sub" = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 SET LOCAL "request.jwt.claim.role" = 'authenticated';
@@ -40,6 +51,25 @@ SELECT ok(
   NOT has_table_privilege('authenticated', 'public.score_events', 'DELETE'),
   'authenticated users cannot delete score events directly'
 );
+
+SET LOCAL ROLE service_role;
+SELECT throws_ok(
+  $INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+    VALUES (
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      100,
+      'achievement',
+      NULL
+    )$,
+  '23514',
+  NULL,
+  'table-level guard rejects a direct score insert without a reference'
+);
+
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claim.sub" = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+SET LOCAL "request.jwt.claim.role" = 'authenticated';
+SET LOCAL "request.jwt.claims" = '{"sub":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","role":"authenticated"}';
 
 SELECT throws_ok(
   $$SELECT public.award_score(

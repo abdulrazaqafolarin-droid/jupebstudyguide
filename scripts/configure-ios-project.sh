@@ -206,8 +206,96 @@ if updates["Profile"] > 1:
 if "PRODUCT_BUNDLE_IDENTIFIER = com.jupeb.master;" not in text:
     raise SystemExit("Expected iOS bundle identifier com.jupeb.master was not found")
 
+# Advertise the Push Notifications capability on the app target as well as
+# supplying aps-environment in App.entitlements. The capability belongs to
+# the native app target, not the project or a test target.
+def matching_brace_end(source: str, opening: int) -> int:
+    depth = 0
+    for offset in range(opening, len(source)):
+        if source[offset] == "{":
+            depth += 1
+        elif source[offset] == "}":
+            depth -= 1
+            if depth == 0:
+                return offset + 1
+    raise SystemExit("Unclosed Xcode project block while enabling Push Notifications")
+
+native_targets = re.search(
+    r"/\\* Begin PBXNativeTarget section \\*/(.*?)/\\* End PBXNativeTarget section \\*/",
+    text,
+    flags=re.S,
+)
+if not native_targets:
+    raise SystemExit("Could not locate Xcode native targets")
+app_target = re.search(
+    r"(?m)^\\s*([A-F0-9]{24}) /\\* App \\*/ = \\{",
+    native_targets.group(1),
+)
+if not app_target:
+    raise SystemExit("Could not locate the Capacitor App target")
+app_target_id = app_target.group(1)
+
+target_attributes = re.search(r"TargetAttributes\\s*=\\s*\\{", text)
+if not target_attributes:
+    raise SystemExit("Could not locate Xcode TargetAttributes")
+attributes_start = target_attributes.end() - 1
+attributes_end = matching_brace_end(text, attributes_start)
+attributes_block = text[attributes_start:attributes_end]
+app_attribute = re.search(
+    rf"(?m)^\\s*{re.escape(app_target_id)}\\s*=\\s*\\{{",
+    attributes_block,
+)
+if not app_attribute:
+    raise SystemExit("Could not locate App target attributes")
+app_block_start = attributes_start + app_attribute.end() - 1
+app_block_end = matching_brace_end(text, app_block_start)
+app_block = text[app_block_start:app_block_end]
+
+if "com.apple.Push" not in app_block:
+    capability = re.search(r"SystemCapabilities\\s*=\\s*\\{", app_block)
+    if capability:
+        capability_start = capability.end() - 1
+        capability_end = matching_brace_end(app_block, capability_start)
+        capability_block = app_block[capability_start:capability_end]
+        capability_insert = capability_block.rfind("}")
+        capability_block = (
+            capability_block[:capability_insert]
+            + "\\n\\t\\t\\t\\t\\t\\tcom.apple.Push = {\\n"
+            + "\\t\\t\\t\\t\\t\\t\\tenabled = 1;\\n"
+            + "\\t\\t\\t\\t\\t\\t};\\n"
+            + capability_block[capability_insert:]
+        )
+        app_block = (
+            app_block[:capability_start]
+            + capability_block
+            + app_block[capability_end:]
+        )
+    else:
+        provisioning = re.search(
+            r"(?m)^([\\t ]*)ProvisioningStyle = Automatic;",
+            app_block,
+        )
+        if not provisioning:
+            raise SystemExit("Could not locate App target provisioning style")
+        indent = provisioning.group(1)
+        capability = (
+            f"\\n{indent}SystemCapabilities = {{\\n"
+            f"{indent}\\tcom.apple.Push = {{\\n"
+            f"{indent}\\t\\tenabled = 1;\\n"
+            f"{indent}\\t}};\\n"
+            f"{indent}}};"
+        )
+        insert_at = provisioning.end()
+        app_block = app_block[:insert_at] + capability + app_block[insert_at:]
+
+    text = (
+        text[:app_block_start]
+        + app_block
+        + text[app_block_end:]
+    )
+
 path.write_text(text, encoding="utf-8")
-print("Configured iOS 15 minimum and development/production APNs entitlements.")
+print("Configured iOS 15 minimum, APNs entitlements and the Xcode Push Notifications capability.")
 PY
 
 if [[ -f "$PODFILE" ]]; then

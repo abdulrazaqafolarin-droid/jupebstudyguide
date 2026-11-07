@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Capacitor } from "@capacitor/core";
-import { isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
+import { downloadApk, installDownloadedApk, isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
 
 describe("isAndroidApp", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -13,6 +13,34 @@ describe("isAndroidApp", () => {
     expect(isAndroidApp()).toBe(false);
     vi.spyOn(Capacitor, "getPlatform").mockReturnValue("web");
     expect(isAndroidApp()).toBe(false);
+  });
+});
+
+describe("Android-only updater operations", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("blocks APK download and installation on iOS before touching the native plugin", async () => {
+    vi.spyOn(Capacitor, "getPlatform").mockReturnValue("ios");
+
+    await expect(
+      downloadApk(RELEASE_APK_URL, 1, "a".repeat(64), vi.fn()),
+    ).rejects.toThrow("APK downloads are only available in the Android app");
+
+    await expect(
+      installDownloadedApk("/tmp/not-a-real-apk"),
+    ).rejects.toThrow("APK installation is only available in the Android app");
+  });
+
+  it("blocks APK download and installation in the browser too", async () => {
+    vi.spyOn(Capacitor, "getPlatform").mockReturnValue("web");
+
+    await expect(
+      downloadApk(RELEASE_APK_URL, 1, "a".repeat(64), vi.fn()),
+    ).rejects.toThrow("APK downloads are only available in the Android app");
+
+    await expect(
+      installDownloadedApk("/tmp/not-a-real-apk"),
+    ).rejects.toThrow("APK installation is only available in the Android app");
   });
 });
 

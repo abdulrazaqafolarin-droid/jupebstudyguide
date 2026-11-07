@@ -156,4 +156,74 @@ describe("NativeAuthDeepLinkBridge", () => {
       expect.objectContaining({ title: "Sign-in cancelled" }),
     );
   });
+
+
+  it("verifies a signup email token and returns to the app", async () => {
+    mocks.getLaunchUrl.mockResolvedValue({
+      url: "com.jupeb.master://auth?token_hash=signup-hash&type=signup",
+    });
+
+    render(<NativeAuthDeepLinkBridge />);
+
+    await waitFor(() => {
+      expect(mocks.verifyOtp).toHaveBeenCalledWith({
+        token_hash: "signup-hash",
+        type: "signup",
+      });
+      expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+    });
+    expect(mocks.toast).not.toHaveBeenCalled();
+  });
+
+  it("routes a verified password-recovery token to the new-password screen", async () => {
+    mocks.getLaunchUrl.mockResolvedValue({
+      url: "com.jupeb.master://auth?token_hash=recovery-hash&type=recovery",
+    });
+
+    render(<NativeAuthDeepLinkBridge />);
+
+    await waitFor(() => {
+      expect(mocks.verifyOtp).toHaveBeenCalledWith({
+        token_hash: "recovery-hash",
+        type: "recovery",
+      });
+      expect(mocks.navigate).toHaveBeenCalledWith("/auth?flow=recovery", { replace: true });
+    });
+  });
+
+  it("restores a legacy token-pair callback without exchanging a PKCE code", async () => {
+    mocks.getLaunchUrl.mockResolvedValue({
+      url: "com.jupeb.master://auth#access_token=access-token&refresh_token=refresh-token",
+    });
+
+    render(<NativeAuthDeepLinkBridge />);
+
+    await waitFor(() => {
+      expect(mocks.setSession).toHaveBeenCalledWith({
+        access_token: "access-token",
+        refresh_token: "refresh-token",
+      });
+      expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+    });
+    expect(mocks.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(mocks.verifyOtp).not.toHaveBeenCalled();
+  });
+
+  it("does not exchange the same URL twice when cold-start and warm events overlap", async () => {
+    const callbackUrl = "com.jupeb.master://auth?code=one-time-code";
+    mocks.getLaunchUrl.mockResolvedValue({ url: callbackUrl });
+
+    render(<NativeAuthDeepLinkBridge />);
+
+    await waitFor(() => {
+      expect(mocks.exchangeCodeForSession).toHaveBeenCalledTimes(1);
+      expect(mocks.appUrlOpenCallback).toBeTypeOf("function");
+    });
+
+    await act(async () => {
+      mocks.appUrlOpenCallback?.({ url: callbackUrl });
+    });
+
+    expect(mocks.exchangeCodeForSession).toHaveBeenCalledTimes(1);
+  });
 });

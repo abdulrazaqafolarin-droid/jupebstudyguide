@@ -101,14 +101,7 @@ const Index = () => {
     hasStudiedToday 
   } = useStreak();
 
-  const {
-    answerQuestion: awardAnswer,
-    correctAnswer: awardCorrect,
-    streakDay: awardStreakDay,
-    syllabusDay: awardSyllabusDay,
-    achievement: awardAchievement,
-    quizComplete: awardQuizComplete,
-  } = useScoreAwarder();
+  const { recordQuestionAttempt } = useScoreAwarder();
 
   useEffect(() => {
     initDataLayer("idle");
@@ -317,20 +310,22 @@ const Index = () => {
 
   const handleMissionAttempt = useCallback((attempt: DailyMissionRecord["attempts"][number]) => {
     let streak = consecutiveCorrect;
+    const rewardRequests: Promise<boolean>[] = [];
     attempt.answers.forEach(({ questionId, selectedAnswer, isCorrect }) => {
       if (!selectedAnswer.trim()) {
         streak = 0;
         return;
       }
       updateProgress(questionId, isCorrect ? 4 : 1);
-      awardAnswer(questionId);
+      rewardRequests.push(recordQuestionAttempt(questionId, selectedAnswer));
       if (isCorrect) {
         streak++;
-        awardCorrect(questionId);
       } else {
         streak = 0;
       }
     });
+    // Reward correctness is recalculated from the database answer key.
+    void Promise.all(rewardRequests);
     setConsecutiveCorrect(streak);
     const answeredCount = attempt.answers.filter((answer) => answer.selectedAnswer.trim()).length;
     if (answeredCount > 0) {
@@ -338,26 +333,19 @@ const Index = () => {
       const hour = new Date().getHours();
       setSessionHours((previous) => previous.includes(hour) ? previous : [...previous, hour].slice(-20));
     }
-  }, [consecutiveCorrect, updateProgress, awardAnswer, awardCorrect, setConsecutiveCorrect, recordStudySession, setSessionHours]);
+  }, [consecutiveCorrect, updateProgress, recordQuestionAttempt, setConsecutiveCorrect, recordStudySession, setSessionHours]);
 
   const handleMissionComplete = useCallback((mission: DailyMissionRecord) => {
     const finalAttempt = mission.attempts[mission.attempts.length - 1];
     if (!finalAttempt || finalAttempt.accuracy < 70) return;
     completeSessionDay(mission.sessionId, mission.syllabusDay, finalAttempt.accuracy);
-    awardQuizComplete(mission.id);
-    awardSyllabusDay(mission.syllabusDay);
     fireConfetti({ particleCount: 40, spread: 70, origin: { y: 0.6 }, colors: ["#f59e0b", "#fb923c", "#ef4444", "#f97316"] });
     toast.success(`Daily mission complete — ${finalAttempt.accuracy}% accuracy!`);
     // Finished for today — drop tonight's evening check-in reminder.
     void suppressEveningReminder();
-  }, [completeSessionDay, awardSyllabusDay, awardQuizComplete]);
+  }, [completeSessionDay]);
 
   const documentsUploaded = documentUploadCount;
-
-  // Sync newly unlocked achievements to Supabase and award points
-  const handleNewAchievement = useCallback((achievement: Achievement) => {
-    awardAchievement(achievement.id);
-  }, [awardAchievement]);
 
   const {
     unlockedAchievements,
@@ -381,7 +369,7 @@ const Index = () => {
     studiedBefore6am,
     consecutiveCorrect,
     onboardingCompleted: !!profile?.onboarding_completed_at,
-  }, handleNewAchievement, profile?.achievements ?? []);
+  }, undefined, profile?.achievements ?? []);
 
   // Sync unlocked achievements to profiles table
   const prevUnlockedRef = useRef(0);
@@ -454,10 +442,6 @@ const Index = () => {
   // Award streak_day when streak increases
   useEffect(() => {
     if (currentStreak > prevStreakRef.current && currentStreak > 0) {
-      const d = new Date();
-      const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      awardStreakDay(todayStr);
-
       // Celebration at streak milestones
       const milestones = [3, 7, 14, 30, 50, 100];
       if (milestones.includes(currentStreak)) {
@@ -469,12 +453,7 @@ const Index = () => {
       }
     }
     prevStreakRef.current = currentStreak;
-  }, [currentStreak, awardStreakDay]);
-
-  // Award achievement points for newly unlocked achievements
-  useEffect(() => {
-    newlyUnlocked.forEach(a => awardAchievement(a.id));
-  }, [newlyUnlocked, awardAchievement]);
+  }, [currentStreak]);
 
   const getRandomFromAll = (count: number, subject?: Subject): Question[] => {
     const source = subject ? getAllQuestionsBySubject(subject) : allQuestions;
@@ -518,18 +497,20 @@ const Index = () => {
   };
 
   const handleQuizComplete = (result: QuizResult) => {
-    // Award points for quiz completion
-    const sessionId = `session_${Date.now()}`;
-    awardQuizComplete(sessionId);
+    // Submit each entered answer. The database checks the official answer key
+    // and awards fixed points once per student/question; local correctness is
+    // used only for this student's study-progress and streak UI.
+    const rewardRequests = result.answeredQuestions
+      .filter((answer) => answer.answer.trim().length > 0)
+      .map((answer) => recordQuestionAttempt(answer.questionId, answer.answer));
+    void Promise.all(rewardRequests);
 
-    // Track consecutive correct streak (for Perfect Ten achievement)
+    // Track consecutive correct streak (for the local Perfect Ten achievement)
     let streak = consecutiveCorrect;
     result.answeredQuestions.forEach(({ questionId, isCorrect }) => {
       updateProgress(questionId, isCorrect ? 4 : 1);
-      awardAnswer(questionId);
       if (isCorrect) {
         streak++;
-        awardCorrect(questionId);
       } else {
         streak = 0;
       }
@@ -712,7 +693,6 @@ const Index = () => {
             return;
           }
           completeSessionDay(sessionId, day, mastery);
-          awardSyllabusDay(day);
         }}
         canAdvanceToDay={canAdvanceSessionDay}
         onRenameSession={renameSession}

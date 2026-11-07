@@ -75,6 +75,51 @@ if [[ "$ICON_WIDTH" != "1024" || "$ICON_HEIGHT" != "1024" ]]; then
 fi
 echo "Installed the 1024x1024 Rutex logo as the native iOS home-screen icon."
 
+# Replace the generic Capacitor launch artwork with the same Rutex source.
+SPLASH_SET="ios/App/App/Assets.xcassets/Splash.imageset"
+if [[ ! -d "$SPLASH_SET" ]]; then
+  echo "::error::The generated iOS Splash imageset is missing."
+  exit 1
+fi
+python3 - "$SPLASH_SET/Contents.json" "$SPLASH_SET" "$ICON_SOURCE" <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+contents_path = Path(sys.argv[1])
+asset_dir = Path(sys.argv[2])
+source = Path(sys.argv[3])
+with contents_path.open(encoding="utf-8") as handle:
+    catalog = json.load(handle)
+images = [
+    image for image in catalog.get("images", [])
+    if image.get("idiom") == "universal" and image.get("filename")
+]
+if len(images) < 1:
+    raise SystemExit("The iOS Splash imageset has no universal image entries")
+
+for image in images:
+    target = asset_dir / image["filename"]
+    subprocess.run(
+        ["sips", "-s", "format", "png", str(source), "--out", str(target)],
+        check=True,
+        stdout=subprocess.DEVNULL,
+    )
+    subprocess.run(
+        ["sips", "-z", "2732", "2732", str(target)],
+        check=True,
+        stdout=subprocess.DEVNULL,
+    )
+    dimensions = subprocess.check_output(
+        ["sips", "-g", "pixelWidth", "-g", "pixelHeight", str(target)],
+        text=True,
+    )
+    if "pixelWidth: 2732" not in dimensions or "pixelHeight: 2732" not in dimensions:
+        raise SystemExit(f"Unexpected splash image dimensions: {target}")
+print(f"Installed Rutex splash artwork in {len(images)} iOS image slots.")
+PY
+
 cat > "$ENTITLEMENTS" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

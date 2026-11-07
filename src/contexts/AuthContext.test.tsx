@@ -35,7 +35,7 @@ vi.mock("@capacitor/core", () => ({
 
 import { AuthProvider, useAuth } from "./AuthContext";
 
-describe("Google OAuth platform handling", () => {
+describe("OAuth platform handling", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.getPlatform.mockReturnValue("ios");
@@ -78,7 +78,11 @@ describe("Google OAuth platform handling", () => {
     });
   });
 
-  it("starts Apple OAuth using the native iOS callback and opens the system browser", async () => {
+  it("starts Apple OAuth using the native iOS callback and opens the Apple authorization URL", async () => {
+    mocks.supabase.auth.signInWithOAuth.mockResolvedValue({
+      data: { url: "https://project.supabase.co/auth/v1/authorize?provider=apple" },
+      error: null,
+    });
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
     let outcome: { error: Error | null } | undefined;
     await act(async () => {
@@ -93,7 +97,7 @@ describe("Google OAuth platform handling", () => {
       },
     });
     expect(mocks.browserOpen).toHaveBeenCalledWith({
-      url: "https://project.supabase.co/auth/v1/authorize?provider=google",
+      url: "https://project.supabase.co/auth/v1/authorize?provider=apple",
     });
   });
 

@@ -44,7 +44,8 @@ interface AppUpdaterPlugin {
 
 const AppUpdater = registerPlugin<AppUpdaterPlugin>("AppUpdater");
 
-export const isNativeApp = () => Capacitor.isNativePlatform();
+/** The APK updater is an Android-only capability; never expose it in the iOS shell. */
+export const isNativeApp = () => Capacitor.getPlatform() === "android";
 
 /** Plain numeric comparison: any higher published code is an update. */
 export function isNewer(installedCode: number, latestCode: number): boolean {

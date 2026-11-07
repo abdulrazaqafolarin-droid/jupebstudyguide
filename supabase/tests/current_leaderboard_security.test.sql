@@ -2,7 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 SET LOCAL search_path = extensions, public;
 
-SELECT plan(5);
+SELECT plan(8);
 
 SELECT ok(
   COALESCE(
@@ -24,6 +24,19 @@ SELECT ok(
 SELECT ok(
   has_table_privilege('authenticated', 'public.current_leaderboard', 'SELECT'),
   'authenticated users retain SELECT privilege on current_leaderboard'
+);
+
+SELECT ok(
+  NOT has_table_privilege('authenticated', 'public.current_leaderboard', 'INSERT'),
+  'authenticated users cannot insert through the leaderboard view'
+);
+SELECT ok(
+  NOT has_table_privilege('authenticated', 'public.current_leaderboard', 'UPDATE'),
+  'authenticated users cannot update through the leaderboard view'
+);
+SELECT ok(
+  NOT has_table_privilege('authenticated', 'public.current_leaderboard', 'DELETE'),
+  'authenticated users cannot delete through the leaderboard view'
 );
 
 SET LOCAL ROLE anon;

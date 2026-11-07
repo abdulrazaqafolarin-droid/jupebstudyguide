@@ -47,6 +47,9 @@ CREATE TRIGGER prevent_duplicate_score_event
   FOR EACH ROW
   EXECUTE FUNCTION public.prevent_duplicate_score_event();
 
+-- Trigger functions are not RPC endpoints; remove unnecessary direct execute grants.
+REVOKE EXECUTE ON FUNCTION public.prevent_duplicate_score_event() FROM PUBLIC, anon, authenticated;
+
 CREATE OR REPLACE FUNCTION public.award_score(
   p_user_id UUID,
   p_amount INTEGER,
@@ -189,6 +192,17 @@ BEGIN
     PERFORM pg_advisory_xact_lock(
       hashtextextended('quiz_complete:' || p_user_id::TEXT, 0)
     );
+
+    -- A concurrent retry may have waited behind the user-wide lock. Recheck
+    -- idempotency after obtaining it, before applying the daily limit.
+    IF EXISTS (
+      SELECT 1
+      FROM public.score_events
+      WHERE user_id = p_user_id
+        AND reference_id = p_reference_id
+    ) THEN
+      RETURN jsonb_build_object('success', true, 'duplicate', true);
+    END IF;
 
     SELECT COUNT(*)::INTEGER INTO v_quiz_awards_last_24h
     FROM public.score_events

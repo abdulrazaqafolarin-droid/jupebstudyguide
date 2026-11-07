@@ -190,8 +190,18 @@ grant execute on function public.get_admin_dashboard_stats(text) to authenticate
 revoke execute on function public.get_ai_usage_summary(text) from public, anon;
 grant execute on function public.get_ai_usage_summary(text) to authenticated, service_role;
 
-revoke execute on function public.admin_delete_question(text) from public, anon;
-grant execute on function public.admin_delete_question(text) to authenticated, service_role;
+-- Some installations received admin_delete_question through an out-of-band
+-- migration that is not present in this repository's clean-install history.
+-- Preserve its grants when present, but do not make fresh local setup fail
+-- when the optional RPC has not been created yet.
+do $function$
+begin
+  if to_regprocedure('public.admin_delete_question(text)') is not null then
+    execute 'revoke execute on function public.admin_delete_question(text) from public, anon';
+    execute 'grant execute on function public.admin_delete_question(text) to authenticated, service_role';
+  end if;
+end;
+$function$;
 
 -- ── 3. ai_api_keys_config: admin-only ─────────────────────────────────────
 -- The old authenticated SELECT policy exposed the stored admin email to

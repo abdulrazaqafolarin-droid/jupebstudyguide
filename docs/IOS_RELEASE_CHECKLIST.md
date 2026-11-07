@@ -22,6 +22,8 @@ The first callback returns iOS email-confirmation links to the app. The second o
 
 Remote iPhone notifications require an Apple Push Notifications authentication key. Do not commit the `.p8` file or paste its private key into source control.
 
+Before signing a device build, enable the **Push Notifications** capability for the explicit App ID `com.jupeb.master` in the Apple Developer account. The Xcode target includes the matching capability and APNs entitlement, but it cannot enable the capability or create a provisioning profile in Apple's account for you.
+
 Create an APNs key in the Apple Developer account, then set these Supabase Edge Function secrets:
 
 | Secret | Value |

@@ -450,14 +450,15 @@ const createActionToken = async (recipientId: string, conversationId: string, me
     // them, Android and web delivery continue normally and iOS users still
     // receive in-app Realtime + locally scheduled reminders while online.
     if (iosRows.length > 0) {
-      const apnsConfig = loadApnsConfig();
-      if (!apnsConfig) {
-        iosSkipped = iosRows.length;
-        console.warn("[push-fcm] APNs secrets are not configured; skipping iOS remote pushes");
-      } else {
-        const providerToken = await getApnsProviderToken(apnsConfig);
-        await Promise.all(
-          iosRows.map(async (row) => {
+      try {
+        const apnsConfig = loadApnsConfig();
+        if (!apnsConfig) {
+          iosSkipped = iosRows.length;
+          console.warn("[push-fcm] APNs secrets are not configured; skipping iOS remote pushes");
+        } else {
+          const providerToken = await getApnsProviderToken(apnsConfig);
+          await Promise.all(
+            iosRows.map(async (row) => {
             try {
               const result = await sendApnsAlert(
                 String(row.token),
@@ -475,7 +476,9 @@ const createActionToken = async (recipientId: string, conversationId: string, me
                 iosSent++;
                 return;
               }
-              if (result.status === 410 || result.reason === "Unregistered" || result.reason === "BadDeviceToken") {
+              // Only APNs Unregistered is a definitive stale token. BadDeviceToken
+              // can also mean the configured sandbox/production endpoint is wrong.
+              if (result.status === 410 && result.reason === "Unregistered") {
                 deadTokens.push(String(row.token));
               }
               failures.push({
@@ -492,8 +495,14 @@ const createActionToken = async (recipientId: string, conversationId: string, me
               });
               console.warn("[push-fcm] iOS APNs request failed:", error);
             }
-          }),
-        );
+            }),
+          );
+        }
+      } catch (error) {
+        // APNs is an independent delivery wire. A missing or invalid Apple key
+        // must never prevent Android FCM or browser Web Push for this message.
+        iosSkipped = iosRows.length - iosSent;
+        console.error("[push-fcm] APNs delivery is unavailable; other push transports will continue:", error);
       }
     }
 

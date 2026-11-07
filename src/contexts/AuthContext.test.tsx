@@ -79,6 +79,10 @@ describe("Google OAuth platform handling", () => {
   });
 
   it("starts Apple OAuth using the native iOS callback and opens the system browser", async () => {
+    mocks.supabase.auth.signInWithOAuth.mockResolvedValueOnce({
+      data: { url: "https://project.supabase.co/auth/v1/authorize?provider=apple" },
+      error: null,
+    });
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
     let outcome: { error: Error | null } | undefined;
     await act(async () => {
@@ -93,7 +97,7 @@ describe("Google OAuth platform handling", () => {
       },
     });
     expect(mocks.browserOpen).toHaveBeenCalledWith({
-      url: "https://project.supabase.co/auth/v1/authorize?provider=google",
+      url: "https://project.supabase.co/auth/v1/authorize?provider=apple",
     });
   });
 

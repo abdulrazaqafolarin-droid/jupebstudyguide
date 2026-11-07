@@ -93,7 +93,7 @@ jobs:
             echo "signing-mode=stable" >> "$GITHUB_OUTPUT"
             echo "Built release APK with the configured persistent signing key."
           else
-            export APK_PREVIEW_PACKAGE=true
+          PACKAGE="$( "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK_PATH" | awk -F"'" '/^package:/{print $2; exit}')" 
             mkdir -p android/app/src/debug/res/values
             cat > android/app/src/debug/res/values/strings.xml <<'XML'
           <resources>
@@ -120,7 +120,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          PACKAGE="$("$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK_PATH" | sed -n "s/^package: name='\\([^']*\\)'.*/\\1/p" | head -n 1)"
+          PACKAGE="$( "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK_PATH" | awk -F"'" '/^package:/{print $2; exit}')" 
           if [ "$PACKAGE" != "com.jupeb.master.preview" ]; then
             echo "::error::Expected isolated package com.jupeb.master.preview, got '$PACKAGE'"
             exit 1
@@ -148,8 +148,8 @@ jobs:
 
           CURRENT_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$APK" 2>&1 || true)"
           PREVIOUS_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$PREVIOUS_APK" 2>&1 || true)"
-          CURRENT_CERT="$(printf '%s\\n' "$CURRENT_SIGNER_REPORT" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1 | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
-          PREVIOUS_CERT="$(printf '%s\\n' "$PREVIOUS_SIGNER_REPORT" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -n 1 | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          CURRENT_CERT="$(echo "$CURRENT_SIGNER_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          PREVIOUS_CERT="$(echo "$PREVIOUS_SIGNER_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
 
           if [ -z "$CURRENT_CERT" ] || [ -z "$PREVIOUS_CERT" ]; then
             echo "compatible=false" >> "$GITHUB_OUTPUT"
@@ -197,9 +197,7 @@ jobs:
             false|"") REINSTALL_JSON=false ;;
             *) echo "::error::Invalid requires-reinstall release flag"; exit 1 ;;
           esac
-          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","requiresReinstall":%s}' \\
-            "${{ github.run_number }}" "1.1.${{ github.run_number }}" "${{ github.sha }}" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$REINSTALL_JSON" \\
-            > version.json
+          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","requiresReinstall":%s}' "$GITHUB_RUN_NUMBER" "1.1.$GITHUB_RUN_NUMBER" "$GITHUB_SHA" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$REINSTALL_JSON" > version.json
           python3 - "$APK" version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
           import hashlib
           import json

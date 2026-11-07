@@ -1,18 +1,15 @@
 -- Secure study-question rewards and preserve existing leaderboard history.
 --
--- This migration was not present in the production Supabase migration history
--- during the 2026-11-07 security review. It replaces the earlier draft, which
--- deleted duplicate score rows and trusted a client-supplied reward reference.
--- Existing score_events are preserved; prior question rewards are backfilled
--- into a private claim ledger so they cannot be earned a second time.
+-- Production history contains duplicate score references and this migration
+-- intentionally does not delete or rewrite historical score_events rows.
+-- Existing question rewards are backfilled into a private claim ledger.
 
 -- Clients must not insert score events directly.
 DROP POLICY IF EXISTS "Users insert own score events" ON public.score_events;
 REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM PUBLIC, anon, authenticated;
 ALTER TABLE public.score_events ENABLE ROW LEVEL SECURITY;
 
--- This table is an internal idempotency ledger. It is deliberately not exposed
--- through the Supabase Data API and has no client-facing policies or grants.
+-- Private idempotency ledger. It is not exposed through the Supabase Data API.
 CREATE TABLE IF NOT EXISTS public.question_reward_claims (
   user_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
   question_id TEXT NOT NULL,
@@ -26,11 +23,10 @@ REVOKE ALL PRIVILEGES ON TABLE public.question_reward_claims
   FROM PUBLIC, anon, authenticated, service_role;
 
 COMMENT ON TABLE public.question_reward_claims IS
-  'Private ledger preventing repeated attempt and correct-answer rewards per user and official question.';
+  'Private ledger preventing repeated attempt and correctness rewards per student and official question.';
 
--- Backfill claims from existing references. Do not delete or rewrite historical
--- score_events: production contains duplicate reference groups, and those
--- historical points must be preserved while preventing any further re-awards.
+-- Backfill from existing official-question reward references. Keep all
+-- historical score_events rows, including existing duplicate reference groups.
 INSERT INTO public.question_reward_claims (user_id, question_id, reward_type, created_at)
 SELECT DISTINCT ON (user_id, question_id, reward_type)
   user_id,
@@ -58,8 +54,7 @@ WHERE question_id <> ''
 ORDER BY user_id, question_id, reward_type, created_at
 ON CONFLICT (user_id, question_id, reward_type) DO NOTHING;
 
--- Keep the legacy generic RPC for trusted server-side compatibility only.
--- Normal signed-in clients must use record_question_attempt below.
+-- Retain the legacy generic function for trusted server-side use only.
 REVOKE ALL PRIVILEGES ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT)
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT)
@@ -79,13 +74,11 @@ DECLARE
   v_question_id TEXT := btrim(COALESCE(p_question_id, ''));
   v_answer TEXT := btrim(COALESCE(p_answer, ''));
   v_correct_answer TEXT;
-  v_question_found BOOLEAN := false;
-  v_custom_question_id UUID;
   v_is_correct BOOLEAN := false;
   v_attempt_awarded BOOLEAN := false;
   v_correct_awarded BOOLEAN := false;
 BEGIN
-  -- An authenticated, non-anonymous account is required for leaderboard points.
+  -- A signed-in, non-anonymous student account is required for points.
   IF v_user_id IS NULL
      OR COALESCE(auth.jwt() ->> 'is_anonymous', 'false') = 'true' THEN
     RAISE EXCEPTION 'A signed-in student account is required'
@@ -107,29 +100,32 @@ BEGIN
       USING ERRCODE = '22023';
   END IF;
 
-  -- Read the authoritative answer from the official, visible question bank.
-  -- Never accept a client-provided correctness flag or point amount.
+  -- Only the centrally curated, visible JUPEB question bank can award points.
+  -- Student-created custom_questions remain usable for practice but are not
+  -- trusted evidence for leaderboard rewards.
   SELECT q.correct_answer
     INTO v_correct_answer
   FROM public.study_questions AS q
   WHERE q.id = v_question_id
     AND q.hidden = false;
 
-  v_question_found := FOUND;
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'eligible_for_points', false,
+      'attempt_awarded', false,
+      'correct_awarded', false,
+      'duplicate', false
+    );
+  END IF;
 
-  -- Uploaded questions are stored separately and must belong to the caller.
-  -- Only UUID-shaped identifiers are cast, so arbitrary input cannot raise
-  -- an invalid UUID exception or probe another student's custom questions.
-  IF NOT v_question_found
-     AND v_question_id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
   v_is_correct :=
     v_correct_answer IS NOT NULL
     AND btrim(v_correct_answer) <> ''
     AND upper(btrim(v_correct_answer)) <> 'TBD'
     AND upper(v_answer) = upper(btrim(v_correct_answer));
 
-  -- One attempt reward per student/question. A later correct submission can
-  -- still earn the separate correctness reward if the first attempt was wrong.
+  -- One attempt reward per student/question.
   INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
   VALUES (v_user_id, v_question_id, 'attempt')
   ON CONFLICT (user_id, question_id, reward_type) DO NOTHING
@@ -147,7 +143,8 @@ BEGIN
     );
   END IF;
 
-  -- One correctness reward per student/question, checked by this function.
+  -- One correctness reward per student/question. A later correct answer can
+  -- still earn this reward after a prior wrong attempt.
   IF v_is_correct THEN
     INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
     VALUES (v_user_id, v_question_id, 'correct')
@@ -169,6 +166,7 @@ BEGIN
 
   RETURN jsonb_build_object(
     'success', true,
+    'eligible_for_points', true,
     'attempt_awarded', v_attempt_awarded,
     'correct_awarded', v_correct_awarded,
     'is_correct', v_is_correct,
@@ -183,82 +181,4 @@ GRANT EXECUTE ON FUNCTION public.record_question_attempt(TEXT, TEXT)
   TO authenticated;
 
 COMMENT ON FUNCTION public.record_question_attempt(TEXT, TEXT) IS
-  'Awards the fixed 5-point attempt and 10-point correctness rewards after checking the official answer key and a private per-user claim ledger.';
- THEN
-    v_custom_question_id := v_question_id::UUID;
-    SELECT q.correct_answer
-      INTO v_correct_answer
-    FROM public.custom_questions AS q
-    WHERE q.id = v_custom_question_id
-      AND q.user_id = v_user_id;
-
-    v_question_found := FOUND;
-  END IF;
-
-  IF NOT v_question_found THEN
-    RAISE EXCEPTION 'Question is unavailable for scoring'
-      USING ERRCODE = '22023';
-  END IF;
-
-  v_is_correct :=
-    v_correct_answer IS NOT NULL
-    AND btrim(v_correct_answer) <> ''
-    AND upper(btrim(v_correct_answer)) <> 'TBD'
-    AND upper(v_answer) = upper(btrim(v_correct_answer));
-
-  -- One attempt reward per student/question. A later correct submission can
-  -- still earn the separate correctness reward if the first attempt was wrong.
-  INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
-  VALUES (v_user_id, v_question_id, 'attempt')
-  ON CONFLICT (user_id, question_id, reward_type) DO NOTHING
-  RETURNING true INTO v_attempt_awarded;
-
-  v_attempt_awarded := COALESCE(v_attempt_awarded, false);
-
-  IF v_attempt_awarded THEN
-    INSERT INTO public.score_events (user_id, amount, reason, reference_id)
-    VALUES (
-      v_user_id,
-      5,
-      'answered_question',
-      'answered_question:' || v_question_id || ':' || v_user_id::TEXT
-    );
-  END IF;
-
-  -- One correctness reward per student/question, checked by this function.
-  IF v_is_correct THEN
-    INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
-    VALUES (v_user_id, v_question_id, 'correct')
-    ON CONFLICT (user_id, question_id, reward_type) DO NOTHING
-    RETURNING true INTO v_correct_awarded;
-
-    v_correct_awarded := COALESCE(v_correct_awarded, false);
-
-    IF v_correct_awarded THEN
-      INSERT INTO public.score_events (user_id, amount, reason, reference_id)
-      VALUES (
-        v_user_id,
-        10,
-        'correct_answer',
-        'correct_answer:' || v_question_id || ':' || v_user_id::TEXT
-      );
-    END IF;
-  END IF;
-
-  RETURN jsonb_build_object(
-    'success', true,
-    'attempt_awarded', v_attempt_awarded,
-    'correct_awarded', v_correct_awarded,
-    'is_correct', v_is_correct,
-    'duplicate', NOT (v_attempt_awarded OR v_correct_awarded)
-  );
-END;
-$function$;
-
-REVOKE ALL PRIVILEGES ON FUNCTION public.record_question_attempt(TEXT, TEXT)
-  FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.record_question_attempt(TEXT, TEXT)
-  TO authenticated;
-
-COMMENT ON FUNCTION public.record_question_attempt(TEXT, TEXT) IS
-  'Awards the fixed 5-point attempt and 10-point correctness rewards after checking the official answer key and a private per-user claim ledger.';
+  'Awards fixed attempt and correctness rewards only for official visible questions, after checking the database answer key and private per-student claim ledger.';

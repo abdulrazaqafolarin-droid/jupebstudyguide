@@ -50,7 +50,13 @@ FROM (
     created_at
   FROM public.score_events
   WHERE reason IN ('answered_question', 'correct_answer')
-    AND reference_id LIKE reason || ':%:' || user_id::TEXT
+    -- Use literal prefix/suffix comparisons rather than LIKE: the underscore
+    -- in both reason names is a LIKE wildcard, not a literal underscore.
+    AND left(reference_id, char_length(reason) + 1) = reason || ':'
+    AND right(reference_id, char_length(user_id::TEXT) + 1) = ':' || user_id::TEXT
+    -- Legacy references use the canonical reason:questionId:userId shape.
+    AND char_length(reference_id) > char_length(reason) + char_length(user_id::TEXT) + 2
+    AND char_length(reference_id) - char_length(replace(reference_id, ':', '')) = 2
 ) AS existing_rewards
 WHERE question_id <> ''
 ORDER BY user_id, question_id, reward_type, created_at

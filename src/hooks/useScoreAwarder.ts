@@ -27,18 +27,23 @@ export function useScoreAwarder() {
 
       if (!user || !normalizedQuestionId || !normalizedAnswer) return false;
 
-      const { data, error } = await supabase.rpc("record_question_attempt", {
-        p_question_id: normalizedQuestionId,
-        p_answer: normalizedAnswer,
-      });
+      try {
+        const { data, error } = await supabase.rpc("record_question_attempt", {
+          p_question_id: normalizedQuestionId,
+          p_answer: normalizedAnswer,
+        });
 
-      if (error) {
-        console.error("Question reward could not be recorded:", error.message);
+        if (error) {
+          console.error("Question reward could not be recorded:", error.message);
+          return false;
+        }
+
+        const result = data as unknown as QuestionRewardResult | null;
+        return Boolean(result?.attempt_awarded || result?.correct_awarded);
+      } catch (error) {
+        console.error("Question reward request failed:", error);
         return false;
       }
-
-      const result = data as QuestionRewardResult | null;
-      return Boolean(result?.attempt_awarded || result?.correct_awarded);
     },
     [user],
   );

@@ -12,6 +12,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null; needsMfa?: boolean }>;
   verifyMfa: (code: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: () => Promise<{ error: Error | null }>;
+  signInWithApple: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   updatePassword: (password: string) => Promise<{ error: Error | null }>;
@@ -162,6 +163,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const signInWithApple = async () => {
+    const isNativeIos = Capacitor.getPlatform() === 'ios';
+    try {
+      const { data, error } = await withAuthRequestTimeout(
+        supabase.auth.signInWithOAuth({
+          provider: 'apple',
+          options: {
+            redirectTo: isNativeIos ? 'com.jupeb.master://auth' : window.location.origin,
+            skipBrowserRedirect: isNativeIos,
+          },
+        }),
+        'Starting Apple sign in',
+      );
+      if (error) return { error };
+      if (isNativeIos) {
+        if (!data.url) {
+          return { error: new Error('Apple sign-in did not return an authorization URL.') };
+        }
+        await Browser.open({ url: data.url });
+      }
+      return { error: null };
+    } catch (error) {
+      return { error: error as Error };
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     try {
       const { data: loginData, error: loginError } = await supabase.functions.invoke('secure-login', {
@@ -291,6 +318,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     verifyMfa,
     signInWithGoogle,
+    signInWithApple,
     signOut,
     resetPassword,
     updatePassword,

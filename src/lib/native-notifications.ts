@@ -1,8 +1,9 @@
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 
-/** True inside the Capacitor shell (the sideloaded Android APK). */
+/** Native notification APIs are available to both Capacitor mobile targets. */
 export const isNativePlatform = Capacitor.isNativePlatform();
+const isAndroidPlatform = Capacitor.getPlatform() === 'android';
 
 const ENABLED_KEY = 'native-notifications-enabled';
 
@@ -19,7 +20,10 @@ export const NOTIFICATION_CHANNELS = {
  */
 export function isNativeNotificationsEnabled(): boolean {
   try {
-    return localStorage.getItem(ENABLED_KEY) !== '0';
+    const preference = localStorage.getItem(ENABLED_KEY);
+    // iOS asks for notification permission only after an explicit user opt-in.
+    // Preserve the existing Android default while avoiding an unsolicited iOS prompt.
+    return preference === null ? isAndroidPlatform : preference === '1';
   } catch {
     return true;
   }
@@ -40,13 +44,14 @@ export function setNativeNotificationsEnabled(enabled: boolean): void {
 let channelsReady = false;
 
 /**
- * Create the Android 8+ notification channels. Importance HIGH is what
+ * Create Android 8+ notification channels. iOS has no channel concept, so
+ * the function deliberately becomes a no-op there. Importance HIGH is what
  * produces the WhatsApp look (heads-up popup + sound) — the plugin's default
  * channel importance is only IMPORTANCE_DEFAULT (shade-only, no popup), and
  * channel vibration defaults to off, so both are set explicitly here.
  */
 export async function ensureNotificationChannels(): Promise<void> {
-  if (!isNativePlatform || channelsReady) return;
+  if (!isAndroidPlatform || channelsReady) return;
   try {
     await LocalNotifications.createChannel({
       id: NOTIFICATION_CHANNELS.messages,
@@ -129,18 +134,16 @@ export async function postNativeNotification(input: NativeNotificationInput): Pr
   if (!isNativePlatform || !isNativeNotificationsEnabled()) return;
   try {
     await ensureNotificationChannels();
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          id: input.id,
-          title: input.title,
-          body: input.body,
-          channelId: input.channelId,
-          foreground: true, // Android: raise priority → heads-up popup
-          extra: input.data ?? {},
-        },
-      ],
-    });
+    const notification = {
+      id: input.id,
+      title: input.title,
+      body: input.body,
+      extra: input.data ?? {},
+      ...(isAndroidPlatform
+        ? { channelId: input.channelId, foreground: true }
+        : {}),
+    };
+    await LocalNotifications.schedule({ notifications: [notification] });
   } catch (e) {
     console.warn('Failed to post native notification:', e);
   }
@@ -150,17 +153,12 @@ const DAILY_REMINDER_ID = 9001;
 const STREAK_REMINDER_ID = 9002;
 
 /**
- * Schedule the repeating 09:00 / 18:00 study reminders. AlarmManager backs
- * these, so they fire even when the app is closed, and the plugin restores
- * them after a reboot.
+ * Schedule repeating 09:00 / 18:00 study reminders using Capacitor's
+ * cross-platform calendar schedule. Android uses inexact alarms; iOS uses
+ * UNUserNotificationCenter repeating calendar triggers.
  *
- * Implementation notes (verified against the plugin source):
- *  - `on: { hour, minute }` is the correct daily path on Android — the
- *    `at` + `repeats` path computes its repeat interval from the time until
- *    the first fire, which produces a wrong (shrinking) cadence.
- *  - `isExactNotification: false` because targetSdk 36 gets no default
- *    exact-alarm permission; an exact alarm would open the system
- *    "Alarms & reminders" settings screen on launch.
+ * `on: { hour, minute }` is supported on both iOS and Android. The
+ * Android-only channel, foreground and exact-alarm flags are omitted on iOS.
  */
 export async function scheduleDailyReminders(): Promise<void> {
   if (!isNativePlatform || !isNativeNotificationsEnabled()) return;
@@ -170,27 +168,26 @@ export async function scheduleDailyReminders(): Promise<void> {
     await LocalNotifications.cancel({
       notifications: [{ id: DAILY_REMINDER_ID }, { id: STREAK_REMINDER_ID }],
     });
+    const androidOptions = isAndroidPlatform
+      ? { channelId: NOTIFICATION_CHANNELS.reminders, isExactNotification: false, foreground: true }
+      : {};
     await LocalNotifications.schedule({
       notifications: [
         {
           id: DAILY_REMINDER_ID,
-          channelId: NOTIFICATION_CHANNELS.reminders,
+          ...androidOptions,
           title: '📚 Your Daily Mission is ready',
           body: 'One lesson and a short question set — about 10 minutes. Keep your streak alive.',
           extra: { type: 'home' },
           schedule: { on: { hour: 9, minute: 0 } },
-          isExactNotification: false,
-          foreground: true,
         },
         {
           id: STREAK_REMINDER_ID,
-          channelId: NOTIFICATION_CHANNELS.reminders,
+          ...androidOptions,
           title: '🔥 Daily Mission check-in',
           body: 'Not started yet? A few questions now keep your streak alive.',
           extra: { type: 'home' },
           schedule: { on: { hour: 18, minute: 0 } },
-          isExactNotification: false,
-          foreground: true,
         },
       ],
     });

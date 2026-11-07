@@ -40,3 +40,11 @@ nul
 android/app/*.jks
 android/app/*.keystore
 *.jks
+
+# Generated iOS dependencies and Xcode build products.
+ios/App/Pods/
+ios/App/build/
+ios/App/DerivedData/
+ios/App/*.xcuserstate
+ios/App.xcworkspace/xcuserdata/
+ios/App.xcodeproj/xcuserdata/

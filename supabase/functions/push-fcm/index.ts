@@ -1,7 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
+import { createApnsProviderToken, sendApnsAlert, type ApnsConfig } from "../_shared/apns.ts";
 
-// push-fcm — closed-app message push (FCM HTTP v1 + Web Push).
+// push-fcm — closed-app message push (FCM HTTP v1 + APNs + Web Push).
 // Invoked by the dispatch_push_notification trigger on messages INSERT via
 // pg_net. Unlike the old LocalNotifications path, FCM wakes an app that
 // Android has fully killed — this is the WhatsApp-style closed-app pop.
@@ -10,7 +11,8 @@ import webpush from "npm:web-push@3.6.7";
 //
 // The body carries ONLY the message id; everything else (recipients, mute
 // state, preview) is re-read with the service role, so a forged request can
-// at worst re-notify about a real, <5 minutes old message.
+// at worst re-notify about a real, <5 minutes old message. iOS device tokens
+// are sent directly to APNs; Android tokens continue to use FCM.
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
@@ -28,6 +30,11 @@ let dispatchWindowStartMs = 0;
 let dispatchesInWindow = 0;
 const DISPATCH_DEDUP_MS = 60_000;
 const MAX_DISPATCHES_PER_WINDOW = 120;
+const APNS_BUNDLE_ID = Deno.env.get("APNS_BUNDLE_ID") || "com.jupeb.master";
+const APNS_KEY_ID = Deno.env.get("APNS_KEY_ID") || "";
+const APNS_TEAM_ID = Deno.env.get("APNS_TEAM_ID") || "";
+const APNS_AUTH_KEY = Deno.env.get("APNS_AUTH_KEY") || "";
+const APNS_ENVIRONMENT = (Deno.env.get("APNS_ENVIRONMENT") || "production").toLowerCase();
 
 interface ServiceAccount {
   project_id: string;
@@ -45,6 +52,7 @@ interface MessageRow {
 }
 
 let cachedAccessToken: { token: string; expiresAtMs: number } | null = null;
+let cachedApnsToken: { token: string; expiresAtMs: number } | null = null;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -136,6 +144,34 @@ async function getAccessToken(sa: ServiceAccount): Promise<string> {
   return cachedAccessToken.token;
 }
 
+
+function loadApnsConfig(): ApnsConfig | null {
+  if (!APNS_KEY_ID || !APNS_TEAM_ID || !APNS_AUTH_KEY) return null;
+  if (!/^[A-Z0-9]{10}$/.test(APNS_KEY_ID) || !/^[A-Z0-9]{10}$/.test(APNS_TEAM_ID)) {
+    throw new Error("APNs key ID or team ID has an invalid format");
+  }
+  if (!/^[A-Za-z0-9.-]+$/.test(APNS_BUNDLE_ID)) {
+    throw new Error("APNs bundle ID has an invalid format");
+  }
+  return {
+    keyId: APNS_KEY_ID,
+    teamId: APNS_TEAM_ID,
+    bundleId: APNS_BUNDLE_ID,
+    privateKey: APNS_AUTH_KEY.replace(/\\n/g, "\n"),
+    environment: APNS_ENVIRONMENT === "sandbox" ? "sandbox" : "production",
+  };
+}
+
+/** Reuse an APNs provider token within its 50-minute cache window. */
+async function getApnsProviderToken(config: ApnsConfig): Promise<string> {
+  const nowMs = Date.now();
+  if (cachedApnsToken && cachedApnsToken.expiresAtMs > nowMs + 60_000) {
+    return cachedApnsToken.token;
+  }
+  const token = await createApnsProviderToken(config, nowMs);
+  cachedApnsToken = { token, expiresAtMs: nowMs + 50 * 60_000 };
+  return token;
+}
 
 function buildPreview(message: MessageRow): string {
   switch (message.message_type) {
@@ -229,7 +265,7 @@ const createActionToken = async (recipientId: string, conversationId: string, me
     // never got a closed-app push — the "notifications aren't consistent
     // across apps/accounts" bug.
     const [tokenRowsRes, webSubsRes] = await Promise.all([
-      admin.from("device_tokens").select("user_id, token, supports_notification_actions").in("user_id", targets),
+      admin.from("device_tokens").select("user_id, token, platform, supports_notification_actions").in("user_id", targets),
       admin
         .from("notification_subscriptions")
         .select("user_id, endpoint, p256dh, auth")
@@ -262,94 +298,157 @@ const createActionToken = async (recipientId: string, conversationId: string, me
     recentDispatches.set(messageId, nowMs);
     dispatchesInWindow++;
 
-    const serviceAccount = loadServiceAccount();
-    const accessToken = await getAccessToken(serviceAccount);
-    const endpoint =
-      `https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`;
-
+    const androidRows = tokenRows.filter((row) => row.platform !== "ios");
+    const iosRows = tokenRows.filter((row) => row.platform === "ios");
     const deadTokens: string[] = [];
-    const failures: { status: number; error: string }[] = [];
+    const failures: { platform: string; status: number; error: string }[] = [];
     let sent = 0;
+    let iosSent = 0;
+    let iosSkipped = 0;
     let webSent = 0;
 
-    // Create separate single-use action tokens for each upgraded device.
-    // Older app versions keep the legacy notification payload until they
-    // register again from a build that advertises action support.
-    const actionTokens = new Map<string, { reply: string | null; read: string | null }>();
-    const actionCapableRows = tokenRows.filter((row) => row.supports_notification_actions === true);
-    await Promise.all(actionCapableRows.map(async (row) => {
-      const [reply, read] = await Promise.all([
-        createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "reply"),
-        createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "read"),
-      ]);
-      actionTokens.set(String(row.token), { reply, read });
-    }));
+    // --- Wire 1a: FCM to Android devices -------------------------------
+    if (androidRows.length > 0) {
+      const serviceAccount = loadServiceAccount();
+      const accessToken = await getAccessToken(serviceAccount);
+      const endpoint =
+        `https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`;
 
-    await Promise.all(
-      tokenRows.map(async (row) => {
-        const actions = actionTokens.get(String(row.token));
-        const supportsActions = row.supports_notification_actions === true && Boolean(actions?.reply && actions?.read);
-        const notificationMessage = supportsActions
-          ? {
-              token: row.token,
-              // Data-only is required for our native service to add Android RemoteInput actions.
-              data: {
-                type: "chat",
+      // Inline reply/read is implemented only by the Android notification receiver.
+      const actionTokens = new Map<string, { reply: string | null; read: string | null }>();
+      const actionCapableRows = androidRows.filter((row) => row.supports_notification_actions === true);
+      await Promise.all(actionCapableRows.map(async (row) => {
+        const [reply, read] = await Promise.all([
+          createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "reply"),
+          createActionToken(String(row.user_id), String(message.conversation_id), String(message.id), "read"),
+        ]);
+        actionTokens.set(String(row.token), { reply, read });
+      }));
+
+      await Promise.all(
+        androidRows.map(async (row) => {
+          const actions = actionTokens.get(String(row.token));
+          const supportsActions = row.supports_notification_actions === true && Boolean(actions?.reply && actions?.read);
+          const notificationMessage = supportsActions
+            ? {
+                token: row.token,
+                data: {
+                  type: "chat",
+                  title,
+                  body,
+                  channel_id: PUSH_CHANNEL,
+                  conversation_id: String(message.conversation_id),
+                  message_id: String(message.id),
+                  reply_token: actions!.reply!,
+                  read_token: actions!.read!,
+                },
+                android: { priority: "HIGH", ttl: "86400s" },
+              }
+            : {
+                token: row.token,
+                notification: { title, body },
+                data: {
+                  type: "chat",
+                  conversation_id: String(message.conversation_id),
+                  message_id: String(message.id),
+                },
+                android: { priority: "HIGH", ttl: "86400s" },
+              };
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ message: notificationMessage }),
+          });
+          if (res.ok) {
+            sent++;
+            return;
+          }
+          const errText = await res.text();
+          const lower = errText.toLowerCase();
+          if (
+            res.status === 404 ||
+            lower.includes("unregistered") ||
+            lower.includes("notregistered") ||
+            lower.includes("registration token")
+          ) {
+            deadTokens.push(row.token);
+          }
+          failures.push({
+            platform: "android",
+            status: res.status,
+            error: errText.split(row.token).join("***").slice(0, 300),
+          });
+          console.warn(`[push-fcm] Android send failed (${res.status}): ${errText}`);
+        }),
+      );
+    }
+
+    // --- Wire 1b: APNs to iOS devices ---------------------------------
+    // APNs credentials are separate from Firebase credentials. Without
+    // them, Android and web delivery continue normally and iOS users still
+    // receive in-app Realtime + locally scheduled reminders while online.
+    if (iosRows.length > 0) {
+      try {
+        const apnsConfig = loadApnsConfig();
+        if (!apnsConfig) {
+          iosSkipped = iosRows.length;
+          console.warn("[push-fcm] APNs secrets are not configured; skipping iOS remote pushes");
+        } else {
+          const providerToken = await getApnsProviderToken(apnsConfig);
+          await Promise.all(
+            iosRows.map(async (row) => {
+            try {
+              const result = await sendApnsAlert(
+                String(row.token),
                 title,
                 body,
-                channel_id: PUSH_CHANNEL,
-                conversation_id: String(message.conversation_id),
-                message_id: String(message.id),
-                reply_token: actions!.reply!,
-                read_token: actions!.read!,
-              },
-              android: { priority: "HIGH", ttl: "86400s" },
+                {
+                  type: "chat",
+                  conversation_id: String(message.conversation_id),
+                  message_id: String(message.id),
+                },
+                apnsConfig,
+                providerToken,
+              );
+              if (result.ok) {
+                iosSent++;
+                return;
+              }
+              // Only APNs Unregistered is a definitive stale token. BadDeviceToken
+              // can also mean the configured sandbox/production endpoint is wrong.
+              if (result.status === 410 && result.reason === "Unregistered") {
+                deadTokens.push(String(row.token));
+              }
+              failures.push({
+                platform: "ios",
+                status: result.status,
+                error: (result.reason || "APNs delivery failed").slice(0, 200),
+              });
+              console.warn(`[push-fcm] iOS APNs send failed (${result.status}): ${result.reason || "unknown"}`);
+            } catch (error) {
+              failures.push({
+                platform: "ios",
+                status: 0,
+                error: "APNs request failed",
+              });
+              console.warn("[push-fcm] iOS APNs request failed:", error);
             }
-          : {
-              // Backward compatibility: older installed APKs do not contain
-              // our custom FirebaseMessagingService, so retain OS-rendered notifications.
-              token: row.token,
-              notification: { title, body },
-              data: {
-                type: "chat",
-                conversation_id: String(message.conversation_id),
-                message_id: String(message.id),
-              },
-              android: { priority: "HIGH", ttl: "86400s" },
-            };
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ message: notificationMessage }),
-        });
-        if (res.ok) {
-          sent++;
-          return;
+            }),
+          );
         }
-        const errText = await res.text();
-        const lower = errText.toLowerCase();
-        if (
-          res.status === 404 ||
-          lower.includes("unregistered") ||
-          lower.includes("notregistered") ||
-          lower.includes("registration token")
-        ) {
-          deadTokens.push(row.token);
-        }
-        // Sanitized excerpt for diagnostics — the token itself never leaks.
-        failures.push({
-          status: res.status,
-          error: errText.split(row.token).join("***").slice(0, 300),
-        });
-        console.warn(`[push-fcm] send failed (${res.status}): ${errText}`);
-      }),
-    );
+      } catch (error) {
+        // APNs is an independent delivery wire. A missing or invalid Apple key
+        // must never prevent Android FCM or browser Web Push for this message.
+        iosSkipped = iosRows.length - iosSent;
+        console.error("[push-fcm] APNs delivery is unavailable; other push transports will continue:", error);
+      }
+    }
 
     if (deadTokens.length > 0) {
-      await admin.from("device_tokens").delete().in("token", deadTokens);
+      await admin.from("device_tokens").delete().in("token", [...new Set(deadTokens)]);
     }
 
     // --- Wire 2: Web Push to browser/PWA subscriptions ---------------
@@ -410,6 +509,8 @@ const createActionToken = async (recipientId: string, conversationId: string, me
       message_id: messageId,
       targets: targets.length,
       sent,
+      ios_sent: iosSent,
+      ios_skipped: iosSkipped,
       web_sent: webSent,
       dead: deadTokens.length,
       failures: failures.slice(0, 5),

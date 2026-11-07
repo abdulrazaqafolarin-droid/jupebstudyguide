@@ -522,6 +522,13 @@
   }
 }
 
+/* iPhone home-indicator spacing for fixed navigation bars. The viewport
+ * already declares viewport-fit=cover; this class consumes the safe-area inset
+ * instead of letting the native home indicator cover the last navigation row. */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* ---------------------------------------------------------------------------
  * Mobile platform polish — the "feels installed, not bookmarked" layer.
  * Deliberately outside @layer: these shell-level rules must win over

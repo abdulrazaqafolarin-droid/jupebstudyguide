@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +17,7 @@ const authSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters" }).max(100),
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot' | 'forgot-sent' | 'mfa';
+type AuthMode = 'login' | 'signup' | 'forgot' | 'forgot-sent' | 'mfa' | 'recovery';
 
 const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -26,10 +27,19 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [mfaCode, setMfaCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [mfaVerifying, setMfaVerifying] = useState(false);
 
-  const { signIn, verifyMfa, signUp, resetPassword } = useAuth();
+  const { signIn, verifyMfa, signUp, resetPassword, updatePassword } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('flow') === 'recovery') {
+      setMode('recovery');
+    }
+  }, [location.search]);
   const { toast } = useToast();
 
   const validateForm = () => {
@@ -49,6 +59,51 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (mode === 'recovery') {
+      if (newPassword.length < 6 || newPassword.length > 100) {
+        toast({
+          title: "Password requirements",
+          description: "Choose a password between 6 and 100 characters.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        toast({
+          title: "Passwords do not match",
+          description: "Enter the same new password in both fields.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const { error } = await updatePassword(newPassword);
+        if (error) {
+          toast({
+            title: "Password update failed",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        }
+        toast({
+          title: "Password updated",
+          description: "Your password has been changed. Sign in with your new password.",
+        });
+        setNewPassword('');
+        setConfirmNewPassword('');
+        setEmail('');
+        setPassword('');
+        setMode('login');
+        navigate('/auth', { replace: true });
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (mode === 'forgot') {
       if (!email.trim()) { setErrors({ email: 'Email is required' }); return; }
       setErrors({});
@@ -153,6 +208,7 @@ const Auth = () => {
   const isForgot = mode === 'forgot';
   const isForgotSent = mode === 'forgot-sent';
   const isMfa = mode === 'mfa';
+  const isRecovery = mode === 'recovery';
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -163,7 +219,7 @@ const Auth = () => {
         <CardHeader className="text-center pb-6">
           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mx-auto mb-4">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">JUPEB Study Guide</span>
+            <span className="text-sm font-medium text-primary">Rutex Master(Jupeb)</span>
           </div>
           <AnimatePresence mode="wait">
             {isMfa ? (
@@ -183,10 +239,11 @@ const Auth = () => {
             ) : (
               <motion.div key="main" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                 <CardTitle className="text-2xl font-bold">
-                  {isLogin ? 'Welcome Back' : isSignup ? 'Create Account' : 'Reset Password'}
+                  {isRecovery ? 'Choose a new password' : isLogin ? 'Welcome Back' : isSignup ? 'Create Account' : 'Reset Password'}
                 </CardTitle>
                 <CardDescription>
-                  {isLogin ? 'Sign in to continue your learning journey'
+                  {isRecovery ? 'Set a new password for your Rutex Master account'
+                    : isLogin ? 'Sign in to continue your learning journey'
                     : isSignup ? 'Create your account and get a 1-day free trial to start your JUPEB preparation'
                     : 'Enter your email and we\'ll send you a reset link'}
                 </CardDescription>
@@ -279,6 +336,7 @@ const Auth = () => {
                 onSubmit={handleSubmit}
                 className="space-y-4"
               >
+                {!isRecovery && (
                 <div className="space-y-2">
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -290,7 +348,7 @@ const Auth = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
                       disabled={loading}
-                      autoFocus
+                      autoFocus={Capacitor.getPlatform() !== 'ios'}
                     />
                   </div>
                   {errors.email && (
@@ -299,8 +357,42 @@ const Auth = () => {
                     </motion.p>
                   )}
                 </div>
+                )}
 
-                {!isForgot && (
+                {isRecovery && (
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <label htmlFor="new-password" className="text-sm font-medium">New password</label>
+                      <Input
+                        id="new-password"
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="Enter your new password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        disabled={loading}
+                        minLength={6}
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="confirm-new-password" className="text-sm font-medium">Confirm new password</label>
+                      <Input
+                        id="confirm-new-password"
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="Enter the new password again"
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        disabled={loading}
+                        minLength={6}
+                        maxLength={100}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {!isForgot && !isRecovery && (
                   <div className="space-y-2">
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -349,7 +441,7 @@ const Auth = () => {
                       {isForgot ? 'Sending...' : isLogin ? 'Signing in...' : 'Creating account...'}
                     </>
                   ) : (
-                    isForgot ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Create Account'
+                    isRecovery ? 'Update Password' : isForgot ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Create Account'
                   )}
                 </Button>
 
@@ -367,7 +459,7 @@ const Auth = () => {
             )}
           </AnimatePresence>
 
-          {!isForgot && !isForgotSent && !isMfa && (
+          {!isForgot && !isForgotSent && !isMfa && !isRecovery && (
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
                 {isLogin ? "Don't have an account?" : 'Already have an account?'}

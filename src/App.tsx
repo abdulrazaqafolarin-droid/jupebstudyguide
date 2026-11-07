@@ -10,6 +10,7 @@ import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
 import { PushNotificationsProvider } from "@/contexts/PushNotificationsContext";
 import { NativeNotificationBridge } from "@/components/NativeNotificationBridge";
+import { NativeAuthDeepLinkBridge } from "@/components/NativeAuthDeepLinkBridge";
 import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
@@ -369,6 +370,7 @@ const App = () => {
               <PresenceProvider>
                 <NotificationsProvider>
                   <NativeNotificationBridge />
+                  <NativeAuthDeepLinkBridge />
                   <AnimatedRoutes />
                   <ErrorBoundary>
                   <Suspense fallback={null}>

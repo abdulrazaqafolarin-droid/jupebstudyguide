@@ -27,7 +27,7 @@ function AppMountedSignal() {
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
-  document.body.textContent = "JUPEB Master could not find its application root. Please reload the app.";
+  document.body.textContent = "Rutex Master(Jupeb) could not find its application root. Please reload the app.";
 } else {
   createRoot(rootElement).render(
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>

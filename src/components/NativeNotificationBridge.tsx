@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useNavigate } from 'react-router-dom';
 import { PushNotifications } from '@capacitor/push-notifications';
 import type { PluginListenerHandle } from '@capacitor/core';
@@ -21,7 +22,7 @@ interface IncomingMessage {
 }
 
 /**
- * App-scoped bridge between Supabase Realtime and Android notifications.
+ * App-scoped bridge between Supabase Realtime and native notifications.
  * Mounted once inside the router so it hears new messages no matter which
  * screen is open — useChat's own listener only exists while the Chat page
  * is mounted, so messages arriving on any other screen used to be
@@ -39,6 +40,9 @@ export function NativeNotificationBridge() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const tokenRef = useRef<string | null>(null);
+  const nativePlatform = Capacitor.getPlatform();
+  const pushPlatform = nativePlatform === 'ios' ? 'ios' : 'android';
+  const supportsNotificationActions = nativePlatform === 'android';
 
   // Channels + repeating 09:00/18:00 reminders + local tap routing.
   useEffect(() => {
@@ -76,9 +80,9 @@ export function NativeNotificationBridge() {
     };
   }, [user, navigate]);
 
-  // FCM: register this device's token so the server can push while the app
-  // is backgrounded or fully closed, and route notification taps back into
-  // the right conversation.
+  // Register the platform-native push token only after the student has
+  // enabled notifications. Android returns an FCM token; iOS returns an
+  // APNs device token. The backend routes each token through its own service.
   useEffect(() => {
     if (!isNativePlatform || !user) return;
     let disposed = false;
@@ -96,7 +100,14 @@ export function NativeNotificationBridge() {
       // logged in on it now (RLS "claim" policy allows exactly that).
       const { error } = await supabase
         .from('device_tokens')
-        .upsert({ user_id: user.id, token, platform: 'android', supports_notification_actions: true }, { onConflict: 'token' });
+        .upsert({
+          user_id: user.id,
+          token,
+          platform: pushPlatform,
+          // Inline reply/read actions are implemented by the Android native
+          // notification receiver only. iOS notifications open the chat.
+          supports_notification_actions: supportsNotificationActions,
+        }, { onConflict: 'token' });
       if (error) console.warn('[push] token upsert failed:', error.message);
     };
 
@@ -132,11 +143,24 @@ export function NativeNotificationBridge() {
             }
           }),
         );
-        // One OS dialog (Android 13+ POST_NOTIFICATIONS). register() still
-        // yields a token when denied — pushes start the moment the user
-        // flips permission on in system settings, no reinstall needed.
-        await PushNotifications.requestPermissions().catch(() => undefined);
-        await PushNotifications.register();
+        const registerWhenEnabled = async () => {
+          if (disposed || !isNativeNotificationsEnabled()) return;
+          try {
+            let permission = await PushNotifications.checkPermissions();
+            if (permission.receive !== 'granted') {
+              permission = await PushNotifications.requestPermissions();
+            }
+            if (!disposed && permission.receive === 'granted') {
+              await PushNotifications.register();
+            }
+          } catch (error) {
+            console.warn('[push] permission/registration failed:', error);
+          }
+        };
+        // The iOS permission prompt must follow an explicit opt-in. Android
+        // retains its existing default-on behavior for current installations.
+        if (isNativeNotificationsEnabled()) await registerWhenEnabled();
+        else console.info('[push] waiting for the user to enable notifications');
       } catch (e) {
         console.warn('[push] init failed:', e);
       }
@@ -144,7 +168,24 @@ export function NativeNotificationBridge() {
 
     // The mute-everywhere switch flips server-side targeting too.
     const onPrefChanged = () => {
-      if (tokenRef.current) void syncToken(tokenRef.current);
+      if (!isNativeNotificationsEnabled()) {
+        if (tokenRef.current) void syncToken(tokenRef.current);
+        return;
+      }
+      // Re-check the OS permission and register after an explicit opt-in.
+      void (async () => {
+        try {
+          let permission = await PushNotifications.checkPermissions();
+          if (permission.receive !== 'granted') {
+            permission = await PushNotifications.requestPermissions();
+          }
+          if (!disposed && permission.receive === 'granted') {
+            await PushNotifications.register();
+          }
+        } catch (error) {
+          console.warn('[push] opt-in registration failed:', error);
+        }
+      })();
     };
     window.addEventListener('native-notifications-pref', onPrefChanged);
 
@@ -155,8 +196,8 @@ export function NativeNotificationBridge() {
     };
   }, [user, navigate]);
 
-  // Realtime messages → in-app banner on any screen. The system shade is
-  // FCM's job now (effect above); posting LocalNotifications here as well
+  // Realtime messages → in-app banner on any screen. Remote push delivery
+  // uses FCM on Android and APNs on iOS; posting LocalNotifications here
   // would double-pop every backgrounded message.
   useEffect(() => {
     if (!isNativePlatform || !user) return;

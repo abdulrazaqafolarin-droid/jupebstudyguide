@@ -35,9 +35,13 @@ SELECT ok(
 );
 
 -- These are disposable identities in the local migration-test database.
--- Suppress only auth.users user triggers while inserting them: the signup
--- welcome-message path is unrelated to this date-window regression.
-ALTER TABLE auth.users DISABLE TRIGGER USER;
+-- Keep normal signup triggers enabled. The local JWT subject is set to the
+-- seeded StudyBot identity so any sender-id fallback inside the signup
+-- welcome-message trigger always receives a non-null sender.
+SET LOCAL "request.jwt.claim.sub" = '00000000-0000-0000-0000-000000000000';
+SET LOCAL "request.jwt.claim.role" = 'service_role';
+SET LOCAL "request.jwt.claims" =
+  '{"sub":"00000000-0000-0000-0000-000000000000","role":"service_role"}';
 
 INSERT INTO auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -56,8 +60,6 @@ VALUES
     now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
     now(), now()
   );
-
-ALTER TABLE auth.users ENABLE TRIGGER USER;
 
 INSERT INTO public.profiles (user_id, display_name)
 VALUES

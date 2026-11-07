@@ -1,5 +1,10 @@
 -- Keep image-based questions readable: show the image and its question text together.
 -- Idempotent; avoid dropping an existing constraint so rollout is non-disruptive.
+-- The original study_questions table migration predates image support.
+-- Match the nullable text column already present in deployed environments.
+ALTER TABLE public.study_questions
+  ADD COLUMN IF NOT EXISTS image_url TEXT;
+
 ALTER TABLE public.study_questions
   ADD COLUMN IF NOT EXISTS image_position TEXT;
 

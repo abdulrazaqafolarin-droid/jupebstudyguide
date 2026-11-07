@@ -89,13 +89,9 @@ export default function StudyPastQuestions() {
   const timer = useQuestionTimer();
   const { bookmarks, toggle, isBookmarked } = useBookmarks();
   const { status: activationStatus } = useActivation();
-  const {
-    answerQuestion: awardAnswer,
-    correctAnswer: awardCorrect,
-    quizComplete: awardQuizComplete,
-  } = useScoreAwarder();
-  // Guarantees one XP grant per quiz attempt even if both manual submit
-  // and timer-expiry paths fire.
+  const { recordQuestionAttempt } = useScoreAwarder();
+  // Prevents manual completion and timer expiry from submitting the same
+  // quiz results twice; the database also deduplicates each question reward.
   const awardedRef = useRef(false);
 
   const [view, setView] = useState<View>("subjects");
@@ -306,14 +302,17 @@ export default function StudyPastQuestions() {
   const awardForResults = (results: AnswerEntry[]) => {
     if (awardedRef.current) return;
     awardedRef.current = true;
-    // XP parity with the home quiz flow: server dedupes by reference id,
-    // so re-attempting the same questions never double-awards.
-    const sessionId = `past-questions_${Date.now()}`;
-    awardQuizComplete(sessionId);
-    for (const r of results) {
-      awardAnswer(r.questionId);
-      if (r.isCorrect) awardCorrect(r.questionId);
-    }
+
+    // Only non-empty answers are submitted. The database looks up the
+    // official answer key and uses a private claim ledger to award each
+    // attempt and correctness reward once per student/question.
+    const pendingAwards = results
+      .filter((result) => result.answer.trim().length > 0)
+      .map((result) => recordQuestionAttempt(result.questionId, result.answer));
+
+    void Promise.all(pendingAwards);
+    // The previous 25-point quiz-complete bonus is intentionally withheld
+    // until quiz completions have server-created, verifiable session records.
   };
 
   const handleComplete = (results: AnswerEntry[]) => {

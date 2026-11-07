@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: native-ios-${{ github.event.pull_request.number || github.ref }}
+  group: native-ios-runtime-check-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:

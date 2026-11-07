@@ -220,6 +220,7 @@ BEGIN
     EXECUTE 'DROP POLICY IF EXISTS admin_only_insert_config ON public.ai_api_keys_config';
     EXECUTE 'DROP POLICY IF EXISTS admin_only_update_config ON public.ai_api_keys_config';
     EXECUTE 'DROP POLICY IF EXISTS admin_only_delete_config ON public.ai_api_keys_config';
+    EXECUTE 'DROP POLICY IF EXISTS ai_config_admin_all ON public.ai_api_keys_config';
     EXECUTE 'CREATE POLICY ai_config_admin_all ON public.ai_api_keys_config
       FOR ALL TO authenticated
       USING (EXISTS (

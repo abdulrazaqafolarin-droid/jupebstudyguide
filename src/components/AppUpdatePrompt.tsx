@@ -9,7 +9,7 @@ import {
   getInstalledVersion,
   installDownloadedApk,
   openInstallSettings,
-  isNativeApp,
+  isAndroidApp,
   isNewer,
   type ReleaseInfo,
 } from "@/lib/app-updater";
@@ -52,7 +52,7 @@ export function AppUpdatePrompt() {
   }, []);
 
   const checkForUpdate = useCallback(async (force = false) => {
-    if (!isNativeApp() || !navigator.onLine || phaseRef.current.kind !== "idle") return;
+    if (!isAndroidApp() || !navigator.onLine || phaseRef.current.kind !== "idle") return;
     if (!force && Date.now() - lastCheckAtRef.current < UPDATE_CHECK_INTERVAL_MS) return;
     if (checkInFlightRef.current) return checkInFlightRef.current;
 
@@ -141,7 +141,7 @@ export function AppUpdatePrompt() {
   }, [attemptInstall]);
 
   useEffect(() => {
-    if (!isNativeApp()) return;
+    if (!isAndroidApp()) return;
     let disposed = false;
 
     const check = () => {

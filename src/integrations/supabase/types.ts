@@ -1391,6 +1391,10 @@ export type Database = {
           textbook_title: string
         }[]
       }
+      record_question_attempt: {
+        Args: { p_answer: string; p_question_id: string }
+        Returns: Json
+      }
       report_user: {
         Args: {
           p_description?: string

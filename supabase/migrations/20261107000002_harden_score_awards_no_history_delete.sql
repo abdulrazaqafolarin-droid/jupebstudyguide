@@ -50,8 +50,6 @@ CREATE TRIGGER prevent_duplicate_score_event
 -- Trigger functions are not RPC endpoints; remove unnecessary direct execute grants.
 REVOKE EXECUTE ON FUNCTION public.prevent_duplicate_score_event() FROM PUBLIC, anon, authenticated;
 
-REVOKE EXECUTE ON FUNCTION public.prevent_duplicate_score_event() FROM PUBLIC, anon, authenticated;
-
 CREATE OR REPLACE FUNCTION public.award_score(
   p_user_id UUID,
   p_amount INTEGER,

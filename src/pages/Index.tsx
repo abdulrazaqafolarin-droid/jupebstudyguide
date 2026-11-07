@@ -34,7 +34,7 @@ import {
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useCustomQuestions } from '@/hooks/useCustomQuestions';
 import { useStreak } from '@/hooks/useStreak';
-import { useAchievements, Achievement } from '@/hooks/useAchievements';
+import { useAchievements } from '@/hooks/useAchievements';
 import { useStudySessions } from '@/hooks/useStudySessions';
 import { useStatsSync } from '@/hooks/useStatsSync';
 import { useStudySessionSync } from '@/hooks/useStudySessionSync';

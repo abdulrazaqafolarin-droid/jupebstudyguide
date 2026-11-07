@@ -6,7 +6,7 @@
 -- Keep the non-empty reference invariant at table level as well as in the trigger.
 -- NOT VALID preserves compatibility with any legacy rows in other installations,
 -- while PostgreSQL still enforces this check for every new or updated row.
-DO $
+DO $constraint$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
@@ -20,7 +20,7 @@ BEGIN
       NOT VALID;
   END IF;
 END;
-$;
+$constraint$;
 
 -- Do not rely on an RLS INSERT policy or client table grants for reward writes.
 -- Remove the legacy policy and keep all score-event mutations behind trusted

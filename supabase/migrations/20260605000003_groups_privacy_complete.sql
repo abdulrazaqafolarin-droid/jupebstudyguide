@@ -133,30 +133,42 @@ $$;
 -- --------------------------------------------------
 -- RPC: block_user
 -- --------------------------------------------------
-CREATE OR REPLACE FUNCTION public.block_user(p_blocked_id UUID)
+-- Earlier migrations declared this RPC with a different argument name and
+-- JSONB return type. Drop that signature so clean installs match the deployed
+-- p_blocked_id / void API used by the application.
+DROP FUNCTION IF EXISTS public.block_user(UUID);
+CREATE FUNCTION public.block_user(p_blocked_id UUID)
 RETURNS VOID
 LANGUAGE plpgsql SECURITY DEFINER
-AS $$
+SET search_path = pg_catalog, public, pg_temp
+AS $function$
 BEGIN
   IF p_blocked_id = auth.uid() THEN RAISE EXCEPTION 'Cannot block yourself'; END IF;
   INSERT INTO public.blocked_users (blocker_id, blocked_id)
   VALUES (auth.uid(), p_blocked_id)
   ON CONFLICT (blocker_id, blocked_id) DO NOTHING;
 END;
-$$;
+$function$;
+REVOKE EXECUTE ON FUNCTION public.block_user(UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.block_user(UUID) TO authenticated, service_role;
 
 -- --------------------------------------------------
 -- RPC: unblock_user
 -- --------------------------------------------------
-CREATE OR REPLACE FUNCTION public.unblock_user(p_blocked_id UUID)
+-- Recreate the legacy JSONB-returning function with the deployed argument name.
+DROP FUNCTION IF EXISTS public.unblock_user(UUID);
+CREATE FUNCTION public.unblock_user(p_blocked_id UUID)
 RETURNS VOID
 LANGUAGE plpgsql SECURITY DEFINER
-AS $$
+SET search_path = pg_catalog, public, pg_temp
+AS $function$
 BEGIN
   DELETE FROM public.blocked_users
   WHERE blocker_id = auth.uid() AND blocked_id = p_blocked_id;
 END;
-$$;
+$function$;
+REVOKE EXECUTE ON FUNCTION public.unblock_user(UUID) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.unblock_user(UUID) TO authenticated, service_role;
 
 -- --------------------------------------------------
 -- RPC: is_blocked

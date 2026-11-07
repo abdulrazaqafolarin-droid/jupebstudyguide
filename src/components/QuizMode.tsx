@@ -26,6 +26,7 @@ export interface QuizResult {
   timeSpent: number; // in seconds
   answeredQuestions: Array<{
     questionId: string;
+    answer: string;
     isCorrect: boolean;
     isGradable?: boolean;
     timeSpent: number;
@@ -48,7 +49,7 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
   const questions = useMemo(() => filterObjectiveQuizQuestions(incomingQuestions), [incomingQuestions]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Array<{ questionId: string; isCorrect: boolean; isGradable: boolean; timeSpent: number }>>([]);
+  const [answers, setAnswers] = useState<Array<{ questionId: string; answer: string; isCorrect: boolean; isGradable: boolean; timeSpent: number }>>([]);
   const [startTime, setStartTime] = useState(Date.now());
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const [showResult, setShowResult] = useState(false);
@@ -72,6 +73,7 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
       const qTimeSpent = (Date.now() - questionStartTime) / 1000;
       finalAnswers.push({
         questionId: currentQuestion.id,
+        answer: selectedOption,
         isCorrect,
         isGradable,
         timeSpent: qTimeSpent,
@@ -115,6 +117,7 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
 
     const newAnswers = [...answers, {
       questionId: currentQuestion.id,
+      answer: selectedOption ?? "",
       isCorrect,
       isGradable,
       timeSpent,

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { App as CapacitorApp } from "@capacitor/app";
+import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +33,14 @@ export function NativeAuthDeepLinkBridge() {
 
       if (url.protocol !== APP_SCHEME || url.hostname !== CALLBACK_HOST) return;
       processed.add(rawUrl);
+
+      // Close the Safari authentication sheet when Google redirects back
+      // into the native app. A close failure must not block session exchange.
+      try {
+        await Browser.close();
+      } catch {
+        // The browser may already have been dismissed by the operating system.
+      }
 
       const params = new URLSearchParams(url.search);
       const hash = new URLSearchParams(url.hash.replace(/^#/, ""));

@@ -88,7 +88,8 @@
     "tesseract.js": "^7.0.0",
     "vaul": "^0.9.9",
     "zod": "4.6.7",
-    "@capacitor/app": "^8.0.2"
+    "@capacitor/app": "^8.0.2",
+    "@capacitor/browser": "^8.0.2"
   },
   "devDependencies": {
     "@capacitor/android": "^8.6.0",

@@ -6,6 +6,26 @@ The iOS app uses the existing React/Vite application and Supabase backend throug
 
 The generated iOS project is committed by the macOS GitHub Actions workflow after it successfully generates and builds the Capacitor project. The workflow currently produces an **unsigned iOS Simulator build**, not a device-installable IPA.
 
+## Google sign-in setup
+
+The native iOS app offers Google and Apple OAuth in a Safari authentication session and returns to the app through `com.jupeb.master://auth`. Apple sign-in is an optional provider alongside Google; email/password remains available.
+
+1. In Google Cloud Console, create or select an OAuth client for a **Web application**. In its Authorized redirect URIs, add this Supabase callback URL: `https://gzyczowqqywesqhqqpdi.supabase.co/auth/v1/callback`.
+2. In Supabase Dashboard → Authentication → Sign In / Providers → Google, enable Google and enter that OAuth client ID and client secret. Keep the client secret in Supabase only; never put it in the app, repository, or chat.
+3. In Supabase Dashboard → Authentication → URL Configuration → Redirect URLs, allow `com.jupeb.master://auth` for the native iOS callback and the exact production web app origin for browser sign-in.
+4. Test with a Google account that is permitted by the Google OAuth consent-screen publishing mode. Confirm the user returns to Rutex Master and remains signed in after closing and reopening the app.
+
+Google provider credentials are dashboard configuration, not source-code configuration. A simulator build can compile without them, but a live Google sign-in cannot be verified until Google is enabled in Supabase.
+
+## Apple sign-in setup
+
+1. In the Apple Developer account, enable **Sign in with Apple** for the App ID `com.jupeb.master`. Configure a Services ID for web-based OAuth and associate it with the primary App ID and the verified website domain/return URL required by Supabase.
+2. In Supabase Dashboard → Authentication → Sign In / Providers → Apple, enable Apple and enter the Services ID, Team ID, Key ID, and private key generated for Sign in with Apple. Keep the private key only in Supabase secrets; never commit it or paste it into chat.
+3. In Supabase Dashboard → Authentication → URL Configuration → Redirect URLs, allow `com.jupeb.master://auth` for native iOS and the production website origin for web sign-in.
+4. Test first-time consent and repeat sign-in on a physical iPhone. Apple may provide a private relay email; ensure account creation and email handling work without requiring a public email address.
+
+Apple credentials and domain/return-URL verification are account configuration, not source-code configuration. A simulator compile does not verify a real Apple OAuth transaction.
+
 ## Required Supabase Auth setting
 
 In Supabase Dashboard → Authentication → URL Configuration → Redirect URLs, add:

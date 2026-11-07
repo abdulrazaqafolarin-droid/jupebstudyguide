@@ -22,10 +22,12 @@ set_plist_string() {
   fi
 }
 
+set_plist_string "CFBundleDisplayName" "Rutex Master(Jupeb)"
 set_plist_string "NSCameraUsageDescription" "Rutex Master uses the camera when you choose to capture a question or study image."
 set_plist_string "NSPhotoLibraryUsageDescription" "Rutex Master accesses photos you choose to attach to questions, answers and your profile."
 set_plist_string "NSPhotoLibraryAddUsageDescription" "Rutex Master saves an image only when you choose to save or export it."
 set_plist_string "NSMicrophoneUsageDescription" "Rutex Master uses the microphone when you choose to record a voice note or use voice input."
+set_plist_string "LSApplicationCategoryType" "public.app-category.education"
 
 cat > "$ENTITLEMENTS" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -73,6 +75,7 @@ print("Configured camera, photo-library and microphone usage descriptions.")
 print("Configured development/production APNs entitlement build settings.")
 PY
 
+/usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" "$INFO_PLIST" | grep -Fx "Rutex Master(Jupeb)" >/dev/null
 /usr/libexec/PlistBuddy -c "Print :NSCameraUsageDescription" "$INFO_PLIST" >/dev/null
 /usr/libexec/PlistBuddy -c "Print :NSPhotoLibraryUsageDescription" "$INFO_PLIST" >/dev/null
 /usr/libexec/PlistBuddy -c "Print :NSMicrophoneUsageDescription" "$INFO_PLIST" >/dev/null

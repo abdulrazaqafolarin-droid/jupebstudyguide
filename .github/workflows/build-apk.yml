@@ -99,8 +99,8 @@ jobs:
             mkdir -p android/app/src/debug/res/values
             cat > android/app/src/debug/res/values/strings.xml <<'XML'
           <resources>
-              <string name="app_name">JUPEB Master</string>
-              <string name="title_activity_main">JUPEB Master</string>
+              <string name="app_name">Rutex Master(Jupeb)</string>
+              <string name="title_activity_main">Rutex Master(Jupeb)</string>
               <string name="package_name">com.jupeb.master</string>
               <string name="custom_url_scheme">com.jupeb.master</string>
           </resources>

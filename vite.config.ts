@@ -27,8 +27,8 @@ export default defineConfig(({ mode }) => ({
       filename: "sw.ts",
       includeAssets: ["favicon.ico", "favicon.svg", "robots.txt"],
       manifest: {
-        name: "JUPEB Master - Past Questions Study App",
-        short_name: "JUPEB Master",
+        name: "Rutex Master(Jupeb) - Past Questions Study App",
+        short_name: "Rutex Master(Jupeb)",
         description: "Master JUPEB exams with spaced repetition and AI tutoring. Study Physics, Chemistry & Biology past questions.",
         theme_color: "#D4A34C",
         background_color: "#0D0D0D",

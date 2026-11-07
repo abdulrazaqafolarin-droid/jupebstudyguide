@@ -12,7 +12,11 @@ In Supabase Dashboard → Authentication → URL Configuration → Redirect URLs
 
 `com.jupeb.master://auth`
 
-This callback is used only by iOS email-confirmation links. Web and Android email-confirmation redirects are unchanged.
+Also allow the password-recovery callback:
+
+`com.jupeb.master://auth?flow=recovery`
+
+The first callback returns iOS email-confirmation links to the app. The second opens the in-app new-password form after a recovery link is verified. Web and Android redirect behavior remains unchanged.
 
 ## Enable remote iPhone notifications
 
@@ -40,7 +44,7 @@ Before signing a release, configure the signing certificate, provisioning profil
 
 - [ ] iOS simulator build passes on the hosted macOS/Xcode runner.
 - [ ] Simulator install and launch smoke test passes.
-- [ ] Supabase Auth redirect allow-list contains `com.jupeb.master://auth`.
+- [ ] Supabase Auth redirect allow-list contains `com.jupeb.master://auth` and `com.jupeb.master://auth?flow=recovery`.
 - [ ] Verify signup confirmation on a physical iPhone.
 - [ ] Verify sign-in, sign-out, session restore and the one-day trial on a physical iPhone.
 - [ ] Verify camera, photo library, question-image uploads, file uploads and voice-note recording.

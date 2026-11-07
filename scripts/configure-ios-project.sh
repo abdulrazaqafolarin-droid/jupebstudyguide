@@ -45,6 +45,36 @@ with path.open("wb") as destination:
 print("Configured iOS display name, URL callback scheme and privacy descriptions.")
 PY
 
+# Replace the Capacitor template icon with the app's real Rutex logo.
+ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
+ICON_SOURCE="$(find dist/assets -maxdepth 1 -type f -name 'rutex-logo-*.jpg' -print -quit)"
+if [[ ! -d "$ICON_SET" || -z "$ICON_SOURCE" ]]; then
+  echo "::error::The generated iOS AppIcon set or the built Rutex logo asset is missing."
+  exit 1
+fi
+ICON_FILENAME="$(python3 - "$ICON_SET/Contents.json" <<'PY'
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as source:
+    data = json.load(source)
+images = data.get("images", [])
+if len(images) != 1 or images[0].get("idiom") != "universal":
+    raise SystemExit("Unexpected iOS AppIcon catalog structure; refusing to replace it blindly")
+print(images[0].get("filename", ""))
+PY
+)"
+if [[ -z "$ICON_FILENAME" ]]; then
+  echo "::error::The iOS AppIcon catalog has no universal image filename."
+  exit 1
+fi
+ICON_TARGET="$ICON_SET/$ICON_FILENAME"
+sips -s format png "$ICON_SOURCE" --out "$ICON_TARGET" >/dev/null
+ICON_WIDTH="$(sips -g pixelWidth "$ICON_TARGET" | awk '/pixelWidth/ { print $2 }')"
+ICON_HEIGHT="$(sips -g pixelHeight "$ICON_TARGET" | awk '/pixelHeight/ { print $2 }')"
+if [[ "$ICON_WIDTH" != "1024" || "$ICON_HEIGHT" != "1024" ]]; then
+  sips -z 1024 1024 "$ICON_TARGET" >/dev/null
+fi
+echo "Installed the 1024x1024 Rutex logo as the native iOS home-screen icon."
+
 cat > "$ENTITLEMENTS" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

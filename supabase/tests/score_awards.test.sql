@@ -4,6 +4,12 @@ SET LOCAL search_path = extensions, public;
 
 SELECT plan(15);
 
+-- Signup creates a StudyBot welcome message. This suite is about score awards,
+-- not message delivery; message-level triggers depend on an authenticated
+-- request context that a migration test does not have. Keep them disabled only
+-- while the disposable test users are created, then restore them immediately.
+ALTER TABLE public.messages DISABLE TRIGGER USER;
+
 -- These IDs exist only inside this rolled-back local test transaction.
 INSERT INTO auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -22,6 +28,8 @@ VALUES
     now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
     now(), now()
   );
+
+ALTER TABLE public.messages ENABLE TRIGGER USER;
 
 SELECT ok(
   EXISTS (

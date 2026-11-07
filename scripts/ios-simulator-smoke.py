@@ -56,6 +56,60 @@ def is_valid_png_screenshot(path: Path) -> bool:
     )
 
 
+def is_app_installed(udid: str) -> bool:
+    """Check whether simctl completed an install before its command timed out."""
+    try:
+        result = run(
+            ["xcrun", "simctl", "get_app_container", udid, BUNDLE_ID, "app"],
+            timeout_seconds=30,
+            check=False,
+            capture_output=True,
+        )
+        return result.returncode == 0 and bool((result.stdout or "").strip())
+    except RuntimeError:
+        return False
+
+
+def install_app_with_retries(udid: str) -> None:
+    """Retry slow first-boot installation and verify state after each attempt."""
+    errors: list[str] = []
+    command = ["xcrun", "simctl", "install", udid, str(APP_PATH)]
+
+    for attempt, timeout_seconds in enumerate((180, 240), start=1):
+        try:
+            result = run(
+                command,
+                timeout_seconds=timeout_seconds,
+                check=False,
+                capture_output=True,
+            )
+            if result.returncode == 0:
+                return
+            errors.append(
+                f"attempt {attempt} exited {result.returncode}: "
+                f"{(result.stderr or result.stdout or '').strip()}"
+            )
+        except RuntimeError as error:
+            errors.append(str(error))
+
+        # simctl install can time out even after it has installed the bundle.
+        if is_app_installed(udid):
+            print("App bundle is installed despite a slow simctl response.", flush=True)
+            return
+
+        if attempt < 2:
+            time.sleep(8)
+
+    if is_app_installed(udid):
+        print("App bundle is installed after the final install retry.", flush=True)
+        return
+
+    raise RuntimeError(
+        "Simulator did not confirm app installation after retries. "
+        + " | ".join(errors)
+    )
+
+
 def launch_app_with_retries(udid: str) -> None:
     """Give a cold simulator extra time to finish its first app launch."""
     errors: list[str] = []
@@ -132,7 +186,7 @@ def main() -> int:
     if device.get("state") != "Booted":
         run(["xcrun", "simctl", "boot", udid], timeout_seconds=45)
     run(["xcrun", "simctl", "bootstatus", udid, "-b"], timeout_seconds=180)
-    run(["xcrun", "simctl", "install", udid, str(APP_PATH)], timeout_seconds=120)
+    install_app_with_retries(udid)
     launch_app_with_retries(udid)
 
     # Allow the bundled WKWebView to paint before taking a visual checkpoint.

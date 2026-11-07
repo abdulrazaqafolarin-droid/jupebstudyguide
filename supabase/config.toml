@@ -16,3 +16,6 @@ verify_jwt = false
 
 [functions.question-rag-index]
 verify_jwt = false
+
+[experimental.webhooks]
+enabled = true

@@ -48,9 +48,9 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check Supabase Edge Functions
-        run: deno check supabase/functions/push-fcm/index.ts supabase/functions/notification-action/index.ts supabase/functions/question-rag-index/index.ts supabase/functions/chat-proxy/index.ts supabase/functions/ai-tutor/index.ts
+        run: deno check supabase/functions/push-fcm/index.ts supabase/functions/notification-action/index.ts supabase/functions/question-rag-index/index.ts supabase/functions/chat-proxy/index.ts supabase/functions/ai-tutor/index.ts supabase/functions/weekly-reset/index.ts
       - name: Test AI image routing, question RAG and APNs delivery
-        run: deno test supabase/functions/_shared/ai-router.test.ts supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/apns.test.ts
+        run: deno test supabase/functions/_shared/ai-router.test.ts supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/apns.test.ts supabase/functions/weekly-reset/period.test.ts
       - name: Type-check application TypeScript
         run: npx tsc --noEmit -p tsconfig.app.json --pretty false && npx tsc --noEmit -p tsconfig.node.json --pretty false && npx tsc --noEmit -p tsconfig.sw.json --pretty false
       - name: Validate private question-source tooling

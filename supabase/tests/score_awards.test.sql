@@ -2,7 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 SET LOCAL search_path = extensions, public;
 
-SELECT plan(15);
+SELECT plan(18);
 
 -- Signup creates a StudyBot welcome message. This suite is about score awards,
 -- not message delivery; message-level triggers depend on an authenticated
@@ -144,6 +144,41 @@ SELECT is(
   ),
   1,
   'a repeated award creates only one score row'
+);
+
+SELECT throws_ok(
+  $INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+    VALUES (
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      100,
+      'achievement',
+      ''
+    )$,
+  '23514',
+  NULL,
+  'the trigger rejects an empty score reference'
+);
+
+SELECT throws_ok(
+  $INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+    VALUES (
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      100,
+      'achievement',
+      'achievement:first_day:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+    )$,
+  '23505',
+  NULL,
+  'the trigger rejects a direct duplicate score reference'
+);
+
+SELECT ok(
+  (
+    SELECT provolatile = 'v' AND prosecdef
+    FROM pg_proc
+    WHERE oid = 'public.prevent_duplicate_score_event()'::regprocedure
+  ),
+  'duplicate guard remains VOLATILE and SECURITY DEFINER for the concurrent retry check'
 );
 
 SELECT throws_ok(

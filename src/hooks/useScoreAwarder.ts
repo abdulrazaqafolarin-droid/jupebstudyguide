@@ -1,107 +1,47 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-type ScoreReason =
-  | "answered_question"
-  | "correct_answer"
-  | "streak_day"
-  | "syllabus_day"
-  | "achievement"
-  | "quiz_complete";
+interface QuestionRewardResult {
+  success?: boolean;
+  attempt_awarded?: boolean;
+  correct_awarded?: boolean;
+  is_correct?: boolean;
+  duplicate?: boolean;
+}
 
-const SCORE_VALUES: Record<ScoreReason, number> = {
-  answered_question: 5,
-  correct_answer: 10,
-  streak_day: 20,
-  syllabus_day: 50,
-  achievement: 100,
-  quiz_complete: 25,
-};
-
+/**
+ * Records a submitted official past-question answer.
+ *
+ * The database reads the authoritative answer key and awards fixed points
+ * through a private per-user claim ledger. The client never sends point values,
+ * a correctness flag, or a user ID.
+ */
 export function useScoreAwarder() {
   const { user } = useAuth();
-  const pendingRef = useRef<Map<string, Promise<unknown>>>(new Map());
 
-  const award = useCallback(
-    async (
-      reason: ScoreReason,
-      referenceKey: string,
-      extraAmount?: number
-    ): Promise<boolean> => {
-      if (!user) return false;
+  const recordQuestionAttempt = useCallback(
+    async (questionId: string, submittedAnswer: string): Promise<boolean> => {
+      const normalizedQuestionId = questionId.trim();
+      const normalizedAnswer = submittedAnswer.trim();
 
-      const refId = `${reason}:${referenceKey}:${user.id}`;
+      if (!user || !normalizedQuestionId || !normalizedAnswer) return false;
 
-      // Deduplicate in-flight requests
-      if (pendingRef.current.has(refId)) {
-        const result = await pendingRef.current.get(refId);
-        return (result as { duplicate?: boolean } | null)?.duplicate === false;
+      const { data, error } = await supabase.rpc("record_question_attempt", {
+        p_question_id: normalizedQuestionId,
+        p_answer: normalizedAnswer,
+      });
+
+      if (error) {
+        console.error("Question reward could not be recorded:", error.message);
+        return false;
       }
 
-      const amount = extraAmount ?? SCORE_VALUES[reason];
-      const promise: Promise<{ duplicate?: boolean } | null> = (async () => {
-        const { data, error } = await supabase.rpc("award_score", {
-          p_user_id: user.id,
-          p_amount: amount,
-          p_reason: reason,
-          p_reference_id: refId,
-        });
-        if (error) {
-          console.error("Score award error:", error);
-          return null;
-        }
-        return (data as unknown as { duplicate?: boolean } | null);
-      })();
-
-      pendingRef.current.set(refId, promise);
-      try {
-        const result = await promise;
-        return result?.duplicate === false;
-      } finally {
-        pendingRef.current.delete(refId);
-      }
+      const result = data as QuestionRewardResult | null;
+      return Boolean(result?.attempt_awarded || result?.correct_awarded);
     },
-    [user]
+    [user],
   );
 
-  const answerQuestion = useCallback(
-    (questionId: string) => award("answered_question", questionId),
-    [award]
-  );
-
-  const correctAnswer = useCallback(
-    (questionId: string) => award("correct_answer", questionId),
-    [award]
-  );
-
-  const streakDay = useCallback(
-    (dateStr: string) => award("streak_day", dateStr),
-    [award]
-  );
-
-  const syllabusDay = useCallback(
-    (day: number) => award("syllabus_day", String(day)),
-    [award]
-  );
-
-  const achievement = useCallback(
-    (achievementId: string) => award("achievement", achievementId),
-    [award]
-  );
-
-  const quizComplete = useCallback(
-    (sessionId: string) => award("quiz_complete", sessionId),
-    [award]
-  );
-
-  return {
-    answerQuestion,
-    correctAnswer,
-    streakDay,
-    syllabusDay,
-    achievement,
-    quizComplete,
-    award,
-  };
+  return { recordQuestionAttempt };
 }

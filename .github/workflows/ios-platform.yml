@@ -141,7 +141,33 @@ jobs:
           # A cold WKWebView may need more time than the native process launch.
           sleep 15
           xcrun simctl io "$DEVICE_UDID" screenshot "$RUNNER_TEMP/rutex-ios-boot.png"
-          xcrun simctl spawn "$DEVICE_UDID" log show --last 3m --style compact --predicate 'process == "App" OR process == "WebContent" OR subsystem CONTAINS[c] "WebKit"' > "$RUNNER_TEMP/rutex-ios-runtime.log" 2>&1 || true
+          python3 - "$DEVICE_UDID" "$RUNNER_TEMP/rutex-ios-runtime.log" <<'PY'
+          import subprocess
+          import sys
+
+          device_udid, log_path = sys.argv[1], sys.argv[2]
+          command = [
+              "xcrun", "simctl", "spawn", device_udid, "log", "show",
+              "--last", "1m", "--style", "compact",
+              "--predicate",
+              'process == "App" OR process == "WebContent" OR subsystem CONTAINS[c] "WebKit"',
+          ]
+          try:
+              with open(log_path, "w", encoding="utf-8") as output:
+                  result = subprocess.run(
+                      command,
+                      stdout=output,
+                      stderr=subprocess.STDOUT,
+                      text=True,
+                      timeout=20,
+                      check=False,
+                  )
+              print(f"Simulator runtime log capture exit code: {result.returncode}")
+          except subprocess.TimeoutExpired:
+              with open(log_path, "a", encoding="utf-8") as output:
+                  output.write("\\nRuntime log capture exceeded the 20-second limit.\\n")
+              print("Simulator log capture timed out; keeping the screenshot and continuing.")
+          PY
           xcrun simctl terminate "$DEVICE_UDID" com.jupeb.master || true
 
       - name: Upload simulator build and generated Xcode project

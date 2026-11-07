@@ -4,6 +4,8 @@ import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { getNativeAuthCallbackError } from "@/lib/native-auth-callback";
 
 const APP_SCHEME = "com.jupeb.master:";
 const CALLBACK_HOST = "auth";
@@ -14,6 +16,7 @@ const CALLBACK_HOST = "auth";
  */
 export function NativeAuthDeepLinkBridge() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (Capacitor.getPlatform() !== "ios") return;
@@ -40,6 +43,20 @@ export function NativeAuthDeepLinkBridge() {
         await Browser.close();
       } catch {
         // The browser may already have been dismissed by the operating system.
+      }
+
+      if (disposed) return;
+
+      const callbackError = getNativeAuthCallbackError(rawUrl);
+      if (callbackError) {
+        console.warn("[auth] native provider sign-in failed:", callbackError);
+        toast({
+          title: "Sign-in could not be completed",
+          description: callbackError,
+          variant: "destructive",
+        });
+        navigate("/auth", { replace: true });
+        return;
       }
 
       const params = new URLSearchParams(url.search);
@@ -110,7 +127,7 @@ export function NativeAuthDeepLinkBridge() {
       disposed = true;
       void listener.then((handle) => handle.remove());
     };
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return null;
 }

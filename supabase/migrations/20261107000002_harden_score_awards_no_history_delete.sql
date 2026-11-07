@@ -28,6 +28,8 @@ BEGIN
     hashtextextended(NEW.user_id::text || ':' || NEW.reference_id, 0)
   );
 
+  -- Keep this trigger VOLATILE: the SELECT after a lock wait needs a fresh
+  -- snapshot so it sees a duplicate committed by the session that held the lock.
   IF EXISTS (
     SELECT 1
     FROM public.score_events e

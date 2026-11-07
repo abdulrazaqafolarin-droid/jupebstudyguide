@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, build/rutex-master-jupeb-display-name]
   workflow_dispatch:
     inputs:
       allow_signing_key_migration:
@@ -99,16 +99,16 @@ jobs:
             mkdir -p android/app/src/debug/res/values
             cat > android/app/src/debug/res/values/strings.xml <<'XML'
           <resources>
-              <string name="app_name">Rutex Master(Jupeb)</string>
-              <string name="title_activity_main">Rutex Master(Jupeb)</string>
+              <string name="app_name">Rutex Master (Jupeb)</string>
+              <string name="title_activity_main">Rutex Master (Jupeb)</string>
               <string name="package_name">com.jupeb.master</string>
               <string name="custom_url_scheme">com.jupeb.master</string>
           </resources>
           XML
             echo "::warning title=Fresh JUPEB installation::This clean-install APK uses a new signing certificate. Uninstall the previous JUPEB Master app before installing it. Device-only data in the old app will be removed; the fresh APK is not published to the in-app updater."
             (cd android && ./gradlew assembleDebug --no-daemon)
-            cp android/app/build/outputs/apk/debug/app-debug.apk jupeb-master-fresh-install.apk
-            echo "APK_PATH=jupeb-master-fresh-install.apk" >> "$GITHUB_ENV"
+            cp android/app/build/outputs/apk/debug/app-debug.apk rutex-master-jupeb-fresh-install.apk
+            echo "APK_PATH=rutex-master-jupeb-fresh-install.apk" >> "$GITHUB_ENV"
             echo "signing-mode=debug-candidate" >> "$GITHUB_OUTPUT"
             echo "expected-package=com.jupeb.master" >> "$GITHUB_OUTPUT"
           fi
@@ -184,7 +184,7 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: jupeb-master-fresh-install
+          name: rutex-master-jupeb-fresh-install
           path: ${{ env.APK_PATH }}
 
       - name: Mirror APK + version file to public storage

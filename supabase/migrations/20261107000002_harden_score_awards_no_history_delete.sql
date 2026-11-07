@@ -216,6 +216,7 @@ BEGIN
     END IF;
   ELSIF p_reason = 'achievement' THEN
     IF v_reference_key NOT IN (
+      'welcome_aboard',
       'first_day', 'streak_3', 'streak_7', 'streak_14', 'streak_30',
       'first_10', 'first_50', 'first_100', 'first_500', 'first_1000',
       'master_10', 'master_50', 'master_100', 'master_200',

@@ -99,9 +99,9 @@ SET LOCAL "request.jwt.claim.role" = 'service_role';
 SET LOCAL "request.jwt.claims" = '{"role":"service_role"}';
 
 SELECT throws_ok(
-  $SELECT public.award_score(
+  $$SELECT public.award_score(
     'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 100, 'achievement', NULL
-  )$,
+  )$$,
   '22023',
   NULL,
   'award_score rejects a missing reference'

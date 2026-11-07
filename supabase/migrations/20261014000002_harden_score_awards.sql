@@ -1,203 +1,182 @@
--- Harden reward writes: enforce caller ownership, fixed point values, and race-safe idempotency.
--- Existing duplicate reference events are collapsed to the earliest event before adding the unique index.
-WITH ranked_events AS (
-  SELECT id,
-         ROW_NUMBER() OVER (
-           PARTITION BY user_id, reference_id
-           ORDER BY created_at ASC, id ASC
-         ) AS duplicate_rank
-  FROM public.score_events
-  WHERE reference_id IS NOT NULL
-)
-DELETE FROM public.score_events AS event
-USING ranked_events AS ranked
-WHERE event.id = ranked.id
-  AND ranked.duplicate_rank > 1;
+-- Secure study-question rewards and preserve existing leaderboard history.
+--
+-- This migration was not present in the production Supabase migration history
+-- during the 2026-11-07 security review. It replaces the earlier draft, which
+-- deleted duplicate score rows and trusted a client-supplied reward reference.
+-- Existing score_events are preserved; prior question rewards are backfilled
+-- into a private claim ledger so they cannot be earned a second time.
 
-CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_user_reference
-  ON public.score_events (user_id, reference_id)
-  WHERE reference_id IS NOT NULL;
-
--- Prevent clients from bypassing award_score by inserting arbitrary score rows directly.
+-- Clients must not insert score events directly.
 DROP POLICY IF EXISTS "Users insert own score events" ON public.score_events;
 REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM PUBLIC, anon, authenticated;
+ALTER TABLE public.score_events ENABLE ROW LEVEL SECURITY;
 
-CREATE OR REPLACE FUNCTION public.award_score(
-  p_user_id UUID,
-  p_amount INTEGER,
-  p_reason TEXT,
-  p_reference_id TEXT DEFAULT NULL
+-- This table is an internal idempotency ledger. It is deliberately not exposed
+-- through the Supabase Data API and has no client-facing policies or grants.
+CREATE TABLE IF NOT EXISTS public.question_reward_claims (
+  user_id UUID NOT NULL REFERENCES public.profiles(user_id) ON DELETE CASCADE,
+  question_id TEXT NOT NULL,
+  reward_type TEXT NOT NULL CHECK (reward_type IN ('attempt', 'correct')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, question_id, reward_type)
+);
+
+ALTER TABLE public.question_reward_claims ENABLE ROW LEVEL SECURITY;
+REVOKE ALL PRIVILEGES ON TABLE public.question_reward_claims
+  FROM PUBLIC, anon, authenticated, service_role;
+
+COMMENT ON TABLE public.question_reward_claims IS
+  'Private ledger preventing repeated attempt and correct-answer rewards per user and official question.';
+
+-- Backfill claims from existing references. Do not delete or rewrite historical
+-- score_events: production contains duplicate reference groups, and those
+-- historical points must be preserved while preventing any further re-awards.
+INSERT INTO public.question_reward_claims (user_id, question_id, reward_type, created_at)
+SELECT DISTINCT ON (user_id, question_id, reward_type)
+  user_id,
+  question_id,
+  reward_type,
+  created_at
+FROM (
+  SELECT
+    user_id,
+    substring(
+      reference_id
+      FROM char_length(reason) + 2
+      FOR char_length(reference_id) - char_length(reason) - char_length(user_id::TEXT) - 2
+    ) AS question_id,
+    CASE reason
+      WHEN 'answered_question' THEN 'attempt'
+      WHEN 'correct_answer' THEN 'correct'
+    END AS reward_type,
+    created_at
+  FROM public.score_events
+  WHERE reason IN ('answered_question', 'correct_answer')
+    AND reference_id LIKE reason || ':%:' || user_id::TEXT
+) AS existing_rewards
+WHERE question_id <> ''
+ORDER BY user_id, question_id, reward_type, created_at
+ON CONFLICT (user_id, question_id, reward_type) DO NOTHING;
+
+-- Keep the legacy generic RPC for trusted server-side compatibility only.
+-- Normal signed-in clients must use record_question_attempt below.
+REVOKE ALL PRIVILEGES ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT)
+  TO service_role;
+
+CREATE OR REPLACE FUNCTION public.record_question_attempt(
+  p_question_id TEXT,
+  p_answer TEXT
 )
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = pg_catalog, public, pg_temp
-AS $$
+AS $function$
 DECLARE
-  v_expected_amount INTEGER;
-  v_inserted_id UUID;
-  v_reference_key TEXT;
-  v_question_exists BOOLEAN;
-  v_reference_date DATE;
-  v_quiz_awards_last_24h INTEGER;
+  v_user_id UUID := auth.uid();
+  v_question_id TEXT := btrim(COALESCE(p_question_id, ''));
+  v_answer TEXT := btrim(COALESCE(p_answer, ''));
+  v_correct_answer TEXT;
+  v_is_correct BOOLEAN := false;
+  v_attempt_awarded BOOLEAN := false;
+  v_correct_awarded BOOLEAN := false;
 BEGIN
-  -- Service-role edge functions may award server-verified events. All other
-  -- callers may award only to their own authenticated account.
-  IF COALESCE(auth.role(), '') <> 'service_role'
-     AND (auth.uid() IS NULL OR auth.uid() IS DISTINCT FROM p_user_id) THEN
-    RAISE EXCEPTION 'Not allowed to award points to another user'
+  -- An authenticated, non-anonymous account is required for leaderboard points.
+  IF v_user_id IS NULL
+     OR COALESCE(auth.jwt() ->> 'is_anonymous', 'false') = 'true' THEN
+    RAISE EXCEPTION 'A signed-in student account is required'
       USING ERRCODE = '42501';
   END IF;
 
-  IF p_user_id IS NULL OR p_amount IS NULL OR p_amount <= 0 THEN
-    RAISE EXCEPTION 'Invalid reward request'
+  IF v_question_id = '' OR char_length(v_question_id) > 200 THEN
+    RAISE EXCEPTION 'Invalid question identifier'
       USING ERRCODE = '22023';
   END IF;
 
-  v_expected_amount := CASE p_reason
-    WHEN 'answered_question' THEN 5
-    WHEN 'correct_answer' THEN 10
-    WHEN 'streak_day' THEN 20
-    WHEN 'syllabus_day' THEN 50
-    WHEN 'achievement' THEN 100
-    WHEN 'quiz_complete' THEN 25
-    ELSE NULL
-  END;
-
-  IF v_expected_amount IS NULL OR p_amount <> v_expected_amount THEN
-    RAISE EXCEPTION 'Invalid reward reason or point amount'
+  IF v_answer = '' THEN
+    RAISE EXCEPTION 'An answer is required to earn question points'
       USING ERRCODE = '22023';
   END IF;
 
-  IF p_reference_id IS NULL OR btrim(p_reference_id) = '' THEN
-    RAISE EXCEPTION 'A unique reward reference is required'
+  IF char_length(v_answer) > 10000 THEN
+    RAISE EXCEPTION 'Answer is too long'
       USING ERRCODE = '22023';
   END IF;
 
-  -- The client uses reason:reference:userId. Reject mismatched ownership tags.
-  IF left(p_reference_id, length(p_reason) + 1) <> p_reason || ':'
-     OR right(p_reference_id, length(p_user_id::TEXT)) <> p_user_id::TEXT THEN
-    RAISE EXCEPTION 'Invalid reward reference'
+  -- Read the authoritative answer from the official, visible question bank.
+  -- Never accept a client-provided correctness flag or point amount.
+  SELECT q.correct_answer
+    INTO v_correct_answer
+  FROM public.study_questions AS q
+  WHERE q.id = v_question_id
+    AND q.hidden = false;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Question is unavailable for scoring'
       USING ERRCODE = '22023';
   END IF;
 
-  v_reference_key := split_part(p_reference_id, ':', 2);
-  IF v_reference_key IS NULL OR btrim(v_reference_key) = '' THEN
-    RAISE EXCEPTION 'A non-empty reward reference key is required'
-      USING ERRCODE = '22023';
+  v_is_correct :=
+    v_correct_answer IS NOT NULL
+    AND btrim(v_correct_answer) <> ''
+    AND upper(btrim(v_correct_answer)) <> 'TBD'
+    AND upper(v_answer) = upper(btrim(v_correct_answer));
+
+  -- One attempt reward per student/question. A later correct submission can
+  -- still earn the separate correctness reward if the first attempt was wrong.
+  INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
+  VALUES (v_user_id, v_question_id, 'attempt')
+  ON CONFLICT (user_id, question_id, reward_type) DO NOTHING
+  RETURNING true INTO v_attempt_awarded;
+
+  v_attempt_awarded := COALESCE(v_attempt_awarded, false);
+
+  IF v_attempt_awarded THEN
+    INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+    VALUES (
+      v_user_id,
+      5,
+      'answered_question',
+      'answered_question:' || v_question_id || ':' || v_user_id::TEXT
+    );
   END IF;
 
-  -- Fast idempotency check means retries of an existing reward still succeed
-  -- even if the user has reached a per-day reward cap.
-  IF EXISTS (
-    SELECT 1
-    FROM public.score_events
-    WHERE user_id = p_user_id
-      AND reference_id = p_reference_id
-  ) THEN
-    RETURN jsonb_build_object('success', true, 'duplicate', true);
-  END IF;
+  -- One correctness reward per student/question, checked by this function.
+  IF v_is_correct THEN
+    INSERT INTO public.question_reward_claims (user_id, question_id, reward_type)
+    VALUES (v_user_id, v_question_id, 'correct')
+    ON CONFLICT (user_id, question_id, reward_type) DO NOTHING
+    RETURNING true INTO v_correct_awarded;
 
-  IF p_reason IN ('answered_question', 'correct_answer') THEN
-    SELECT EXISTS (
-      SELECT 1
-      FROM public.study_questions q
-      WHERE q.id::TEXT = v_reference_key
-        AND q.hidden = false
-      UNION ALL
-      SELECT 1
-      FROM public.custom_questions q
-      WHERE q.id::TEXT = v_reference_key
-        AND q.user_id = p_user_id
-    ) INTO v_question_exists;
+    v_correct_awarded := COALESCE(v_correct_awarded, false);
 
-    IF NOT v_question_exists THEN
-      RAISE EXCEPTION 'Question reward reference is not valid for this user'
-        USING ERRCODE = '22023';
-    END IF;
-
-    IF p_reason = 'correct_answer' THEN
-      SELECT EXISTS (
-        SELECT 1
-        FROM public.study_questions q
-        WHERE q.id::TEXT = v_reference_key
-          AND q.hidden = false
-          AND q.correct_answer IS NOT NULL
-          AND btrim(q.correct_answer) <> ''
-          AND upper(btrim(q.correct_answer)) <> 'TBD'
-        UNION ALL
-        SELECT 1
-        FROM public.custom_questions q
-        WHERE q.id::TEXT = v_reference_key
-          AND q.user_id = p_user_id
-          AND btrim(q.correct_answer) <> ''
-          AND upper(btrim(q.correct_answer)) <> 'TBD'
-      ) INTO v_question_exists;
-
-      IF NOT v_question_exists THEN
-        RAISE EXCEPTION 'Cannot award correctness for a question without an answer key'
-          USING ERRCODE = '22023';
-      END IF;
-    END IF;
-  ELSIF p_reason = 'syllabus_day' THEN
-    IF v_reference_key !~ '^[0-9]+$' THEN
-      RAISE EXCEPTION 'Invalid syllabus day reward reference'
-        USING ERRCODE = '22023';
-    END IF;
-    IF v_reference_key::INTEGER NOT BETWEEN 1 AND 30 THEN
-      RAISE EXCEPTION 'Invalid syllabus day reward reference'
-        USING ERRCODE = '22023';
-    END IF;
-  ELSIF p_reason = 'streak_day' THEN
-    IF v_reference_key !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' THEN
-      RAISE EXCEPTION 'Invalid streak date reward reference'
-        USING ERRCODE = '22023';
-    END IF;
-    v_reference_date := to_date(v_reference_key, 'YYYY-MM-DD');
-    IF to_char(v_reference_date, 'YYYY-MM-DD') <> v_reference_key
-       OR v_reference_date NOT BETWEEN CURRENT_DATE - 1 AND CURRENT_DATE + 1 THEN
-      RAISE EXCEPTION 'Streak rewards are limited to the current local date'
-        USING ERRCODE = '22023';
-    END IF;
-  ELSIF p_reason = 'quiz_complete' THEN
-    SELECT COUNT(*)::INTEGER INTO v_quiz_awards_last_24h
-    FROM public.score_events
-    WHERE user_id = p_user_id
-      AND reason = 'quiz_complete'
-      AND created_at >= now() - interval '24 hours';
-
-    IF v_quiz_awards_last_24h >= 20 THEN
-      RAISE EXCEPTION 'Daily quiz reward limit reached'
-        USING ERRCODE = '22023';
-    END IF;
-  ELSIF p_reason = 'achievement' THEN
-    IF v_reference_key NOT IN (
-      'first_day', 'streak_3', 'streak_7', 'streak_14', 'streak_30',
-      'first_10', 'first_50', 'first_100', 'first_500', 'first_1000',
-      'master_10', 'master_50', 'master_100', 'master_200',
-      'accuracy_high', 'accuracy_perfect', 'perfect_10', 'all_subjects',
-      'four_subjects', 'first_upload', 'upload_5', 'upload_10',
-      'syllabus_start', 'syllabus_week1', 'syllabus_half', 'syllabus_25',
-      'syllabus_complete', 'night_owl', 'early_bird'
-    ) THEN
-      RAISE EXCEPTION 'Invalid achievement reward reference'
-        USING ERRCODE = '22023';
+    IF v_correct_awarded THEN
+      INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+      VALUES (
+        v_user_id,
+        10,
+        'correct_answer',
+        'correct_answer:' || v_question_id || ':' || v_user_id::TEXT
+      );
     END IF;
   END IF;
 
-  INSERT INTO public.score_events (user_id, amount, reason, reference_id)
-  VALUES (p_user_id, p_amount, p_reason, p_reference_id)
-  ON CONFLICT (user_id, reference_id) WHERE reference_id IS NOT NULL
-  DO NOTHING
-  RETURNING id INTO v_inserted_id;
-
-  IF v_inserted_id IS NULL THEN
-    RETURN jsonb_build_object('success', true, 'duplicate', true);
-  END IF;
-
-  RETURN jsonb_build_object('success', true, 'duplicate', false);
+  RETURN jsonb_build_object(
+    'success', true,
+    'attempt_awarded', v_attempt_awarded,
+    'correct_awarded', v_correct_awarded,
+    'is_correct', v_is_correct,
+    'duplicate', NOT (v_attempt_awarded OR v_correct_awarded)
+  );
 END;
-$$;
+$function$;
 
-REVOKE EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.award_score(UUID, INTEGER, TEXT, TEXT) TO authenticated, service_role;
+REVOKE ALL PRIVILEGES ON FUNCTION public.record_question_attempt(TEXT, TEXT)
+  FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.record_question_attempt(TEXT, TEXT)
+  TO authenticated;
+
+COMMENT ON FUNCTION public.record_question_attempt(TEXT, TEXT) IS
+  'Awards the fixed 5-point attempt and 10-point correctness rewards after checking the official answer key and a private per-user claim ledger.';

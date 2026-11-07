@@ -168,6 +168,10 @@ SELECT is(
   'the eligible student receives exactly five attempt points and ten correctness points'
 );
 
+-- This ledger is intentionally private to API roles too. The migration test
+-- checks its contents as the local database owner, not as a client role.
+RESET ROLE;
+
 SELECT is(
   (
     SELECT count(*)::INTEGER

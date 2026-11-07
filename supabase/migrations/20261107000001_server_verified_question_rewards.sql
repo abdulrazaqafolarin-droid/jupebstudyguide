@@ -102,6 +102,24 @@ BEGIN
       USING ERRCODE = '22023';
   END IF;
 
+  -- SECURITY DEFINER bypasses study_questions RLS, so explicitly mirror the
+  -- entitlement gate used by the question-bank SELECT policy. A visible
+  -- question must not become a reward endpoint for expired or unactivated
+  -- accounts that cannot access the question in the app.
+  IF NOT EXISTS (
+    SELECT 1
+    FROM public.profiles AS p
+    WHERE p.user_id = v_user_id
+      AND (
+        p.is_admin IS TRUE
+        OR p.is_activated IS TRUE
+        OR p.trial_expires_at > statement_timestamp()
+      )
+  ) THEN
+    RAISE EXCEPTION 'An active trial or activation is required to earn question points'
+      USING ERRCODE = '42501';
+  END IF;
+
   -- Only the centrally curated, visible JUPEB question bank can award points.
   -- Student-created custom_questions remain usable for practice but are not
   -- trusted evidence for leaderboard rewards.
@@ -183,4 +201,4 @@ GRANT EXECUTE ON FUNCTION public.record_question_attempt(TEXT, TEXT)
   TO authenticated;
 
 COMMENT ON FUNCTION public.record_question_attempt(TEXT, TEXT) IS
-  'Awards fixed attempt and correctness rewards only for official visible questions, after checking the database answer key and private per-student claim ledger.';
+  'Awards fixed attempt and correctness rewards only to activated or in-trial users for official visible questions, after checking the database answer key and private per-student claim ledger.';

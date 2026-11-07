@@ -30,8 +30,9 @@ const Auth = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [mfaVerifying, setMfaVerifying] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { signIn, verifyMfa, signUp, resetPassword, updatePassword } = useAuth();
+  const { signIn, verifyMfa, signUp, resetPassword, updatePassword, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -55,6 +56,22 @@ const Auth = () => {
     }
     setErrors({});
     return true;
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) {
+        toast({
+          title: "Google sign-in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -336,6 +353,29 @@ const Auth = () => {
                 onSubmit={handleSubmit}
                 className="space-y-4"
               >
+                {(isLogin || isSignup) && (Capacitor.getPlatform() === 'web' || Capacitor.getPlatform() === 'ios') && (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleGoogleSignIn}
+                      disabled={loading || googleLoading}
+                    >
+                      {googleLoading ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <span aria-hidden="true" className="mr-2 text-base font-bold text-[#4285F4]">G</span>
+                      )}
+                      Continue with Google
+                    </Button>
+                    <div className="flex items-center gap-3 py-1">
+                      <div className="h-px flex-1 bg-border" />
+                      <span className="text-xs text-muted-foreground">or continue with email</span>
+                      <div className="h-px flex-1 bg-border" />
+                    </div>
+                  </>
+                )}
                 {!isRecovery && (
                 <div className="space-y-2">
                   <div className="relative">
@@ -433,7 +473,7 @@ const Auth = () => {
                 <Button
                   type="submit"
                   className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 >
                   {loading ? (
                     <>

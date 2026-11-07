@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
+import { Capacitor } from '@capacitor/core';
 
 interface AuthContextType {
   user: User | null;
@@ -113,7 +114,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            // iOS email verification must return to the installed app so
+            // NativeAuthDeepLinkBridge can exchange and persist the session.
+            emailRedirectTo: Capacitor.getPlatform() === 'ios'
+              ? 'com.jupeb.master://auth'
+              : window.location.origin,
             data: { display_name: email.split('@')[0] },
           },
         }),

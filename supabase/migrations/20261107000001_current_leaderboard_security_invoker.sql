@@ -1,3 +1,6 @@
+-- Public/anonymous users do not need access to this authenticated leaderboard view.
+REVOKE ALL ON TABLE public.current_leaderboard FROM anon;
+
 -- Ensure leaderboard reads obey the caller's permissions and score_events RLS.
 -- The view remains readable by authenticated users through its existing grant,
 -- but anonymous callers no longer inherit the view owner's table privileges.

@@ -14,6 +14,8 @@ DECLARE
   v_week_end DATE;
   v_champion_id UUID;
   v_existing UUID;
+  v_existing_champion UUID;
+  v_existing_badge_awarded BOOLEAN;
 BEGIN
   -- Use UTC explicitly to match score event timestamps and the cron schedule.
   v_current_week_start := date_trunc('week', now() AT TIME ZONE 'UTC')::DATE;
@@ -26,11 +28,18 @@ BEGIN
     hashtextextended('weekly-champion:' || v_week_start::TEXT, 0)
   );
 
-  SELECT id INTO v_existing
+  SELECT id, champion_user_id, champion_badge_awarded
+  INTO v_existing, v_existing_champion, v_existing_badge_awarded
   FROM public.leaderboard_weeks
   WHERE week_start = v_week_start;
 
-  IF FOUND THEN
+  -- Older versions inserted an empty row at the START of the week, before
+  -- there could be a champion. Preserve finalized rows, but allow those blank
+  -- placeholders to be filled now that the week has actually ended.
+  IF FOUND AND (
+    v_existing_champion IS NOT NULL
+    OR COALESCE(v_existing_badge_awarded, false)
+  ) THEN
     RETURN;
   END IF;
 
@@ -42,18 +51,35 @@ BEGIN
   ORDER BY SUM(se.amount) DESC, se.user_id ASC
   LIMIT 1;
 
-  INSERT INTO public.leaderboard_weeks (
-    week_start,
-    week_end,
-    champion_user_id,
-    champion_badge_awarded
-  )
-  VALUES (
-    v_week_start,
-    v_week_end,
-    v_champion_id,
-    v_champion_id IS NOT NULL
-  );
+  IF v_existing IS NULL THEN
+    INSERT INTO public.leaderboard_weeks (
+      week_start,
+      week_end,
+      champion_user_id,
+      champion_badge_awarded
+    )
+    VALUES (
+      v_week_start,
+      v_week_end,
+      v_champion_id,
+      v_champion_id IS NOT NULL
+    );
+  ELSIF v_champion_id IS NOT NULL THEN
+    UPDATE public.leaderboard_weeks
+    SET champion_user_id = v_champion_id,
+        champion_badge_awarded = true,
+        week_end = v_week_end
+    WHERE id = v_existing
+      AND champion_user_id IS NULL
+      AND NOT COALESCE(champion_badge_awarded, false);
+
+    IF NOT FOUND THEN
+      RETURN;
+    END IF;
+  ELSE
+    -- Keep an empty placeholder intact when the completed week had no scores.
+    RETURN;
+  END IF;
 
   IF v_champion_id IS NOT NULL THEN
     INSERT INTO public.score_events (user_id, amount, reason, reference_id)

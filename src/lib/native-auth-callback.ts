@@ -6,10 +6,21 @@ function readParam(search: URLSearchParams, hash: URLSearchParams, key: string):
 }
 
 /**
+ * Keeps text returned by an auth provider safe and predictable for a toast.
+ */
+export function sanitizeNativeAuthMessage(message: string | null | undefined): string {
+  const safeMessage = message
+    ?.replace(/[\u0000-\u001F\u007F]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 240);
+
+  return safeMessage || "Sign-in could not be completed. Please try again.";
+}
+
+/**
  * Reads a provider error returned to the native app after an OAuth attempt.
  * Supabase may put these values in either the query string or URL fragment.
- * The message is rendered as text, so strip control characters and cap its
- * length before showing it to the user.
  */
 export function getNativeAuthCallbackError(rawUrl: string): string | null {
   let url: URL;
@@ -35,11 +46,5 @@ export function getNativeAuthCallbackError(rawUrl: string): string | null {
     return "Sign-in was cancelled or not approved. You can try again.";
   }
 
-  const safeDescription = description
-    ?.replace(/[\u0000-\u001F\u007F]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 240);
-
-  return safeDescription || "Sign-in could not be completed. Please try again.";
+  return sanitizeNativeAuthMessage(description);
 }

@@ -13,7 +13,6 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   updatePassword: (password: string) => Promise<{ error: Error | null }>;
-  updatePassword: (password: string) => Promise<{ error: Error | null }>;
   deleteAccount: () => Promise<{ error: Error | null }>;
 }
 
@@ -223,18 +222,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             : `${window.location.origin}/auth?flow=recovery`,
         }),
         "Sending password reset email",
-      );
-      return { error };
-    } catch (error) {
-      return { error: error as Error };
-    }
-  };
-
-  const updatePassword = async (password: string) => {
-    try {
-      const { error } = await withAuthRequestTimeout(
-        supabase.auth.updateUser({ password }),
-        "Updating password",
       );
       return { error };
     } catch (error) {

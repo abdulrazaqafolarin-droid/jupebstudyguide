@@ -36,8 +36,8 @@ export function getNativeAuthCallbackError(rawUrl: string): string | null {
   }
 
   const safeDescription = description
-    ?.replace(/[\\u0000-\\u001F\\u007F]/g, " ")
-    .replace(/\\s+/g, " ")
+    ?.replace(/[\u0000-\u001F\u007F]/g, " ")
+    .replace(/\s+/g, " ")
     .trim()
     .slice(0, 240);
 

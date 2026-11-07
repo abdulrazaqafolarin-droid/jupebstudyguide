@@ -138,8 +138,10 @@ jobs:
           xcrun simctl bootstatus "$DEVICE_UDID" -b
           xcrun simctl install "$DEVICE_UDID" "$APP"
           xcrun simctl launch "$DEVICE_UDID" com.jupeb.master
-          sleep 5
+          # A cold WKWebView may need more time than the native process launch.
+          sleep 15
           xcrun simctl io "$DEVICE_UDID" screenshot "$RUNNER_TEMP/rutex-ios-boot.png"
+          xcrun simctl spawn "$DEVICE_UDID" log show --last 3m --style compact --predicate 'process == "App" OR process == "WebContent" OR subsystem CONTAINS[c] "WebKit"' > "$RUNNER_TEMP/rutex-ios-runtime.log" 2>&1 || true
           xcrun simctl terminate "$DEVICE_UDID" com.jupeb.master || true
 
       - name: Upload simulator build and generated Xcode project
@@ -150,6 +152,7 @@ jobs:
             ${{ runner.temp }}/rutex-ios-derived/Build/Products/Debug-iphonesimulator/App.app
             ios/
             ${{ runner.temp }}/rutex-ios-boot.png
+            ${{ runner.temp }}/rutex-ios-runtime.log
           if-no-files-found: error
           retention-days: 14
 

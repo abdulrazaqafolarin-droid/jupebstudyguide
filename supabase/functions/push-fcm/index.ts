@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
+import { createApnsProviderToken, sendApnsAlert, type ApnsConfig } from "../_shared/apns.ts";
 
 // push-fcm — closed-app message push (FCM HTTP v1 + APNs + Web Push).
 // Invoked by the dispatch_push_notification trigger on messages INSERT via
@@ -144,14 +145,6 @@ async function getAccessToken(sa: ServiceAccount): Promise<string> {
 }
 
 
-interface ApnsConfig {
-  keyId: string;
-  teamId: string;
-  bundleId: string;
-  privateKey: string;
-  environment: "sandbox" | "production";
-}
-
 function loadApnsConfig(): ApnsConfig | null {
   if (!APNS_KEY_ID || !APNS_TEAM_ID || !APNS_AUTH_KEY) return null;
   if (!/^[A-Z0-9]{10}$/.test(APNS_KEY_ID) || !/^[A-Z0-9]{10}$/.test(APNS_TEAM_ID)) {
@@ -169,68 +162,16 @@ function loadApnsConfig(): ApnsConfig | null {
   };
 }
 
-/** Apple APNs provider token: ES256 JWT, valid for up to one hour. */
+/** Reuse an APNs provider token within its 50-minute cache window. */
 async function getApnsProviderToken(config: ApnsConfig): Promise<string> {
   const nowMs = Date.now();
   if (cachedApnsToken && cachedApnsToken.expiresAtMs > nowMs + 60_000) {
     return cachedApnsToken.token;
   }
-  const issuedAt = Math.floor(nowMs / 1000);
-  const header = b64url(
-    new TextEncoder().encode(JSON.stringify({ alg: "ES256", kid: config.keyId })),
-  );
-  const claims = b64url(
-    new TextEncoder().encode(JSON.stringify({ iss: config.teamId, iat: issuedAt })),
-  );
-  const unsigned = `${header}.${claims}`;
-  const key = await crypto.subtle.importKey(
-    "pkcs8",
-    pemToBytes(config.privateKey),
-    { name: "ECDSA", namedCurve: "P-256" },
-    false,
-    ["sign"],
-  );
-  const signature = await crypto.subtle.sign(
-    { name: "ECDSA", hash: "SHA-256" },
-    key,
-    new TextEncoder().encode(unsigned),
-  );
-  const token = `${unsigned}.${b64url(signature)}`;
+  const token = await createApnsProviderToken(config, nowMs);
   cachedApnsToken = { token, expiresAtMs: nowMs + 50 * 60_000 };
   return token;
 }
-
-/** Send an alert push to one APNs device token; no credentials are logged. */
-async function sendApnsAlert(
-  deviceToken: string,
-  title: string,
-  body: string,
-  data: Record<string, string>,
-  config: ApnsConfig,
-  providerToken: string,
-): Promise<{ ok: boolean; status: number; reason?: string }> {
-  const host = config.environment === "sandbox"
-    ? "api.sandbox.push.apple.com"
-    : "api.push.apple.com";
-  const response = await fetch(`https://${host}/3/device/${deviceToken}`, {
-    method: "POST",
-    headers: {
-      authorization: `bearer ${providerToken}`,
-      "apns-topic": config.bundleId,
-      "apns-push-type": "alert",
-      "apns-priority": "10",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      aps: { alert: { title, body }, sound: "default" },
-      ...data,
-    }),
-  });
-  if (response.ok) return { ok: true, status: response.status };
-  const payload = await response.json().catch(() => ({})) as { reason?: string };
-  return { ok: false, status: response.status, reason: payload.reason };
-}
-
 
 function buildPreview(message: MessageRow): string {
   switch (message.message_type) {

@@ -190,30 +190,50 @@ grant execute on function public.get_admin_dashboard_stats(text) to authenticate
 revoke execute on function public.get_ai_usage_summary(text) from public, anon;
 grant execute on function public.get_ai_usage_summary(text) to authenticated, service_role;
 
-revoke execute on function public.admin_delete_question(text) from public, anon;
-grant execute on function public.admin_delete_question(text) to authenticated, service_role;
+-- Some installations received admin_delete_question through an out-of-band
+-- migration that is not present in this repository's clean-install history.
+-- Preserve its grants when present, but do not make fresh local setup fail
+-- when the optional RPC has not been created yet.
+do $function$
+begin
+  if to_regprocedure('public.admin_delete_question(text)') is not null then
+    execute 'revoke execute on function public.admin_delete_question(text) from public, anon';
+    execute 'grant execute on function public.admin_delete_question(text) to authenticated, service_role';
+  end if;
+end;
+$function$;
 
 -- ── 3. ai_api_keys_config: admin-only ─────────────────────────────────────
 -- The old authenticated SELECT policy exposed the stored admin email to
 -- every signed-in user, and the per-command policies referenced this table
 -- inside their own quals (recursion hazard). One admin-scoped ALL policy.
-
-drop policy if exists authenticated_select_config on public.ai_api_keys_config;
-drop policy if exists admin_only_select_config on public.ai_api_keys_config;
-drop policy if exists admin_only_insert_config on public.ai_api_keys_config;
-drop policy if exists admin_only_update_config on public.ai_api_keys_config;
-drop policy if exists admin_only_delete_config on public.ai_api_keys_config;
-
-create policy ai_config_admin_all on public.ai_api_keys_config
-  for all to authenticated
-  using (exists (
-    select 1 from public.profiles p
-    where p.user_id = auth.uid() and p.is_admin = true
-  ))
-  with check (exists (
-    select 1 from public.profiles p
-    where p.user_id = auth.uid() and p.is_admin = true
-  ));
+--
+-- The table is present in the deployed project, but its original creation
+-- migration is absent from this repository's clean-install history. Apply the
+-- policy repair when the table exists; do not fail a fresh local rebuild when
+-- that optional, out-of-band table has not been created.
+DO $function$
+BEGIN
+  IF to_regclass('public.ai_api_keys_config') IS NOT NULL THEN
+    EXECUTE 'DROP POLICY IF EXISTS authenticated_select_config ON public.ai_api_keys_config';
+    EXECUTE 'DROP POLICY IF EXISTS admin_only_select_config ON public.ai_api_keys_config';
+    EXECUTE 'DROP POLICY IF EXISTS admin_only_insert_config ON public.ai_api_keys_config';
+    EXECUTE 'DROP POLICY IF EXISTS admin_only_update_config ON public.ai_api_keys_config';
+    EXECUTE 'DROP POLICY IF EXISTS admin_only_delete_config ON public.ai_api_keys_config';
+    EXECUTE 'DROP POLICY IF EXISTS ai_config_admin_all ON public.ai_api_keys_config';
+    EXECUTE 'CREATE POLICY ai_config_admin_all ON public.ai_api_keys_config
+      FOR ALL TO authenticated
+      USING (EXISTS (
+        SELECT 1 FROM public.profiles p
+        WHERE p.user_id = auth.uid() AND p.is_admin = true
+      ))
+      WITH CHECK (EXISTS (
+        SELECT 1 FROM public.profiles p
+        WHERE p.user_id = auth.uid() AND p.is_admin = true
+      ))';
+  END IF;
+END;
+$function$;
 
 -- ── 4. scale indexes ──────────────────────────────────────────────────────
 

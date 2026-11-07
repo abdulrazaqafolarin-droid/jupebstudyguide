@@ -147,26 +147,26 @@ SELECT is(
 );
 
 SELECT throws_ok(
-  $INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+  $emptyref$INSERT INTO public.score_events (user_id, amount, reason, reference_id)
     VALUES (
       'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
       100,
       'achievement',
       ''
-    )$,
+    )$emptyref$,
   '23514',
   NULL,
   'the trigger rejects an empty score reference'
 );
 
 SELECT throws_ok(
-  $INSERT INTO public.score_events (user_id, amount, reason, reference_id)
+  $duplicateref$INSERT INTO public.score_events (user_id, amount, reason, reference_id)
     VALUES (
       'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
       100,
       'achievement',
       'achievement:first_day:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
-    )$,
+    )$duplicateref$,
   '23505',
   NULL,
   'the trigger rejects a direct duplicate score reference'

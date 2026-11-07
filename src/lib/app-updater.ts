@@ -123,6 +123,7 @@ export async function downloadApk(
   expectedSha256: string,
   onProgress: (fraction: number) => void,
 ): Promise<string> {
+  if (!isAndroidApp()) throw new Error("APK downloads are only available in the Android app");
   if (url !== RELEASE_APK_URL) throw new Error("Untrusted APK download URL");
   if (!Number.isSafeInteger(versionCode) || versionCode < 1) {
     throw new Error("Release version code is invalid");
@@ -195,5 +196,6 @@ export async function openInstallSettings(): Promise<void> {
 }
 
 export async function installDownloadedApk(absolutePath: string): Promise<void> {
+  if (!isAndroidApp()) throw new Error("APK installation is only available in the Android app");
   await AppUpdater.installApk({ filePath: absolutePath });
 }

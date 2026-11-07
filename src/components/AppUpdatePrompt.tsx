@@ -105,7 +105,7 @@ export function AppUpdatePrompt() {
         release: pending.release,
         filePath: pending.filePath,
         message: message.toLowerCase().includes("permission")
-          ? "Android blocked this installation. Allow JUPEB Master to install unknown apps, then retry."
+          ? "Android blocked this installation. Allow Rutex Master(Jupeb) to install unknown apps, then retry."
           : "The APK downloaded, but Android could not open the installer. Retry the installation.",
       });
     } finally {
@@ -219,7 +219,7 @@ export function AppUpdatePrompt() {
               size="sm"
               className="h-8 shrink-0 gap-1.5"
               onClick={() => void openInstallSettings().catch(() => {
-                setPhase({ kind: "error", release, filePath: phase.filePath, message: "Could not open Android's install-permission settings. Open Settings → Apps → Special app access → Install unknown apps → JUPEB Master." });
+                setPhase({ kind: "error", release, filePath: phase.filePath, message: "Could not open Android's install-permission settings. Open Settings → Apps → Special app access → Install unknown apps → Rutex Master(Jupeb)." });
               })}
             >
               <ShieldCheck className="h-3.5 w-3.5" />

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Browser } from '@capacitor/browser';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
@@ -10,6 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error: Error | null; needsEmailConfirmation?: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null; needsMfa?: boolean }>;
   verifyMfa: (code: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   updatePassword: (password: string) => Promise<{ error: Error | null }>;
@@ -128,6 +130,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return { error, needsEmailConfirmation: !error && !data.session };
     } catch (error) {
       return { error: error as Error, needsEmailConfirmation: false };
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    const isNativeIos = Capacitor.getPlatform() === 'ios';
+    try {
+      const { data, error } = await withAuthRequestTimeout(
+        supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            // Native iOS returns through the registered app URL scheme.
+            // The web app returns to its own root after Supabase exchanges OAuth.
+            redirectTo: isNativeIos ? 'com.jupeb.master://auth' : window.location.origin,
+            skipBrowserRedirect: isNativeIos,
+            queryParams: { prompt: 'select_account' },
+          },
+        }),
+        'Starting Google sign in',
+      );
+      if (error) return { error };
+      if (isNativeIos) {
+        if (!data.url) {
+          return { error: new Error('Google sign-in did not return an authorization URL.') };
+        }
+        await Browser.open({ url: data.url });
+      }
+      return { error: null };
+    } catch (error) {
+      return { error: error as Error };
     }
   };
 
@@ -259,6 +290,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signUp,
     signIn,
     verifyMfa,
+    signInWithGoogle,
     signOut,
     resetPassword,
     updatePassword,

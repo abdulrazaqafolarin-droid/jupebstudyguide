@@ -5,14 +5,14 @@ import { Capacitor } from "@capacitor/core";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { getNativeAuthCallbackError } from "@/lib/native-auth-callback";
+import { getNativeAuthCallbackError, sanitizeNativeAuthMessage } from "@/lib/native-auth-callback";
 
 const APP_SCHEME = "com.jupeb.master:";
 const CALLBACK_HOST = "auth";
 
 /**
- * Exchanges Supabase email-verification links delivered through the iOS
- * custom URL scheme. The listener handles both warm and cold app launches.
+ * Completes Supabase OAuth and email-verification callbacks delivered
+ * through the iOS custom URL scheme, including warm and cold app launches.
  */
 export function NativeAuthDeepLinkBridge() {
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ export function NativeAuthDeepLinkBridge() {
 
       const callbackError = getNativeAuthCallbackError(rawUrl);
       if (callbackError) {
-        console.warn("[auth] native provider sign-in failed:", callbackError);
+        console.warn("[auth] native provider sign-in returned an error.");
         toast({
           title: "Sign-in could not be completed",
           description: callbackError,
@@ -94,7 +94,12 @@ export function NativeAuthDeepLinkBridge() {
         }
 
         if (error) {
-          console.warn("[auth] iOS email verification could not be completed:", error.message);
+          console.warn("[auth] iOS auth callback could not be completed.");
+          toast({
+            title: "Sign-in could not be completed",
+            description: sanitizeNativeAuthMessage(error.message),
+            variant: "destructive",
+          });
           navigate("/auth", { replace: true });
           return;
         }
@@ -103,10 +108,12 @@ export function NativeAuthDeepLinkBridge() {
         // normal auth storage and emits AUTH state changes for the whole app.
         navigate(isPasswordRecovery ? "/auth?flow=recovery" : "/", { replace: true });
       } catch (error) {
-        console.warn(
-          "[auth] iOS email verification failed:",
-          error instanceof Error ? error.message : "unknown error",
-        );
+        console.warn("[auth] iOS auth callback failed.");
+        toast({
+          title: "Sign-in could not be completed",
+          description: sanitizeNativeAuthMessage(error instanceof Error ? error.message : null),
+          variant: "destructive",
+        });
         navigate("/auth", { replace: true });
       }
     };

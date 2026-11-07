@@ -2,7 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 SET LOCAL search_path = extensions, public;
 
-SELECT plan(11);
+SELECT plan(12);
 
 SELECT ok(
   NOT has_function_privilege(
@@ -95,6 +95,20 @@ VALUES (
   false
 );
 
+INSERT INTO public.study_questions (
+  id, subject, year, category, question, options, correct_answer, hidden
+)
+VALUES (
+  'server-reward-hidden-test',
+  'Chemistry',
+  2024,
+  'objective',
+  'Local-only hidden question used to verify reward denial',
+  '[{"label":"A","text":"Option A"},{"label":"B","text":"Option B"}]'::jsonb,
+  'A',
+  true
+);
+
 SET LOCAL ROLE authenticated;
 SET LOCAL "request.jwt.claim.sub" = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 SET LOCAL "request.jwt.claim.role" = 'authenticated';
@@ -114,6 +128,14 @@ SET LOCAL "request.jwt.claim.sub" = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 SET LOCAL "request.jwt.claim.role" = 'authenticated';
 SET LOCAL "request.jwt.claims" =
   '{"sub":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","role":"authenticated"}';
+
+SELECT is(
+  (public.record_question_attempt(
+    'server-reward-hidden-test', 'A'
+  )->>'eligible_for_points')::BOOLEAN,
+  false,
+  'a hidden official question cannot award points'
+);
 
 SELECT is(
   (public.record_question_attempt(

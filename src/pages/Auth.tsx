@@ -393,10 +393,8 @@ const Auth = () => {
                       onClick={handleAppleSignIn}
                       disabled={loading || googleLoading || appleLoading}
                     >
-                      {appleLoading ? (
+                      {appleLoading && (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <span aria-hidden="true" className="mr-2 text-base">●</span>
                       )}
                       Continue with Apple
                     </Button>

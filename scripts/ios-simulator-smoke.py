@@ -50,7 +50,7 @@ def main() -> int:
     )
     devices_data = json.loads(devices_result.stdout)
     candidates = [
-        device
+        (tuple(int(part) for part in runtime.split("iOS-", 1)[1].split("-")), device)
         for runtime, devices in devices_data.get("devices", {}).items()
         if runtime.startswith("com.apple.CoreSimulator.SimRuntime.iOS-")
         for device in devices
@@ -58,8 +58,12 @@ def main() -> int:
     ]
     if not candidates:
         raise SystemExit("No available iPhone simulator was found")
-    candidates.sort(key=lambda device: device.get("name", ""), reverse=True)
-    device = candidates[0]
+    # Prefer the newest installed iOS runtime, then a mainstream iPhone model.
+    candidates.sort(
+        key=lambda item: (item[0], item[1].get("name") == "iPhone 17 Pro"),
+        reverse=True,
+    )
+    device = candidates[0][1]
     udid = device["udid"]
     print(f"Using {device['name']} ({udid}), current state: {device.get('state')}", flush=True)
 
@@ -72,10 +76,30 @@ def main() -> int:
     # Allow the bundled WKWebView to paint before taking a visual checkpoint.
     time.sleep(15)
     SCREENSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    run(
-        ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)],
-        timeout_seconds=45,
-    )
+    screenshot_command = ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)]
+    screenshot_error: RuntimeError | None = None
+    for attempt in range(2):
+        try:
+            run(screenshot_command, timeout_seconds=120)
+            screenshot_error = None
+            break
+        except RuntimeError as error:
+            screenshot_error = error
+            if attempt == 0:
+                print(
+                    "First simulator screenshot attempt timed out; relaunching the app "
+                    "and retrying once.",
+                    flush=True,
+                )
+                run(
+                    ["xcrun", "simctl", "terminate", udid, BUNDLE_ID],
+                    timeout_seconds=30,
+                    check=False,
+                )
+                run(["xcrun", "simctl", "launch", udid, BUNDLE_ID], timeout_seconds=90)
+                time.sleep(15)
+    if screenshot_error is not None:
+        raise screenshot_error
     if not SCREENSHOT_PATH.is_file() or SCREENSHOT_PATH.stat().st_size < 10_000:
         raise RuntimeError("Simulator screenshot was missing or unexpectedly small")
 

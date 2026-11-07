@@ -2,7 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 SET LOCAL search_path = extensions, public;
 
-SELECT plan(9);
+SELECT plan(10);
 
 SELECT ok(
   (
@@ -174,6 +174,17 @@ SELECT is(
   ),
   1,
   'the completed week has exactly one champion record'
+);
+
+SELECT is(
+  (
+    SELECT count(*)::INTEGER
+    FROM public.leaderboard_weeks
+    WHERE week_start =
+      date_trunc('week', now() AT TIME ZONE 'UTC')::DATE
+  ),
+  0,
+  'the function does not create a premature record for the in-progress week'
 );
 
 SELECT * FROM finish();

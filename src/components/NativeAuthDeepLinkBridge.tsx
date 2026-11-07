@@ -38,6 +38,7 @@ export function NativeAuthDeepLinkBridge() {
       const code = params.get("code") ?? hash.get("code");
       const tokenHash = params.get("token_hash") ?? hash.get("token_hash");
       const type = params.get("type") ?? hash.get("type");
+      const isPasswordRecovery = params.get("flow") === "recovery" || type === "recovery";
 
       try {
         let error: Error | null = null;
@@ -45,7 +46,7 @@ export function NativeAuthDeepLinkBridge() {
         if (code) {
           const result = await supabase.auth.exchangeCodeForSession(code);
           error = result.error;
-        } else if (tokenHash && (type === "signup" || type === "invite" || type === "magiclink")) {
+        } else if (tokenHash && (type === "signup" || type === "invite" || type === "magiclink" || type === "recovery")) {
           const result = await supabase.auth.verifyOtp({
             token_hash: tokenHash,
             type,
@@ -74,7 +75,7 @@ export function NativeAuthDeepLinkBridge() {
 
         // The successful exchange persists the session through Supabase's
         // normal auth storage and emits AUTH state changes for the whole app.
-        navigate("/", { replace: true });
+        navigate(isPasswordRecovery ? "/auth?flow=recovery" : "/", { replace: true });
       } catch (error) {
         console.warn(
           "[auth] iOS email verification failed:",

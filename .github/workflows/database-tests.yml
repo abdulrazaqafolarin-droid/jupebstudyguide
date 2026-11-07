@@ -31,13 +31,6 @@ jobs:
         with:
           version: 2.122.1
 
-      - name: Enable pg_net for local migration compatibility
-        run: |
-          cat >> supabase/config.toml <<'EOF'
-          [experimental.webhooks]
-          enabled = true
-          EOF
-
       - name: Start an isolated local Supabase stack
         run: supabase start
 

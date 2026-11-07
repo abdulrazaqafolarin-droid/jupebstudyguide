@@ -66,8 +66,13 @@ text = path.read_text(encoding="utf-8")
 
 # Edit only the app target's XCBuildConfiguration blocks. A broad search for
 # PRODUCT_BUNDLE_IDENTIFIER could otherwise cross Xcode configuration blocks.
-config_starts = list(re.finditer(r"/\* (Debug|Release|Profile) \*/ = \{", text))
+config_starts = list(re.finditer(r"/\\* (Debug|Release|Profile) \\*/ = \\{", text))
 updates = {"Debug": 0, "Release": 0, "Profile": 0}
+settings = {
+    "CODE_SIGN_ENTITLEMENTS": "App/App.entitlements",
+    "APS_ENVIRONMENT": None,
+    "IPHONEOS_DEPLOYMENT_TARGET": "15.0",
+}
 
 for match in reversed(config_starts):
     config = match.group(1)
@@ -91,28 +96,41 @@ for match in reversed(config_starts):
     if updates[config]:
         raise SystemExit(f"Found multiple app {config} configurations; review required")
 
-    build_settings = re.search(r"buildSettings = \{", block)
+    build_settings = re.search(r"buildSettings = \\{", block)
     if not build_settings:
         raise SystemExit(f"App {config} configuration has no buildSettings section")
 
     apns_env = "development" if config == "Debug" else "production"
-    insertion = (
-        f"buildSettings = {{\n"
-        f"\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;\n"
-        f"\t\t\t\tAPS_ENVIRONMENT = {apns_env};\n"
-        f"\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = 15.0;"
-    )
-    block = block[:build_settings.start()] + insertion + block[build_settings.end():]
-    text = text[:match.start()] + block + text[end:]
+    settings["APS_ENVIRONMENT"] = apns_env
+    block_lines = block.splitlines()
+    cleaned_lines = [
+        line for line in block_lines
+        if not any(re.match(rf"^\\s*{re.escape(key)}\\s*=", line) for key in settings)
+    ]
+    for index, line in enumerate(cleaned_lines):
+        if "buildSettings = {" in line:
+            indent = re.match(r"^\\s*", line).group(0) + "    "
+            additions = [
+                f"{indent}{key} = {value};"
+                for key, value in settings.items()
+            ]
+            cleaned_lines[index + 1:index + 1] = additions
+            break
+    else:
+        raise SystemExit(f"Could not insert settings into app {config} build configuration")
+
+    new_block = "\\n".join(cleaned_lines)
+    text = text[:match.start()] + new_block + text[end:]
     updates[config] += 1
 
-for config, count in updates.items():
-    if count != 1:
-        raise SystemExit(f"Expected exactly one Rutex app {config} configuration, found {count}")
+for config in ("Debug", "Release"):
+    if updates[config] != 1:
+        raise SystemExit(f"Expected exactly one Rutex app {config} configuration, found {updates[config]}")
+if updates["Profile"] > 1:
+    raise SystemExit("Found multiple Rutex app Profile configurations")
 
 if "PRODUCT_BUNDLE_IDENTIFIER = com.jupeb.master;" not in text:
     raise SystemExit("Expected iOS bundle identifier com.jupeb.master was not found")
-
 path.write_text(text, encoding="utf-8")
 print("Configured iOS 15 minimum and development/production APNs entitlements.")
 PY

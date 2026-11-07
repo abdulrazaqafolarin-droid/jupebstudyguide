@@ -220,79 +220,77 @@ def matching_brace_end(source: str, opening: int) -> int:
                 return offset + 1
     raise SystemExit("Unclosed Xcode project block while enabling Push Notifications")
 
-native_targets = re.search(
-    r"/\\* Begin PBXNativeTarget section \\*/(.*?)/\\* End PBXNativeTarget section \\*/",
-    text,
-    flags=re.S,
-)
-if not native_targets:
+native_start = text.find("/* Begin PBXNativeTarget section */")
+native_end = text.find("/* End PBXNativeTarget section */", native_start)
+if native_start < 0 or native_end < 0:
     raise SystemExit("Could not locate Xcode native targets")
-app_target = re.search(
-    r"(?m)^\\s*([A-F0-9]{24}) /\\* App \\*/ = \\{",
-    native_targets.group(1),
-)
-if not app_target:
+native_section = text[native_start:native_end]
+app_target_id = None
+for line in native_section.splitlines():
+    if "/* App */ =" in line and line.strip().endswith("= {"):
+        app_target_id = line.strip().split(" ", 1)[0]
+        break
+if not app_target_id or len(app_target_id) != 24:
     raise SystemExit("Could not locate the Capacitor App target")
-app_target_id = app_target.group(1)
 
-target_attributes = re.search(r"TargetAttributes\\s*=\\s*\\{", text)
-if not target_attributes:
+target_attributes_marker = "TargetAttributes = {"
+attributes_start = text.find(target_attributes_marker)
+if attributes_start < 0:
     raise SystemExit("Could not locate Xcode TargetAttributes")
-attributes_start = target_attributes.end() - 1
-attributes_end = matching_brace_end(text, attributes_start)
+attributes_opening = attributes_start + len(target_attributes_marker) - 1
+attributes_end = matching_brace_end(text, attributes_opening)
 attributes_block = text[attributes_start:attributes_end]
-app_attribute = re.search(
-    rf"(?m)^\\s*{re.escape(app_target_id)}\\s*=\\s*\\{{",
-    attributes_block,
-)
-if not app_attribute:
+app_target_marker = app_target_id + " = {"
+app_target_offset = attributes_block.find(app_target_marker)
+if app_target_offset < 0:
     raise SystemExit("Could not locate App target attributes")
-app_block_start = attributes_start + app_attribute.end() - 1
-app_block_end = matching_brace_end(text, app_block_start)
-app_block = text[app_block_start:app_block_end]
+app_block_opening = attributes_start + app_target_offset + len(app_target_id + " = ")
+app_block_end = matching_brace_end(text, app_block_opening)
+app_block = text[app_block_opening:app_block_end]
 
 if "com.apple.Push" not in app_block:
-    capability = re.search(r"SystemCapabilities\\s*=\\s*\\{", app_block)
-    if capability:
-        capability_start = capability.end() - 1
-        capability_end = matching_brace_end(app_block, capability_start)
-        capability_block = app_block[capability_start:capability_end]
-        capability_insert = capability_block.rfind("}")
-        capability_block = (
-            capability_block[:capability_insert]
-            + "\\n\\t\\t\\t\\t\\t\\tcom.apple.Push = {\\n"
-            + "\\t\\t\\t\\t\\t\\t\\tenabled = 1;\\n"
-            + "\\t\\t\\t\\t\\t\\t};\\n"
-            + capability_block[capability_insert:]
+    capabilities_marker = "SystemCapabilities = {"
+    capabilities_offset = app_block.find(capabilities_marker)
+    if capabilities_offset >= 0:
+        capabilities_opening = capabilities_offset + len(capabilities_marker) - 1
+        capabilities_end = matching_brace_end(app_block, capabilities_opening)
+        line_start = app_block.rfind("\n", 0, capabilities_offset) + 1
+        indent = app_block[line_start:capabilities_offset]
+        insertion = (
+            f"\n{indent}\tcom.apple.Push = {{\n"
+            f"{indent}\t\tenabled = 1;\n"
+            f"{indent}\t}};\n{indent}"
         )
         app_block = (
-            app_block[:capability_start]
-            + capability_block
-            + app_block[capability_end:]
+            app_block[:capabilities_end - 1]
+            + insertion
+            + app_block[capabilities_end - 1:]
         )
     else:
-        provisioning = re.search(
-            r"(?m)^([\\t ]*)ProvisioningStyle = Automatic;",
-            app_block,
-        )
-        if not provisioning:
+        provisioning_marker = "ProvisioningStyle = Automatic;"
+        provisioning_offset = app_block.find(provisioning_marker)
+        if provisioning_offset < 0:
             raise SystemExit("Could not locate App target provisioning style")
-        indent = provisioning.group(1)
-        capability = (
-            f"\\n{indent}SystemCapabilities = {{\\n"
-            f"{indent}\\tcom.apple.Push = {{\\n"
-            f"{indent}\\t\\tenabled = 1;\\n"
-            f"{indent}\\t}};\\n"
+        line_start = app_block.rfind("\n", 0, provisioning_offset) + 1
+        indent = app_block[line_start:provisioning_offset]
+        insertion = (
+            f"\n{indent}SystemCapabilities = {{\n"
+            f"{indent}\tcom.apple.Push = {{\n"
+            f"{indent}\t\tenabled = 1;\n"
+            f"{indent}\t}};\n"
             f"{indent}}};"
         )
-        insert_at = provisioning.end()
-        app_block = app_block[:insert_at] + capability + app_block[insert_at:]
+        insert_at = provisioning_offset + len(provisioning_marker)
+        app_block = app_block[:insert_at] + insertion + app_block[insert_at:]
 
     text = (
-        text[:app_block_start]
+        text[:app_block_opening]
         + app_block
         + text[app_block_end:]
     )
+
+if "com.apple.Push = {" not in app_block:
+    raise SystemExit("Failed to enable Push Notifications on the App target")
 
 path.write_text(text, encoding="utf-8")
 print("Configured iOS 15 minimum, APNs entitlements and the Xcode Push Notifications capability.")

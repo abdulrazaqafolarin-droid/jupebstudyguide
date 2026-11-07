@@ -32,54 +32,63 @@ SELECT ok(
   'authenticated clients cannot read the private reward-claim ledger'
 );
 
--- Do not invoke signup welcome-message triggers: these tests create only the
--- minimal local identities required to exercise the RPC entitlement check.
-ALTER TABLE auth.users DISABLE TRIGGER USER;
-
-INSERT INTO auth.users (
-  id, aud, role, email, encrypted_password, email_confirmed_at,
-  raw_app_meta_data, raw_user_meta_data, created_at, updated_at
-)
-VALUES
-  (
-    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-    'authenticated', 'authenticated', 'reward-test-active@example.invalid', '',
-    now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
-    now(), now()
-  ),
-  (
-    'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
-    'authenticated', 'authenticated', 'reward-test-expired@example.invalid', '',
-    now(), '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
-    now(), now()
-  );
-
-ALTER TABLE auth.users ENABLE TRIGGER USER;
-
--- The profile-guard migration allows trial fields only during the trusted
--- signup initialization context. This is a disposable local test fixture.
-SELECT set_config('app.signup_trial_initialize', 'true', true);
+-- Use the seeded StudyBot identity as a disposable test student. The
+-- service_role bypass is confined to this transaction and lets the profile
+-- security trigger initialize the test entitlement without editing auth.users.
+SET LOCAL ROLE service_role;
+SET LOCAL "request.jwt.claim.role" = 'service_role';
+SET LOCAL "request.jwt.claims" = '{"role":"service_role"}';
 
 INSERT INTO public.profiles (
-  user_id, display_name, is_activated, trial_started_at, trial_expires_at
+  user_id, display_name, is_admin, is_activated, trial_started_at, trial_expires_at
 )
-VALUES
-  (
-    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-    'Reward Test Active',
-    false,
-    now(),
-    now() + interval '1 day'
-  ),
-  (
-    'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
-    'Reward Test Expired',
-    false,
-    now() - interval '2 days',
-    now() - interval '1 day'
-  );
+VALUES (
+  '00000000-0000-0000-0000-000000000000',
+  'Reward Test Student',
+  false,
+  false,
+  now() - interval '2 days',
+  now() - interval '1 day'
+)
+ON CONFLICT (user_id) DO UPDATE
+SET display_name = EXCLUDED.display_name,
+    is_admin = false,
+    is_activated = false,
+    trial_started_at = EXCLUDED.trial_started_at,
+    trial_expires_at = EXCLUDED.trial_expires_at;
 
-SELECT set_config('app.signup_trial_initialize', 'false', true);
+RESET ROLE;
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claim.sub" = '00000000-0000-0000-0000-000000000000';
+SET LOCAL "request.jwt.claim.role" = 'authenticated';
+SET LOCAL "request.jwt.claims" =
+  '{"sub":"00000000-0000-0000-0000-000000000000","role":"authenticated"}';
+
+SELECT throws_ok(
+  $$SELECT public.record_question_attempt(
+    'server-reward-entitlement-test', 'A'
+  )$$,
+  '42501',
+  NULL,
+  'an expired, unactivated account cannot earn question points'
+);
+
+RESET ROLE;
+SET LOCAL ROLE service_role;
+SET LOCAL "request.jwt.claim.role" = 'service_role';
+SET LOCAL "request.jwt.claims" = '{"role":"service_role"}';
+
+UPDATE public.profiles
+SET trial_started_at = now(),
+    trial_expires_at = now() + interval '1 day'
+WHERE user_id = '00000000-0000-0000-0000-000000000000';
+
+RESET ROLE;
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claim.sub" = '00000000-0000-0000-0000-000000000000';
+SET LOCAL "request.jwt.claim.role" = 'authenticated';
+SET LOCAL "request.jwt.claims" =
+  '{"sub":"00000000-0000-0000-0000-000000000000","role":"authenticated"}';
 
 INSERT INTO public.study_questions (
   id, subject, year, category, question, options, correct_answer, hidden
@@ -110,10 +119,10 @@ VALUES (
 );
 
 SET LOCAL ROLE authenticated;
-SET LOCAL "request.jwt.claim.sub" = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+SET LOCAL "request.jwt.claim.sub" = '11111111-1111-4111-8111-111111111111';
 SET LOCAL "request.jwt.claim.role" = 'authenticated';
 SET LOCAL "request.jwt.claims" =
-  '{"sub":"bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb","role":"authenticated"}';
+  '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}';
 
 SELECT throws_ok(
   $$SELECT public.record_question_attempt(
@@ -124,10 +133,10 @@ SELECT throws_ok(
   'an expired, unactivated account cannot earn question points'
 );
 
-SET LOCAL "request.jwt.claim.sub" = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+SET LOCAL "request.jwt.claim.sub" = '00000000-0000-0000-0000-000000000000';
 SET LOCAL "request.jwt.claim.role" = 'authenticated';
 SET LOCAL "request.jwt.claims" =
-  '{"sub":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","role":"authenticated"}';
+  '{"sub":"00000000-0000-0000-0000-000000000000","role":"authenticated"}';
 
 SELECT is(
   (public.record_question_attempt(
@@ -173,10 +182,10 @@ SELECT is(
   (
     SELECT COALESCE(sum(amount), 0)::INTEGER
     FROM public.score_events
-    WHERE user_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+    WHERE user_id = '00000000-0000-0000-0000-000000000000'
       AND reference_id IN (
-        'answered_question:server-reward-entitlement-test:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-        'correct_answer:server-reward-entitlement-test:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+        'answered_question:server-reward-entitlement-test:00000000-0000-0000-0000-000000000000',
+        'correct_answer:server-reward-entitlement-test:00000000-0000-0000-0000-000000000000'
       )
   ),
   15,
@@ -187,7 +196,7 @@ SELECT is(
   (
     SELECT count(*)::INTEGER
     FROM public.question_reward_claims
-    WHERE user_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+    WHERE user_id = '00000000-0000-0000-0000-000000000000'
       AND question_id = 'server-reward-entitlement-test'
   ),
   2,

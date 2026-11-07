@@ -141,14 +141,14 @@ CREATE FUNCTION public.block_user(p_blocked_id UUID)
 RETURNS VOID
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = pg_catalog, public, pg_temp
-AS $
+AS $function$
 BEGIN
   IF p_blocked_id = auth.uid() THEN RAISE EXCEPTION 'Cannot block yourself'; END IF;
   INSERT INTO public.blocked_users (blocker_id, blocked_id)
   VALUES (auth.uid(), p_blocked_id)
   ON CONFLICT (blocker_id, blocked_id) DO NOTHING;
 END;
-$;
+$function$;
 REVOKE EXECUTE ON FUNCTION public.block_user(UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.block_user(UUID) TO authenticated, service_role;
 
@@ -161,12 +161,12 @@ CREATE FUNCTION public.unblock_user(p_blocked_id UUID)
 RETURNS VOID
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = pg_catalog, public, pg_temp
-AS $
+AS $function$
 BEGIN
   DELETE FROM public.blocked_users
   WHERE blocker_id = auth.uid() AND blocked_id = p_blocked_id;
 END;
-$;
+$function$;
 REVOKE EXECUTE ON FUNCTION public.unblock_user(UUID) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.unblock_user(UUID) TO authenticated, service_role;
 

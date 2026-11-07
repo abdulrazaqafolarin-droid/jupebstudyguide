@@ -71,7 +71,7 @@ export default function DownloadApp() {
       >
         <div className="text-center space-y-2">
           <Smartphone className="h-12 w-12 mx-auto text-primary" />
-          <h1 className="text-2xl font-bold">JUPEB Master App</h1>
+          <h1 className="text-2xl font-bold">Rutex Master(Jupeb) App</h1>
           <p className="text-sm text-muted-foreground">
             Get the best experience with the native Android app or PWA
           </p>

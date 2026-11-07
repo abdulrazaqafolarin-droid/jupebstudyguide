@@ -13,6 +13,7 @@ REVOKE INSERT, UPDATE, DELETE ON public.score_events FROM PUBLIC, anon, authenti
 CREATE OR REPLACE FUNCTION public.prevent_duplicate_score_event()
 RETURNS trigger
 LANGUAGE plpgsql
+VOLATILE
 SECURITY DEFINER
 SET search_path = pg_catalog, public, pg_temp
 AS $$

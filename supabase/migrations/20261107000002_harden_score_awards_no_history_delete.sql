@@ -224,7 +224,10 @@ BEGIN
       'accuracy_high', 'accuracy_perfect', 'perfect_10', 'all_subjects',
       'four_subjects', 'first_upload', 'upload_5', 'upload_10',
       'syllabus_start', 'syllabus_week1', 'syllabus_half', 'syllabus_25',
-      'syllabus_complete', 'night_owl', 'early_bird'
+      'syllabus_complete', 'night_owl', 'early_bird',
+      -- Preserve achievement identifiers used by older installed app builds.
+      'ai_tutor_1', 'ai_tutor_20', 'chat_first', 'friends_3',
+      'leaderboard_top50', 'profile_complete'
     ) THEN
       RAISE EXCEPTION 'Invalid achievement reward reference'
         USING ERRCODE = '22023';

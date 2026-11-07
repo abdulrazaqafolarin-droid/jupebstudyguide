@@ -1,5 +1,20 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { Capacitor } from "@capacitor/core";
 import { isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
+
+describe("isNativeApp", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("enables the APK updater only on Android", async () => {
+    const { isNativeApp } = await import("./app-updater");
+    vi.spyOn(Capacitor, "getPlatform").mockReturnValue("android");
+    expect(isNativeApp()).toBe(true);
+    vi.spyOn(Capacitor, "getPlatform").mockReturnValue("ios");
+    expect(isNativeApp()).toBe(false);
+    vi.spyOn(Capacitor, "getPlatform").mockReturnValue("web");
+    expect(isNativeApp()).toBe(false);
+  });
+});
 
 describe("isNewer", () => {
   it("detects a higher published code", () => {

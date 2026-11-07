@@ -2,7 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 SET LOCAL search_path = extensions, public;
 
-SELECT plan(14);
+SELECT plan(15);
 
 -- These IDs exist only inside this rolled-back local test transaction.
 INSERT INTO auth.users (
@@ -73,10 +73,27 @@ SET LOCAL "request.jwt.claim.sub" = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 SET LOCAL "request.jwt.claim.role" = 'authenticated';
 SET LOCAL "request.jwt.claims" = '{"sub":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","role":"authenticated"}';
 
+SELECT ok(
+  NOT has_function_privilege(
+    'authenticated', 'public.award_score(uuid,integer,text,text)', 'EXECUTE'
+  ),
+  'authenticated clients cannot execute the generic award_score RPC'
+);
+SELECT ok(
+  has_function_privilege(
+    'service_role', 'public.award_score(uuid,integer,text,text)', 'EXECUTE'
+  ),
+  'trusted service_role retains award_score execution'
+);
+
+SET LOCAL ROLE service_role;
+SET LOCAL "request.jwt.claim.role" = 'service_role';
+SET LOCAL "request.jwt.claims" = '{"role":"service_role"}';
+
 SELECT throws_ok(
-  $$SELECT public.award_score(
+  $SELECT public.award_score(
     'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 100, 'achievement', NULL
-  )$$,
+  )$,
   '22023',
   NULL,
   'award_score rejects a missing reference'
@@ -90,16 +107,6 @@ SELECT throws_ok(
   '22023',
   NULL,
   'award_score rejects extra reference segments'
-);
-
-SELECT throws_ok(
-  $$SELECT public.award_score(
-    'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', 100, 'achievement',
-    'achievement:first_day:bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'
-  )$$,
-  '42501',
-  NULL,
-  'a user cannot award points to another account'
 );
 
 SELECT is(

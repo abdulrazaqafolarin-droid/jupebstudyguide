@@ -85,6 +85,10 @@ jobs:
           grep -q 'CODE_SIGN_ENTITLEMENTS = App/App.entitlements;' ios/App/App.xcodeproj/project.pbxproj
           grep -q 'APS_ENVIRONMENT = development;' ios/App/App.xcodeproj/project.pbxproj
           grep -q 'APS_ENVIRONMENT = production;' ios/App/App.xcodeproj/project.pbxproj
+          grep -q 'com.apple.Push = {' ios/App/App.xcodeproj/project.pbxproj
+          grep -q 'enabled = 1;' ios/App/App.xcodeproj/project.pbxproj
+          grep -q 'capacitorDidRegisterForRemoteNotifications' ios/App/App/AppDelegate.swift
+          grep -q 'capacitorDidFailToRegisterForRemoteNotifications' ios/App/App/AppDelegate.swift
           /usr/libexec/PlistBuddy -c 'Print :CFBundleURLTypes' ios/App/App/Info.plist | grep -q 'com.jupeb.master'
           /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' ios/App/App/Info.plist >/dev/null
           /usr/libexec/PlistBuddy -c 'Print :NSPhotoLibraryUsageDescription' ios/App/App/Info.plist >/dev/null

@@ -6,6 +6,17 @@ The iOS app uses the existing React/Vite application and Supabase backend throug
 
 The generated iOS project is committed by the macOS GitHub Actions workflow after it successfully generates and builds the Capacitor project. The workflow currently produces an **unsigned iOS Simulator build**, not a device-installable IPA.
 
+## Google sign-in setup
+
+The native iOS app uses Supabase's Google OAuth flow in a Safari authentication session and returns to the app through `com.jupeb.master://auth`. The app does not request or use Apple ID sign-in.
+
+1. In Google Cloud Console, create or select an OAuth client for a **Web application**. In its Authorized redirect URIs, add the Supabase callback URL shown in your Supabase project's Google provider setup. It normally has this form: `https://<SUPABASE_PROJECT_REF>.supabase.co/auth/v1/callback`.
+2. In Supabase Dashboard → Authentication → Sign In / Providers → Google, enable Google and enter that OAuth client ID and client secret. Keep the client secret in Supabase only; never put it in the app, repository, or chat.
+3. In Supabase Dashboard → Authentication → URL Configuration → Redirect URLs, allow `com.jupeb.master://auth` for the native iOS callback and the production web app origin for browser sign-in.
+4. Test with a Google account that is permitted by the Google OAuth consent-screen publishing mode. Confirm the user returns to Rutex Master and remains signed in after closing and reopening the app.
+
+Google provider credentials are dashboard configuration, not source-code configuration. A simulator build can compile without them, but a live Google sign-in cannot be verified until Google is enabled in Supabase.
+
 ## Required Supabase Auth setting
 
 In Supabase Dashboard → Authentication → URL Configuration → Redirect URLs, add:

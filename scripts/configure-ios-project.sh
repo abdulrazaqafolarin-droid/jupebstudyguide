@@ -66,7 +66,7 @@ text = path.read_text(encoding="utf-8")
 
 # Edit only the app target's XCBuildConfiguration blocks. A broad search for
 # PRODUCT_BUNDLE_IDENTIFIER could otherwise cross Xcode configuration blocks.
-config_starts = list(re.finditer(r"/\\* (Debug|Release|Profile) \\*/ = \\{", text))
+config_starts = list(re.finditer(r"/\* (Debug|Release|Profile) \*/ = \{", text))
 updates = {"Debug": 0, "Release": 0, "Profile": 0}
 settings = {
     "CODE_SIGN_ENTITLEMENTS": "App/App.entitlements",
@@ -96,20 +96,19 @@ for match in reversed(config_starts):
     if updates[config]:
         raise SystemExit(f"Found multiple app {config} configurations; review required")
 
-    build_settings = re.search(r"buildSettings = \\{", block)
+    build_settings = re.search(r"buildSettings = \{", block)
     if not build_settings:
         raise SystemExit(f"App {config} configuration has no buildSettings section")
 
-    apns_env = "development" if config == "Debug" else "production"
-    settings["APS_ENVIRONMENT"] = apns_env
+    settings["APS_ENVIRONMENT"] = "development" if config == "Debug" else "production"
     block_lines = block.splitlines()
     cleaned_lines = [
         line for line in block_lines
-        if not any(re.match(rf"^\\s*{re.escape(key)}\\s*=", line) for key in settings)
+        if not any(re.match(rf"^\s*{re.escape(key)}\s*=", line) for key in settings)
     ]
     for index, line in enumerate(cleaned_lines):
         if "buildSettings = {" in line:
-            indent = re.match(r"^\\s*", line).group(0) + "    "
+            indent = re.match(r"^\s*", line).group(0) + "    "
             additions = [
                 f"{indent}{key} = {value};"
                 for key, value in settings.items()
@@ -119,7 +118,7 @@ for match in reversed(config_starts):
     else:
         raise SystemExit(f"Could not insert settings into app {config} build configuration")
 
-    new_block = "\\n".join(cleaned_lines)
+    new_block = "\n".join(cleaned_lines)
     text = text[:match.start()] + new_block + text[end:]
     updates[config] += 1
 
@@ -131,6 +130,7 @@ if updates["Profile"] > 1:
 
 if "PRODUCT_BUNDLE_IDENTIFIER = com.jupeb.master;" not in text:
     raise SystemExit("Expected iOS bundle identifier com.jupeb.master was not found")
+
 path.write_text(text, encoding="utf-8")
 print("Configured iOS 15 minimum and development/production APNs entitlements.")
 PY
@@ -140,10 +140,17 @@ if [[ -f "$PODFILE" ]]; then
 from pathlib import Path
 import re
 import sys
+
 path = Path(sys.argv[1])
 content = path.read_text(encoding="utf-8")
 if re.search(r"^platform :ios,", content, flags=re.M):
-    content = re.sub(r"^platform :ios,.*$", "platform :ios, '15.0'", content, count=1, flags=re.M)
+    content = re.sub(
+        r"^platform :ios,.*$",
+        "platform :ios, '15.0'",
+        content,
+        count=1,
+        flags=re.M,
+    )
 else:
     content = "platform :ios, '15.0'\n" + content
 path.write_text(content, encoding="utf-8")

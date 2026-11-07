@@ -291,7 +291,7 @@ const Auth = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
                       disabled={loading}
-                      autoFocus={!Capacitor.isNativePlatform()}
+                      autoFocus={Capacitor.getPlatform() !== 'ios'}
                     />
                   </div>
                   {errors.email && (

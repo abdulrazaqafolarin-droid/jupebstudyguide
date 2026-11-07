@@ -90,7 +90,11 @@ Deno.serve(async (req) => {
         // when this optional display lookup cannot be completed.
         console.warn("Could not load completed-week champion score:", rankingError);
       } else {
-        const champion = (rankings ?? []).find(
+        const weeklyRows = (rankings ?? []) as Array<{
+          user_id: string;
+          week_score: number | string;
+        }>;
+        const champion = weeklyRows.find(
           (row) => row.user_id === week.champion_user_id,
         );
         championScore = Number(champion?.week_score ?? 0);

@@ -4,13 +4,15 @@ import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const APP_SCHEME = "com.jupeb.master:";
 const CALLBACK_HOST = "auth";
 
 /**
- * Exchanges Supabase email-verification links delivered through the iOS
- * custom URL scheme. The listener handles both warm and cold app launches.
+ * Completes Supabase auth callbacks delivered through the iOS custom URL
+ * scheme, including social OAuth, email verification and password recovery.
+ * The listener handles both warm and cold app launches.
  */
 export function NativeAuthDeepLinkBridge() {
   const navigate = useNavigate();
@@ -48,6 +50,29 @@ export function NativeAuthDeepLinkBridge() {
       const tokenHash = params.get("token_hash") ?? hash.get("token_hash");
       const type = params.get("type") ?? hash.get("type");
       const isPasswordRecovery = params.get("flow") === "recovery" || type === "recovery";
+      const callbackError = params.get("error") ?? hash.get("error");
+      const callbackErrorCode = params.get("error_code") ?? hash.get("error_code");
+      const callbackErrorDescription = params.get("error_description") ?? hash.get("error_description");
+
+      // OAuth providers return errors in the callback URL when the user
+      // cancels consent or the provider rejects the request. Handle these
+      // before looking for a PKCE code, otherwise the failure is invisible.
+      if (callbackError || callbackErrorCode) {
+        const isCancellation =
+          callbackError === "access_denied" ||
+          callbackErrorCode === "access_denied" ||
+          callbackErrorCode === "user_cancelled" ||
+          /cancel(?:led|ed)?/i.test(callbackErrorDescription ?? "");
+        toast({
+          title: isCancellation ? "Sign-in cancelled" : "Sign-in failed",
+          description: isCancellation
+            ? "The sign-in request was cancelled. You can try again whenever you're ready."
+            : (callbackErrorDescription || callbackErrorCode || callbackError || "The identity provider could not complete sign-in."),
+          variant: isCancellation ? "default" : "destructive",
+        });
+        navigate("/auth", { replace: true });
+        return;
+      }
 
       try {
         let error: Error | null = null;
@@ -77,7 +102,12 @@ export function NativeAuthDeepLinkBridge() {
         }
 
         if (error) {
-          console.warn("[auth] iOS email verification could not be completed:", error.message);
+          console.warn("[auth] iOS authentication callback could not be completed:", error.message);
+          toast({
+            title: "Sign-in could not be completed",
+            description: error.message || "Please return to the sign-in screen and try again.",
+            variant: "destructive",
+          });
           navigate("/auth", { replace: true });
           return;
         }
@@ -86,10 +116,13 @@ export function NativeAuthDeepLinkBridge() {
         // normal auth storage and emits AUTH state changes for the whole app.
         navigate(isPasswordRecovery ? "/auth?flow=recovery" : "/", { replace: true });
       } catch (error) {
-        console.warn(
-          "[auth] iOS email verification failed:",
-          error instanceof Error ? error.message : "unknown error",
-        );
+        const message = error instanceof Error ? error.message : "An unexpected authentication error occurred.";
+        console.warn("[auth] iOS authentication callback failed:", message);
+        toast({
+          title: "Sign-in could not be completed",
+          description: message,
+          variant: "destructive",
+        });
         navigate("/auth", { replace: true });
       }
     };

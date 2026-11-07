@@ -14,6 +14,7 @@ APP_PATH = Path(sys.argv[1])
 SCREENSHOT_PATH = Path(sys.argv[2])
 RUNTIME_LOG_PATH = Path(sys.argv[3])
 BUNDLE_ID = "com.jupeb.master"
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 
 def run(
@@ -36,6 +37,23 @@ def run(
         raise RuntimeError(
             f"Simulator command exceeded {timeout_seconds} seconds: {' '.join(command)}"
         ) from error
+
+
+def is_valid_png_screenshot(path: Path) -> bool:
+    """Reject truncated or non-PNG simulator output before uploading an artifact."""
+    try:
+        if path.stat().st_size < 10_000:
+            return False
+        with path.open("rb") as screenshot_file:
+            header = screenshot_file.read(24)
+    except OSError:
+        return False
+
+    return (
+        len(header) == 24
+        and header[:8] == PNG_SIGNATURE
+        and header[12:16] == b"IHDR"
+    )
 
 
 def main() -> int:
@@ -72,12 +90,33 @@ def main() -> int:
     # Allow the bundled WKWebView to paint before taking a visual checkpoint.
     time.sleep(15)
     SCREENSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    run(
-        ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)],
-        timeout_seconds=45,
-    )
-    if not SCREENSHOT_PATH.is_file() or SCREENSHOT_PATH.stat().st_size < 10_000:
-        raise RuntimeError("Simulator screenshot was missing or unexpectedly small")
+    screenshot_command = ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)]
+    screenshot_errors: list[str] = []
+    screenshot_verified = False
+
+    # Fresh simulator boots can spend several minutes migrating CoreSimulator
+    # data. A screenshot command may time out even after the simulator has
+    # produced the image, so verify the output before treating a timeout as a
+    # failed app launch. Retry once with a longer bound if no valid image exists.
+    for attempt, timeout_seconds in enumerate((60, 90), start=1):
+        try:
+            run(screenshot_command, timeout_seconds=timeout_seconds)
+        except RuntimeError as error:
+            screenshot_errors.append(str(error))
+            print(f"Screenshot attempt {attempt} did not return cleanly: {error}", flush=True)
+
+        if is_valid_png_screenshot(SCREENSHOT_PATH):
+            screenshot_verified = True
+            break
+
+        if attempt < 2:
+            time.sleep(3)
+
+    if not screenshot_verified:
+        raise RuntimeError(
+            "Simulator screenshot was missing, invalid, or unexpectedly small after retries. "
+            + " | ".join(screenshot_errors)
+        )
 
     log_command = [
         "xcrun", "simctl", "spawn", udid, "log", "show",

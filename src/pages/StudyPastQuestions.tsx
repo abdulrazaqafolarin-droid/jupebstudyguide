@@ -89,11 +89,7 @@ export default function StudyPastQuestions() {
   const timer = useQuestionTimer();
   const { bookmarks, toggle, isBookmarked } = useBookmarks();
   const { status: activationStatus } = useActivation();
-  const {
-    answerQuestion: awardAnswer,
-    correctAnswer: awardCorrect,
-    quizComplete: awardQuizComplete,
-  } = useScoreAwarder();
+  const { recordQuestionAttempt } = useScoreAwarder();
   // Guarantees one XP grant per quiz attempt even if both manual submit
   // and timer-expiry paths fire.
   const awardedRef = useRef(false);
@@ -306,14 +302,17 @@ export default function StudyPastQuestions() {
   const awardForResults = (results: AnswerEntry[]) => {
     if (awardedRef.current) return;
     awardedRef.current = true;
-    // XP parity with the home quiz flow: server dedupes by reference id,
-    // so re-attempting the same questions never double-awards.
-    const sessionId = `past-questions_${Date.now()}`;
-    awardQuizComplete(sessionId);
-    for (const r of results) {
-      awardAnswer(r.questionId);
-      if (r.isCorrect) awardCorrect(r.questionId);
-    }
+
+    // The server checks the official answer key and awards both attempt and
+    // correctness points. Non-gradable and blank answers earn no points.
+    const rewardableResults = results.filter(
+      (result) => result.isGradable !== false && result.answer.trim().length > 0,
+    );
+    void Promise.all(
+      rewardableResults.map((result) =>
+        recordQuestionAttempt(result.questionId, result.answer),
+      ),
+    );
   };
 
   const handleComplete = (results: AnswerEntry[]) => {

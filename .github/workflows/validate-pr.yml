@@ -82,3 +82,23 @@ jobs:
           set -euo pipefail
           chmod +x android/gradlew
           (cd android && ./gradlew assembleDebug --no-daemon)
+
+      - name: Verify Android APK identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          PACKAGE="$( "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | awk -F"'" '/^package:/{print $2; exit}' )"
+          VERSION="$( "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | awk -F"'" '/^package:/{print $4; exit}' )"
+          test "$PACKAGE" = "com.jupeb.master"
+          echo "Verified Android package: $PACKAGE"
+          echo "APK version: $VERSION"
+
+      - name: Upload fresh-install Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rutex-master-jupeb-fresh-install
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7

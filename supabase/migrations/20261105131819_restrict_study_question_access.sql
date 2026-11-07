@@ -6,6 +6,11 @@
 -- retain access. Expired trials and accounts without an entitlement are denied.
 -- Hidden questions remain admin-only.
 
+-- The original table migration predates this visibility flag.
+-- Default existing and newly imported questions to visible.
+ALTER TABLE public.study_questions
+  ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT false;
+
 DROP POLICY IF EXISTS study_questions_select_policy ON public.study_questions;
 
 CREATE POLICY study_questions_select_policy

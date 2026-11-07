@@ -3,6 +3,25 @@
 -- across 10 accounts. This migration preserves every existing row and only blocks
 -- invalid or repeated awards going forward.
 
+-- Keep the non-empty reference invariant at table level as well as in the trigger.
+-- NOT VALID preserves compatibility with any legacy rows in other installations,
+-- while PostgreSQL still enforces this check for every new or updated row.
+DO $
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conrelid = 'public.score_events'::regclass
+      AND conname = 'score_events_reference_nonempty'
+  ) THEN
+    ALTER TABLE public.score_events
+      ADD CONSTRAINT score_events_reference_nonempty
+      CHECK (reference_id IS NOT NULL AND btrim(reference_id) <> '')
+      NOT VALID;
+  END IF;
+END;
+$;
+
 -- Do not rely on an RLS INSERT policy or client table grants for reward writes.
 -- Remove the legacy policy and keep all score-event mutations behind trusted
 -- database functions. This also protects projects where the earlier hardening

@@ -18,10 +18,10 @@ describe("study question numbering", () => {
     expect(getStudyQuestionDisplayNumbers(questions)).toEqual([1, 2, 3]);
   });
 
-  it("preserves gaps in a zero-based sequence", () => {
+  it("treats sparse positive values as one-based when zero is a legacy default", () => {
     const questions = [{ sortOrder: 0 }, { sortOrder: 2 }, { sortOrder: 3 }];
 
-    expect(getStudyQuestionDisplayNumbers(questions)).toEqual([1, 3, 4]);
+    expect(getStudyQuestionDisplayNumbers(questions)).toEqual([1, 2, 3]);
   });
 
   it("does not treat sparse mixed one-based values as a zero-based sequence", () => {

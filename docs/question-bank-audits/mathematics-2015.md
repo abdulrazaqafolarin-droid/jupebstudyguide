@@ -101,3 +101,15 @@ StudentFirst's 2015 previews show the same first three objective questions as th
 ## Figure and table handling
 
 No 2015 objective record currently has an image asset attached. The theory paper contains data tables (including the statistics and correlation questions); these should be rendered as accessible structured tables, not flattened into screenshots. The full PDF still needs a page-by-page visual check before final certification so that any diagram, chart or notation that is lost in text extraction can be recreated as a clean original asset and linked to its source question.
+
+
+## Numbering dependency: PR #44 needs a 2015-specific regression
+
+PR #44's current all-zero fallback assigns sequential display numbers in the order of the input array. The live data layer fetches rows ordered by `id`. For 2015, this gives:
+
+- `mat-2015-mq-0028` before `mat-2015-mq-0028a` by ID sort;
+- the official paper order is the reverse: `mat-2015-mq-0028a` is Q29 and `mat-2015-mq-0028` is Q30.
+
+Therefore, the PR #44 fallback would label these two records in the wrong order when every `sort_order` is zero. The display fallback is useful for generic legacy sequences, but it cannot recover source numbering from IDs when the ID suffixes are not in exam order.
+
+**Required 2015 regression:** test that the source mapping yields Q29 for `mat-2015-mq-0028a` and Q30 for `mat-2015-mq-0028`. The durable correction is to persist the verified one-based `sort_order` values for all 50 2015 records, then verify that the ordered viewer displays the exact source order. Do not rely on an inferred fallback to certify this paper.

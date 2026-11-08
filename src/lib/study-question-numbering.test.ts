@@ -17,7 +17,7 @@ describe("getStudyQuestionDisplayNumber", () => {
   });
 
   it("uses the array position when legacy rows all have the default zero order", () => {
-    const questions = [{ sortOrder: 0 }, { sortOrder: 0 }, { sortOrder: 0 }];
+    const questions: Array<{ sortOrder?: number | null }> = [{ sortOrder: 0 }, { sortOrder: 0 }, {}];
 
     expect(questions.map((_, index) => getStudyQuestionDisplayNumber(questions, index)))
       .toEqual([1, 2, 3]);

@@ -413,6 +413,23 @@ For this audit, treat the original/authorized-source status as follows:
 
 A Google Sites listing and other third-party pages mention some older papers, but their provenance/authorization must be checked before relying on them. A PDF that happens to be publicly downloadable is not automatically an authorized source for reproducing its contents in the app. JUPEB's FAQ advises students to contact their centre director for past questions as well as using the Board's downloads page.
 
+## Aggregate Chemistry data-quality summary
+
+The latest live-database aggregate confirms that the missing answer-guide problem is much larger than the objective-question checks suggest:
+
+| Category | Stored rows | Visible | Hidden | Missing answer key | Missing explanation | Attached images |
+|---|---:|---:|---:|---:|---:|---:|
+| Objective | 623 | 590 | 33 | 4 | 5 | 0 |
+| Theory | 125 | 91 | 34 | 125 | 120 | 0 |
+| Practical | 25 | 23 | 2 | 25 | 23 | 0 |
+| **Total** | **773** | **704** | **69** | **154** | **148** | **0** |
+
+All 590 visible objective questions pass a **limited structural check** (four choices, unique labels, a key that matches one label, and a non-empty explanation). The other 33 objective records are hidden; among all 623 stored objective records, 4 have no answer key and 5 have no explanation. This structural result must not be described as scientific verification.
+
+For the 91 visible theory rows, none has a separate answer key and all 91 lack a worked explanation in the existing columns. For the 23 visible practical rows, none has an answer key and all 23 lack a worked explanation/observation guide. The 120 theory rows without explanations and 23 practical rows without explanations mean the app does not yet provide a complete teacher-grade answer/marking layer for these sections. Some answer fragments exist in hidden duplicate/course-block rows, but they need to be moved into a canonical answer-guide/mark-scheme representation after source validation, not exposed as duplicate questions.
+
+**Quality gate:** do not call a Chemistry year "complete" until each official item has a source citation/page or authorized-source identifier, correct printed number, faithful stem and all options, an independently checked answer, a worked explanation/mark scheme, any required figure, a second review status, and a verified app rendering/answer-grading test.
+
 ## Next work sequence
 
 1. Finish 2015: reconcile all 50 MCQs and eight essay questions against the official PDF; restore the graph-based options for MCQ 12; independently verify every key and explanation; review the two current missing theory prompts and quarantine misattributed rows.

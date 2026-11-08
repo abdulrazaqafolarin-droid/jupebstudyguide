@@ -3,48 +3,93 @@ type OrderedStudyQuestion = {
 };
 
 /**
- * Resolve the human-facing question number from the stored sort order.
+ * Resolve human-facing numbers from stored sort orders.
  *
- * Historical question-bank rows use several conventions:
- * - positive one-based source numbers (including gaps for withheld questions);
- * - zero-based sequences;
- * - legacy rows where sortOrder was left at the default value 0;
- * - partially numbered legacy groups mixing default-zero and explicit values.
- *
- * Preserve positive source numbers. Only interpret a group as zero-based when
- * its numeric orders are unique and form a zero-starting sequence. This avoids
- * shifting positive one-based paper numbers merely because another legacy row
- * in the same group has the default sortOrder of 0.
+ * The question bank contains one-based source numbers, zero-based sequences,
+ * all-zero legacy groups, and partially numbered groups where 0 means
+ * "not assigned". Explicit positive numbers are preserved. In mixed groups,
+ * missing/default rows are assigned the lowest unused positive numbers so
+ * they cannot collide with a valid source number.
  */
+export function getStudyQuestionDisplayNumbers<T extends OrderedStudyQuestion>(
+  questions: readonly T[],
+): number[] {
+  const orders = questions
+    .map((question) => question.sortOrder)
+    .filter((order): order is number => typeof order === "number");
+  const orderCounts = new Map<number, number>();
+
+  for (const order of orders) {
+    orderCounts.set(order, (orderCounts.get(order) ?? 0) + 1);
+  }
+
+  const isUniqueZeroBasedSequence =
+    orders.length === questions.length &&
+    orders.length > 0 &&
+    orders.includes(0) &&
+    new Set(orders).size === orders.length;
+
+  const displayNumbers: Array<number | undefined> = new Array(questions.length);
+  const usedNumbers = new Set<number>();
+
+  if (isUniqueZeroBasedSequence) {
+    questions.forEach((question, index) => {
+      const order = question.sortOrder;
+      if (typeof order === "number") {
+        const displayNumber = order + 1;
+        displayNumbers[index] = displayNumber;
+        usedNumbers.add(displayNumber);
+      }
+    });
+  } else {
+    // Keep every unambiguous positive, one-based source number as an anchor.
+    questions.forEach((question, index) => {
+      const order = question.sortOrder;
+      if (typeof order === "number" && order > 0 && orderCounts.get(order) === 1) {
+        displayNumbers[index] = order;
+        usedNumbers.add(order);
+      }
+    });
+  }
+
+  // Default-zero, missing, or ambiguous duplicate orders take the lowest
+  // unused positive number. This also handles groups with mixed conventions.
+  for (let index = 0; index < questions.length; index += 1) {
+    if (displayNumbers[index] !== undefined) continue;
+
+    let candidate = 1;
+    while (usedNumbers.has(candidate)) candidate += 1;
+
+    displayNumbers[index] = candidate;
+    usedNumbers.add(candidate);
+  }
+
+  return displayNumbers as number[];
+}
+
 export function getStudyQuestionDisplayNumber<T extends OrderedStudyQuestion>(
   questions: readonly T[],
   index: number,
 ): number {
-  const question = questions[index];
-  if (!question) return index + 1;
+  return getStudyQuestionDisplayNumbers(questions)[index] ?? index + 1;
+}
 
-  const orders = questions
-    .map((item) => item.sortOrder)
-    .filter((order): order is number => typeof order === "number");
-  const distinctOrders = new Set(orders);
-  const allOrdersDefaultToZero =
-    orders.length > 0 && orders.every((order) => order === 0);
-  const isUniqueZeroBasedSequence =
-    orders.length > 0 &&
-    orders.length === distinctOrders.size &&
-    distinctOrders.has(0) &&
-    Math.min(...orders) === 0 &&
-    Math.max(...orders) === orders.length - 1;
+/**
+ * Sorts question records by their resolved human-facing paper number.
+ * Original array order breaks ties in the unlikely event of a remaining
+ * equal number.
+ */
+export function sortStudyQuestionsByDisplayNumber<T extends OrderedStudyQuestion>(
+  questions: readonly T[],
+): T[] {
+  const displayNumbers = getStudyQuestionDisplayNumbers(questions);
 
-  if (question.sortOrder == null || allOrdersDefaultToZero) {
-    return index + 1;
-  }
-
-  if (isUniqueZeroBasedSequence) {
-    return question.sortOrder + 1;
-  }
-
-  // A zero in a mixed/partially numbered legacy group is a missing/default
-  // order, not evidence that the positive source numbers are zero-based.
-  return question.sortOrder > 0 ? question.sortOrder : index + 1;
+  return questions
+    .map((question, index) => ({
+      question,
+      index,
+      displayNumber: displayNumbers[index],
+    }))
+    .sort((a, b) => a.displayNumber - b.displayNumber || a.index - b.index)
+    .map(({ question }) => question);
 }

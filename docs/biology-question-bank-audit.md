@@ -205,3 +205,23 @@ Do not treat a letter transposition or restoring the official A–D order as suf
 ### Official answer-key availability
 
 The official 2015 JUPEB PDF inspected for this pilot contains the objective paper and essay questions, not a published answer key. Therefore, answer keys in our database must be independently validated and must not be described as “official JUPEB answers” without a separate source. StudentFirst's public preview confirms the first three 2015 objective items and advertises solutions for signed-in users, but the gated solutions were not used or copied during this audit.
+
+
+## 10. Cross-subject numbering convention defect
+
+The inspected question viewer renders a stored question number as `sortOrder + 1` (including in its jump grid and result summary), which assumes `sort_order` is consistently **zero-based**. The live database does not follow one convention:
+
+- All Biology objective years inspected (2015–2024) have visible `sort_order` values beginning at 1.
+- Most Chemistry years use values beginning at 1, but Chemistry 2021 also has a zero-valued row.
+- Mathematics 2015, 2016, 2021 and 2024 have all visible objective rows at `sort_order = 0`; Mathematics 2018 and 2022–2023 contain mixed zero/one-based records.
+- Physics 2020 has all visible objective rows at zero; Physics 2023–2024 begin at 3 rather than 0 or 1.
+- Other subject/year sets also contain values beyond expected paper question counts.
+
+Consequences:
+- A Biology/Chemistry/Physics source Question 1 stored as `sort_order = 1` can display as Q2.
+- A set where every row is stored as `sort_order = 0` can display every question as Q1.
+- Mixed sets can display inconsistent or duplicate question numbers.
+
+**Do not fix this with one global SQL subtraction or UI-only change.** First reconcile each subject/year/category against source paper numbering, establish one canonical zero-based storage convention (`Q1 = sort_order 0`), then write and test a data migration that preserves original question numbers and replacement links. Include regression tests for the viewer label, jump grid, answer review and ordering across zero-based, one-based, mixed and missing-sort-order legacy fixtures.
+
+This is a cross-subject data integrity issue, not a Biology-only cleanup.

@@ -348,7 +348,7 @@ export function QuestionViewer({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1 gap-2">
               <span className="text-xs text-muted-foreground tabular-nums truncate">
-                Q{getStudyQuestionDisplayNumber(questions, current)}/{total}
+                Q{getStudyQuestionDisplayNumber(questions, current)}
               </span>
               <span className="text-xs text-muted-foreground tabular-nums flex-shrink-0">
                 {answeredCount}/{total}

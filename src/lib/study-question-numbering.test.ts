@@ -24,7 +24,7 @@ describe("getStudyQuestionDisplayNumber", () => {
   });
 
   it("falls back to the array position when an order is missing", () => {
-    const questions = [{ sortOrder: 1 }, {}, { sortOrder: 3 }];
+    const questions: Array<{ sortOrder?: number }> = [{ sortOrder: 1 }, {}, { sortOrder: 3 }];
 
     expect(questions.map((_, index) => getStudyQuestionDisplayNumber(questions, index)))
       .toEqual([1, 2, 3]);

@@ -51,6 +51,8 @@ This is a numbering map only. It does not certify the affected records' content 
 | 29 | `mat-2015-mq-0028a` | Rutex replaces an original option with the computed scalar-projection expression `10.8/√13.41`; the official option list does not contain that expression. | Preserve original options and flag that the paper/options do not match the computed result. |
 | 37 | `mat-2015-mq-0035` | Rutex changes one option to 11. The official options are 8, 9, 10 and 7, while the dot-product condition gives `λ = 11`. | Preserve original options and flag the no-correct-option source defect. |
 | 40 | `mat-2015-mq-0038` | The official correct Spearman-rank formula is option C. Rutex alters/reorders the options and stores B as correct. | Restore the official option text/order and set the verified key to C. |
+| 31 | `mat-2015-mq-0029` | The official paper asks for *speed* from the derivative of displacement. Rutex rewrites it as *velocity*. Speed is the magnitude `|3t − 1|`; the keyed signed expression can be negative for early positive t. | Preserve the source wording and explain the distinction. Flag the source/options as incomplete unless the intended time range or velocity wording is confirmed. |
+| 38 | `mat-2015-mq-0036` | The official prompt gives only the two individual pass probabilities; it does not state that the results are independent. Rutex silently adds an independence assumption. Without independence (or a joint probability), “exactly one” is not determined. | Preserve the original and state independence only as an editorial assumption, or mark the item ambiguous until an authoritative clarification is found. |
 
 ## Editorial normalisations that need provenance
 
@@ -92,7 +94,7 @@ A row-level aggregate check returned:
 - 0 records with a linked image.
 - 50/50 still have `sort_order = 0`.
 
-A first independent calculation pass found no substantive answer/explanation mismatch in the 44 objective rows outside Q5, Q13, Q14, Q29, Q37 and Q40. This is a **first-pass review**, not final certification; those 44 still need the full source-wording/options comparison and a second check. The editorial clarifications listed above (Q33, Q36 and Q38) must remain explicit.
+A first independent calculation pass found no substantive answer/explanation mismatch in the 43 objective rows outside the seven direct source/record mismatches. This is a **first-pass calculation review**, not final certification: those 43 still need the full source-wording/options comparison and a second check. The source ambiguities at Q31 and Q38, plus the mark-type caveat at Q41, must remain explicit. The editorial clarifications at Q6, Q33 and Q36 must also remain documented.
 
 StudentFirst's 2015 previews show the same first three objective questions as the official paper and list all eight theory questions. Its first three theory previews also align with the official paper's structure. This corroborates coverage only; it does not replace the official PDF as the content authority.
 

@@ -74,6 +74,24 @@ The official paper has 50 multiple-choice questions and eight essay questions. R
 - Question 12 is explicitly a graph-selection question about the mass of a copper cathode over time. The Rutex entry replaces the four graph choices with text descriptions and has no attached figure. The conceptual key (a straight line with positive slope under constant current) is plausible, but the actual original option graphics/layout must be restored or represented by a newly drawn, source-faithful diagram.
 - Question 31's citric-acid condensed structural formula is represented in the Rutex stem; its answer of zero chiral centres is consistent with the two identical \\(-CH_2COOH\\) groups attached to the central carbon. This is a case where a clear formula can preserve the information without copying the page image.
 
+### 2015 objective paper — first-pass item audit
+
+All 50 rows were inspected in sequence against the official paper. The first-pass review is **not a clean pass**; the following need source-aware repair or explicit errata:
+
+| Item | Finding | Required treatment |
+|---|---|---|
+| Q3 | The official paper lists 35.4 g Cu and 63.5 g mol⁻¹. Calculation gives about 3.36 × 10²³ atoms, but none of the listed choices is exact. In addition, the Rutex option A exponent is 10²³ while the official PDF prints 10²⁴. | Treat as a source-paper answer-choice defect plus a Rutex transcription defect. Do not silently key the nearest option; seek an authorized corrected paper or record an explicit erratum. |
+| Q8 | Rutex key is B, while its explanation says the stronger metallic bond (option C) explains sodium's higher melting point. | Resolve the key/explanation conflict against the chemistry and source. C is the direct explanation, but preserve an audit note before changing the key. |
+| Q10 | The official item asks for the number of equivalent sp² hybrid orbitals. Rutex changes this to the number of sigma bonds. Both lead to three, but the stem is no longer faithful. | Restore the official stem; keep the answer only after confirming options and explanation. |
+| Q11 | The original refers to an underlined carbon in a displayed structure. Rutex substitutes a condensed butanoic-acid formula and verbalizes the alpha-carbon interpretation. | Confirm the marked atom against the original figure; restore a clear structure or faithful text representation. |
+| Q12 | The official choices are four graphs. Rutex substitutes verbal descriptions and has no attached image. | Recreate the four graph choices from the authorized paper, test their rendering, and verify the key. |
+| Q21 | Rutex's explanation says both CaCO₃ and Mg(OH)₂ precipitate, but only CaCO₃ appears among the choices. | Review for an ambiguous stem or incomplete options; correct only after the intended precipitate is established. |
+| Q26 | Stored key is C, but the explanation says the dominant cause is the weaker H–I bond, which is option D. | Correct the key/explanation after an independent Hess-law/bond-energy check; do not leave the internal contradiction. |
+| Q28 | The source wording says cryolite lowers the melting point of bauxite; the explanation correctly discusses dissolving alumina/lowering alumina's operating melt temperature. | Treat as an inherited source wording defect. Add a transparent chemistry correction (alumina, not raw bauxite) while retaining the original-paper transcription in the audit trail. |
+| Q37 | The copied reaction is unbalanced: Na₂O₂ + 2H₂O should produce 2NaOH + H₂O₂. | Correct the equation with an erratum and retain the original wording in the source audit trail. |
+
+Other checked examples (Q1, Q2, Q4–7, Q13–20, Q22–25, Q27, Q29–35, Q38–50) were broadly consistent on the first pass, but this is not a substitute for a second independent review. In particular, Q3's numerical defect and Q11–12's visual dependence mean the year must not be marked complete.
+
 ### Essay paper
 Direct comparison shows a serious year/source-alignment defect:
 - Rutex theory row 01 matches official essay question 1 on chemical equilibrium.

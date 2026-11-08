@@ -3,6 +3,7 @@ import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { getPersistedDeletedIds } from "@/lib/admin-questions-service";
+import { sortStudyQuestionsByDisplayNumber } from "@/lib/study-question-numbering";
 
 const ALL_YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
@@ -159,7 +160,7 @@ export function getStudyQuestionsByYear(year: number): StudyQuestion[] {
 export function getStudyQuestionsBySubject(subject: Subject, year: number, category?: StudyCategory): StudyQuestion[] {
   let filtered = currentData.filter(q => q.subject === subject && q.year === year);
   if (category) filtered = filtered.filter(q => q.category === category);
-  return filtered.sort((a, b) => (a.sortOrder ?? 9999) - (b.sortOrder ?? 9999));
+  return sortStudyQuestionsByDisplayNumber(filtered);
 }
 
 export function getAllStudyYears(): number[] {

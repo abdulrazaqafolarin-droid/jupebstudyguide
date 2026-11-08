@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
 import { gradeAnswer, percentageScore } from "@/lib/answer-scoring";
+import { getStudyQuestionDisplayNumber } from "@/lib/study-question-numbering";
 
 interface AnswerEntry {
   questionId: string;
@@ -232,7 +233,7 @@ export function QuestionViewer({
                 }`}
               >
                 <p className="text-sm font-medium mb-1">
-                  Q{q.sortOrder != null ? q.sortOrder + 1 : i + 1}. {q.question}
+                  Q{getStudyQuestionDisplayNumber(questions, i)}. {q.question}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
@@ -315,7 +316,7 @@ export function QuestionViewer({
                       {status === "answered" ? (
                         <Check className="h-3.5 w-3.5" />
                       ) : (
-                        q.sortOrder != null ? q.sortOrder + 1 : idx + 1
+                        getStudyQuestionDisplayNumber(questions, idx)
                       )}
                     </button>
                   );
@@ -347,7 +348,7 @@ export function QuestionViewer({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1 gap-2">
               <span className="text-xs text-muted-foreground tabular-nums truncate">
-                Q{questions[current]?.sortOrder != null ? questions[current].sortOrder + 1 : current + 1}/{total}
+                Q{getStudyQuestionDisplayNumber(questions, current)}
               </span>
               <span className="text-xs text-muted-foreground tabular-nums flex-shrink-0">
                 {answeredCount}/{total}

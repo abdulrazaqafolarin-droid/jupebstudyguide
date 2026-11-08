@@ -27,7 +27,9 @@ export function getStudyQuestionDisplayNumbers<T extends OrderedStudyQuestion>(
     orders.length === questions.length &&
     orders.length > 0 &&
     orders.includes(0) &&
-    new Set(orders).size === orders.length;
+    new Set(orders).size === orders.length &&
+    Math.min(...orders) === 0 &&
+    Math.max(...orders) === orders.length - 1;
 
   const displayNumbers: Array<number | undefined> = new Array(questions.length);
   const usedNumbers = new Set<number>();

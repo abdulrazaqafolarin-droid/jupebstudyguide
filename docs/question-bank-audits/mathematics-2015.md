@@ -44,7 +44,7 @@ This is a numbering map only. It does not certify the affected records' content 
 
 | Paper question | Rutex ID | Finding | Safe disposition |
 |---:|---|---|---|
-| 5 | `mat-2015-mq-0005` | The official stem says the circle is `2x² + 2y² = 30` and asks for a tangent at `(-3, 6)`. That point is not on the stated circle. Rutex replaces an original option with an explanatory non-option. | Preserve original paper wording/options and mark as a source-paper defect pending an authoritative erratum or verified alternative source. Do not grade a fabricated option. |
+| 5 | `mat-2015-mq-0005` | The official stem says the circle is `2x² + 2y² = 30` and asks for a tangent at `(-3, 6)`. That point is not on the stated circle. The official option D, `x − 2y + 15 = 0`, would be the tangent if the right side were 90 instead of 30, suggesting a possible source typo but not proving an erratum. Rutex replaces that original option with an explanatory non-option. | Preserve original paper wording/options and mark as a source-paper defect pending an authoritative erratum or verified alternative source. Do not grade a fabricated option. |
 | 13 | `mat-2015-mq-0012` | The official paper asks for the “range for which y = 0” and its options do not express the real zero set `{-1, 0, 1}`. Rutex rewrites the stem and replaces an option with that set. | Preserve the original separately; flag the source defect. Any student-friendly correction must be labelled as an editorial correction, not the original paper. |
 | 19 | `mat-2015-mq-0018` | Integrating the stated gradient `dy/dx = 2x + 3` and using the origin gives `y = x² + 3x = x(x + 3)`, but none of the four official options gives that equation. Rutex changes official option A from `x(x + 2)` to `x(x + 3)` and keys the altered option. | Preserve the official option list and flag the paper's no-correct-option defect. A corrected option may be shown only as a separate editorial correction. |
 | 14 | `mat-2015-mq-0013` | Official denominator is `x + 35`; Rutex stores `x + 3`. The official-paper limit is 0 (option C), while the stored altered expression produces -18. | Restore the official expression and verify the key/explanation against it. |
@@ -60,6 +60,10 @@ This is a numbering map only. It does not certify the affected records' content 
 - **Q33 — `mat-2015-mq-0031`:** official paper prints retardation as `1.2 m/s`; Rutex uses `1.2 m/s²`. This is dimensionally sensible, but should be documented as a unit correction.
 - **Q36 — `mat-2015-mq-0034`:** the official option text contains a likely N/W unit typo; Rutex normalises the force units to newtons. Record this as editorial normalisation.
 - **Q38 — `mat-2015-mq-0036`:** Rutex adds an independence assumption needed for the “exactly one passes” calculation. Keep that assumption explicit rather than silently inserting it into the original stem.
+
+## Answer/explanation defect requiring correction
+
+- **Q36 — `mat-2015-mq-0034`:** The stored answer key A (57.4 N, 70.3 N) is consistent with equilibrium for an 8 kg mass and strings at 30° and 45° to the horizontal. However, the stored explanation gives (T_{45}=W\sin30^\circ/\sin105^\circ\) and claims this is approximately 70.3 N. That expression is approximately 40.6 N, not 70.3 N. The consistent Lami/equilibrium expressions are (T_{30}=W\sin45^\circ/\sin105^\circ\approx57.4\,N) and (T_{45}=W\sin120^\circ/\sin105^\circ\approx70.3\,N), with (W=8g=78.4\,N). Correct the worked explanation while retaining the verified answer key. The source options' use of W instead of N is a separate unit typo normalised by Rutex.
 
 ## Theory-paper gap
 
@@ -94,7 +98,7 @@ A row-level aggregate check returned:
 - 0 records with a linked image.
 - 50/50 still have `sort_order = 0`.
 
-A first independent calculation pass found no substantive answer/explanation mismatch in the 43 objective rows outside the seven direct source/record mismatches. This is a **first-pass calculation review**, not final certification: those 43 still need the full source-wording/options comparison and a second check. The source ambiguities at Q31 and Q38, plus the mark-type caveat at Q41, must remain explicit. The editorial clarifications at Q6, Q33 and Q36 must also remain documented.
+A first calculation pass identified the Q36 explanation defect described below. The remaining objective rows have not yet passed a complete independent answer-and-explanation audit or a full line-by-line source comparison; no 2015 set is certified. The source ambiguities at Q31 and Q38, and the mark-type caveat at Q41, must remain explicit. The editorial clarifications at Q6, Q33 and Q36 must also remain documented.
 
 StudentFirst's 2015 previews show the same first three objective questions as the official paper and list all eight theory questions. Its first three theory previews also align with the official paper's structure. This corroborates coverage only; it does not replace the official PDF as the content authority.
 

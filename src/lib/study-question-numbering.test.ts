@@ -9,22 +9,42 @@ describe("getStudyQuestionDisplayNumber", () => {
       .toEqual([1, 3, 6]);
   });
 
-  it("converts zero-based sort orders to human-facing question numbers", () => {
-    const questions = [{ sortOrder: 0 }, { sortOrder: 2 }, { sortOrder: 4 }];
-
-    expect(questions.map((_, index) => getStudyQuestionDisplayNumber(questions, index)))
-      .toEqual([1, 3, 5]);
-  });
-
-  it("uses the array position when legacy rows all have the default zero order", () => {
-    const questions: Array<{ sortOrder?: number | null }> = [{ sortOrder: 0 }, { sortOrder: 0 }, {}];
+  it("converts a complete zero-based sequence to human-facing question numbers", () => {
+    const questions = [{ sortOrder: 0 }, { sortOrder: 1 }, { sortOrder: 2 }];
 
     expect(questions.map((_, index) => getStudyQuestionDisplayNumber(questions, index)))
       .toEqual([1, 2, 3]);
   });
 
+  it("uses array positions when legacy rows all have the default zero order", () => {
+    const questions: Array<{ sortOrder?: number | null }> = [
+      { sortOrder: 0 },
+      { sortOrder: 0 },
+      {},
+    ];
+
+    expect(questions.map((_, index) => getStudyQuestionDisplayNumber(questions, index)))
+      .toEqual([1, 2, 3]);
+  });
+
+  it("preserves positive source numbers in partially numbered legacy groups", () => {
+    const questions = [
+      { sortOrder: 0 },
+      { sortOrder: 0 },
+      { sortOrder: 3 },
+      { sortOrder: 4 },
+    ];
+
+    expect(questions.map((_, index) => getStudyQuestionDisplayNumber(questions, index)))
+      .toEqual([1, 2, 3, 4]);
+  });
+
   it("falls back to the array position when an order is missing", () => {
-    const questions: Array<{ sortOrder?: number }> = [{ sortOrder: 1 }, {}, { sortOrder: 3 }];
+    const questions: Array<{ sortOrder?: number }> = [
+      { sortOrder: 1 },
+      {},
+      { sortOrder: 3 },
+    ];
 
     expect(questions.map((_, index) => getStudyQuestionDisplayNumber(questions, index)))
       .toEqual([1, 2, 3]);

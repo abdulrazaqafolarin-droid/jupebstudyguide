@@ -114,6 +114,38 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2020 status — practical paper source-aligned; theory fragmented; MCQ verification pending
+
+Primary sources are listed in the official JUPEB archive: [2020 Chemistry MCQ & Essay](https://jupeb.edu.ng/past_questions/2020%20Chemistry%20-%20MCQ%20%26%20Essay.pdf) and [2020 Chemistry Practical](https://jupeb.edu.ng/past_questions/2020%20Chemistry%20-%20Practical.pdf). The practical PDF was visually reviewed from its original pages. The MCQ/essay PDF is listed by JUPEB, but its text and page image could not be retrieved reliably in this session, so no claim of full year-by-year MCQ/essay matching is made yet.
+
+### Practical paper
+The two Rutex 2020 practical entries match the two official practical tasks:
+1. Quantitative analysis: sodium carbonate hydrate (Na₂CO₃·nH₂O) solution titrated with 0.10 mol dm⁻³ nitric acid; students calculate titre-based moles/concentration and hydration number.
+2. Qualitative analysis: identify functional groups in three liquid organic samples using 2,4-DNPH, Tollens', dichromate/NaHCO₃ and iodine/NaOH tests, then write structures for three-carbon samples.
+
+This is a positive source-alignment finding. However, both Rutex practical records have sort_order 0 and lack worked answer/observation guides. Build a complete observation/inference/result guide from chemistry principles and the official paper, and order these as practical questions 1 and 2 after the source mapping is confirmed.
+
+### Objective inventory and first-pass QA
+Rutex has 53 objective records (49 visible) with two missing sort_order positions in the expected 1–50 sequence (8 and 33). Several replacement records are appended at positions 51–55:
+- Hidden originals for questions 14, 24 and 30 have corrected-looking replacement records at 53, 54 and 55 respectively. They must be mapped back to their original paper positions after validating the full stems/options/keys.
+- A branched-chain-isomer question appears twice: one visible record at sort_order 51 and one hidden duplicate at 52. It must be deduplicated and assigned the true printed question number.
+- The first-pass visible items Q2–Q5, Q7, Q8–Q13 have plausible explanations/keys on chemistry grounds, but still require full source comparison.
+- Q1 option C is grammatically corrupted ("equal unequal number of protons"); repair only after comparing with the source. Its stored key D and explanation identify the Brønsted–Lowry/Lewis distinction.
+- Q6's key/explanation is not reliable: option D says spectator ions form insoluble salts, while the explanation itself says the reacting ions form the precipitate and spectator ions remain in solution. The current choices may not contain a valid statement; resolve from the original paper rather than retaining D.
+- Q13 includes an option rendered only as "BF", which appears incomplete and needs checking against the source.
+- Several hidden objective items have missing answer keys/explanations; do not unhide them solely because replacement rows exist elsewhere in the table.
+
+### Theory/essay inventory
+The year contains 30 theory-category records, only 7 visible and 23 hidden. The records include a mixture of complete-looking question stems, standalone continuations/subparts, answer fragments, and alternative versions of the same material:
+- A visible question begins with an unexplained phase-change prompt about a substance Z and an isotope/redox section; confirm whether any referenced phase diagram/data was lost.
+- A fuel-cell/thermochemistry/radioactive-decay question is split across visible theory-03 and theory-09.
+- A gas-mixture calculation is split across theory-10 and hidden theory-11.
+- Several hidden rows (theory-15 through theory-22 and theory-23 through theory-30) contain answer fragments or continuations rather than independently numbered full exam questions.
+- The pentanone/iodoform task appears in alternative hidden versions (theory-02 and theory-08) with worked answer content. These are not a substitute for the original question stem and should be reconciled into one canonical source-linked record.
+- No visible theory entry has a usable answer key or explanation field, and several organic/decay tasks require structures/schemes not currently attached.
+
+**2020 disposition:** preserve the two source-aligned practical questions but add verified worked guides and correct sequence order; rebuild the essay question set from the official source and reconstruct its fragments into a canonical set rather than exposing random pieces; validate objective Q6, repair text/option defects, move verified replacements into the original question slots, resolve missing questions 8 and 33, and remove the branched-isomer duplicate. MCQ/essay source matching remains pending until the official PDF can be read. No database rows have been changed.
+
 ## 2019 status — official paper proves objective-year contamination
 
 A primary source is available: [JUPEB June 2019 Chemistry — MCQ & Essay PDF](https://jupeb.edu.ng/past_questions/2019%20Chemistry%20-%20MCQ%20%26%20Essay.pdf). The paper identifies itself as June 2019 Chemistry SCI-J153, contains 50 objective questions and eight essay questions. The official past-question index lists a Chemistry MCQ & Essay paper for 2019, but no separate 2019 Chemistry practical paper in the year listing.

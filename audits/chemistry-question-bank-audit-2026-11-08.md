@@ -114,6 +114,34 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2021 status — corrupted source fields, appended replacements and duplicate theory blocks
+
+The official JUPEB archive lists both 2021 Chemistry MCQ & Essay and Chemistry Practical papers. The archive's MCQ/essay link could not be retrieved reliably in this session, and the practical link currently returns 404, so original-paper content verification remains pending.
+
+Rutex inventory: 59 objective rows (50 visible, 9 hidden), 8 theory rows (6 visible, 2 hidden), and 2 practical rows (both visible).
+
+### Objective questions
+The first visible questions Q1–Q6 have plausible stems, options and keys on a first chemistry pass: precision/repeatability, Rutherford scattering, Brønsted–Lowry acid, hydrogen isotopes, standard solution and CCl₄ polarity. However, the next items reveal source-extraction defects:
+- Q7 has an unreadable/missing d-subshell exponent in the electronic configuration. Its explanation says the period remains 4, but the exact stem should be restored from the paper.
+- Q10 option C contains an incomplete `2p^{?}` configuration. The current correct key A is not affected, but the set is not a faithful four-option transcription.
+- Nine objective originals are explicitly flagged as unusable because a diagram, compound, formula or options are missing: IDs ending 019, 023, 034, 036, 038, 042, 045, 047 and 050.
+- Nine replacement questions have been appended after the normal Q1–Q50 order (sort_order 50–57, with two replacements sharing sort_order 50). These cover activation energy, radical-chain initiation, coordination number, an alkyne acid name, C₄H₁₀/C₅H₁₂ isomer counts, a cobalt complex and counter-ion counting.
+- The appended rows may be useful repairs, but they are not assigned consistently to the original printed question slots. At least one substitution changes the actual prompt (the hidden original asks a radical-chain propagation step, while a replacement asks for the initiation step). The correct paper number and original wording must be confirmed before reordering or restoring any row.
+
+The Chemistry table has no image assets, so the graph, compound structures and coordination complexes referenced by several flagged questions are not preserved.
+
+### Theory/essay questions
+- Eight theory records exist, but only six are visible.
+- Theory-01 is hidden and overlaps the van der Waals SO₂ question in theory-03; theory-03 is the more complete version.
+- Theory-08 is hidden; it contains an organic-reaction/products task and several structure-writing prompts that must be source-checked before reconstruction.
+- All theory rows use sort_order 0, so their original paper sequence is not preserved.
+- No visible theory question has an answer key or worked explanation. Theory questions with missing organic structures require source diagrams or clear redrawn structural formulas.
+
+### Practical questions
+Rutex has two practical records: a mixed NaHCO₃/Na₂CO₃ quantitative titration and a three-salt qualitative analysis. The official archive lists a 2021 practical paper, but its current download link returns 404; therefore these two records are plausible but **not yet source-verified**. They have no worked observation/inference guides and both use sort_order 0.
+
+**2021 disposition:** keep the nine flagged originals hidden until the original PDF is obtained; map all nine appended corrections to the authentic question numbers and verify that no prompt has been changed; remove/reconcile the duplicate Van der Waals theory record; rebuild a properly ordered theory set and answer guide; and retrieve the official practical source before marking either practical question verified. No database rows have been changed.
+
 ## 2020 status — practical paper source-aligned; theory fragmented; MCQ verification pending
 
 Primary sources are listed in the official JUPEB archive: [2020 Chemistry MCQ & Essay](https://jupeb.edu.ng/past_questions/2020%20Chemistry%20-%20MCQ%20%26%20Essay.pdf) and [2020 Chemistry Practical](https://jupeb.edu.ng/past_questions/2020%20Chemistry%20-%20Practical.pdf). The practical PDF was visually reviewed from its original pages. The MCQ/essay PDF is listed by JUPEB, but its text and page image could not be retrieved reliably in this session, so no claim of full year-by-year MCQ/essay matching is made yet.

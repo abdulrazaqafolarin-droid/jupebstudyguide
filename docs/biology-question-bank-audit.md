@@ -154,3 +154,38 @@ A year is not “complete” until all of the following are true:
 ## Change-control note
 
 This document records inspection findings only. No production database rows were updated, no hidden questions were restored, no source PDFs/images were copied into the repository, and no production deployment was triggered.
+
+
+## 9. Further 2015 scientific review and data-model blockers
+
+A second pass over the stored explanations found more issues that were invisible to the initial field-shape check:
+
+| Question | Additional finding | Required disposition |
+|---:|---|---|
+| 32 | The original paper's ordering makes Copper option B, not D. More importantly, Iron is also an essential trace element; the current options include both Iron and Copper. | Correct the option order and retain the key only if an official JUPEB key or clearly defined syllabus context resolves the intended classification. Otherwise mark as ambiguous/unscored. |
+| 40 | Both Nutrient Agar and Tryptic Soy Agar are used as general-purpose media. ATCC identifies Nutrient Agar as general-purpose; the BD Difco/BBL manual identifies Tryptic/Trypticase Soy Agar as a general-purpose medium. | Keep the source question but do not treat D as an unequivocally wrong distractor. Require official answer-key evidence or mark ambiguous/unscored. |
+| 43 | Starch grains are non-living inclusions, but a cell wall is also a non-living structure. The current explanation incorrectly describes the cell wall as a living/actively functional cell component. | Do not grade as a single-answer item until the source or official key resolves the ambiguity. Rewrite the explanation only after the disposition is decided. |
+| 44 | The current explanation calls both generations “sexual phases”. In plant alternation of generations, the haploid gametophyte produces gametes; the diploid sporophyte produces spores. The stem's option “two sexual pathways” is not a sound description of this life cycle. | Correct the scientific explanation and flag the original item wording as ambiguous; do not silently rewrite the original paper. |
+| 50 | The current explanation says Streptococcus is not part of the stomach microbiota. Reviews document Streptococcus among genera repeatedly detected in healthy human stomach samples. | The stored key/explanation is not supported by current evidence. Do not present A as a settled scientific answer; check the source key and historical syllabus context, or mark the item ambiguous/outdated. |
+
+Evidence for these findings:
+- Canada's public-health technical document explicitly identifies iron as a trace element: https://www.canada.ca/en/health-canada/services/publications/healthy-living/guidelines-canadian-drinking-water-quality-guideline-technical-document-iron.html
+- The National Research Council describes both iron and copper as trace elements: https://www.ncbi.nlm.nih.gov/books/NBK218751/
+- Plant alternation of generations is a haploid gametophyte that produces gametes and a diploid sporophyte that produces spores: https://openstax.org/books/biology/pages/11-2-sexual-reproduction
+- The BD Difco/BBL manual describes Tryptic/Trypticase Soy Agar as a general-purpose medium: https://static.bd.com/assets/product/Documents/Integrated%20Diagnostic%20Solutions%20%28IDS%29/DS_CM_Difco-and-BBL-culture-media-manual_UG_EN.pdf
+- A review of the human stomach microbiota lists Streptococcus among genera repeatedly found in healthy stomach samples: https://academic.oup.com/femsre/article/37/5/736/542661
+
+### Theory and practical answer-guide storage limitation
+
+The 2015 Theory paper has eight questions, but the live `study_questions` table cannot currently store theory answer guides or mark schemes. The inspected database schema contains no `answer_guide`, `mark_scheme` or `total_marks` columns. Although the TypeScript `StudyQuestion` type declares `answerGuide`, `markScheme` and `totalMarks`, the row mapper and its SELECT list do not load these fields.
+
+Likewise, the database table does not contain the structured practical fields represented in the TypeScript type (apparatus, procedure, observations and practical sub-questions). So simply importing practical papers or adding theory solutions to JSON will not make those fields persist or render through the current database-backed loader.
+
+**Architecture work required before filling these content gaps:**
+- design a backward-compatible migration for theory answer guides, mark schemes and total marks;
+- design structured storage for practical title/objective/apparatus/procedure/observations/sub-questions and marks;
+- update the row mapper, SELECT list, write/admin service and viewer so each field is persisted, fetched and displayed;
+- add tests for old rows with null new fields and for all three categories;
+- only then import verified theory/practical solutions.
+
+No schema changes have been applied. This is a design blocker to resolve before attempting to make the theory/practical archive complete.

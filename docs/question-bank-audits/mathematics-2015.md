@@ -53,6 +53,7 @@ This is a numbering map only. It does not certify the affected records' content 
 
 ## Editorial normalisations that need provenance
 
+- **Q6 — `mat-2015-mq-0006`:** the official paper's directrix options are printed with the unusual coordinate-style notation `x = (0, ±n)`; Rutex simplifies these to `x = ±n`. The mathematical answer remains option B, but retain the exact source typography in the source transcription and record the simplification as display normalisation.
 - **Q33 — `mat-2015-mq-0031`:** official paper prints retardation as `1.2 m/s`; Rutex uses `1.2 m/s²`. This is dimensionally sensible, but should be documented as a unit correction.
 - **Q36 — `mat-2015-mq-0034`:** the official option text contains a likely N/W unit typo; Rutex normalises the force units to newtons. Record this as editorial normalisation.
 - **Q38 — `mat-2015-mq-0036`:** Rutex adds an independence assumption needed for the “exactly one passes” calculation. Keep that assumption explicit rather than silently inserting it into the original stem.

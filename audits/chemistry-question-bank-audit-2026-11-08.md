@@ -114,6 +114,30 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2022 status — answer-key/explanation conflicts and duplicate MCQ
+
+The official JUPEB archive lists Chemistry MCQ & Essay and Chemistry Practical under 2022, but both the MCQ/essay PDF and practical PDF links currently return 404. This year is therefore **source-pending**; the live records can be audited for internal chemistry correctness, but exact transcription and printed numbering cannot yet be certified against the original papers.
+
+Rutex inventory: 50 objective records (49 visible, 1 hidden), 8 theory records (all visible), 2 practical records (both visible). The theory and practical records all have sort_order 0, and no Chemistry image assets are attached.
+
+### Objective first-pass findings
+- Q1 asks what information is obtained from a mass-spectrometer spectrum. The options include "mass/charge ratio" (B) and "atomic mass ratio" (C). The key is C, but the explanation says the instrument measures mass-to-charge ratio (m/z). The key should be B unless the original stem asks a different quantity; the current explanation/key conflict is not acceptable.
+- Q4 treats "ounce" as a mass unit, but ounce can also denote a fluid-volume unit. The option is ambiguous without specifying avoirdupois ounce versus fluid ounce.
+- Q6's written prompt describes only peaks at m/z 70 (~70%) and 78 (~20%), while its calculation uses an additional m/z 75 isotope at 10%. That third peak/abundance is missing from the stem and no image is attached.
+- Q9 says atomic radius and ionization energy follow the same trend, claiming both decrease across a period and increase down a group. This is incorrect: atomic radius generally decreases across and increases down; first ionization energy generally increases across and decreases down. Its explanation then describes the correct ionization-energy direction, contradicting the stem.
+- Q11 contains an equilibrium equation and ΔH value but no clear interrogative instruction in the stored stem. The answer options suggest a shift/Le Châtelier question, but the exact ask must be recovered.
+- Q40 (hidden) and Q46 (visible) are the same nitrogen partial-pressure question. Q40 has key C (0.98 atm), although its own calculation gives 0.225 atm and option A (0.23 atm); Q46 is the corrected duplicate with key A. Keep one source-mapped record at the correct printed number.
+- Q42 asks for the "kinetics order" of acetyl chloride reacting with ethanol based only on its equation. The explanation infers second order merely because two reactants appear in the equation. A rate law/order cannot generally be determined from a net stoichiometric equation alone without kinetic evidence or a stated mechanism; the question needs correction or supporting data.
+- Q48 combines two distinct prompts: formation of an N-nitrosamine from a secondary amine and classification of the hydroxyl group in quinine. Q49 then asks the quinine hydroxyl classification again. This duplicates a sub-question and makes Q48's answer ambiguous.
+- Q2, Q3, Q5, Q7, Q8, Q10, Q12, Q13 and several later items have plausible chemistry/keys on this first pass; that is not proof of fidelity to the 2022 paper.
+
+### Theory and practical
+- Eight theory records exist and are all visible, but all are sort_order 0 and none has a worked answer guide/explanation.
+- Several theory prompts depend on reaction schemes/structures (notably the toluene reaction scheme and organic transformations); no referenced diagram or image is attached.
+- The two practical records contain a sodium carbonate/HCl quantitative titration and a mixed-inorganic-salt qualitative analysis. They are plausible JUPEB practical tasks but cannot be certified against the official 2022 practical while its source link is broken. Both lack full validated observation/inference and calculation guides.
+
+**2022 disposition:** resolve Q1's key, restore the missing mass-spectrum information in Q6, correct the periodic-trend statement in Q9, recover Q11's missing instruction, deduplicate Q40/Q46, reject or properly source the rate-law question Q42, separate Q48/Q49, restore the original objective/theory numbering and source figures, and complete answer guides. Keep paper-level verification open until an official/authorized source is obtained. No database rows have been changed.
+
 ## 2021 status — corrupted source fields, appended replacements and duplicate theory blocks
 
 The official JUPEB archive lists both 2021 Chemistry MCQ & Essay and Chemistry Practical papers. The archive's MCQ/essay link could not be retrieved reliably in this session, and the practical link currently returns 404, so original-paper content verification remains pending.

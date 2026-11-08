@@ -183,8 +183,10 @@ export function QuestionViewer({
 
   const bookmark = isBookmarked?.(question?.id ?? "");
   const userAnswer = answers[question?.id ?? ""];
-  const hasRealAnswer = !!question?.correctAnswer && question.correctAnswer !== "TBD" && question.correctAnswer !== "tbd";
-  const isAnswerCorrect = hasRealAnswer && userAnswer?.toUpperCase() === question?.correctAnswer?.toUpperCase();
+  const { isGradable: isAnswerGradable, isCorrect: isAnswerCorrect } = gradeAnswer(
+    userAnswer,
+    question?.correctAnswer,
+  );
 
   if (!questions.length) {
     return (
@@ -238,7 +240,7 @@ export function QuestionViewer({
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
                 </p>
                 {r.isGradable === false ? (
-                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no answer key is available.</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no verified answer key is available.</p>
                 ) : q.correctAnswer && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {r.isCorrect ? "Correct" : `Correct answer: ${q.correctAnswer}`}
@@ -486,10 +488,10 @@ export function QuestionViewer({
                           {opt.label}
                             </span>
                           <span className="text-pretty break-words flex-1 min-w-0"><QuestionMath content={opt.text} inline /></span>
-                          {showFeedback && isCorrect && (
+                          {showFeedback && isAnswerGradable && isCorrect && (
                             <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>
                           )}
-                          {showFeedback && isSelected && !isCorrect && (
+                          {showFeedback && isAnswerGradable && isSelected && !isCorrect && (
                             <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>
                           )}
                         </button>
@@ -500,21 +502,32 @@ export function QuestionViewer({
                       <div className="space-y-3 pt-2">
                         <div className={cn(
                           "p-3 rounded-xl border",
-                          isAnswerCorrect
-                            ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
-                            : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
+                          !isAnswerGradable
+                            ? "border-border bg-muted/30"
+                            : isAnswerCorrect
+                              ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
+                              : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
                         )}>
                           <p className={cn(
                             "text-sm font-medium",
-                            isAnswerCorrect ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"
+                            !isAnswerGradable
+                              ? "text-muted-foreground"
+                              : isAnswerCorrect
+                                ? "text-green-700 dark:text-green-300"
+                                : "text-red-700 dark:text-red-300"
                           )}>
-                            {isAnswerCorrect ? "Correct!" : "Incorrect"}
+                            {!isAnswerGradable ? "Not scored" : isAnswerCorrect ? "Correct!" : "Incorrect"}
                           </p>
-                          {!isAnswerCorrect && hasRealAnswer && question.correctAnswer && (
+                          {isAnswerGradable && !isAnswerCorrect && question.correctAnswer && (
                             <p className="text-xs text-muted-foreground mt-1">
                               The correct answer is <span className="font-mono font-medium text-green-600 dark:text-green-400">
                                 {question.correctAnswer}
                               </span>
+                            </p>
+                          )}
+                          {!isAnswerGradable && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              No verified answer key is available for this question.
                             </p>
                           )}
                         </div>

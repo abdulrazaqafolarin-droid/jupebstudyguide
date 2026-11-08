@@ -114,6 +114,29 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2017 status — widespread stem/option/explanation and category mismatches
+
+The public 2017 StudentFirst previews show 50 objective questions, 8 theory questions and 2 practical questions. No 2017 Chemistry paper was available from the official JUPEB archive page inspected here, so use this only as a cross-check pending an original/authorized paper.
+
+Rutex stores 52 objective rows (48 visible), 10 theory rows and 3 practical rows. A first-pass check of objective Q1–Q10 found:
+- Q1 asks about Bohr's atomic model, but its explanation discusses the mass of an electron.
+- Q2 asks for boron electron quantum numbers; its spin-option values are truncated and its explanation discusses atomic number instead.
+- Q3 asks for sodium's electronic configuration but its options are the answer choices for the mass of a carbon-dioxide molecule.
+- Q4 asks for the atomic mass of a triatomic gas from vapour density; the stored answer C (32) is plausible, but its explanation is about the maximum electron capacity of the third shell.
+- Q5 asks for the process of making hydrogen from red-hot coke and steam; its explanation discusses isotopes and its stored answer needs source review.
+- Q7 asks for phenolphthalein's colour in acid, but its explanation is about covalent bonding.
+- Q10 asks for a valid quantum-number combination, but its explanation is about electrical conductivity of ionic compounds.
+
+Some 2017 objectives (for example Q6, Q8 and Q9) appear internally coherent, but that does not rescue the paper as a whole. The first ten are enough to prove that structural checks can pass while the visible content is scientifically mismatched.
+
+Theory/practical records also need rebuilding:
+- There are ten current theory-category rows rather than the public index's eight. The first three theory topics visible on StudentFirst (quantum/atomic ideas and pH titration; P/S ionization energies and buffers; water/methane intermolecular forces and gas mixtures) do not match the first three Rutex theory rows, which instead cover generic pH/buffers, ammonia equilibrium and environmental pollution.
+- Current theory entries have no answer guides/explanations, and most use `sort_order = 0`.
+- One separation-of-sand-and-sodium-chloride task is categorized as theory, while three practical-category records include general atom structure and polymerization prompts. The two tasks shown in the public 2017 practical preview (carbonate titration and a mixed-salt qualitative analysis) are not represented by those Rutex practical entries.
+- Theory prompts involving organic reaction schemes and structure identification require image/diagram support, but the Chemistry bank has no attached images.
+
+**2017 disposition:** do not label the current year set as a verified JUPEB past paper. Quarantine confirmed mismatched objective rows, obtain the original paper, rebuild all three paper sections and their numbering, and only then create answer guides and restore reviewed rows. No database rows have been changed.
+
 ## 2016 status — visible cross-year options contamination
 
 The public 2016 StudentFirst previews are useful for checking paper coverage and sequence: 50 objective questions, 8 theory questions and 2 practical questions. The official JUPEB archive page inspected in this audit does not currently expose a 2016 Chemistry paper, so this remains **third-party corroboration pending a primary source**.

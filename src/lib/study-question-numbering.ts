@@ -25,7 +25,7 @@ export function getStudyQuestionDisplayNumber<T extends OrderedStudyQuestion>(
     .filter((order): order is number => typeof order === "number");
 
   const allOrdersDefaultToZero =
-    orders.length === questions.length && orders.length > 0 && orders.every((order) => order === 0);
+    orders.length > 0 && orders.every((order) => order === 0);
 
   if (question.sortOrder == null || allOrdersDefaultToZero) {
     return index + 1;

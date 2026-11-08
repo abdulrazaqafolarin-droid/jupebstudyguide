@@ -114,6 +114,38 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2019 status — official paper proves objective-year contamination
+
+A primary source is available: [JUPEB June 2019 Chemistry — MCQ & Essay PDF](https://jupeb.edu.ng/past_questions/2019%20Chemistry%20-%20MCQ%20%26%20Essay.pdf). The paper identifies itself as June 2019 Chemistry SCI-J153, contains 50 objective questions and eight essay questions. The official past-question index lists a Chemistry MCQ & Essay paper for 2019, but no separate 2019 Chemistry practical paper in the year listing.
+
+Rutex currently stores 51 objective records (49 visible), 8 theory records (7 visible) and 2 practical records. The objective sequence does **not** correspond to the official 2019 paper:
+- Official 2019 Q1 is about precision in measurement; Rutex Q1 is a body-temperature water-ion calculation from the older question set.
+- Official Q2 is about Bohr's atomic model; Rutex Q2 is a group/valence-electron question.
+- Official Q3 asks which factor does not affect ionization energy; Rutex Q3 is the copper atom-count calculation from the 2015 set.
+- Official Q4 is the ionization energy of gaseous lithium; Rutex Q4 is NaCl solution preparation.
+- Official Q5 is the electronic configuration of Zn²⁺; Rutex Q5 asks the shape of PCl₃.
+- The Rutex records around Q11–Q50 continue to repeat the 2015 question-bank sequence (for example the alpha-carbon question, copper electrorefining graph question, ideal-gas question, Solvay calculation, oxidation-state and isomerism items). A normalized exact-stem comparison found 15 exact matches between the Rutex 2019 and 2015 objective sets, with further near-identical/reformatted repeats.
+- Official 2019 Q44 is an IUPAC naming task with a branched structural diagram, and Q50 is a reaction-product question with pictured alkene structures. Rutex Q44 is instead an Arrhenius-base question and Q50 is an isomerism question from the earlier bank. Neither has an attached image.
+- Official Q12 is a diagonal-relationship question, while the Rutex Q12 is the old copper-electrorefining graph question and offers only text descriptions instead of the four plotted choices.
+- The hidden Q6 record has duplicate/incomplete thorium choices. A replacement version exists at sort_order 51 rather than 6. Q8 is also hidden and has no explanation. These must not be treated as a complete 50-question set.
+
+There is also a content defect within the old material that was carried into 2019:
+- Q1's key is A (2.5 × 10⁻⁷), but the explanation computes 1.55 × 10⁻⁷ and identifies option D.
+- Q3 computes about 3.36 × 10²³ atoms but accepts 3.27 × 10²³ as the approximate option, preserving the 2015 answer-choice problem.
+
+Essay/theory section:
+- The official 2019 essay paper has eight questions across CHM001–CHM004. Rutex theory-01 starts at subpart (a)(ii), omitting the first Bohr-postulate subpart of official question 1.
+- Theory-02 matches official question 2; theory-03 matches official question 3; theory-04 matches official question 4; theory-05 matches official question 5.
+- Theory-06 has a coordination-complex formula differing from the original: database A is `[Cr(NH₃)₄Cl₂]Br`, while the official paper gives `[Cr(NH₃)₄Cl]Br`. This changes the actual complex composition and must be corrected from source.
+- The official question 7 is missing. It is a diagram-heavy organic chemistry item asking for carbon hybridization at labelled atoms, products in a propanone reaction scheme, structures of named compounds and possible structures of an alcohol/ketone pair.
+- Theory-08 matches official question 8. Theory-07, currently hidden, duplicates theory-02 rather than supplying the missing official question 7.
+- The theory records have no answer keys or worked explanations. No image asset exists for Q7's labelled structure and propanone reaction scheme.
+
+Practical section:
+- Two practical-category records exist in Rutex, but the 2019 official paper/index used for this year is titled MCQ & Essay. These practical records are therefore **not verified as 2019 official papers** and should not be presented as such unless a separate authorized 2019 practical paper is found.
+
+**2019 disposition:** rebuild the objective paper from the official 2019 PDF, not by patching the reused 2015 list; recover/recreate Q44/Q50 and other diagram assets from authorized source material; correct Q1 answer/choice inconsistency; restore Q6 and Q8 with correct numbering; replace the duplicate theory-07 with official essay Q7; correct theory-06 formula; restore missing Q1 subpart; create and independently verify worked answer guides. No database rows have been changed.
+
 ## 2018 status — duplicated course blocks and mis-numbered replacement questions
 
 StudentFirst's 2018 public index/preview advertises 50 objective questions, 8 theory questions and 2 practical tasks. No primary JUPEB 2018 Chemistry PDF was located in the official archive inspected during this audit, so this is a third-party coverage comparison pending the original paper.

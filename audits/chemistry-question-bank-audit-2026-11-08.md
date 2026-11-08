@@ -367,6 +367,52 @@ These are **record/order anomalies**, not proof that the original papers had tha
 - `scripts/import-questions.mjs` creates empty answers and explanations and has a simplified text parser; it is not safe for a direct production question-bank import without a redesigned validation/review flow.
 - No Chemistry database row currently has an attached `image_url`.
 
+## App-level defect — stored question numbering is interpreted inconsistently
+
+This is separate from incorrect/missing source records and must be fixed before publishing a corrected question bank.
+
+The live client code in `src/components/study-past-questions/QuestionViewer.tsx` adds 1 to `sortOrder` in three places: the active-question header, the jump-to-question grid and the results list. But the Supabase objective data is predominantly **1-based** already:
+- 622 of 623 Chemistry objective rows have `sort_order >= 1`; only one has 0.
+- 90 of 125 Chemistry theory rows have `sort_order = 0`.
+- 21 of 25 Chemistry practical rows have `sort_order = 0`.
+- The current loader sorts directly by `sort_order` and does not normalize numbering.
+
+Consequences:
+- A typical objective record with `sort_order = 1` is shown by the viewer as Q2, not Q1; a record numbered 50 is presented as Q51.
+- Theory/practical records whose sort order is 0 can all be shown as Q1.
+- Mixed 0-based and 1-based years can show inconsistent numbering, and ties/out-of-range rows can also corrupt the jump grid.
+- Fixing only the database records or adding replacement questions will not solve this. Define one explicit convention (preferably canonical printed question number or zero-based display index), normalize data and renderer together, and add tests for first/last question, gaps, duplicate numbers, out-of-range replacements, theory and practical categories. Preserve the true printed number in a separate source-question-number field if multiple paper sections or subparts require distinct numbering.
+
+**This is a release-blocking UI/data-contract correction.** Do not renumber production rows until the renderer contract and any dependent admin/reordering logic have been tested on a separate branch.
+
+## Image handling — the app can support diagrams; Chemistry data currently does not use it
+
+The existing app has the basic mechanism needed for legitimate question figures:
+- `QuestionViewer.tsx` reads `imageUrl` and `imagePosition` and renders text-only, image-only, image-above or image-beside layouts.
+- `AdminQuestionPanel.tsx` supports image selection, cropping, preview and upload while editing a question.
+- `admin-questions-service.ts` writes images to Supabase Storage bucket `question-images` and stores the public URL in `study_questions.image_url`.
+- The Chemistry data query returned zero non-empty `image_url` values across all 773 rows. No Chemistry figures are currently attached.
+
+Therefore the missing-diagram work is possible without inventing a new rendering system. The safe asset process is:
+1. Use a board-issued/authorized scan or a source the user owns/licences.
+2. Crop the specific figure or redraw it faithfully from the authorized paper, preserving labels, axes, units, structures and option letters.
+3. Have a Chemistry reviewer compare the asset with the source and independently solve the question.
+4. Upload the approved image through the existing question-image bucket, set the correct `image_position`, and test in both mobile and desktop question views.
+5. Keep original paper scans and extraction files in a private source store; do not commit copyrighted PDFs or unlicensed question banks to the public GitHub repository.
+
+Do **not** copy StudentFirst's images/text into this public question library without written permission. StudentFirst's published Terms of Use restrict redistribution/republication and the creation of a competing question library; public preview visibility is not a republication licence. Use StudentFirst to identify a gap or validate coverage, then source the actual question/figure from JUPEB, a user-provided authorized paper, or a licensed source. If no lawful original figure can be recovered, commission a fresh explanatory diagram that preserves the chemistry and clearly label it as an adapted teaching illustration rather than the original paper image.
+
+## Source recovery and 2026+ coverage boundary
+
+The official JUPEB questions page currently exposes paper entries for 2015, 2020, 2021 and 2022 in its page text. A secondary archive claims to retain working Board papers for 2015, 2019 and 2020, while warning that the 2021 and 2022 links fail. StudentFirst advertises yearly Chemistry sets from 2014 through 2026, but its content is not a substitute for the Board's original scan or an authorized licence.
+
+For this audit, treat the original/authorized-source status as follows:
+- **Located and read:** official 2015 Chemistry MCQ & Essay; official 2019 Chemistry MCQ & Essay; official 2020 Chemistry Practical.
+- **Listed by JUPEB but not reliably retrievable in this session:** 2020 MCQ & Essay; 2021 MCQ & Essay and Practical; 2022 MCQ & Essay and Practical (2021/2022 links currently return errors in the secondary archive).
+- **No primary official PDF confirmed in the inspected archive/search:** 2014, 2016, 2017, 2018, 2023, 2024, 2025 and 2026.
+
+A Google Sites listing and other third-party pages mention some older papers, but their provenance/authorization must be checked before relying on them. A PDF that happens to be publicly downloadable is not automatically an authorized source for reproducing its contents in the app. JUPEB's FAQ advises students to contact their centre director for past questions as well as using the Board's downloads page.
+
 ## Next work sequence
 
 1. Finish 2015: reconcile all 50 MCQs and eight essay questions against the official PDF; restore the graph-based options for MCQ 12; independently verify every key and explanation; review the two current missing theory prompts and quarantine misattributed rows.

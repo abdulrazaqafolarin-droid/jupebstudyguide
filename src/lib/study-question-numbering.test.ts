@@ -24,6 +24,12 @@ describe("study question numbering", () => {
     expect(getStudyQuestionDisplayNumbers(questions)).toEqual([1, 3, 4]);
   });
 
+  it("does not treat sparse mixed one-based values as a zero-based sequence", () => {
+    const questions = [{ sortOrder: 0 }, { sortOrder: 2 }, { sortOrder: 4 }];
+
+    expect(getStudyQuestionDisplayNumbers(questions)).toEqual([1, 2, 4]);
+  });
+
   it("uses sequential numbers when legacy rows all have the default zero order", () => {
     const questions: Array<{ sortOrder?: number | null }> = [
       { sortOrder: 0 },

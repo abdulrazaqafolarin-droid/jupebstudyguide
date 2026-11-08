@@ -114,6 +114,29 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2018 status — duplicated course blocks and mis-numbered replacement questions
+
+StudentFirst's 2018 public index/preview advertises 50 objective questions, 8 theory questions and 2 practical tasks. No primary JUPEB 2018 Chemistry PDF was located in the official archive inspected during this audit, so this is a third-party coverage comparison pending the original paper.
+
+The Rutex bank currently has 50 visible objective records, 12 visible theory records and 2 visible practical records. The 2018 objective records show several replacements kept after the 50-question sequence:
+- The originals at positions 10, 17, 46 and 48 are hidden pending correction.
+- Four visible replacement records exist at positions 51–54 rather than filling the original positions 10, 17, 46 and 48. This leaves the visible sequence mis-numbered and can make the year appear to exceed 50 questions.
+- Q1–Q5 are broadly coherent on a first reading (copper electronic configuration, d-orbital quantum number, ionization energy, periodic trend, Lewis acid), and Q6–Q9 also have plausible answers/explanations.
+- The original Q10 item asks oxygen's oxidation state in OF₂. Its stored key D (+1) is wrong: fluorine is −1, so oxygen is +2 (option A). It is appropriately hidden; its replacement currently lives at sort_order 51 and asks the oxidation state of sulphur in H₂SO₄.
+- Q17, Q46 and Q48 are also replaced beyond the paper boundary; the ethanol oxidation question's original expected product must be read against the paper to decide whether ethanoic acid or a different oxidation product is intended. Replacements must be mapped back to their source question numbers, not appended as Q51–54.
+
+Theory structure:
+- There are 12 visible rows: eight rows named `chemistry-2018-theory-01…08` (all sort_order 0) plus four rows named `che-2018-t0001…t0004` (sort_order 1–4).
+- The four `che-2018-t` records are course-group blocks (CHM 001–004) containing sequences of theory questions; their contents overlap the eight separately stored theory rows. For example, t0001 substantially repeats theory-01, t0002 repeats theory-03, t0003 overlaps theory-05/06 and t0004 overlaps theory-07/08. This is likely duplicate/alternative representation of the same paper, not evidence of 12 distinct official theory questions.
+- Some separately stored rows are malformed/incomplete: theory-07 contains garbled text and mismatched fragments; theory-08 has corrupted formulas/garbled reaction content. These need to be reconciled against the course-block version and original paper.
+- The course-block theory entries contain no worked answer guides; the eight split theory entries also have no explanation/answer-guide fields. Several questions need molecular structures/reaction drawings, yet no Chemistry image assets are attached.
+
+Practical section:
+- Two visible records broadly resemble the acid/base titration and mixed-salt qualitative analysis tasks.
+- Both currently have `sort_order=0`, no worked answer guides and require checking against the full paper and observation/result tables.
+
+**2018 disposition:** map the four replacement MCQs back to their original numbers and close numbering gaps only after source checks; choose one canonical theory representation (split questions or course blocks) to avoid duplicate display; quarantine malformed duplicates; and add validated answer guides and original-source diagrams. Do not mark complete from counts alone. No database rows have been changed.
+
 ## 2017 status — widespread stem/option/explanation and category mismatches
 
 The public 2017 StudentFirst previews show 50 objective questions, 8 theory questions and 2 practical questions. No 2017 Chemistry paper was available from the official JUPEB archive page inspected here, so use this only as a cross-check pending an original/authorized paper.

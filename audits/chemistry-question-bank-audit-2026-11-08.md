@@ -114,6 +114,20 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## Objective numbering and ordering anomalies
+
+A separate SQL check of `sort_order` found anomalies that a simple visible-count comparison cannot detect:
+- 2014 has a visible objective record numbered 51.
+- 2017 has two visible records both numbered 51.
+- 2018 has visible objective records numbered 51–54.
+- 2019 has a visible record numbered 51.
+- 2020 has objective records numbered 51–55 and no rows at sort numbers 8 and 33 within the expected 1–50 sequence.
+- 2021 has a visible record with sort number 0, two visible records numbered 50, and records numbered 51–57.
+- 2023 has a visible record numbered 51.
+- 2024 has visible records numbered 51 and 52.
+
+These are **record/order anomalies**, not proof that the original papers had that many MCQs. Some rows may be replacement, duplicate, supplementary or misassigned material. Because the client sorts by `sort_order`, ties and zero/out-of-range values can affect students' question sequence. For each year, map every database record to the original paper's printed question number before deciding whether to retain, re-number, hide or merge it.
+
 ## Repository/runtime findings
 
 - `src/data/study-questions/index.ts` reads `study_questions` from Supabase, excludes `hidden = true`, and has a fixed year list ending at 2025.

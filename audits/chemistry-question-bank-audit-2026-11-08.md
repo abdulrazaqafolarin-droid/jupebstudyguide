@@ -114,6 +114,54 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2023 status — coverage largely populated, but answer/numbering QA still fails
+
+StudentFirst's 2023 public Chemistry index displays 50 objective, 8 theory and 2 practical questions. Its public objective preview's first three prompts align with Rutex's first three objective stems. Its theory preview also aligns with the Rutex 2023 topics on calcium chloride empirical formula, periodic law, combustion enthalpy and coordination compounds. This is useful coverage corroboration, but no primary JUPEB 2023 PDF was found in the official archive page inspected here; do not treat a third-party preview as a permissioned source or official certification.
+
+Rutex holds 51 objective records (50 visible, 1 hidden), 8 theory records (all visible) and 2 practical records (both visible).
+- A flagged objective Q26 is hidden because the source compound name is invalid/corrupted; a replacement question about chiral centres in 3,4-dibromohexane is appended as sort_order 51. That is a replacement candidate, not a properly numbered Q26, until confirmed against the paper.
+- Q6 has a clear key/explanation contradiction. It asks which of three statements is *not possible*. The explanation says I and II are not possible and III is possible, which corresponds to option A (I and II only), but the stored key is D (III only). This is a definite answer-key defect.
+- Q23 says "a system that is operated at constant heat" is adiabatic. Adiabatic means no heat is exchanged with surroundings, not "constant heat"; the stem is technically malformed and needs the original wording.
+- Q50's IUPAC naming question needs correction. For the displayed structure CH₃–CH(CH₃)–C≡C–CH₂Cl, numbering from the CH₂Cl end gives the lower alkyne locant; the listed keyed name D uses a higher alkyne locant. Rebuild the stem/options/name against the actual paper.
+- The eight theory and two practical prompts have no usable answer key/worked explanation fields. All are sort_order 0, so the original paper sequence is not represented in database order. Organic theory Q7 includes a reaction scheme but there is no attached image.
+- The two practical entries (alkaline-earth hydroxide titration and qualitative analysis of a two-salt mixture) are plausible and correspond to StudentFirst's displayed practical category, but cannot yet be certified against a board source; both need complete observation/inference and calculation guides.
+
+**2023 disposition:** fix Q6's key, restore the original Q23 wording, recalculate Q50's IUPAC name/options, map the Q26 replacement to its true printed number and source, and add source-verified answers, diagrams and proper question ordering. No database rows have been changed.
+
+## 2024 status — objective order is not the paper order; practical paper is incomplete
+
+StudentFirst's 2024 public index advertises 50 objective, 8 theory and 2 practical questions. Its public objective preview begins with (1) a molecular bond-angle item, (2) the electronegativity trend, and (3) the electron de Broglie wavelength. Rutex stores the bond-angle item at sort_order 34, while Rutex sort_order 1 is the preview's second question and sort_order 2 is the preview's third. This is direct evidence that the objective records are not in true printed paper order. The primary 2024 JUPEB paper was not located in the official JUPEB archive page inspected here.
+
+Rutex inventory: 52 objective rows (50 visible, 2 hidden), 12 theory rows (8 visible, 4 hidden), and only 2 practical rows (1 visible, 1 hidden).
+- Objective Q25 is an incomplete/corrupted compound-only prompt with incomplete options. Objective Q30 has placeholder structure options and unrelated distractors. Both have been hidden.
+- Two replacement questions are appended as sort_order 51 and 52: one about geometrical-isomer pairs and one about the stereoisomer count for 2,3-dibromobutanoic acid. They appear to be repair candidates for the missing/corrupted objective questions but are not restored to original positions or yet verified against the official paper.
+- The Q3 de Broglie item has the right numerical result, but its options are reordered from StudentFirst's public preview (the 3.64 pm correct value is option A in the preview and option C in Rutex). The Rutex key is internally remapped to C, but it is not a faithful options-order transcription.
+- Eight visible theory records appear to contain the eight essay prompts, but all have sort_order 0 and no answer guides. Four hidden course-group records are answer/working copies overlapping those questions; they should not be exposed as four additional independent theory questions.
+- StudentFirst displays two practical questions, but Rutex contains only one visible practical prompt: quantitative analysis with sodium carbonate and an acid. The second row is a hidden answer/worked copy of that same task, not a separate qualitative-analysis practical question. Therefore the second practical paper is missing from Rutex's visible bank.
+
+**2024 disposition:** restore the bond-angle item to Q1 and map all objective questions to printed numbering; reconcile/replace Q25 and Q30; retain exact option order or document any intentional shuffle; choose canonical theory prompts and keep worked solutions in the answer field rather than duplicate rows; find and transcribe the missing practical Q2 from an authorized original. No database rows have been changed.
+
+## 2025 status — one confirmed wrong answer key, hidden items and source-order concerns
+
+StudentFirst's 2025 public index advertises 50 objective questions, 2 practical questions and a theory paper shown as 32 questions/subparts. Its public objective preview starts with a bonding question about ammonium, then the relative-error question, then a balancing equation for ammonia oxidation. Rutex starts with the relative-error question and places the ammonia balancing question at sort_order 5; the public preview's first question is not present among Rutex's first 15 objective items. This is an order/coverage discrepancy to reconcile against an authorized source. The official JUPEB archive page inspected here did not list a 2025 paper.
+
+Rutex inventory: 50 objective rows (47 visible, 3 hidden), 12 theory rows (8 visible, 4 hidden), and 3 practical rows (2 visible, 1 hidden).
+- Q9 asks which ionic compound is insoluble in water. The stored key is B (KNO₃), but KNO₃ is soluble; the explanation itself says AgCl is the insoluble exception (option C). This is a definite answer-key defect.
+- Q7 asks which reaction converts an alkyl halide into an alcohol. The options include both "substitution" and "hydrolysis"; hydrolysis is a type of nucleophilic substitution, so the single-answer design is ambiguous unless the wording or choices are tightened.
+- Q19 is hidden because two answer choices are duplicated and the item is malformed.
+- Q24 is hidden due option/content quality concerns.
+- Q30 duplicates the synthesis-gas question already present at Q15 and is hidden; it does not replace a genuinely missing item.
+- Eight visible theory prompts are stored separately; four hidden course-group records overlap the same CHM 001–004 material and include draft answer text. These should be reconciled into one canonical question representation with answers stored separately. StudentFirst's "32 theory questions" may count subparts rather than eight top-level essays; use the paper's printed numbering to resolve that count rather than treating the two numbers as directly contradictory.
+- Two practical prompts are visible: a weak-acid/NaOH titration and a qualitative analysis using an inorganic salt and zinc dust. A hidden third row is a worked copy of the quantitative analysis prompt, not a third practical question. No validated answer/observation guides are attached.
+
+**2025 disposition:** correct Q9 to C after a second independent check, rewrite Q7 to remove the substitution/hydrolysis ambiguity, rebuild or replace Q19/Q24, remove the duplicate Q30 while ensuring the authentic question 30 is present, align the objective sequence to the original paper, reconstruct a paper-numbered theory/practical set, and provide reviewed worked guides. No database rows have been changed.
+
+## 2026 status — advertised externally, absent internally, source still unverified
+
+StudentFirst's public index advertises three 2026 Chemistry papers: 50 objective, 2 practical and a theory paper shown as 32 questions/subparts. The Rutex production database has **zero Chemistry records** for 2026, and the repository's study-year configuration currently ends at 2025. No 2026 Chemistry paper was found in the official JUPEB archive page inspected during this audit.
+
+Do not add 2026 to the selectable year list or import third-party preview content merely to make the index look complete. Obtain an original or authorized 2026 paper, confirm the examination year/session and full question structure, then build and review its MCQ, theory and practical entries from that primary source.
+
 ## 2022 status — answer-key/explanation conflicts and duplicate MCQ
 
 The official JUPEB archive lists Chemistry MCQ & Essay and Chemistry Practical under 2022, but both the MCQ/essay PDF and practical PDF links currently return 404. This year is therefore **source-pending**; the live records can be audited for internal chemistry correctness, but exact transcription and printed numbering cannot yet be certified against the original papers.

@@ -63,6 +63,19 @@ A read-only SQL check parsed legacy options stored as JSON strings and tested th
 
 All 590 passed those structural checks. This **does not** certify that the stems are faithful transcriptions, that the scientific answer is correct, or that the explanation is valid. Each question still needs comparison with its source and an independent solution check. Hidden rows include four 2020 objective records that fail key/option or explanation checks and require source review before restoration.
 
+## 2014 status — primary source still required
+
+StudentFirst's public 2014 pages advertise 50 objective questions, 8 theory questions and 2 practical questions. Rutex stores 51 objective rows (48 visible, 3 hidden), only 3 theory rows, and 2 practical rows. The first three visible objective questions and the first theory prompt resemble the public preview, but this is limited corroboration only; it does not establish the complete official paper or grant permission to reproduce StudentFirst's content.
+
+Additional defects found in the current 2014 records:
+- Hidden objective Q12 has duplicate answer-choice text, so the item cannot be safely graded.
+- Hidden objective Q36 depends on a missing chemical structure.
+- Hidden objective Q50 has no option matching the scientifically correct increasing-acidity order.
+- The three visible theory rows have no usable answer guides/explanations (the stored explanation field contains an import/AI failure message).
+- Theory row 03 combines aluminium-extraction/ethanoic-acid material with alcohol/polymer/dipeptide subparts that also appear in the official 2015 Chemistry essay paper. This is a strong indication that content from different year papers has been merged or misattributed.
+
+**2014 disposition:** keep the year open. Obtain an original or board-authorized 2014 paper, map each question to its true year/course/number, recover missing diagrams and complete answer guides. Do not fill the five-question theory gap by generating generic questions or copying StudentFirst.
+
 ## First source-verified year: 2015
 
 Primary source: [JUPEB 2015 Chemistry — MCQ & Essay (official PDF)](https://jupeb.edu.ng/past_questions/2015%20Chemistry%20-%20MCQ%20%26%20Essay.pdf).

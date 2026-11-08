@@ -114,6 +114,27 @@ Direct comparison shows a serious year/source-alignment defect:
 
 **2015 disposition:** Do not add two generic theory rows or simply relabel the six existing entries. Quarantine the misaligned records from the 2015 paper view, rebuild the eight official essay prompts from the official source, and independently produce answer guides/mark schemes. Preserve the original row IDs and data in an audit trail until a reviewed migration is ready.
 
+## 2016 status — visible cross-year options contamination
+
+The public 2016 StudentFirst previews are useful for checking paper coverage and sequence: 50 objective questions, 8 theory questions and 2 practical questions. The official JUPEB archive page inspected in this audit does not currently expose a 2016 Chemistry paper, so this remains **third-party corroboration pending a primary source**.
+
+The live Rutex inventory has 50 objective rows, 8 theory rows and 3 practical rows. A first-pass comparison found:
+- Objective Q1 and Q2 agree with the publicly previewed question topics and have plausible answer choices.
+- Objective Q3 asks about the helium cation, but its four stored options are copper-atom counts copied from the 2015 copper calculation question. Its key A therefore does not answer the helium question.
+- Objective Q4 asks for the shape of PF₅, but its four stored options are the 2015 NaCl-solution preparation choices. Its key C does not answer the PF₅ question.
+- The two contaminated option sets pass the structural four-choice check, illustrating why semantic/source matching is required.
+
+Theory records:
+- All eight current theory rows have `sort_order = 0`, no answer guide and no explanation. This is insufficient to show an exam-style sequence or worked answers.
+- Topic matching to the public preview suggests the intended 2016 paper order is: theory-03, theory-08, theory-06, theory-07, theory-01, theory-02, theory-04, theory-05. This is only a provisional mapping; confirm against the original paper before writing new order values.
+- The current theory-08 record omits a requested molecular-formula subpart; theory-05 omits the final aspirin-conversion task from the public preview, which is structure/image-dependent. Theory-04 includes structure-identification tasks without attached images.
+
+Practical records:
+- Rutex has three practical entries, while the public 2016 index shows two. Two Rutex rows broadly resemble the displayed titration and qualitative-analysis tasks. The additional copper(II) sulfate crystal-preparation item has no source match yet and must not be labelled as a 2016 official question without proof.
+- Practical records also lack worked answer guidance and require a source/layout review.
+
+**2016 disposition:** quarantine Q3 and Q4 from student practice until the original options are recovered; obtain a primary source; restore exact theory numbering/order and missing subparts/figures; source-check the extra practical record. No database rows have been changed.
+
 ## Objective numbering and ordering anomalies
 
 A separate SQL check of `sort_order` found anomalies that a simple visible-count comparison cannot detect:

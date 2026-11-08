@@ -77,3 +77,23 @@ The TypeScript `StudyQuestion` type supports `answerGuide`, `markScheme` and `to
 - [ ] Final database counts and app display match the official source paper.
 
 Until these gates are met, label Mathematics 2015 **in progress**, not complete.
+
+
+## Detailed objective-row integrity pass
+
+A row-level aggregate check returned:
+
+- 50 records; all 50 visible.
+- 50/50 have exactly four options.
+- 50/50 have a non-empty answer key and explanation.
+- 50 distinct question stems.
+- 0 records with a linked image.
+- 50/50 still have `sort_order = 0`.
+
+A first independent calculation pass found no substantive answer/explanation mismatch in the 44 objective rows outside Q5, Q13, Q14, Q29, Q37 and Q40. This is a **first-pass review**, not final certification; those 44 still need the full source-wording/options comparison and a second check. The editorial clarifications listed above (Q33, Q36 and Q38) must remain explicit.
+
+StudentFirst's 2015 previews show the same first three objective questions as the official paper and list all eight theory questions. Its first three theory previews also align with the official paper's structure. This corroborates coverage only; it does not replace the official PDF as the content authority.
+
+## Figure and table handling
+
+No 2015 objective record currently has an image asset attached. The theory paper contains data tables (including the statistics and correlation questions); these should be rendered as accessible structured tables, not flattened into screenshots. The full PDF still needs a page-by-page visual check before final certification so that any diagram, chart or notation that is lost in text extraction can be recreated as a clean original asset and linked to its source question.

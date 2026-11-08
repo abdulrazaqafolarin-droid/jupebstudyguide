@@ -189,3 +189,19 @@ Likewise, the database table does not contain the structured practical fields re
 - only then import verified theory/practical solutions.
 
 No schema changes have been applied. This is a design blocker to resolve before attempting to make the theory/practical archive complete.
+
+
+### Additional 2015 answer/explanation checks
+
+The detailed explanation pass also requires these Biology-specific corrections or flags before 2015 can be called verified:
+
+- **Q32 – trace element:** the source paper orders Copper as B, but the database currently places Copper at D. After restoring source order, the answer letter would change to B. However, Iron is also formally classified as an essential trace element, so the item has two defensible options under a general biological/nutritional interpretation. See the National Research Council's trace-element chapter (https://www.ncbi.nlm.nih.gov/books/NBK218751/) and Health Canada's technical document (https://www.canada.ca/en/health-canada/services/publications/healthy-living/guidelines-canadian-drinking-water-quality-guideline-technical-document-iron.html).
+- **Q43 – non-living cell components:** the answer key selects starch grains, but the explanation incorrectly treats the cell wall as living. A cell wall is non-living material, so option D is also defensible. The original item needs an official key/context check or an explicit ambiguity disposition.
+- **Q44 – alternation of generations:** the explanation needs to distinguish the haploid gametophyte (gamete-producing) from the diploid sporophyte (spore-producing). The existing explanation calls both generations sexual phases, which is inaccurate. OpenStax's plant-life-cycle explanation provides the correct distinction: https://openstax.org/books/biology/pages/11-2-sexual-reproduction.
+- **Q50 – stomach microbiota:** the stored explanation's claim that Streptococcus is absent is not sustainable as a general statement. Modern reviews identify Streptococcus among bacteria repeatedly detected in human gastric samples. The original question's “except” framing should be reviewed before scoring.
+
+Do not treat a letter transposition or restoring the official A–D order as sufficient to clear a question when the science itself leaves more than one plausible answer.
+
+### Official answer-key availability
+
+The official 2015 JUPEB PDF inspected for this pilot contains the objective paper and essay questions, not a published answer key. Therefore, answer keys in our database must be independently validated and must not be described as “official JUPEB answers” without a separate source. StudentFirst's public preview confirms the first three 2015 objective items and advertises solutions for signed-in users, but the gated solutions were not used or copied during this audit.

@@ -31,9 +31,8 @@ const Auth = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [mfaVerifying, setMfaVerifying] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [appleLoading, setAppleLoading] = useState(false);
 
-  const { signIn, verifyMfa, signUp, resetPassword, updatePassword, signInWithGoogle, signInWithApple } = useAuth();
+  const { signIn, verifyMfa, signUp, resetPassword, updatePassword, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -72,22 +71,6 @@ const Auth = () => {
       }
     } finally {
       setGoogleLoading(false);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    setAppleLoading(true);
-    try {
-      const { error } = await signInWithApple();
-      if (error) {
-        toast({
-          title: "Apple sign-in failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setAppleLoading(false);
     }
   };
 
@@ -377,7 +360,7 @@ const Auth = () => {
                       variant="outline"
                       className="w-full"
                       onClick={handleGoogleSignIn}
-                      disabled={loading || googleLoading || appleLoading}
+                      disabled={loading || googleLoading}
                     >
                       {googleLoading ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -386,20 +369,7 @@ const Auth = () => {
                       )}
                       Continue with Google
                     </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={handleAppleSignIn}
-                      disabled={loading || googleLoading || appleLoading}
-                    >
-                      {appleLoading ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <span aria-hidden="true" className="mr-2 text-base">●</span>
-                      )}
-                      Continue with Apple
-                    </Button>
+                    
                     <div className="flex items-center gap-3 py-1">
                       <div className="h-px flex-1 bg-border" />
                       <span className="text-xs text-muted-foreground">or continue with email</span>

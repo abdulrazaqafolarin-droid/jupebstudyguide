@@ -1,9 +1,8 @@
 package com.jupeb.master;
 
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.graphics.Color;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,19 +22,12 @@ public class MainActivity extends BridgeActivity {
         }
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            // On Android 14 and earlier, let the status bar occupy its normal
-            // space. The Capacitor StatusBar plugin is configured with
-            // overlaysWebView=false, so the WebView must not draw underneath it.
-            WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-            return;
-        }
-
-        // Android 15+ enforces edge-to-edge for apps targeting API 35+.
-        // Keep that behavior, but inset the content container so the WebView
-        // starts below the clock, battery icons, and any camera/display cutout.
+        // Use one edge-to-edge path on Android 7 through current Android.
+        // The status bar is genuinely transparent; the WebView draws the app
+        // canvas behind it, while CSS consumes the measured top safe inset.
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().getDecorView().setBackgroundColor(Color.parseColor("#14171c"));
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
 
         View appContent = findViewById(android.R.id.content);
         if (appContent != null) {
@@ -49,22 +41,48 @@ public class MainActivity extends BridgeActivity {
                     WindowInsetsCompat.Type.systemBars()
                         | WindowInsetsCompat.Type.displayCutout()
                 );
+                Insets topInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.statusBars()
+                        | WindowInsetsCompat.Type.displayCutout()
+                );
+
+                // Keep horizontal cutout protection at the native view layer.
+                // Do not add top padding here: that would expose the native
+                // window background instead of the WebView behind the bar.
                 view.setPadding(
                     baseLeft + safeInsets.left,
-                    baseTop + safeInsets.top,
+                    baseTop,
                     baseRight + safeInsets.right,
                     baseBottom
                 );
+
+                applyStatusBarInsetToWebView(topInsets.top);
                 return windowInsets;
             });
             ViewCompat.requestApplyInsets(appContent);
         }
     }
 
+    private void applyStatusBarInsetToWebView(int insetPx) {
+        if (getBridge() == null || getBridge().getWebView() == null) {
+            return;
+        }
+
+        String script = "document.documentElement.style.setProperty("
+            + "'--native-status-bar-inset', '" + Math.max(0, insetPx) + "px');";
+        getBridge().getWebView().post(
+            () -> getBridge().getWebView().evaluateJavascript(script, null)
+        );
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         isAppForeground = true;
+        View appContent = findViewById(android.R.id.content);
+        if (appContent != null) {
+            ViewCompat.requestApplyInsets(appContent);
+        }
     }
 
     @Override

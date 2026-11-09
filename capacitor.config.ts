@@ -28,11 +28,11 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
     StatusBar: {
-      // Do not let the status bar overlap the WebView on Android 14 and below.
-      // Android 15+ enforces edge-to-edge and is handled in MainActivity.
-      overlaysWebView: false,
+      // Draw the WebView edge-to-edge behind a transparent Android status bar.
+      // MainActivity forwards the real top inset to the web content so controls
+      // stay safely below the clock and camera cutout.
+      overlaysWebView: true,
       style: 'dark',
-      backgroundColor: '#0f0f1a',
     },
   },
   android: {

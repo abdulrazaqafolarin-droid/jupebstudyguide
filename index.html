@@ -76,6 +76,13 @@
             showFailure('App error: ' + event.message);
           }
         }, true);
+        window.addEventListener('unhandledrejection', function (event) {
+          var reason = event.reason;
+          var detail = reason && typeof reason.message === 'string'
+            ? reason.message
+            : String(reason || 'Unknown asynchronous startup error');
+          showFailure('App startup failed: ' + detail.slice(0, 220));
+        });
         if (location.hostname !== 'localhost' && 'serviceWorker' in navigator) {
           window.addEventListener('load', function () {
             navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (error) {

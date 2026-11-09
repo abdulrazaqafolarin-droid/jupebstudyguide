@@ -11,6 +11,8 @@ import type { Subject, Question } from "@/types/question";
 import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
+import { isInlineImagePosition } from "@/lib/question-image-position";
+import { QuestionTextWithImage } from "./QuestionTextWithImage";
 import { gradeAnswer, percentageScore } from "@/lib/answer-scoring";
 import { getQuestionDisplayNumber } from "@/lib/question-numbering";
 
@@ -67,6 +69,9 @@ export function QuestionViewer({
   const renderQuestionMedia = useCallback((q: StudyQuestion) => {
     const hasImage = !!q.imageUrl && !brokenImages.has(q.id);
     const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
+    if (hasImage && isInlineImagePosition(pos)) {
+      return <QuestionTextWithImage content={q.question || ""} imageSrc={q.imageUrl!} imagePosition={pos} />;
+    }
     if (pos === "text-only" || !hasImage) {
       return q.question ? (
         <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />

@@ -3,8 +3,45 @@
  * No JSX here (keeps react-refresh lint quiet and logic unit-testable).
  */
 
+const TEX_COMMANDS = new Set([
+  "alpha", "beta", "gamma", "delta", "epsilon", "theta", "lambda", "mu",
+  "nu", "pi", "rho", "sigma", "tau", "phi", "varphi", "chi", "psi",
+  "omega", "Gamma", "Delta", "Theta", "Lambda", "Sigma", "Phi", "Psi",
+  "Omega", "frac", "dfrac", "tfrac", "sqrt", "times", "cdot", "div",
+  "pm", "mp", "le", "leq", "ge", "geq", "neq", "approx", "equiv",
+  "sim", "propto", "infty", "partial", "nabla", "mathbf", "boldsymbol",
+  "mathbb", "mathcal", "mathrm", "mathsf", "mathtt", "textrm", "text",
+  "operatorname", "overrightarrow", "vec", "begin", "end", "left", "right",
+  "lim", "int", "iint", "oint", "sum", "prod", "log", "ln", "sin", "cos",
+  "tan", "sec", "csc", "cot", "arcsin", "arccos", "arctan", "exp", "binom",
+  "overline", "underline", "hat", "bar", "widehat", "widetilde", "dot",
+  "ddot", "prime", "dots", "ldots", "cdots", "vdots", "ddots", "quad",
+  "qquad", "space", "overset", "underset", "stackrel", "boxed", "tag",
+  "ce", "rightarrow", "leftarrow", "leftrightarrow", "Rightarrow",
+  "Leftarrow", "Leftrightarrow", "therefore", "forall", "exists", "subset",
+  "subseteq", "supset", "supseteq", "cup", "cap", "emptyset", "in", "notin",
+  "mid", "perp", "parallel", "angle", "degree", "ell", "hbar", "Re", "Im",
+  "det", "gcd", "max", "min"
+]);
+
+/**
+ * Imported database rows sometimes contain doubled command slashes. A run
+ * of four slashes before an ordinary symbol is an escaped row break, not a
+ * command: preserve it as two TeX row-break slashes. Before a known command,
+ * normalize doubled slashes to one and longer runs to row-break + command.
+ */
 function collapseBackslashes(latex: string): string {
-  return latex.replace(/\\{2,}/g, "\\");
+  return latex
+    .replace(/\\{2,}([A-Za-z]+)/g, (match, command: string) => {
+      const slashCount = match.length - command.length;
+      if (!TEX_COMMANDS.has(command)) {
+        return slashCount >= 3 ? "\\\\" + command : match;
+      }
+      if (slashCount === 2) return "\\" + command;
+      if (slashCount >= 3) return "\\\\" + "\\" + command;
+      return match;
+    })
+    .replace(/\\{4,}(?=[^A-Za-z])/g, "\\\\");
 }
 
 function convertCe(latex: string): string {
@@ -62,7 +99,7 @@ export function splitMathSpans(content: string): Segment[] {
   let m: RegExpExecArray | null;
   while ((m = MATH_TOKEN_RE.exec(masked)) !== null) {
     if (m.index > cur) segs.push({ text: masked.slice(cur, m.index), isMath: false, isBlock: false });
-    const entry = maths[Number(m[1])];
+    const entry = maths[indexDecode(m[1])];
     if (entry) segs.push({ text: entry.latex, isMath: true, isBlock: entry.isBlock });
     cur = m.index + m[0].length;
   }
@@ -142,27 +179,36 @@ export function mathPlaceholder(i: number): string {
 export function maskMath(content: string): { masked: string; maths: MathEntry[] } {
   const maths: MathEntry[] = [];
   const spans: { start: number; end: number; math: string; isBlock: boolean }[] = [];
-  const blockRe = /\$\$([\s\S]*?)\$\$/g;
-  const inlineRe = /(?<!\$)\$([^$\n]+?)\$(?!\$)/g;
-  let m: RegExpExecArray | null;
-  while ((m = blockRe.exec(content)) !== null) {
-    spans.push({ start: m.index, end: m.index + m[0].length, math: m[1], isBlock: true });
-  }
-  while ((m = inlineRe.exec(content)) !== null) {
-    const inside = spans.some((b) => m!.index >= b.start && m!.index < b.end);
-    if (!inside && m[1].trim().length > 0) {
-      spans.push({ start: m.index, end: m.index + m[0].length, math: m[1], isBlock: false });
+  const patterns: { regex: RegExp; isBlock: boolean }[] = [
+    { regex: /\$\$([\s\S]*?)\$\$/g, isBlock: true },
+    { regex: /\\\[([\s\S]*?)\\\]/g, isBlock: true },
+    { regex: /\\\(([\s\S]*?)\\\)/g, isBlock: false },
+    // Support multi-line inline delimiters used by imported matrices and
+    // piecewise functions; avoid escaped dollars and display delimiters.
+    { regex: /(?<!\\)\$(?!\$)([\s\S]+?)(?<!\\)\$(?!\$)/g, isBlock: false },
+  ];
+
+  for (const { regex, isBlock } of patterns) {
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+      const start = match.index;
+      const end = start + match[0].length;
+      const overlaps = spans.some((span) => start < span.end && end > span.start);
+      if (!overlaps && match[1].trim().length > 0) {
+        spans.push({ start, end, math: match[1], isBlock });
+      }
     }
   }
+
   spans.sort((a, b) => a.start - b.start);
   let masked = "";
-  let cur = 0;
-  for (const sp of spans) {
-    masked += content.slice(cur, sp.start);
+  let cursor = 0;
+  for (const span of spans) {
+    masked += content.slice(cursor, span.start);
     masked += mathPlaceholder(maths.length);
-    maths.push({ latex: sp.math, isBlock: sp.isBlock });
-    cur = sp.end;
+    maths.push({ latex: span.math, isBlock: span.isBlock });
+    cursor = span.end;
   }
-  masked += content.slice(cur);
+  masked += content.slice(cursor);
   return { masked, maths };
 }

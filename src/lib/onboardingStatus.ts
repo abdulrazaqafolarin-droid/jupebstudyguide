@@ -65,23 +65,38 @@ export function fetchOnboardingStatus(userId: string): Promise<OnboardingStatus>
 
   const request = (async () => {
     try {
-      // Both reads share one deadline. Supabase aborts the requests when the
-      // deadline expires, allowing OnboardingGuard to show its retry state.
-      const requestSignal = AbortSignal.timeout(ONBOARDING_REQUEST_TIMEOUT_MS);
-      const [profileRes, sessionsRes] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
-          .eq('user_id', userId)
-          .abortSignal(requestSignal)
-          .maybeSingle(),
-        supabase
-          .from('study_sessions')
-          .select('sessions')
-          .eq('user_id', userId)
-          .abortSignal(requestSignal)
-          .maybeSingle(),
-      ]);
+      // Both reads share one deadline. AbortController is supported by older
+      // mobile browsers where AbortSignal.timeout() may not be available.
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(
+        () => controller.abort(),
+        ONBOARDING_REQUEST_TIMEOUT_MS,
+      );
+      let profileRes;
+      let sessionsRes;
+      try {
+        [profileRes, sessionsRes] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
+            .eq('user_id', userId)
+            .abortSignal(controller.signal)
+            .maybeSingle(),
+          supabase
+            .from('study_sessions')
+            .select('sessions')
+            .eq('user_id', userId)
+            .abortSignal(controller.signal)
+            .maybeSingle(),
+        ]);
+      } catch (error) {
+        if (controller.signal.aborted) {
+          throw new Error('Loading your study profile timed out. Check your connection and try again.');
+        }
+        throw error;
+      } finally {
+        window.clearTimeout(timeoutId);
+      }
 
       if (profileRes.error) throw profileRes.error;
       if (sessionsRes.error) throw sessionsRes.error;

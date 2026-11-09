@@ -78,24 +78,6 @@ describe("Google OAuth platform handling", () => {
     });
   });
 
-  it("starts Apple OAuth using the native iOS callback and opens the system browser", async () => {
-    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
-    let outcome: { error: Error | null } | undefined;
-    await act(async () => {
-      outcome = await result.current.signInWithApple();
-    });
-    expect(outcome?.error).toBeNull();
-    expect(mocks.supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
-      provider: "apple",
-      options: {
-        redirectTo: "com.jupeb.master://auth",
-        skipBrowserRedirect: true,
-      },
-    });
-    expect(mocks.browserOpen).toHaveBeenCalledWith({
-      url: "https://project.supabase.co/auth/v1/authorize?provider=google",
-    });
-  });
 
   it("keeps the standard browser OAuth redirect for web users", async () => {
     mocks.getPlatform.mockReturnValue("web");

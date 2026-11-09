@@ -72,31 +72,27 @@ export function fetchOnboardingStatus(userId: string): Promise<OnboardingStatus>
         () => controller.abort(),
         ONBOARDING_REQUEST_TIMEOUT_MS,
       );
-      let profileRes;
-      let sessionsRes;
-      try {
-        [profileRes, sessionsRes] = await Promise.all([
-          supabase
-            .from('profiles')
-            .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
-            .eq('user_id', userId)
-            .abortSignal(controller.signal)
-            .maybeSingle(),
-          supabase
-            .from('study_sessions')
-            .select('sessions')
-            .eq('user_id', userId)
-            .abortSignal(controller.signal)
-            .maybeSingle(),
-        ]);
-      } catch (error) {
-        if (controller.signal.aborted) {
-          throw new Error('Loading your study profile timed out. Check your connection and try again.');
-        }
-        throw error;
-      } finally {
-        window.clearTimeout(timeoutId);
-      }
+      const [profileRes, sessionsRes] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
+          .eq('user_id', userId)
+          .abortSignal(controller.signal)
+          .maybeSingle(),
+        supabase
+          .from('study_sessions')
+          .select('sessions')
+          .eq('user_id', userId)
+          .abortSignal(controller.signal)
+          .maybeSingle(),
+      ])
+        .catch((error: unknown) => {
+          if (controller.signal.aborted) {
+            throw new Error('Loading your study profile timed out. Check your connection and try again.');
+          }
+          throw error;
+        })
+        .finally(() => window.clearTimeout(timeoutId));
 
       if (profileRes.error) throw profileRes.error;
       if (sessionsRes.error) throw sessionsRes.error;

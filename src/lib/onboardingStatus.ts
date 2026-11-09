@@ -39,6 +39,9 @@ const EMPTY: OnboardingStatus = {
 const cache = new Map<string, OnboardingStatus>();
 const inFlight = new Map<string, Promise<OnboardingStatus>>();
 
+// A profile/session read must never leave the protected route on an infinite spinner.
+const ONBOARDING_REQUEST_TIMEOUT_MS = 12_000;
+
 export function getCachedOnboardingStatus(userId: string): OnboardingStatus | null {
   return cache.get(userId) ?? null;
 }
@@ -62,16 +65,21 @@ export function fetchOnboardingStatus(userId: string): Promise<OnboardingStatus>
 
   const request = (async () => {
     try {
+      // Both reads share one deadline. Supabase aborts the requests when the
+      // deadline expires, allowing OnboardingGuard to show its retry state.
+      const requestSignal = AbortSignal.timeout(ONBOARDING_REQUEST_TIMEOUT_MS);
       const [profileRes, sessionsRes] = await Promise.all([
         supabase
           .from('profiles')
           .select('onboarding_completed_at, onboarding_data, is_admin, display_name, theme_preference, school_name, exam_seat_number')
           .eq('user_id', userId)
+          .abortSignal(requestSignal)
           .maybeSingle(),
         supabase
           .from('study_sessions')
           .select('sessions')
           .eq('user_id', userId)
+          .abortSignal(requestSignal)
           .maybeSingle(),
       ]);
 

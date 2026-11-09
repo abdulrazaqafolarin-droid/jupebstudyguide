@@ -68,7 +68,7 @@ public class MainActivity extends BridgeActivity {
                     baseLeft + safeInsets.left,
                     baseTop,
                     baseRight + safeInsets.right,
-                    baseBottom
+                    baseBottom + safeInsets.bottom
                 );
 
                 if (getBridge() != null) {

@@ -27,6 +27,11 @@ const config: CapacitorConfig = {
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
     },
+    // Capacitor 8 handles edge-to-edge system bars. Keep the native inset
+    // values available to CSS, including the fallback for older Android WebViews.
+    SystemBars: {
+      insetsHandling: 'css',
+    },
     StatusBar: {
       style: 'dark',
       backgroundColor: '#0f0f1a',

@@ -608,3 +608,31 @@ nav a {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
+
+
+/* Native Android edge-to-edge status bar.
+ * MainActivity leaves the status bar transparent and writes its measured
+ * inset here. The app canvas is visible behind the system icons while the
+ * actual screen content remains below the clock/camera cutout. On iOS, use
+ * the platform safe-area value; on the web, both values resolve to zero.
+ */
+#root {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding-top: max(
+    var(--native-status-bar-inset, 0px),
+    env(safe-area-inset-top, 0px)
+  );
+}
+
+/* Keep full-height screens at the visible content height after consuming
+ * the top inset, instead of making the page taller than the device viewport.
+ */
+#root .min-h-screen {
+  min-height: calc(
+    100dvh - max(
+      var(--native-status-bar-inset, 0px),
+      env(safe-area-inset-top, 0px)
+    )
+  );
+}

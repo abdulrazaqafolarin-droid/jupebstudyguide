@@ -48,3 +48,6 @@ ios/App/DerivedData/
 ios/App/*.xcuserstate
 ios/App.xcworkspace/xcuserdata/
 ios/App.xcodeproj/xcuserdata/
+
+# Google OAuth client downloads can contain a private Web client secret.
+client_secret_*.json

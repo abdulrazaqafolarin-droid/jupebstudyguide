@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { QuestionMath } from "./QuestionMath";
+import { normalizeMath } from "@/lib/question-math";
 
 function text(content: string): string {
   const { container } = render(<QuestionMath content={content} />);
@@ -97,4 +98,40 @@ describe("QuestionMath with real question-bank content", () => {
     expect(t).toContain("Nitration of bromobenzene");
     expect(t).toContain("(b)");
   });
+
+  it("renders a multiline single-dollar formula as one KaTeX expression", () => {
+    const source = "Evaluate $\n\\frac{1}{2}\n$ and simplify.";
+    const { container } = render(<QuestionMath content={source} />);
+    expect(container.querySelector(".katex")).not.toBeNull();
+    expect(container.querySelector(".katex-error")).toBeNull();
+    const rendered = text(source);
+    expect(rendered).not.toContain("$");
+    expect(rendered).toContain("Evaluate");
+    expect(rendered).toContain("simplify.");
+  });
+
+  it("normalizes doubled TeX commands without destroying cases row breaks", () => {
+    const stored = "\\\\begin{cases}x-1,&x<1,\\\\\\\\x^2+k,&x\\\\geq1.\\\\end{cases}";
+    const normalized = normalizeMath(stored);
+    expect(normalized).toBe("\\begin{cases}x-1,&x<1,\\\\x^2+k,&x\\geq1.\\end{cases}");
+  });
+
+  it("renders imported piecewise functions with their row separator intact", () => {
+    const source = "Let $f(x)=\\\\begin{cases}x-1,&x<1,\\\\\\\\x^2+k,&x\\\\geq1.\\\\end{cases}$";
+    const { container } = render(<QuestionMath content={source} />);
+    expect(container.querySelector(".katex")).not.toBeNull();
+    expect(container.querySelector(".katex-error")).toBeNull();
+    const rendered = text(source);
+    expect(rendered).not.toContain("\\begin");
+    expect(rendered).not.toContain("\\end");
+  });
+
+  it("supports standard bracket and parenthesis math delimiters", () => {
+    const bracket = render(<QuestionMath content={"Area: \\[\\frac{1}{2}bh\\]"} />);
+    expect(bracket.container.querySelector(".katex-display .katex")).not.toBeNull();
+
+    const paren = render(<QuestionMath content={"Speed is \\(\\frac{d}{t}\\)."} />);
+    expect(paren.container.querySelector(".katex")).not.toBeNull();
+  });
+
 });

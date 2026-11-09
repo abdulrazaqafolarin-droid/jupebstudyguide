@@ -83,6 +83,9 @@
             : String(reason || 'Unknown asynchronous startup error');
           showFailure('App startup failed: ' + detail.slice(0, 220));
         });
+        // Keep the worker for browser push notifications. Website releases are
+        // deployed through Vercel; there is no in-app "Update now" prompt.
+        // The browser manages the worker lifecycle during normal navigation.
         if (location.hostname !== 'localhost' && 'serviceWorker' in navigator) {
           window.addEventListener('load', function () {
             navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (error) {

@@ -139,4 +139,4 @@ export const STUDY_SUBJECT_INFO: Record<Subject, SubjectMeta> = {
   },
 };
 
-export const STUDY_YEARS = Array.from({ length: 12 }, (_, i) => 2014 + i);
+export const STUDY_YEARS = Array.from({ length: 13 }, (_, i) => 2014 + i);

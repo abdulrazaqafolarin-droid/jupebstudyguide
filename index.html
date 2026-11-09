@@ -21,69 +21,20 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-    <style>
-      #jupeb-boot-screen { position: fixed; inset: 0; z-index: 2147483647; display: flex; align-items: center; justify-content: center; padding: 28px; background: #0f0f1a; color: #f7f7fb; font: 16px/1.5 system-ui, sans-serif; text-align: center; }
-      #jupeb-boot-screen[hidden] { display: none; }
-      #jupeb-boot-screen .boot-card { max-width: 360px; }
-      #jupeb-boot-screen .boot-spinner { width: 30px; height: 30px; margin: 0 auto 18px; border: 3px solid #55546a; border-top-color: #e19209; border-radius: 50%; animation: jupeb-spin .8s linear infinite; }
-      #jupeb-boot-screen.failed .boot-spinner { display: none; }
-      #jupeb-boot-screen button, #jupeb-boot-screen a { display: inline-block; margin: 12px 5px 0; padding: 10px 16px; border: 0; border-radius: 9px; background: #e19209; color: #17130b; font: 600 14px system-ui, sans-serif; text-decoration: none; }
-      #jupeb-boot-screen .boot-detail { color: #c1c0ce; font-size: 12px; overflow-wrap: anywhere; }
-      @keyframes jupeb-spin { to { transform: rotate(360deg); } }
-    </style>
   </head>
   <body>
     <a href="#root" class="sr-only skip-link">Skip to main content</a>
-    <div id="jupeb-boot-screen" role="status" aria-live="polite">
-      <div class="boot-card">
-        <div class="boot-spinner"></div>
-        <strong id="jupeb-boot-title">Starting Rutex Master(Jupeb)…</strong>
-        <p id="jupeb-boot-message">Loading your study app.</p>
-        <div id="jupeb-boot-actions" hidden>
-          <button type="button" onclick="window.location.reload()">Reload app</button>
-          <a href="https://rutexjupebmaster.vercel.app/" target="_blank" rel="noopener">Open website</a>
-          <p class="boot-detail">Your saved study data has not been deleted.</p>
-        </div>
-      </div>
-    </div>
     <div id="root"></div>
     <script>
-      (function () {
-        var screen = document.getElementById('jupeb-boot-screen');
-        var title = document.getElementById('jupeb-boot-title');
-        var message = document.getElementById('jupeb-boot-message');
-        var actions = document.getElementById('jupeb-boot-actions');
-        var timer = window.setTimeout(function () {
-          showFailure('The app did not finish starting. A required app file may not have loaded.');
-        }, 15000);
-        function showFailure(detail) {
-          if (!screen || screen.hidden) return;
-          screen.classList.add('failed');
-          title.textContent = 'Rutex Master(Jupeb) could not start';
-          message.textContent = detail || 'An app startup error occurred.';
-          actions.hidden = false;
-          console.error('[JUPEB startup]', detail);
-        }
-        window.addEventListener('jupeb:app-ready', function () {
-          window.clearTimeout(timer);
-          if (screen) screen.hidden = true;
-        }, { once: true });
-        window.addEventListener('error', function (event) {
-          var target = event.target;
-          if (target && target !== window && target.tagName === 'SCRIPT') {
-            showFailure('A required app script could not be loaded: ' + (target.src || 'unknown file'));
-          } else if (event.message) {
-            showFailure('App error: ' + event.message);
-          }
-        }, true);
-        if (location.hostname !== 'localhost' && 'serviceWorker' in navigator) {
-          window.addEventListener('load', function () {
-            navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (error) {
-              console.warn('[JUPEB] service worker registration skipped:', error);
-            });
+      // Keep the worker for browser push notifications. App updates are
+      // delivered as normal website deployments and signed Android releases.
+      if (location.hostname !== 'localhost' && 'serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (error) {
+            console.warn('[JUPEB] service worker registration skipped:', error);
           });
-        }
-      })();
+        });
+      }
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

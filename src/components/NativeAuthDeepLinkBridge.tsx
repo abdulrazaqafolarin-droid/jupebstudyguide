@@ -9,14 +9,14 @@ const APP_SCHEME = "com.jupeb.master:";
 const CALLBACK_HOST = "auth";
 
 /**
- * Exchanges Supabase email-verification links delivered through the iOS
- * custom URL scheme. The listener handles both warm and cold app launches.
+ * Exchanges Supabase auth callbacks delivered through the native app URL
+ * scheme on Android and iOS. The listener handles warm and cold launches.
  */
 export function NativeAuthDeepLinkBridge() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (Capacitor.getPlatform() !== "ios") return;
+    if (Capacitor.getPlatform() === "web") return;
 
     let disposed = false;
     const processed = new Set<string>();
@@ -34,7 +34,7 @@ export function NativeAuthDeepLinkBridge() {
       if (url.protocol !== APP_SCHEME || url.hostname !== CALLBACK_HOST) return;
       processed.add(rawUrl);
 
-      // Close the Safari authentication sheet when Google redirects back
+      // Close the external authentication browser when Google redirects back
       // into the native app. A close failure must not block session exchange.
       try {
         await Browser.close();
@@ -71,13 +71,13 @@ export function NativeAuthDeepLinkBridge() {
             });
             error = result.error;
           } else {
-            console.warn("[auth] ignored an unrecognized iOS auth callback");
+            console.warn("[auth] ignored an unrecognized native auth callback");
             return;
           }
         }
 
         if (error) {
-          console.warn("[auth] iOS email verification could not be completed:", error.message);
+          console.warn("[auth] native auth callback could not be completed:", error.message);
           navigate("/auth", { replace: true });
           return;
         }
@@ -87,7 +87,7 @@ export function NativeAuthDeepLinkBridge() {
         navigate(isPasswordRecovery ? "/auth?flow=recovery" : "/", { replace: true });
       } catch (error) {
         console.warn(
-          "[auth] iOS email verification failed:",
+          "[auth] native auth callback failed:",
           error instanceof Error ? error.message : "unknown error",
         );
         navigate("/auth", { replace: true });
@@ -103,7 +103,7 @@ export function NativeAuthDeepLinkBridge() {
         if (launch?.url) return handleUrl(launch.url);
       })
       .catch((error) => {
-        console.warn("[auth] could not read the iOS launch URL:", error);
+        console.warn("[auth] could not read the native launch URL:", error);
       });
 
     return () => {

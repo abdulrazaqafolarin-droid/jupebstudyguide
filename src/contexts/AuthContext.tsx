@@ -117,9 +117,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email,
           password,
           options: {
-            // iOS email verification must return to the installed app so
-            // NativeAuthDeepLinkBridge can exchange and persist the session.
-            emailRedirectTo: Capacitor.getPlatform() === 'ios'
+            // Native Android and iOS email verification return to the app
+            // through the deep-link bridge; browsers return to the website.
+            emailRedirectTo: Capacitor.getPlatform() !== 'web'
               ? 'com.jupeb.master://auth'
               : window.location.origin,
             data: { display_name: email.split('@')[0] },
@@ -250,7 +250,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const { error } = await withAuthRequestTimeout(
         supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: Capacitor.getPlatform() === 'ios'
+          redirectTo: Capacitor.getPlatform() !== 'web'
             ? 'com.jupeb.master://auth?flow=recovery'
             : `${window.location.origin}/auth?flow=recovery`,
         }),

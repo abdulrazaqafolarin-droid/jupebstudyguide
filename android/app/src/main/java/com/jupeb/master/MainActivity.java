@@ -1,9 +1,9 @@
 package com.jupeb.master;
 
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.graphics.Color;
+import android.webkit.WebView;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -11,9 +11,11 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.WebViewListener;
 
 public class MainActivity extends BridgeActivity {
     public static volatile boolean isAppForeground = false;
+    private int statusBarInsetPx = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,19 +25,23 @@ public class MainActivity extends BridgeActivity {
         }
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            // On Android 14 and earlier, let the status bar occupy its normal
-            // space. The Capacitor StatusBar plugin is configured with
-            // overlaysWebView=false, so the WebView must not draw underneath it.
-            WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-            return;
-        }
-
-        // Android 15+ enforces edge-to-edge for apps targeting API 35+.
-        // Keep that behavior, but inset the content container so the WebView
-        // starts below the clock, battery icons, and any camera/display cutout.
+        // Draw edge-to-edge on every supported Android version. Android 15+
+        // enforces this for target SDK 35+, while older versions need the
+        // explicit window setting. The status bar itself is fully transparent.
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().getDecorView().setBackgroundColor(Color.parseColor("#14171c"));
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+
+        // Apply the measured inset after each WebView page load as well as
+        // whenever Android reports new window insets (rotation/resume).
+        if (getBridge() != null) {
+            getBridge().addWebViewListener(new WebViewListener() {
+                @Override
+                public void onPageLoaded(WebView webView) {
+                    applyStatusBarInsetToWebView(webView);
+                }
+            });
+        }
 
         View appContent = findViewById(android.R.id.content);
         if (appContent != null) {
@@ -49,22 +55,49 @@ public class MainActivity extends BridgeActivity {
                     WindowInsetsCompat.Type.systemBars()
                         | WindowInsetsCompat.Type.displayCutout()
                 );
+                Insets topInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.statusBars()
+                        | WindowInsetsCompat.Type.displayCutout()
+                );
+
+                // Keep side-cutout protection at the native layer. The top
+                // inset is consumed in CSS so the WebView can paint behind
+                // the transparent status bar without putting controls there.
+                statusBarInsetPx = topInsets.top;
                 view.setPadding(
                     baseLeft + safeInsets.left,
-                    baseTop + safeInsets.top,
+                    baseTop,
                     baseRight + safeInsets.right,
-                    baseBottom
+                    baseBottom + safeInsets.bottom
                 );
+
+                if (getBridge() != null) {
+                    applyStatusBarInsetToWebView(getBridge().getWebView());
+                }
                 return windowInsets;
             });
             ViewCompat.requestApplyInsets(appContent);
         }
     }
 
+    private void applyStatusBarInsetToWebView(WebView webView) {
+        if (webView == null) {
+            return;
+        }
+
+        String script = "document.documentElement.style.setProperty("
+            + "'--native-status-bar-inset', '" + Math.max(0, statusBarInsetPx) + "px');";
+        webView.post(() -> webView.evaluateJavascript(script, null));
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         isAppForeground = true;
+        View appContent = findViewById(android.R.id.content);
+        if (appContent != null) {
+            ViewCompat.requestApplyInsets(appContent);
+        }
     }
 
     @Override

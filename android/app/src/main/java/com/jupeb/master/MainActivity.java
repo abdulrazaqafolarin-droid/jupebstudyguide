@@ -5,6 +5,7 @@ import android.view.View;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.getcapacitor.BridgeActivity;
@@ -21,8 +22,9 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
 
         // Android 15+ enforces edge-to-edge for apps targeting API 35+.
-        // Keep the Capacitor WebView inside the status-bar/cutout safe area so
-        // the first row of the app remains visible and interactive.
+        // Explicitly request raw insets, then move the app content below the
+        // status bar and display cutout so important controls remain visible.
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         View appContent = findViewById(android.R.id.content);
         if (appContent != null) {
             ViewCompat.setOnApplyWindowInsetsListener(appContent, (view, windowInsets) -> {

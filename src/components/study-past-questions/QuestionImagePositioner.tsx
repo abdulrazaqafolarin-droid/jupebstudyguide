@@ -36,6 +36,7 @@ export function QuestionImagePositioner({
   const pointerRef = useRef<{ pointerId: number; startX: number; startY: number } | null>(null);
   const holdTimerRef = useRef<number | null>(null);
   const draggingRef = useRef(false);
+  const pointerDraggedRef = useRef(false);
 
   useEffect(() => {
     previewIndexRef.current = savedIndex;
@@ -85,7 +86,10 @@ export function QuestionImagePositioner({
 
     event.preventDefault();
     const nearest = findNearestSlot(event.clientY);
-    if (nearest !== null && nearest !== previewIndexRef.current) updateIndex(nearest);
+    if (nearest !== null && nearest !== previewIndexRef.current) {
+      pointerDraggedRef.current = true;
+      updateIndex(nearest);
+    }
   }, [findNearestSlot, updateIndex]);
 
   const handlePointerEnd = useCallback((event: PointerEvent) => {
@@ -122,6 +126,7 @@ export function QuestionImagePositioner({
     event.preventDefault();
 
     if (holdTimerRef.current !== null) window.clearTimeout(holdTimerRef.current);
+    pointerDraggedRef.current = false;
     pointerRef.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -167,7 +172,13 @@ export function QuestionImagePositioner({
         key={"image-slot-" + index}
         type="button"
         data-image-drop-slot={index}
-        onClick={() => updateIndex(index)}
+        onClick={() => {
+          if (pointerDraggedRef.current) {
+            pointerDraggedRef.current = false;
+            return;
+          }
+          updateIndex(index);
+        }}
         onPointerDown={isCurrentSlot ? beginLongPress : undefined}
         onKeyDown={isCurrentSlot ? handleImageKeyDown : undefined}
         aria-label={isCurrentSlot

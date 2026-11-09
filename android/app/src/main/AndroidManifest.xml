@@ -36,6 +36,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Supabase Google OAuth returns here after the system browser completes sign-in. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.jupeb.master" android:host="auth" />
+            </intent-filter>
+
         </activity>
 
         <!-- Replace Capacitor's default FCM handler with the data-only receiver for Android notification actions. -->

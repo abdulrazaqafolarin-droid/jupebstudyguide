@@ -1,4 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
+import { Capacitor } from "@capacitor/core";
+import { StatusBar, Style } from "@capacitor/status-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -340,10 +342,23 @@ const App = () => {
   // painted in the active theme's background so the app reads as one surface.
   useEffect(() => {
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (!meta) return;
     const applyThemeColor = () => {
       const dark = document.documentElement.classList.contains("dark");
-      meta.setAttribute("content", dark ? "#14171c" : "#f8f6f2");
+      const surfaceColor = dark ? "#14171c" : "#f8f6f2";
+
+      // Keep the browser toolbar and Android status bar visually continuous
+      // with the active app theme instead of leaving a near-black strip.
+      meta?.setAttribute("content", surfaceColor);
+
+      if (Capacitor.isNativePlatform()) {
+        void StatusBar.setBackgroundColor({ color: surfaceColor }).catch(() => {
+          // Android 15+ enforces transparent edge-to-edge status bars and
+          // does not support changing their background color through this API.
+        });
+        void StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => {
+          // Status-bar styling is optional on platforms without native support.
+        });
+      }
     };
     applyThemeColor();
     const observer = new MutationObserver(applyThemeColor);

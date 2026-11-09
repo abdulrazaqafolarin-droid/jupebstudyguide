@@ -18,15 +18,9 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
-// The page keeps the old bundle until the student confirms an update.
-// After SKIP_WAITING, claim existing tabs so the page can detect controlchange.
+// Keep clients claimed after normal browser-controlled worker activation.
+// The website has no in-app update prompt; web releases are deployed through Vercel.
 clientsClaim();
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    event.waitUntil(self.skipWaiting());
-  }
-});
 
 self.addEventListener('push', (event) => {
   let data: { title?: string; body?: string; data?: Record<string, unknown> } = {};

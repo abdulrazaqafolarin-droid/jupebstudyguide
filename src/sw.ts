@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-import { clientsClaim } from 'workbox-core';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -18,9 +17,31 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
-// Keep clients claimed after normal browser-controlled worker activation.
-// The website has no in-app update prompt; web releases are deployed through Vercel.
-clientsClaim();
+// Website releases are delivered by Vercel. Activate a newly deployed worker
+// immediately instead of waiting for a student to press an in-app Update button.
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting());
+});
+
+// Take control with the new precache, then reload already-open pages once so
+// they stop rendering HTML/JS served by the previous worker. This is a silent
+// release transition: no Update prompt is shown. Push handling remains below.
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true,
+    });
+    await self.clients.claim();
+    await Promise.all(windows.map(async (client) => {
+      try {
+        await client.navigate(client.url);
+      } catch {
+        // A tab may close while the new worker is activating.
+      }
+    }));
+  })());
+});
 
 self.addEventListener('push', (event) => {
   let data: { title?: string; body?: string; data?: Record<string, unknown> } = {};

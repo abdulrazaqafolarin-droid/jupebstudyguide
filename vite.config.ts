@@ -20,7 +20,6 @@ export default defineConfig(({ mode }) => ({
     react(),
     ...(mode === "development" && devTaggerPlugin ? [devTaggerPlugin()] : []),
     VitePWA({
-      registerType: "prompt",
       injectRegister: false,
       strategies: "injectManifest",
       srcDir: "src",

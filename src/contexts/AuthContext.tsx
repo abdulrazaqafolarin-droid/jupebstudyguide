@@ -134,23 +134,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signInWithGoogle = async () => {
-    const isNativeIos = Capacitor.getPlatform() === 'ios';
+    const platform = Capacitor.getPlatform();
+    const isNative = platform === 'ios' || platform === 'android';
     try {
       const { data, error } = await withAuthRequestTimeout(
         supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            // Native iOS returns through the registered app URL scheme.
-            // The web app returns to its own root after Supabase exchanges OAuth.
-            redirectTo: isNativeIos ? 'com.jupeb.master://auth' : window.location.origin,
-            skipBrowserRedirect: isNativeIos,
+            // Native Android and iOS complete OAuth in the system browser,
+            // then return to the app through the registered custom URL scheme.
+            // Ordinary browser users return to the website that started sign-in.
+            redirectTo: isNative ? 'com.jupeb.master://auth' : window.location.origin,
+            skipBrowserRedirect: isNative,
             queryParams: { prompt: 'select_account' },
           },
         }),
         'Starting Google sign in',
       );
       if (error) return { error };
-      if (isNativeIos) {
+      if (isNative) {
         if (!data.url) {
           return { error: new Error('Google sign-in did not return an authorization URL.') };
         }

@@ -78,18 +78,22 @@ describe("Google OAuth platform handling", () => {
     });
   });
 
-  it("starts Apple OAuth using the native iOS callback and opens the system browser", async () => {
+  it("opens Google OAuth in the native Android browser and uses the app callback", async () => {
+    mocks.getPlatform.mockReturnValue("android");
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
     let outcome: { error: Error | null } | undefined;
     await act(async () => {
-      outcome = await result.current.signInWithApple();
+      outcome = await result.current.signInWithGoogle();
     });
+
     expect(outcome?.error).toBeNull();
     expect(mocks.supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
-      provider: "apple",
+      provider: "google",
       options: {
         redirectTo: "com.jupeb.master://auth",
         skipBrowserRedirect: true,
+        queryParams: { prompt: "select_account" },
       },
     });
     expect(mocks.browserOpen).toHaveBeenCalledWith({

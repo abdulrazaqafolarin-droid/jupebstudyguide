@@ -1,10 +1,10 @@
 import type { Subject } from "@/types/question";
-import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
+import { STUDY_YEARS, type StudyQuestion, type StudyCategory } from "@/types/study-questions";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { getPersistedDeletedIds } from "@/lib/admin-questions-service";
 
-const ALL_YEARS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+const ALL_YEARS = STUDY_YEARS;
 
 let currentData: StudyQuestion[] = [];
 const listeners: Set<() => void> = new Set();

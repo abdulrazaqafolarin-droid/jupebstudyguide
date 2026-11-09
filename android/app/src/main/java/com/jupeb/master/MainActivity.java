@@ -3,6 +3,7 @@ package com.jupeb.master;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -10,9 +11,11 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.WebViewListener;
 
 public class MainActivity extends BridgeActivity {
     public static volatile boolean isAppForeground = false;
+    private int statusBarInsetPx = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,12 +25,23 @@ public class MainActivity extends BridgeActivity {
         }
         super.onCreate(savedInstanceState);
 
-        // Use one edge-to-edge path on Android 7 through current Android.
-        // The status bar is genuinely transparent; the WebView draws the app
-        // canvas behind it, while CSS consumes the measured top safe inset.
+        // Draw edge-to-edge on every supported Android version. Android 15+
+        // enforces this for target SDK 35+, while older versions need the
+        // explicit window setting. The status bar itself is fully transparent.
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+
+        // Apply the measured inset after each WebView page load as well as
+        // whenever Android reports new window insets (rotation/resume).
+        if (getBridge() != null) {
+            getBridge().addWebViewListener(new WebViewListener() {
+                @Override
+                public void onPageLoaded(WebView webView) {
+                    applyStatusBarInsetToWebView(webView);
+                }
+            });
+        }
 
         View appContent = findViewById(android.R.id.content);
         if (appContent != null) {
@@ -46,9 +60,10 @@ public class MainActivity extends BridgeActivity {
                         | WindowInsetsCompat.Type.displayCutout()
                 );
 
-                // Keep horizontal cutout protection at the native view layer.
-                // Do not add top padding here: that would expose the native
-                // window background instead of the WebView behind the bar.
+                // Keep side-cutout protection at the native layer. The top
+                // inset is consumed in CSS so the WebView can paint behind
+                // the transparent status bar without putting controls there.
+                statusBarInsetPx = topInsets.top;
                 view.setPadding(
                     baseLeft + safeInsets.left,
                     baseTop,
@@ -56,23 +71,23 @@ public class MainActivity extends BridgeActivity {
                     baseBottom
                 );
 
-                applyStatusBarInsetToWebView(topInsets.top);
+                if (getBridge() != null) {
+                    applyStatusBarInsetToWebView(getBridge().getWebView());
+                }
                 return windowInsets;
             });
             ViewCompat.requestApplyInsets(appContent);
         }
     }
 
-    private void applyStatusBarInsetToWebView(int insetPx) {
-        if (getBridge() == null || getBridge().getWebView() == null) {
+    private void applyStatusBarInsetToWebView(WebView webView) {
+        if (webView == null) {
             return;
         }
 
         String script = "document.documentElement.style.setProperty("
-            + "'--native-status-bar-inset', '" + Math.max(0, insetPx) + "px');";
-        getBridge().getWebView().post(
-            () -> getBridge().getWebView().evaluateJavascript(script, null)
-        );
+            + "'--native-status-bar-inset', '" + Math.max(0, statusBarInsetPx) + "px');";
+        webView.post(() -> webView.evaluateJavascript(script, null));
     }
 
     @Override

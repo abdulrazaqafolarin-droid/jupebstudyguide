@@ -104,19 +104,8 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     return () => document.removeEventListener("keydown", handleEscape);
   }, [open]);
 
-  const drawerVariants = reduced.current
-    ? { closed: { opacity: 0 }, open: { opacity: 1 } }
-    : {
-        closed: { x: "-100%", opacity: 0 },
-        open: { x: 0, opacity: 1 },
-      };
-
-  const linkVariants = reduced.current
-    ? { closed: { opacity: 0 }, open: { opacity: 1 } }
-    : {
-        closed: { x: -16, opacity: 0 },
-        open: { x: 0, opacity: 1 },
-      };
+  const prefersReducedMotion = reduced.current;
+  const panelDuration = prefersReducedMotion ? 0.08 : 0.22;
 
   return (
     <>
@@ -127,32 +116,25 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+              transition={{ duration: prefersReducedMotion ? 0.08 : 0.16 }}
+              className="fixed inset-0 z-40 bg-black/40"
               onClick={close}
             />
 
             <motion.nav
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={{
-                closed: { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
-                open: { transition: { staggerChildren: 0.04, staggerDirection: 1 } },
-              }}
-              transition={{ type: "tween", duration: 0.25, ease: easeOut }}
+              initial={{ x: prefersReducedMotion ? 0 : "-100%", opacity: prefersReducedMotion ? 1 : 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: prefersReducedMotion ? 0 : "-100%", opacity: prefersReducedMotion ? 0 : 1 }}
+              transition={{ type: "tween", duration: panelDuration, ease: easeOut }}
+              style={{ willChange: prefersReducedMotion ? "auto" : "transform, opacity" }}
               className={cn(
                 "fixed top-0 left-0 z-50 h-full w-72 max-w-[85vw]",
-                "bg-card/95 backdrop-blur-xl border-r border-border",
+                "bg-card border-r border-border",
                 "flex flex-col shadow-2xl"
               )}
             >
-              <motion.div
-                variants={drawerVariants}
-                transition={{ type: "tween", duration: 0.25, ease: easeOut }}
-                className="flex flex-col h-full"
-              >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between px-4 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-3 border-b border-border shrink-0">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <UserAvatar
                       url={profileAvatar}
@@ -191,19 +173,19 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                   </div>
                 </div>
 
-                <div className="flex-1 py-2 overflow-y-auto">
+                <div className="flex-1 py-2 overflow-y-auto overscroll-contain">
                   {allLinks.map(({ path, label, icon: Icon }) => {
                     const isActive =
                       path === "/"
                         ? location.pathname === "/"
                         : location.pathname.startsWith(path);
                     return (
-                      <motion.div key={path} variants={linkVariants} transition={{ type: "tween", duration: 0.2, ease: easeOut }}>
+                      <div key={path}>
                         <Link
                           to={path}
                           onClick={close}
                           className={cn(
-                            "flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg transition-[color,transform] duration-150 active:scale-[0.98]",
+                            "flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg transition-[color,background-color,transform] duration-150 active:scale-[0.98]",
                             isActive
                               ? "bg-primary/10 text-primary font-medium"
                               : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
@@ -215,16 +197,12 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                             <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
                           )}
                         </Link>
-                      </motion.div>
+                      </div>
                     );
                   })}
                 </div>
 
-                <motion.div
-                  variants={linkVariants}
-                  transition={{ type: "tween", duration: 0.2, ease: easeOut }}
-                  className="border-t border-border px-4 py-3 shrink-0"
-                >
+                <div className="border-t border-border px-4 py-3 shrink-0">
                   <button
                     onClick={() => { close(); signOut(); }}
                     className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
@@ -232,8 +210,8 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                     <LogOut className="w-5 h-5 shrink-0" />
                     <span className="text-sm">Sign out</span>
                   </button>
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
             </motion.nav>
           </>
         )}

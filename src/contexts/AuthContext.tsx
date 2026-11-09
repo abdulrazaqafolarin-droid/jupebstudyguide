@@ -12,7 +12,6 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null; needsMfa?: boolean }>;
   verifyMfa: (code: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: () => Promise<{ error: Error | null }>;
-  signInWithApple: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   updatePassword: (password: string) => Promise<{ error: Error | null }>;
@@ -135,7 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signInWithGoogle = async () => {
-    const isNativeIos = Capacitor.getPlatform() === 'ios';
+    const isNativePlatform = Capacitor.getPlatform() !== 'web';
     try {
       const { data, error } = await withAuthRequestTimeout(
         supabase.auth.signInWithOAuth({
@@ -143,43 +142,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           options: {
             // Native iOS returns through the registered app URL scheme.
             // The web app returns to its own root after Supabase exchanges OAuth.
-            redirectTo: isNativeIos ? 'com.jupeb.master://auth' : window.location.origin,
-            skipBrowserRedirect: isNativeIos,
+            redirectTo: isNativePlatform ? 'com.jupeb.master://auth' : window.location.origin,
+            skipBrowserRedirect: isNativePlatform,
             queryParams: { prompt: 'select_account' },
           },
         }),
         'Starting Google sign in',
       );
       if (error) return { error };
-      if (isNativeIos) {
+      if (isNativePlatform) {
         if (!data.url) {
           return { error: new Error('Google sign-in did not return an authorization URL.') };
-        }
-        await Browser.open({ url: data.url });
-      }
-      return { error: null };
-    } catch (error) {
-      return { error: error as Error };
-    }
-  };
-
-  const signInWithApple = async () => {
-    const isNativeIos = Capacitor.getPlatform() === 'ios';
-    try {
-      const { data, error } = await withAuthRequestTimeout(
-        supabase.auth.signInWithOAuth({
-          provider: 'apple',
-          options: {
-            redirectTo: isNativeIos ? 'com.jupeb.master://auth' : window.location.origin,
-            skipBrowserRedirect: isNativeIos,
-          },
-        }),
-        'Starting Apple sign in',
-      );
-      if (error) return { error };
-      if (isNativeIos) {
-        if (!data.url) {
-          return { error: new Error('Apple sign-in did not return an authorization URL.') };
         }
         await Browser.open({ url: data.url });
       }
@@ -318,7 +291,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     verifyMfa,
     signInWithGoogle,
-    signInWithApple,
     signOut,
     resetPassword,
     updatePassword,

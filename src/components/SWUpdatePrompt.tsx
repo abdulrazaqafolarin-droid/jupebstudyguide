@@ -12,6 +12,7 @@ export function SWUpdatePrompt() {
   const isNativeApp = Capacitor.isNativePlatform();
   const [updateReady, setUpdateReady] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [applyError, setApplyError] = useState(false);
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
   const applyRequestedRef = useRef(false);
   const fallbackTimerRef = useRef<number | null>(null);
@@ -106,20 +107,47 @@ export function SWUpdatePrompt() {
     };
   }, [isNativeApp]);
 
-  const applyUpdate = useCallback(() => {
+  const applyUpdate = useCallback(async () => {
     const registration = registrationRef.current;
-    const waiting = registration?.waiting;
-    if (!waiting) {
-      window.location.reload();
+    if (!registration) {
+      setApplyError(true);
       return;
     }
 
+    let waiting = registration.waiting;
+    if (!waiting) {
+      // A different tab may have applied the worker between rendering this
+      // prompt and the click. Never reload blindly: that can recreate this
+      // same prompt forever when no new worker is controlling the page.
+      try {
+        await registration.update();
+      } catch {
+        setApplyError(true);
+        return;
+      }
+      waiting = registration.waiting;
+      if (!waiting) {
+        setUpdateReady(false);
+        setApplying(false);
+        setApplyError(true);
+        return;
+      }
+    }
+
     applyRequestedRef.current = true;
+    setApplyError(false);
     setApplying(true);
     waiting.postMessage({ type: "SKIP_WAITING" });
-    // A defensive fallback covers WebViews which fail to dispatch controllerchange.
+
+    // Reload only after controllerchange confirms the new worker controls
+    // this page. A timeout must not force a reload into the same old version.
+    if (fallbackTimerRef.current) window.clearTimeout(fallbackTimerRef.current);
     fallbackTimerRef.current = window.setTimeout(() => {
-      if (applyRequestedRef.current) window.location.reload();
+      if (!applyRequestedRef.current) return;
+      applyRequestedRef.current = false;
+      setApplying(false);
+      setUpdateReady(true);
+      setApplyError(true);
     }, 8_000);
   }, []);
 
@@ -131,7 +159,11 @@ export function SWUpdatePrompt() {
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold">New version available</p>
           <p className="truncate text-xs text-muted-foreground">
-            {applying ? "Applying update…" : "Refresh to load the newest app files."}
+            {applying
+              ? "Applying update…"
+              : applyError
+                ? "The update did not activate. Please try again or refresh later."
+                : "Refresh to load the newest app files."}
           </p>
         </div>
         <Button size="sm" className="h-8 shrink-0 gap-1.5" onClick={applyUpdate} disabled={applying}>

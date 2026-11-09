@@ -16,8 +16,6 @@ import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { NotificationCenter } from "@/components/NotificationCenter";
 
-const easeOut = [0.23, 1, 0.32, 1] as const;
-
 const navLinks = [
   { path: "/", label: "Home", icon: Home },
   { path: "/past-questions", label: "Past Questions", icon: BookOpen },
@@ -86,10 +84,6 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     fetchProfile();
   }, [fetchProfile]);
 
-  useEffect(() => {
-    if (open) fetchProfile();
-  }, [open, fetchProfile]);
-
   const allLinks = isAdmin
     ? [...navLinks, { path: "/admin", label: "Admin", icon: Shield }]
     : navLinks;
@@ -105,7 +99,6 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
   }, [open]);
 
   const prefersReducedMotion = reduced.current;
-  const panelDuration = prefersReducedMotion ? 0.08 : 0.22;
 
   return (
     <>
@@ -116,17 +109,24 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: prefersReducedMotion ? 0.08 : 0.16 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.14, ease: "easeOut" }}
               className="fixed inset-0 z-40 bg-black/40"
               onClick={close}
             />
 
             <motion.nav
-              initial={{ x: prefersReducedMotion ? 0 : "-100%", opacity: prefersReducedMotion ? 1 : 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: prefersReducedMotion ? 0 : "-100%", opacity: prefersReducedMotion ? 0 : 1 }}
-              transition={{ type: "tween", duration: panelDuration, ease: easeOut }}
-              style={{ willChange: prefersReducedMotion ? "auto" : "transform, opacity" }}
+              initial={{ x: prefersReducedMotion ? 0 : "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: prefersReducedMotion ? 0 : "-100%" }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { type: "spring", stiffness: 420, damping: 42, mass: 0.85 }
+              }
+              style={{
+                willChange: prefersReducedMotion ? "auto" : "transform",
+                backfaceVisibility: "hidden",
+              }}
               className={cn(
                 "fixed top-0 left-0 z-50 h-full w-72 max-w-[85vw]",
                 "bg-card border-r border-border",

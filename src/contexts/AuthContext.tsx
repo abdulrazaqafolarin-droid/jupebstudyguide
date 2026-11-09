@@ -12,7 +12,6 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null; needsMfa?: boolean }>;
   verifyMfa: (code: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: () => Promise<{ error: Error | null }>;
-  signInWithApple: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
   updatePassword: (password: string) => Promise<{ error: Error | null }>;
@@ -118,9 +117,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email,
           password,
           options: {
-            // iOS email verification must return to the installed app so
-            // NativeAuthDeepLinkBridge can exchange and persist the session.
-            emailRedirectTo: Capacitor.getPlatform() === 'ios'
+            // Native Android and iOS email verification return to the app
+            // through the deep-link bridge; browsers return to the website.
+            emailRedirectTo: Capacitor.getPlatform() !== 'web'
               ? 'com.jupeb.master://auth'
               : window.location.origin,
             data: { display_name: email.split('@')[0] },
@@ -135,51 +134,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signInWithGoogle = async () => {
-    const isNativeIos = Capacitor.getPlatform() === 'ios';
+    const platform = Capacitor.getPlatform();
+    const isNative = platform === 'ios' || platform === 'android';
     try {
       const { data, error } = await withAuthRequestTimeout(
         supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            // Native iOS returns through the registered app URL scheme.
-            // The web app returns to its own root after Supabase exchanges OAuth.
-            redirectTo: isNativeIos ? 'com.jupeb.master://auth' : window.location.origin,
-            skipBrowserRedirect: isNativeIos,
+            // Native Android and iOS complete OAuth in the system browser,
+            // then return to the app through the registered custom URL scheme.
+            // Ordinary browser users return to the website that started sign-in.
+            redirectTo: isNative ? 'com.jupeb.master://auth' : window.location.origin,
+            skipBrowserRedirect: isNative,
             queryParams: { prompt: 'select_account' },
           },
         }),
         'Starting Google sign in',
       );
       if (error) return { error };
-      if (isNativeIos) {
+      if (isNative) {
         if (!data.url) {
           return { error: new Error('Google sign-in did not return an authorization URL.') };
-        }
-        await Browser.open({ url: data.url });
-      }
-      return { error: null };
-    } catch (error) {
-      return { error: error as Error };
-    }
-  };
-
-  const signInWithApple = async () => {
-    const isNativeIos = Capacitor.getPlatform() === 'ios';
-    try {
-      const { data, error } = await withAuthRequestTimeout(
-        supabase.auth.signInWithOAuth({
-          provider: 'apple',
-          options: {
-            redirectTo: isNativeIos ? 'com.jupeb.master://auth' : window.location.origin,
-            skipBrowserRedirect: isNativeIos,
-          },
-        }),
-        'Starting Apple sign in',
-      );
-      if (error) return { error };
-      if (isNativeIos) {
-        if (!data.url) {
-          return { error: new Error('Apple sign-in did not return an authorization URL.') };
         }
         await Browser.open({ url: data.url });
       }
@@ -275,7 +250,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const { error } = await withAuthRequestTimeout(
         supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: Capacitor.getPlatform() === 'ios'
+          redirectTo: Capacitor.getPlatform() !== 'web'
             ? 'com.jupeb.master://auth?flow=recovery'
             : `${window.location.origin}/auth?flow=recovery`,
         }),
@@ -318,7 +293,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     verifyMfa,
     signInWithGoogle,
-    signInWithApple,
     signOut,
     resetPassword,
     updatePassword,

@@ -20,12 +20,24 @@ export default defineConfig(({ mode }) => ({
     react(),
     ...(mode === "development" && devTaggerPlugin ? [devTaggerPlugin()] : []),
     VitePWA({
-      registerType: "prompt",
       injectRegister: false,
       strategies: "injectManifest",
       srcDir: "src",
       filename: "sw.ts",
       includeAssets: ["favicon.ico", "favicon.svg", "robots.txt"],
+      includeManifestIcons: false,
+      injectManifest: {
+        globPatterns: [
+          "index.html",
+          "manifest.webmanifest",
+          "**/*.css",
+          "assets/index-*.js",
+          "assets/vendor-react-*.js",
+          "assets/vendor-supabase-*.js",
+          "assets/vendor-framer-*.js",
+          "pwa-*.png",
+        ],
+      },
       manifest: {
         name: "Rutex Master(Jupeb) - Past Questions Study App",
         short_name: "Rutex Master(Jupeb)",
@@ -41,14 +53,6 @@ export default defineConfig(({ mode }) => ({
           { src: "/pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
           { src: "/pwa-maskable-192x192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
           { src: "/pwa-maskable-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
-        ],
-      },
-      workbox: {
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        runtimeCaching: [
-          { urlPattern: /^https?:\/\/.*\.supabase\.co\/.*/i, handler: "NetworkOnly" },
-          { urlPattern: /^https?:\/\/.*\.googleapis\.com\/.*/i, handler: "NetworkOnly" },
-          { urlPattern: /^https?:\/\/.*\.groq\.com\/.*/i, handler: "NetworkOnly" },
         ],
       },
     }),

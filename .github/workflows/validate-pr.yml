@@ -82,3 +82,11 @@ jobs:
           set -euo pipefail
           chmod +x android/gradlew
           (cd android && ./gradlew assembleDebug --no-daemon)
+
+      - name: Upload Android debug APK candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: jupeb-master-debug-candidate
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7

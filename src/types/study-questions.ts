@@ -2,6 +2,13 @@ import type { Subject, Difficulty, MCQOption } from "./question";
 
 export type StudyCategory = "objective" | "theory" | "practical";
 
+export type QuestionImagePosition =
+  | "text-only"
+  | "image-only"
+  | "image-above"
+  | "image-beside"
+  | `image-inline:${number}`;
+
 export interface TheoryQuestion {
   id: string;
   subject: Subject;
@@ -52,7 +59,7 @@ export interface StudyQuestion {
   subQuestions?: { id: string; text: string; answerGuide: string }[];
   difficulty?: Difficulty;
   imageUrl?: string;
-  imagePosition?: "text-only" | "image-only" | "image-above" | "image-beside";
+  imagePosition?: QuestionImagePosition;
 }
 
 export interface YearData {

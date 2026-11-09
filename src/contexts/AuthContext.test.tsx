@@ -79,6 +79,29 @@ describe("Google OAuth platform handling", () => {
   });
 
 
+  it("opens Google OAuth in the system browser and uses the app callback on Android", async () => {
+    mocks.getPlatform.mockReturnValue("android");
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    let outcome: { error: Error | null } | undefined;
+    await act(async () => {
+      outcome = await result.current.signInWithGoogle();
+    });
+
+    expect(outcome?.error).toBeNull();
+    expect(mocks.supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: "google",
+      options: {
+        redirectTo: "com.jupeb.master://auth",
+        skipBrowserRedirect: true,
+        queryParams: { prompt: "select_account" },
+      },
+    });
+    expect(mocks.browserOpen).toHaveBeenCalledWith({
+      url: "https://project.supabase.co/auth/v1/authorize?provider=google",
+    });
+  });
+
   it("keeps the standard browser OAuth redirect for web users", async () => {
     mocks.getPlatform.mockReturnValue("web");
     const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });

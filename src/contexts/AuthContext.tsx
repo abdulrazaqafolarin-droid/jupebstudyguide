@@ -140,7 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            // Native iOS returns through the registered app URL scheme.
+            // Native Android and iOS return through the registered app URL scheme.
             // The web app returns to its own root after Supabase exchanges OAuth.
             redirectTo: isNativePlatform ? 'com.jupeb.master://auth' : window.location.origin,
             skipBrowserRedirect: isNativePlatform,

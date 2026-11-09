@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import { motion, type Variants, type Transition } from 'framer-motion';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
 import { getAllStudyQuestions, getAllStudyQuestionsForSubject, initDataLayer, subscribe } from '@/data/study-questions';
-import { preloadHotRoutes } from '@/lib/route-preload';
 import { toQuestions } from '@/lib/question-adapter';
 import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 import { Subject, SUBJECT_INFO, Question } from '@/types/question';
@@ -112,7 +111,6 @@ const Index = () => {
 
   useEffect(() => {
     initDataLayer("idle");
-    preloadHotRoutes();
     return subscribe(() => setTick(t => t + 1));
   }, []);
 

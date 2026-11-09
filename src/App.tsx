@@ -351,10 +351,8 @@ const App = () => {
       meta?.setAttribute("content", surfaceColor);
 
       if (Capacitor.isNativePlatform()) {
-        void StatusBar.setBackgroundColor({ color: surfaceColor }).catch(() => {
-          // Android 15+ enforces transparent edge-to-edge status bars and
-          // does not support changing their background color through this API.
-        });
+        // The native window is edge-to-edge and the status-bar background is
+        // transparent. Only switch icon contrast when the app theme changes.
         void StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => {
           // Status-bar styling is optional on platforms without native support.
         });

@@ -357,7 +357,7 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
       </div>
 
       {/* Question card */}
-      <div ref={cardRef} className="bg-card rounded-2xl border border-border p-6 chalk-texture animate-scale-in" key={currentIndex}>
+      <div ref={cardRef} className="max-h-[76dvh] overflow-y-auto overscroll-contain touch-pan-y scrollbar-thin bg-card rounded-2xl border border-border p-6 chalk-texture animate-scale-in" key={currentIndex}>
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <span className={cn(

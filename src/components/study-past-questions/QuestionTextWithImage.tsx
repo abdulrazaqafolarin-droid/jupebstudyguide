@@ -7,6 +7,7 @@ interface QuestionTextWithImageProps {
   imageSrc: string;
   imagePosition: string;
   imageAlt?: string;
+  onImageError?: () => void;
   className?: string;
 }
 
@@ -20,6 +21,7 @@ export function QuestionTextWithImage({
   imageSrc,
   imagePosition,
   imageAlt = "Question illustration",
+  onImageError,
   className,
 }: QuestionTextWithImageProps) {
   const lines = splitQuestionIntoPositionableLines(content);
@@ -30,6 +32,7 @@ export function QuestionTextWithImage({
       alt={imageAlt}
       className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
       loading="lazy"
+      onError={onImageError}
     />
   );
 

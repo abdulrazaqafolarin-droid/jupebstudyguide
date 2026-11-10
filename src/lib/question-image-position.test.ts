@@ -17,10 +17,19 @@ describe("question image line positioning", () => {
   });
 
   it("keeps multiline display math together as one positionable unit", () => {
-    expect(splitQuestionIntoPositionableLines("Before\n$$\nx + y\n= z\n$$\nAfter")).toEqual([
+    expect(splitQuestionIntoPositionableLines("Before\n$\nx + y\n= z\n$\nAfter")).toEqual([
       "Before",
-      "$$\nx + y\n= z\n$$",
+      "$\nx + y\n= z\n$",
       "After",
+    ]);
+  });
+
+  it("normalizes Windows line endings without splitting display math", () => {
+    expect(splitQuestionIntoPositionableLines("First\r\nSecond\r\n$\r\nx = 2\r\n$\r\nLast")).toEqual([
+      "First",
+      "Second",
+      "$\r\nx = 2\r\n$",
+      "Last",
     ]);
   });
 

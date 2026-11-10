@@ -630,3 +630,22 @@ html.native-android #root {
 html.native-android #root .min-h-screen {
   min-height: 100dvh;
 }
+
+
+/* The activation gate owns the full app surface. The trial notice is a
+ * normal-flow region that animates its height to zero when removed, while
+ * this shell keeps the reclaimed area painted with the active app background.
+ */
+.activation-gate-shell {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100dvh;
+  background: hsl(var(--background));
+}
+
+.activation-gate-content {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  background: hsl(var(--background));
+}

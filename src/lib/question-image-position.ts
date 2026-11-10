@@ -1,9 +1,4 @@
-export type QuestionImagePosition =
-  | "text-only"
-  | "image-only"
-  | "image-above"
-  | "image-beside"
-  | string;
+export type InlineQuestionImagePosition = `image-inline:${number}`;
 
 const INLINE_IMAGE_POSITION = /^image-inline:(\d+)$/;
 
@@ -18,7 +13,7 @@ export function getInlineImageIndex(position: string | null | undefined, lineCou
   return Math.max(0, Math.min(Math.max(0, Math.floor(lineCount)), safeIndex));
 }
 
-export function createInlineImagePosition(index: number): string {
+export function createInlineImagePosition(index: number): InlineQuestionImagePosition {
   const safeIndex = Number.isFinite(index) ? Math.max(0, Math.floor(index)) : 0;
   return "image-inline:" + safeIndex;
 }

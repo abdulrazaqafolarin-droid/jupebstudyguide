@@ -53,7 +53,6 @@ export function QuestionImagePositioner({
   const pointerRef = useRef<{ pointerId: number; startX: number; startY: number } | null>(null);
   const holdTimerRef = useRef<number | null>(null);
   const draggingRef = useRef(false);
-  const pointerDraggedRef = useRef(false);
 
   const measureVisualLines = useCallback(() => {
     const element = measureRef.current;
@@ -189,7 +188,6 @@ export function QuestionImagePositioner({
     if (nearest !== null && nearest !== dragTargetIndexRef.current) {
       dragTargetIndexRef.current = nearest;
       setDragTargetIndex(nearest);
-      if (nearest !== selectedIndex) pointerDraggedRef.current = true;
     }
   }, [findNearestSlot, selectedIndex]);
 
@@ -204,7 +202,6 @@ export function QuestionImagePositioner({
       const target = dragTargetIndexRef.current;
       const targetOffset = target === null ? undefined : lineOffsetsRef.current[target];
       if (targetOffset !== undefined && targetOffset !== previewOffsetRef.current) {
-        pointerDraggedRef.current = true;
         updateOffset(targetOffset);
       }
     }
@@ -217,25 +214,38 @@ export function QuestionImagePositioner({
     setDragTargetIndex(null);
   }, [updateOffset]);
 
+  const handlePointerCancel = useCallback((event: PointerEvent) => {
+    const pointer = pointerRef.current;
+    if (!pointer || pointer.pointerId !== event.pointerId) return;
+
+    if (holdTimerRef.current !== null) window.clearTimeout(holdTimerRef.current);
+    holdTimerRef.current = null;
+    pointerRef.current = null;
+    draggingRef.current = false;
+    setIsDragging(false);
+    setIsPressing(false);
+    setDragPoint(null);
+    setDragTargetIndex(null);
+  }, []);
+
   useEffect(() => {
     window.addEventListener("pointermove", handlePointerMove, { passive: false });
     window.addEventListener("pointerup", handlePointerEnd);
-    window.addEventListener("pointercancel", handlePointerEnd);
+    window.addEventListener("pointercancel", handlePointerCancel);
 
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerEnd);
-      window.removeEventListener("pointercancel", handlePointerEnd);
+      window.removeEventListener("pointercancel", handlePointerCancel);
       if (holdTimerRef.current !== null) window.clearTimeout(holdTimerRef.current);
     };
-  }, [handlePointerEnd, handlePointerMove]);
+  }, [handlePointerCancel, handlePointerEnd, handlePointerMove]);
 
   const beginLongPress = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     event.preventDefault();
 
     if (holdTimerRef.current !== null) window.clearTimeout(holdTimerRef.current);
-    pointerDraggedRef.current = false;
     pointerRef.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -284,10 +294,6 @@ export function QuestionImagePositioner({
         type="button"
         data-image-drop-slot={index}
         onClick={() => {
-          if (pointerDraggedRef.current) {
-            pointerDraggedRef.current = false;
-            return;
-          }
           updateOffset(lineOffsets[index] ?? 0);
         }}
         aria-label={"Place image " + placeLabel}
@@ -311,10 +317,6 @@ export function QuestionImagePositioner({
     <button
       type="button"
       onPointerDown={beginLongPress}
-      onClick={() => {
-        // A drag can end over another line; suppress the synthetic click.
-        if (pointerDraggedRef.current) pointerDraggedRef.current = false;
-      }}
       onKeyDown={handleImageKeyDown}
       aria-label="Question image. Press and hold, then drag up or down to reposition. Arrow keys also move it line by line."
       className="my-2 w-full rounded-lg border border-primary/30 bg-primary/5 p-1 cursor-grab active:cursor-grabbing touch-none select-none"

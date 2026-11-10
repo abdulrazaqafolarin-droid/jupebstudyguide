@@ -455,8 +455,22 @@ export function QuestionViewer({
                   (question.apparatus && question.apparatus.length > 0) ||
                   (question.procedure || "").trim()) && (
                 <div className="mb-4 p-4 rounded-xl bg-muted/50 border space-y-3">
-                  {question.imageUrl && !brokenImages.has(question.id) && (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-lg" loading="lazy" onError={() => handleImageError(question.id)} />
+                  {((question.imageUrls?.length ? question.imageUrls : question.imageUrl ? [question.imageUrl] : [])
+                    .filter((url) => !brokenImages.has(url))).length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {(question.imageUrls?.length ? question.imageUrls : question.imageUrl ? [question.imageUrl] : [])
+                        .filter((url) => !brokenImages.has(url))
+                        .map((url, index) => (
+                          <img
+                            key={url + index}
+                            src={url}
+                            alt={"Practical question illustration " + (index + 1)}
+                            className="w-full max-h-64 object-contain rounded-lg"
+                            loading="lazy"
+                            onError={() => handleImageError(url)}
+                          />
+                        ))}
+                    </div>
                   )}
                   <p className="font-semibold text-lg"><QuestionMath content={question.title || ""} inline /></p>
                   <p className="text-sm text-muted-foreground"><QuestionMath content={question.objective || ""} inline /></p>

@@ -319,6 +319,7 @@ export function AdminQuestionPanel({
         });
 
         if (!result.success) {
+          await deleteQuestionImageUrls(newlyUploadedUrls).catch(() => {});
           setError(result.error || "Failed to update question");
           setSaving(false);
           setUploadingImage(false);
@@ -363,6 +364,7 @@ export function AdminQuestionPanel({
         });
 
         if (!result.success) {
+          await deleteQuestionImageUrls(newlyUploadedUrls).catch(() => {});
           setError(result.error || "Failed to add question");
           setSaving(false);
           setUploadingImage(false);
@@ -786,6 +788,13 @@ export function AdminQuestionPanel({
                                       <QuestionMath content={questionText} className="text-base font-medium leading-relaxed sm:w-1/2" />
                                     )}
                                   </div>
+                                  {images.length > 1 && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      {images.slice(1).map((image, index) => (
+                                        <img key={image.id} src={image.url} alt={"Additional question preview " + (index + 2)} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
+                                      ))}
+                                    </div>
+                                  )}
                                 ) : (
                                   <div className="space-y-2">
                                     {images.map((image, index) => (

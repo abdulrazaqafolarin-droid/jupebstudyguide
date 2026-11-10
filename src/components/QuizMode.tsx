@@ -369,7 +369,7 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
         </div>
 
         {/* Image is shown alongside the complete written prompt when available. */}
-        <QuestionImage imageUrl={currentQuestion.imageUrl} />
+        <QuestionImage imageUrl={currentQuestion.imageUrl} imageUrls={currentQuestion.imageUrls} />
         <h3 className="text-lg font-medium mb-6 leading-relaxed">
           <QuestionMath content={currentQuestion.question} inline />
         </h3>

@@ -21,6 +21,7 @@ interface QuestionInput {
   topic?: string | null;
   sortOrder?: number;
   imageUrl?: string | null;
+  imageUrls?: string[] | null;
   imagePosition?: string | null;
 }
 
@@ -37,7 +38,8 @@ function toDbRow(input: QuestionInput) {
     difficulty: input.difficulty || "medium",
     course: input.topic || null,
     sort_order: input.sortOrder ?? 0,
-    image_url: input.imageUrl || null,
+    image_url: input.imageUrl || input.imageUrls?.[0] || null,
+    image_urls: input.imageUrls ?? (input.imageUrl ? [input.imageUrl] : []),
     image_position: input.imagePosition || null,
   };
 }

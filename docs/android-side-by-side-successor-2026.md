@@ -22,7 +22,7 @@ The successor continues to use the same Supabase project and user accounts. Clou
 
 ## Source and release isolation
 
-The successor build is started manually with Actions → Build Rutex Master Next (artifact only) on this branch. It:
+The successor artifact build runs from this branch's pull request into main (and also supports manual dispatch once the workflow is available from the default branch). After the dedicated signing and Firebase secrets are added, synchronize this PR or rerun its failed build job. It:
 
 - uses the dedicated successor package and OAuth scheme;
 - requires the four new signing secrets and the new Firebase Android client JSON;

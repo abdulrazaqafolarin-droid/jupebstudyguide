@@ -13,7 +13,8 @@ export function toQuestion(sq: StudyQuestion): Question {
     correctAnswer: sq.correctAnswer ?? "",
     explanation: sq.explanation ?? sq.answerGuide ?? "",
     difficulty: sq.difficulty,
-    imageUrl: sq.imageUrl,
+    imageUrl: sq.imageUrl ?? sq.imageUrls?.[0],
+    imageUrls: sq.imageUrls?.length ? sq.imageUrls : sq.imageUrl ? [sq.imageUrl] : undefined,
     imagePosition: sq.imagePosition,
   };
 }

@@ -2,6 +2,11 @@ import type { QuestionImagePosition } from "@/types/question";
 
 const INLINE_IMAGE_POSITION = /^image-inline:(\d+)$/;
 
+/** Detect the inline layout while keeping legacy layout values untouched. */
+export function isInlineImagePosition(position?: string | null): boolean {
+  return position === "image-inline" || INLINE_IMAGE_POSITION.test(position || "");
+}
+
 // Tokens that must stay intact when an image is inserted into question prose.
 const PROTECTED_SPAN = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|`[^`]*`|\*\*[\s\S]*?\*\*|__[\s\S]*?__|\*[^*\n]+\*|_[^_\n]+_/g;
 

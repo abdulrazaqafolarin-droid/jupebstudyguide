@@ -60,31 +60,41 @@ export function QuestionViewer({
   const [showJumpGrid, setShowJumpGrid] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
   const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
-  const handleImageError = useCallback((id: string) => {
-    setBrokenImages(prev => new Set(prev).add(id));
+  const handleImageError = useCallback((url: string) => {
+    setBrokenImages(prev => new Set(prev).add(url));
   }, []);
 
   // Renders the question image and/or text according to the admin-chosen
   // Image Layout (image_position): text-only, image-only, image-above, image-beside, or a saved inline text anchor.
   const renderQuestionMedia = useCallback((q: StudyQuestion) => {
-    const hasImage = !!q.imageUrl && !brokenImages.has(q.id);
+    const imageUrls = q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : [];
+    const visibleImageUrls = imageUrls.filter(url => !brokenImages.has(url));
+    const hasImage = visibleImageUrls.length > 0;
     const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
     if (hasImage && isInlineImagePosition(pos)) {
-      return <QuestionTextWithImage content={q.question || ""} imageSrc={q.imageUrl!} imagePosition={pos} onImageError={() => handleImageError(q.id)} />;
+      return (
+        <QuestionTextWithImage
+          content={q.question || ""}
+          imageSrc={visibleImageUrls[0]}
+          additionalImageSrcs={visibleImageUrls.slice(1)}
+          imagePosition={pos}
+          onImageError={handleImageError}
+        />
+      );
     }
     if (pos === "text-only" || !hasImage) {
       return q.question ? (
         <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />
       ) : null;
     }
-    const img = (
-      <img src={q.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
-    );
-    if (pos === "image-only") return img;
+    const images = visibleImageUrls.map((url, index) => (
+      <img key={url} src={url} alt={visibleImageUrls.length > 1 ? `Question image ${index + 1}` : "Question"} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(url)} />
+    ));
+    if (pos === "image-only") return <div className="space-y-3">{images}</div>;
     if (pos === "image-above") {
       return (
         <>
-          {img}
+          <div className="space-y-3">{images}</div>
           {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />}
         </>
       );
@@ -92,12 +102,13 @@ export function QuestionViewer({
     if (pos === "image-beside") {
       return (
         <div className="flex flex-col sm:flex-row gap-4 items-start">
-          <div className="sm:w-1/2 shrink-0">{img}</div>
+          <div className="sm:w-1/2 shrink-0 space-y-3">{images}</div>
           {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed sm:w-1/2" />}
         </div>
       );
     }
-    return img;
+    return <div className="space-y-3">{images}</div>;
+
   }, [brokenImages, handleImageError]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -413,9 +424,9 @@ export function QuestionViewer({
                   (question.apparatus && question.apparatus.length > 0) ||
                   (question.procedure || "").trim()) && (
                 <div className="mb-4 p-4 rounded-xl bg-muted/50 border space-y-3">
-                  {question.imageUrl && !brokenImages.has(question.id) && (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-lg" loading="lazy" onError={() => handleImageError(question.id)} />
-                  )}
+                  {(question.imageUrls?.length ? question.imageUrls : question.imageUrl ? [question.imageUrl] : []).filter(url => !brokenImages.has(url)).map((url, index) => (
+                    <img key={url} src={url} alt={`Question image ${index + 1}`} className="w-full max-h-64 object-contain rounded-lg" loading="lazy" onError={() => handleImageError(url)} />
+                  ))}
                   <p className="font-semibold text-lg"><QuestionMath content={question.title || ""} inline /></p>
                   <p className="text-sm text-muted-foreground"><QuestionMath content={question.objective || ""} inline /></p>
                   {question.apparatus && question.apparatus.length > 0 && (

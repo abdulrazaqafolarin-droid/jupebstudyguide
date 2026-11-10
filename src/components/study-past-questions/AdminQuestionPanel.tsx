@@ -92,13 +92,15 @@ export function AdminQuestionPanel({
   }, [isOpen]);
 
   const loadQuestion = useCallback((q: StudyQuestion) => {
+    previewUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+    previewUrlsRef.current.clear();
     setEditingQuestion(q);
     setQuestionText(q.question || "");
     setImageUrls(q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : []);
     setImagePreviews([]);
     setImageFiles([]);
     setImagePosition(q.imagePosition || (q.imageUrl ? "image-only" : "text-only"));
-    setShowPreview(!!q.imageUrl);
+    setShowPreview(!!(q.imageUrls?.length || q.imageUrl));
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
     setCorrectAnswer(q.correctAnswer || "");
     setExplanation(q.explanation || "");
@@ -109,6 +111,8 @@ export function AdminQuestionPanel({
   }, []);
 
   const resetForm = useCallback(() => {
+    previewUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+    previewUrlsRef.current.clear();
     setEditingQuestion(null);
     setQuestionText("");
     setImageUrls([]);

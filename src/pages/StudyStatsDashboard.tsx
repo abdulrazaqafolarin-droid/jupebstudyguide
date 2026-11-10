@@ -2,8 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Trophy, Flame, BookOpen, Brain, Target, Award, Zap, TrendingUp } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Area, AreaChart, CartesianGrid } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, Area, AreaChart, CartesianGrid } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useStreak } from '@/hooks/useStreak';
@@ -214,52 +213,44 @@ export default function StudyStatsDashboard() {
             <span className="text-2xl font-bold text-amber-500">{totalScore.toLocaleString()}</span>
           </div>
           {!loadingScore && weeklyScores.length > 0 && (
-            <ChartContainer
-              config={{ total: { label: 'Score', color: 'hsl(var(--primary))' } }}
-              className="h-40 w-full aspect-auto"
-            >
-              <AreaChart data={weeklyScores} margin={{ top: 8, right: 10, left: -18, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.28} />
-                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.015} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 5" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis
-                  dataKey="week"
-                  tickFormatter={formatScoreDate}
-                  tick={{ fontSize: 10 }}
-                  tickLine={false}
-                  axisLine={false}
-                  minTickGap={18}
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <YAxis
-                  tick={{ fontSize: 10 }}
-                  tickLine={false}
-                  axisLine={false}
-                  width={34}
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      indicator="line"
-                      labelFormatter={(value) => formatScoreDate(String(value))}
-                    />
-                  }
-                />
-                <Area
-                  type="monotone"
-                  dataKey="total"
-                  stroke="hsl(var(--primary))"
-                  fill="url(#scoreGradient)"
-                  strokeWidth={2.5}
-                  activeDot={{ r: 4, strokeWidth: 0 }}
-                />
-              </AreaChart>
-            </ChartContainer>
+            <div className="h-40">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={weeklyScores}>
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis
+                    dataKey="week"
+                    tickFormatter={formatScoreDate}
+                    tick={{ fontSize: 10 }}
+                    stroke="hsl(var(--muted-foreground))"
+                  />
+                  <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                    }}
+                    labelFormatter={formatScoreDate}
+                    formatter={(value: number) => [value.toLocaleString(), 'Score']}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="total"
+                    stroke="hsl(var(--primary))"
+                    fill="url(#scoreGradient)"
+                    strokeWidth={2}
+                  />
+                  <Line type="monotone" dataKey="total" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           )}
           {!loadingScore && weeklyScores.length === 0 && (
             <p className="text-xs text-muted-foreground text-center py-4">
@@ -279,35 +270,29 @@ export default function StudyStatsDashboard() {
             <Brain className="w-4 h-4 text-primary" />
             Performance by Subject
           </h2>
-          <ChartContainer
-            config={{
-              studied: { label: 'Studied', color: 'hsl(var(--primary))' },
-              learned: { label: 'Mastered', color: 'hsl(var(--accent))' },
-            }}
-            className="h-48 w-full aspect-auto"
-          >
-            <BarChart data={subjectStats} barGap={6} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 5" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis
-                dataKey="label"
-                tick={{ fontSize: 11 }}
-                tickLine={false}
-                axisLine={false}
-                stroke="hsl(var(--muted-foreground))"
-              />
-              <YAxis
-                tick={{ fontSize: 10 }}
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-                width={34}
-                stroke="hsl(var(--muted-foreground))"
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="studied" radius={[5, 5, 2, 2]} fill="hsl(var(--primary))" maxBarSize={30} />
-              <Bar dataKey="learned" radius={[5, 5, 2, 2]} fill="hsl(var(--accent))" maxBarSize={30} />
-            </BarChart>
-          </ChartContainer>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={subjectStats} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 11 }}
+                  stroke="hsl(var(--muted-foreground))"
+                />
+                <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                <Tooltip
+                  contentStyle={{
+                    background: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                  }}
+                />
+                <Bar dataKey="studied" name="Studied" radius={[4, 4, 0, 0]} fill="hsl(var(--primary))" maxBarSize={32} />
+                <Bar dataKey="learned" name="Mastered" radius={[4, 4, 0, 0]} fill="hsl(var(--accent))" maxBarSize={32} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded-sm bg-primary" />

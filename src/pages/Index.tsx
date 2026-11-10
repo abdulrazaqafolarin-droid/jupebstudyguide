@@ -61,14 +61,14 @@ function fireConfetti(options: ConfettiOptions) {
   });
 }
 
-const springBounce: Transition = { type: "spring", stiffness: 260, damping: 24, mass: 0.85 };
-const fastSpring: Transition = { type: "spring", stiffness: 360, damping: 24, mass: 0.7 };
+const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
+const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
 const containerVariants: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 18, scale: 0.985 },
+  hidden: { opacity: 0, y: 30, scale: 0.9 },
   show: { opacity: 1, y: 0, scale: 1, transition: springBounce },
 };
 
@@ -734,15 +734,15 @@ const Index = () => {
       />
       
       {/* Hero Section */}
-      <header className="relative isolate flex min-h-[52vh] items-center overflow-hidden">
+      <header className="relative overflow-hidden min-h-[60vh] flex items-center">
         {/* Animated mesh gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/12 via-background to-accent/10" style={{ willChange: 'transform' }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-background to-accent/10 animate-mesh bg-[length:200%_200%]" style={{ willChange: 'transform' }} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/20" />
         <div className="absolute inset-0 chalk-texture opacity-30" style={{ willChange: 'transform' }} />
         
         {/* Floating decorative orbs */}
-        <div className="absolute top-20 left-10 h-56 w-56 rounded-full bg-primary/5 blur-3xl md:h-72 md:w-72" style={{ willChange: 'transform' }} />
-        <div className="absolute bottom-10 right-10 h-64 w-64 rounded-full bg-accent/5 blur-3xl md:h-96 md:w-96" style={{ willChange: 'transform', animationDelay: '-3s' }} />
+        <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-primary/5 blur-3xl animate-float" style={{ willChange: 'transform' }} />
+        <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-accent/5 blur-3xl animate-float" style={{ willChange: 'transform', animationDelay: '-3s' }} />
         
         {/* Subtle grid */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
@@ -785,7 +785,7 @@ const Index = () => {
               <Button
                 size="lg"
                 onClick={() => isSyllabusStarted ? setCurrentView('syllabus') : setCurrentView('syllabus-setup')}
-                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-primary/15"
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 hover:scale-105 active:scale-95 transition-all duration-200 glow-gold animate-pulse-glow shadow-lg shadow-primary/25"
               >
                 <CalendarDays className="w-5 h-5 mr-2" />
                 {isSyllabusStarted ? 'Continue 30-Day Syllabus' : '30-Day Syllabus Plan'}
@@ -794,7 +794,7 @@ const Index = () => {
                 size="lg"
                 variant="outline"
                 onClick={() => handleStartQuiz()}
-                className="border-primary/40 text-primary hover:bg-primary/10 hover:border-primary hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
+                className="border-primary/40 text-primary hover:bg-primary/10 hover:border-primary hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 <Target className="w-5 h-5 mr-2" />
                 Quick Quiz

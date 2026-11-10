@@ -235,15 +235,16 @@ jobs:
 
           UPDATE_SHA256="$(sha256sum "$UPDATE_APK" | cut -d ' ' -f1)"
           FRESH_SHA256="$(sha256sum "$FRESH_APK" | cut -d ' ' -f1)"
-          python3 - "$UPDATE_SHA256" "$FRESH_SHA256" "$OLD_SHA1" "$OLD_SHA256" "$NEW_SHA1" "$NEW_SHA256" <<'PY'
+          BUILT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 - "$UPDATE_SHA256" "$FRESH_SHA256" "$OLD_SHA1" "$OLD_SHA256" "$NEW_SHA1" "$NEW_SHA256" "$BUILT_AT" <<'PY'
           import json, os, sys
-          update_hash, fresh_hash, old_sha1, old_sha256, new_sha1, new_sha256 = sys.argv[1:]
+          update_hash, fresh_hash, old_sha1, old_sha256, new_sha1, new_sha256, built_at = sys.argv[1:]
           manifest = {
               "packageName": "com.jupeb.master",
               "versionCode": int(os.environ["APK_VERSION_CODE"]),
               "versionName": os.environ["APK_VERSION_NAME"],
               "commit": os.environ["GITHUB_SHA"],
-              "builtAt": os.environ.get("GITHUB_RUN_ID", ""),
+              "builtAt": built_at,
               "rotationMinSdkVersion": 33,
               "legacySignerSha1": old_sha1,
               "legacySignerSha256": old_sha256,

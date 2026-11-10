@@ -67,24 +67,38 @@ export function QuestionViewer({
   // Renders the question image and/or text according to the admin-chosen
   // Image Layout (image_position): text-only, image-only, image-above, image-beside, or a saved inline text anchor.
   const renderQuestionMedia = useCallback((q: StudyQuestion) => {
-    const hasImage = !!q.imageUrl && !brokenImages.has(q.id);
+    const imageUrls = (q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : [])
+      .filter((url): url is string => typeof url === "string" && url.length > 0);
+    const hasImage = imageUrls.length > 0 && !brokenImages.has(q.id);
     const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
     if (hasImage && isInlineImagePosition(pos)) {
-      return <QuestionTextWithImage content={q.question || ""} imageSrc={q.imageUrl!} imagePosition={pos} onImageError={() => handleImageError(q.id)} />;
+      return (
+        <>
+          <QuestionTextWithImage content={q.question || ""} imageSrc={imageUrls[0]} imagePosition={pos} onImageError={() => handleImageError(q.id)} />
+          {imageUrls.length > 1 && (
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {imageUrls.slice(1).map((url, index) => (
+                <img key={url + index} src={url} alt={`Question illustration ${index + 2}`} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
+              ))}
+            </div>
+          )}
+        </>
+      );
     }
     if (pos === "text-only" || !hasImage) {
       return q.question ? (
         <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />
       ) : null;
     }
-    const img = (
-      <img src={q.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
-    );
-    if (pos === "image-only") return img;
+    const images = imageUrls.map((url, index) => (
+      <img key={url + index} src={url} alt={imageUrls.length > 1 ? `Question illustration ${index + 1}` : "Question"} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
+    ));
+    const imageGallery = <div className={imageUrls.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "w-full"}>{images}</div>;
+    if (pos === "image-only") return imageGallery;
     if (pos === "image-above") {
       return (
         <>
-          {img}
+          {imageGallery}
           {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />}
         </>
       );
@@ -92,12 +106,13 @@ export function QuestionViewer({
     if (pos === "image-beside") {
       return (
         <div className="flex flex-col sm:flex-row gap-4 items-start">
-          <div className="sm:w-1/2 shrink-0">{img}</div>
+          <div className="sm:w-1/2 shrink-0">{images[0]}</div>
           {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed sm:w-1/2" />}
+          {images.length > 1 && <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">{images.slice(1)}</div>}
         </div>
       );
     }
-    return img;
+    return imageGallery;
   }, [brokenImages, handleImageError]);
 
   const scrollRef = useRef<HTMLDivElement>(null);

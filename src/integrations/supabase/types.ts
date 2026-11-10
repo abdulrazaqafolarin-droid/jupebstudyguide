@@ -909,6 +909,7 @@ export type Database = {
           id: string
           image_position: string | null
           image_url: string | null
+          image_urls: Json
           options: Json | null
           question: string | null
           sort_order: number | null
@@ -926,6 +927,7 @@ export type Database = {
           id: string
           image_position?: string | null
           image_url?: string | null
+          image_urls?: Json
           options?: Json | null
           question?: string | null
           sort_order?: number | null
@@ -943,6 +945,7 @@ export type Database = {
           id?: string
           image_position?: string | null
           image_url?: string | null
+          image_urls?: Json
           options?: Json | null
           question?: string | null
           sort_order?: number | null

@@ -541,37 +541,69 @@ export function AdminQuestionPanel({
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block flex items-center gap-1.5">
                       <ImageIcon className="h-3.5 w-3.5" />
-                      Question Image
-                      <span className="text-muted-foreground/50 font-normal">(optional)</span>
+                      Question Images
+                      <span className="text-muted-foreground/50 font-normal">(optional · multiple images)</span>
                     </label>
 
-                    {(imagePreview || imageUrl) && (
-                      <>
-                      <div className="relative mb-2 rounded-xl overflow-hidden border bg-muted/30 group">
-                        <img
-                          src={imagePreview || imageUrl}
-                          alt="Question preview"
-                          className="w-full max-h-64 object-contain cursor-pointer"
-                          onClick={() => fileInputRef.current?.click()}
-                        />
-                        <div className="absolute top-2 right-2 flex gap-1.5">
-                          <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
-                            title="Replace image"
-                          >
-                            <ImageIcon className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={handleRemoveImage}
-                            className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-red-500/80 transition-colors"
-                            title="Remove image"
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </button>
-                        </div>
+                    {images.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+                        {images.map((image, index) => (
+                          <div key={image.id} className="relative rounded-xl overflow-hidden border bg-muted/30">
+                            <img
+                              src={image.url}
+                              alt={"Question image " + (index + 1)}
+                              className="w-full h-32 object-contain"
+                            />
+                            <div className="absolute top-1.5 left-1.5 rounded-md bg-black/65 px-2 py-0.5 text-[10px] text-white">
+                              Image {index + 1}{image.file ? " · pending upload" : ""}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(image.id)}
+                              className="absolute top-1.5 right-1.5 p-1.5 rounded-lg bg-black/65 text-white hover:bg-red-600 transition-colors"
+                              title={"Remove image " + (index + 1)}
+                              aria-label={"Remove image " + (index + 1)}
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
                       </div>
+                    )}
 
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-primary"); }}
+                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-primary"); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove("border-primary");
+                        if (e.dataTransfer.files.length) handleImageSelect(e.dataTransfer.files);
+                      }}
+                      className="border-2 border-dashed rounded-xl px-4 py-5 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-all"
+                    >
+                      <Upload className="h-7 w-7 mx-auto mb-2 text-muted-foreground/60" />
+                      <p className="text-sm text-muted-foreground">
+                        {images.length ? "Add more images" : "Click or drag images here"}
+                      </p>
+                      <p className="text-xs text-muted-foreground/50 mt-1">
+                        Select multiple JPEG, PNG, WebP or GIF files · Max 5 MB each
+                      </p>
+                    </div>
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.currentTarget.files?.length) handleImageSelect(e.currentTarget.files);
+                        e.currentTarget.value = "";
+                      }}
+                    />
+
+                    {images.length > 0 && (
                       <div className="mt-3">
                         <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
                           Image Layout
@@ -589,52 +621,17 @@ export function AdminQuestionPanel({
                           }}
                           className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         >
-                          <option value="image-only">Image Only</option>
+                          <option value="image-only">Images Only</option>
                           <option value="text-only">Text Only</option>
-                          <option value="image-above">Image Above Text</option>
-                          <option value="image-beside">Image Beside Text</option>
-                          <option value="image-inline">Inline Within Question Text</option>
+                          <option value="image-above">Images Above Text</option>
+                          <option value="image-beside">First Image Beside Text</option>
+                          <option value="image-inline">First Image Inline Within Question Text</option>
                         </select>
                         <p className="text-xs text-muted-foreground/60 mt-1">
-                          Controls how the image and question text are displayed together.
-                        </p>
-                      </div>
-                      </>
-                    )}
-
-                    {!imagePreview && !imageUrl && (
-                      <div
-                        onClick={() => fileInputRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-primary'); }}
-                        onDragLeave={(e) => { e.currentTarget.classList.remove('border-primary'); }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          e.currentTarget.classList.remove('border-primary');
-                          const file = e.dataTransfer.files[0];
-                          if (file) handleImageSelect(file);
-                        }}
-                        className="border-2 border-dashed rounded-xl px-4 py-8 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-all"
-                      >
-                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
-                        <p className="text-sm text-muted-foreground">
-                          Click or drag an image here
-                        </p>
-                        <p className="text-xs text-muted-foreground/50 mt-1">
-                          JPEG, PNG, WebP, GIF &middot; Max 5 MB
+                          Image order is preserved. Inline positioning applies to the first image; additional images follow it.
                         </p>
                       </div>
                     )}
-
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp,image/gif"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageSelect(file);
-                      }}
-                    />
                   </div>
 
                   <div>
@@ -769,47 +766,49 @@ export function AdminQuestionPanel({
                           </div>
 
                           <div className="space-y-2">
-                            {(imagePreview || imageUrl) && imagePosition !== "text-only" && (
-                              isInlineImagePosition(imagePosition) ? (
-                                <QuestionImagePositioner
-                                  content={questionText}
-                                  imageSrc={imagePreview || imageUrl!}
-                                  imagePosition={imagePosition}
-                                  onPositionChange={setImagePosition}
-                                />
-                              ) : imagePosition === "image-only" ? (
-                                <img
-                                  src={imagePreview || imageUrl!}
-                                  alt="Question preview"
-                                  className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-                                />
-                              ) : imagePosition === "image-beside" ? (
-                                <div className="flex flex-col sm:flex-row gap-4 items-start">
-                                  <div className="sm:w-1/2 shrink-0">
-                                    <img
-                                      src={imagePreview || imageUrl!}
-                                      alt="Question preview"
-                                      className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-                                    />
-                                  </div>
-                                  {questionText.trim() && (
-                                    <QuestionMath content={questionText} className="text-base font-medium leading-relaxed sm:w-1/2" />
-                                  )}
-                                </div>
-                              ) : (
-                                <>
-                                  <img
-                                    src={imagePreview || imageUrl!}
-                                    alt="Question preview"
-                                    className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+                            {images.length > 0 && imagePosition !== "text-only" && (
+                              <>
+                                {isInlineImagePosition(imagePosition) ? (
+                                  <QuestionImagePositioner
+                                    content={questionText}
+                                    imageSrc={images[0].url}
+                                    imagePosition={imagePosition}
+                                    onPositionChange={setImagePosition}
                                   />
-                                  {questionText.trim() && (
-                                    <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
-                                  )}
-                                </>
-                              )
+                                ) : imagePosition === "image-beside" ? (
+                                  <div className="flex flex-col sm:flex-row gap-4 items-start">
+                                    <div className="sm:w-1/2 shrink-0">
+                                      <img src={images[0].url} alt="Question preview" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
+                                    </div>
+                                    {questionText.trim() && (
+                                      <QuestionMath content={questionText} className="text-base font-medium leading-relaxed sm:w-1/2" />
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div className="space-y-2">
+                                    {images.map((image, index) => (
+                                      <img
+                                        key={image.id}
+                                        src={image.url}
+                                        alt={"Question preview " + (index + 1)}
+                                        className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+                                      />
+                                    ))}
+                                    {imagePosition !== "image-only" && questionText.trim() && (
+                                      <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
+                                    )}
+                                  </div>
+                                )}
+                                {isInlineImagePosition(imagePosition) && images.length > 1 && (
+                                  <div className="space-y-2">
+                                    {images.slice(1).map((image, index) => (
+                                      <img key={image.id} src={image.url} alt={"Additional question image " + (index + 2)} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
+                                    ))}
+                                  </div>
+                                )}
+                              </>
                             )}
-                            {(!(imagePreview || imageUrl) || imagePosition === "text-only") && questionText.trim() && (
+                            {(images.length === 0 || imagePosition === "text-only") && questionText.trim() && (
                               <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
                             )}
                           </div>

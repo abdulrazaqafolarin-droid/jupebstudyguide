@@ -2,30 +2,15 @@ name: Android signing-key rotation
 
 on:
   workflow_dispatch:
-    inputs:
-      publish_release:
-        description: "Publish the verified rotation APKs to the public updater. Run only from main after reviewing artifacts."
-        required: false
-        default: false
-        type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   rotate:
     name: Build and verify rotated Android APKs
     runs-on: ubuntu-latest
     steps:
-      - name: Require main for publication
-        if: inputs.publish_release
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
-            echo "::error::Release publication is allowed only from the main branch."
-            exit 1
-          fi
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -248,6 +233,30 @@ jobs:
           echo "Version: $APK_VERSION_NAME ($APK_VERSION_CODE)"
           echo "APK signing and package checks passed."
 
+          UPDATE_SHA256="$(sha256sum "$UPDATE_APK" | cut -d ' ' -f1)"
+          FRESH_SHA256="$(sha256sum "$FRESH_APK" | cut -d ' ' -f1)"
+          python3 - "$UPDATE_SHA256" "$FRESH_SHA256" "$OLD_SHA1" "$OLD_SHA256" "$NEW_SHA1" "$NEW_SHA256" <<'PY'
+          import json, os, sys
+          update_hash, fresh_hash, old_sha1, old_sha256, new_sha1, new_sha256 = sys.argv[1:]
+          manifest = {
+              "packageName": "com.jupeb.master",
+              "versionCode": int(os.environ["APK_VERSION_CODE"]),
+              "versionName": os.environ["APK_VERSION_NAME"],
+              "commit": os.environ["GITHUB_SHA"],
+              "builtAt": os.environ.get("GITHUB_RUN_ID", ""),
+              "rotationMinSdkVersion": 33,
+              "legacySignerSha1": old_sha1,
+              "legacySignerSha256": old_sha256,
+              "rotatedSignerSha1": new_sha1,
+              "rotatedSignerSha256": new_sha256,
+              "updateApkSha256": update_hash,
+              "freshInstallApkSha256": fresh_hash,
+          }
+          with open("release-manifest.json", "w", encoding="utf-8") as f:
+              json.dump(manifest, f, separators=(",", ":"), sort_keys=True)
+          print("Created release manifest with both APK checksums and signer fingerprints.")
+          PY
+
       - name: Upload verified APK artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -255,67 +264,7 @@ jobs:
           path: |
             jupeb-master-rotated-update.apk
             jupeb-master-fresh-install.apk
+            release-manifest.json
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
 
-      - name: Publish rotated APKs and metadata
-        if: inputs.publish_release
-        shell: bash
-        env:
-          SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          set -euo pipefail
-          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
-            echo "::error::SUPABASE_SERVICE_ROLE_KEY is required for publication."
-            exit 1
-          fi
-
-          UPDATE_SHA256="$(sha256sum "$UPDATE_APK" | cut -d ' ' -f1)"
-          FRESH_SHA256="$(sha256sum "$FRESH_APK" | cut -d ' ' -f1)"
-          BUILT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          UPDATE_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master.apk"
-          FRESH_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master-fresh-install.apk"
-          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s","sha256":"%s","freshInstallUrl":"%s","freshInstallSha256":"%s","rotationMinSdkVersion":33}' \
-            "$APK_VERSION_CODE" "$APK_VERSION_NAME" "$GITHUB_SHA" "$BUILT_AT" "$UPDATE_URL" "$UPDATE_SHA256" "$FRESH_URL" "$FRESH_SHA256" > version.json
-
-          curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master.apk" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Content-Type: application/vnd.android.package-archive" \
-            -H "x-upsert: true" --data-binary "@$UPDATE_APK"
-
-          curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master-fresh-install.apk" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Content-Type: application/vnd.android.package-archive" \
-            -H "x-upsert: true" --data-binary "@$FRESH_APK"
-
-          curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/version.json" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Content-Type: application/json" \
-            -H "x-upsert: true" --data-binary "@version.json"
-
-          curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -fsS "$SUPABASE_URL/storage/v1/object/public/app-releases/version.json" -o published-version.json
-          python3 - "$UPDATE_APK" "$FRESH_APK" published-version.json "$UPDATE_SHA256" "$FRESH_SHA256" "$UPDATE_URL" "$FRESH_URL" <<'PY'
-          import hashlib, json, sys
-          update_apk, fresh_apk, metadata_path, update_hash, fresh_hash, update_url, fresh_url = sys.argv[1:]
-          with open(metadata_path, encoding="utf-8") as f:
-              metadata = json.load(f)
-          def digest(path):
-              h = hashlib.sha256()
-              with open(path, "rb") as f:
-                  for block in iter(lambda: f.read(1024 * 1024), b""):
-                      h.update(block)
-              return h.hexdigest()
-          assert metadata["url"] == update_url
-          assert metadata["freshInstallUrl"] == fresh_url
-          assert metadata["sha256"] == update_hash == digest(update_apk)
-          assert metadata["freshInstallSha256"] == fresh_hash == digest(fresh_apk)
-          print("Both public APK URLs and their checksums match the verified build artifacts.")
-          PY
-
-          test "$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w '%{http_code}' -I "$UPDATE_URL")" = "200"
-          test "$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w '%{http_code}' -I "$FRESH_URL")" = "200"
-          echo "Rotated updater and clean-install APKs published and verified."

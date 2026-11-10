@@ -1,0 +1,187 @@
+name: Build Rutex Master Next (artifact only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rutex-master-next-android-build
+  cancel-in-progress: false
+jobs:
+  build:
+    name: Build and verify side-by-side successor APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ANDROID_APPLICATION_ID: com.rutex.jupebmaster
+      ANDROID_AUTH_SCHEME: com.rutex.jupebmaster
+      CAPACITOR_APP_ID: com.rutex.jupebmaster
+      CAPACITOR_APP_NAME: Rutex Master Next
+      VITE_NATIVE_APP_SCHEME: com.rutex.jupebmaster
+      VITE_ANDROID_RELEASE_BASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next
+      VITE_ANDROID_RELEASE_APK_NAME: rutex-master-next.apk
+      VITE_SUPABASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX
+      VITE_SUPABASE_PROJECT_ID: gzyczowqqywesqhqqpdi
+      VITE_ADMIN_EMAIL: abdulrazaqafolarin@gmail.com
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
+      - name: Validate and stage dedicated Firebase and signing credentials
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_NEXT_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_NEXT_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_NEXT_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_NEXT_KEY_PASSWORD }}
+          GOOGLE_SERVICES_BASE64: ${{ secrets.ANDROID_NEXT_GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          set -euo pipefail
+          for value in "$KEYSTORE_BASE64" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" "$GOOGLE_SERVICES_BASE64"; do
+            test -n "$value" || { echo "::error::Successor secrets are incomplete. Read the successor runbook."; exit 1; }
+          done
+          WORK="$RUNNER_TEMP/rutex-master-next"
+          mkdir -p "$WORK"
+          chmod 700 "$WORK"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$WORK/release.jks"
+          chmod 600 "$WORK/release.jks"
+          printf '%s' "$GOOGLE_SERVICES_BASE64" | base64 --decode > android/app/google-services.json
+          python3 - <<'PY'
+          import json
+          with open("android/app/google-services.json", encoding="utf-8") as f:
+              config = json.load(f)
+          packages = {
+              item.get("client_info", {}).get("android_client_info", {}).get("package_name")
+              for item in config.get("client", [])
+          }
+          if "com.rutex.jupebmaster" not in packages:
+              raise SystemExit("Firebase config is missing package com.rutex.jupebmaster")
+          print("Dedicated Firebase Android client verified.")
+          PY
+          keytool -list -keystore "$WORK/release.jks" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
+          echo "ANDROID_KEYSTORE_PATH=$WORK/release.jks" >> "$GITHUB_ENV"
+          echo "Signing/Firebase secrets are present and valid; secret values were not printed."
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm test
+      - name: Run lint
+        run: npm run lint
+      - name: Build web assets
+        run: npm run build
+      - name: Sync Android project with successor identity
+        run: |
+          set -euo pipefail
+          npx cap sync android
+          mkdir -p android/app/src/main/res/values
+          cat > android/app/src/main/res/values/strings.xml <<XML
+          <resources>
+              <string name="app_name">Rutex Master Next</string>
+              <string name="title_activity_main">Rutex Master Next</string>
+              <string name="package_name">$ANDROID_APPLICATION_ID</string>
+              <string name="custom_url_scheme">$ANDROID_AUTH_SCHEME</string>
+          </resources>
+          XML
+      - name: Calculate successor version
+        run: |
+          echo "APK_VERSION_CODE=$((200000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+          echo "APK_VERSION_NAME=2.0.$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+      - name: Build with permanent successor key
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_NEXT_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_NEXT_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_NEXT_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          chmod +x android/gradlew
+          (cd android && ./gradlew assembleRelease --no-daemon)
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          mkdir -p dist-successor
+          cp "$APK" dist-successor/rutex-master-next.apk
+          echo "APK_PATH=dist-successor/rutex-master-next.apk" >> "$GITHUB_ENV"
+      - name: Verify package, version, SDK and signing certificate
+        id: verify
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_NEXT_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_NEXT_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          AAPT="$ANDROID_HOME/build-tools/36.0.0/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          BADGING="$("$AAPT" dump badging "$APK_PATH")"
+          PACKAGE="$(echo "$BADGING" | awk -F"'" '/^package:/{print $2; exit}')"
+          APK_CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p" | head -n1)"
+          APK_NAME="$(echo "$BADGING" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p" | head -n1)"
+          MIN_SDK="$(echo "$BADGING" | awk -F"'" '/^sdkVersion:/{print $2; exit}')"
+          test "$PACKAGE" = "$ANDROID_APPLICATION_ID"
+          test "$APK_CODE" = "$APK_VERSION_CODE"
+          test "$APK_NAME" = "$APK_VERSION_NAME"
+          test "$MIN_SDK" = "24"
+          keytool -exportcert -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" -file "$RUNNER_TEMP/next-cert.der" >/dev/null
+          EXPECTED_CERT="$(sha256sum "$RUNNER_TEMP/next-cert.der" | awk '{print $1}')"
+          REPORT="$("$APKSIGNER" verify --print-certs "$APK_PATH" 2>&1)"
+          ACTUAL_CERT="$(echo "$REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')"
+          test -n "$ACTUAL_CERT"
+          test "$ACTUAL_CERT" = "$EXPECTED_CERT"
+          "$APKSIGNER" verify --verbose --min-sdk-version 24 --max-sdk-version 36 "$APK_PATH"
+          echo "$ACTUAL_CERT" > dist-successor/signing-certificate-sha256.txt
+          echo "signer_sha256=$ACTUAL_CERT" >> "$GITHUB_OUTPUT"
+          echo "APK package and signing identity verified."
+      - name: Generate manifest and checksum
+        env:
+          SIGNER_SHA256: ${{ steps.verify.outputs.signer_sha256 }}
+        run: |
+          set -euo pipefail
+          HASH="$(sha256sum "$APK_PATH" | awk '{print $1}')"
+          python3 - "$APK_VERSION_CODE" "$APK_VERSION_NAME" "$GITHUB_SHA" "$HASH" "$SIGNER_SHA256" <<'PY'
+          import datetime, json, sys
+          code, name, commit, apk_hash, signer = sys.argv[1:]
+          manifest = {
+              "packageName": "com.rutex.jupebmaster",
+              "versionCode": int(code),
+              "versionName": name,
+              "commit": commit,
+              "builtAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "url": "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next/rutex-master-next.apk",
+              "sha256": apk_hash,
+              "signingCertificateSha256": signer,
+              "requiresReinstall": False
+          }
+          with open("dist-successor/version.json", "w", encoding="utf-8") as f:
+              json.dump(manifest, f, separators=(",", ":"))
+          with open("dist-successor/SHA256SUMS", "w", encoding="utf-8") as f:
+              f.write(apk_hash + "  rutex-master-next.apk\n")
+          PY
+      - name: Upload verified artifact only
+        uses: actions/upload-artifact@v4
+        with:
+          name: rutex-master-next-${{ github.run_number }}
+          path: dist-successor/*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove temporary private signing material
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/rutex-master-next/release.jks"
+          rm -f "$RUNNER_TEMP/next-cert.der"
+      - name: Summarize artifact-only result
+        if: success()
+        run: |
+          echo "Rutex Master Next built and verified." >> "$GITHUB_STEP_SUMMARY"
+          echo "Package: com.rutex.jupebmaster" >> "$GITHUB_STEP_SUMMARY"
+          echo "Version: $APK_VERSION_NAME ($APK_VERSION_CODE)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact only. No app updater or production data was changed." >> "$GITHUB_STEP_SUMMARY"

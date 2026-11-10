@@ -780,7 +780,8 @@ export function AdminQuestionPanel({
                                     onPositionChange={setImagePosition}
                                   />
                                 ) : imagePosition === "image-beside" ? (
-                                  <div className="flex flex-col sm:flex-row gap-4 items-start">
+                                  <>
+                                    <div className="flex flex-col sm:flex-row gap-4 items-start">
                                     <div className="sm:w-1/2 shrink-0">
                                       <img src={images[0].url} alt="Question preview" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
                                     </div>
@@ -794,7 +795,7 @@ export function AdminQuestionPanel({
                                         <img key={image.id} src={image.url} alt={"Additional question preview " + (index + 2)} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
                                       ))}
                                     </div>
-                                  )}
+                                  </>
                                 ) : (
                                   <div className="space-y-2">
                                     {images.map((image, index) => (

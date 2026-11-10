@@ -56,9 +56,13 @@ export function AdminQuestionPanel({
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [sortOrder, setSortOrder] = useState("0");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const imageUrl = imageUrls[0] ?? null;
+  const imageFile = imageFiles[0] ?? null;
+  const imagePreview = imagePreviews[0] ?? null;
+  const allImagePreviews = [...imageUrls, ...imagePreviews];
   const [uploadingImage, setUploadingImage] = useState(false);
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
   const [imagePosition, setImagePosition] = useState<string>("image-above");
@@ -93,9 +97,9 @@ export function AdminQuestionPanel({
   const loadQuestion = useCallback((q: StudyQuestion) => {
     setEditingQuestion(q);
     setQuestionText(q.question || "");
-    setImageUrl(q.imageUrl || null);
-    setImagePreview(null);
-    setImageFile(null);
+    setImageUrls(q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : []);
+    setImagePreviews([]);
+    setImageFiles([]);
     setImagePosition(q.imagePosition || (q.imageUrl ? "image-only" : "text-only"));
     setShowPreview(!!q.imageUrl);
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
@@ -110,9 +114,9 @@ export function AdminQuestionPanel({
   const resetForm = useCallback(() => {
     setEditingQuestion(null);
     setQuestionText("");
-    setImageUrl(null);
-    setImagePreview(null);
-    setImageFile(null);
+    setImageUrls([]);
+    setImagePreviews([]);
+    setImageFiles([]);
     setImagePosition("image-above");
     setShowPreview(false);
     setOptions(isObjective ? [{ label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" }] : []);
@@ -151,30 +155,37 @@ export function AdminQuestionPanel({
     };
   }, []);
 
-  const handleImageSelect = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      setError("Only image files are allowed (JPEG, PNG, WebP, GIF)");
+  const handleImageSelect = (files: FileList | File[]) => {
+    const selected = Array.from(files);
+    if (selected.length === 0) return;
+    const invalid = selected.find(file => !file.type.startsWith("image/") || file.size > 5 * 1024 * 1024);
+    if (invalid) {
+      setError(!invalid.type.startsWith("image/") ? "Only image files are allowed (JPEG, PNG, WebP, GIF)" : "Each image must be less than 5 MB");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be less than 5 MB");
-      return;
-    }
-    if (!imagePreview && !imageUrl) setImagePosition("image-above");
-    setCropFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = () => setCropImageUrl(reader.result as string);
-    reader.readAsDataURL(file);
+    if (!imageUrls.length && !imageFiles.length) setImagePosition("image-above");
     setError(null);
+    if (selected.length === 1) {
+      const file = selected[0];
+      setCropFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = () => setCropImageUrl(reader.result as string);
+      reader.readAsDataURL(file);
+      return;
+    }
+    // Multi-select keeps every chosen image; select one image at a time to
+    // apply the freehand crop before adding it.
+    const previews = selected.map(file => URL.createObjectURL(file));
+    setImageFiles(prev => [...prev, ...selected]);
+    setImagePreviews(prev => [...prev, ...previews]);
+    setShowPreview(true);
   };
 
   const handleCropComplete = useCallback((croppedBlob: Blob) => {
     const croppedFile = new File([croppedBlob], cropFileName.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
-    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
-    prevObjectUrl.current = URL.createObjectURL(croppedFile);
-    setImageFile(croppedFile);
-    setImagePreview(prevObjectUrl.current);
-    setImageUrl(null);
+    const previewUrl = URL.createObjectURL(croppedFile);
+    setImageFiles(prev => [...prev, croppedFile]);
+    setImagePreviews(prev => [...prev, previewUrl]);
     setShowPreview(true);
     setCropImageUrl(null);
     setCropFileName("");
@@ -182,11 +193,9 @@ export function AdminQuestionPanel({
 
   const handleSkipCrop = useCallback((originalBlob: Blob) => {
     const originalFile = new File([originalBlob], cropFileName, { type: originalBlob.type });
-    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
-    prevObjectUrl.current = URL.createObjectURL(originalFile);
-    setImageFile(originalFile);
-    setImagePreview(prevObjectUrl.current);
-    setImageUrl(null);
+    const previewUrl = URL.createObjectURL(originalFile);
+    setImageFiles(prev => [...prev, originalFile]);
+    setImagePreviews(prev => [...prev, previewUrl]);
     setShowPreview(true);
     setCropImageUrl(null);
     setCropFileName("");
@@ -198,17 +207,16 @@ export function AdminQuestionPanel({
   }, []);
 
   const handleRemoveImage = () => {
-    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
-    prevObjectUrl.current = null;
-    setImageFile(null);
-    setImagePreview(null);
-    setImageUrl(null);
+    imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    setImageFiles([]);
+    setImagePreviews([]);
+    setImageUrls([]);
     setImagePosition("image-above");
     setShowPreview(false);
   };
 
   const handleSave = async () => {
-    if (!questionText.trim() && !imageFile && !imageUrl) {
+    if (!questionText.trim() && imageFiles.length === 0 && imageUrls.length === 0) {
       setError("Question text or an image is required");
       return;
     }
@@ -233,28 +241,29 @@ export function AdminQuestionPanel({
     }
 
     const qId = mode === "edit" && editingQuestion ? editingQuestion.id : generateQuestionId(subject, year, category);
-    const existingImageUrl = mode === "edit" && editingQuestion ? editingQuestion.imageUrl : undefined;
+    const existingImageUrls = mode === "edit" && editingQuestion ? (editingQuestion.imageUrls?.length ? editingQuestion.imageUrls : editingQuestion.imageUrl ? [editingQuestion.imageUrl] : []) : [];
 
     setSaving(true);
     setError(null);
-    setUploadingImage(!!imageFile);
+    setUploadingImage(imageFiles.length > 0);
 
     try {
-      let resolvedImageUrl = imageUrl;
-
-      if (imageFile) {
-        if (existingImageUrl) {
+      let resolvedImageUrls = [...imageUrls];
+      if (imageFiles.length > 0) {
+        const uploads = await Promise.all(imageFiles.map((file, index) =>
+          uploadQuestionImage(qId, file, resolvedImageUrls.length + index)
+        ));
+        const failedUpload = uploads.find(result => !result.success || !result.url);
+        if (failedUpload) {
           await deleteQuestionImage(qId).catch(() => {});
-        }
-        const uploadResult = await uploadQuestionImage(qId, imageFile);
-        if (!uploadResult.success) {
-          setError(uploadResult.error || "Failed to upload image");
+          setError(failedUpload.error || "Failed to upload one or more images");
           setSaving(false);
           setUploadingImage(false);
           return;
         }
-        resolvedImageUrl = uploadResult.url!;
+        resolvedImageUrls = [...resolvedImageUrls, ...uploads.map(result => result.url!)];
       }
+      const resolvedImageUrl = resolvedImageUrls[0] ?? null;
 
       if (mode === "edit" && editingQuestion) {
         const result = await updateQuestion({
@@ -270,6 +279,7 @@ export function AdminQuestionPanel({
           topic: topic.trim() || null,
           sortOrder: parseInt(sortOrder) || 0,
           imageUrl: resolvedImageUrl,
+          imageUrls: resolvedImageUrls,
           imagePosition: imagePosition,
         });
 
@@ -291,10 +301,11 @@ export function AdminQuestionPanel({
           sortOrder: parseInt(sortOrder) || 0,
           imagePosition: imagePosition as StudyQuestion["imagePosition"],
           imageUrl: resolvedImageUrl || undefined,
+          imageUrls: resolvedImageUrls,
         };
         onQuestionUpdated(updated);
 
-        if (!imageFile && imageUrl === null && existingImageUrl) {
+        if (resolvedImageUrls.length === 0 && existingImageUrls.length > 0) {
           await deleteQuestionImage(qId).catch(() => {});
         }
       } else if (mode === "add") {
@@ -336,6 +347,7 @@ export function AdminQuestionPanel({
           imagePosition: imagePosition as StudyQuestion["imagePosition"],
         };
         if (resolvedImageUrl) added.imageUrl = resolvedImageUrl;
+        added.imageUrls = resolvedImageUrls;
         onQuestionAdded(added);
       }
 
@@ -498,15 +510,15 @@ export function AdminQuestionPanel({
                       <span className="text-muted-foreground/50 font-normal">(optional)</span>
                     </label>
 
-                    {(imagePreview || imageUrl) && (
+                    {allImagePreviews.length > 0 && (
                       <>
                       <div className="relative mb-2 rounded-xl overflow-hidden border bg-muted/30 group">
                         <img
-                          src={imagePreview || imageUrl}
-                          alt="Question preview"
-                          className="w-full max-h-64 object-contain cursor-pointer"
-                          onClick={() => fileInputRef.current?.click()}
-                        />
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-2">
+                          {allImagePreviews.map((src, index) => (
+                            <img key={src} src={src} alt={`Question image ${index + 1}`} className="w-full h-28 object-contain rounded-lg bg-background" onClick={() => fileInputRef.current?.click()} />
+                          ))}
+                        </div>
                         <div className="absolute top-2 right-2 flex gap-1.5">
                           <button
                             onClick={() => fileInputRef.current?.click()}
@@ -525,6 +537,7 @@ export function AdminQuestionPanel({
                         </div>
                       </div>
 
+                      <p className="text-[11px] text-muted-foreground mb-2">{allImagePreviews.length} image(s) attached. Select multiple files to add more, or select one file to freehand-crop it.</p>
                       <div className="mt-3">
                         <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
                           Image Layout
@@ -555,7 +568,7 @@ export function AdminQuestionPanel({
                       </>
                     )}
 
-                    {!imagePreview && !imageUrl && (
+                    {allImagePreviews.length === 0 && (
                       <div
                         onClick={() => fileInputRef.current?.click()}
                         onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-primary'); }}
@@ -563,8 +576,8 @@ export function AdminQuestionPanel({
                         onDrop={(e) => {
                           e.preventDefault();
                           e.currentTarget.classList.remove('border-primary');
-                          const file = e.dataTransfer.files[0];
-                          if (file) handleImageSelect(file);
+                          const files = e.dataTransfer.files;
+                          if (files.length) handleImageSelect(files);
                         }}
                         className="border-2 border-dashed rounded-xl px-4 py-8 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-all"
                       >
@@ -581,11 +594,13 @@ export function AdminQuestionPanel({
                     <input
                       ref={fileInputRef}
                       type="file"
+                      multiple
                       accept="image/jpeg,image/png,image/webp,image/gif"
                       className="hidden"
                       onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageSelect(file);
+                        const files = e.target.files;
+                        if (files?.length) handleImageSelect(files);
+                        e.target.value = "";
                       }}
                     />
                   </div>
@@ -722,11 +737,11 @@ export function AdminQuestionPanel({
                           </div>
 
                           <div className="space-y-2">
-                            {(imagePreview || imageUrl) && imagePosition !== "text-only" && (
+                            {allImagePreviews.length > 0 && imagePosition !== "text-only" && (
                               isInlineImagePosition(imagePosition) ? (
                                 <QuestionImagePositioner
                                   content={questionText}
-                                  imageSrc={imagePreview || imageUrl!}
+                                  imageSrc={allImagePreviews[0]}
                                   imagePosition={imagePosition}
                                   onPositionChange={setImagePosition}
                                 />
@@ -740,7 +755,7 @@ export function AdminQuestionPanel({
                                 <div className="flex flex-col sm:flex-row gap-4 items-start">
                                   <div className="sm:w-1/2 shrink-0">
                                     <img
-                                      src={imagePreview || imageUrl!}
+                                      src={allImagePreviews[0]}
                                       alt="Question preview"
                                       className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
                                     />
@@ -752,7 +767,7 @@ export function AdminQuestionPanel({
                               ) : (
                                 <>
                                   <img
-                                    src={imagePreview || imageUrl!}
+                                    src={allImagePreviews[0]}
                                     alt="Question preview"
                                     className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
                                   />
@@ -762,7 +777,7 @@ export function AdminQuestionPanel({
                                 </>
                               )
                             )}
-                            {(!(imagePreview || imageUrl) || imagePosition === "text-only") && questionText.trim() && (
+                            {(allImagePreviews.length === 0 || imagePosition === "text-only") && questionText.trim() && (
                               <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
                             )}
                           </div>

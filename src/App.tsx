@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +23,12 @@ import AppUpdatePrompt from "./components/AppUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
+
+type WindowAppearancePlugin = {
+  setSystemBarSurface(options: { color: string }): Promise<void>;
+};
+
+const WindowAppearance = registerPlugin<WindowAppearancePlugin>("WindowAppearance");
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -351,8 +358,13 @@ const App = () => {
       meta?.setAttribute("content", surfaceColor);
 
       if (Capacitor.isNativePlatform()) {
-        // The native window is edge-to-edge and the status-bar background is
-        // transparent. Only switch icon contrast when the app theme changes.
+        if (Capacitor.getPlatform() === "android") {
+          // Android 14 uses a normal status-bar surface; Android 15+ paints
+          // this colour behind its enforced transparent system bar.
+          void WindowAppearance.setSystemBarSurface({ color: surfaceColor }).catch(() => {
+            // The native surface is a visual enhancement, not an app blocker.
+          });
+        }
         void StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => {
           // Status-bar styling is optional on platforms without native support.
         });

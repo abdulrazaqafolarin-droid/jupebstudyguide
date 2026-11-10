@@ -52,7 +52,7 @@ export function splitQuestionAtImageOffset(
  */
 export function getQuestionPositionTokens(content: string): Array<{ start: number; end: number }> {
   const tokens: Array<{ start: number; end: number }> = [];
-  const tokenPattern = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|`[^`]*`|\S+/g;
+  const tokenPattern = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|`[^`]*`|\*\*[\s\S]*?\*\*|__[\s\S]*?__|\*[^*\n]+\*|_[^_\n]+_|\S+/g;
 
   for (const match of content.matchAll(tokenPattern)) {
     const start = match.index ?? 0;

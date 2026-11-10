@@ -1,8 +1,10 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.jupeb.master',
-  appName: 'Rutex Master(Jupeb)',
+  // The default preserves the existing app identity. The side-by-side successor
+  // build supplies its own ID/name through the dedicated artifact-only workflow.
+  appId: process.env.CAPACITOR_APP_ID?.trim() || 'com.jupeb.master',
+  appName: process.env.CAPACITOR_APP_NAME?.trim() || 'Rutex Master(Jupeb)',
   webDir: 'dist',
   // NOTE: no server.url — the app bundles dist locally so it opens instantly
   // without depending on a remote URL (Supabase data still needs internet).

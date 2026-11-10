@@ -114,12 +114,12 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     try { event.currentTarget.releasePointerCapture(event.pointerId); } catch { /* capture may already be released */ }
   };
 
-  const createBlob = (canvas: HTMLCanvasElement, type: string, quality?: number) =>
+  const createBlob = useCallback((canvas: HTMLCanvasElement, type: string, quality?: number) =>
     new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Could not create the cropped image")), type, quality);
-    });
+    }), []);
 
-  const createUploadSafeBlob = async (
+  const createUploadSafeBlob = useCallback(async (
     sourceCanvas: HTMLCanvasElement,
     preferredType: string,
     quality = 0.9,
@@ -148,7 +148,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     }
 
     throw new Error("This crop is larger than the 5 MB image limit. Draw a smaller area or use the original image.");
-  };
+  }, [createBlob]);
 
   const loadImage = useCallback(async () => {
     const imageElement = new Image();
@@ -188,7 +188,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       setCropError(error instanceof Error ? error.message : "Could not crop image");
       processing.current = false;
     }
-  }, [loadImage, croppedAreaPixels, onCropComplete, sourceMimeType]);
+  }, [loadImage, croppedAreaPixels, onCropComplete, sourceMimeType, createUploadSafeBlob]);
 
   const handleFreehandApply = useCallback(async () => {
     if (processing.current || isDrawing) return;
@@ -238,7 +238,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       setCropError(error instanceof Error ? error.message : "Could not crop image");
       processing.current = false;
     }
-  }, [points, isDrawing, onCropComplete]);
+  }, [points, isDrawing, onCropComplete, createUploadSafeBlob]);
 
   const handleUseOriginal = useCallback(async () => {
     if (processing.current) return;

@@ -69,16 +69,18 @@ Add the new SHA-1 fingerprint to the Android OAuth/Firebase configuration for pa
 
 After registration, check that the Android Google sign-in configuration still contains the expected client IDs. If Firebase requires a refreshed `google-services.json`, download it from the Firebase project settings and update the Android client config in a separate reviewed change; never upload a private OAuth client-secret JSON file.
 
-## Run and verify the first rotation
+## Build, test, and promote the first rotation
 
-1. Merge the reviewed signing-rotation code and updater-lineage support into `main`.
-2. Add the four new `ANDROID_ROTATED_*` secrets first.
-3. In **Actions → Android signing-key rotation → Run workflow**, choose `main` and leave `publish_release` unchecked for the first run.
-4. Confirm the workflow reports the expected legacy SHA-1 and a different new SHA-1, verifies the Android 13+ signer as B, verifies Android 7–12 compatibility as A, checks the lineage rollback capability is disabled, and uploads both APK artifacts.
-5. Test the rotated-update APK on an Android 14 device that currently has the November 9 A-signed build installed. Do not uninstall the existing app. Confirm Android accepts the update, the installed version changes, and account/local study data remains.
-6. Only after the test succeeds, run the workflow again from `main` with `publish_release` checked. The stable in-app updater URL will contain the rotated APK; the separate clean installer is for new installations and the later Android 7–12 migration.
+1. Temporarily make the public repository private while the key exposure is being handled. Request GitHub Support to purge the exposed commit/blob from cached views; removing the file from the current branch does not erase copies, forks, caches, or old clones.
+2. Generate the new keystore locally and add the four new `ANDROID_ROTATED_*` repository Actions secrets. Keep the existing `ANDROID_KEYSTORE_*` secrets only for this one-time transition.
+3. Merge the reviewed signing-rotation code and updater-lineage support into `main` only after the new secrets exist. The normal Android build will intentionally fail closed if the new secrets are absent.
+4. In **Actions → Android signing-key rotation → Run workflow**, choose `main`. This workflow only builds and verifies; it does not publish. Confirm it reports the expected legacy SHA-1 and a different new SHA-1, verifies the Android 13+ signer as B, verifies Android 7–12 compatibility as A, confirms rollback capability is disabled, and uploads two APKs plus `release-manifest.json`.
+5. Download `jupeb-master-rotated-update.apk` from that successful run's artifact. Install it over the existing app on your Android 14 phone—do not uninstall. Confirm Android accepts it, the version changes, and the app's sign-in, study progress, and locally stored state are still present. Test Google sign-in after adding the new SHA-1 fingerprint printed in the build log to Firebase / Google Cloud. Keep the old SHA-1 registered during transition.
+6. Record the numeric **Run ID** of the exact successful workflow run you tested.
+7. After the phone test succeeds, open **Actions → Publish tested Android signing rotation → Run workflow**, choose `main`, and enter that Run ID. This workflow downloads the exact tested artifacts (it does not rebuild or re-sign them), verifies the manifest, checksums, package ID, both SDK signer paths, and disabled rollback capability, then publishes both APKs plus matching updater metadata to Supabase.
+8. Check the public `version.json` and updater APK URL. Only then is the in-app update ready for other Android 13+ devices.
 
-The normal `Build Android APK` workflow is switched to use certificate B only for later releases. It publishes `requiresReinstallBelowApi: 33`, so Android 7–12 users are warned and updates are paused until their data-preserving migration route is ready.
+The normal `Build Android APK` workflow is switched to use certificate B only for later releases. It publishes `requiresReinstallBelowApi: 33`, so Android 7–12 users are warned and their automatic updates are paused until their backed-up migration route is ready. The workflow also refreshes the separate B-only fresh-install APK on every future release.
 
 ## After the first verified transition
 

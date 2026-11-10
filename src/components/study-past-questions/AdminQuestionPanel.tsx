@@ -155,25 +155,27 @@ export function AdminQuestionPanel({
   }, []);
 
   const startNextCrop = useCallback(() => {
-    const nextFile = pendingFilesRef.current.shift();
-    if (!nextFile) {
-      isCroppingRef.current = false;
-      setCropImageUrl(null);
-      setCropFileName("");
-      return;
-    }
+    const readNext = () => {
+      const nextFile = pendingFilesRef.current.shift();
+      if (!nextFile) {
+        isCroppingRef.current = false;
+        setCropImageUrl(null);
+        setCropFileName("");
+        return;
+      }
 
-    isCroppingRef.current = true;
-    setCropImageUrl(null);
-    setCropFileName(nextFile.name);
-    const reader = new FileReader();
-    reader.onload = () => setCropImageUrl(reader.result as string);
-    reader.onerror = () => {
-      setError("Could not read " + nextFile.name);
-      isCroppingRef.current = false;
-      startNextCrop();
+      isCroppingRef.current = true;
+      setCropImageUrl(null);
+      setCropFileName(nextFile.name);
+      const reader = new FileReader();
+      reader.onload = () => setCropImageUrl(reader.result as string);
+      reader.onerror = () => {
+        setError("Could not read " + nextFile.name);
+        readNext();
+      };
+      reader.readAsDataURL(nextFile);
     };
-    reader.readAsDataURL(nextFile);
+    readNext();
   }, []);
 
   const handleImageSelect = (fileList: FileList | File[]) => {

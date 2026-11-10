@@ -13,8 +13,10 @@ export interface ReleaseInfo {
   builtAt: string;
   url: string;
   sha256: string;
-  /** True only for the one-time transition away from the legacy debug signing key. */
+  /** True only for a one-time release that cannot update the installed signer. */
   requiresReinstall?: boolean;
+  /** Devices below this API level must use the fresh-install migration path after rotation. */
+  requiresReinstallBelowApi?: number;
 }
 
 interface DownloadProgress {
@@ -25,7 +27,7 @@ interface DownloadProgress {
 }
 
 interface AppUpdaterPlugin {
-  getInstalledVersion(): Promise<{ versionCode: number; versionName: string }>;
+  getInstalledVersion(): Promise<{ versionCode: number; versionName: string; sdkInt: number }>;
   canInstallPackages(): Promise<{ canInstall: boolean }>;
   openInstallSettings(): Promise<void>;
   downloadApk(options: { url: string; versionCode: number }): Promise<{
@@ -79,6 +81,13 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     url: r.url,
     sha256: r.sha256.toLowerCase(),
     requiresReinstall: r.requiresReinstall === true,
+    requiresReinstallBelowApi:
+      typeof r.requiresReinstallBelowApi === "number" &&
+      Number.isSafeInteger(r.requiresReinstallBelowApi) &&
+      r.requiresReinstallBelowApi >= 24 &&
+      r.requiresReinstallBelowApi <= 100
+        ? r.requiresReinstallBelowApi
+        : undefined,
   };
 }
 
@@ -102,11 +111,16 @@ export async function fetchLatestRelease(): Promise<ReleaseInfo | null> {
 export async function getInstalledVersion(): Promise<{
   versionCode: number;
   versionName: string;
+  sdkInt: number;
 } | null> {
   if (!isAndroidApp()) return null;
   try {
     const v = await AppUpdater.getInstalledVersion();
-    return Number.isFinite(v.versionCode) ? v : null;
+    return Number.isFinite(v.versionCode) &&
+      Number.isSafeInteger(v.sdkInt) &&
+      v.sdkInt >= 1
+      ? v
+      : null;
   } catch {
     return null;
   }

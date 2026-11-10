@@ -715,7 +715,7 @@ export function AdminQuestionPanel({
                     </button>
                     {showPreview && (
                       <div className="px-3 pb-3 pt-2 border-t border-border/50 bg-card/50 space-y-2">
-                        <div className="max-w-xl mx-auto rounded-2xl border border-border bg-background p-4 space-y-4">
+                        <div className="max-w-2xl mx-auto rounded-2xl border border-border bg-background p-4 space-y-4">
                           <div className="flex items-center justify-between gap-2 text-[10px] text-muted-foreground">
                             <span className="font-semibold uppercase tracking-wide">Student view</span>
                             <span className="capitalize">{category} · {year}</span>

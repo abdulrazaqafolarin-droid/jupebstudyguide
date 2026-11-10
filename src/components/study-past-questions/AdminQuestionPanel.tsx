@@ -96,7 +96,7 @@ export function AdminQuestionPanel({
     setImageUrl(q.imageUrl || null);
     setImagePreview(null);
     setImageFile(null);
-    setImagePosition(q.imagePosition || (q.imageUrl ? "image-above" : "text-only"));
+    setImagePosition(q.imagePosition || (q.imageUrl ? "image-only" : "text-only"));
     setShowPreview(!!q.imageUrl);
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
     setCorrectAnswer(q.correctAnswer || "");
@@ -160,6 +160,7 @@ export function AdminQuestionPanel({
       setError("Image must be less than 5 MB");
       return;
     }
+    if (!imagePreview && !imageUrl) setImagePosition("image-above");
     setCropFileName(file.name);
     const reader = new FileReader();
     reader.onload = () => setCropImageUrl(reader.result as string);
@@ -600,6 +601,9 @@ export function AdminQuestionPanel({
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
                       placeholder="Type the question text, or leave blank if using an image..."
                     />
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Press Enter to create line breaks. Each line break becomes a snap point for inline image placement.
+                    </p>
                   </div>
 
                   {isObjective && (

@@ -229,7 +229,7 @@ jobs:
             echo "::error::The rotated signer is missing, unchanged, or differs from the clean-install signer."
             exit 1
           fi
-          if ! grep -Eiq 'rollback[^[:alnum:]]+(false|disabled)' "$WORK_DIR/lineage-report.txt"; then
+          if ! grep -Eiq 'Has rollback capability[[:space:]]*:[[:space:]]*false' "$WORK_DIR/lineage-report.txt"; then
             echo "::error::Could not confirm that rollback capability is disabled for the exposed signer. Inspect the lineage report before publishing."
             cat "$WORK_DIR/lineage-report.txt"
             exit 1

@@ -39,6 +39,13 @@ describe("question image text anchors", () => {
     ]);
   });
 
+  it("keeps QuestionMath \\( ... \\) and \\[ ... \\] delimiters intact", () => {
+    const inline = "Before \\(x + y\\) after";
+    const display = "Before \\[x + y\\] after";
+    expect(getSafeQuestionImageOffset(inline, 10)).toBe(7);
+    expect(getSafeQuestionImageOffset(display, 10)).toBe(7);
+  });
+
   it("keeps markdown emphasis spans intact", () => {
     const content = "A **bold phrase** remains";
     expect(getSafeQuestionImageOffset(content, 6)).toBe(2);

@@ -41,7 +41,7 @@ export function getSafeQuestionImageOffset(content: string, requestedOffset: num
 /** Create the durable character offset stored in study_questions.image_position. */
 export function createInlineImagePosition(offset: number): QuestionImagePosition {
   const safeOffset = Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
-  return "image-inline:" + safeOffset;
+  return ("image-inline:" + safeOffset) as `image-inline:${number}`;
 }
 
 /** Split question content at a safe saved character anchor. */

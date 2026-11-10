@@ -70,7 +70,7 @@ export function QuestionViewer({
     const hasImage = !!q.imageUrl && !brokenImages.has(q.id);
     const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
     if (hasImage && isInlineImagePosition(pos)) {
-      return <QuestionTextWithImage content={q.question || ""} imageSrc={q.imageUrl!} imagePosition={pos} />;
+      return <QuestionTextWithImage content={q.question || ""} imageSrc={q.imageUrl!} imagePosition={pos} onImageError={() => handleImageError(q.id)} />;
     }
     if (pos === "text-only" || !hasImage) {
       return q.question ? (

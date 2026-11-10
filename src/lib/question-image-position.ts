@@ -1,9 +1,9 @@
 import type { QuestionImagePosition } from "@/types/question";
 
-const INLINE_IMAGE_POSITION = /^image-inline:(\\d+)$/;
+const INLINE_IMAGE_POSITION = /^image-inline:(\d+)$/;
 
 // Tokens that must stay intact when an image is inserted into question prose.
-const PROTECTED_SPAN = /\\$\\$[\\s\\S]*?\\$\\$|\\$[^$\\n]*?\\$|`[^`]*`|\\*\\*[\\s\\S]*?\\*\\*|__[\\s\\S]*?__|\\*[^*\\n]+\\*|_[^_\\n]+_/g;
+const PROTECTED_SPAN = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|`[^`]*`|\*\*[\s\S]*?\*\*|__[\s\S]*?__|\*[^*\n]+\*|_[^_\n]+_/g;
 
 /** Read the saved character anchor and clamp it to the current question text. */
 export function getInlineImageOffset(position: string | null | undefined, content: string): number {
@@ -52,7 +52,7 @@ export function splitQuestionAtImageOffset(
  */
 export function getQuestionPositionTokens(content: string): Array<{ start: number; end: number }> {
   const tokens: Array<{ start: number; end: number }> = [];
-  const tokenPattern = /\\$\\$[\\s\\S]*?\\$\\$|\\$[^$\\n]*?\\$|`[^`]*`|\\S+/g;
+  const tokenPattern = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|`[^`]*`|\S+/g;
 
   for (const match of content.matchAll(tokenPattern)) {
     const start = match.index ?? 0;

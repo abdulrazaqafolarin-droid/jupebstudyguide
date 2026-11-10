@@ -1,41 +1,66 @@
 import type { QuestionImagePosition } from "@/types/question";
 
-const INLINE_IMAGE_POSITION = /^image-inline:(\d+)$/;
+const INLINE_IMAGE_POSITION = /^image-inline:(\\d+)$/;
 
-export function isInlineImagePosition(position?: string | null): boolean {
-  return position === "image-inline" || INLINE_IMAGE_POSITION.test(position || "");
-}
+// Tokens that must stay intact when an image is inserted into question prose.
+const PROTECTED_SPAN = /\\$\\$[\\s\\S]*?\\$\\$|\\$[^$\\n]*?\\$|`[^`]*`|\\*\\*[\\s\\S]*?\\*\\*|__[\\s\\S]*?__|\\*[^*\\n]+\\*|_[^_\\n]+_/g;
 
-export function getInlineImageIndex(position: string | null | undefined, lineCount: number): number {
+/** Read the saved character anchor and clamp it to the current question text. */
+export function getInlineImageOffset(position: string | null | undefined, content: string): number {
   const match = INLINE_IMAGE_POSITION.exec(position || "");
   const parsed = match ? Number(match[1]) : 0;
-  const safeIndex = Number.isSafeInteger(parsed) ? parsed : 0;
-  return Math.max(0, Math.min(Math.max(0, Math.floor(lineCount)), safeIndex));
+  const requested = Number.isSafeInteger(parsed) ? parsed : 0;
+  return getSafeQuestionImageOffset(content, requested);
 }
 
-export function createInlineImagePosition(index: number): QuestionImagePosition {
-  const safeIndex = Number.isFinite(index) ? Math.max(0, Math.floor(index)) : 0;
-  return `image-inline:${safeIndex}`;
+/** Clamp an anchor and keep it outside LaTeX, code, and Markdown emphasis spans. */
+export function getSafeQuestionImageOffset(content: string, requestedOffset: number): number {
+  const requested = Number.isFinite(requestedOffset)
+    ? Math.max(0, Math.min(content.length, Math.floor(requestedOffset)))
+    : 0;
+
+  for (const match of content.matchAll(PROTECTED_SPAN)) {
+    const start = match.index ?? 0;
+    const end = start + match[0].length;
+    if (requested > start && requested < end) {
+      return requested - start <= end - requested ? start : end;
+    }
+  }
+
+  return requested;
+}
+
+/** Create the durable character offset stored in study_questions.image_position. */
+export function createInlineImagePosition(offset: number): QuestionImagePosition {
+  const safeOffset = Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
+  return `image-inline:${safeOffset}`;
+}
+
+/** Split question content at a safe saved character anchor. */
+export function splitQuestionAtImageOffset(
+  content: string,
+  requestedOffset: number,
+): [before: string, after: string] {
+  const offset = getSafeQuestionImageOffset(content, requestedOffset);
+  return [content.slice(0, offset), content.slice(offset)];
 }
 
 /**
- * Split prose at authored newlines, but preserve multiline $$...$$ display
- * math blocks as single positionable units. CRLF and CR are normalized to LF.
+ * Return the source offsets of visible text units. Inline/display maths and
+ * markdown emphasis/code spans are treated as indivisible units so the editor
+ * never offers a drop point in the middle of their syntax.
  */
-export function splitQuestionIntoPositionableLines(content: string): string[] {
-  if (!content) return [];
+export function getQuestionPositionTokens(content: string): Array<{ start: number; end: number }> {
+  const tokens: Array<{ start: number; end: number }> = [];
+  const tokenPattern = /\\$\\$[\\s\\S]*?\\$\\$|\\$[^$\\n]*?\\$|`[^`]*`|\\S+/g;
 
-  const mathBlocks: string[] = [];
-  const normalized = content.replace(/\r\n?/g, "\n");
-  const masked = normalized.replace(/\$\$[\s\S]*?\$\$/g, (block) => {
-    const token = "__QUESTION_MATH_BLOCK_" + mathBlocks.length + "__";
-    mathBlocks.push(block);
-    return token;
-  });
+  for (const match of content.matchAll(tokenPattern)) {
+    const start = match.index ?? 0;
+    const end = start + match[0].length;
+    if (getSafeQuestionImageOffset(content, start) === start) {
+      tokens.push({ start, end });
+    }
+  }
 
-  return masked.split("\n").map((line) =>
-    line.replace(/__QUESTION_MATH_BLOCK_(\d+)__/g, (token, index: string) =>
-      mathBlocks[Number(index)] ?? token
-    )
-  );
+  return tokens;
 }

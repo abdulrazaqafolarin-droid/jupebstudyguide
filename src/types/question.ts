@@ -1,6 +1,12 @@
 export type Subject = 'physics' | 'chemistry' | 'biology' | 'math';
 export type QuestionType = 'mcq' | 'essay' | 'practical';
 export type Difficulty = 'easy' | 'medium' | 'hard';
+export type QuestionImagePosition =
+  | 'text-only'
+  | 'image-only'
+  | 'image-above'
+  | 'image-beside'
+  | `image-inline:${number}`;
 
 export interface MCQOption {
   label: string;
@@ -19,7 +25,7 @@ export interface Question {
   explanation: string;
   difficulty?: Difficulty;
   imageUrl?: string;
-  imagePosition?: 'text-only' | 'image-only' | 'image-above' | 'image-beside';
+  imagePosition?: QuestionImagePosition;
   document_name?: string;
 }
 

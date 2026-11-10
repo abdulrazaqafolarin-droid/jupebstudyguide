@@ -25,6 +25,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
   const imageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const sourceMimeType = image.match(/^data:(image\/(?:png|webp|jpeg));/)?.[1] || "image/jpeg";
 
   const onCropChange = useCallback((location: { x: number; y: number }) => setCrop(location), []);
   const onZoomChange = useCallback((value: number) => setZoom(value), []);
@@ -151,12 +152,12 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
         canvas.width,
         canvas.height
       );
-      onCropComplete(await createBlob(canvas, "image/jpeg", 0.92));
+      onCropComplete(await createBlob(canvas, sourceMimeType, sourceMimeType === "image/jpeg" ? 0.92 : undefined));
     } catch (error) {
       setCropError(error instanceof Error ? error.message : "Could not crop image");
       processing.current = false;
     }
-  }, [loadImage, croppedAreaPixels, onCropComplete]);
+  }, [loadImage, croppedAreaPixels, onCropComplete, sourceMimeType]);
 
   const handleFreehandApply = useCallback(async () => {
     if (processing.current || isDrawing) return;
@@ -219,12 +220,12 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       canvas.width = imageObj.naturalWidth;
       canvas.height = imageObj.naturalHeight;
       context.drawImage(imageObj, 0, 0);
-      onSkip(await createBlob(canvas, "image/jpeg", 0.92));
+      onSkip(await createBlob(canvas, sourceMimeType, sourceMimeType === "image/jpeg" ? 0.92 : undefined));
     } catch (error) {
       setCropError(error instanceof Error ? error.message : "Could not read original image");
       processing.current = false;
     }
-  }, [loadImage, onSkip]);
+  }, [loadImage, onSkip, sourceMimeType]);
 
   const handleApply = mode === "freehand" ? handleFreehandApply : handleRectangleApply;
 

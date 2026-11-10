@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Trash2, Plus, AlertTriangle, GripVertical, ListOrdered, ImageIcon, Upload, XCircle, Loader2, Eye } from "lucide-react";
 import type { StudyQuestion, StudyCategory } from "@/types/study-questions";
 import type { Subject } from "@/types/question";
-import { addQuestion, updateQuestion, deleteQuestion, generateQuestionId, batchUpdateSortOrder, uploadQuestionImage, deleteQuestionImage } from "@/lib/admin-questions-service";
+import { addQuestion, updateQuestion, deleteQuestion, generateQuestionId, batchUpdateSortOrder, uploadQuestionImage, deleteQuestionImage, deleteQuestionImageUrls } from "@/lib/admin-questions-service";
 import { refreshData } from "@/data/study-questions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,12 @@ interface OptionEntry {
 
 type Mode = "edit" | "add" | null;
 
+interface QuestionImageDraft {
+  id: string;
+  url: string;
+  file?: File;
+}
+
 export function AdminQuestionPanel({
   question,
   questions,
@@ -56,9 +62,7 @@ export function AdminQuestionPanel({
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [sortOrder, setSortOrder] = useState("0");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [images, setImages] = useState<QuestionImageDraft[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
   const [imagePosition, setImagePosition] = useState<string>("image-above");
@@ -93,11 +97,10 @@ export function AdminQuestionPanel({
   const loadQuestion = useCallback((q: StudyQuestion) => {
     setEditingQuestion(q);
     setQuestionText(q.question || "");
-    setImageUrl(q.imageUrl || null);
-    setImagePreview(null);
-    setImageFile(null);
-    setImagePosition(q.imagePosition || (q.imageUrl ? "image-only" : "text-only"));
-    setShowPreview(!!q.imageUrl);
+    const questionImageUrls = q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : [];
+    setImages(questionImageUrls.map((url, index) => ({ id: q.id + "-image-" + index, url })));
+    setImagePosition(q.imagePosition || (questionImageUrls.length ? "image-only" : "text-only"));
+    setShowPreview(questionImageUrls.length > 0);
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
     setCorrectAnswer(q.correctAnswer || "");
     setExplanation(q.explanation || "");
@@ -110,9 +113,7 @@ export function AdminQuestionPanel({
   const resetForm = useCallback(() => {
     setEditingQuestion(null);
     setQuestionText("");
-    setImageUrl(null);
-    setImagePreview(null);
-    setImageFile(null);
+    setImages([]);
     setImagePosition("image-above");
     setShowPreview(false);
     setOptions(isObjective ? [{ label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" }] : []);
@@ -143,72 +144,107 @@ export function AdminQuestionPanel({
     resetForm();
   };
 
-  const prevObjectUrl = useRef<string | null>(null);
+  const objectUrlsRef = useRef<string[]>([]);
+  const pendingFilesRef = useRef<File[]>([]);
+  const isCroppingRef = useRef(false);
 
   useEffect(() => {
     return () => {
-      if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
+      objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     };
   }, []);
 
-  const handleImageSelect = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      setError("Only image files are allowed (JPEG, PNG, WebP, GIF)");
+  const startNextCrop = useCallback(() => {
+    const nextFile = pendingFilesRef.current.shift();
+    if (!nextFile) {
+      isCroppingRef.current = false;
+      setCropImageUrl(null);
+      setCropFileName("");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be less than 5 MB");
-      return;
-    }
-    if (!imagePreview && !imageUrl) setImagePosition("image-above");
-    setCropFileName(file.name);
+
+    isCroppingRef.current = true;
+    setCropImageUrl(null);
+    setCropFileName(nextFile.name);
     const reader = new FileReader();
     reader.onload = () => setCropImageUrl(reader.result as string);
-    reader.readAsDataURL(file);
+    reader.onerror = () => {
+      setError("Could not read " + nextFile.name);
+      isCroppingRef.current = false;
+      startNextCrop();
+    };
+    reader.readAsDataURL(nextFile);
+  }, []);
+
+  const handleImageSelect = (fileList: FileList | File[]) => {
+    const selectedFiles = Array.from(fileList);
+    const validFiles = selectedFiles.filter((file) => {
+      if (!file.type.startsWith("image/")) {
+        setError(file.name + ": only image files are allowed");
+        return false;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError(file.name + ": image must be less than 5 MB");
+        return false;
+      }
+      return true;
+    });
+    if (validFiles.length === 0) return;
+
+    if (images.length === 0) setImagePosition("image-above");
+    pendingFilesRef.current.push(...validFiles);
+    if (!isCroppingRef.current) startNextCrop();
     setError(null);
   };
 
-  const handleCropComplete = useCallback((croppedBlob: Blob) => {
-    const croppedFile = new File([croppedBlob], cropFileName.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
-    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
-    prevObjectUrl.current = URL.createObjectURL(croppedFile);
-    setImageFile(croppedFile);
-    setImagePreview(prevObjectUrl.current);
-    setImageUrl(null);
+  const addCroppedImage = useCallback((file: File) => {
+    const previewUrl = URL.createObjectURL(file);
+    objectUrlsRef.current.push(previewUrl);
+    setImages((current) => [
+      ...current,
+      { id: Date.now() + "-" + Math.random(), url: previewUrl, file },
+    ]);
     setShowPreview(true);
-    setCropImageUrl(null);
-    setCropFileName("");
-  }, [cropFileName]);
+  }, []);
+
+  const handleCropComplete = useCallback((croppedBlob: Blob) => {
+    const png = croppedBlob.type === "image/png";
+    const croppedFile = new File(
+      [croppedBlob],
+      cropFileName.replace(/\.[^.]+$/, png ? ".png" : ".jpg"),
+      { type: croppedBlob.type || "image/jpeg" }
+    );
+    addCroppedImage(croppedFile);
+    startNextCrop();
+  }, [cropFileName, addCroppedImage, startNextCrop]);
 
   const handleSkipCrop = useCallback((originalBlob: Blob) => {
-    const originalFile = new File([originalBlob], cropFileName, { type: originalBlob.type });
-    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
-    prevObjectUrl.current = URL.createObjectURL(originalFile);
-    setImageFile(originalFile);
-    setImagePreview(prevObjectUrl.current);
-    setImageUrl(null);
-    setShowPreview(true);
-    setCropImageUrl(null);
-    setCropFileName("");
-  }, [cropFileName]);
+    addCroppedImage(new File([originalBlob], cropFileName, { type: originalBlob.type }));
+    startNextCrop();
+  }, [cropFileName, addCroppedImage, startNextCrop]);
 
   const handleCancelCrop = useCallback(() => {
+    pendingFilesRef.current = [];
+    isCroppingRef.current = false;
     setCropImageUrl(null);
     setCropFileName("");
   }, []);
 
-  const handleRemoveImage = () => {
-    if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
-    prevObjectUrl.current = null;
-    setImageFile(null);
-    setImagePreview(null);
-    setImageUrl(null);
-    setImagePosition("image-above");
-    setShowPreview(false);
+  const handleRemoveImage = (imageId: string) => {
+    setImages((current) => {
+      const removed = current.find((image) => image.id === imageId);
+      if (removed?.url.startsWith("blob:")) {
+        URL.revokeObjectURL(removed.url);
+        objectUrlsRef.current = objectUrlsRef.current.filter((url) => url !== removed.url);
+      }
+      const remaining = current.filter((image) => image.id !== imageId);
+      if (remaining.length === 0) setImagePosition("image-above");
+      return remaining;
+    });
   };
 
   const handleSave = async () => {
-    if (!questionText.trim() && !imageFile && !imageUrl) {
+    if (!questionText.trim() && images.length === 0) {
       setError("Question text or an image is required");
       return;
     }
@@ -233,28 +269,34 @@ export function AdminQuestionPanel({
     }
 
     const qId = mode === "edit" && editingQuestion ? editingQuestion.id : generateQuestionId(subject, year, category);
-    const existingImageUrl = mode === "edit" && editingQuestion ? editingQuestion.imageUrl : undefined;
+    const existingImageUrls = mode === "edit" && editingQuestion
+      ? (editingQuestion.imageUrls?.length ? editingQuestion.imageUrls : editingQuestion.imageUrl ? [editingQuestion.imageUrl] : [])
+      : [];
+    const newlyUploadedUrls: string[] = [];
 
     setSaving(true);
     setError(null);
-    setUploadingImage(!!imageFile);
+    setUploadingImage(images.some((image) => !!image.file));
 
     try {
-      let resolvedImageUrl = imageUrl;
-
-      if (imageFile) {
-        if (existingImageUrl) {
-          await deleteQuestionImage(qId).catch(() => {});
+      const resolvedImageUrls: string[] = [];
+      for (const image of images) {
+        if (image.file) {
+          const uploadResult = await uploadQuestionImage(qId, image.file);
+          if (!uploadResult.success || !uploadResult.url) {
+            await deleteQuestionImageUrls(newlyUploadedUrls).catch(() => {});
+            setError(uploadResult.error || "Failed to upload image");
+            setSaving(false);
+            setUploadingImage(false);
+            return;
+          }
+          newlyUploadedUrls.push(uploadResult.url);
+          resolvedImageUrls.push(uploadResult.url);
+        } else {
+          resolvedImageUrls.push(image.url);
         }
-        const uploadResult = await uploadQuestionImage(qId, imageFile);
-        if (!uploadResult.success) {
-          setError(uploadResult.error || "Failed to upload image");
-          setSaving(false);
-          setUploadingImage(false);
-          return;
-        }
-        resolvedImageUrl = uploadResult.url!;
       }
+      const resolvedImageUrl = resolvedImageUrls[0] || null;
 
       if (mode === "edit" && editingQuestion) {
         const result = await updateQuestion({
@@ -270,6 +312,7 @@ export function AdminQuestionPanel({
           topic: topic.trim() || null,
           sortOrder: parseInt(sortOrder) || 0,
           imageUrl: resolvedImageUrl,
+          imageUrls: resolvedImageUrls,
           imagePosition: imagePosition,
         });
 
@@ -291,11 +334,13 @@ export function AdminQuestionPanel({
           sortOrder: parseInt(sortOrder) || 0,
           imagePosition: imagePosition as StudyQuestion["imagePosition"],
           imageUrl: resolvedImageUrl || undefined,
+          imageUrls: resolvedImageUrls,
         };
         onQuestionUpdated(updated);
 
-        if (!imageFile && imageUrl === null && existingImageUrl) {
-          await deleteQuestionImage(qId).catch(() => {});
+        const removedImageUrls = existingImageUrls.filter((url) => !resolvedImageUrls.includes(url));
+        if (removedImageUrls.length > 0) {
+          await deleteQuestionImageUrls(removedImageUrls).catch(() => {});
         }
       } else if (mode === "add") {
         const result = await addQuestion({
@@ -311,6 +356,7 @@ export function AdminQuestionPanel({
           topic: topic.trim() || null,
           sortOrder: parseInt(sortOrder) || 0,
           imageUrl: resolvedImageUrl,
+          imageUrls: resolvedImageUrls,
           imagePosition: imagePosition,
         });
 
@@ -334,6 +380,7 @@ export function AdminQuestionPanel({
           topic: topic.trim() || undefined,
           sortOrder: parseInt(sortOrder) || 0,
           imagePosition: imagePosition as StudyQuestion["imagePosition"],
+          imageUrls: resolvedImageUrls,
         };
         if (resolvedImageUrl) added.imageUrl = resolvedImageUrl;
         onQuestionAdded(added);

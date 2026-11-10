@@ -62,6 +62,11 @@ export function isNewer(installedCode: number, latestCode: number): boolean {
 export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
+  const hasRotationThreshold = Object.prototype.hasOwnProperty.call(
+    r,
+    "requiresReinstallBelowApi",
+  );
+  const rotationThreshold = r.requiresReinstallBelowApi;
   if (
     typeof r.versionCode !== "number" ||
     !Number.isSafeInteger(r.versionCode) ||
@@ -69,7 +74,12 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     typeof r.url !== "string" ||
     r.url !== RELEASE_APK_URL ||
     typeof r.sha256 !== "string" ||
-    !/^[a-f0-9]{64}$/i.test(r.sha256)
+    !/^[a-f0-9]{64}$/i.test(r.sha256) ||
+    (hasRotationThreshold &&
+      (typeof rotationThreshold !== "number" ||
+        !Number.isSafeInteger(rotationThreshold) ||
+        rotationThreshold < 24 ||
+        rotationThreshold > 100))
   ) {
     return null;
   }
@@ -81,13 +91,9 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     url: r.url,
     sha256: r.sha256.toLowerCase(),
     requiresReinstall: r.requiresReinstall === true,
-    requiresReinstallBelowApi:
-      typeof r.requiresReinstallBelowApi === "number" &&
-      Number.isSafeInteger(r.requiresReinstallBelowApi) &&
-      r.requiresReinstallBelowApi >= 24 &&
-      r.requiresReinstallBelowApi <= 100
-        ? r.requiresReinstallBelowApi
-        : undefined,
+    requiresReinstallBelowApi: hasRotationThreshold
+      ? (rotationThreshold as number)
+      : undefined,
   };
 }
 

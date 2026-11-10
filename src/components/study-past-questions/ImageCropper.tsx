@@ -119,6 +119,37 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Could not create the cropped image")), type, quality);
     });
 
+  const createUploadSafeBlob = async (
+    sourceCanvas: HTMLCanvasElement,
+    preferredType: string,
+    quality = 0.9,
+  ): Promise<Blob> => {
+    const maxBytes = 5 * 1024 * 1024;
+    let workingCanvas = sourceCanvas;
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const preferredBlob = await createBlob(
+        workingCanvas,
+        preferredType,
+        preferredType === "image/jpeg" || preferredType === "image/webp" ? quality : undefined,
+      );
+      if (preferredBlob.size <= maxBytes) return preferredBlob;
+
+      const webpBlob = await createBlob(workingCanvas, "image/webp", 0.86);
+      if (webpBlob.type === "image/webp" && webpBlob.size <= maxBytes) return webpBlob;
+
+      const resizedCanvas = document.createElement("canvas");
+      resizedCanvas.width = Math.max(1, Math.floor(workingCanvas.width * 0.75));
+      resizedCanvas.height = Math.max(1, Math.floor(workingCanvas.height * 0.75));
+      const context = resizedCanvas.getContext("2d");
+      if (!context) throw new Error("No canvas context");
+      context.drawImage(workingCanvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
+      workingCanvas = resizedCanvas;
+    }
+
+    throw new Error("This crop is larger than the 5 MB image limit. Draw a smaller area or use the original image.");
+  };
+
   const loadImage = useCallback(async () => {
     const imageElement = new Image();
     imageElement.crossOrigin = "anonymous";
@@ -152,7 +183,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
         canvas.width,
         canvas.height
       );
-      onCropComplete(await createBlob(canvas, sourceMimeType, sourceMimeType === "image/jpeg" ? 0.92 : undefined));
+      onCropComplete(await createUploadSafeBlob(canvas, sourceMimeType, 0.86));
     } catch (error) {
       setCropError(error instanceof Error ? error.message : "Could not crop image");
       processing.current = false;
@@ -202,7 +233,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       context.closePath();
       context.clip();
       context.drawImage(imageElement, minX, minY, width, height, 0, 0, width, height);
-      onCropComplete(await createBlob(output, "image/png"));
+      onCropComplete(await createUploadSafeBlob(output, "image/webp", 0.88));
     } catch (error) {
       setCropError(error instanceof Error ? error.message : "Could not crop image");
       processing.current = false;

@@ -340,7 +340,7 @@ export function QuestionViewer({
         )}
       </AnimatePresence>
 
-      <div ref={scrollRef} className="space-y-4 pb-24 overflow-y-auto">
+      <div ref={scrollRef} className="max-h-[calc(100dvh-8rem)] space-y-4 pb-24 overflow-y-auto overscroll-contain touch-pan-y scrollbar-thin">
         <div className="flex items-center gap-2 sm:gap-3">
           {onBack && (
             <button

@@ -795,6 +795,7 @@ export function AdminQuestionPanel({
                                         <img key={image.id} src={image.url} alt={"Additional question preview " + (index + 2)} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
                                       ))}
                                     </div>
+                                  )}
                                   </>
                                 ) : (
                                   <div className="space-y-2">

@@ -168,7 +168,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
               {/* The image is supplementary; always show the written question too. */}
               <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin">
-                <QuestionImage imageUrl={question.imageUrl} />
+                <QuestionImage imageUrl={question.imageUrl} imageUrls={question.imageUrls} />
                 <div className="text-lg font-medium mb-4 leading-relaxed">
                   <QuestionMath content={question.question} />
                 </div>

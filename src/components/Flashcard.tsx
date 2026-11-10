@@ -141,7 +141,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
       <div className="flashcard-container">
         <div
           className={cn(
-            'flashcard relative w-full min-h-[520px] cursor-pointer',
+            'flashcard relative w-full h-[min(76dvh,760px)] min-h-[min(420px,76dvh)] cursor-pointer overflow-hidden',
             isFlipped && 'flipped'
           )}
           onClick={!question.options ? handleFlip : undefined}
@@ -152,7 +152,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
             <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
             <div className="absolute inset-0 chalk-texture opacity-30" />
             
-            <div className="relative h-full p-6 flex flex-col">
+            <div className="relative h-full min-h-0 p-6 flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                 <span className={cn(
@@ -167,7 +167,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
               </div>
 
               {/* The image is supplementary; always show the written question too. */}
-              <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
+              <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin">
                 <QuestionImage imageUrl={question.imageUrl} />
                 <div className="text-lg font-medium mb-4 leading-relaxed">
                   <QuestionMath content={question.question} />

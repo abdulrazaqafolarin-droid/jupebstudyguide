@@ -2,7 +2,6 @@ package com.jupeb.master;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.Window;
 
 import com.getcapacitor.Plugin;
@@ -48,9 +47,9 @@ public class WindowAppearancePlugin extends Plugin {
 
             Window window = activity.getWindow();
             window.getDecorView().setBackgroundColor(surfaceColor);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                window.setStatusBarColor(surfaceColor);
-            }
+            // Keep the system bar transparent; the decor background supplies
+            // the current app surface while Android keeps content safely inset.
+            window.setStatusBarColor(Color.TRANSPARENT);
             call.resolve();
         });
     }

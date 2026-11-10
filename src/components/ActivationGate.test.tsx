@@ -126,4 +126,62 @@ describe("ActivationGate active-trial banner", () => {
       );
     });
   });
+  it("reclaims the trial banner space while keeping the app surface and content mounted", async () => {
+    const trialExpiry = new Date(Date.now() + 60_000).toISOString();
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: false,
+        is_admin: false,
+        trial_expires_at: trialExpiry,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    const { rerender } = render(
+      <ActivationGate>
+        <div>Protected study content</div>
+      </ActivationGate>,
+    );
+
+    expect(screen.getByRole("group", { name: "Free trial status" })).toBeInTheDocument();
+
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: trialExpiry,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+    rerender(
+      <ActivationGate>
+        <div>Protected study content</div>
+      </ActivationGate>,
+    );
+
+    expect(document.querySelector(".activation-gate-shell")).toHaveClass(
+      "min-h-[100dvh]",
+      "bg-background",
+      "w-full",
+    );
+    expect(document.querySelector(".activation-gate-content")).toHaveClass(
+      "min-w-0",
+      "w-full",
+      "bg-background",
+    );
+    expect(screen.getByText("Protected study content")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByRole("group", { name: "Free trial status" })).not.toBeInTheDocument();
+    });
+  });
+
 });

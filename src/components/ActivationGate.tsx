@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useActivation } from "@/hooks/useActivation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -91,73 +91,87 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
 
   if (status.is_activated || status.is_admin || trialActive) {
     return (
-      <>
-        {trialActive && !status.is_activated && !status.is_admin && (
-          <>
-            <div
-              role="group"
-              aria-label="Free trial status"
-              aria-live="off"
-              className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
+      <div className="activation-gate-shell min-h-[100dvh] w-full bg-background">
+        <AnimatePresence initial={false}>
+          {trialActive && !status.is_activated && !status.is_admin && (
+            <motion.div
+              key="trial-status-banner"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{
+                height: { duration: 0.22, ease: [0.23, 1, 0.32, 1] },
+                opacity: { duration: 0.16, ease: "easeOut" },
+              }}
+              className="w-full overflow-hidden"
             >
-              <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
-                <Clock className="h-3.5 w-3.5" />
-                <strong>1-day free trial active</strong>
-                <span aria-hidden="true">·</span>
-                <span className="font-mono tabular-nums" aria-live="off">
-                  {formatTrialCountdown(trialExpiresAt - clockNow)} remaining
-                </span>
-                <Button
-                  type="button"
-                  size="sm"
-                  className="ml-1 h-7 shrink-0 px-3 text-xs"
-                  onClick={() => setShowActivationEntry((open) => !open)}
-                  aria-expanded={showActivationEntry}
-                  aria-controls="trial-activation-entry"
-                >
-                  <Key className="mr-1.5 h-3 w-3" />
-                  Activate Now
-                </Button>
+              <div
+                role="group"
+                aria-label="Free trial status"
+                aria-live="off"
+                className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
+              >
+                <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
+                  <Clock className="h-3.5 w-3.5" />
+                  <strong>1-day free trial active</strong>
+                  <span aria-hidden="true">·</span>
+                  <span className="font-mono tabular-nums" aria-live="off">
+                    {formatTrialCountdown(trialExpiresAt - clockNow)} remaining
+                  </span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="ml-1 h-7 shrink-0 px-3 text-xs"
+                    onClick={() => setShowActivationEntry((open) => !open)}
+                    aria-expanded={showActivationEntry}
+                    aria-controls="trial-activation-entry"
+                  >
+                    <Key className="mr-1.5 h-3 w-3" />
+                    Activate Now
+                  </Button>
+                </div>
               </div>
-            </div>
-            {showActivationEntry && (
-              <div id="trial-activation-entry" className="border-b border-primary/20 bg-card px-4 py-3">
-                <form onSubmit={handleTrialActivation} className="mx-auto flex max-w-2xl flex-col gap-2 sm:flex-row sm:items-end">
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <label htmlFor="trial-activation-code" className="text-xs font-medium text-foreground">
-                      Enter your activation code
-                    </label>
-                    <Input
-                      id="trial-activation-code"
-                      value={activationCode}
-                      onChange={(event) => setActivationCode(event.target.value.toUpperCase())}
-                      placeholder="XXXX-XXXX-XXXX"
-                      maxLength={14}
-                      autoComplete="off"
-                      disabled={validating}
-                      className="h-10 font-mono tracking-widest uppercase"
-                    />
-                    {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
-                  </div>
-                  <div className="flex shrink-0 gap-2">
-                    <Button type="submit" size="sm" className="h-10" disabled={activationCode.trim().length !== 14 || validating}>
-                      {validating ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Key className="mr-1.5 h-4 w-4" />}
-                      {validating ? "Checking…" : "Activate Now"}
-                    </Button>
-                    <Button type="button" size="sm" variant="ghost" className="h-10" onClick={() => setShowActivationEntry(false)}>
-                      Later
-                    </Button>
-                  </div>
-                </form>
-                <p className="mx-auto mt-2 max-w-2xl text-[11px] text-muted-foreground">
-                  Your free trial remains active while you enter a code. You can keep studying if you close this panel.
-                </p>
-              </div>
-            )}
-          </>
-        )}
-        {children}
-      </>
+              {showActivationEntry && (
+                <div id="trial-activation-entry" className="border-b border-primary/20 bg-card px-4 py-3">
+                  <form onSubmit={handleTrialActivation} className="mx-auto flex max-w-2xl flex-col gap-2 sm:flex-row sm:items-end">
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <label htmlFor="trial-activation-code" className="text-xs font-medium text-foreground">
+                        Enter your activation code
+                      </label>
+                      <Input
+                        id="trial-activation-code"
+                        value={activationCode}
+                        onChange={(event) => setActivationCode(event.target.value.toUpperCase())}
+                        placeholder="XXXX-XXXX-XXXX"
+                        maxLength={14}
+                        autoComplete="off"
+                        disabled={validating}
+                        className="h-10 font-mono tracking-widest uppercase"
+                      />
+                      {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <Button type="submit" size="sm" className="h-10" disabled={activationCode.trim().length !== 14 || validating}>
+                        {validating ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Key className="mr-1.5 h-4 w-4" />}
+                        {validating ? "Checking…" : "Activate Now"}
+                      </Button>
+                      <Button type="button" size="sm" variant="ghost" className="h-10" onClick={() => setShowActivationEntry(false)}>
+                        Later
+                      </Button>
+                    </div>
+                  </form>
+                  <p className="mx-auto mt-2 max-w-2xl text-[11px] text-muted-foreground">
+                    Your free trial remains active while you enter a code. You can keep studying if you close this panel.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="activation-gate-content min-w-0 w-full bg-background">
+          {children}
+        </div>
+      </div>
     );
   }
 

@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
 import { QuestionMath } from "@/components/QuestionMath";
+import { createInlineImagePosition, isInlineImagePosition } from "@/lib/question-image-position";
+import { QuestionImagePositioner } from "./QuestionImagePositioner";
 import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 
 interface AdminQuestionPanelProps {
@@ -94,7 +96,8 @@ export function AdminQuestionPanel({
     setImageUrl(q.imageUrl || null);
     setImagePreview(null);
     setImageFile(null);
-    setImagePosition(q.imagePosition || (q.imageUrl ? "image-above" : "image-only"));
+    setImagePosition(q.imagePosition || (q.imageUrl ? "image-only" : "text-only"));
+    setShowPreview(!!q.imageUrl);
     setOptions(q.options ? q.options.map(o => ({ label: o.label, text: o.text })) : []);
     setCorrectAnswer(q.correctAnswer || "");
     setExplanation(q.explanation || "");
@@ -111,6 +114,7 @@ export function AdminQuestionPanel({
     setImagePreview(null);
     setImageFile(null);
     setImagePosition("image-above");
+    setShowPreview(false);
     setOptions(isObjective ? [{ label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" }] : []);
     setCorrectAnswer("");
     setExplanation("");
@@ -156,6 +160,7 @@ export function AdminQuestionPanel({
       setError("Image must be less than 5 MB");
       return;
     }
+    if (!imagePreview && !imageUrl) setImagePosition("image-above");
     setCropFileName(file.name);
     const reader = new FileReader();
     reader.onload = () => setCropImageUrl(reader.result as string);
@@ -170,6 +175,7 @@ export function AdminQuestionPanel({
     setImageFile(croppedFile);
     setImagePreview(prevObjectUrl.current);
     setImageUrl(null);
+    setShowPreview(true);
     setCropImageUrl(null);
     setCropFileName("");
   }, [cropFileName]);
@@ -181,6 +187,7 @@ export function AdminQuestionPanel({
     setImageFile(originalFile);
     setImagePreview(prevObjectUrl.current);
     setImageUrl(null);
+    setShowPreview(true);
     setCropImageUrl(null);
     setCropFileName("");
   }, [cropFileName]);
@@ -196,6 +203,8 @@ export function AdminQuestionPanel({
     setImageFile(null);
     setImagePreview(null);
     setImageUrl(null);
+    setImagePosition("image-above");
+    setShowPreview(false);
   };
 
   const handleSave = async () => {
@@ -281,8 +290,8 @@ export function AdminQuestionPanel({
           topic: topic.trim() || undefined,
           sortOrder: parseInt(sortOrder) || 0,
           imagePosition: imagePosition as StudyQuestion["imagePosition"],
+          imageUrl: resolvedImageUrl || undefined,
         };
-        if (resolvedImageUrl) updated.imageUrl = resolvedImageUrl;
         onQuestionUpdated(updated);
 
         if (!imageFile && imageUrl === null && existingImageUrl) {
@@ -521,14 +530,23 @@ export function AdminQuestionPanel({
                           Image Layout
                         </label>
                         <select
-                          value={imagePosition}
-                          onChange={e => setImagePosition(e.target.value)}
+                          value={isInlineImagePosition(imagePosition) ? "image-inline" : imagePosition}
+                          onChange={e => {
+                            const value = e.target.value;
+                            if (value === "image-inline") {
+                              setImagePosition(createInlineImagePosition(0));
+                              setShowPreview(true);
+                            } else {
+                              setImagePosition(value);
+                            }
+                          }}
                           className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         >
                           <option value="image-only">Image Only</option>
                           <option value="text-only">Text Only</option>
                           <option value="image-above">Image Above Text</option>
                           <option value="image-beside">Image Beside Text</option>
+                          <option value="image-inline">Inline Within Question Text</option>
                         </select>
                         <p className="text-xs text-muted-foreground/60 mt-1">
                           Controls how the image and question text are displayed together.
@@ -583,6 +601,9 @@ export function AdminQuestionPanel({
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
                       placeholder="Type the question text, or leave blank if using an image..."
                     />
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Press Enter to create line breaks. Each line break becomes a snap point for inline image placement.
+                    </p>
                   </div>
 
                   {isObjective && (
@@ -690,26 +711,79 @@ export function AdminQuestionPanel({
                       className="w-full flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Eye className="h-3.5 w-3.5" />
-                      {showPreview ? "Hide student preview" : "Show student preview (math rendering)"}
+                      {showPreview ? "Hide app preview" : "Preview as a student"}
                     </button>
                     {showPreview && (
-                      <div className="px-3 pb-3 pt-1 space-y-2 border-t border-border/50 bg-card/50">
-                        {questionText.trim() && (
-                          <QuestionMath content={questionText} className="text-sm font-medium leading-relaxed pt-2" />
-                        )}
-                        {isObjective && options.filter(o => o.text.trim()).map(opt => (
-                          <div key={opt.label} className="flex items-center gap-2 text-sm">
-                            <span className="shrink-0 w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
-                              {opt.label}
-                            </span>
-                            <QuestionMath content={opt.text} inline className="flex-1 min-w-0" />
+                      <div className="px-3 pb-3 pt-2 border-t border-border/50 bg-card/50 space-y-2">
+                        <div className="max-w-2xl mx-auto rounded-2xl border border-border bg-background p-4 space-y-4">
+                          <div className="flex items-center justify-between gap-2 text-[10px] text-muted-foreground">
+                            <span className="font-semibold uppercase tracking-wide">Student view</span>
+                            <span className="capitalize">{category} · {year}</span>
                           </div>
-                        ))}
-                        {explanation.trim() && (
-                          <div className="rounded-lg bg-background border border-border/50 p-2">
-                            <p className="text-[10px] font-medium text-muted-foreground mb-0.5">Explanation</p>
-                            <QuestionMath content={explanation} className="text-xs leading-relaxed" />
+
+                          <div className="space-y-2">
+                            {(imagePreview || imageUrl) && imagePosition !== "text-only" && (
+                              isInlineImagePosition(imagePosition) ? (
+                                <QuestionImagePositioner
+                                  content={questionText}
+                                  imageSrc={imagePreview || imageUrl!}
+                                  imagePosition={imagePosition}
+                                  onPositionChange={setImagePosition}
+                                />
+                              ) : imagePosition === "image-only" ? (
+                                <img
+                                  src={imagePreview || imageUrl!}
+                                  alt="Question preview"
+                                  className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+                                />
+                              ) : imagePosition === "image-beside" ? (
+                                <div className="flex flex-col sm:flex-row gap-4 items-start">
+                                  <div className="sm:w-1/2 shrink-0">
+                                    <img
+                                      src={imagePreview || imageUrl!}
+                                      alt="Question preview"
+                                      className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+                                    />
+                                  </div>
+                                  {questionText.trim() && (
+                                    <QuestionMath content={questionText} className="text-base font-medium leading-relaxed sm:w-1/2" />
+                                  )}
+                                </div>
+                              ) : (
+                                <>
+                                  <img
+                                    src={imagePreview || imageUrl!}
+                                    alt="Question preview"
+                                    className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+                                  />
+                                  {questionText.trim() && (
+                                    <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
+                                  )}
+                                </>
+                              )
+                            )}
+                            {(!(imagePreview || imageUrl) || imagePosition === "text-only") && questionText.trim() && (
+                              <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
+                            )}
                           </div>
+
+                          {isObjective && options.filter(o => o.text.trim()).length > 0 && (
+                            <div className="space-y-2 pt-1">
+                              {options.filter(o => o.text.trim()).map(opt => (
+                                <div key={opt.label} className="flex items-center gap-3 rounded-xl border border-border/70 bg-card px-3 py-3 text-sm">
+                                  <span className="shrink-0 w-7 h-7 rounded-full border border-border flex items-center justify-center text-xs font-semibold text-muted-foreground">
+                                    {opt.label}
+                                  </span>
+                                  <QuestionMath content={opt.text} inline className="flex-1 min-w-0" />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        {isInlineImagePosition(imagePosition) && (
+                          <p className="max-w-xl mx-auto text-[11px] text-muted-foreground">
+                            Drag the image to the line where it belongs. The position is saved when you press Save below.
+                          </p>
                         )}
                       </div>
                     )}

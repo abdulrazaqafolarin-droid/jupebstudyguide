@@ -1,0 +1,271 @@
+name: Android signing-key rotation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rotate:
+    name: Build and verify rotated Android APKs
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
+
+      - name: Validate signing inputs
+        shell: bash
+        env:
+          LEGACY_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          LEGACY_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          LEGACY_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          LEGACY_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ROTATED_KEYSTORE_BASE64: ${{ secrets.ANDROID_ROTATED_KEYSTORE_BASE64 }}
+          ROTATED_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEYSTORE_PASSWORD }}
+          ROTATED_KEY_ALIAS: ${{ secrets.ANDROID_ROTATED_KEY_ALIAS }}
+          ROTATED_KEY_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in LEGACY_KEYSTORE_BASE64 LEGACY_KEYSTORE_PASSWORD LEGACY_KEY_ALIAS LEGACY_KEY_PASSWORD ROTATED_KEYSTORE_BASE64 ROTATED_KEYSTORE_PASSWORD ROTATED_KEY_ALIAS ROTATED_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Required repository secret is missing: $name (map it to the documented ANDROID_* secret)."
+              exit 1
+            fi
+          done
+          echo "Both signing identities are present. Keystore contents and passwords will not be printed."
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build web app
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          VITE_SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX"
+          VITE_SUPABASE_PROJECT_ID: "gzyczowqqywesqhqqpdi"
+          VITE_ADMIN_EMAIL: "abdulrazaqafolarin@gmail.com"
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build release APK with the new private key
+        id: build
+        shell: bash
+        env:
+          ANDROID_ROTATED_KEYSTORE_BASE64: ${{ secrets.ANDROID_ROTATED_KEYSTORE_BASE64 }}
+          ANDROID_ROTATED_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEYSTORE_PASSWORD }}
+          ANDROID_ROTATED_KEY_ALIAS: ${{ secrets.ANDROID_ROTATED_KEY_ALIAS }}
+          ANDROID_ROTATED_KEY_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          chmod +x android/gradlew
+          WORK="$RUNNER_TEMP/rutex-android-signing"
+          mkdir -p "$WORK"
+          printf '%s' "$ANDROID_ROTATED_KEYSTORE_BASE64" | base64 --decode > "$WORK/rotated-release.jks"
+          chmod 600 "$WORK/rotated-release.jks"
+
+          export ANDROID_KEYSTORE_PATH="$WORK/rotated-release.jks"
+          export ANDROID_KEYSTORE_PASSWORD="$ANDROID_ROTATED_KEYSTORE_PASSWORD"
+          export ANDROID_KEY_ALIAS="$ANDROID_ROTATED_KEY_ALIAS"
+          export ANDROID_KEY_PASSWORD="$ANDROID_ROTATED_KEY_PASSWORD"
+          export APK_VERSION_CODE="$((100000 + GITHUB_RUN_NUMBER))"
+          export APK_VERSION_NAME="2.0.$GITHUB_RUN_NUMBER"
+
+          (cd android && ./gradlew assembleRelease --no-daemon)
+          cp android/app/build/outputs/apk/release/app-release.apk "$WORK/new-key-base.apk"
+          echo "WORK_DIR=$WORK" >> "$GITHUB_ENV"
+          echo "BASE_APK=$WORK/new-key-base.apk" >> "$GITHUB_ENV"
+          echo "APK_VERSION_CODE=$APK_VERSION_CODE" >> "$GITHUB_ENV"
+          echo "APK_VERSION_NAME=$APK_VERSION_NAME" >> "$GITHUB_ENV"
+
+      - name: Create proof-of-rotation and sign transition APKs
+        id: rotate-sign
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_ROTATED_KEYSTORE_BASE64: ${{ secrets.ANDROID_ROTATED_KEYSTORE_BASE64 }}
+          ANDROID_ROTATED_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEYSTORE_PASSWORD }}
+          ANDROID_ROTATED_KEY_ALIAS: ${{ secrets.ANDROID_ROTATED_KEY_ALIAS }}
+          ANDROID_ROTATED_KEY_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          WORK="$WORK_DIR"
+          APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          OLD_KEYSTORE="$WORK/legacy-release.jks"
+          NEW_KEYSTORE="$WORK/rotated-release.jks"
+          LINEAGE="$WORK/rutex-master-signing-lineage.bin"
+          UPDATE_APK="$GITHUB_WORKSPACE/jupeb-master-rotated-update.apk"
+          FRESH_APK="$GITHUB_WORKSPACE/jupeb-master-fresh-install.apk"
+
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$OLD_KEYSTORE"
+          chmod 600 "$OLD_KEYSTORE"
+          test -s "$NEW_KEYSTORE"
+          test -s "$BASE_APK"
+
+          # Keep existing-data capability so Android can update the installed
+          # package in place. Explicitly deny rollback to the exposed old key.
+          "$APKSIGNER" rotate --out "$LINEAGE" \
+            --old-signer --ks "$OLD_KEYSTORE" \
+              --ks-key-alias "$ANDROID_KEY_ALIAS" \
+              --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+              --key-pass env:ANDROID_KEY_PASSWORD \
+              --set-installed-data true \
+              --set-shared-uid false \
+              --set-permission false \
+              --set-rollback false \
+              --set-auth false \
+            --new-signer --ks "$NEW_KEYSTORE" \
+              --ks-key-alias "$ANDROID_ROTATED_KEY_ALIAS" \
+              --ks-pass env:ANDROID_ROTATED_KEYSTORE_PASSWORD \
+              --key-pass env:ANDROID_ROTATED_KEY_PASSWORD
+
+          # The update APK targets Android 13+ with the new signer (v3.1).
+          # Older platform versions see the original signer for one transition
+          # release; they must migrate to the new-key-only installer afterwards.
+          "$APKSIGNER" sign --out "$UPDATE_APK" \
+            --ks "$OLD_KEYSTORE" \
+              --ks-key-alias "$ANDROID_KEY_ALIAS" \
+              --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+              --key-pass env:ANDROID_KEY_PASSWORD \
+            --next-signer --ks "$NEW_KEYSTORE" \
+              --ks-key-alias "$ANDROID_ROTATED_KEY_ALIAS" \
+              --ks-pass env:ANDROID_ROTATED_KEYSTORE_PASSWORD \
+              --key-pass env:ANDROID_ROTATED_KEY_PASSWORD \
+            --lineage "$LINEAGE" \
+            --rotation-min-sdk-version 33 \
+            "$BASE_APK"
+
+          # Separate new-key-only APK for fresh installs and the later migration
+          # of existing Android 7–12 devices after their data has been backed up.
+          "$APKSIGNER" sign --out "$FRESH_APK" \
+            --ks "$NEW_KEYSTORE" \
+              --ks-key-alias "$ANDROID_ROTATED_KEY_ALIAS" \
+              --ks-pass env:ANDROID_ROTATED_KEYSTORE_PASSWORD \
+              --key-pass env:ANDROID_ROTATED_KEY_PASSWORD \
+            "$BASE_APK"
+
+          echo "UPDATE_APK=$UPDATE_APK" >> "$GITHUB_ENV"
+          echo "FRESH_APK=$FRESH_APK" >> "$GITHUB_ENV"
+          echo "LINEAGE_FILE=$LINEAGE" >> "$GITHUB_ENV"
+
+      - name: Verify signatures, lineage, package and version
+        id: verify
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          AAPT="$ANDROID_HOME/build-tools/36.0.0/aapt"
+          EXPOSED_OLD_SHA256="879bea99ba72a5ce65e4337bca4701d0bdd46eeb1af76a7330a88679a0d751d7"
+          EXPECTED_OLD_SHA1="75de4551c67f66381d25477c2ee22d081dba5a18"
+
+          "$APKSIGNER" verify --verbose --print-certs --min-sdk-version 33 --max-sdk-version 36 "$UPDATE_APK" > "$WORK_DIR/verify-api33.txt" 2>&1
+          "$APKSIGNER" verify --verbose --print-certs --min-sdk-version 24 --max-sdk-version 32 "$UPDATE_APK" > "$WORK_DIR/verify-api24-32.txt" 2>&1
+          "$APKSIGNER" verify --verbose --print-certs --min-sdk-version 24 --max-sdk-version 36 "$FRESH_APK" > "$WORK_DIR/verify-fresh.txt" 2>&1
+          "$APKSIGNER" lineage --in "$LINEAGE_FILE" --print-certs > "$WORK_DIR/lineage-report.txt" 2>&1
+
+          cert_sha256() {
+            awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print tolower($2); exit}' "$1" | tr -d '[:space:]'
+          }
+          cert_sha1() {
+            awk -F': ' '/Signer #1 certificate SHA-1 digest:/{print tolower($2); exit}' "$1" | tr -d '[:space:]'
+          }
+
+          OLD_SHA256="$(cert_sha256 "$WORK_DIR/verify-api24-32.txt")"
+          OLD_SHA1="$(cert_sha1 "$WORK_DIR/verify-api24-32.txt")"
+          NEW_SHA256="$(cert_sha256 "$WORK_DIR/verify-api33.txt")"
+          NEW_SHA1="$(cert_sha1 "$WORK_DIR/verify-api33.txt")"
+          FRESH_SHA256="$(cert_sha256 "$WORK_DIR/verify-fresh.txt")"
+          FRESH_SHA1="$(cert_sha1 "$WORK_DIR/verify-fresh.txt")"
+
+          test -n "$OLD_SHA256" && test -n "$NEW_SHA256" && test -n "$NEW_SHA1" && test -n "$FRESH_SHA256"
+          if [ "$OLD_SHA256" != "$EXPOSED_OLD_SHA256" ]; then
+            echo "::error::The legacy key does not match the expected November 9 certificate. Refusing to create an update lineage."
+            exit 1
+          fi
+          if [ "$OLD_SHA1" != "$EXPECTED_OLD_SHA1" ]; then
+            echo "::error::The legacy SHA-1 fingerprint does not match the recorded November 9 Google OAuth certificate."
+            exit 1
+          fi
+          if [ "$NEW_SHA256" = "$EXPOSED_OLD_SHA256" ] || [ "$NEW_SHA256" != "$FRESH_SHA256" ]; then
+            echo "::error::The rotated signer is missing, unchanged, or differs from the clean-install signer."
+            exit 1
+          fi
+          if ! grep -Eiq 'Has rollback capability[[:space:]]*:[[:space:]]*false' "$WORK_DIR/lineage-report.txt"; then
+            echo "::error::Could not confirm that rollback capability is disabled for the exposed signer. Inspect the lineage report before publishing."
+            cat "$WORK_DIR/lineage-report.txt"
+            exit 1
+          fi
+
+          PACKAGE="$("$AAPT" dump badging "$UPDATE_APK" | awk -F"'" '/^package:/{print $2; exit}')"
+          if [ "$PACKAGE" != "com.jupeb.master" ]; then
+            echo "::error::Unexpected Android package ID: $PACKAGE"
+            exit 1
+          fi
+
+          echo "Verified legacy signer SHA-1 (Android 7–12 compatibility): $OLD_SHA1"
+          echo "::notice title=New Android signing certificate SHA-1::$NEW_SHA1"
+          echo "New Android signing certificate SHA-256: $NEW_SHA256"
+          echo "Fresh installer uses the same new signing certificate: $FRESH_SHA1"
+          echo "Version: $APK_VERSION_NAME ($APK_VERSION_CODE)"
+          echo "APK signing and package checks passed."
+
+          UPDATE_SHA256="$(sha256sum "$UPDATE_APK" | cut -d ' ' -f1)"
+          FRESH_SHA256="$(sha256sum "$FRESH_APK" | cut -d ' ' -f1)"
+          BUILT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 - "$UPDATE_SHA256" "$FRESH_SHA256" "$OLD_SHA1" "$OLD_SHA256" "$NEW_SHA1" "$NEW_SHA256" "$BUILT_AT" <<'PY'
+          import json, os, sys
+          update_hash, fresh_hash, old_sha1, old_sha256, new_sha1, new_sha256, built_at = sys.argv[1:]
+          manifest = {
+              "packageName": "com.jupeb.master",
+              "versionCode": int(os.environ["APK_VERSION_CODE"]),
+              "versionName": os.environ["APK_VERSION_NAME"],
+              "commit": os.environ["GITHUB_SHA"],
+              "builtAt": built_at,
+              "rotationMinSdkVersion": 33,
+              "legacySignerSha1": old_sha1,
+              "legacySignerSha256": old_sha256,
+              "rotatedSignerSha1": new_sha1,
+              "rotatedSignerSha256": new_sha256,
+              "updateApkSha256": update_hash,
+              "freshInstallApkSha256": fresh_hash,
+          }
+          with open("release-manifest.json", "w", encoding="utf-8") as f:
+              json.dump(manifest, f, separators=(",", ":"), sort_keys=True)
+          print("Created release manifest with both APK checksums and signer fingerprints.")
+          PY
+
+      - name: Upload verified APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rutex-master-key-rotation-${{ github.run_number }}
+          path: |
+            jupeb-master-rotated-update.apk
+            jupeb-master-fresh-install.apk
+            release-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+

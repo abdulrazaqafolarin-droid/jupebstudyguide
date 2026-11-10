@@ -4,17 +4,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      allow_signing_key_migration:
-        description: "DANGEROUS: authorize a different signing key and required uninstall. This can erase device-only study progress/bookmarks from the old app."
-        required: false
-        default: false
-        type: boolean
-      confirm_legacy_device_data_loss:
-        description: "SECOND REQUIRED ACKNOWLEDGEMENT: explicitly accept permanent loss of device-only data on existing legacy installations. Do not select unless the owner has approved and students have been informed."
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: write
@@ -76,71 +65,63 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build signed release APK or isolated debug preview
+      - name: Build signed release APK with the rotated permanent key
         id: build-apk
         shell: bash
+        env:
+          ANDROID_ROTATED_KEYSTORE_BASE64: ${{ secrets.ANDROID_ROTATED_KEYSTORE_BASE64 }}
+          ANDROID_ROTATED_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEYSTORE_PASSWORD }}
+          ANDROID_ROTATED_KEY_ALIAS: ${{ secrets.ANDROID_ROTATED_KEY_ALIAS }}
+          ANDROID_ROTATED_KEY_PASSWORD: ${{ secrets.ANDROID_ROTATED_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          chmod +x android/gradlew
-          export APK_VERSION_CODE="$GITHUB_RUN_NUMBER"
-          export APK_VERSION_NAME="1.1.$GITHUB_RUN_NUMBER"
+          for name in ANDROID_ROTATED_KEYSTORE_BASE64 ANDROID_ROTATED_KEYSTORE_PASSWORD ANDROID_ROTATED_KEY_ALIAS ANDROID_ROTATED_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing permanent signing secret: $name. Refusing to create a debug-signed or incorrectly signed release."
+              exit 1
+            fi
+          done
 
-          if [ -n "$ANDROID_KEYSTORE_BASE64" ] && [ -n "$ANDROID_KEYSTORE_PASSWORD" ] && [ -n "$ANDROID_KEY_ALIAS" ] && [ -n "$ANDROID_KEY_PASSWORD" ]; then
-            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/ci-release-key.jks
-            export ANDROID_KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/ci-release-key.jks"
-            (cd android && ./gradlew assembleRelease --no-daemon)
-            echo "APK_PATH=android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_ENV"
-            echo "signing-mode=stable" >> "$GITHUB_OUTPUT"
-            echo "Built release APK with the configured persistent signing key."
-          else
-            # The owner explicitly approved a clean reinstall and loss of
-            # device-only state. Keep the normal app ID, but sign this one-time
-            # fresh install with the new CI debug key. It is artifact-only.
-            mkdir -p android/app/src/debug/res/values
-            cat > android/app/src/debug/res/values/strings.xml <<'XML'
-          <resources>
-              <string name="app_name">Rutex Master(Jupeb)</string>
-              <string name="title_activity_main">Rutex Master(Jupeb)</string>
-              <string name="package_name">com.jupeb.master</string>
-              <string name="custom_url_scheme">com.jupeb.master</string>
-          </resources>
-          XML
-            echo "::warning title=Fresh JUPEB installation::This clean-install APK uses a new signing certificate. Uninstall the previous JUPEB Master app before installing it. Device-only data in the old app will be removed; the fresh APK is not published to the in-app updater."
-            (cd android && ./gradlew assembleDebug --no-daemon)
-            cp android/app/build/outputs/apk/debug/app-debug.apk jupeb-master-fresh-install.apk
-            echo "APK_PATH=jupeb-master-fresh-install.apk" >> "$GITHUB_ENV"
-            echo "signing-mode=debug-candidate" >> "$GITHUB_OUTPUT"
-            echo "expected-package=com.jupeb.master" >> "$GITHUB_OUTPUT"
-          fi
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          chmod +x android/gradlew
+          WORK="$RUNNER_TEMP/rutex-android-release"
+          mkdir -p "$WORK"
+          printf '%s' "$ANDROID_ROTATED_KEYSTORE_BASE64" | base64 --decode > "$WORK/rotated-release.jks"
+          chmod 600 "$WORK/rotated-release.jks"
+
+          export ANDROID_KEYSTORE_PATH="$WORK/rotated-release.jks"
+          export ANDROID_KEYSTORE_PASSWORD="$ANDROID_ROTATED_KEYSTORE_PASSWORD"
+          export ANDROID_KEY_ALIAS="$ANDROID_ROTATED_KEY_ALIAS"
+          export ANDROID_KEY_PASSWORD="$ANDROID_ROTATED_KEY_PASSWORD"
+          export APK_VERSION_CODE="$((200000 + GITHUB_RUN_NUMBER))"
+          export APK_VERSION_NAME="2.1.$GITHUB_RUN_NUMBER"
+
+          (cd android && ./gradlew assembleRelease --no-daemon)
+          echo "APK_PATH=android/app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_ENV"
+          echo "signing-mode=stable" >> "$GITHUB_OUTPUT"
+          echo "expected-package=com.jupeb.master" >> "$GITHUB_OUTPUT"
+          echo "Permanent signing-key release APK built."
 
       - name: Reject the publicly disclosed Android signing certificate
         if: steps.build-apk.outputs.signing-mode == 'stable'
         shell: bash
         run: |
           set -euo pipefail
-          # This certificate fingerprint was extracted from the release keystore
-          # later committed to this PUBLIC repository. Treat it as compromised.
           EXPOSED_CERT_SHA256="879bea99ba72a5ce65e4337bca4701d0bdd46eeb1af76a7330a88679a0d751d7"
-          REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$APK_PATH" 2>&1)"
+          REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --min-sdk-version 33 --print-certs "$APK_PATH" 2>&1)"
           CERT="$(echo "$REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
           if [ -z "$CERT" ]; then
-            echo "::error::Could not read the candidate APK signing certificate. Publication is blocked."
+            echo "::error::Could not read the Android release signing certificate. Publication is blocked."
             exit 1
           fi
-          echo "Candidate APK signer SHA-256: $CERT"
+          echo "Current Android 13+ release signer SHA-256: $CERT"
           if [ "$CERT" = "$EXPOSED_CERT_SHA256" ]; then
-            echo "::error title=Compromised Android signing key::This APK uses the certificate associated with a keystore committed to this public repository. Rotate the Android signing key and update all four ANDROID_KEYSTORE_* secrets before publishing."
+            echo "::error title=Compromised Android signing key::The release APK still uses the publicly exposed November 9 key."
             exit 1
           fi
-          echo "Candidate signer does not match the disclosed certificate fingerprint."
- 
-      - name: Verify fresh-install package identity
-        if: steps.build-apk.outputs.signing-mode == 'debug-candidate'
+          echo "Release signer is different from the exposed certificate."
+
+      - name: Verify Android package identity
+        if: steps.build-apk.outputs.signing-mode == 'stable'
         shell: bash
         env:
           EXPECTED_PACKAGE: ${{ steps.build-apk.outputs.expected-package }}
@@ -151,7 +132,7 @@ jobs:
             echo "::error::Expected package $EXPECTED_PACKAGE, got '$PACKAGE'"
             exit 1
           fi
-          echo "Fresh-install package verified: $PACKAGE"
+          echo "Android package verified: $PACKAGE"
 
       - name: Verify signing compatibility with the currently published APK
         id: update-signing
@@ -178,8 +159,8 @@ jobs:
             exit 0
           fi
 
-          CURRENT_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$APK" 2>&1 || true)"
-          PREVIOUS_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$PREVIOUS_APK" 2>&1 || true)"
+          CURRENT_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --min-sdk-version 33 --print-certs "$APK" 2>&1 || true)"
+          PREVIOUS_SIGNER_REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --min-sdk-version 33 --print-certs "$PREVIOUS_APK" 2>&1 || true)"
           CURRENT_CERT="$(echo "$CURRENT_SIGNER_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
           PREVIOUS_CERT="$(echo "$PREVIOUS_SIGNER_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
 
@@ -214,6 +195,7 @@ jobs:
           SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           REQUIRES_REINSTALL: ${{ steps.update-signing.outputs.requires-reinstall }}
+          REQUIRES_REINSTALL_BELOW_API: "33"
         run: |
           set -euo pipefail
           if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
@@ -224,12 +206,14 @@ jobs:
           if [ ! -f "$APK" ]; then echo "APK output missing: $APK"; exit 1; fi
           BUILT_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           APK_SHA256=$(sha256sum "$APK" | cut -d ' ' -f1)
+          FRESH_INSTALL_SHA256="$APK_SHA256"
+          FRESH_INSTALL_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master-fresh-install.apk"
           case "$REQUIRES_REINSTALL" in
             true) REINSTALL_JSON=true ;;
             false|"") REINSTALL_JSON=false ;;
             *) echo "::error::Invalid requires-reinstall release flag"; exit 1 ;;
           esac
-          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","requiresReinstall":%s}' "$GITHUB_RUN_NUMBER" "1.1.$GITHUB_RUN_NUMBER" "$GITHUB_SHA" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$REINSTALL_JSON" > version.json
+          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","freshInstallUrl":"%s","freshInstallSha256":"%s","requiresReinstall":%s,"requiresReinstallBelowApi":%s}' "$((200000 + GITHUB_RUN_NUMBER))" "2.1.$GITHUB_RUN_NUMBER" "$GITHUB_SHA" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$FRESH_INSTALL_URL" "$FRESH_INSTALL_SHA256" "$REINSTALL_JSON" "$REQUIRES_REINSTALL_BELOW_API" > version.json
           python3 - "$APK" version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
           import hashlib
           import json
@@ -251,25 +235,32 @@ jobs:
           print(f"Verified release metadata for version {metadata['versionCode']} ({digest})")
           PY
           curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master.apk" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/vnd.android.package-archive" -H "x-upsert: true" --data-binary "@$APK"
+          curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master-fresh-install.apk" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/vnd.android.package-archive" -H "x-upsert: true" --data-binary "@$APK"
           curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/version.json" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/json" -H "x-upsert: true" --data-binary "@version.json"
           PUBLISHED_VERSION_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/version.json"
           curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS --fail-with-body "$PUBLISHED_VERSION_URL" -o published-version.json
-          python3 - "$APK" published-version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
+          python3 - "$APK" published-version.json "$APK_SHA256" "$FRESH_INSTALL_SHA256" "$FRESH_INSTALL_URL" "$SUPABASE_URL" <<'PY'
           import hashlib, json, re, sys
-          apk_path, metadata_path, expected_hash, supabase_url = sys.argv[1:]
+          apk_path, metadata_path, expected_hash, fresh_hash, fresh_url, supabase_url = sys.argv[1:]
           with open(metadata_path, encoding="utf-8") as f:
               metadata = json.load(f)
           with open(apk_path, "rb") as f:
               actual_hash = hashlib.file_digest(f, "sha256").hexdigest()
           expected_url = f"{supabase_url.rstrip('/')}/storage/v1/object/public/app-releases/jupeb-master.apk"
           assert metadata.get("url") == expected_url
+          assert metadata.get("freshInstallUrl") == fresh_url
           assert re.fullmatch(r"[a-fA-F0-9]{64}", metadata.get("sha256", ""))
+          assert re.fullmatch(r"[a-fA-F0-9]{64}", metadata.get("freshInstallSha256", ""))
           assert metadata["sha256"].lower() == actual_hash == expected_hash.lower()
+          assert metadata["freshInstallSha256"].lower() == actual_hash == fresh_hash.lower()
           print(f"Public metadata verified for version {metadata['versionCode']}")
           PY
           APK_HTTP_STATUS=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w "%{http_code}" -I "$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master.apk")
-          echo "Published APK HTTP status: $APK_HTTP_STATUS"
+          FRESH_APK_HTTP_STATUS=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w "%{http_code}" -I "$FRESH_INSTALL_URL")
+          echo "Published updater APK HTTP status: $APK_HTTP_STATUS"
+          echo "Published fresh-install APK HTTP status: $FRESH_APK_HTTP_STATUS"
           test "$APK_HTTP_STATUS" = "200"
+          test "$FRESH_APK_HTTP_STATUS" = "200"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

@@ -223,13 +223,64 @@ public class AppUpdaterPlugin extends Plugin {
             installedSigners = installedInfo.signatures;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            SigningInfo archiveSigningInfo = archiveInfo.signingInfo;
+            SigningInfo installedSigningInfo = installedInfo.signingInfo;
+            if (archiveSigningInfo == null || installedSigningInfo == null) {
+                throw new IllegalStateException("Could not verify the APK signing certificate");
+            }
+
+            boolean archiveHasMultipleSigners = archiveSigningInfo.hasMultipleSigners();
+            boolean installedHasMultipleSigners = installedSigningInfo.hasMultipleSigners();
+            if (archiveHasMultipleSigners || installedHasMultipleSigners) {
+                if (!archiveHasMultipleSigners || !installedHasMultipleSigners
+                        || !haveSameSigningCertificates(archiveSigningInfo.getApkContentsSigners(),
+                                                       installedSigningInfo.getApkContentsSigners())) {
+                    throw new IllegalStateException(
+                        "Downloaded APK uses incompatible multiple signing certificates"
+                    );
+                }
+                return;
+            }
+
+            Signature[] archiveHistory = archiveSigningInfo.getSigningCertificateHistory();
+            Signature[] archiveCurrentSigners = archiveSigningInfo.getApkContentsSigners();
+            Signature[] installedCurrentSigners = installedSigningInfo.getApkContentsSigners();
+
+            if (archiveHistory == null || archiveHistory.length == 0
+                    || archiveCurrentSigners == null || archiveCurrentSigners.length != 1
+                    || installedCurrentSigners == null || installedCurrentSigners.length != 1
+                    || !archiveHistory[archiveHistory.length - 1].equals(archiveCurrentSigners[0])) {
+                throw new IllegalStateException("Downloaded APK has an invalid signing certificate lineage");
+            }
+
+            // A legitimate rotation carries a platform-verified proof-of-rotation.
+            // The installed certificate must appear in the candidate APK's history.
+            // PackageInstaller performs the authoritative lineage/capability check
+            // when the user confirms the update, including the rollback restriction.
+            if (!containsCertificate(archiveHistory, installedCurrentSigners[0])) {
+                throw new IllegalStateException(
+                    "This update is not signed by the installed app's certificate or a verified descendant"
+                );
+            }
+            return;
+        }
+
         if (!haveSameSigningCertificates(archiveSigners, installedSigners)) {
             throw new IllegalStateException(
                 "This update is signed with a different key from the installed app. " +
-                "A release built with the same stable signing key is required; Android " +
-                "will reject this APK as an in-place update."
+                "Android versions before 9 do not support signing-key rotation; " +
+                "a same-key update or a backed-up reinstall is required."
             );
         }
+    }
+
+    private boolean containsCertificate(Signature[] certificates, Signature expected) {
+        if (certificates == null || expected == null) return false;
+        for (Signature certificate : certificates) {
+            if (expected.equals(certificate)) return true;
+        }
+        return false;
     }
 
     private boolean haveSameSigningCertificates(Signature[] left, Signature[] right) {
@@ -289,6 +340,7 @@ public class AppUpdaterPlugin extends Plugin {
                 ret.put("versionCode", info.versionCode);
             }
             ret.put("versionName", info.versionName);
+            ret.put("sdkInt", Build.VERSION.SDK_INT);
             call.resolve(ret);
         } catch (PackageManager.NameNotFoundException e) {
             call.reject("package not found", e);

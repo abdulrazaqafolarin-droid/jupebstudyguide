@@ -13,8 +13,10 @@ export interface ReleaseInfo {
   builtAt: string;
   url: string;
   sha256: string;
-  /** True only for the one-time transition away from the legacy debug signing key. */
+  /** True only for a one-time release that cannot update the installed signer. */
   requiresReinstall?: boolean;
+  /** Devices below this API level must use the fresh-install migration path after rotation. */
+  requiresReinstallBelowApi?: number;
 }
 
 interface DownloadProgress {
@@ -25,7 +27,7 @@ interface DownloadProgress {
 }
 
 interface AppUpdaterPlugin {
-  getInstalledVersion(): Promise<{ versionCode: number; versionName: string }>;
+  getInstalledVersion(): Promise<{ versionCode: number; versionName: string; sdkInt: number }>;
   canInstallPackages(): Promise<{ canInstall: boolean }>;
   openInstallSettings(): Promise<void>;
   downloadApk(options: { url: string; versionCode: number }): Promise<{
@@ -60,6 +62,11 @@ export function isNewer(installedCode: number, latestCode: number): boolean {
 export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
+  const hasRotationThreshold = Object.prototype.hasOwnProperty.call(
+    r,
+    "requiresReinstallBelowApi",
+  );
+  const rotationThreshold = r.requiresReinstallBelowApi;
   if (
     typeof r.versionCode !== "number" ||
     !Number.isSafeInteger(r.versionCode) ||
@@ -67,7 +74,12 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     typeof r.url !== "string" ||
     r.url !== RELEASE_APK_URL ||
     typeof r.sha256 !== "string" ||
-    !/^[a-f0-9]{64}$/i.test(r.sha256)
+    !/^[a-f0-9]{64}$/i.test(r.sha256) ||
+    (hasRotationThreshold &&
+      (typeof rotationThreshold !== "number" ||
+        !Number.isSafeInteger(rotationThreshold) ||
+        rotationThreshold < 24 ||
+        rotationThreshold > 100))
   ) {
     return null;
   }
@@ -79,6 +91,9 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     url: r.url,
     sha256: r.sha256.toLowerCase(),
     requiresReinstall: r.requiresReinstall === true,
+    requiresReinstallBelowApi: hasRotationThreshold
+      ? (rotationThreshold as number)
+      : undefined,
   };
 }
 
@@ -102,11 +117,16 @@ export async function fetchLatestRelease(): Promise<ReleaseInfo | null> {
 export async function getInstalledVersion(): Promise<{
   versionCode: number;
   versionName: string;
+  sdkInt: number;
 } | null> {
   if (!isAndroidApp()) return null;
   try {
     const v = await AppUpdater.getInstalledVersion();
-    return Number.isFinite(v.versionCode) ? v : null;
+    return Number.isFinite(v.versionCode) &&
+      Number.isSafeInteger(v.sdkInt) &&
+      v.sdkInt >= 1
+      ? v
+      : null;
   } catch {
     return null;
   }

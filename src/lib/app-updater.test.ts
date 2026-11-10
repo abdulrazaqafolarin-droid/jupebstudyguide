@@ -80,7 +80,24 @@ describe("parseReleaseInfo", () => {
       url: RELEASE_APK_URL,
       sha256: "a".repeat(64),
       requiresReinstall: false,
+      requiresReinstallBelowApi: undefined,
     });
+  });
+
+  it("accepts a bounded Android signing-rotation SDK threshold", () => {
+    expect(parseReleaseInfo({
+      versionCode: 44,
+      url: RELEASE_APK_URL,
+      sha256: "d".repeat(64),
+      requiresReinstallBelowApi: 33,
+    })?.requiresReinstallBelowApi).toBe(33);
+
+    expect(parseReleaseInfo({
+      versionCode: 45,
+      url: RELEASE_APK_URL,
+      sha256: "e".repeat(64),
+      requiresReinstallBelowApi: 101,
+    })).toBeNull();
   });
 
   it("preserves the explicit one-time reinstall flag", () => {

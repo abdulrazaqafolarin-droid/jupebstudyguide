@@ -1,6 +1,6 @@
 import { QuestionMath } from "@/components/QuestionMath";
 import { cn } from "@/lib/utils";
-import { getInlineImageIndex, splitQuestionIntoPositionableLines } from "@/lib/question-image-position";
+import { getInlineImageOffset, splitQuestionAtImageOffset } from "@/lib/question-image-position";
 
 interface QuestionTextWithImageProps {
   content: string;
@@ -12,9 +12,10 @@ interface QuestionTextWithImageProps {
 }
 
 /**
- * Student-facing renderer for an image anchored between authored question
- * lines. It shares the line-splitting helper with the admin editor so preview
- * and saved placement use the same positions.
+ * Student-facing renderer for an image anchored at a stable word boundary.
+ * The saved character offset survives responsive reflow: on narrower/wider
+ * screens the image remains attached to the same phrase instead of a stale
+ * visual line number.
  */
 export function QuestionTextWithImage({
   content,
@@ -24,31 +25,32 @@ export function QuestionTextWithImage({
   onImageError,
   className,
 }: QuestionTextWithImageProps) {
-  const lines = splitQuestionIntoPositionableLines(content);
-  const imageIndex = getInlineImageIndex(imagePosition, lines.length);
-  const image = (
-    <img
-      src={imageSrc}
-      alt={imageAlt}
-      className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-      loading="lazy"
-      onError={onImageError}
-    />
-  );
+  const offset = getInlineImageOffset(imagePosition, content);
+  const [before, after] = splitQuestionAtImageOffset(content, offset);
 
   return (
     <div className={cn("w-full min-w-0", className)}>
-      {lines.map((line, index) => (
-        <div key={index}>
-          {index === imageIndex && <div className="my-3">{image}</div>}
-          {line.trim() ? (
-            <QuestionMath content={line} className="text-base font-medium leading-relaxed" />
-          ) : (
-            <div aria-hidden="true" className="min-h-3" />
-          )}
-        </div>
-      ))}
-      {imageIndex === lines.length && <div className="my-3">{image}</div>}
+      {before && (
+        <QuestionMath
+          content={before}
+          className="text-base font-medium leading-relaxed"
+        />
+      )}
+      <div className="my-3">
+        <img
+          src={imageSrc}
+          alt={imageAlt}
+          className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+          loading="lazy"
+          onError={onImageError}
+        />
+      </div>
+      {after && (
+        <QuestionMath
+          content={after}
+          className="text-base font-medium leading-relaxed"
+        />
+      )}
     </div>
   );
 }

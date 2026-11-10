@@ -28,10 +28,9 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
     StatusBar: {
-      // Draw the WebView edge-to-edge behind a transparent Android status bar.
-      // MainActivity forwards the real top inset to the web content so controls
-      // stay safely below the clock and camera cutout.
-      overlaysWebView: true,
+      // Keep the WebView below the status bar on Android 14 and earlier.
+      // Android 15+ is handled by MainActivity's native window-inset listener.
+      overlaysWebView: false,
       style: 'dark',
     },
   },

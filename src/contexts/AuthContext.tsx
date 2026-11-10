@@ -118,10 +118,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email,
           password,
           options: {
-            // iOS email verification must return to the installed app so
-            // NativeAuthDeepLinkBridge can exchange and persist the session.
-            emailRedirectTo: Capacitor.getPlatform() === 'ios'
-              ? 'com.jupeb.master://auth'
+            // Native email verification returns through the active package's
+            // custom URL scheme so the native bridge can exchange and persist it.
+            emailRedirectTo: Capacitor.isNativePlatform()
+              ? NATIVE_AUTH_REDIRECT_URI
               : window.location.origin,
             data: { display_name: email.split('@')[0] },
           },

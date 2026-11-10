@@ -479,7 +479,10 @@ export function QuestionViewer({
                   >
                     {renderQuestionMedia(question)}
                   </div>
-                  <div className="space-y-2">
+                  <div
+                    className="max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1 space-y-2"
+                    aria-label="Scrollable answer options"
+                  >
                     {(question.options ?? []).map((opt) => {
                       const isSelected = answers[question.id] === opt.label;
                       const isCorrect = question.correctAnswer?.toUpperCase() === opt.label.toUpperCase();

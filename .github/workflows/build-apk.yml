@@ -123,9 +123,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # This certificate fingerprint was documented for the release key
+          # This certificate fingerprint was extracted from the release keystore
           # later committed to this PUBLIC repository. Treat it as compromised.
-          EXPOSED_CERT_SHA256="341744a3408e4f6b4178c083953100785eb21c985c0a8fa4f62592e0a9c53181"
+          EXPOSED_CERT_SHA256="879bea99ba72a5ce65e4337bca4701d0bdd46eeb1af76a7330a88679a0d751d7"
           REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$APK_PATH" 2>&1)"
           CERT="$(echo "$REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
           if [ -z "$CERT" ]; then

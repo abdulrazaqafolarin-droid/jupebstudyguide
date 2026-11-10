@@ -1,4 +1,4 @@
-export type InlineQuestionImagePosition = `image-inline:${number}`;
+import type { QuestionImagePosition } from "@/types/question";
 
 const INLINE_IMAGE_POSITION = /^image-inline:(\d+)$/;
 
@@ -13,27 +13,28 @@ export function getInlineImageIndex(position: string | null | undefined, lineCou
   return Math.max(0, Math.min(Math.max(0, Math.floor(lineCount)), safeIndex));
 }
 
-export function createInlineImagePosition(index: number): InlineQuestionImagePosition {
+export function createInlineImagePosition(index: number): QuestionImagePosition {
   const safeIndex = Number.isFinite(index) ? Math.max(0, Math.floor(index)) : 0;
   return `image-inline:${safeIndex}`;
 }
 
 /**
- * Split prose at authored newlines, but preserve a multiline $$...$$
- * display-math block as one positionable unit.
+ * Split prose at authored newlines, but preserve multiline $$...$$ display
+ * math blocks as single positionable units. CRLF and CR are normalized to LF.
  */
 export function splitQuestionIntoPositionableLines(content: string): string[] {
   if (!content) return [];
 
   const mathBlocks: string[] = [];
-  const masked = content.replace(/\$\$[\s\S]*?\$\$/g, (block) => {
-    const token = "\u0000QUESTION_MATH_BLOCK_" + mathBlocks.length + "\u0000";
+  const normalized = content.replace(/\r\n?/g, "\n");
+  const masked = normalized.replace(/\$\$[\s\S]*?\$\$/g, (block) => {
+    const token = "__QUESTION_MATH_BLOCK_" + mathBlocks.length + "__";
     mathBlocks.push(block);
     return token;
   });
 
   return masked.split("\n").map((line) =>
-    line.replace(/\u0000QUESTION_MATH_BLOCK_(\d+)\u0000/g, (token, index: string) =>
+    line.replace(/__QUESTION_MATH_BLOCK_(\d+)__/g, (token, index: string) =>
       mathBlocks[Number(index)] ?? token
     )
   );

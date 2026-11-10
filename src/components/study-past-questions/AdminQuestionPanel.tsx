@@ -196,8 +196,8 @@ export function AdminQuestionPanel({
   const handleImageSelect = (fileList: FileList | File[]) => {
     const selectedFiles = Array.from(fileList);
     const validFiles = selectedFiles.filter((file) => {
-      if (!file.type.startsWith("image/")) {
-        setError(file.name + ": only image files are allowed");
+      if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
+        setError(file.name + ": only JPEG, PNG, WebP or GIF images are allowed");
         return false;
       }
       if (file.size > 5 * 1024 * 1024) {

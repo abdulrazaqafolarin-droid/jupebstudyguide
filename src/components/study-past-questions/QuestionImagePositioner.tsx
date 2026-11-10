@@ -15,10 +15,17 @@ interface QuestionImagePositionerProps {
   onPositionChange: (position: string) => void;
 }
 
+interface DragPoint {
+  x: number;
+  y: number;
+}
+
 /**
- * Interactive admin preview. The image is a long-press draggable object and
- * the drop targets are the boundaries between the same logical lines rendered
- * to students. A click on a target or the keyboard arrows is also supported.
+ * Admin-only placement surface.
+ *
+ * The image stays in its original slot while dragging so line targets do not
+ * move underneath the pointer. A floating preview follows the pointer, and
+ * the actual image is moved only on release.
  */
 export function QuestionImagePositioner({
   content,
@@ -29,10 +36,14 @@ export function QuestionImagePositioner({
   const lines = useMemo(() => splitQuestionIntoPositionableLines(content), [content]);
   const savedIndex = getInlineImageIndex(imagePosition, lines.length);
   const [previewIndex, setPreviewIndex] = useState(savedIndex);
+  const [dragTargetIndex, setDragTargetIndex] = useState<number | null>(null);
+  const [dragPoint, setDragPoint] = useState<DragPoint | null>(null);
   const [isPressing, setIsPressing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const previewIndexRef = useRef(savedIndex);
+  const dragTargetIndexRef = useRef<number | null>(savedIndex);
   const pointerRef = useRef<{ pointerId: number; startX: number; startY: number } | null>(null);
   const holdTimerRef = useRef<number | null>(null);
   const draggingRef = useRef(false);
@@ -41,12 +52,18 @@ export function QuestionImagePositioner({
   useEffect(() => {
     previewIndexRef.current = savedIndex;
     setPreviewIndex(savedIndex);
+    if (!draggingRef.current) {
+      dragTargetIndexRef.current = savedIndex;
+      setDragTargetIndex(savedIndex);
+    }
   }, [savedIndex]);
 
   const updateIndex = useCallback((index: number) => {
     const nextIndex = Math.max(0, Math.min(lines.length, Math.floor(index)));
     previewIndexRef.current = nextIndex;
+    dragTargetIndexRef.current = nextIndex;
     setPreviewIndex(nextIndex);
+    setDragTargetIndex(nextIndex);
     onPositionChange(createInlineImagePosition(nextIndex));
   }, [lines.length, onPositionChange]);
 
@@ -58,11 +75,16 @@ export function QuestionImagePositioner({
     let nearestDistance = Number.POSITIVE_INFINITY;
 
     slots.forEach((slot) => {
+      const index = Number(slot.dataset.imageDropSlot);
+      // The image's origin slot is tall; ignoring it keeps the remaining
+      // insertion targets evenly positioned throughout the drag.
+      if (index === previewIndexRef.current) return;
+
       const rect = slot.getBoundingClientRect();
       const distance = Math.abs(clientY - (rect.top + rect.height / 2));
       if (distance < nearestDistance) {
         nearestDistance = distance;
-        nearestIndex = Number(slot.dataset.imageDropSlot);
+        nearestIndex = index;
       }
     });
 
@@ -85,12 +107,14 @@ export function QuestionImagePositioner({
     }
 
     event.preventDefault();
+    setDragPoint({ x: event.clientX, y: event.clientY });
     const nearest = findNearestSlot(event.clientY);
-    if (nearest !== null && nearest !== previewIndexRef.current) {
-      pointerDraggedRef.current = true;
-      updateIndex(nearest);
+    if (nearest !== null && nearest !== dragTargetIndexRef.current) {
+      dragTargetIndexRef.current = nearest;
+      setDragTargetIndex(nearest);
+      if (nearest !== previewIndexRef.current) pointerDraggedRef.current = true;
     }
-  }, [findNearestSlot, updateIndex]);
+  }, [findNearestSlot]);
 
   const handlePointerEnd = useCallback((event: PointerEvent) => {
     const pointer = pointerRef.current;
@@ -100,14 +124,20 @@ export function QuestionImagePositioner({
     holdTimerRef.current = null;
 
     if (draggingRef.current) {
-      onPositionChange(createInlineImagePosition(previewIndexRef.current));
+      const target = dragTargetIndexRef.current ?? previewIndexRef.current;
+      if (target !== previewIndexRef.current) {
+        pointerDraggedRef.current = true;
+        updateIndex(target);
+      }
     }
 
     pointerRef.current = null;
     draggingRef.current = false;
     setIsDragging(false);
     setIsPressing(false);
-  }, [onPositionChange]);
+    setDragPoint(null);
+    setDragTargetIndex(previewIndexRef.current);
+  }, [updateIndex]);
 
   useEffect(() => {
     window.addEventListener("pointermove", handlePointerMove, { passive: false });
@@ -132,6 +162,9 @@ export function QuestionImagePositioner({
       startX: event.clientX,
       startY: event.clientY,
     };
+    dragTargetIndexRef.current = previewIndexRef.current;
+    setDragTargetIndex(previewIndexRef.current);
+    setDragPoint({ x: event.clientX, y: event.clientY });
     setIsPressing(true);
 
     holdTimerRef.current = window.setTimeout(() => {
@@ -161,6 +194,7 @@ export function QuestionImagePositioner({
 
   const renderSlot = (index: number) => {
     const isCurrentSlot = previewIndex === index;
+    const isDropTarget = isDragging && dragTargetIndex === index && !isCurrentSlot;
     const placeLabel = index === 0
       ? "before the first line"
       : index === lines.length
@@ -190,7 +224,9 @@ export function QuestionImagePositioner({
           isCurrentSlot
             ? "cursor-grab active:cursor-grabbing border border-primary/30 bg-primary/5 p-1"
             : isDragging
-              ? "h-9 border-2 border-dashed border-primary/50 bg-primary/5 text-[11px] font-medium text-primary"
+              ? isDropTarget
+                ? "h-9 border-2 border-primary bg-primary/15 text-[11px] font-semibold text-primary"
+                : "h-9 border border-dashed border-primary/25 bg-primary/5 text-[11px] text-primary/70"
               : "h-2 border border-dashed border-transparent hover:border-primary/40 hover:bg-primary/5"
         )}
       >
@@ -202,15 +238,16 @@ export function QuestionImagePositioner({
               draggable={false}
               className={cn(
                 "w-full max-h-64 object-contain rounded-lg bg-muted/30 pointer-events-none",
-                isPressing && "scale-[0.99]"
+                isPressing && "scale-[0.99]",
+                isDragging && "opacity-40"
               )}
             />
             <span className="block text-[10px] text-muted-foreground pt-1">
-              {isDragging ? "Drag to a highlighted line break" : "Press and hold to reposition"}
+              {isDragging ? "Release on the highlighted line" : "Press and hold to reposition"}
             </span>
           </span>
         ) : isDragging ? (
-          "Drop image here"
+          isDropTarget ? "Release to place image" : "Drop image here"
         ) : (
           <span className="sr-only">Place image {placeLabel}</span>
         )}
@@ -221,7 +258,7 @@ export function QuestionImagePositioner({
   return (
     <div className="space-y-2" ref={wrapperRef}>
       <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-muted-foreground">
-        Press and hold the image, then drag it up or down. It snaps to the line breaks in the question. You can also tap a drop line or focus the image and use the arrow keys.
+        Press and hold the image, then drag up or down. The highlighted line is the drop position. You can also tap a line or focus the image and use the arrow keys.
       </div>
       <div className="space-y-0">
         {lines.map((line, index) => (
@@ -236,6 +273,26 @@ export function QuestionImagePositioner({
         ))}
         {renderSlot(lines.length)}
       </div>
+
+      {isDragging && dragPoint && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed z-[100] w-48 max-w-[calc(100vw-24px)] rounded-lg border border-primary/40 bg-background/90 p-1 shadow-2xl"
+          style={{
+            top: dragPoint.y + 14,
+            left: dragPoint.x,
+            transform: "translateX(-50%)",
+          }}
+        >
+          <img
+            src={imageSrc}
+            alt=""
+            draggable={false}
+            className="max-h-28 w-full object-contain rounded-md"
+          />
+          <p className="pt-1 text-center text-[10px] font-medium text-primary">Move to a line, then release</p>
+        </div>
+      )}
     </div>
   );
 }

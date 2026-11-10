@@ -67,6 +67,14 @@ export function AppUpdatePrompt() {
       }
       if (!isNewer(installed.versionCode, latest.versionCode)) return;
 
+      if (
+        latest.requiresReinstallBelowApi !== undefined &&
+        installed.sdkInt < latest.requiresReinstallBelowApi
+      ) {
+        setPhase({ kind: "reinstall", release: latest });
+        return;
+      }
+
       try {
         if (localStorage.getItem(DISMISS_KEY_PREFIX + latest.versionCode)) return;
       } catch {
@@ -196,7 +204,9 @@ export function AppUpdatePrompt() {
             <p className="text-xs text-muted-foreground">
               {phase.kind === "downloading" && "Downloading… " + Math.round(phase.progress * 100) + "%"}
               {phase.kind === "ready" && "Installer opened. Confirm the update in Android’s system prompt."}
-              {phase.kind === "reinstall" && "This release uses a different Android signing key. Android would require uninstalling the older app, which can erase device-only study progress and bookmarks. The older app cannot export that data to this release. The update is paused: keep your current app installed and do not uninstall it. Supabase account data remains online, but device-only records may not be synced."}
+              {phase.kind === "reinstall" && (release?.requiresReinstallBelowApi
+                ? "This phone's Android version is below the signing-key rotation boundary. The in-place update is paused to protect your installation. Keep Rutex Master installed; do not uninstall it until a verified backup and migration installer are ready."
+                : "This release uses a different Android signing key. Android would require uninstalling the older app, which can erase device-only study progress and bookmarks. The older app cannot export that data to this release. The update is paused: keep your current app installed and do not uninstall it. Supabase account data remains online, but device-only records may not be synced.")}
               {phase.kind === "available" && "A newer version is ready. Your study data stays on your account."}
               {phase.kind === "permission" && "Android needs install permission. Choose Allow in its system prompt, then return here."}
               {phase.kind === "error" && phase.message}

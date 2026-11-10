@@ -21,6 +21,7 @@ interface QuestionInput {
   topic?: string | null;
   sortOrder?: number;
   imageUrl?: string | null;
+  imageUrls?: string[] | null;
   imagePosition?: string | null;
 }
 
@@ -37,7 +38,8 @@ function toDbRow(input: QuestionInput) {
     difficulty: input.difficulty || "medium",
     course: input.topic || null,
     sort_order: input.sortOrder ?? 0,
-    image_url: input.imageUrl || null,
+    image_url: input.imageUrl || input.imageUrls?.[0] || null,
+    image_urls: input.imageUrls ?? (input.imageUrl ? [input.imageUrl] : []),
     image_position: input.imagePosition || null,
   };
 }
@@ -166,11 +168,13 @@ export async function uploadQuestionImage(
 ): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
     const ext = file.name.split(".").pop() || "jpg";
-    const path = `${questionId}.${ext}`;
+    // Each image gets its own object so adding a second image never overwrites the first.
+    const safeQuestionId = questionId.replace(/[^a-zA-Z0-9_-]/g, "_");
+    const path = `${safeQuestionId}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(path, file, { upsert: true });
+      .upload(path, file, { upsert: false });
 
     if (uploadError) return { success: false, error: uploadError.message };
 
@@ -178,6 +182,30 @@ export async function uploadQuestionImage(
     return { success: true, url: urlData.publicUrl };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : "Upload failed" };
+  }
+}
+
+export async function deleteQuestionImageUrls(
+  urls: string[]
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const prefix = `/storage/v1/object/public/${STORAGE_BUCKET}/`;
+    const paths = urls.flatMap((url) => {
+      try {
+        const pathname = new URL(url).pathname;
+        const markerIndex = pathname.indexOf(prefix);
+        if (markerIndex < 0) return [];
+        return [decodeURIComponent(pathname.slice(markerIndex + prefix.length))];
+      } catch {
+        return [];
+      }
+    });
+    if (paths.length === 0) return { success: true };
+    const { error } = await supabase.storage.from(STORAGE_BUCKET).remove(paths);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : "Delete failed" };
   }
 }
 

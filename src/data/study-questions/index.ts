@@ -36,6 +36,19 @@ function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
   if (row.course) sq.topic = row.course as string;
   if (row.sort_order !== null && row.sort_order !== undefined) sq.sortOrder = row.sort_order as number;
   if (row.image_url) sq.imageUrl = row.image_url as string;
+  if (row.image_urls) {
+    try {
+      const parsed = typeof row.image_urls === "string"
+        ? JSON.parse(row.image_urls as string)
+        : row.image_urls;
+      if (Array.isArray(parsed)) {
+        sq.imageUrls = parsed.filter((url): url is string => typeof url === "string" && url.length > 0);
+      }
+    } catch (error) {
+      console.error(`Invalid image_urls JSON for study question ${String(row.id)}:`, error);
+    }
+  }
+  if ((!sq.imageUrls || sq.imageUrls.length === 0) && sq.imageUrl) sq.imageUrls = [sq.imageUrl];
   if (row.image_position) sq.imagePosition = row.image_position as StudyQuestion["imagePosition"];
   return sq;
 }
@@ -55,7 +68,7 @@ async function fetchAll() {
     const columns = [
       "id", "subject", "year", "category", "question", "difficulty",
       "options", "correct_answer", "explanation", "course", "sort_order",
-      "image_url", "image_position",
+      "image_url", "image_urls", "image_position",
     ].join(",");
 
     const allData: Record<string, unknown>[] = [];

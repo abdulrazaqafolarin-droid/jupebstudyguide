@@ -1,9 +1,9 @@
 package com.jupeb.master;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -11,11 +11,9 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.getcapacitor.BridgeActivity;
-import com.getcapacitor.WebViewListener;
 
 public class MainActivity extends BridgeActivity {
     public static volatile boolean isAppForeground = false;
-    private int statusBarInsetPx = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,25 +21,26 @@ public class MainActivity extends BridgeActivity {
         if (!getPackageName().endsWith(".preview")) {
             registerPlugin(AppUpdaterPlugin.class);
         }
+        registerPlugin(WindowAppearancePlugin.class);
         super.onCreate(savedInstanceState);
 
-        // Draw edge-to-edge on every supported Android version. Android 15+
-        // enforces this for target SDK 35+, while older versions need the
-        // explicit window setting. The status bar itself is fully transparent.
+        final int initialSurface = Color.parseColor("#14171c");
+        getWindow().getDecorView().setBackgroundColor(initialSurface);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            // Android 14 and earlier are more stable with the system reserving
+            // the status/navigation bar areas. The StatusBar plugin supplies
+            // the active theme colour and icon contrast without WebView offsets.
+            WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+            return;
+        }
+
+        // Android 15+ enforces edge-to-edge for apps targeting API 35+.
+        // Apply insets to the native content container before its first draw;
+        // never wait for WebView JavaScript or a page-load callback to move UI.
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
-        getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
-
-        // Apply the measured inset after each WebView page load as well as
-        // whenever Android reports new window insets (rotation/resume).
-        if (getBridge() != null) {
-            getBridge().addWebViewListener(new WebViewListener() {
-                @Override
-                public void onPageLoaded(WebView webView) {
-                    applyStatusBarInsetToWebView(webView);
-                }
-            });
-        }
 
         View appContent = findViewById(android.R.id.content);
         if (appContent != null) {
@@ -55,48 +54,32 @@ public class MainActivity extends BridgeActivity {
                     WindowInsetsCompat.Type.systemBars()
                         | WindowInsetsCompat.Type.displayCutout()
                 );
-                Insets topInsets = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.statusBars()
-                        | WindowInsetsCompat.Type.displayCutout()
-                );
 
-                // Keep side-cutout protection at the native layer. The top
-                // inset is consumed in CSS so the WebView can paint behind
-                // the transparent status bar without putting controls there.
-                statusBarInsetPx = topInsets.top;
+                // Always derive from the original padding. Repeated inset
+                // dispatches (resume, rotation, split-screen) therefore cannot
+                // accumulate padding or make the app jump progressively.
                 view.setPadding(
                     baseLeft + safeInsets.left,
-                    baseTop,
+                    baseTop + safeInsets.top,
                     baseRight + safeInsets.right,
                     baseBottom + safeInsets.bottom
                 );
-
-                if (getBridge() != null) {
-                    applyStatusBarInsetToWebView(getBridge().getWebView());
-                }
                 return windowInsets;
             });
+
             ViewCompat.requestApplyInsets(appContent);
         }
-    }
-
-    private void applyStatusBarInsetToWebView(WebView webView) {
-        if (webView == null) {
-            return;
-        }
-
-        String script = "document.documentElement.style.setProperty("
-            + "'--native-status-bar-inset', '" + Math.max(0, statusBarInsetPx) + "px');";
-        webView.post(() -> webView.evaluateJavascript(script, null));
     }
 
     @Override
     public void onResume() {
         super.onResume();
         isAppForeground = true;
-        View appContent = findViewById(android.R.id.content);
-        if (appContent != null) {
-            ViewCompat.requestApplyInsets(appContent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            View appContent = findViewById(android.R.id.content);
+            if (appContent != null) {
+                ViewCompat.requestApplyInsets(appContent);
+            }
         }
     }
 

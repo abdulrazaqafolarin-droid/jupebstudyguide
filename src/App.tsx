@@ -2,11 +2,6 @@ import { lazy, Suspense, useEffect } from "react";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
 
-type WindowAppearancePlugin = {
-  setSystemBarSurface(options: { color: string }): Promise<void>;
-};
-
-const WindowAppearance = registerPlugin<WindowAppearancePlugin>("WindowAppearance");
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,6 +23,12 @@ import AppUpdatePrompt from "./components/AppUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
+
+type WindowAppearancePlugin = {
+  setSystemBarSurface(options: { color: string }): Promise<void>;
+};
+
+const WindowAppearance = registerPlugin<WindowAppearancePlugin>("WindowAppearance");
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));

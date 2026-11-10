@@ -65,7 +65,7 @@ export function QuestionViewer({
   }, []);
 
   // Renders the question image and/or text according to the admin-chosen
-  // Image Layout (image_position): text-only, image-only, image-above, image-beside.
+  // Image Layout (image_position): text-only, image-only, image-above, image-beside, or a saved inline text anchor.
   const renderQuestionMedia = useCallback((q: StudyQuestion) => {
     const hasImage = !!q.imageUrl && !brokenImages.has(q.id);
     const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");

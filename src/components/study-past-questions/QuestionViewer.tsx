@@ -60,31 +60,72 @@ export function QuestionViewer({
   const [showJumpGrid, setShowJumpGrid] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
   const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
-  const handleImageError = useCallback((id: string) => {
-    setBrokenImages(prev => new Set(prev).add(id));
+  const handleImageError = useCallback((url: string) => {
+    setBrokenImages((previous) => new Set(previous).add(url));
   }, []);
 
   // Renders the question image and/or text according to the admin-chosen
   // Image Layout (image_position): text-only, image-only, image-above, image-beside, or a saved inline text anchor.
   const renderQuestionMedia = useCallback((q: StudyQuestion) => {
-    const hasImage = !!q.imageUrl && !brokenImages.has(q.id);
+    const imageUrls = (q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : [])
+      .filter((url): url is string => typeof url === "string" && url.length > 0);
+    const displayImageUrls = imageUrls.filter((url) => !brokenImages.has(url));
+    const hasImage = displayImageUrls.length > 0;
     const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
+
     if (hasImage && isInlineImagePosition(pos)) {
-      return <QuestionTextWithImage content={q.question || ""} imageSrc={q.imageUrl!} imagePosition={pos} onImageError={() => handleImageError(q.id)} />;
+      return (
+        <>
+          <QuestionTextWithImage
+            content={q.question || ""}
+            imageSrc={displayImageUrls[0]}
+            imagePosition={pos}
+            onImageError={() => handleImageError(displayImageUrls[0])}
+          />
+          {displayImageUrls.length > 1 && (
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {displayImageUrls.slice(1).map((url, index) => (
+                <img
+                  key={url + index}
+                  src={url}
+                  alt={"Question illustration " + (index + 2)}
+                  className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+                  loading="lazy"
+                  onError={() => handleImageError(url)}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      );
     }
+
     if (pos === "text-only" || !hasImage) {
       return q.question ? (
         <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />
       ) : null;
     }
-    const img = (
-      <img src={q.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
+
+    const images = displayImageUrls.map((url, index) => (
+      <img
+        key={url + index}
+        src={url}
+        alt={displayImageUrls.length > 1 ? "Question illustration " + (index + 1) : "Question"}
+        className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+        loading="lazy"
+        onError={() => handleImageError(url)}
+      />
+    ));
+    const imageGallery = (
+      <div className={displayImageUrls.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "w-full"}>
+        {images}
+      </div>
     );
-    if (pos === "image-only") return img;
+    if (pos === "image-only") return imageGallery;
     if (pos === "image-above") {
       return (
         <>
-          {img}
+          {imageGallery}
           {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />}
         </>
       );
@@ -92,12 +133,13 @@ export function QuestionViewer({
     if (pos === "image-beside") {
       return (
         <div className="flex flex-col sm:flex-row gap-4 items-start">
-          <div className="sm:w-1/2 shrink-0">{img}</div>
+          <div className="sm:w-1/2 shrink-0">{images[0]}</div>
           {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed sm:w-1/2" />}
+          {images.length > 1 && <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">{images.slice(1)}</div>}
         </div>
       );
     }
-    return img;
+    return imageGallery;
   }, [brokenImages, handleImageError]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -413,8 +455,22 @@ export function QuestionViewer({
                   (question.apparatus && question.apparatus.length > 0) ||
                   (question.procedure || "").trim()) && (
                 <div className="mb-4 p-4 rounded-xl bg-muted/50 border space-y-3">
-                  {question.imageUrl && !brokenImages.has(question.id) && (
-                    <img src={question.imageUrl} alt="Question" className="w-full max-h-64 object-contain rounded-lg" loading="lazy" onError={() => handleImageError(question.id)} />
+                  {((question.imageUrls?.length ? question.imageUrls : question.imageUrl ? [question.imageUrl] : [])
+                    .filter((url) => !brokenImages.has(url))).length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {(question.imageUrls?.length ? question.imageUrls : question.imageUrl ? [question.imageUrl] : [])
+                        .filter((url) => !brokenImages.has(url))
+                        .map((url, index) => (
+                          <img
+                            key={url + index}
+                            src={url}
+                            alt={"Practical question illustration " + (index + 1)}
+                            className="w-full max-h-64 object-contain rounded-lg"
+                            loading="lazy"
+                            onError={() => handleImageError(url)}
+                          />
+                        ))}
+                    </div>
                   )}
                   <p className="font-semibold text-lg"><QuestionMath content={question.title || ""} inline /></p>
                   <p className="text-sm text-muted-foreground"><QuestionMath content={question.objective || ""} inline /></p>
@@ -458,8 +514,16 @@ export function QuestionViewer({
                 </div>
               ) : category === "objective" ? (
                 <div className="space-y-3">
-                  {renderQuestionMedia(question)}
-                  <div className="space-y-2">
+                  <div
+                    className="max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1"
+                    aria-label="Scrollable question content"
+                  >
+                    {renderQuestionMedia(question)}
+                  </div>
+                  <div
+                    className="max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1 space-y-2"
+                    aria-label="Scrollable answer options"
+                  >
                     {(question.options ?? []).map((opt) => {
                       const isSelected = answers[question.id] === opt.label;
                       const isCorrect = question.correctAnswer?.toUpperCase() === opt.label.toUpperCase();
@@ -543,7 +607,12 @@ export function QuestionViewer({
                   </div>
                 ) : (
                 <div className="space-y-3">
-                  {renderQuestionMedia(question)}
+                  <div
+                    className="max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1"
+                    aria-label="Scrollable question content"
+                  >
+                    {renderQuestionMedia(question)}
+                  </div>
                   {submittedTheory.has(question.id) ? (
                     <div className="space-y-3">
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">

@@ -118,6 +118,27 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
+      - name: Reject the publicly disclosed Android signing certificate
+        if: steps.build-apk.outputs.signing-mode == 'stable'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This certificate fingerprint was documented for the release key
+          # later committed to this PUBLIC repository. Treat it as compromised.
+          EXPOSED_CERT_SHA256="341744a3408e4f6b4178c083953100785eb21c985c0a8fa4f62592e0a9c53181"
+          REPORT="$("$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs "$APK_PATH" 2>&1)"
+          CERT="$(echo "$REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          if [ -z "$CERT" ]; then
+            echo "::error::Could not read the candidate APK signing certificate. Publication is blocked."
+            exit 1
+          fi
+          echo "Candidate APK signer SHA-256: $CERT"
+          if [ "$CERT" = "$EXPOSED_CERT_SHA256" ]; then
+            echo "::error title=Compromised Android signing key::This APK uses the certificate associated with a keystore committed to this public repository. Rotate the Android signing key and update all four ANDROID_KEYSTORE_* secrets before publishing."
+            exit 1
+          fi
+          echo "Candidate signer does not match the disclosed certificate fingerprint."
+ 
       - name: Verify fresh-install package identity
         if: steps.build-apk.outputs.signing-mode == 'debug-candidate'
         shell: bash

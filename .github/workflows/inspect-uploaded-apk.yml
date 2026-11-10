@@ -1,0 +1,145 @@
+name: Inspect uploaded Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'rutex-master-1.1.137 (1).apk'
+      - '.github/workflows/inspect-uploaded-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    name: Verify committed APK for in-place update
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Android SDK tools
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
+
+      - name: Inspect APK and compare with the live updater release
+        id: inspect
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="rutex-master-1.1.137 (1).apk"
+          AAPT="$ANDROID_HOME/build-tools/36.0.0/aapt"
+          SIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          REPORT="apk-inspection.txt"
+          : > "$REPORT"
+          ELIGIBLE=true
+          EXPECTED_PACKAGE="com.jupeb.master"
+          EXPECTED_SHA1="75de4551c67f66381d25477c2ee22d081dba5a18"
+          EXPECTED_SHA256="879bea99ba72a5ce65e4337bca4701d0bdd46eeb1af76a7330a88679a0d751d7"
+          BASE="https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases"
+
+          test -s "$APK"
+          APK_SIZE="$(stat -c '%s' "$APK")"
+          APK_HASH="$(sha256sum "$APK" | awk '{print $1}')"
+          BADGING="$("$AAPT" dump badging "$APK")"
+          PACKAGE="$(echo "$BADGING" | awk -F"'" '/^package:/{print $2; exit}')"
+          VERSION_CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\\([0-9]*\\)'.*/\\1/p" | head -n1)"
+          VERSION_NAME="$(echo "$BADGING" | sed -n "s/.*versionName='\\([^']*\\)'.*/\\1/p" | head -n1)"
+          MIN_SDK="$(echo "$BADGING" | awk -F"'" '/^sdkVersion:/{print $2; exit}')"
+          TARGET_SDK="$(echo "$BADGING" | awk -F"'" '/^targetSdkVersion:/{print $2; exit}')"
+          SIGNATURE_REPORT="$("$SIGNER" verify --print-certs "$APK" 2>&1)"
+          SIGNATURE_OK=true
+          "$SIGNER" verify --verbose --min-sdk-version 24 --max-sdk-version 34 "$APK" >/dev/null 2>&1 || SIGNATURE_OK=false
+          CANDIDATE_SHA1="$(echo "$SIGNATURE_REPORT" | awk -F': ' '/Signer #1 certificate SHA-1 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          CANDIDATE_SHA256="$(echo "$SIGNATURE_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+
+          echo "APK size: $APK_SIZE bytes" | tee -a "$REPORT"
+          echo "APK SHA-256: $APK_HASH" | tee -a "$REPORT"
+          echo "Package: $PACKAGE" | tee -a "$REPORT"
+          echo "Version code: $VERSION_CODE" | tee -a "$REPORT"
+          echo "Version name: $VERSION_NAME" | tee -a "$REPORT"
+          echo "Minimum SDK: $MIN_SDK" | tee -a "$REPORT"
+          echo "Target SDK: $TARGET_SDK" | tee -a "$REPORT"
+          echo "Signer SHA-1: $CANDIDATE_SHA1" | tee -a "$REPORT"
+          echo "Signer SHA-256: $CANDIDATE_SHA256" | tee -a "$REPORT"
+          echo "APK signature verifies for Android API 24-34: $SIGNATURE_OK" | tee -a "$REPORT"
+
+          [ "$PACKAGE" = "$EXPECTED_PACKAGE" ] || ELIGIBLE=false
+          [ "$CANDIDATE_SHA1" = "$EXPECTED_SHA1" ] || ELIGIBLE=false
+          [ "$CANDIDATE_SHA256" = "$EXPECTED_SHA256" ] || ELIGIBLE=false
+          [ "$SIGNATURE_OK" = "true" ] || ELIGIBLE=false
+          [[ "$MIN_SDK" =~ ^[0-9]+$ ]] && [ "$MIN_SDK" -le 34 ] || ELIGIBLE=false
+
+          LIVE_VERSION_CODE=""
+          LIVE_PACKAGE=""
+          LIVE_SHA256=""
+          LIVE_META_CODE=""
+          if curl --retry 2 --retry-all-errors --connect-timeout 10 --max-time 60 -fsS "$BASE/version.json" -o "$RUNNER_TEMP/live-version.json" &&
+             curl --retry 2 --retry-all-errors --connect-timeout 10 --max-time 60 -fsS "$BASE/jupeb-master.apk" -o "$RUNNER_TEMP/live.apk"; then
+            LIVE_META_CODE="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["versionCode"])' "$RUNNER_TEMP/live-version.json")"
+            LIVE_BADGING="$("$AAPT" dump badging "$RUNNER_TEMP/live.apk")"
+            LIVE_PACKAGE="$(echo "$LIVE_BADGING" | awk -F"'" '/^package:/{print $2; exit}')"
+            LIVE_VERSION_CODE="$(echo "$LIVE_BADGING" | sed -n "s/.*versionCode='\\([0-9]*\\)'.*/\\1/p" | head -n1)"
+            LIVE_REPORT="$("$SIGNER" verify --print-certs "$RUNNER_TEMP/live.apk" 2>&1)"
+            LIVE_SHA256="$(echo "$LIVE_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+            echo "Live updater package: $LIVE_PACKAGE" | tee -a "$REPORT"
+            echo "Live updater version code: $LIVE_VERSION_CODE" | tee -a "$REPORT"
+            echo "Live metadata version code: $LIVE_META_CODE" | tee -a "$REPORT"
+            echo "Live updater signer SHA-256: $LIVE_SHA256" | tee -a "$REPORT"
+            [ "$LIVE_PACKAGE" = "$EXPECTED_PACKAGE" ] || ELIGIBLE=false
+            [ "$LIVE_SHA256" = "$EXPECTED_SHA256" ] || ELIGIBLE=false
+            [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] && [[ "$LIVE_VERSION_CODE" =~ ^[0-9]+$ ]] && [ "$VERSION_CODE" -gt "$LIVE_VERSION_CODE" ] || ELIGIBLE=false
+            [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] && [[ "$LIVE_META_CODE" =~ ^[0-9]+$ ]] && [ "$VERSION_CODE" -gt "$LIVE_META_CODE" ] || ELIGIBLE=false
+          else
+            echo "Could not retrieve current live updater APK and metadata." | tee -a "$REPORT"
+            ELIGIBLE=false
+          fi
+
+          echo "Eligible for safe in-place update: $ELIGIBLE" | tee -a "$REPORT"
+          {
+            echo "### Committed APK verification"
+            echo
+            echo "| Check | Result |"
+            echo "|---|---|"
+            echo "| Package | $PACKAGE |"
+            echo "| Version | $VERSION_NAME (code $VERSION_CODE) |"
+            echo "| Minimum Android SDK | $MIN_SDK |"
+            echo "| Signer SHA-1 | $CANDIDATE_SHA1 |"
+            echo "| Signer SHA-256 | $CANDIDATE_SHA256 |"
+            echo "| Signature valid for API 24-34 | $SIGNATURE_OK |"
+            echo "| Live updater version code | $LIVE_VERSION_CODE |"
+            echo "| Live metadata version code | $LIVE_META_CODE |"
+            echo "| Eligible for in-place update | **$ELIGIBLE** |"
+            echo
+            echo "Full report is attached as an artifact."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "eligible=$ELIGIBLE" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha256=$APK_HASH" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          cp "$REPORT" "$RUNNER_TEMP/apk-inspection.txt"
+
+      - name: Upload APK and inspection report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rutex-master-uploaded-apk-inspection
+          path: |
+            rutex-master-1.1.137 (1).apk
+            ${{ runner.temp }}/apk-inspection.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Enforce safe-update checks
+        if: steps.inspect.outputs.eligible != 'true'
+        run: |
+          echo "::error::The uploaded APK is not verified as a safe in-place update. It has not been published."
+          exit 1

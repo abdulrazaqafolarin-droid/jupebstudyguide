@@ -340,6 +340,7 @@ public class AppUpdaterPlugin extends Plugin {
                 ret.put("versionCode", info.versionCode);
             }
             ret.put("versionName", info.versionName);
+            ret.put("sdkInt", Build.VERSION.SDK_INT);
             call.resolve(ret);
         } catch (PackageManager.NameNotFoundException e) {
             call.reject("package not found", e);

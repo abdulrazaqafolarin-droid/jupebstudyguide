@@ -60,8 +60,8 @@ export function QuestionViewer({
   const [showJumpGrid, setShowJumpGrid] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
   const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
-  const handleImageError = useCallback((id: string) => {
-    setBrokenImages(prev => new Set(prev).add(id));
+  const handleImageError = useCallback((url: string) => {
+    setBrokenImages((previous) => new Set(previous).add(url));
   }, []);
 
   // Renders the question image and/or text according to the admin-chosen
@@ -69,31 +69,58 @@ export function QuestionViewer({
   const renderQuestionMedia = useCallback((q: StudyQuestion) => {
     const imageUrls = (q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : [])
       .filter((url): url is string => typeof url === "string" && url.length > 0);
-    const hasImage = imageUrls.length > 0 && !brokenImages.has(q.id);
+    const displayImageUrls = imageUrls.filter((url) => !brokenImages.has(url));
+    const hasImage = displayImageUrls.length > 0;
     const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
+
     if (hasImage && isInlineImagePosition(pos)) {
       return (
         <>
-          <QuestionTextWithImage content={q.question || ""} imageSrc={imageUrls[0]} imagePosition={pos} onImageError={() => handleImageError(q.id)} />
-          {imageUrls.length > 1 && (
+          <QuestionTextWithImage
+            content={q.question || ""}
+            imageSrc={displayImageUrls[0]}
+            imagePosition={pos}
+            onImageError={() => handleImageError(displayImageUrls[0])}
+          />
+          {displayImageUrls.length > 1 && (
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {imageUrls.slice(1).map((url, index) => (
-                <img key={url + index} src={url} alt={`Question illustration ${index + 2}`} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
+              {displayImageUrls.slice(1).map((url, index) => (
+                <img
+                  key={url + index}
+                  src={url}
+                  alt={"Question illustration " + (index + 2)}
+                  className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+                  loading="lazy"
+                  onError={() => handleImageError(url)}
+                />
               ))}
             </div>
           )}
         </>
       );
     }
+
     if (pos === "text-only" || !hasImage) {
       return q.question ? (
         <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />
       ) : null;
     }
-    const images = imageUrls.map((url, index) => (
-      <img key={url + index} src={url} alt={imageUrls.length > 1 ? `Question illustration ${index + 1}` : "Question"} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" loading="lazy" onError={() => handleImageError(q.id)} />
+
+    const images = displayImageUrls.map((url, index) => (
+      <img
+        key={url + index}
+        src={url}
+        alt={displayImageUrls.length > 1 ? "Question illustration " + (index + 1) : "Question"}
+        className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+        loading="lazy"
+        onError={() => handleImageError(url)}
+      />
     ));
-    const imageGallery = <div className={imageUrls.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "w-full"}>{images}</div>;
+    const imageGallery = (
+      <div className={displayImageUrls.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "w-full"}>
+        {images}
+      </div>
+    );
     if (pos === "image-only") return imageGallery;
     if (pos === "image-above") {
       return (

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, type PointerEvent as ReactPointerEvent } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import { X, Check, ZoomIn, ZoomOut, Pencil, Crop } from "lucide-react";
 
@@ -64,7 +64,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     context.stroke();
   }, [mode, points, isDrawing]);
 
-  const getPointerPoint = (event: React.PointerEvent<HTMLCanvasElement>): DrawPoint | null => {
+  const getPointerPoint = (event: ReactPointerEvent<HTMLCanvasElement>): DrawPoint | null => {
     const canvas = canvasRef.current;
     const imageElement = imageRef.current;
     const container = containerRef.current;
@@ -83,7 +83,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     return { x, y };
   };
 
-  const handlePointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     if (mode !== "freehand" || processing.current) return;
     const point = getPointerPoint(event);
     if (!point) return;
@@ -94,7 +94,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     setIsDrawing(true);
   };
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const handlePointerMove = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
     const point = getPointerPoint(event);
     if (!point) return;
@@ -106,7 +106,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     });
   };
 
-  const handlePointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const handlePointerUp = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
     event.preventDefault();
     setIsDrawing(false);
@@ -118,7 +118,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("Could not create the cropped image")), type, quality);
     });
 
-  const loadImage = async () => {
+  const loadImage = useCallback(async () => {
     const imageElement = new Image();
     imageElement.crossOrigin = "anonymous";
     const loaded = new Promise<void>((resolve, reject) => {
@@ -128,7 +128,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     imageElement.src = image;
     await loaded;
     return imageElement;
-  };
+  }, [image]);
 
   const handleRectangleApply = useCallback(async () => {
     if (processing.current || !croppedAreaPixels) return;
@@ -156,7 +156,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       setCropError(error instanceof Error ? error.message : "Could not crop image");
       processing.current = false;
     }
-  }, [image, croppedAreaPixels, onCropComplete]);
+  }, [loadImage, croppedAreaPixels, onCropComplete]);
 
   const handleFreehandApply = useCallback(async () => {
     if (processing.current || isDrawing) return;
@@ -224,7 +224,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
       setCropError(error instanceof Error ? error.message : "Could not read original image");
       processing.current = false;
     }
-  }, [image, onSkip]);
+  }, [loadImage, onSkip]);
 
   const handleApply = mode === "freehand" ? handleFreehandApply : handleRectangleApply;
 

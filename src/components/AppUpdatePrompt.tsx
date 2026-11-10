@@ -67,18 +67,18 @@ export function AppUpdatePrompt() {
       }
       if (!isNewer(installed.versionCode, latest.versionCode)) return;
 
+      try {
+        if (localStorage.getItem(DISMISS_KEY_PREFIX + latest.versionCode)) return;
+      } catch {
+        /* still offer the update if storage is blocked */
+      }
+
       if (
         latest.requiresReinstallBelowApi !== undefined &&
         installed.sdkInt < latest.requiresReinstallBelowApi
       ) {
         setPhase({ kind: "reinstall", release: latest });
         return;
-      }
-
-      try {
-        if (localStorage.getItem(DISMISS_KEY_PREFIX + latest.versionCode)) return;
-      } catch {
-        /* still offer the update if storage is blocked */
       }
       setPhase(latest.requiresReinstall
         ? { kind: "reinstall", release: latest }

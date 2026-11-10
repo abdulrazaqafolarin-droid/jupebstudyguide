@@ -52,6 +52,8 @@ export interface StudyQuestion {
   subQuestions?: { id: string; text: string; answerGuide: string }[];
   difficulty?: Difficulty;
   imageUrl?: string;
+  /** Additional question images; imageUrl remains the legacy first-image field. */
+  imageUrls?: string[];
   imagePosition?: QuestionImagePosition;
 }
 

@@ -3,6 +3,7 @@ import { Browser } from '@capacitor/browser';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
+import { NATIVE_AUTH_REDIRECT_URI } from '@/lib/native-app-config';
 
 interface AuthContextType {
   user: User | null;
@@ -142,7 +143,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           options: {
             // Native Android and iOS return through the registered app URL scheme.
             // The web app returns to its own root after Supabase exchanges OAuth.
-            redirectTo: isNativePlatform ? 'com.jupeb.master://auth' : window.location.origin,
+            redirectTo: isNativePlatform ? NATIVE_AUTH_REDIRECT_URI : window.location.origin,
             skipBrowserRedirect: isNativePlatform,
             queryParams: { prompt: 'select_account' },
           },

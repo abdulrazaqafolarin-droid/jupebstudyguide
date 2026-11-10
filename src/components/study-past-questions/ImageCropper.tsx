@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import { X, Check, RotateCcw, Undo2 } from "lucide-react";
 
 interface ImageCropperProps {
@@ -10,6 +10,10 @@ interface ImageCropperProps {
 }
 
 interface Point { x: number; y: number }
+
+const makeBlob = (canvas: HTMLCanvasElement) => new Promise<Blob>((resolve, reject) => {
+  canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Image export failed")), "image/jpeg", 0.92);
+});
 
 export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel }: ImageCropperProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -66,7 +70,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     return () => { cancelled = true; };
   }, [image, redraw]);
 
-  const pointFromEvent = (event: React.PointerEvent<HTMLCanvasElement>): Point => {
+  const pointFromEvent = (event: ReactPointerEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
     return {
@@ -116,10 +120,6 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     setPointsCount(pointsRef.current.length);
     redraw(pointsRef.current);
   };
-
-  const makeBlob = (canvas: HTMLCanvasElement) => new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Image export failed")), "image/jpeg", 0.92);
-  });
 
   const handleApply = useCallback(async () => {
     if (processingRef.current || !imageRef.current) return;

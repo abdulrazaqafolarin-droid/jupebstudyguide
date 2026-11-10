@@ -458,7 +458,12 @@ export function QuestionViewer({
                 </div>
               ) : category === "objective" ? (
                 <div className="space-y-3">
-                  {renderQuestionMedia(question)}
+                  <div
+                    className="max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1"
+                    aria-label="Scrollable question content"
+                  >
+                    {renderQuestionMedia(question)}
+                  </div>
                   <div className="space-y-2">
                     {(question.options ?? []).map((opt) => {
                       const isSelected = answers[question.id] === opt.label;
@@ -543,7 +548,12 @@ export function QuestionViewer({
                   </div>
                 ) : (
                 <div className="space-y-3">
-                  {renderQuestionMedia(question)}
+                  <div
+                    className="max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1"
+                    aria-label="Scrollable question content"
+                  >
+                    {renderQuestionMedia(question)}
+                  </div>
                   {submittedTheory.has(question.id) ? (
                     <div className="space-y-3">
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">

@@ -44,7 +44,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$AUTHORIZED" = "true" || { echo "::error::Explicit authorization is required."; exit 1; }
-          test -n "$KEYSTORE" && test -n "$STORE_PASSWORD" && test -n "$KEY_PASSWORD"
+          if [ -z "$KEYSTORE" ] || [ -z "$STORE_PASSWORD" ] || [ -z "$KEY_PASSWORD" ] || [ -z "$KEY_ALIAS" ]; then
+            echo "::error::One or more legacy signing secrets are missing."
+            exit 1
+          fi
           test "$KEY_ALIAS" = "rutex-master-release" || { echo "::error::Legacy key alias mismatch."; exit 1; }
           if [ "$PUBLISH" = "true" ]; then test -n "$SUPABASE_KEY"; fi
           test -s android/app/google-services.json

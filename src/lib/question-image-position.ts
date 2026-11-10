@@ -2,13 +2,16 @@ import type { QuestionImagePosition } from "@/types/question";
 
 const INLINE_IMAGE_POSITION = /^image-inline:(\d+)$/;
 
+/**
+ * Protect every math delimiter supported by QuestionMath, plus code and
+ * Markdown emphasis, so an image anchor never splits a formatted expression.
+ */
+const PROTECTED_SPAN = /\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\x60[^\x60]*\x60|\*\*[\s\S]*?\*\*|__[\s\S]*?__|\*[^*\n]+\*|_[^_\n]+_/g;
+
 /** Detect the inline layout while keeping legacy layout values untouched. */
 export function isInlineImagePosition(position?: string | null): boolean {
   return position === "image-inline" || INLINE_IMAGE_POSITION.test(position || "");
 }
-
-// Tokens that must stay intact when an image is inserted into question prose.
-const PROTECTED_SPAN = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|`[^`]*`|\*\*[\s\S]*?\*\*|__[\s\S]*?__|\*[^*\n]+\*|_[^_\n]+_/g;
 
 /** Read the saved character anchor and clamp it to the current question text. */
 export function getInlineImageOffset(position: string | null | undefined, content: string): number {
@@ -38,7 +41,7 @@ export function getSafeQuestionImageOffset(content: string, requestedOffset: num
 /** Create the durable character offset stored in study_questions.image_position. */
 export function createInlineImagePosition(offset: number): QuestionImagePosition {
   const safeOffset = Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
-  return `image-inline:${safeOffset}`;
+  return "image-inline:" + safeOffset;
 }
 
 /** Split question content at a safe saved character anchor. */
@@ -51,13 +54,13 @@ export function splitQuestionAtImageOffset(
 }
 
 /**
- * Return the source offsets of visible text units. Inline/display maths and
- * markdown emphasis/code spans are treated as indivisible units so the editor
- * never offers a drop point in the middle of their syntax.
+ * Return the source offsets of visible text units. Math, code and emphasis
+ * spans are indivisible units, so the editor does not offer a drop point in
+ * the middle of their syntax.
  */
 export function getQuestionPositionTokens(content: string): Array<{ start: number; end: number }> {
   const tokens: Array<{ start: number; end: number }> = [];
-  const tokenPattern = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|`[^`]*`|\*\*[\s\S]*?\*\*|__[\s\S]*?__|\*[^*\n]+\*|_[^_\n]+_|\S+/g;
+  const tokenPattern = /\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$|\x60[^\x60]*\x60|\*\*[\s\S]*?\*\*|__[\s\S]*?__|\*[^*\n]+\*|_[^_\n]+_|\S+/g;
 
   for (const match of content.matchAll(tokenPattern)) {
     const start = match.index ?? 0;

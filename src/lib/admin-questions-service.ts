@@ -21,6 +21,7 @@ interface QuestionInput {
   topic?: string | null;
   sortOrder?: number;
   imageUrl?: string | null;
+  imageUrls?: string[] | null;
   imagePosition?: string | null;
 }
 
@@ -37,7 +38,8 @@ function toDbRow(input: QuestionInput) {
     difficulty: input.difficulty || "medium",
     course: input.topic || null,
     sort_order: input.sortOrder ?? 0,
-    image_url: input.imageUrl || null,
+    image_url: input.imageUrls?.[0] || input.imageUrl || null,
+    image_urls: input.imageUrls?.length ? input.imageUrls : input.imageUrl ? [input.imageUrl] : [],
     image_position: input.imagePosition || null,
   };
 }
@@ -162,11 +164,12 @@ export function getQuestionImagePublicUrl(questionId: string): string {
 
 export async function uploadQuestionImage(
   questionId: string,
-  file: File
+  file: File,
+  imageIndex = 0
 ): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
     const ext = file.name.split(".").pop() || "jpg";
-    const path = `${questionId}.${ext}`;
+    const path = `${questionId}${imageIndex === 0 ? "" : `-${imageIndex + 1}`}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)

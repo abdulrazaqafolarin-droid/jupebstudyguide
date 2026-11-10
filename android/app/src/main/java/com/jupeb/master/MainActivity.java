@@ -32,7 +32,7 @@ public class MainActivity extends BridgeActivity {
             // the status/navigation bar areas. The StatusBar plugin supplies
             // the active theme colour and icon contrast without WebView offsets.
             WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-            getWindow().setStatusBarColor(initialSurface);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
             return;
         }
 

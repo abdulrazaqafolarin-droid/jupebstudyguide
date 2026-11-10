@@ -213,19 +213,20 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     if (processing.current) return;
     processing.current = true;
     try {
-      const imageObj = await loadImage();
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      if (!context) throw new Error("No canvas context");
-      canvas.width = imageObj.naturalWidth;
-      canvas.height = imageObj.naturalHeight;
-      context.drawImage(imageObj, 0, 0);
-      onSkip(await createBlob(canvas, sourceMimeType, sourceMimeType === "image/jpeg" ? 0.92 : undefined));
+      // The source is the FileReader data URL. Returning its original Blob
+      // preserves GIF animation and avoids recompressing an untouched image.
+      const response = await fetch(image);
+      if (!response.ok) throw new Error("Could not read original image");
+      const originalBlob = await response.blob();
+      if (!originalBlob.type.startsWith("image/") || originalBlob.size === 0) {
+        throw new Error("The original image is invalid");
+      }
+      onSkip(originalBlob);
     } catch (error) {
       setCropError(error instanceof Error ? error.message : "Could not read original image");
       processing.current = false;
     }
-  }, [loadImage, onSkip, sourceMimeType]);
+  }, [image, onSkip]);
 
   const handleApply = mode === "freehand" ? handleFreehandApply : handleRectangleApply;
 

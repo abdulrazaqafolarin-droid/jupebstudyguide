@@ -744,26 +744,23 @@ export function AdminQuestionPanel({
                           <div className="space-y-2">
                             {allImagePreviews.length > 0 && imagePosition !== "text-only" && (
                               isInlineImagePosition(imagePosition) ? (
-                                <QuestionImagePositioner
-                                  content={questionText}
-                                  imageSrc={allImagePreviews[0]}
-                                  imagePosition={imagePosition}
-                                  onPositionChange={setImagePosition}
-                                />
-                              ) : imagePosition === "image-only" ? (
-                                <img
-                                  src={allImagePreviews[0]}
-                                  alt="Question preview"
-                                  className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-                                />
+                                <>
+                                  <QuestionImagePositioner
+                                    content={questionText}
+                                    imageSrc={allImagePreviews[0]}
+                                    imagePosition={imagePosition}
+                                    onPositionChange={setImagePosition}
+                                  />
+                                  {allImagePreviews.slice(1).map((src, index) => (
+                                    <img key={src} src={src} alt={`Question image ${index + 2}`} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
+                                  ))}
+                                </>
                               ) : imagePosition === "image-beside" ? (
                                 <div className="flex flex-col sm:flex-row gap-4 items-start">
-                                  <div className="sm:w-1/2 shrink-0">
-                                    <img
-                                      src={allImagePreviews[0]}
-                                      alt="Question preview"
-                                      className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-                                    />
+                                  <div className="sm:w-1/2 shrink-0 space-y-3">
+                                    {allImagePreviews.map((src, index) => (
+                                      <img key={src} src={src} alt={`Question image ${index + 1}`} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
+                                    ))}
                                   </div>
                                   {questionText.trim() && (
                                     <QuestionMath content={questionText} className="text-base font-medium leading-relaxed sm:w-1/2" />
@@ -771,12 +768,12 @@ export function AdminQuestionPanel({
                                 </div>
                               ) : (
                                 <>
-                                  <img
-                                    src={allImagePreviews[0]}
-                                    alt="Question preview"
-                                    className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-                                  />
-                                  {questionText.trim() && (
+                                  <div className="space-y-3">
+                                    {allImagePreviews.map((src, index) => (
+                                      <img key={src} src={src} alt={`Question image ${index + 1}`} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
+                                    ))}
+                                  </div>
+                                  {imagePosition !== "image-only" && questionText.trim() && (
                                     <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
                                   )}
                                 </>

@@ -97,7 +97,7 @@ export function LocalDataBackup() {
           Study Data Backup
         </CardTitle>
         <CardDescription>
-          Protect this account's learning data before changing or reinstalling the app. Cloud backups are private to the signed-in account.
+          A private cloud snapshot is saved automatically about once per day while you are signed in and online. You can also create one now or export a separate backup file. Cloud backups are private to the signed-in account.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">

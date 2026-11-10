@@ -225,10 +225,14 @@ export function AdminQuestionPanel({
   }, []);
 
   const handleCropComplete = useCallback((croppedBlob: Blob) => {
-    const png = croppedBlob.type === "image/png";
+    const extension = croppedBlob.type === "image/png"
+      ? ".png"
+      : croppedBlob.type === "image/webp"
+        ? ".webp"
+        : ".jpg";
     const croppedFile = new File(
       [croppedBlob],
-      cropFileName.replace(/\.[^.]+$/, png ? ".png" : ".jpg"),
+      cropFileName.replace(/\.[^.]+$/, extension),
       { type: croppedBlob.type || "image/jpeg" }
     );
     addCroppedImage(croppedFile);

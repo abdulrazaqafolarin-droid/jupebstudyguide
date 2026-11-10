@@ -59,9 +59,6 @@ export function AdminQuestionPanel({
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const imageUrl = imageUrls[0] ?? null;
-  const imageFile = imageFiles[0] ?? null;
-  const imagePreview = imagePreviews[0] ?? null;
   const allImagePreviews = [...imageUrls, ...imagePreviews];
   const [uploadingImage, setUploadingImage] = useState(false);
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
@@ -147,11 +144,11 @@ export function AdminQuestionPanel({
     resetForm();
   };
 
-  const prevObjectUrl = useRef<string | null>(null);
+  const previewUrlsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     return () => {
-      if (prevObjectUrl.current) URL.revokeObjectURL(prevObjectUrl.current);
+      previewUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
     };
   }, []);
 
@@ -175,7 +172,11 @@ export function AdminQuestionPanel({
     }
     // Multi-select keeps every chosen image; select one image at a time to
     // apply the freehand crop before adding it.
-    const previews = selected.map(file => URL.createObjectURL(file));
+    const previews = selected.map(file => {
+      const url = URL.createObjectURL(file);
+      previewUrlsRef.current.add(url);
+      return url;
+    });
     setImageFiles(prev => [...prev, ...selected]);
     setImagePreviews(prev => [...prev, ...previews]);
     setShowPreview(true);
@@ -184,6 +185,7 @@ export function AdminQuestionPanel({
   const handleCropComplete = useCallback((croppedBlob: Blob) => {
     const croppedFile = new File([croppedBlob], cropFileName.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
     const previewUrl = URL.createObjectURL(croppedFile);
+    previewUrlsRef.current.add(previewUrl);
     setImageFiles(prev => [...prev, croppedFile]);
     setImagePreviews(prev => [...prev, previewUrl]);
     setShowPreview(true);
@@ -194,6 +196,7 @@ export function AdminQuestionPanel({
   const handleSkipCrop = useCallback((originalBlob: Blob) => {
     const originalFile = new File([originalBlob], cropFileName, { type: originalBlob.type });
     const previewUrl = URL.createObjectURL(originalFile);
+    previewUrlsRef.current.add(previewUrl);
     setImageFiles(prev => [...prev, originalFile]);
     setImagePreviews(prev => [...prev, previewUrl]);
     setShowPreview(true);
@@ -207,7 +210,10 @@ export function AdminQuestionPanel({
   }, []);
 
   const handleRemoveImage = () => {
-    imagePreviews.forEach(url => URL.revokeObjectURL(url));
+    imagePreviews.forEach(url => {
+      URL.revokeObjectURL(url);
+      previewUrlsRef.current.delete(url);
+    });
     setImageFiles([]);
     setImagePreviews([]);
     setImageUrls([]);
@@ -255,7 +261,6 @@ export function AdminQuestionPanel({
         ));
         const failedUpload = uploads.find(result => !result.success || !result.url);
         if (failedUpload) {
-          await deleteQuestionImage(qId).catch(() => {});
           setError(failedUpload.error || "Failed to upload one or more images");
           setSaving(false);
           setUploadingImage(false);
@@ -322,6 +327,7 @@ export function AdminQuestionPanel({
           topic: topic.trim() || null,
           sortOrder: parseInt(sortOrder) || 0,
           imageUrl: resolvedImageUrl,
+          imageUrls: resolvedImageUrls,
           imagePosition: imagePosition,
         });
 
@@ -513,7 +519,6 @@ export function AdminQuestionPanel({
                     {allImagePreviews.length > 0 && (
                       <>
                       <div className="relative mb-2 rounded-xl overflow-hidden border bg-muted/30 group">
-                        <img
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-2">
                           {allImagePreviews.map((src, index) => (
                             <img key={src} src={src} alt={`Question image ${index + 1}`} className="w-full h-28 object-contain rounded-lg bg-background" onClick={() => fileInputRef.current?.click()} />
@@ -523,7 +528,7 @@ export function AdminQuestionPanel({
                           <button
                             onClick={() => fileInputRef.current?.click()}
                             className="p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
-                            title="Replace image"
+                            title="Add more images"
                           >
                             <ImageIcon className="h-4 w-4" />
                           </button>
@@ -747,7 +752,7 @@ export function AdminQuestionPanel({
                                 />
                               ) : imagePosition === "image-only" ? (
                                 <img
-                                  src={imagePreview || imageUrl!}
+                                  src={allImagePreviews[0]}
                                   alt="Question preview"
                                   className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
                                 />

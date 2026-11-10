@@ -206,12 +206,14 @@ jobs:
           if [ ! -f "$APK" ]; then echo "APK output missing: $APK"; exit 1; fi
           BUILT_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           APK_SHA256=$(sha256sum "$APK" | cut -d ' ' -f1)
+          FRESH_INSTALL_SHA256="$APK_SHA256"
+          FRESH_INSTALL_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master-fresh-install.apk"
           case "$REQUIRES_REINSTALL" in
             true) REINSTALL_JSON=true ;;
             false|"") REINSTALL_JSON=false ;;
             *) echo "::error::Invalid requires-reinstall release flag"; exit 1 ;;
           esac
-          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","requiresReinstall":%s,"requiresReinstallBelowApi":%s}' "$((200000 + GITHUB_RUN_NUMBER))" "2.1.$GITHUB_RUN_NUMBER" "$GITHUB_SHA" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$REINSTALL_JSON" "$REQUIRES_REINSTALL_BELOW_API" > version.json
+          printf '{"versionCode":%s,"versionName":"%s","commit":"%s","builtAt":"%s","url":"%s/storage/v1/object/public/app-releases/jupeb-master.apk","sha256":"%s","freshInstallUrl":"%s","freshInstallSha256":"%s","requiresReinstall":%s,"requiresReinstallBelowApi":%s}' "$((200000 + GITHUB_RUN_NUMBER))" "2.1.$GITHUB_RUN_NUMBER" "$GITHUB_SHA" "$BUILT_AT" "$SUPABASE_URL" "$APK_SHA256" "$FRESH_INSTALL_URL" "$FRESH_INSTALL_SHA256" "$REINSTALL_JSON" "$REQUIRES_REINSTALL_BELOW_API" > version.json
           python3 - "$APK" version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
           import hashlib
           import json
@@ -233,25 +235,32 @@ jobs:
           print(f"Verified release metadata for version {metadata['versionCode']} ({digest})")
           PY
           curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master.apk" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/vnd.android.package-archive" -H "x-upsert: true" --data-binary "@$APK"
+          curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/jupeb-master-fresh-install.apk" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/vnd.android.package-archive" -H "x-upsert: true" --data-binary "@$APK"
           curl -sS --fail-with-body -X POST "$SUPABASE_URL/storage/v1/object/app-releases/version.json" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/json" -H "x-upsert: true" --data-binary "@version.json"
           PUBLISHED_VERSION_URL="$SUPABASE_URL/storage/v1/object/public/app-releases/version.json"
           curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS --fail-with-body "$PUBLISHED_VERSION_URL" -o published-version.json
-          python3 - "$APK" published-version.json "$APK_SHA256" "$SUPABASE_URL" <<'PY'
+          python3 - "$APK" published-version.json "$APK_SHA256" "$FRESH_INSTALL_SHA256" "$FRESH_INSTALL_URL" "$SUPABASE_URL" <<'PY'
           import hashlib, json, re, sys
-          apk_path, metadata_path, expected_hash, supabase_url = sys.argv[1:]
+          apk_path, metadata_path, expected_hash, fresh_hash, fresh_url, supabase_url = sys.argv[1:]
           with open(metadata_path, encoding="utf-8") as f:
               metadata = json.load(f)
           with open(apk_path, "rb") as f:
               actual_hash = hashlib.file_digest(f, "sha256").hexdigest()
           expected_url = f"{supabase_url.rstrip('/')}/storage/v1/object/public/app-releases/jupeb-master.apk"
           assert metadata.get("url") == expected_url
+          assert metadata.get("freshInstallUrl") == fresh_url
           assert re.fullmatch(r"[a-fA-F0-9]{64}", metadata.get("sha256", ""))
+          assert re.fullmatch(r"[a-fA-F0-9]{64}", metadata.get("freshInstallSha256", ""))
           assert metadata["sha256"].lower() == actual_hash == expected_hash.lower()
+          assert metadata["freshInstallSha256"].lower() == actual_hash == fresh_hash.lower()
           print(f"Public metadata verified for version {metadata['versionCode']}")
           PY
           APK_HTTP_STATUS=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w "%{http_code}" -I "$SUPABASE_URL/storage/v1/object/public/app-releases/jupeb-master.apk")
-          echo "Published APK HTTP status: $APK_HTTP_STATUS"
+          FRESH_APK_HTTP_STATUS=$(curl --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 -sS -o /dev/null -w "%{http_code}" -I "$FRESH_INSTALL_URL")
+          echo "Published updater APK HTTP status: $APK_HTTP_STATUS"
+          echo "Published fresh-install APK HTTP status: $FRESH_APK_HTTP_STATUS"
           test "$APK_HTTP_STATUS" = "200"
+          test "$FRESH_APK_HTTP_STATUS" = "200"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2

@@ -1,13 +1,6 @@
-import type { Subject, Difficulty, MCQOption } from "./question";
+import type { Subject, Difficulty, MCQOption, QuestionImagePosition } from "./question";
 
 export type StudyCategory = "objective" | "theory" | "practical";
-
-export type QuestionImagePosition =
-  | "text-only"
-  | "image-only"
-  | "image-above"
-  | "image-beside"
-  | `image-inline:${number}`;
 
 export interface TheoryQuestion {
   id: string;

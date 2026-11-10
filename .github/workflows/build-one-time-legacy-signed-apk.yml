@@ -1,0 +1,189 @@
+name: Build one-time legacy-signed Android update
+on:
+  workflow_dispatch:
+    inputs:
+      authorize_legacy_key:
+        description: "Authorize one final release signed by the existing November 9 certificate."
+        required: true
+        default: false
+        type: boolean
+      publish_to_updater:
+        description: "Publish the verified APK to the live in-app updater (otherwise artifact only)."
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
+
+      - name: Validate authorization and signing secrets
+        env:
+          AUTHORIZED: ${{ inputs.authorize_legacy_key }}
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PUBLISH: ${{ inputs.publish_to_updater }}
+        run: |
+          set -euo pipefail
+          test "$AUTHORIZED" = "true" || { echo "::error::Explicit authorization is required."; exit 1; }
+          if [ -z "$KEYSTORE" ] || [ -z "$STORE_PASSWORD" ] || [ -z "$KEY_PASSWORD" ] || [ -z "$KEY_ALIAS" ]; then
+            echo "::error::One or more legacy signing secrets are missing."
+            exit 1
+          fi
+          test "$KEY_ALIAS" = "rutex-master-release" || { echo "::error::Legacy key alias mismatch."; exit 1; }
+          if [ "$PUBLISH" = "true" ]; then test -n "$SUPABASE_KEY"; fi
+          test -s android/app/google-services.json
+          echo "Authorization and required secrets are present; values remain hidden."
+
+      - name: Install dependencies and build web assets
+        run: |
+          npm ci
+          npm run build
+          npx cap sync android
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          VITE_SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX"
+          VITE_SUPABASE_PROJECT_ID: "gzyczowqqywesqhqqpdi"
+          VITE_ADMIN_EMAIL: "abdulrazaqafolarin@gmail.com"
+
+      - name: Build APK with the existing release key
+        id: apk
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/rutex-legacy"
+          mkdir -p "$WORK"
+          printf '%s' "$KEYSTORE" | base64 --decode > "$WORK/legacy.jks"
+          chmod 600 "$WORK/legacy.jks"
+          export ANDROID_KEYSTORE_PATH="$WORK/legacy.jks"
+          export ANDROID_KEYSTORE_PASSWORD="$STORE_PASSWORD"
+          export ANDROID_KEY_ALIAS="$KEY_ALIAS"
+          export ANDROID_KEY_PASSWORD="$KEY_PASSWORD"
+          export APK_VERSION_CODE="$((200000 + GITHUB_RUN_NUMBER))"
+          export APK_VERSION_NAME="2.1.$GITHUB_RUN_NUMBER"
+          chmod +x android/gradlew
+          (cd android && ./gradlew assembleRelease --no-daemon)
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "code=$APK_VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "name=$APK_VERSION_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Verify exact certificate, package, minSdk, and update sequence
+        id: verify
+        env:
+          APK: ${{ steps.apk.outputs.path }}
+          VERSION_CODE: ${{ steps.apk.outputs.code }}
+          EXPECTED_SHA1: "75de4551c67f66381d25477c2ee22d081dba5a18"
+          EXPECTED_SHA256: "879bea99ba72a5ce65e4337bca4701d0bdd46eeb1af76a7330a88679a0d751d7"
+        run: |
+          set -euo pipefail
+          AAPT="$ANDROID_HOME/build-tools/36.0.0/aapt"
+          SIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          BADGING="$("$AAPT" dump badging "$APK")"
+          PACKAGE="$(echo "$BADGING" | awk -F"'" '/^package:/{print $2; exit}')"
+          APK_CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p" | head -n1)"
+          MIN_SDK="$(echo "$BADGING" | awk -F"'" '/^sdkVersion:/{print $2; exit}')"
+          test "$PACKAGE" = "com.jupeb.master"
+          test "$APK_CODE" = "$VERSION_CODE"
+          test "$MIN_SDK" = "24"
+          REPORT="$("$SIGNER" verify --print-certs "$APK" 2>&1)"
+          SHA1="$(echo "$REPORT" | awk -F': ' '/Signer #1 certificate SHA-1 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          SHA256="$(echo "$REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          test "$SHA1" = "$EXPECTED_SHA1"
+          test "$SHA256" = "$EXPECTED_SHA256"
+          "$SIGNER" verify --verbose --min-sdk-version 24 --max-sdk-version 36 "$APK"
+
+          BASE="https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases"
+          curl --retry 2 --retry-all-errors -fsS "$BASE/version.json" -o "$RUNNER_TEMP/old-version.json"
+          curl --retry 2 --retry-all-errors -fsS "$BASE/jupeb-master.apk" -o "$RUNNER_TEMP/old.apk"
+          python3 - "$RUNNER_TEMP/old-version.json" "$VERSION_CODE" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as f: old = json.load(f)
+          assert isinstance(old.get("versionCode"), int) and int(sys.argv[2]) > old["versionCode"], "Candidate versionCode is not newer than live release"
+          PY
+          OLD_REPORT="$("$SIGNER" verify --print-certs "$RUNNER_TEMP/old.apk" 2>&1)"
+          OLD_SHA256="$(echo "$OLD_REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          OLD_PACKAGE="$("$AAPT" dump badging "$RUNNER_TEMP/old.apk" | awk -F"'" '/^package:/{print $2; exit}')"
+          test "$OLD_SHA256" = "$EXPECTED_SHA256"
+          test "$OLD_PACKAGE" = "com.jupeb.master"
+          echo "Verified package $PACKAGE, Android API $MIN_SDK+, exact legacy signer, and increasing versionCode."
+
+      - name: Generate updater metadata
+        id: meta
+        env:
+          APK: ${{ steps.apk.outputs.path }}
+          VERSION_CODE: ${{ steps.apk.outputs.code }}
+          VERSION_NAME: ${{ steps.apk.outputs.name }}
+        run: |
+          set -euo pipefail
+          HASH="$(sha256sum "$APK" | cut -d ' ' -f1)"
+          python3 - "$VERSION_CODE" "$VERSION_NAME" "$GITHUB_SHA" "$HASH" <<'PY'
+          import json, sys, datetime
+          code, name, commit, digest = sys.argv[1:]
+          meta = {"versionCode": int(code), "versionName": name, "commit": commit,
+            "builtAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "url": "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk",
+            "sha256": digest, "requiresReinstall": False}
+          with open("version.json", "w", encoding="utf-8") as f: json.dump(meta, f, separators=(",", ":"))
+          PY
+          echo "sha256=$HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload verified APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rutex-master-legacy-signed-${{ steps.apk.outputs.code }}
+          path: |
+            ${{ steps.apk.outputs.path }}
+            version.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish verified APK to the in-app updater
+        if: ${{ inputs.publish_to_updater == true }}
+        env:
+          APK: ${{ steps.apk.outputs.path }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          EXPECTED_HASH: ${{ steps.meta.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          BASE="https://gzyczowqqywesqhqqpdi.supabase.co"
+          curl --retry 2 --retry-all-errors -fsS -X POST "$BASE/storage/v1/object/app-releases/jupeb-master.apk" \
+            -H "Authorization: Bearer $SUPABASE_KEY" -H "apikey: $SUPABASE_KEY" \
+            -H "Content-Type: application/vnd.android.package-archive" -H "x-upsert: true" --data-binary "@$APK"
+          curl --retry 2 --retry-all-errors -fsS -X POST "$BASE/storage/v1/object/app-releases/version.json" \
+            -H "Authorization: Bearer $SUPABASE_KEY" -H "apikey: $SUPABASE_KEY" \
+            -H "Content-Type: application/json" -H "x-upsert: true" --data-binary "@version.json"
+          curl --retry 2 --retry-all-errors -fsS "$BASE/storage/v1/object/public/app-releases/version.json" -o "$RUNNER_TEMP/live-version.json"
+          curl --retry 2 --retry-all-errors -fsS "$BASE/storage/v1/object/public/app-releases/jupeb-master.apk" -o "$RUNNER_TEMP/live.apk"
+          python3 - "$RUNNER_TEMP/live-version.json" "$RUNNER_TEMP/live.apk" "$EXPECTED_HASH" <<'PY'
+          import hashlib, json, sys
+          with open(sys.argv[1], encoding="utf-8") as f: meta = json.load(f)
+          with open(sys.argv[2], "rb") as f: digest = hashlib.file_digest(f, "sha256").hexdigest()
+          assert digest == sys.argv[3] == meta["sha256"]
+          assert meta["requiresReinstall"] is False
+          print("Published APK and updater metadata verified.")
+          PY

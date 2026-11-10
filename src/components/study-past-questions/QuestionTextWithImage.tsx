@@ -5,9 +5,10 @@ import { getInlineImageOffset, splitQuestionAtImageOffset } from "@/lib/question
 interface QuestionTextWithImageProps {
   content: string;
   imageSrc: string;
+  additionalImageSrcs?: string[];
   imagePosition: string;
   imageAlt?: string;
-  onImageError?: () => void;
+  onImageError?: (url: string) => void;
   className?: string;
 }
 
@@ -20,6 +21,7 @@ interface QuestionTextWithImageProps {
 export function QuestionTextWithImage({
   content,
   imageSrc,
+  additionalImageSrcs = [],
   imagePosition,
   imageAlt = "Question illustration",
   onImageError,
@@ -42,7 +44,7 @@ export function QuestionTextWithImage({
           alt={imageAlt}
           className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
           loading="lazy"
-          onError={onImageError}
+          onError={() => onImageError?.(imageSrc)}
         />
       </div>
       {after && (
@@ -51,6 +53,17 @@ export function QuestionTextWithImage({
           className="text-base font-medium leading-relaxed"
         />
       )}
+      {additionalImageSrcs.map((src, index) => (
+        <div key={src} className="my-3">
+          <img
+            src={src}
+            alt={`Question illustration ${index + 2}`}
+            className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
+            loading="lazy"
+            onError={() => onImageError?.(src)}
+          />
+        </div>
+      ))}
     </div>
   );
 }

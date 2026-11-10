@@ -52,6 +52,7 @@ export interface StudyQuestion {
   subQuestions?: { id: string; text: string; answerGuide: string }[];
   difficulty?: Difficulty;
   imageUrl?: string;
+  imageUrls?: string[];
   imagePosition?: QuestionImagePosition;
 }
 

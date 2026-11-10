@@ -1,10 +1,13 @@
 import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 
-export const VERSION_URL =
-  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/version.json";
-export const APK_FILE_NAME = "jupeb-master.apk";
-export const RELEASE_APK_URL =
-  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
+const DEFAULT_RELEASE_BASE_URL =
+  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases";
+const RELEASE_BASE_URL = (
+  import.meta.env.VITE_ANDROID_RELEASE_BASE_URL || DEFAULT_RELEASE_BASE_URL
+).replace(/\\/+$/, "");
+export const APK_FILE_NAME = import.meta.env.VITE_ANDROID_RELEASE_APK_NAME || "jupeb-master.apk";
+export const VERSION_URL = `${RELEASE_BASE_URL}/version.json`;
+export const RELEASE_APK_URL = `${RELEASE_BASE_URL}/${APK_FILE_NAME}`;
 
 export interface ReleaseInfo {
   versionCode: number;

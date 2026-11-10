@@ -70,6 +70,9 @@ export function AdminQuestionPanel({
   const [cropFileName, setCropFileName] = useState<string>("");
   const [editingQuestion, setEditingQuestion] = useState<StudyQuestion | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const objectUrlsRef = useRef<string[]>([]);
+  const pendingFilesRef = useRef<File[]>([]);
+  const isCroppingRef = useRef(false);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
@@ -77,6 +80,10 @@ export function AdminQuestionPanel({
 
   useEffect(() => {
     if (!isOpen) {
+      pendingFilesRef.current = [];
+      isCroppingRef.current = false;
+      setCropImageUrl(null);
+      setCropFileName("");
       setMode(null);
       setConfirmDelete(false);
       setError(null);
@@ -95,6 +102,12 @@ export function AdminQuestionPanel({
   }, [isOpen]);
 
   const loadQuestion = useCallback((q: StudyQuestion) => {
+    objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    objectUrlsRef.current = [];
+    pendingFilesRef.current = [];
+    isCroppingRef.current = false;
+    setCropImageUrl(null);
+    setCropFileName("");
     setEditingQuestion(q);
     setQuestionText(q.question || "");
     const questionImageUrls = q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : [];
@@ -111,6 +124,12 @@ export function AdminQuestionPanel({
   }, []);
 
   const resetForm = useCallback(() => {
+    objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    objectUrlsRef.current = [];
+    pendingFilesRef.current = [];
+    isCroppingRef.current = false;
+    setCropImageUrl(null);
+    setCropFileName("");
     setEditingQuestion(null);
     setQuestionText("");
     setImages([]);
@@ -143,10 +162,6 @@ export function AdminQuestionPanel({
     setMode("add");
     resetForm();
   };
-
-  const objectUrlsRef = useRef<string[]>([]);
-  const pendingFilesRef = useRef<File[]>([]);
-  const isCroppingRef = useRef(false);
 
   useEffect(() => {
     return () => {

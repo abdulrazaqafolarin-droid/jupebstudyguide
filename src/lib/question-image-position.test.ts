@@ -1,55 +1,55 @@
 import { describe, expect, it } from "vitest";
 import {
   createInlineImagePosition,
-  getInlineImageIndex,
+  getInlineImageOffset,
+  getQuestionPositionTokens,
+  getSafeQuestionImageOffset,
   isInlineImagePosition,
-  splitQuestionIntoPositionableLines,
+  splitQuestionAtImageOffset,
 } from "./question-image-position";
 
-describe("question image line positioning", () => {
-  it("splits ordinary question text at authored line breaks", () => {
-    expect(splitQuestionIntoPositionableLines("First line\nSecond line\n\nFourth line")).toEqual([
-      "First line",
-      "Second line",
-      "",
-      "Fourth line",
-    ]);
-  });
-
-  it("keeps multiline display math together as one positionable unit", () => {
-    expect(splitQuestionIntoPositionableLines("Before\n$\nx + y\n= z\n$\nAfter")).toEqual([
-      "Before",
-      "$\nx + y\n= z\n$",
-      "After",
-    ]);
-  });
-
-  it("normalizes Windows line endings without splitting display math", () => {
-    expect(splitQuestionIntoPositionableLines("First\r\nSecond\r\n$\r\nx = 2\r\n$\r\nLast")).toEqual([
-      "First",
-      "Second",
-      "$\r\nx = 2\r\n$",
-      "Last",
-    ]);
-  });
-
-  it("clamps saved positions when question text changes", () => {
-    expect(getInlineImageIndex("image-inline:8", 3)).toBe(3);
-    expect(getInlineImageIndex("image-inline:2", 3)).toBe(2);
-    expect(getInlineImageIndex("image-above", 3)).toBe(0);
-    expect(getInlineImageIndex("image-inline:4", 0)).toBe(0);
-  });
-
-  it("creates stable non-negative inline position values", () => {
-    expect(createInlineImagePosition(3)).toBe("image-inline:3");
+describe("question image text anchors", () => {
+  it("stores a stable non-negative character offset", () => {
+    expect(createInlineImagePosition(12)).toBe("image-inline:12");
     expect(createInlineImagePosition(-2)).toBe("image-inline:0");
     expect(createInlineImagePosition(Number.NaN)).toBe("image-inline:0");
   });
 
-  it("recognizes inline layouts without changing legacy layouts", () => {
-    expect(isInlineImagePosition("image-inline:2")).toBe(true);
+  it("recognizes inline positions without changing legacy layouts", () => {
+    expect(isInlineImagePosition("image-inline:12")).toBe(true);
     expect(isInlineImagePosition("image-inline")).toBe(true);
     expect(isInlineImagePosition("image-above")).toBe(false);
     expect(isInlineImagePosition("image-beside")).toBe(false);
+  });
+
+  it("clamps saved anchors when a question is edited", () => {
+    expect(getInlineImageOffset("image-inline:8", "short")).toBe(5);
+    expect(getInlineImageOffset("image-inline:2", "short")).toBe(2);
+    expect(getInlineImageOffset("image-above", "short")).toBe(0);
+    expect(getInlineImageOffset("image-inline:4", "")).toBe(0);
+  });
+
+  it("keeps anchors outside inline and display maths", () => {
+    const content = "Before $x^2$ then $$y=2$$ after";
+    expect(getSafeQuestionImageOffset(content, 9)).toBe(7);
+    expect(getSafeQuestionImageOffset(content, 22)).toBeGreaterThan(22);
+    expect(splitQuestionAtImageOffset("Before $x^2$ after", 9)).toEqual([
+      "Before ",
+      "$x^2$ after",
+    ]);
+  });
+
+  it("keeps markdown emphasis spans intact", () => {
+    const content = "A **bold phrase** remains";
+    expect(getSafeQuestionImageOffset(content, 6)).toBe(2);
+  });
+
+  it("returns word and formula boundaries for visual line measurement", () => {
+    const content = "A simple $x^2$ term **bold phrase** remains";
+    const starts = getQuestionPositionTokens(content).map((token) => token.start);
+    expect(starts[0]).toBe(0);
+    expect(starts).toContain(content.indexOf("$x^2$"));
+    expect(starts).toContain(content.indexOf("remains"));
+    expect(starts).not.toContain(content.indexOf("phrase"));
   });
 });

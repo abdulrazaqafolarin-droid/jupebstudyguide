@@ -15,7 +15,7 @@ export function getInlineImageIndex(position: string | null | undefined, lineCou
 
 export function createInlineImagePosition(index: number): InlineQuestionImagePosition {
   const safeIndex = Number.isFinite(index) ? Math.max(0, Math.floor(index)) : 0;
-  return "image-inline:" + safeIndex;
+  return `image-inline:${safeIndex}`;
 }
 
 /**

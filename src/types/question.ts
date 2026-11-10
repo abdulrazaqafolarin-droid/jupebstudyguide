@@ -25,6 +25,7 @@ export interface Question {
   explanation: string;
   difficulty?: Difficulty;
   imageUrl?: string;
+  imageUrls?: string[];
   imagePosition?: QuestionImagePosition;
   document_name?: string;
 }

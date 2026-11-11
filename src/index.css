@@ -248,6 +248,22 @@
     touch-action: pan-y;
   }
 
+  /* Protect study question and answer text from casual selection/copy. */
+  .protected-study-content,
+  .protected-study-content *:not(input):not(textarea):not([contenteditable="true"]) {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none;
+  }
+
+  .protected-study-content input,
+  .protected-study-content textarea,
+  .protected-study-content [contenteditable="true"] {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    -webkit-touch-callout: default;
+  }
+
   /* Subject badges */
   .subject-physics {
     @apply bg-[hsl(var(--physics))] text-white;

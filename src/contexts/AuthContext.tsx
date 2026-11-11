@@ -72,25 +72,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setSession(session);
         setUser(session?.user ?? null);
 
-        // Validate every restored or newly-created session against auth.sessions.
-        // A second device sign-in revokes the previous refresh session; this
-        // check also removes the old device from the app immediately on resume.
-        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.access_token) {
-          const signedInToken = session.access_token;
-          window.setTimeout(() => {
-            void (async () => {
-              const { error: enforcementError } = await supabase.functions.invoke(
-                'enforce-single-session',
-                { headers: { Authorization: `Bearer ${signedInToken}` } },
-              );
-              if (enforcementError) {
-                console.warn('[auth] device session could not be verified; signing out locally');
-                await supabase.auth.signOut({ scope: 'local' });
-              }
-            })();
-          }, 0);
-        }
-
         // Set Realtime auth token so channels can connect
         if (session?.access_token) {
           supabase.realtime.setAuth(session.access_token);
@@ -130,6 +111,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       clearTimeout(timeoutId);
     };
   }, []);
+
+  // Poll the server-side session record so a device that was displaced by a
+  // later login is signed out locally, even while its cached access JWT remains
+  // within its normal expiry window.
+  useEffect(() => {
+    const accessToken = session?.access_token;
+    if (!accessToken) return;
+
+    let cancelled = false;
+    const checkDeviceSession = async () => {
+      const { error } = await supabase.functions.invoke("enforce-single-session", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (cancelled || !error) return;
+
+      const response = (error as { context?: Response }).context;
+      if (response?.status === 401) {
+        await supabase.auth.signOut({ scope: "local" });
+        return;
+      }
+      console.warn("[auth] temporary device-session verification failure", error);
+    };
+
+    void checkDeviceSession();
+    const intervalId = window.setInterval(() => { void checkDeviceSession(); }, 20_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [session?.access_token]);
 
   const signUp = async (email: string, password: string) => {
     try {

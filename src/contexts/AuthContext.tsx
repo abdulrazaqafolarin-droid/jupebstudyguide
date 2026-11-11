@@ -3,6 +3,7 @@ import { Browser } from '@capacitor/browser';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
+import { NATIVE_AUTH_REDIRECT_URI } from '@/lib/native-app-config';
 
 interface AuthContextType {
   user: User | null;
@@ -117,10 +118,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           email,
           password,
           options: {
-            // iOS email verification must return to the installed app so
-            // NativeAuthDeepLinkBridge can exchange and persist the session.
-            emailRedirectTo: Capacitor.getPlatform() === 'ios'
-              ? 'com.jupeb.master://auth'
+            // Native email verification returns through the active package's
+            // custom URL scheme so the native bridge can exchange and persist it.
+            emailRedirectTo: Capacitor.isNativePlatform()
+              ? NATIVE_AUTH_REDIRECT_URI
               : window.location.origin,
             data: { display_name: email.split('@')[0] },
           },
@@ -142,7 +143,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           options: {
             // Native Android and iOS return through the registered app URL scheme.
             // The web app returns to its own root after Supabase exchanges OAuth.
-            redirectTo: isNativePlatform ? 'com.jupeb.master://auth' : window.location.origin,
+            redirectTo: isNativePlatform ? NATIVE_AUTH_REDIRECT_URI : window.location.origin,
             skipBrowserRedirect: isNativePlatform,
             queryParams: { prompt: 'select_account' },
           },

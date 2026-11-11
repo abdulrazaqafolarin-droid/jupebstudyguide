@@ -39,8 +39,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @CapacitorPlugin(name = "AppUpdater")
 public class AppUpdaterPlugin extends Plugin {
 
-    private static final String RELEASE_APK_URL =
+    private static final String LEGACY_RELEASE_APK_URL =
         "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
+    private static final String SUCCESSOR_RELEASE_APK_BASE_URL =
+        "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next";
+
+    /**
+     * The successor publishes immutable, version-specific APK objects so a CDN
+     * cannot serve an older APK after the manifest advances. Keep the legacy
+     * package pinned to its original release URL.
+     */
+    private String getExpectedReleaseApkUrl(int versionCode) {
+        if ("com.rutex.jupebmaster".equals(getContext().getPackageName())) {
+            return SUCCESSOR_RELEASE_APK_BASE_URL + "/rutex-master-next-" + versionCode + ".apk";
+        }
+        return LEGACY_RELEASE_APK_URL;
+    }
     private static final long MAX_APK_BYTES = 200L * 1024L * 1024L;
     private final ExecutorService downloadExecutor = Executors.newSingleThreadExecutor();
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
@@ -55,7 +69,7 @@ public class AppUpdaterPlugin extends Plugin {
     public void downloadApk(PluginCall call) {
         String url = call.getString("url");
         Integer versionCode = call.getInt("versionCode");
-        if (!RELEASE_APK_URL.equals(url) || versionCode == null || versionCode < 1) {
+        if (versionCode == null || versionCode < 1 || !getExpectedReleaseApkUrl(versionCode).equals(url)) {
             call.reject("Invalid APK release request");
             return;
         }

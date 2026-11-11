@@ -14,6 +14,7 @@ import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
 import { PushNotificationsProvider } from "@/contexts/PushNotificationsContext";
 import { NativeNotificationBridge } from "@/components/NativeNotificationBridge";
 import { NativeAuthDeepLinkBridge } from "@/components/NativeAuthDeepLinkBridge";
+import { AutoCloudBackup } from "@/components/AutoCloudBackup";
 import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
@@ -380,6 +381,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
+          <AutoCloudBackup />
         <PushNotificationsProvider>
         <ChatUnreadProvider>
           <ProfilePhotoViewerProvider>

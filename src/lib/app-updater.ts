@@ -1,10 +1,30 @@
 import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 
-export const VERSION_URL =
-  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/version.json";
-export const APK_FILE_NAME = "jupeb-master.apk";
-export const RELEASE_APK_URL =
-  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
+const DEFAULT_RELEASE_BASE_URL =
+  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases";
+const RELEASE_BASE_URL = (
+  import.meta.env.VITE_ANDROID_RELEASE_BASE_URL || DEFAULT_RELEASE_BASE_URL
+).replace(/\/+$/, "");
+export const APK_FILE_NAME = import.meta.env.VITE_ANDROID_RELEASE_APK_NAME || "jupeb-master.apk";
+export const VERSION_URL = `${RELEASE_BASE_URL}/version.json`;
+export const RELEASE_APK_URL = `${RELEASE_BASE_URL}/${APK_FILE_NAME}`;
+
+/**
+ * Successor APKs are published under immutable versioned object names. The
+ * legacy package keeps its original fixed APK URL for compatibility.
+ */
+export function getReleaseApkUrl(
+  versionCode: number,
+  baseUrl = RELEASE_BASE_URL,
+  apkFileName = APK_FILE_NAME,
+): string {
+  if (!Number.isSafeInteger(versionCode) || versionCode < 1) return "";
+  const normalizedBaseUrl = baseUrl.replace(/\/+$/, "");
+  if (apkFileName === "rutex-master-next.apk") {
+    return `${normalizedBaseUrl}/rutex-master-next-${versionCode}.apk`;
+  }
+  return `${normalizedBaseUrl}/${apkFileName}`;
+}
 
 export interface ReleaseInfo {
   versionCode: number;
@@ -65,7 +85,7 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     !Number.isSafeInteger(r.versionCode) ||
     r.versionCode < 1 ||
     typeof r.url !== "string" ||
-    r.url !== RELEASE_APK_URL ||
+    r.url !== getReleaseApkUrl(r.versionCode) ||
     typeof r.sha256 !== "string" ||
     !/^[a-f0-9]{64}$/i.test(r.sha256)
   ) {
@@ -124,10 +144,10 @@ export async function downloadApk(
   onProgress: (fraction: number) => void,
 ): Promise<string> {
   if (!isAndroidApp()) throw new Error("APK downloads are only available in the Android app");
-  if (url !== RELEASE_APK_URL) throw new Error("Untrusted APK download URL");
   if (!Number.isSafeInteger(versionCode) || versionCode < 1) {
     throw new Error("Release version code is invalid");
   }
+  if (url !== getReleaseApkUrl(versionCode)) throw new Error("Untrusted APK download URL");
   if (!/^[a-f0-9]{64}$/i.test(expectedSha256)) {
     throw new Error("Release checksum is missing or invalid");
   }

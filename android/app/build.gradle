@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def androidApplicationId = (System.getenv("ANDROID_APPLICATION_ID") ?: "com.jupeb.master").trim()
+def androidAuthScheme = (System.getenv("ANDROID_AUTH_SCHEME") ?: "com.jupeb.master").trim()
 def signingPath = System.getenv("ANDROID_KEYSTORE_PATH")
 def signingStorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
 def signingKeyAlias = System.getenv("ANDROID_KEY_ALIAS")
@@ -11,7 +13,8 @@ android {
     namespace = "com.jupeb.master"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.jupeb.master"
+        applicationId androidApplicationId
+        manifestPlaceholders = [appAuthScheme: androidAuthScheme]
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // Every CI build stamps a unique, monotonically increasing versionCode

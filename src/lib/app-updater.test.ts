@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Capacitor } from "@capacitor/core";
-import { downloadApk, installDownloadedApk, isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
+import { downloadApk, getReleaseApkUrl, installDownloadedApk, isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
 
 describe("isAndroidApp", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -44,6 +44,25 @@ describe("Android-only updater operations", () => {
   });
 });
 
+describe("getReleaseApkUrl", () => {
+  it("keeps the legacy app on its fixed APK URL", () => {
+    expect(getReleaseApkUrl(41, "https://example.supabase.co/app-releases", "jupeb-master.apk"))
+      .toBe("https://example.supabase.co/app-releases/jupeb-master.apk");
+  });
+
+  it("uses an immutable APK URL for each successor version", () => {
+    expect(getReleaseApkUrl(200321, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .toBe("https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-200321.apk");
+    expect(getReleaseApkUrl(200320, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .not.toBe(getReleaseApkUrl(200321, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"));
+  });
+
+  it("rejects invalid version codes", () => {
+    expect(getReleaseApkUrl(0, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .toBe("");
+  });
+});
+
 describe("isNewer", () => {
   it("detects a higher published code", () => {
     expect(isNewer(2, 3)).toBe(true);
@@ -69,7 +88,7 @@ describe("parseReleaseInfo", () => {
         versionName: "1.1.41",
         commit: "abc123",
         builtAt: "2026-10-16T15:00:00Z",
-        url: RELEASE_APK_URL,
+        url: getReleaseApkUrl(41),
         sha256: "a".repeat(64),
       }),
     ).toEqual({
@@ -77,7 +96,7 @@ describe("parseReleaseInfo", () => {
       versionName: "1.1.41",
       commit: "abc123",
       builtAt: "2026-10-16T15:00:00Z",
-      url: RELEASE_APK_URL,
+      url: getReleaseApkUrl(41),
       sha256: "a".repeat(64),
       requiresReinstall: false,
     });
@@ -86,7 +105,7 @@ describe("parseReleaseInfo", () => {
   it("preserves the explicit one-time reinstall flag", () => {
     expect(parseReleaseInfo({
       versionCode: 42,
-      url: RELEASE_APK_URL,
+      url: getReleaseApkUrl(42),
       sha256: "b".repeat(64),
       requiresReinstall: true,
     })).toMatchObject({
@@ -97,7 +116,7 @@ describe("parseReleaseInfo", () => {
     // Older metadata remains valid and defaults to a normal in-place update.
     expect(parseReleaseInfo({
       versionCode: 43,
-      url: RELEASE_APK_URL,
+      url: getReleaseApkUrl(43),
       sha256: "c".repeat(64),
     })?.requiresReinstall).toBe(false);
   });
@@ -109,6 +128,6 @@ describe("parseReleaseInfo", () => {
     expect(parseReleaseInfo({ versionCode: 41, url: "http://insecure/x.apk" })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 41, url: "https://example.com/jupeb-master.apk" })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 0, url: RELEASE_APK_URL, sha256: "a".repeat(64) })).toBeNull();
-    expect(parseReleaseInfo({ versionCode: 41, url: RELEASE_APK_URL, sha256: "not-a-checksum" })).toBeNull();
+    expect(parseReleaseInfo({ versionCode: 41, url: getReleaseApkUrl(41), sha256: "not-a-checksum" })).toBeNull();
   });
 });

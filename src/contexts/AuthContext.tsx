@@ -145,11 +145,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.warn("[auth] temporary device-session verification failure", error);
     };
 
+    const handleResume = () => { void checkDeviceSession(); };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void checkDeviceSession();
+    };
+
     void checkDeviceSession();
     const intervalId = window.setInterval(() => { void checkDeviceSession(); }, 20_000);
+    window.addEventListener("focus", handleResume);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       cancelled = true;
       window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleResume);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [session?.access_token]);
 

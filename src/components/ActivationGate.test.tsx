@@ -26,10 +26,10 @@ vi.mock("sonner", () => ({
 
 import { ActivationGate } from "./ActivationGate";
 
-describe("ActivationGate active-trial banner", () => {
+describe("ActivationGate subscription banner", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.validateCode.mockResolvedValue({ success: true, plan_type: "premium" });
+    mocks.validateCode.mockResolvedValue({ success: true, plan_type: "monthly", duration_days: 30 });
     mocks.refreshStatus.mockResolvedValue(undefined);
     mocks.useAuth.mockReturnValue({
       user: { id: "trial-user", email: "student@example.com" },
@@ -39,7 +39,9 @@ describe("ActivationGate active-trial banner", () => {
       status: {
         is_activated: false,
         is_admin: false,
-        trial_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        subscription_duration_days: 7,
         checking: false,
       },
       validateCode: mocks.validateCode,
@@ -49,26 +51,28 @@ describe("ActivationGate active-trial banner", () => {
     });
   });
 
-  it("always displays Activate Now while a one-day trial is active", () => {
+  it("shows the subscription status and countdown while access is active", () => {
     render(
       <ActivationGate>
         <div>Protected study content</div>
       </ActivationGate>,
     );
 
-    expect(screen.getByText("1-day free trial active")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Activate Now" })).toBeVisible();
+    expect(screen.getByText("7-day subscription active")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add Time" })).toBeVisible();
     expect(screen.getByText("Protected study content")).toBeInTheDocument();
   });
 
-  it("shows a live hours-minutes-seconds countdown that updates every second", async () => {
+  it("shows a live subscription countdown that updates every second", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-06T12:00:00.000Z"));
     mocks.useActivation.mockReturnValue({
       status: {
         is_activated: false,
         is_admin: false,
-        trial_expires_at: new Date(Date.now() + 60_000).toISOString(),
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 60_000).toISOString(),
+        subscription_duration_days: 7,
         checking: false,
       },
       validateCode: mocks.validateCode,
@@ -91,14 +95,14 @@ describe("ActivationGate active-trial banner", () => {
     }
   });
 
-  it("opens the inline activation form without interrupting the trial session", () => {
+  it("opens the inline renewal form without interrupting the subscription", () => {
     render(
       <ActivationGate>
         <div>Protected study content</div>
       </ActivationGate>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Activate Now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Time" }));
 
     expect(screen.getByLabelText("Enter your activation code")).toBeVisible();
     expect(screen.getByRole("button", { name: "Later" })).toBeVisible();
@@ -122,17 +126,19 @@ describe("ActivationGate active-trial banner", () => {
       expect(mocks.validateCode).toHaveBeenCalledWith("ABCD-1234-EFGH");
       expect(mocks.refreshStatus).toHaveBeenCalledOnce();
       expect(mocks.toastSuccess).toHaveBeenCalledWith(
-        "Account activated with the premium plan.",
+        "Subscription extended by 30 days.",
       );
     });
   });
-  it("reclaims the trial banner space while keeping the app surface and content mounted", async () => {
-    const trialExpiry = new Date(Date.now() + 60_000).toISOString();
+  it("reclaims the subscription banner space when the term no longer applies", async () => {
+    const subscriptionExpiry = new Date(Date.now() + 60_000).toISOString();
     mocks.useActivation.mockReturnValue({
       status: {
         is_activated: false,
         is_admin: false,
-        trial_expires_at: trialExpiry,
+        trial_expires_at: null,
+        subscription_expires_at: subscriptionExpiry,
+        subscription_duration_days: 7,
         checking: false,
       },
       validateCode: mocks.validateCode,
@@ -147,7 +153,7 @@ describe("ActivationGate active-trial banner", () => {
       </ActivationGate>,
     );
 
-    expect(screen.getByRole("group", { name: "Free trial status" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Subscription status" })).toBeInTheDocument();
 
     mocks.useActivation.mockReturnValue({
       status: {
@@ -180,7 +186,7 @@ describe("ActivationGate active-trial banner", () => {
     expect(screen.getByText("Protected study content")).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.queryByRole("group", { name: "Free trial status" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("group", { name: "Subscription status" })).not.toBeInTheDocument();
     });
   });
 

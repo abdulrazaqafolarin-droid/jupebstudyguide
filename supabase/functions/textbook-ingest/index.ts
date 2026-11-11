@@ -20,6 +20,7 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const token = authHeader.replace("Bearer ", "");
     const authSupabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -39,7 +40,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const sessionActive = await checkAuthSessionActive(supabaseUrl, anonKey, token);
+    const sessionActive = await checkAuthSessionActive(supabaseUrl, supabaseAnonKey, token);
     if (sessionActive !== true) {
       return new Response(
         JSON.stringify({ error: sessionActive === false ? "This device session is no longer active." : "Could not verify this device session." }),

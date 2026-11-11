@@ -94,7 +94,7 @@ describe("parseReleaseInfo", () => {
       versionName: "1.1.41",
       commit: "abc123",
       builtAt: "2026-10-16T15:00:00Z",
-      url: getReleaseApkUrl(42),
+      url: getReleaseApkUrl(41),
       sha256: "a".repeat(64),
       requiresReinstall: false,
     });
@@ -103,7 +103,7 @@ describe("parseReleaseInfo", () => {
   it("preserves the explicit one-time reinstall flag", () => {
     expect(parseReleaseInfo({
       versionCode: 42,
-      url: getReleaseApkUrl(43),
+      url: getReleaseApkUrl(42),
       sha256: "b".repeat(64),
       requiresReinstall: true,
     })).toMatchObject({
@@ -114,7 +114,7 @@ describe("parseReleaseInfo", () => {
     // Older metadata remains valid and defaults to a normal in-place update.
     expect(parseReleaseInfo({
       versionCode: 43,
-      url: RELEASE_APK_URL,
+      url: getReleaseApkUrl(43),
       sha256: "c".repeat(64),
     })?.requiresReinstall).toBe(false);
   });

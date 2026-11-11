@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { formatQuestionForEmbedding } from "../_shared/question-retrieve.ts";
 import { generateEmbedding, resolveEmbedKeys } from "../_shared/textbook-embed.ts";
+import { checkAuthSessionActive } from "../_shared/auth-session.ts";
 
 interface ClaimedJob {
   question_id: string;
@@ -94,6 +95,18 @@ Deno.serve(async (req) => {
 
   const { data: { user }, error: userError } = await admin.auth.getUser(token);
   if (userError || !user) return json({ error: "invalid-authentication" }, 401);
+
+  const sessionActive = await checkAuthSessionActive(
+    supabaseUrl,
+    Deno.env.get("SUPABASE_ANON_KEY") || "",
+    token,
+  );
+  if (sessionActive !== true) {
+    return json(
+      { error: sessionActive === false ? "This device session is no longer active." : "Could not verify this device session." },
+      sessionActive === false ? 401 : 503,
+    );
+  }
 
   const { data: profile, error: profileError } = await admin
     .from("profiles")

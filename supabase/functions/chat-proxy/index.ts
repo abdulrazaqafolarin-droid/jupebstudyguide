@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     );
   }
 
-  const blocked = await guardAiAccess(supabase, user);
+  const blocked = await guardAiAccess(supabase, user, token);
   if (blocked) return blocked;
 
   try {

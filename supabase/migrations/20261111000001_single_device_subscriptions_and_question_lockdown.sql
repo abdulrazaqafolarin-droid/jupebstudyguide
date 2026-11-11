@@ -126,6 +126,36 @@ CREATE TRIGGER guard_profile_security_flags
   FOR EACH ROW
   EXECUTE FUNCTION public.guard_profile_security_flags();
 
+-- Attach the same guard to INSERT as well: the function's TG_OP = 'INSERT'
+-- checks otherwise would never execute for a client-created profile row.
+DROP TRIGGER IF EXISTS guard_profile_security_flags_insert ON public.profiles;
+CREATE TRIGGER guard_profile_security_flags_insert
+  BEFORE INSERT ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.guard_profile_security_flags();
+
+-- Existing student activations do not carry a recorded subscription term.
+-- The owner administrator is exempt. Revoke every currently active Supabase
+-- session for previously activated students and clear their legacy activation
+-- flag so they must sign in again and redeem a new duration-based code.
+SELECT set_config('request.jwt.claim', '{"role":"service_role"}', true);
+
+DELETE FROM auth.sessions AS s
+USING public.profiles AS p
+JOIN auth.users AS u ON u.id = p.user_id
+WHERE s.user_id = p.user_id
+  AND p.is_admin IS NOT TRUE
+  AND p.is_activated IS TRUE
+  AND lower(u.email) <> 'abdulrazaqafolarin@gmail.com';
+
+UPDATE public.profiles AS p
+SET is_activated = false
+FROM auth.users AS u
+WHERE u.id = p.user_id
+  AND p.is_admin IS NOT TRUE
+  AND p.is_activated IS TRUE
+  AND lower(u.email) <> 'abdulrazaqafolarin@gmail.com';
+
 -- Signups no longer receive an automatic free trial. Preserve the existing
 -- welcome conversation behaviour for new student accounts.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -335,6 +365,9 @@ DECLARE
   v_expiry timestamptz;
 BEGIN
   IF (auth.jwt() ->> 'role') <> 'service_role' THEN
+    IF NOT public.current_auth_session_is_active() THEN
+      RETURN jsonb_build_object('success', false, 'error', 'This device session is no longer active. Please sign in again.');
+    END IF;
     p_user_id := auth.uid();
   END IF;
 

@@ -107,6 +107,11 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   }, [question, aiTheoryLoading]);
 
   const subjectInfo = SUBJECT_INFO[question.subject];
+  // Some theory rows arrive with options: [] from the database adapter.
+  // An empty array is truthy in JavaScript, so test its length instead of
+  // relying on the presence of the array to decide whether this is an MCQ.
+  const questionOptions = question.options ?? [];
+  const hasOptions = questionOptions.length > 0;
 
   const handleOptionClick = (label: string) => {
     if (selectedOption) return;
@@ -152,7 +157,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
       <div className="flashcard-container">
         <div
           className={cn('flashcard relative w-full min-h-[320px] cursor-pointer', isFlipped && 'flipped')}
-          onClick={!question.options ? (event) => {
+          onClick={!hasOptions ? (event) => {
             // Scrolling and controls are independent interactions; only taps
             // on the non-interactive card surface reveal the answer.
             const target = event.target;
@@ -191,7 +196,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   data-flashcard-scroll-region="question"
                   className={cn(
                     "flashcard-scroll-region overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin",
-                    question.options
+                    hasOptions
                       ? "h-auto max-h-[min(28dvh,240px)] shrink-0"
                       : "h-auto max-h-[min(52dvh,480px)] shrink-0"
                   )}
@@ -229,13 +234,13 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 </div>
 
                 {/* MCQ options have their own independent scroll area. */}
-                {question.options && (
+                {hasOptions && (
                   <div
                     aria-label="Scrollable answer options"
                     data-flashcard-scroll-region="options"
                     className="flashcard-scroll-region max-h-[min(32dvh,280px)] overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin space-y-2.5"
                   >
-                    {question.options.map((option, oi) => {
+                    {questionOptions.map((option, oi) => {
                       const isSelected = selectedOption === option.label;
                       const isCorrectOption = option.label === question.correctAnswer;
                       const showResult = selectedOption !== null;
@@ -281,7 +286,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 )}
 
                 {/* Essay question hint */}
-                {!question.options && (
+                {!hasOptions && (
                   <div className="shrink-0 text-center text-muted-foreground py-2">
                     <p className="text-sm mb-1">Tap the card to reveal the answer</p>
                     <RotateCcw className="w-5 h-5 mx-auto animate-pulse text-primary/60" />
@@ -292,7 +297,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
           </div>
 
           {/* Back of card (for essay questions) */}
-          {!question.options && (
+          {!hasOptions && (
             <div className="flashcard-face flashcard-back min-h-[320px] rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-accent/10" />
               <div className="absolute inset-0 chalk-texture opacity-30" />
@@ -363,7 +368,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
       </div>
 
       {/* Explanation panel for MCQs */}
-      {showExplanation && question.options && (
+      {showExplanation && hasOptions && (
         <div className={cn(
           'mt-6 p-5 rounded-2xl border-2 animate-scale-in',
           isCorrect ? 'bg-gradient-to-br from-accent/10 to-accent/5 border-accent/40' : 'bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/40'

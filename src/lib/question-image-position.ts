@@ -1,6 +1,6 @@
 import type { QuestionImagePosition } from "@/types/question";
 
-const INLINE_IMAGE_POSITION = /^image-inline:(\d+)$/;
+const INLINE_IMAGE_POSITION = /^image-inline:(\d+(?:,\d+)*)$/;
 
 /**
  * Protect every math delimiter supported by QuestionMath, plus code and

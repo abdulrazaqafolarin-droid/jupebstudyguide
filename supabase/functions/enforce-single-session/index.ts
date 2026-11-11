@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
   // Enforce MFA at the server boundary as well as in the app. Never revoke
   // another device while this login is still at AAL1 and must reach AAL2.
   const { data: assurance, error: assuranceError } =
-    await userClient.auth.mfa.getAuthenticatorAssuranceLevel();
+    await userClient.auth.mfa.getAuthenticatorAssuranceLevel(token);
   if (assuranceError) {
     return json({ error: "Could not verify multi-factor authentication. Please retry." }, 503);
   }

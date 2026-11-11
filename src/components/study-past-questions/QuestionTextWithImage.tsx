@@ -1,58 +1,87 @@
 import { QuestionMath } from "@/components/QuestionMath";
 import { cn } from "@/lib/utils";
-import { getInlineImageOffset, splitQuestionAtImageOffset } from "@/lib/question-image-position";
+import { getInlineImageOffsets } from "@/lib/question-image-position";
+
+interface InlineQuestionImage {
+  id: string;
+  src: string;
+  alt?: string;
+  onError?: () => void;
+}
 
 interface QuestionTextWithImageProps {
   content: string;
-  imageSrc: string;
+  images: InlineQuestionImage[];
   imagePosition: string;
-  imageAlt?: string;
-  onImageError?: () => void;
   className?: string;
 }
 
 /**
- * Student-facing renderer for an image anchored at a stable word boundary.
- * The saved character offset survives responsive reflow: on narrower/wider
- * screens the image remains attached to the same phrase instead of a stale
- * visual line number.
+ * Student renderer for multiple independently anchored question images.
+ * Character offsets keep every image attached to its intended phrase when
+ * the text reflows on different device widths.
  */
 export function QuestionTextWithImage({
   content,
-  imageSrc,
+  images,
   imagePosition,
-  imageAlt = "Question illustration",
-  onImageError,
   className,
 }: QuestionTextWithImageProps) {
-  const offset = getInlineImageOffset(imagePosition, content);
-  const [before, after] = splitQuestionAtImageOffset(content, offset);
+  const offsets = getInlineImageOffsets(imagePosition, content, images.length);
+  const placements = images
+    .map((image, index) => ({ image, offset: offsets[index] ?? content.length, index }))
+    .sort((a, b) => a.offset - b.offset || a.index - b.index);
 
-  return (
-    <div className={cn("w-full min-w-0", className)}>
-      {before && (
+  const parts: React.ReactNode[] = [];
+  let cursor = 0;
+
+  placements.forEach(({ image, offset, index }) => {
+    const safeOffset = Math.max(cursor, Math.min(content.length, offset));
+    if (safeOffset > cursor) {
+      parts.push(
         <QuestionMath
-          content={before}
+          key={"question-text-" + cursor}
+          content={content.slice(cursor, safeOffset)}
           className="text-base font-medium leading-relaxed"
         />
-      )}
-      <div className="my-3">
+      );
+    }
+
+    parts.push(
+      <div key={image.id || "question-image-" + index} className="my-3">
         <img
-          src={imageSrc}
-          alt={imageAlt}
+          src={image.src}
+          alt={image.alt || "Question illustration " + (index + 1)}
           className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
           loading="lazy"
-          onError={onImageError}
+          onError={image.onError}
         />
       </div>
-      {after && (
-        <QuestionMath
-          content={after}
-          className="text-base font-medium leading-relaxed"
-        />
-      )}
-    </div>
-  );
+    );
+    cursor = safeOffset;
+  });
+
+  if (cursor < content.length) {
+    parts.push(
+      <QuestionMath
+        key={"question-text-" + cursor}
+        content={content.slice(cursor)}
+        className="text-base font-medium leading-relaxed"
+      />
+    );
+  }
+
+  if (parts.length === 0 && content) {
+    parts.push(
+      <QuestionMath
+        key="question-text-only"
+        content={content}
+        className="text-base font-medium leading-relaxed"
+      />
+    );
+  }
+
+  return <div className={cn("w-full min-w-0", className)}>{parts}</div>;
 }
 
 export default QuestionTextWithImage;

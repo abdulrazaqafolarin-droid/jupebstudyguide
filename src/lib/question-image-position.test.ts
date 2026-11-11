@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createInlineImagePosition,
   getInlineImageOffset,
+  getInlineImageOffsets,
   getQuestionPositionTokens,
   getSafeQuestionImageOffset,
   isInlineImagePosition,
@@ -13,10 +14,12 @@ describe("question image text anchors", () => {
     expect(createInlineImagePosition(12)).toBe("image-inline:12");
     expect(createInlineImagePosition(-2)).toBe("image-inline:0");
     expect(createInlineImagePosition(Number.NaN)).toBe("image-inline:0");
+    expect(createInlineImagePosition([4, 18, 32])).toBe("image-inline:4,18,32");
   });
 
   it("recognizes inline positions without changing legacy layouts", () => {
     expect(isInlineImagePosition("image-inline:12")).toBe(true);
+    expect(isInlineImagePosition("image-inline:12,28,44")).toBe(true);
     expect(isInlineImagePosition("image-inline")).toBe(true);
     expect(isInlineImagePosition("image-above")).toBe(false);
     expect(isInlineImagePosition("image-beside")).toBe(false);
@@ -27,6 +30,8 @@ describe("question image text anchors", () => {
     expect(getInlineImageOffset("image-inline:2", "short")).toBe(2);
     expect(getInlineImageOffset("image-above", "short")).toBe(0);
     expect(getInlineImageOffset("image-inline:4", "")).toBe(0);
+    expect(getInlineImageOffsets("image-inline:2,8,99", "short", 3)).toEqual([2, 5, 5]);
+    expect(getInlineImageOffsets("image-inline:7", "long text", 3)).toEqual([7, 0, 0]);
   });
 
   it("keeps anchors outside inline and display maths", () => {

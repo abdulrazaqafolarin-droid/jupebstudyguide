@@ -164,10 +164,10 @@ export function useActivation() {
     try {
       const normalized = code.trim().toUpperCase();
       const { data, error: rpcError } = await withActivationTimeout(
-        (signal) => supabase.rpc("consume_activation_code", {
-          p_code: normalized,
-          p_user_id: user.id,
-        }).abortSignal(signal),
+        (signal) => supabase.functions.invoke("validate-activation", {
+          body: { action: "validate", code: normalized },
+          signal,
+        }),
         "Activation code validation",
       );
 

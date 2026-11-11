@@ -58,10 +58,10 @@ describe("Admin free cropper", () => {
 
     const crop = screen.getByRole("group", { name: "Free crop selection" });
     const start = {
-      left: Number.parseFloat(crop.getAttribute("style")?.match(/left:\\s*([\\d.]+)px/)?.[1] || "0"),
-      top: Number.parseFloat(crop.getAttribute("style")?.match(/top:\\s*([\\d.]+)px/)?.[1] || "0"),
-      width: Number.parseFloat(crop.getAttribute("style")?.match(/width:\\s*([\\d.]+)px/)?.[1] || "0"),
-      height: Number.parseFloat(crop.getAttribute("style")?.match(/height:\\s*([\\d.]+)px/)?.[1] || "0"),
+      left: Number.parseFloat(crop.style.left),
+      top: Number.parseFloat(crop.style.top),
+      width: Number.parseFloat(crop.style.width),
+      height: Number.parseFloat(crop.style.height),
     };
     const handle = screen.getByRole("button", { name: "Resize crop nw" });
 
@@ -88,9 +88,8 @@ describe("Admin free cropper", () => {
     });
     dispatchPointer(window, "pointerup", { pointerId: 7, pointerType: "touch" });
 
-    const updatedStyle = crop.getAttribute("style") || "";
     const read = (property: string) =>
-      Number.parseFloat(updatedStyle.match(new RegExp(property + ":\\\\s*([\\\\d.]+)px"))?.[1] || "0");
+      Number.parseFloat(crop.style.getPropertyValue(property) || "0");
 
     expect(read("left")).toBeCloseTo(start.left + 21);
     expect(read("top")).toBeCloseTo(start.top + 9);

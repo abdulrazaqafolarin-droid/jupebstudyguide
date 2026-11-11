@@ -31,7 +31,7 @@ describe("multiple inline question image positioning", () => {
       configurable: true,
       value(this: Range) {
         const prefix = this.startContainer.textContent?.slice(0, this.startOffset) || "";
-        const visualLine = (prefix.match(/\\n/g) || []).length;
+        const visualLine = (prefix.match(/\n/g) || []).length;
         return { top: visualLine * 40, height: 12 } as DOMRect;
       },
     });

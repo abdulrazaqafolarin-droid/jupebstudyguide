@@ -154,7 +154,13 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
         </Button>
       </div>
 
-      <div className="flashcard-container">
+      <div
+        className="flashcard-container protected-study-content"
+        onCopy={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+        onCut={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+        onContextMenu={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+        onDragStart={(event) => event.preventDefault()}
+      >
         <div
           className={cn('flashcard relative w-full min-h-[320px] cursor-pointer', isFlipped && 'flipped')}
           onClick={!hasOptions ? (event) => {

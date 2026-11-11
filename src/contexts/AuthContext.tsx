@@ -121,6 +121,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     let cancelled = false;
     const checkDeviceSession = async () => {
+      // Do not revoke another device while this sign-in is still waiting for
+      // its required second factor. The same polling check becomes active as
+      // soon as the user completes MFA (AAL2).
+      const { data: assurance, error: assuranceError } =
+        await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (cancelled || assuranceError) {
+        if (assuranceError) console.warn("[auth] could not verify MFA level before device handoff");
+        return;
+      }
+      if (assurance?.nextLevel === "aal2" && assurance.currentLevel !== "aal2") return;
+
       const { error } = await supabase.functions.invoke("enforce-single-session", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });

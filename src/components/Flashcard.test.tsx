@@ -49,15 +49,21 @@ describe("Flashcard independent scrolling", () => {
     expect(questionPane).not.toBe(optionsPane);
   });
 
-  it("does not treat a touch/click inside the theory question scroller as a reveal", () => {
+  it("lets a tap on the theory question reveal the answer and a tap on the answer return to the question", () => {
     render(<Flashcard question={baseQuestion} onAnswer={() => {}} showControls={false} />);
 
     const questionPane = screen.getByLabelText("Scrollable question");
+    expect(questionPane).toHaveClass("flex-1", "min-h-0");
     fireEvent.click(questionPane);
 
-    expect(screen.queryByLabelText("Scrollable written explanation")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Scrollable AI model answer")).not.toBeInTheDocument();
-    expect(screen.getByText(/Think about your answer/)).toBeInTheDocument();
+    const explanationPane = screen.getByLabelText("Scrollable written explanation");
+    const aiAnswerPane = screen.getByLabelText("Scrollable AI model answer");
+    expect(explanationPane).toBeInTheDocument();
+    expect(aiAnswerPane).toBeInTheDocument();
+
+    fireEvent.click(explanationPane);
+    expect(screen.getByLabelText("Scrollable question")).toBeInTheDocument();
+    expect(screen.getByText(/Tap the card to reveal the answer/)).toBeInTheDocument();
   });
 
   it("shows the written explanation and AI model answer in separate scroll cards after reveal", () => {

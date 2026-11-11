@@ -138,4 +138,25 @@ describe("multiple inline question image positioning", () => {
       }
     }
   });
+  it("stacks images dropped on the same text line without obscuring either image", () => {
+    const content = "First line\nSecond line";
+    const { container } = render(
+      <QuestionImagePositioner
+        content={content}
+        images={[
+          { id: "same-line-one", url: "https://example.test/one.png" },
+          { id: "same-line-two", url: "https://example.test/two.png" },
+        ]}
+        imagePosition="image-inline:0,0"
+        onPositionChange={() => {}}
+      />,
+    );
+
+    const firstLineGroup = [...container.querySelectorAll<HTMLElement>("[data-testid=inline-image-placement-group]")]
+      .find((group) => group.dataset.imagePlacementOffset === "0");
+    expect(firstLineGroup).toBeTruthy();
+    expect(firstLineGroup).toHaveClass("flex-col");
+    expect(firstLineGroup?.querySelectorAll("[data-testid=draggable-question-image]")).toHaveLength(2);
+    expect(firstLineGroup?.querySelectorAll("img")).toHaveLength(2);
+  });
 });

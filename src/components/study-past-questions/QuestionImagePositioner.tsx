@@ -335,7 +335,7 @@ export function QuestionImagePositioner({
         data-testid="draggable-question-image"
         data-image-index={imageIndex}
         className={cn(
-          "my-2 w-full rounded-lg border p-1 cursor-grab active:cursor-grabbing touch-none select-none",
+          "w-full rounded-lg border p-1 cursor-grab active:cursor-grabbing touch-none select-none",
           activeImageIndex === imageIndex ? "border-primary/50 bg-primary/5" : "border-border bg-muted/20"
         )}
       >
@@ -423,18 +423,38 @@ export function QuestionImagePositioner({
           const parts: ReactNode[] = [];
           let cursor = start;
 
-          linePlacements.forEach((placement) => {
-            if (placement.offset > cursor) {
+          const groupedLinePlacements = linePlacements.reduce<Array<{ offset: number; items: typeof linePlacements }>>(
+            (groups, placement) => {
+              const existing = groups[groups.length - 1];
+              if (existing?.offset === placement.offset) existing.items.push(placement);
+              else groups.push({ offset: placement.offset, items: [placement] });
+              return groups;
+            },
+            [],
+          );
+
+          groupedLinePlacements.forEach((group) => {
+            if (group.offset > cursor) {
               parts.push(
                 <QuestionMath
                   key={"text-" + cursor}
-                  content={content.slice(cursor, placement.offset)}
+                  content={content.slice(cursor, group.offset)}
                   className="text-base font-medium leading-relaxed"
                 />
               );
             }
-            parts.push(renderImage(placement.image, placement.imageIndex));
-            cursor = placement.offset;
+            // Shared text anchors render in a vertical stack, never as overlays.
+            parts.push(
+              <div
+                key={"inline-image-group-" + start + "-" + group.offset}
+                data-testid="inline-image-placement-group"
+                data-image-placement-offset={group.offset}
+                className="my-2 flex flex-col gap-2"
+              >
+                {group.items.map((placement) => renderImage(placement.image, placement.imageIndex))}
+              </div>
+            );
+            cursor = group.offset;
           });
 
           if (cursor < end || linePlacements.length === 0) {
@@ -459,10 +479,20 @@ export function QuestionImagePositioner({
         })}
 
         {renderDropSlot(lineOffsets.length - 1)}
-        {placements
-          .filter((placement) => placement.offset >= content.length)
-          .sort((a, b) => a.imageIndex - b.imageIndex)
-          .map((placement) => renderImage(placement.image, placement.imageIndex))}
+        {(() => {
+          const trailing = placements
+            .filter((placement) => placement.offset >= content.length)
+            .sort((a, b) => a.imageIndex - b.imageIndex);
+          return trailing.length > 0 ? (
+            <div
+              data-testid="inline-image-placement-group"
+              data-image-placement-offset={content.length}
+              className="my-2 flex flex-col gap-2"
+            >
+              {trailing.map((placement) => renderImage(placement.image, placement.imageIndex))}
+            </div>
+          ) : null;
+        })()}
       </div>
 
       {isDragging && dragPoint && draggingImageIndexRef.current !== null && (

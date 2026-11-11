@@ -147,7 +147,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
             const target = event.target;
             if (
               target instanceof Element &&
-              target.closest("[data-flashcard-scroll-region],button,a,input,textarea,select,[role=button]")
+              target.closest("button,a,input,textarea,select,[role=button]")
             ) return;
             handleFlip();
           } : undefined}
@@ -180,7 +180,12 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 <div
                   aria-label="Scrollable question"
                   data-flashcard-scroll-region="question"
-                  className="flashcard-scroll-region h-[min(32dvh,260px)] min-h-[140px] max-h-[260px] shrink-0 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin"
+                  className={cn(
+                    "flashcard-scroll-region overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin",
+                    question.options
+                      ? "h-[min(32dvh,260px)] min-h-[140px] max-h-[260px] shrink-0"
+                      : "flex-1 min-h-0"
+                  )}
                 >
                   <QuestionImage imageUrl={question.imageUrl} />
                   <div className="text-lg font-medium mb-4 leading-relaxed">
@@ -242,9 +247,9 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
                 {/* Essay question hint */}
                 {!question.options && (
-                  <div className="mt-auto text-center text-muted-foreground py-8">
-                    <p className="text-sm mb-2">Think about your answer, then click to reveal</p>
-                    <RotateCcw className="w-6 h-6 mx-auto animate-pulse text-primary/60" />
+                  <div className="shrink-0 text-center text-muted-foreground py-2">
+                    <p className="text-sm mb-1">Tap the card to reveal the answer</p>
+                    <RotateCcw className="w-5 h-5 mx-auto animate-pulse text-primary/60" />
                   </div>
                 )}
               </div>

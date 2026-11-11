@@ -28,7 +28,7 @@ export function resolveActivationFailure(
     trial_expires_at: null,
     subscription_expires_at: null,
     subscription_duration_days: null,
-    checking: false;
+    checking: false,
     check_error: !isAdminEmail,
   };
 }

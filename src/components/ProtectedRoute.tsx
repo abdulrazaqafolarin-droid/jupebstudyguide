@@ -164,7 +164,7 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
         if (error) console.error("Admin check failed:", error.message);
         const dbAdmin = data?.is_admin ?? false;
         const emailAdmin = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
-        setIsAdmin(dbAdmin || emailAdmin);
+        setIsAdmin(dbAdmin && emailAdmin);
       } catch (err) {
         if (!cancelled) { console.error("Admin check error:", err); }
       } finally {

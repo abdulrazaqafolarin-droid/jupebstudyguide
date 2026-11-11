@@ -117,7 +117,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     kind: "move" | "resize",
     handle?: ResizeHandle,
   ) => {
-    if (mode !== "rectangle" || !cropRect || processing.current) return;
+    if (!cropRect || processing.current) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     const start = getLocalPoint(event.clientX, event.clientY);
     if (!start) return;
@@ -333,7 +333,7 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
             draggable={false}
           />
 
-          {mode === "rectangle" && cropRect && (
+          {cropRect && (
             <div
               role="group"
               aria-label="Free crop selection"

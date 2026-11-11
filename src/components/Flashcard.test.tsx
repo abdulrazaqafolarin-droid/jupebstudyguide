@@ -71,6 +71,36 @@ describe("Flashcard independent scrolling", () => {
     expect(screen.getByText(/Tap the card to reveal the answer/)).toBeInTheDocument();
   });
 
+  it("shows all saved images on home subject cards, including inline image anchors", () => {
+    const objective: Question = {
+      ...baseQuestion,
+      id: "objective-with-images",
+      type: "mcq",
+      options: [{ label: "A", text: "Option A" }, { label: "B", text: "Option B" }],
+      correctAnswer: "A",
+      imageUrl: "https://example.com/first.png",
+      imageUrls: ["https://example.com/first.png", "https://example.com/second.png"],
+      imagePosition: "image-above",
+    };
+
+    const { rerender } = render(
+      <Flashcard question={objective} onAnswer={() => {}} showControls={false} />,
+    );
+
+    expect(screen.getByRole("img", { name: "Question illustration 1" })).toHaveAttribute("src", "https://example.com/first.png");
+    expect(screen.getByRole("img", { name: "Question illustration 2" })).toHaveAttribute("src", "https://example.com/second.png");
+
+    const inlineQuestion: Question = {
+      ...objective,
+      id: "objective-inline-images",
+      imagePosition: "image-inline:3,24",
+    };
+    rerender(<Flashcard question={inlineQuestion} onAnswer={() => {}} showControls={false} />);
+    expect(screen.getByAltText("Question illustration 1")).toBeInTheDocument();
+    expect(screen.getByAltText("Question illustration 2")).toBeInTheDocument();
+    expect(screen.getAllByTestId("inline-question-image-group")).toHaveLength(2);
+  });
+
   it("shows only the independent AI model answer scroll card on the theory back face", () => {
     render(<Flashcard question={baseQuestion} onAnswer={() => {}} showControls={false} />);
 

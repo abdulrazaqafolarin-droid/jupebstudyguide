@@ -26,6 +26,8 @@ export interface Question {
   explanation: string;
   difficulty?: Difficulty;
   imageUrl?: string;
+  /** All images attached to the question; imageUrl remains the legacy first-image field. */
+  imageUrls?: string[];
   imagePosition?: QuestionImagePosition;
   document_name?: string;
 }

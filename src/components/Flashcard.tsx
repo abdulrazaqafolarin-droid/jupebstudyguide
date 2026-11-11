@@ -111,7 +111,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   };
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    setIsFlipped((current) => !current);
   };
 
   const handleRating = (quality: number) => {
@@ -144,7 +144,14 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
             'flashcard relative w-full min-h-[520px] cursor-pointer',
             isFlipped && 'flipped'
           )}
-          onClick={!question.options ? handleFlip : undefined}
+          onClick={!question.options ? (event) => {
+            // A tap or swipe inside a scroll pane must never be interpreted as
+            // the card's flip gesture. The reveal hint and non-scroll space
+            // remain available for the normal flip interaction.
+            const target = event.target;
+            if (target instanceof Element && target.closest("[data-flashcard-scroll-region]")) return;
+            handleFlip();
+          } : undefined}
         >
           {/* Front of card */}
           <div className="flashcard-face absolute inset-0 rounded-2xl border-2 border-border shadow-xl overflow-hidden">
@@ -171,7 +178,8 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 {/* Question prompt scrolls independently from its answer options. */}
                 <div
                   aria-label="Scrollable question"
-                  className="h-[min(30vh,240px)] min-h-0 shrink-0 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin"
+                  data-flashcard-scroll-region="question"
+                  className="flashcard-scroll-region h-[min(32dvh,260px)] min-h-[140px] max-h-[260px] shrink-0 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin"
                 >
                   <QuestionImage imageUrl={question.imageUrl} />
                   <div className="text-lg font-medium mb-4 leading-relaxed">
@@ -183,7 +191,8 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 {question.options && (
                   <div
                     aria-label="Scrollable answer options"
-                    className="min-h-[120px] flex-1 overflow-y-auto overscroll-contain touch-pan-y max-h-[280px] pr-1 scrollbar-thin space-y-2.5"
+                    data-flashcard-scroll-region="options"
+                    className="flashcard-scroll-region min-h-[120px] flex-1 overflow-y-auto overscroll-contain touch-pan-y max-h-[280px] pr-1 scrollbar-thin space-y-2.5"
                   >
                     {question.options.map((option, oi) => {
                       const isSelected = selectedOption === option.label;
@@ -259,7 +268,8 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 <div className="flex-1 min-h-0 flex flex-col gap-3">
                   <div
                     aria-label="Scrollable written explanation"
-                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y rounded-xl border border-border/60 bg-background/35 p-3"
+                    data-flashcard-scroll-region="written-explanation"
+                    className="flashcard-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y rounded-xl border border-border/60 bg-background/35 p-3"
                   >
                     {question.explanation ? (
                       <div className="text-base leading-relaxed">
@@ -277,8 +287,9 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                     </div>
                     <div
                       aria-label="Scrollable AI model answer"
+                      data-flashcard-scroll-region="ai-answer"
                       aria-live="polite"
-                      className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-3 space-y-3"
+                      className="flashcard-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-3 space-y-3"
                     >
                       {aiTheoryAnswer ? (
                         <MathRenderer content={aiTheoryAnswer} className="text-sm leading-relaxed text-foreground" />

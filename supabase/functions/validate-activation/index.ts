@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { checkAuthSessionActive } from "../_shared/auth-session.ts";
 
 const OWNER_EMAIL = "abdulrazaqafolarin@gmail.com";
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
@@ -43,6 +44,15 @@ Deno.serve(async (req) => {
     });
     const { data: { user }, error: userError } = await admin.auth.getUser(token);
     if (userError || !user) return json({ error: "Invalid authentication" }, 401);
+
+    const sessionActive = await checkAuthSessionActive(supabaseUrl, anonKey, token);
+    if (sessionActive !== true) {
+      return json({
+        error: sessionActive === false
+          ? "This account was signed in on another device. Please sign in again."
+          : "Could not verify this device session. Please retry.",
+      }, sessionActive === false ? 401 : 503);
+    }
 
     const { data: callerProfile, error: callerProfileError } = await admin
       .from("profiles")

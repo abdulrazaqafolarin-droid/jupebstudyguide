@@ -58,9 +58,9 @@ export async function aiChatStream(
   return routerStream(systemPrompt, messages, opts, undefined, strict);
 }
 
-// Per-user AI access guard: requires an activated, admin, or currently
-// trial-eligible account and enforces the same daily request cap for all
-// non-admin users. Trial expiry is read from the server-owned profile column.
+// Per-user AI access guard: first verifies the exact caller session, then
+// requires either the owner administrator account or an unexpired paid
+// subscription. The daily request cap applies to all non-admin users.
 export async function guardAiAccess(
   supabaseClient: unknown,
   user: { id: string; email?: string | null },

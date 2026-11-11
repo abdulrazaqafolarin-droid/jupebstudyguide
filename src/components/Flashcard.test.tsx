@@ -23,7 +23,7 @@ const baseQuestion: Question = {
 };
 
 describe("Flashcard independent scrolling", () => {
-  it("gives objective question text and options separate native scroll regions", () => {
+  it("keeps objective question text and answer options independently scrollable without a reserved spacer", () => {
     const objective: Question = {
       ...baseQuestion,
       id: "objective-scroll-test",
@@ -44,41 +44,43 @@ describe("Flashcard independent scrolling", () => {
 
     expect(questionPane).toHaveAttribute("data-flashcard-scroll-region", "question");
     expect(optionsPane).toHaveAttribute("data-flashcard-scroll-region", "options");
-    expect(questionPane).toHaveClass("overflow-y-auto", "touch-pan-y");
-    expect(optionsPane).toHaveClass("overflow-y-auto", "touch-pan-y");
+    expect(questionPane).toHaveClass("h-auto", "max-h-[min(28dvh,240px)]", "overflow-y-auto", "touch-pan-y");
+    expect(optionsPane).toHaveClass("max-h-[min(32dvh,280px)]", "overflow-y-auto", "touch-pan-y");
+    expect(questionPane).not.toHaveClass("flex-1", "min-h-[140px]");
+    expect(optionsPane).not.toHaveClass("flex-1", "min-h-[120px]");
     expect(questionPane).not.toBe(optionsPane);
   });
 
-  it("lets a tap on the theory question reveal the answer and a tap on the answer return to the question", () => {
+  it("keeps long theory questions scrollable and restores the two-sided card flip", () => {
     render(<Flashcard question={baseQuestion} onAnswer={() => {}} showControls={false} />);
 
+    const card = document.querySelector(".flashcard");
     const questionPane = screen.getByLabelText("Scrollable question");
-    expect(questionPane).toHaveClass("flex-1", "min-h-0");
+    expect(questionPane).toHaveClass("h-auto", "max-h-[min(52dvh,480px)]", "overflow-y-auto", "touch-pan-y");
+    expect(questionPane).not.toHaveClass("flex-1", "min-h-0");
+
     fireEvent.click(questionPane);
+    expect(card).toHaveClass("flipped");
 
-    const explanationPane = screen.getByLabelText("Scrollable written explanation");
     const aiAnswerPane = screen.getByLabelText("Scrollable AI model answer");
-    expect(explanationPane).toBeInTheDocument();
     expect(aiAnswerPane).toBeInTheDocument();
+    expect(screen.queryByLabelText("Scrollable written explanation")).not.toBeInTheDocument();
 
-    fireEvent.click(explanationPane);
-    expect(screen.getByLabelText("Scrollable question")).toBeInTheDocument();
+    fireEvent.click(aiAnswerPane);
+    expect(card).not.toHaveClass("flipped");
     expect(screen.getByText(/Tap the card to reveal the answer/)).toBeInTheDocument();
   });
 
-  it("shows the written explanation and AI model answer in separate scroll cards after reveal", () => {
+  it("shows only the independent AI model answer scroll card on the theory back face", () => {
     render(<Flashcard question={baseQuestion} onAnswer={() => {}} showControls={false} />);
 
     fireEvent.click(screen.getByText(/Tap the card to reveal the answer/));
 
-    const explanationPane = screen.getByLabelText("Scrollable written explanation");
     const aiAnswerPane = screen.getByLabelText("Scrollable AI model answer");
-
-    expect(explanationPane).toHaveAttribute("data-flashcard-scroll-region", "written-explanation");
     expect(aiAnswerPane).toHaveAttribute("data-flashcard-scroll-region", "ai-answer");
-    expect(explanationPane).toHaveClass("overflow-y-auto", "touch-pan-y");
     expect(aiAnswerPane).toHaveClass("overflow-y-auto", "touch-pan-y");
     expect(aiAnswerPane.closest("section")).toBeInTheDocument();
-    expect(explanationPane).not.toBe(aiAnswerPane);
+    expect(screen.queryByLabelText("Scrollable written explanation")).not.toBeInTheDocument();
+    expect(screen.queryByText(/No written explanation is available/)).not.toBeInTheDocument();
   });
 });

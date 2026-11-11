@@ -210,14 +210,42 @@
 }
 
 @layer components {
-  /* Independent native scroll surfaces in the home-page study cards. */
+  /* Original two-sided flashcard rotation, restored for theory questions. */
+  .flashcard-container {
+    perspective: 1500px;
+    -webkit-perspective: 1500px;
+  }
+
+  .flashcard {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s var(--ease-in-out);
+    will-change: transform;
+  }
+
+  .flashcard.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .flashcard-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .flashcard-back {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+  }
+
+  /* Each prompt/options/AI answer keeps its own native vertical scroll. */
   .flashcard-scroll-region {
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
-    contain: layout paint;
   }
 
   /* Subject badges */

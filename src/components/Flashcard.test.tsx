@@ -71,6 +71,22 @@ describe("Flashcard independent scrolling", () => {
     expect(screen.getByText(/Tap the card to reveal the answer/)).toBeInTheDocument();
   });
 
+  it("still flips theory cards when the data adapter supplies an empty options array", () => {
+    const theoryWithEmptyOptions: Question = {
+      ...baseQuestion,
+      id: "theory-empty-options",
+      options: [],
+    };
+
+    render(<Flashcard question={theoryWithEmptyOptions} onAnswer={() => {}} showControls={false} />);
+
+    const card = document.querySelector(".flashcard");
+    fireEvent.click(screen.getByLabelText("Scrollable question"));
+
+    expect(card).toHaveClass("flipped");
+    expect(screen.getByLabelText("Scrollable AI model answer")).toBeInTheDocument();
+  });
+
   it("shows all saved images on home subject cards, including inline image anchors", () => {
     const objective: Question = {
       ...baseQuestion,

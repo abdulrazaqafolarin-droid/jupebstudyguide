@@ -289,6 +289,8 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
     }
   }, [image, onSkip]);
 
+  const handleApply = handleRectangleApply;
+
   const handleLabels: Array<{ handle: ResizeHandle; className: string }> = [
     { handle: "nw", className: "-left-2 -top-2 cursor-nwse-resize" },
     { handle: "n", className: "left-1/2 -top-2 -translate-x-1/2 cursor-ns-resize" },

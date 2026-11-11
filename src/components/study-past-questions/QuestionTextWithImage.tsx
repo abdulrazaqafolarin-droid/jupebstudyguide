@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { QuestionMath } from "@/components/QuestionMath";
 import { cn } from "@/lib/utils";
 import { getInlineImageOffsets } from "@/lib/question-image-position";
@@ -32,7 +33,7 @@ export function QuestionTextWithImage({
     .map((image, index) => ({ image, offset: offsets[index] ?? content.length, index }))
     .sort((a, b) => a.offset - b.offset || a.index - b.index);
 
-  const parts: React.ReactNode[] = [];
+  const parts: ReactNode[] = [];
   let cursor = 0;
 
   placements.forEach(({ image, offset, index }) => {

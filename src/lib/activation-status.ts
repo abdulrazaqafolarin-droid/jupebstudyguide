@@ -2,6 +2,8 @@ export interface ActivationStatusSnapshot {
   is_activated: boolean;
   is_admin: boolean;
   trial_expires_at: string | null;
+  subscription_expires_at: string | null;
+  subscription_duration_days: number | null;
   checking: boolean;
   /** True only when the first verification failed and no trusted cache exists. */
   check_error?: boolean;
@@ -22,9 +24,13 @@ export function resolveActivationFailure(
 
   return {
     is_activated: false,
-    is_admin: isAdminEmail,
+    is_admin: false,
     trial_expires_at: null,
+    subscription_expires_at: null,
+    subscription_duration_days: null,
     checking: false,
-    check_error: !isAdminEmail,
+    // Admin privileges are never inferred from email alone. The trusted
+    // profiles.is_admin read must succeed before the owner gets an exemption.
+    check_error: true,
   };
 }

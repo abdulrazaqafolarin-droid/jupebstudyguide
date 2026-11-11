@@ -210,14 +210,17 @@
 }
 
 @layer components {
-  /* Flashcard flip animation */
+  /* Original two-sided flashcard rotation, restored for theory questions. */
   .flashcard-container {
     perspective: 1500px;
+    -webkit-perspective: 1500px;
   }
 
   .flashcard {
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
     transition: transform 0.5s var(--ease-in-out);
+    will-change: transform;
   }
 
   .flashcard.flipped {
@@ -230,7 +233,35 @@
   }
 
   .flashcard-back {
+    position: absolute;
+    inset: 0;
     transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+  }
+
+  /* Each prompt/options/AI answer keeps its own native vertical scroll. */
+  .flashcard-scroll-region {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  /* Protect study question and answer text from casual selection/copy. */
+  .protected-study-content,
+  .protected-study-content *:not(input):not(textarea):not([contenteditable="true"]) {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none;
+  }
+
+  .protected-study-content input,
+  .protected-study-content textarea,
+  .protected-study-content [contenteditable="true"] {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    -webkit-touch-callout: default;
   }
 
   /* Subject badges */

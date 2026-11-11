@@ -14,16 +14,19 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy, Clock } from 'lucide-react';
 import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 import { ACHIEVEMENTS, Achievement } from '@/hooks/useAchievements';
 import { useUserStorage } from '@/hooks/useUserStorage';
+import { useActivation } from '@/hooks/useActivation';
+import { formatTrialCountdown } from '@/lib/trial-countdown';
 import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
   const { signOut, user, deleteAccount } = useAuth();
+  const { status: activationStatus } = useActivation();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -33,6 +36,20 @@ export default function ProfilePage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [subscriptionClock, setSubscriptionClock] = useState(() => Date.now());
+  const subscriptionExpiry = activationStatus.subscription_expires_at
+    ? Date.parse(activationStatus.subscription_expires_at)
+    : Number.NaN;
+
+  useEffect(() => {
+    if (!Number.isFinite(subscriptionExpiry) || subscriptionExpiry <= Date.now()) return;
+    const timer = window.setInterval(() => setSubscriptionClock(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [subscriptionExpiry]);
+
+  const subscriptionRemaining = Number.isFinite(subscriptionExpiry)
+    ? Math.max(0, subscriptionExpiry - subscriptionClock)
+    : 0;
 
   // Achievements
   const [unlockedIds] = useUserStorage<string[]>('achievements-unlocked', []);
@@ -153,6 +170,48 @@ export default function ProfilePage() {
               </div>
               <p className="text-sm text-muted-foreground bg-secondary/30 px-3 py-1 rounded-full">{user?.email}</p>
             </div>
+          </div>
+        </section>
+
+        {/* Subscription status */}
+        <section className="animate-in-up stagger-2" aria-label="Subscription status">
+          <div className="bg-card rounded-2xl border border-border p-6 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <Clock className="w-4 h-4 text-primary" />
+                Subscription
+              </h3>
+              {!activationStatus.is_admin && activationStatus.subscription_expires_at && (
+                <span className="text-xs text-muted-foreground">
+                  {activationStatus.subscription_duration_days
+                    ? activationStatus.subscription_duration_days + "-day term"
+                    : "Paid term"}
+                </span>
+              )}
+            </div>
+            {activationStatus.checking ? (
+              <p className="text-sm text-muted-foreground">Checking subscription…</p>
+            ) : activationStatus.is_admin ? (
+              <div className="rounded-xl bg-primary/5 border border-primary/15 p-3">
+                <p className="text-sm font-semibold text-primary">Administrator access</p>
+                <p className="text-xs text-muted-foreground mt-1">Your owner account does not require an activation code or subscription.</p>
+              </div>
+            ) : Number.isFinite(subscriptionExpiry) && subscriptionRemaining > 0 ? (
+              <div className="rounded-xl bg-primary/5 border border-primary/15 p-3 space-y-2">
+                <p className="text-sm font-semibold text-foreground">Subscription active</p>
+                <p className="text-2xl font-mono font-semibold tabular-nums text-primary">
+                  {formatTrialCountdown(subscriptionRemaining)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Time remaining. Expires {new Date(subscriptionExpiry).toLocaleString()}.
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-xl bg-muted/50 border border-border p-3">
+                <p className="text-sm font-semibold text-foreground">No active subscription</p>
+                <p className="text-xs text-muted-foreground mt-1">Enter a valid activation code to unlock the study content.</p>
+              </div>
+            )}
           </div>
         </section>
 

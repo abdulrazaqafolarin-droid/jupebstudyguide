@@ -71,6 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
         // Set Realtime auth token so channels can connect
         if (session?.access_token) {
           supabase.realtime.setAuth(session.access_token);
@@ -110,6 +111,56 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       clearTimeout(timeoutId);
     };
   }, []);
+
+  // Poll the server-side session record so a device that was displaced by a
+  // later login is signed out locally, even while its cached access JWT remains
+  // within its normal expiry window.
+  useEffect(() => {
+    const accessToken = session?.access_token;
+    if (!accessToken) return;
+
+    let cancelled = false;
+    const checkDeviceSession = async () => {
+      // Do not revoke another device while this sign-in is still waiting for
+      // its required second factor. The same polling check becomes active as
+      // soon as the user completes MFA (AAL2).
+      const { data: assurance, error: assuranceError } =
+        await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (cancelled || assuranceError) {
+        if (assuranceError) console.warn("[auth] could not verify MFA level before device handoff");
+        return;
+      }
+      if (assurance?.nextLevel === "aal2" && assurance.currentLevel !== "aal2") return;
+
+      const { error } = await supabase.functions.invoke("enforce-single-session", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (cancelled || !error) return;
+
+      const response = (error as { context?: Response }).context;
+      if (response?.status === 401) {
+        await supabase.auth.signOut({ scope: "local" });
+        return;
+      }
+      console.warn("[auth] temporary device-session verification failure", error);
+    };
+
+    const handleResume = () => { void checkDeviceSession(); };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void checkDeviceSession();
+    };
+
+    void checkDeviceSession();
+    const intervalId = window.setInterval(() => { void checkDeviceSession(); }, 20_000);
+    window.addEventListener("focus", handleResume);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleResume);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [session?.access_token]);
 
   const signUp = async (email: string, password: string) => {
     try {

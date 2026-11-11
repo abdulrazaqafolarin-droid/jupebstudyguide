@@ -75,28 +75,16 @@ export function QuestionViewer({
 
     if (hasImage && isInlineImagePosition(pos)) {
       return (
-        <>
-          <QuestionTextWithImage
-            content={q.question || ""}
-            imageSrc={displayImageUrls[0]}
-            imagePosition={pos}
-            onImageError={() => handleImageError(displayImageUrls[0])}
-          />
-          {displayImageUrls.length > 1 && (
-            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {displayImageUrls.slice(1).map((url, index) => (
-                <img
-                  key={url + index}
-                  src={url}
-                  alt={"Question illustration " + (index + 2)}
-                  className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-                  loading="lazy"
-                  onError={() => handleImageError(url)}
-                />
-              ))}
-            </div>
-          )}
-        </>
+        <QuestionTextWithImage
+          content={q.question || ""}
+          images={displayImageUrls.map((url, index) => ({
+            id: url + "-" + index,
+            src: url,
+            alt: "Question illustration " + (index + 1),
+            onError: () => handleImageError(url),
+          }))}
+          imagePosition={pos}
+        />
       );
     }
 
@@ -447,7 +435,11 @@ export function QuestionViewer({
             animate="center"
             exit="exit"
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="space-y-5"
+            className="space-y-5 protected-study-content"
+            onCopy={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+            onCut={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+            onContextMenu={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+            onDragStart={(event) => event.preventDefault()}
           >
             <div>
               {category === "practical" && (

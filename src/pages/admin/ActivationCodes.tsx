@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useActivation, useAdminCodes, type ActivationCodeResult } from "@/hooks/useActivation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Key, Copy, CheckCircle, Loader2, Shield, Users, TrendingUp, RefreshCw } from "lucide-react";
@@ -22,7 +24,10 @@ export default function AdminActivationCodes() {
   }, [signOut, navigate]);
 
   const [count, setCount] = useState(5);
-  const [planType, setPlanType] = useState("basic");
+  const [durationDays, setDurationDays] = useState("7");
+  const [assignDurationDays, setAssignDurationDays] = useState("7");
+  const [targetEmail, setTargetEmail] = useState("");
+  const [assigning, setAssigning] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeResult[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -42,7 +47,7 @@ export default function AdminActivationCodes() {
 
   const handleGenerate = async () => {
     setGenerating(true);
-    const result = await generateCodes(count, planType);
+    const result = await generateCodes(count, Number(durationDays));
     setGenerating(false);
 
     if (result.success && result.codes) {
@@ -54,8 +59,30 @@ export default function AdminActivationCodes() {
     }
   };
 
+  const handleAssignSubscription = async () => {
+    if (!targetEmail.trim()) {
+      toast.error("Enter the user's email address");
+      return;
+    }
+    setAssigning(true);
+    const { data, error } = await supabase.functions.invoke("validate-activation", {
+      body: {
+        action: "assign-subscription",
+        target_email: targetEmail.trim(),
+        duration_days: Number(assignDurationDays),
+      },
+    });
+    setAssigning(false);
+    if (error || !data?.success) {
+      toast.error(data?.error || error?.message || "Could not assign subscription");
+      return;
+    }
+    toast.success("Assigned " + data.duration_days + "-day subscription to " + data.email);
+    setTargetEmail("");
+  };
+
   const copyAll = () => {
-    const text = generatedCodes.map((c) => `${c.code}\t${c.plan_type}`).join("\n");
+    const text = generatedCodes.map((c) => c.code + "\t" + (c.duration_days ?? "legacy") + " days").join("\n");
     navigator.clipboard.writeText(text);
     toast.success("Copied all codes");
   };
@@ -96,7 +123,7 @@ export default function AdminActivationCodes() {
           <button onClick={() => navigate("/admin")} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-5 h-5" /> Dashboard
           </button>
-          <h1 className="font-semibold">Activation Code Manager</h1>
+          <h1 className="font-semibold">Activation Code Vault</h1>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={refresh} disabled={refreshing} className="gap-1.5">
               <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
@@ -165,15 +192,15 @@ export default function AdminActivationCodes() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm text-muted-foreground">Plan Type</label>
-                <Select value={planType} onValueChange={setPlanType}>
-                  <SelectTrigger className="w-36 bg-background/50">
+                <label className="text-sm text-muted-foreground">Subscription Duration</label>
+                <Select value={durationDays} onValueChange={setDurationDays}>
+                  <SelectTrigger className="w-44 bg-background/50">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="basic">Basic</SelectItem>
-                    <SelectItem value="premium">Premium</SelectItem>
-                    <SelectItem value="lifetime">Lifetime</SelectItem>
+                    <SelectItem value="7">1 Week (7 days)</SelectItem>
+                    <SelectItem value="30">1 Month (30 days)</SelectItem>
+                    <SelectItem value="90">3 Months (90 days)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -202,7 +229,7 @@ export default function AdminActivationCodes() {
                   {generatedCodes.map((c, i: number) => (
                     <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                       <code className="font-mono text-sm tracking-wider text-primary">{c.code}</code>
-                      <span className="text-xs text-muted-foreground capitalize">{c.plan_type}</span>
+                      <span className="text-xs text-muted-foreground">{c.duration_days ? c.duration_days + " days" : "Legacy code"}</span>
                       <button
                         onClick={() => { navigator.clipboard.writeText(c.code); toast.success("Copied"); }}
                         className="text-muted-foreground hover:text-foreground"
@@ -214,6 +241,44 @@ export default function AdminActivationCodes() {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Assign a purchased term directly to an existing user account. */}
+        <Card className="border-accent/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="w-5 h-5 text-accent" />
+              Assign Subscription to User
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row gap-3 items-end">
+            <div className="flex-1 w-full space-y-1.5">
+              <label htmlFor="subscription-user-email" className="text-sm text-muted-foreground">User account email</label>
+              <Input
+                id="subscription-user-email"
+                type="email"
+                value={targetEmail}
+                onChange={(event) => setTargetEmail(event.target.value)}
+                placeholder="student@example.com"
+                autoComplete="off"
+              />
+            </div>
+            <div className="w-full sm:w-56 space-y-1.5">
+              <label className="text-sm text-muted-foreground">Purchased duration</label>
+              <Select value={assignDurationDays} onValueChange={setAssignDurationDays}>
+                <SelectTrigger className="bg-background/50"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">1 Week (7 days)</SelectItem>
+                  <SelectItem value="30">1 Month (30 days)</SelectItem>
+                  <SelectItem value="90">3 Months (90 days)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={handleAssignSubscription} disabled={assigning || !targetEmail.trim()}>
+              {assigning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+              Assign access
+            </Button>
           </CardContent>
         </Card>
 
@@ -236,7 +301,7 @@ export default function AdminActivationCodes() {
                   <thead>
                     <tr className="border-b border-border">
                       <th className="text-left py-2 px-2 text-muted-foreground font-medium">Code</th>
-                      <th className="text-left py-2 px-2 text-muted-foreground font-medium">Plan</th>
+                      <th className="text-left py-2 px-2 text-muted-foreground font-medium">Duration</th>
                       <th className="text-left py-2 px-2 text-muted-foreground font-medium">Status</th>
                       <th className="text-left py-2 px-2 text-muted-foreground font-medium">Used By</th>
                       <th className="text-left py-2 px-2 text-muted-foreground font-medium">Created</th>
@@ -248,7 +313,7 @@ export default function AdminActivationCodes() {
                         <td className="py-2 px-2">
                           <code className="font-mono text-xs bg-secondary/50 px-1.5 py-0.5 rounded">{c.code}</code>
                         </td>
-                        <td className="py-2 px-2 capitalize">{c.plan_type}</td>
+                        <td className="py-2 px-2">{c.duration_days ? c.duration_days + " days" : "Legacy — reissue"}</td>
                         <td className="py-2 px-2">
                           {c.is_used ? (
                             <span className="text-accent text-xs flex items-center gap-1">

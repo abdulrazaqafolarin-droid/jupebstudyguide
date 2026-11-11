@@ -17,7 +17,8 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") || "";
+const OWNER_EMAIL = "abdulrazaqafolarin@gmail.com";
+const ADMIN_EMAIL = (Deno.env.get("ADMIN_EMAIL") || OWNER_EMAIL).trim().toLowerCase();
 
 type Action =
   | "check-setup"
@@ -78,8 +79,19 @@ Deno.serve(async (req) => {
     );
   }
 
-  // Verify admin email
-  if (!user.email || user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+  // The established owner email must also carry the protected admin flag
+  // from the database; an email address alone never grants key-vault access.
+  const { data: ownerProfile, error: ownerProfileError } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (
+    ownerProfileError ||
+    user.email?.trim().toLowerCase() !== OWNER_EMAIL ||
+    ADMIN_EMAIL !== OWNER_EMAIL ||
+    ownerProfile?.is_admin !== true
+  ) {
     return new Response(
       JSON.stringify({ error: "Admin access required" }),
       { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }

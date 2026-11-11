@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
     .select("is_admin")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (profileError || !profile?.is_admin) return json({ error: "admin-access-required" }, 403);
+  if (profileError || user.email?.trim().toLowerCase() !== "abdulrazaqafolarin@gmail.com" || !profile?.is_admin) return json({ error: "admin-access-required" }, 403);
 
   try {
     const payload = await req.json().catch(() => ({})) as {

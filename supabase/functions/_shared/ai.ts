@@ -5,6 +5,8 @@ import type { AiAccessProfile } from "./trial-access.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 
+const OWNER_EMAIL = "abdulrazaqafolarin@gmail.com";
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -60,22 +62,29 @@ export async function aiChatStream(
 // non-admin users. Trial expiry is read from the server-owned profile column.
 export async function guardAiAccess(
   supabaseClient: unknown,
-  user: { id: string }
+  user: { id: string; email?: string | null }
 ): Promise<Response | null> {
   // Narrow the SDK's deeply generic client at this shared boundary only.
   const supabase = supabaseClient as AiAccessClient;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_activated, is_admin, trial_expires_at")
+    .select("is_admin, subscription_expires_at")
     .eq("user_id", user.id)
     .maybeSingle();
-  if (!hasAiAccountAccess(profile)) {
+  const isOwnerAdmin =
+    user.email?.trim().toLowerCase() === OWNER_EMAIL &&
+    profile?.is_admin === true;
+  const accessProfile: AiAccessProfile | null = profile
+    ? { is_admin: isOwnerAdmin, subscription_expires_at: profile.subscription_expires_at }
+    : null;
+
+  if (!hasAiAccountAccess(accessProfile)) {
     return new Response(
-      JSON.stringify({ error: "Your one-day free trial has ended. Enter an activation code to continue using AI features." }),
+      JSON.stringify({ error: "Your subscription is inactive or has expired. Enter a current activation code to continue using AI features." }),
       { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }
-  if (!profile?.is_admin) {
+  if (!isOwnerAdmin) {
     const { data: allowed } = await supabase.rpc("check_ai_rate_limit", {
       p_user_id: user.id,
       p_limit: 100,

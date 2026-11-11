@@ -1,8 +1,15 @@
-name: Build Rutex Master Next (artifact only)
+name: Build Rutex Master (artifact only)
 on:
   pull_request:
-    branches: [main]
+    # Build the signed successor artifact for its stacked UI feature PR as well
+    # as the original successor PR. Publishing remains manual and opt-in only.
+    branches:
+      - main
+      - release/rutex-master-next-side-by-side-2026-11-10
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - feat/independent-question-scroll-multi-inline-crop-2026-11-11
   workflow_dispatch:
     inputs:
       publish_release:
@@ -24,7 +31,7 @@ jobs:
       ANDROID_APPLICATION_ID: com.rutex.jupebmaster
       ANDROID_AUTH_SCHEME: com.rutex.jupebmaster
       CAPACITOR_APP_ID: com.rutex.jupebmaster
-      CAPACITOR_APP_NAME: Rutex Master Next
+      CAPACITOR_APP_NAME: Rutex Master
       VITE_ANDROID_RELEASE_BASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next
       VITE_ANDROID_RELEASE_APK_NAME: rutex-master-next.apk
       VITE_SUPABASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co
@@ -94,8 +101,8 @@ jobs:
           mkdir -p android/app/src/main/res/values
           cat > android/app/src/main/res/values/strings.xml <<XML
           <resources>
-              <string name="app_name">Rutex Master Next</string>
-              <string name="title_activity_main">Rutex Master Next</string>
+              <string name="app_name">Rutex Master</string>
+              <string name="title_activity_main">Rutex Master</string>
               <string name="package_name">$ANDROID_APPLICATION_ID</string>
               <string name="custom_url_scheme">$ANDROID_AUTH_SCHEME</string>
           </resources>
@@ -233,7 +240,7 @@ jobs:
       - name: Summarize artifact-only result
         if: success()
         run: |
-          echo "Rutex Master Next built and verified." >> "$GITHUB_STEP_SUMMARY"
+          echo "Rutex Master APK built and verified." >> "$GITHUB_STEP_SUMMARY"
           echo "Package: com.rutex.jupebmaster" >> "$GITHUB_STEP_SUMMARY"
           echo "Version: $APK_VERSION_NAME ($APK_VERSION_CODE)" >> "$GITHUB_STEP_SUMMARY"
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ inputs.publish_release }}" == "true" ]]; then

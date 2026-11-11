@@ -6,7 +6,8 @@ export type QuestionImagePosition =
   | 'image-only'
   | 'image-above'
   | 'image-beside'
-  | `image-inline:${number}`;
+  | `image-inline:${number}`
+  | `image-inline:${number},${number}${string}`;
 
 export interface MCQOption {
   label: string;
@@ -25,6 +26,8 @@ export interface Question {
   explanation: string;
   difficulty?: Difficulty;
   imageUrl?: string;
+  /** All images attached to the question; imageUrl remains the legacy first-image field. */
+  imageUrls?: string[];
   imagePosition?: QuestionImagePosition;
   document_name?: string;
 }

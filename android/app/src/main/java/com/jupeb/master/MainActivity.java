@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,6 +24,10 @@ public class MainActivity extends BridgeActivity {
         }
         registerPlugin(WindowAppearancePlugin.class);
         super.onCreate(savedInstanceState);
+
+        // Prevent Android screenshots, screen recordings, and recent-app
+        // preview capture from exposing protected study content.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
         final int initialSurface = Color.parseColor("#14171c");
         getWindow().getDecorView().setBackgroundColor(initialSurface);

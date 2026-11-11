@@ -7,6 +7,9 @@ on:
       - main
       - release/rutex-master-next-side-by-side-2026-11-10
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - feat/independent-question-scroll-multi-inline-crop-2026-11-11
   workflow_dispatch:
     inputs:
       publish_release:

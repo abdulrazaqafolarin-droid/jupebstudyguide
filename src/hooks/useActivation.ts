@@ -59,7 +59,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
     const { data, error } = await withActivationTimeout(
       (signal) => supabase
         .from("profiles")
-        .select("is_activated, is_admin, trial_expires_at")
+        .select("is_activated, is_admin, trial_expires_at, subscription_expires_at, subscription_duration_days")
         .eq("user_id", user.id)
         .abortSignal(signal)
         .single(),
@@ -74,8 +74,10 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
     return {
       status: {
         is_activated: data?.is_activated ?? false,
-        is_admin: isAdminEmail || (data?.is_admin ?? false),
+        is_admin: isAdminEmail && (data?.is_admin ?? false),
         trial_expires_at: data?.trial_expires_at ?? null,
+        subscription_expires_at: data?.subscription_expires_at ?? null,
+        subscription_duration_days: data?.subscription_duration_days ?? null,
         checking: false,
       },
       cacheable: true,
@@ -114,7 +116,7 @@ export function useActivation() {
   const [status, setStatus] = useState<ActivationStatus>(
     cachedForUser
       ? cachedForUser.status
-      : { is_activated: false, is_admin: false, trial_expires_at: null, checking: !!user },
+      : { is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, subscription_duration_days: null, checking: !!user },
   );
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -123,7 +125,7 @@ export function useActivation() {
     async (force = false) => {
       if (!user) {
         activationCache = null;
-        setStatus({ is_activated: false, is_admin: false, trial_expires_at: null, checking: false });
+        setStatus({ is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, subscription_duration_days: null, checking: false });
         return;
       }
 
@@ -178,11 +180,11 @@ export function useActivation() {
 
       const result = data as Record<string, unknown> | null;
       if (result?.success) {
-        const next: ActivationStatus = { is_activated: true, is_admin: status.is_admin, trial_expires_at: status.trial_expires_at, checking: false };
+        const next: ActivationStatus = { is_activated: true, is_admin: status.is_admin, trial_expires_at: null, subscription_expires_at: typeof result.subscription_expires_at === 'string' ? result.subscription_expires_at : null, subscription_duration_days: typeof result.duration_days === 'number' ? result.duration_days : null, checking: false };
         activationCache = { userId: user.id, status: next, fetchedAt: Date.now() };
         setStatus(next);
         setValidating(false);
-        return { success: true, plan_type: typeof result.plan_type === "string" ? result.plan_type : undefined };
+        return { success: true, plan_type: typeof result.plan_type === "string" ? result.plan_type : undefined, duration_days: typeof result.duration_days === "number" ? result.duration_days : undefined };
       } else {
         const msg = typeof result?.error === "string" && result.error ? result.error : "Invalid code";
         setError(msg);
@@ -206,6 +208,7 @@ export interface ActivationCodeResult {
   id: string;
   code: string;
   plan_type: string | null;
+  duration_days: number | null;
   is_used: boolean;
   used_by: string | null;
   used_at: string | null;
@@ -218,13 +221,11 @@ export function useAdminCodes() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  const generateCodes = useCallback(async (count: number, plan_type: string): Promise<{ success: boolean; codes?: ActivationCodeResult[]; error?: string }> => {
+  const generateCodes = useCallback(async (count: number, duration_days: number): Promise<{ success: boolean; codes?: ActivationCodeResult[]; error?: string }> => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc("generate_activation_codes", {
-        p_created_by: user?.id,
-        p_count: Math.min(count, 100),
-        p_plan_type: plan_type,
+      const { data, error } = await supabase.functions.invoke("validate-activation", {
+        body: { action: "generate-codes", count: Math.min(count, 100), duration_days },
       });
 
       if (error) {
@@ -233,9 +234,9 @@ export function useAdminCodes() {
         return { success: false, error: error.message };
       }
 
-      const rows = (data || []) as Array<{ code: string; plan_type: string; expires_at: string | null }>;
+      const rows = (data?.codes || []) as Array<{ code: string; plan_type: string; duration_days: number }>;
       const mapped: ActivationCodeResult[] = rows.map((r) => ({
-        id: "", code: r.code, plan_type: r.plan_type, is_used: false,
+        id: "", code: r.code, plan_type: r.plan_type, duration_days: r.duration_days, is_used: false,
         used_by: null, used_at: null, created_at: new Date().toISOString(),
       }));
       setLoading(false);
@@ -251,7 +252,7 @@ export function useAdminCodes() {
     try {
       const { data: rawCodes, error } = await supabase
         .from("activation_codes")
-        .select("id, code, plan_type, is_used, used_by, used_at, created_at")
+        .select("id, code, plan_type, duration_days, is_used, used_by, used_at, created_at")
         .order("created_at", { ascending: false })
         .limit(200);
 

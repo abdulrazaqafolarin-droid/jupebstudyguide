@@ -331,6 +331,9 @@ export function QuestionImagePositioner({
         onFocus={() => setActiveImageIndex(imageIndex)}
         onKeyDown={(event) => handleImageKeyDown(event, imageIndex)}
         aria-label={"Question image " + (imageIndex + 1) + ". Press and hold, then drag to reposition. Arrow keys also move it line by line."}
+        aria-pressed={activeImageIndex === imageIndex}
+        data-testid="draggable-question-image"
+        data-image-index={imageIndex}
         className={cn(
           "my-2 w-full rounded-lg border p-1 cursor-grab active:cursor-grabbing touch-none select-none",
           activeImageIndex === imageIndex ? "border-primary/50 bg-primary/5" : "border-border bg-muted/20"
@@ -363,7 +366,44 @@ export function QuestionImagePositioner({
   return (
     <div className="relative space-y-2" ref={wrapperRef}>
       <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-muted-foreground">
-        Each image has its own saved position. Select an image, then press and hold it and drag to a highlighted line. Drop lines follow the text as it wraps in this preview. Arrow keys also reposition the selected image.
+        Every image can be moved independently. Select the image you want below, then press and hold that image in the preview and drag it to the highlighted text line. You can also use the arrow keys while an image is focused.
+      </div>
+      <div
+        role="group"
+        aria-label="Select image to reposition"
+        className="flex flex-wrap items-center gap-2 rounded-lg border bg-card/70 p-2"
+      >
+        <span className="text-[11px] font-medium text-muted-foreground">Move image:</span>
+        {images.map((image, imageIndex) => {
+          const selected = activeImageIndex === imageIndex;
+          const lineIndex = getSelectedLineIndex(imageIndex);
+          const lineLabel = lineIndex === lineOffsets.length - 1
+            ? "after last line"
+            : "line " + (lineIndex + 1);
+          return (
+            <button
+              key={image.id}
+              type="button"
+              data-testid="select-inline-image"
+              aria-label={"Select image " + (imageIndex + 1) + " to position"}
+              aria-pressed={selected}
+              onClick={() => {
+                setActiveImageIndex(imageIndex);
+                dragTargetIndexRef.current = null;
+                setDragTargetIndex(null);
+              }}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs transition-colors",
+                selected
+                  ? "border-primary bg-primary/10 text-primary font-semibold"
+                  : "border-border bg-background text-muted-foreground hover:border-primary/40"
+              )}
+            >
+              <span>Image {imageIndex + 1}</span>
+              <span className="text-[10px] opacity-75">{lineLabel}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div

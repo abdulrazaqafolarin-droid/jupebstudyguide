@@ -119,6 +119,14 @@ describe("parseReleaseInfo", () => {
     })?.requiresReinstall).toBe(false);
   });
 
+  it("rejects a version URL that does not match the manifest version", () => {
+    expect(parseReleaseInfo({
+      versionCode: 41,
+      url: getReleaseApkUrl(40),
+      sha256: "d".repeat(64),
+    })).toBeNull();
+  });
+
   it("rejects corrupt payloads", () => {
     expect(parseReleaseInfo(null)).toBeNull();
     expect(parseReleaseInfo({})).toBeNull();

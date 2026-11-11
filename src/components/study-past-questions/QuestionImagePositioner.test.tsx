@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { QuestionImagePositioner } from "./QuestionImagePositioner";
 
@@ -57,7 +57,7 @@ describe("multiple inline question image positioning", () => {
       expect(dragHandles[1]).toHaveAttribute("aria-pressed", "false");
 
       const selectSecond = screen.getByRole("button", { name: "Select image 2 to position" });
-      selectSecond.click();
+      fireEvent.click(selectSecond);
       expect(selectSecond).toHaveAttribute("aria-pressed", "true");
       expect(dragHandles[1]).toHaveAttribute("aria-pressed", "true");
       expect(dragHandles[0]).toHaveAttribute("aria-pressed", "false");

@@ -86,8 +86,12 @@ export function QuestionImagePositioner({
     for (const token of tokens) {
       range.setStart(textNode, token.start);
       range.setEnd(textNode, Math.min(token.start + 1, token.end));
-      const rect = range.getBoundingClientRect();
-      if (rect.height <= 0) continue;
+      // jsdom and older embedded browsers may not expose Range geometry.
+      // Keep the safe start/end fallback rather than failing the question editor.
+      const rect = typeof range.getBoundingClientRect === "function"
+        ? range.getBoundingClientRect()
+        : null;
+      if (!rect || rect.height <= 0) continue;
 
       const lineTop = Math.round(rect.top);
       if (previousLineTop !== null && Math.abs(lineTop - previousLineTop) > 2) {

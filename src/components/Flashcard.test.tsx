@@ -69,7 +69,7 @@ describe("Flashcard independent scrolling", () => {
   it("shows the written explanation and AI model answer in separate scroll cards after reveal", () => {
     render(<Flashcard question={baseQuestion} onAnswer={() => {}} showControls={false} />);
 
-    fireEvent.click(screen.getByText(/Think about your answer/));
+    fireEvent.click(screen.getByText(/Tap the card to reveal the answer/));
 
     const explanationPane = screen.getByLabelText("Scrollable written explanation");
     const aiAnswerPane = screen.getByLabelText("Scrollable AI model answer");

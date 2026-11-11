@@ -71,6 +71,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
+        // Validate every restored or newly-created session against auth.sessions.
+        // A second device sign-in revokes the previous refresh session; this
+        // check also removes the old device from the app immediately on resume.
+        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.access_token) {
+          const signedInToken = session.access_token;
+          window.setTimeout(() => {
+            void (async () => {
+              const { error: enforcementError } = await supabase.functions.invoke(
+                'enforce-single-session',
+                { headers: { Authorization: `Bearer ${signedInToken}` } },
+              );
+              if (enforcementError) {
+                console.warn('[auth] device session could not be verified; signing out locally');
+                await supabase.auth.signOut({ scope: 'local' });
+              }
+            })();
+          }, 0);
+        }
+
         // Set Realtime auth token so channels can connect
         if (session?.access_token) {
           supabase.realtime.setAuth(session.access_token);

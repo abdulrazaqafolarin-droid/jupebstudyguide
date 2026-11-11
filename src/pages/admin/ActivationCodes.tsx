@@ -122,7 +122,7 @@ export default function AdminActivationCodes() {
           <button onClick={() => navigate("/admin")} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-5 h-5" /> Dashboard
           </button>
-          <h1 className="font-semibold">Activation Code Manager</h1>
+          <h1 className="font-semibold">Activation Code Vault</h1>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={refresh} disabled={refreshing} className="gap-1.5">
               <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />

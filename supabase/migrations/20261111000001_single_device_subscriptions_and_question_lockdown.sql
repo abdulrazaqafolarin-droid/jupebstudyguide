@@ -126,6 +126,14 @@ CREATE TRIGGER guard_profile_security_flags
   FOR EACH ROW
   EXECUTE FUNCTION public.guard_profile_security_flags();
 
+-- Attach the same guard to INSERT as well: the function's TG_OP = 'INSERT'
+-- checks otherwise would never execute for a client-created profile row.
+DROP TRIGGER IF EXISTS guard_profile_security_flags_insert ON public.profiles;
+CREATE TRIGGER guard_profile_security_flags_insert
+  BEFORE INSERT ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.guard_profile_security_flags();
+
 -- Signups no longer receive an automatic free trial. Preserve the existing
 -- welcome conversation behaviour for new student accounts.
 CREATE OR REPLACE FUNCTION public.handle_new_user()

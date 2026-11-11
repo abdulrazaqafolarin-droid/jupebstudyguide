@@ -6,7 +6,8 @@ export type QuestionImagePosition =
   | 'image-only'
   | 'image-above'
   | 'image-beside'
-  | `image-inline:${number}`;
+  | `image-inline:${number}`
+  | `image-inline:${number},${number}${string}`;
 
 export interface MCQOption {
   label: string;

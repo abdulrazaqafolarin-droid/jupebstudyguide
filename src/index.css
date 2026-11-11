@@ -210,27 +210,14 @@
 }
 
 @layer components {
-  /* Flashcard flip animation */
-  .flashcard-container {
-    perspective: 1500px;
-  }
-
-  .flashcard {
-    transform-style: preserve-3d;
-    transition: transform 0.5s var(--ease-in-out);
-  }
-
-  .flashcard.flipped {
-    transform: rotateY(180deg);
-  }
-
-  .flashcard-face {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-
-  .flashcard-back {
-    transform: rotateY(180deg);
+  /* Independent native scroll surfaces in the home-page study cards. */
+  .flashcard-scroll-region {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    contain: layout paint;
   }
 
   /* Subject badges */

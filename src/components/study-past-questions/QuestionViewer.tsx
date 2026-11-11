@@ -75,28 +75,16 @@ export function QuestionViewer({
 
     if (hasImage && isInlineImagePosition(pos)) {
       return (
-        <>
-          <QuestionTextWithImage
-            content={q.question || ""}
-            imageSrc={displayImageUrls[0]}
-            imagePosition={pos}
-            onImageError={() => handleImageError(displayImageUrls[0])}
-          />
-          {displayImageUrls.length > 1 && (
-            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {displayImageUrls.slice(1).map((url, index) => (
-                <img
-                  key={url + index}
-                  src={url}
-                  alt={"Question illustration " + (index + 2)}
-                  className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-                  loading="lazy"
-                  onError={() => handleImageError(url)}
-                />
-              ))}
-            </div>
-          )}
-        </>
+        <QuestionTextWithImage
+          content={q.question || ""}
+          images={displayImageUrls.map((url, index) => ({
+            id: url + "-" + index,
+            src: url,
+            alt: "Question illustration " + (index + 1),
+            onError: () => handleImageError(url),
+          }))}
+          imagePosition={pos}
+        />
       );
     }
 

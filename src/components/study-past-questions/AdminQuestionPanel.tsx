@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
 import { QuestionMath } from "@/components/QuestionMath";
-import { createInlineImagePosition, isInlineImagePosition } from "@/lib/question-image-position";
+import { createInlineImagePosition, getInlineImageOffsets, isInlineImagePosition } from "@/lib/question-image-position";
 import { QuestionImagePositioner } from "./QuestionImagePositioner";
 import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 
@@ -252,6 +252,13 @@ export function AdminQuestionPanel({
   }, []);
 
   const handleRemoveImage = (imageId: string) => {
+    const removedIndex = images.findIndex((image) => image.id === imageId);
+    if (removedIndex >= 0 && isInlineImagePosition(imagePosition)) {
+      const nextOffsets = getInlineImageOffsets(imagePosition, questionText, images.length)
+        .filter((_, index) => index !== removedIndex);
+      if (nextOffsets.length > 0) setImagePosition(createInlineImagePosition(nextOffsets));
+    }
+
     setImages((current) => {
       const removed = current.find((image) => image.id === imageId);
       if (removed?.url.startsWith("blob:")) {
@@ -651,7 +658,7 @@ export function AdminQuestionPanel({
                           <option value="image-inline">First Image Inline Within Question Text</option>
                         </select>
                         <p className="text-xs text-muted-foreground/60 mt-1">
-                          Image order is preserved. Inline positioning applies to the first image; additional images follow it.
+                          Every image can be dragged to its own position between question-text lines. Each image position is saved separately.
                         </p>
                       </div>
                     )}
@@ -794,7 +801,7 @@ export function AdminQuestionPanel({
                                 {isInlineImagePosition(imagePosition) ? (
                                   <QuestionImagePositioner
                                     content={questionText}
-                                    imageSrc={images[0].url}
+                                    images={images.map(({ id, url }) => ({ id, url }))}
                                     imagePosition={imagePosition}
                                     onPositionChange={setImagePosition}
                                   />
@@ -860,7 +867,7 @@ export function AdminQuestionPanel({
                         </div>
                         {isInlineImagePosition(imagePosition) && (
                           <p className="max-w-xl mx-auto text-[11px] text-muted-foreground">
-                            Drag the image to the line where it belongs. The position is saved when you press Save below.
+                            Drag each image independently to the line where it belongs. Every position is saved when you press Save below.
                           </p>
                         )}
                       </div>

@@ -116,7 +116,7 @@ describe("ActivationGate subscription banner", () => {
       </ActivationGate>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Activate Now" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add Time" }));
     fireEvent.change(screen.getByLabelText("Enter your activation code"), {
       target: { value: "abcd-1234-efgh" },
     });
@@ -157,9 +157,11 @@ describe("ActivationGate subscription banner", () => {
 
     mocks.useActivation.mockReturnValue({
       status: {
-        is_activated: true,
+        is_activated: false,
         is_admin: false,
-        trial_expires_at: trialExpiry,
+        trial_expires_at: null,
+        subscription_expires_at: null,
+        subscription_duration_days: null,
         checking: false,
       },
       validateCode: mocks.validateCode,
@@ -173,17 +175,8 @@ describe("ActivationGate subscription banner", () => {
       </ActivationGate>,
     );
 
-    expect(document.querySelector(".activation-gate-shell")).toHaveClass(
-      "min-h-[100dvh]",
-      "bg-background",
-      "w-full",
-    );
-    expect(document.querySelector(".activation-gate-content")).toHaveClass(
-      "min-w-0",
-      "w-full",
-      "bg-background",
-    );
-    expect(screen.getByText("Protected study content")).toBeInTheDocument();
+    expect(screen.queryByText("Protected study content")).not.toBeInTheDocument();
+    expect(screen.getByText("Activate Your Account")).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.queryByRole("group", { name: "Subscription status" })).not.toBeInTheDocument();

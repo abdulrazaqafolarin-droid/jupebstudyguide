@@ -343,6 +343,9 @@ DECLARE
   v_expiry timestamptz;
 BEGIN
   IF (auth.jwt() ->> 'role') <> 'service_role' THEN
+    IF NOT public.current_auth_session_is_active() THEN
+      RETURN jsonb_build_object('success', false, 'error', 'This device session is no longer active. Please sign in again.');
+    END IF;
     p_user_id := auth.uid();
   END IF;
 

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, Key, CheckCircle, Loader2, AlertCircle, LogOut, Mail, MessageCircle, DollarSign, Clock } from "lucide-react";
-import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
 import { toast } from "sonner";
 import { formatTrialCountdown } from "@/lib/trial-countdown";
@@ -53,7 +52,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Checking activation...</p>
+          <p className="text-muted-foreground">Checking subscription...</p>
         </div>
       </div>
     );
@@ -193,7 +192,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
 
     const result = await validateCode(normalized);
     if (result.success) {
-      setPlanType(result.plan_type || "weekly");
+      setPlanType(result.duration_days ? result.duration_days + " days" : result.plan_type || "subscription");
       setShowSuccess(true);
       setTimeout(() => {
         window.location.reload();
@@ -224,7 +223,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
           </div>
           <h2 className="text-2xl font-bold mb-2">Activated!</h2>
           <p className="text-muted-foreground mb-2">
-            Your account has been activated with the <strong className="text-accent">{planType}</strong> plan.
+            Your subscription is active for <strong className="text-accent">{planType}</strong>.
           </p>
           <p className="text-sm text-muted-foreground">Redirecting you to the app...</p>
           <div className="flex justify-center mt-4">
@@ -244,7 +243,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
         <CardHeader className="text-center pb-4">
           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mx-auto mb-4">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">JUPEB Master</span>
+            <span className="text-sm font-medium text-primary">Rutex Master</span>
           </div>
           <CardTitle className="text-2xl font-bold">Activate Your Account</CardTitle>
           <CardDescription>

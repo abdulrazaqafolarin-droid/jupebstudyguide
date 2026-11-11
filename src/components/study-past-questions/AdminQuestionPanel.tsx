@@ -655,7 +655,7 @@ export function AdminQuestionPanel({
                           <option value="text-only">Text Only</option>
                           <option value="image-above">Images Above Text</option>
                           <option value="image-beside">First Image Beside Text</option>
-                          <option value="image-inline">First Image Inline Within Question Text</option>
+                          <option value="image-inline">All Images Inline Within Question Text</option>
                         </select>
                         <p className="text-xs text-muted-foreground/60 mt-1">
                           Every image can be dragged to its own position between question-text lines. Each image position is saved separately.
@@ -836,13 +836,6 @@ export function AdminQuestionPanel({
                                     {imagePosition !== "image-only" && questionText.trim() && (
                                       <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
                                     )}
-                                  </div>
-                                )}
-                                {isInlineImagePosition(imagePosition) && images.length > 1 && (
-                                  <div className="space-y-2">
-                                    {images.slice(1).map((image, index) => (
-                                      <img key={image.id} src={image.url} alt={"Additional question image " + (index + 2)} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
-                                    ))}
                                   </div>
                                 )}
                               </>

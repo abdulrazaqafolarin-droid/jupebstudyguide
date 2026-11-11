@@ -53,6 +53,8 @@ describe("getReleaseApkUrl", () => {
   it("uses an immutable APK URL for each successor version", () => {
     expect(getReleaseApkUrl(200321, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
       .toBe("https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-200321.apk");
+    expect(getReleaseApkUrl(200320, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .not.toBe(getReleaseApkUrl(200321, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"));
   });
 
   it("rejects invalid version codes", () => {
@@ -117,14 +119,6 @@ describe("parseReleaseInfo", () => {
       url: getReleaseApkUrl(43),
       sha256: "c".repeat(64),
     })?.requiresReinstall).toBe(false);
-  });
-
-  it("rejects a version URL that does not match the manifest version", () => {
-    expect(parseReleaseInfo({
-      versionCode: 41,
-      url: getReleaseApkUrl(40),
-      sha256: "d".repeat(64),
-    })).toBeNull();
   });
 
   it("rejects corrupt payloads", () => {

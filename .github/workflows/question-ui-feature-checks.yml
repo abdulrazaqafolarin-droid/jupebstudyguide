@@ -39,7 +39,7 @@ jobs:
         run: npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-          VITE_SUPABASE_URL: https://gzyczowqqywesqhqqqpd.supabase.co
+          VITE_SUPABASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co
           VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX
-          VITE_SUPABASE_PROJECT_ID: gzyczowqqywesqhqqqpd
+          VITE_SUPABASE_PROJECT_ID: gzyczowqqywesqhqqpdi
           VITE_ADMIN_EMAIL: abdulrazaqafolarin@gmail.com

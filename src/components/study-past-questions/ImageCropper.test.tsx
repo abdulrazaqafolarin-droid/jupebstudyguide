@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ImageCropper } from "./ImageCropper";
 
@@ -73,20 +73,22 @@ describe("Admin free cropper", () => {
       target.dispatchEvent(event);
     };
 
-    dispatchPointer(handle, "pointerdown", {
-      pointerId: 7,
-      pointerType: "touch",
-      button: 0,
-      clientX: start.left,
-      clientY: start.top,
+    act(() => {
+      dispatchPointer(handle, "pointerdown", {
+        pointerId: 7,
+        pointerType: "touch",
+        button: 0,
+        clientX: start.left,
+        clientY: start.top,
+      });
+      dispatchPointer(window, "pointermove", {
+        pointerId: 7,
+        pointerType: "touch",
+        clientX: start.left + 21,
+        clientY: start.top + 9,
+      });
+      dispatchPointer(window, "pointerup", { pointerId: 7, pointerType: "touch" });
     });
-    dispatchPointer(window, "pointermove", {
-      pointerId: 7,
-      pointerType: "touch",
-      clientX: start.left + 21,
-      clientY: start.top + 9,
-    });
-    dispatchPointer(window, "pointerup", { pointerId: 7, pointerType: "touch" });
 
     const read = (property: string) =>
       Number.parseFloat(crop.style.getPropertyValue(property) || "0");

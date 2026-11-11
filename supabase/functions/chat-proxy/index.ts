@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
         .select("is_admin")
         .eq("user_id", user.id)
         .single();
-      if (!profile?.is_admin) {
+      if (user.email?.trim().toLowerCase() !== "abdulrazaqafolarin@gmail.com" || !profile?.is_admin) {
         return new Response(
           JSON.stringify({ error: "Admin only" }),
           { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }

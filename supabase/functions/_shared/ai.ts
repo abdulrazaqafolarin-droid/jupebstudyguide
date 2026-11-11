@@ -1,6 +1,7 @@
 import { routerText, routerJSON, routerStream } from "./ai-router.ts";
 import type { RouterMessage, RouterOpts } from "./ai-router.ts";
 import { hasAiAccountAccess } from "./trial-access.ts";
+import { checkAuthSessionActive } from "./auth-session.ts";
 import type { AiAccessProfile } from "./trial-access.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
@@ -62,10 +63,26 @@ export async function aiChatStream(
 // non-admin users. Trial expiry is read from the server-owned profile column.
 export async function guardAiAccess(
   supabaseClient: unknown,
-  user: { id: string; email?: string | null }
+  user: { id: string; email?: string | null },
+  accessToken: string,
 ): Promise<Response | null> {
   // Narrow the SDK's deeply generic client at this shared boundary only.
   const supabase = supabaseClient as AiAccessClient;
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
+  if (!supabaseUrl || !anonKey) {
+    return new Response(
+      JSON.stringify({ error: "Session verification is unavailable. Please retry." }),
+      { status: 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+  const sessionActive = await checkAuthSessionActive(supabaseUrl, anonKey, accessToken);
+  if (sessionActive !== true) {
+    return new Response(
+      JSON.stringify({ error: sessionActive === false ? "This device session is no longer active. Please sign in again." : "Could not verify this device session. Please retry." }),
+      { status: sessionActive === false ? 401 : 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_admin, subscription_expires_at")

@@ -41,15 +41,15 @@ describe("resolveActivationFailure", () => {
     });
   });
 
-  it("continues to allow the configured administrator email during a profile outage", () => {
+  it("does not grant administrator access from email alone during a profile outage", () => {
     expect(resolveActivationFailure(true, null)).toEqual({
       is_activated: false,
-      is_admin: true,
+      is_admin: false,
       trial_expires_at: null,
       subscription_expires_at: null,
       subscription_duration_days: null,
       checking: false,
-      check_error: false,
+      check_error: true,
     });
   });
 });

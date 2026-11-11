@@ -21,18 +21,18 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [showActivationEntry, setShowActivationEntry] = useState(false);
   const [activationCode, setActivationCode] = useState("");
-  const trialExpiresAt = status.trial_expires_at ? Date.parse(status.trial_expires_at) : Number.NaN;
+  const subscriptionExpiresAt = status.subscription_expires_at ? Date.parse(status.subscription_expires_at) : Number.NaN;
 
   useEffect(() => {
-    if (!Number.isFinite(trialExpiresAt)) return;
+    if (!Number.isFinite(subscriptionExpiresAt)) return;
     const tick = () => setClockNow(Date.now());
     tick();
-    if (trialExpiresAt <= Date.now()) return;
+    if (subscriptionExpiresAt <= Date.now()) return;
     const interval = window.setInterval(tick, 1000);
     return () => window.clearInterval(interval);
-  }, [trialExpiresAt]);
+  }, [subscriptionExpiresAt]);
 
-  const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
+  const subscriptionActive = Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > clockNow;
 
   const handleTrialActivation = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,7 +44,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
       setActivationCode("");
       setShowActivationEntry(false);
       await refreshStatus();
-      toast.success(`Account activated with the ${result.plan_type || "basic"} plan.`);
+      toast.success(`Subscription extended by ${result.duration_days ?? "the purchased"} days.`);
     }
   }, [activationCode, validating, validateCode, refreshStatus]);
 
@@ -59,7 +59,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.check_error && !status.is_activated && !status.is_admin && !trialActive) {
+  if (status.check_error && !status.is_admin && !subscriptionActive) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-border/50 shadow-xl">
@@ -89,13 +89,13 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.is_activated || status.is_admin || trialActive) {
+  if (status.is_admin || subscriptionActive) {
     return (
       <div className="activation-gate-shell min-h-[100dvh] w-full bg-background">
         <AnimatePresence initial={false}>
-          {trialActive && !status.is_activated && !status.is_admin && (
+          {subscriptionActive && !status.is_admin && (
             <motion.div
-              key="trial-status-banner"
+              key="subscription-status-banner"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -107,16 +107,16 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
             >
               <div
                 role="group"
-                aria-label="Free trial status"
+                aria-label="Subscription status"
                 aria-live="off"
                 className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
               >
                 <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
                   <Clock className="h-3.5 w-3.5" />
-                  <strong>1-day free trial active</strong>
+                  <strong>{status.subscription_duration_days ?? "Paid"}-day subscription active</strong>
                   <span aria-hidden="true">·</span>
                   <span className="font-mono tabular-nums" aria-live="off">
-                    {formatTrialCountdown(trialExpiresAt - clockNow)} remaining
+                    {formatTrialCountdown(subscriptionExpiresAt - clockNow)} remaining
                   </span>
                   <Button
                     type="button"
@@ -127,7 +127,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                     aria-controls="trial-activation-entry"
                   >
                     <Key className="mr-1.5 h-3 w-3" />
-                    Activate Now
+                    Add Time
                   </Button>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                     </div>
                   </form>
                   <p className="mx-auto mt-2 max-w-2xl text-[11px] text-muted-foreground">
-                    Your free trial remains active while you enter a code. You can keep studying if you close this panel.
+                    Your current subscription remains active while you enter another code. Any new term will extend its expiry date.
                   </p>
                 </div>
               )}
@@ -193,7 +193,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
 
     const result = await validateCode(normalized);
     if (result.success) {
-      setPlanType(result.plan_type || "basic");
+      setPlanType(result.plan_type || "weekly");
       setShowSuccess(true);
       setTimeout(() => {
         window.location.reload();

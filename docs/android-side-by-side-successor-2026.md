@@ -128,6 +128,10 @@ The workflow always builds and verifies an artifact. Pull-request events remain 
 
 A publish run requires the `SUPABASE_SERVICE_ROLE_KEY` Actions secret. It uploads a version-specific APK object under the public `app-releases/rutex-master-next/` folder and then replaces only that folder's `version.json` manifest. It does not touch `app-releases/jupeb-master.apk`, the old app's `version.json`, student data, Auth settings, or the website. The workflow verifies the publicly served manifest and downloads the APK back to compare its SHA-256 before reporting success. The bucket already exists and is public; do not create a second bucket for this path.
 
+### One-time updater bootstrap for an already installed preview build
+
+A Rutex Master Next APK installed before this updater correction may contain the earlier native downloader URL allowlist. That build cannot complete the first corrected in-app download. When moving from that pre-fix build to the corrected updater, install the newly built APK manually over the existing `com.rutex.jupebmaster` app using the same permanent successor signing key. This is an in-place Android update, not an uninstall/reinstall; make a backup first and keep the old `com.jupeb.master` app installed. Once the corrected updater build is installed, subsequent releases can be offered and downloaded through the in-app updater.
+
 Each successor APK has an immutable name containing its Android version code. This avoids overwriting a cached APK object; only the small current manifest is replaced. Keep APK history in Storage for rollback/audit; do not delete old versioned objects casually.
 
 ## Release gates

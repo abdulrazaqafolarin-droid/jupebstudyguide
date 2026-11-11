@@ -110,6 +110,9 @@ In repository Settings → Secrets and variables → Actions, create these new s
 | ANDROID_NEXT_KEY_ALIAS | rutex-master-next-release |
 | ANDROID_NEXT_KEY_PASSWORD | New private-key password |
 | ANDROID_NEXT_GOOGLE_SERVICES_JSON_BASE64 | Base64 text of the new package's google-services.json |
+| SUPABASE_SERVICE_ROLE_KEY | Server-side service_role key for the JUPEB Supabase project; used only by the explicit manual publish step |
+
+Keep SUPABASE_SERVICE_ROLE_KEY only in GitHub Actions secrets. Never place it in Vite environment variables, client code, the APK, logs, or chat. Normal pull-request builds do not read this secret.
 
 PowerShell can copy the Base64 value without printing the keystore contents:
 
@@ -118,6 +121,14 @@ PowerShell can copy the Base64 value without printing the keystore contents:
 ~~~
 
 For the Firebase file, run the same command with its full path. Base64 is encoding, not encryption; paste it directly into the matching GitHub secret and never post it publicly.
+
+## Controlled updater publishing
+
+The workflow always builds and verifies an artifact. Pull-request events remain artifact-only. After the workflow exists on the repository's default branch, a release operator can manually run **Build Rutex Master Next (artifact only)** with the `publish_release` input left false for another artifact-only build, or explicitly set it true to publish.
+
+A publish run requires the `SUPABASE_SERVICE_ROLE_KEY` Actions secret. It uploads a version-specific APK object under the public `app-releases/rutex-master-next/` folder and then replaces only that folder's `version.json` manifest. It does not touch `app-releases/jupeb-master.apk`, the old app's `version.json`, student data, Auth settings, or the website. The workflow verifies the publicly served manifest and downloads the APK back to compare its SHA-256 before reporting success. The bucket already exists and is public; do not create a second bucket for this path.
+
+Each successor APK has an immutable name containing its Android version code. This avoids overwriting a cached APK object; only the small current manifest is replaced. Keep APK history in Storage for rollback/audit; do not delete old versioned objects casually.
 
 ## Release gates
 

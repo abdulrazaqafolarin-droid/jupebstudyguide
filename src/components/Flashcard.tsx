@@ -167,15 +167,24 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
               </div>
 
               {/* The image is supplementary; always show the written question too. */}
-              <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
-                <QuestionImage imageUrl={question.imageUrl} />
-                <div className="text-lg font-medium mb-4 leading-relaxed">
-                  <QuestionMath content={question.question} />
+              <div className="flex-1 min-h-0 flex flex-col gap-3">
+                {/* Question prompt scrolls independently from its answer options. */}
+                <div
+                  aria-label="Scrollable question"
+                  className="h-[min(30vh,240px)] min-h-0 shrink-0 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin"
+                >
+                  <QuestionImage imageUrl={question.imageUrl} />
+                  <div className="text-lg font-medium mb-4 leading-relaxed">
+                    <QuestionMath content={question.question} />
+                  </div>
                 </div>
 
-                {/* MCQ Options - Scrollable container */}
+                {/* MCQ options have their own independent scroll area. */}
                 {question.options && (
-                  <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[280px] pr-1 scrollbar-thin">
+                  <div
+                    aria-label="Scrollable answer options"
+                    className="min-h-[120px] flex-1 overflow-y-auto overscroll-contain touch-pan-y max-h-[280px] pr-1 scrollbar-thin space-y-2.5"
+                  >
                     {question.options.map((option, oi) => {
                       const isSelected = selectedOption === option.label;
                       const isCorrectOption = option.label === question.correctAnswer;
@@ -247,50 +256,63 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </span>
                 </div>
 
-                <div className="flex-1 min-h-0 overflow-y-auto space-y-4">
-                  {question.explanation ? (
-                    <div className="text-base leading-relaxed">
-                      <QuestionMath content={question.explanation} />
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No written explanation is available for this question yet.</p>
-                  )}
-
-                  {aiTheoryAnswer && (
-                    <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm">
-                      <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary">
-                        <Bot className="h-4 w-4" />
-                        AI model answer
+                <div className="flex-1 min-h-0 flex flex-col gap-3">
+                  <div
+                    aria-label="Scrollable written explanation"
+                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y rounded-xl border border-border/60 bg-background/35 p-3"
+                  >
+                    {question.explanation ? (
+                      <div className="text-base leading-relaxed">
+                        <QuestionMath content={question.explanation} />
                       </div>
-                      <MathRenderer content={aiTheoryAnswer} className="text-sm leading-relaxed text-foreground" />
-                    </div>
-                  )}
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No written explanation is available for this question yet.</p>
+                    )}
+                  </div>
 
-                  {aiTheoryError && (
-                    <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
-                      {aiTheoryError}
-                    </p>
-                  )}
-
-                  {aiTheoryLoading ? (
-                    <div className="flex items-center justify-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground" aria-live="polite">
-                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                      Generating a model answer…
+                  <section className="min-h-0 flex-[1.25] rounded-2xl border border-primary/20 bg-primary/5 shadow-sm flex flex-col overflow-hidden">
+                    <div className="shrink-0 border-b border-primary/15 px-3 py-2.5 flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Bot className="h-4 w-4" />
+                      AI model answer
                     </div>
-                  ) : (
-                    <button
-                      type="button"
-                      aria-label="Generate an AI model answer for this theory question"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleAIRevealAnswer();
-                      }}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/15 active:scale-[0.99]"
+                    <div
+                      aria-label="Scrollable AI model answer"
+                      aria-live="polite"
+                      className="min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-3 space-y-3"
                     >
-                      <Sparkles className="h-4 w-4" />
-                      {aiTheoryAnswer || aiTheoryError ? 'Regenerate AI answer' : 'AI Reveal Answer'}
-                    </button>
-                  )}
+                      {aiTheoryAnswer ? (
+                        <MathRenderer content={aiTheoryAnswer} className="text-sm leading-relaxed text-foreground" />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Generate a separate AI model answer for this question. It will scroll independently from the written explanation.</p>
+                      )}
+
+                      {aiTheoryError && (
+                        <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
+                          {aiTheoryError}
+                        </p>
+                      )}
+
+                      {aiTheoryLoading ? (
+                        <div className="flex items-center justify-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                          Generating a model answer…
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          aria-label="Generate an AI model answer for this theory question"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            void handleAIRevealAnswer();
+                          }}
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/15 active:scale-[0.99]"
+                        >
+                          <Sparkles className="h-4 w-4" />
+                          {aiTheoryAnswer || aiTheoryError ? 'Regenerate AI answer' : 'AI Reveal Answer'}
+                        </button>
+                      )}
+                    </div>
+                  </section>
                 </div>
 
                 <div className="mt-3 pt-2 text-center text-muted-foreground">

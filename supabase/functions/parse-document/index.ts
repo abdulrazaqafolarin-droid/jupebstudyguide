@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { guardAiAccess, CORS_HEADERS } from "../_shared/ai.ts";
 import { CORS_HEADERS, aiChatJSON, guardAiAccess } from "../_shared/ai.ts";
 
 Deno.serve(async (req) => {

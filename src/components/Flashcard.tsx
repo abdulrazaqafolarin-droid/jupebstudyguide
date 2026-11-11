@@ -140,7 +140,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
       <div className="flashcard-container">
         <div
-          className="relative w-full min-h-[520px]"
+          className="relative w-full h-[min(78vh,760px)] min-h-[520px]"
           onClick={!question.options ? (event) => {
             // Scrolling and controls are independent interactions; only taps
             // on the non-interactive card surface reveal the answer.
@@ -155,12 +155,12 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
           {/* Keep the question face in normal document flow. 3D-transformed
               ancestors can swallow nested touch scrolling in Android WebView. */}
           {(!isFlipped || question.options) && (
-          <div className="flashcard-face relative min-h-[520px] rounded-2xl border-2 border-border shadow-xl overflow-hidden">
+          <div className="flashcard-face relative h-full min-h-[520px] rounded-2xl border-2 border-border shadow-xl overflow-hidden">
             {/* Card background with subtle gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
             <div className="absolute inset-0 chalk-texture opacity-30" />
             
-            <div className="relative min-h-[520px] p-6 flex flex-col">
+            <div className="relative h-full min-h-[520px] p-6 flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                 <span className={cn(
@@ -254,11 +254,11 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
           {/* Back of card (for essay questions) */}
           {!question.options && isFlipped && (
-            <div className="flashcard-face relative min-h-[520px] rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
+            <div className="flashcard-face relative h-full min-h-[520px] rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-accent/10" />
               <div className="absolute inset-0 chalk-texture opacity-30" />
               
-              <div className="relative min-h-[520px] p-6 flex flex-col">
+              <div className="relative h-full min-h-[520px] p-6 flex flex-col">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-accent/30">
                   <span className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium bg-accent/20 text-accent'

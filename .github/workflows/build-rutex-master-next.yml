@@ -1,7 +1,11 @@
 name: Build Rutex Master Next (artifact only)
 on:
   pull_request:
-    branches: [main]
+    # Build the signed successor artifact for its stacked UI feature PR as well
+    # as the original successor PR. Publishing remains manual and opt-in only.
+    branches:
+      - main
+      - release/rutex-master-next-side-by-side-2026-11-10
     types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:

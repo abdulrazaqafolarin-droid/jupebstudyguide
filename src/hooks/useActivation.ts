@@ -151,7 +151,7 @@ export function useActivation() {
     checkStatus();
   }, [checkStatus]);
 
-  const validateCode = useCallback(async (code: string): Promise<{ success: boolean; error?: string; plan_type?: string }> => {
+  const validateCode = useCallback(async (code: string): Promise<{ success: boolean; error?: string; plan_type?: string; duration_days?: number }> => {
     if (!user) {
       setError("You must be logged in to activate.");
       setValidating(false);

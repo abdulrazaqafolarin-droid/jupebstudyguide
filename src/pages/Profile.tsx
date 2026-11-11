@@ -14,7 +14,7 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy, Clock } from 'lucide-react';
 import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 import { ACHIEVEMENTS, Achievement } from '@/hooks/useAchievements';

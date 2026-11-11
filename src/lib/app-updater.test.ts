@@ -86,7 +86,7 @@ describe("parseReleaseInfo", () => {
         versionName: "1.1.41",
         commit: "abc123",
         builtAt: "2026-10-16T15:00:00Z",
-        url: RELEASE_APK_URL,
+        url: getReleaseApkUrl(41),
         sha256: "a".repeat(64),
       }),
     ).toEqual({
@@ -94,7 +94,7 @@ describe("parseReleaseInfo", () => {
       versionName: "1.1.41",
       commit: "abc123",
       builtAt: "2026-10-16T15:00:00Z",
-      url: RELEASE_APK_URL,
+      url: getReleaseApkUrl(42),
       sha256: "a".repeat(64),
       requiresReinstall: false,
     });
@@ -103,7 +103,7 @@ describe("parseReleaseInfo", () => {
   it("preserves the explicit one-time reinstall flag", () => {
     expect(parseReleaseInfo({
       versionCode: 42,
-      url: RELEASE_APK_URL,
+      url: getReleaseApkUrl(43),
       sha256: "b".repeat(64),
       requiresReinstall: true,
     })).toMatchObject({
@@ -126,6 +126,6 @@ describe("parseReleaseInfo", () => {
     expect(parseReleaseInfo({ versionCode: 41, url: "http://insecure/x.apk" })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 41, url: "https://example.com/jupeb-master.apk" })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 0, url: RELEASE_APK_URL, sha256: "a".repeat(64) })).toBeNull();
-    expect(parseReleaseInfo({ versionCode: 41, url: RELEASE_APK_URL, sha256: "not-a-checksum" })).toBeNull();
+    expect(parseReleaseInfo({ versionCode: 41, url: getReleaseApkUrl(41), sha256: "not-a-checksum" })).toBeNull();
   });
 });

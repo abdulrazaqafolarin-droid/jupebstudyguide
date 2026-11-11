@@ -19,7 +19,6 @@ jobs:
       ANDROID_AUTH_SCHEME: com.rutex.jupebmaster
       CAPACITOR_APP_ID: com.rutex.jupebmaster
       CAPACITOR_APP_NAME: Rutex Master Next
-      VITE_NATIVE_APP_SCHEME: com.rutex.jupebmaster
       VITE_ANDROID_RELEASE_BASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next
       VITE_ANDROID_RELEASE_APK_NAME: rutex-master-next.apk
       VITE_SUPABASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co
@@ -80,8 +79,8 @@ jobs:
         run: npm test
       - name: Run lint
         run: npm run lint
-      - name: Build web assets
-        run: npm run build
+      - name: Build web assets with successor callback scheme
+        run: VITE_NATIVE_APP_SCHEME="$ANDROID_AUTH_SCHEME" npm run build
       - name: Sync Android project with successor identity
         run: |
           set -euo pipefail

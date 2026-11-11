@@ -176,7 +176,7 @@ const Auth = () => {
         } else if (needsEmailConfirmation) {
           toast({
             title: "Confirm your email",
-            description: `We sent a confirmation link to ${email}. Open it to finish signing up and start your 1-day free trial.`,
+            description: `We sent a confirmation link to ${email}. Open it to finish signing up. Your subscription becomes active after you enter an activation code.`,
           });
           setMode('login');
         } else {

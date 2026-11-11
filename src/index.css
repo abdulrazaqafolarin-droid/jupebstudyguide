@@ -229,6 +229,16 @@
     -webkit-backface-visibility: hidden;
   }
 
+  /* Keep touch scrolling native inside flashcard panes instead of letting
+   * the card's 3D flip gesture consume the user's vertical swipe. */
+  .flashcard-scroll-region {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
   .flashcard-back {
     transform: rotateY(180deg);
   }

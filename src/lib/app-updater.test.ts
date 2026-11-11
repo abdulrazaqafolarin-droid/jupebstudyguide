@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Capacitor } from "@capacitor/core";
-import { downloadApk, installDownloadedApk, isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
+import { downloadApk, getReleaseApkUrl, installDownloadedApk, isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
 
 describe("isAndroidApp", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -41,6 +41,23 @@ describe("Android-only updater operations", () => {
     await expect(
       installDownloadedApk("/tmp/not-a-real-apk"),
     ).rejects.toThrow("APK installation is only available in the Android app");
+  });
+});
+
+describe("getReleaseApkUrl", () => {
+  it("keeps the legacy app on its fixed APK URL", () => {
+    expect(getReleaseApkUrl(41, "https://example.supabase.co/app-releases", "jupeb-master.apk"))
+      .toBe("https://example.supabase.co/app-releases/jupeb-master.apk");
+  });
+
+  it("uses an immutable APK URL for each successor version", () => {
+    expect(getReleaseApkUrl(200321, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .toBe("https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-200321.apk");
+  });
+
+  it("rejects invalid version codes", () => {
+    expect(getReleaseApkUrl(0, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .toBe("");
   });
 });
 

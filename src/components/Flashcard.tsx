@@ -140,26 +140,27 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
 
       <div className="flashcard-container">
         <div
-          className={cn(
-            'flashcard relative w-full min-h-[520px] cursor-pointer',
-            isFlipped && 'flipped'
-          )}
+          className="relative w-full min-h-[520px]"
           onClick={!question.options ? (event) => {
-            // A tap or swipe inside a scroll pane must never be interpreted as
-            // the card's flip gesture. The reveal hint and non-scroll space
-            // remain available for the normal flip interaction.
+            // Scrolling and controls are independent interactions; only taps
+            // on the non-interactive card surface reveal the answer.
             const target = event.target;
-            if (target instanceof Element && target.closest("[data-flashcard-scroll-region]")) return;
+            if (
+              target instanceof Element &&
+              target.closest("[data-flashcard-scroll-region],button,a,input,textarea,select,[role=button]")
+            ) return;
             handleFlip();
           } : undefined}
         >
-          {/* Front of card */}
-          <div className="flashcard-face absolute inset-0 rounded-2xl border-2 border-border shadow-xl overflow-hidden">
+          {/* Keep the question face in normal document flow. 3D-transformed
+              ancestors can swallow nested touch scrolling in Android WebView. */}
+          {(!isFlipped || question.options) && (
+          <div className="flashcard-face relative min-h-[520px] rounded-2xl border-2 border-border shadow-xl overflow-hidden">
             {/* Card background with subtle gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
             <div className="absolute inset-0 chalk-texture opacity-30" />
             
-            <div className="relative h-full p-6 flex flex-col">
+            <div className="relative min-h-[520px] p-6 flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                 <span className={cn(
@@ -249,14 +250,15 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
               </div>
             </div>
           </div>
+          )}
 
           {/* Back of card (for essay questions) */}
-          {!question.options && (
-            <div className="flashcard-face flashcard-back absolute inset-0 rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
+          {!question.options && isFlipped && (
+            <div className="flashcard-face relative min-h-[520px] rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-accent/10" />
               <div className="absolute inset-0 chalk-texture opacity-30" />
               
-              <div className="relative h-full p-6 flex flex-col">
+              <div className="relative min-h-[520px] p-6 flex flex-col">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-accent/30">
                   <span className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium bg-accent/20 text-accent'

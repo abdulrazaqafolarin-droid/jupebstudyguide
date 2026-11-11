@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from "react";
 import { QuestionMath } from "@/components/QuestionMath";
 import { cn } from "@/lib/utils";
 import {
@@ -380,7 +380,7 @@ export function QuestionImagePositioner({
           const linePlacements = placements
             .filter((placement) => placement.offset >= start && placement.offset < end)
             .sort((a, b) => a.offset - b.offset || a.imageIndex - b.imageIndex);
-          const parts: React.ReactNode[] = [];
+          const parts: ReactNode[] = [];
           let cursor = start;
 
           linePlacements.forEach((placement) => {

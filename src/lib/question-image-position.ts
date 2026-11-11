@@ -25,7 +25,10 @@ export function getInlineImageOffsets(
 
   return Array.from({ length: count }, (_, index) => {
     const parsed = Number(savedOffsets[index]);
-    const requested = Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : 0;
+    const fallback = index === 0 ? 0 : content.length;
+    const requested = Number.isSafeInteger(parsed) && parsed >= 0
+      ? parsed
+      : fallback;
     return getSafeQuestionImageOffset(content, requested);
   });
 }

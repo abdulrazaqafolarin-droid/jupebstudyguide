@@ -335,6 +335,8 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
 
           {mode === "rectangle" && cropRect && (
             <div
+              role="group"
+              aria-label="Free crop selection"
               className="absolute z-10 border-2 border-primary bg-primary/10 shadow-[0_0_0_9999px_rgba(0,0,0,0.48)] touch-none"
               style={{
                 left: cropRect.x,
@@ -349,9 +351,34 @@ export function ImageCropper({ image, fileName, onCropComplete, onSkip, onCancel
               {handleLabels.map(({ handle, className }) => (
                 <div
                   key={handle}
-                  role="presentation"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={"Resize crop " + handle}
+                  data-crop-handle={handle}
                   onPointerDown={(event) => beginRectangleAction(event, "resize", handle)}
+                  onKeyDown={(event) => {
+                    const step = event.shiftKey ? 10 : 2;
+                    if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "ArrowUp" || event.key === "ArrowDown") {
+                      event.preventDefault();
+                      const original = cropRect;
+                      if (!original) return;
+                      const dx = event.key === "ArrowLeft" ? -step : event.key === "ArrowRight" ? step : 0;
+                      const dy = event.key === "ArrowUp" ? -step : event.key === "ArrowDown" ? step : 0;
+                      const bounds = getImageBounds();
+                      if (!bounds) return;
+                      let left = original.x;
+                      let top = original.y;
+                      let right = original.x + original.width;
+                      let bottom = original.y + original.height;
+                      if (handle.includes("w")) left = Math.max(bounds.x, Math.min(right - MIN_CROP_SIZE, left + dx));
+                      if (handle.includes("e")) right = Math.min(bounds.x + bounds.width, Math.max(left + MIN_CROP_SIZE, right + dx));
+                      if (handle.includes("n")) top = Math.max(bounds.y, Math.min(bottom - MIN_CROP_SIZE, top + dy));
+                      if (handle.includes("s")) bottom = Math.min(bounds.y + bounds.height, Math.max(top + MIN_CROP_SIZE, bottom + dy));
+                      setCropRect({ x: left, y: top, width: right - left, height: bottom - top });
+                    }
+                  }}
                   className={"absolute z-20 h-4 w-4 rounded-full border-2 border-primary bg-white shadow-md touch-none " + className}
+                  style={{ touchAction: "none" }}
                 />
               ))}
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 border-t border-dashed border-white/70 pointer-events-none" />

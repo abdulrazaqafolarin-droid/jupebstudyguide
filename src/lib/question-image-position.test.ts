@@ -31,7 +31,7 @@ describe("question image text anchors", () => {
     expect(getInlineImageOffset("image-above", "short")).toBe(0);
     expect(getInlineImageOffset("image-inline:4", "")).toBe(0);
     expect(getInlineImageOffsets("image-inline:2,8,99", "short", 3)).toEqual([2, 5, 5]);
-    expect(getInlineImageOffsets("image-inline:7", "long text", 3)).toEqual([7, 0, 0]);
+    expect(getInlineImageOffsets("image-inline:7", "long text", 3)).toEqual([7, 9, 9]);
   });
 
   it("keeps anchors outside inline and display maths", () => {

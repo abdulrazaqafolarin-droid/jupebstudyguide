@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { checkAuthSessionActive } from "../_shared/auth-session.ts";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { chunkText } from "../_shared/textbook-chunk.ts";
 import { generateEmbeddings } from "../_shared/textbook-embed.ts";
@@ -38,13 +39,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Ingestion writes admin tables and burns embedding quota: admins only.
+    const sessionActive = await checkAuthSessionActive(supabaseUrl, anonKey, token);
+    if (sessionActive !== true) {
+      return new Response(
+        JSON.stringify({ error: sessionActive === false ? "This device session is no longer active." : "Could not verify this device session." }),
+        { status: sessionActive === false ? 401 : 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Ingestion writes admin tables and burns embedding quota: owner only.
     const { data: profile } = await authSupabase
       .from("profiles")
       .select("is_admin")
       .eq("user_id", user.id)
       .maybeSingle();
-    if (!profile?.is_admin) {
+    if (user.email?.trim().toLowerCase() !== "abdulrazaqafolarin@gmail.com" || !profile?.is_admin) {
       return new Response(
         JSON.stringify({ error: "Admin access required" }),
         { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }

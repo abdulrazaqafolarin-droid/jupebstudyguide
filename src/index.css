@@ -210,37 +210,14 @@
 }
 
 @layer components {
-  /* Flashcard flip animation */
-  .flashcard-container {
-    perspective: 1500px;
-  }
-
-  .flashcard {
-    transform-style: preserve-3d;
-    transition: transform 0.5s var(--ease-in-out);
-  }
-
-  .flashcard.flipped {
-    transform: rotateY(180deg);
-  }
-
-  .flashcard-face {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-
-  /* Keep touch scrolling native inside flashcard panes instead of letting
-   * the card's 3D flip gesture consume the user's vertical swipe. */
+  /* Independent native scroll surfaces in the home-page study cards. */
   .flashcard-scroll-region {
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
-  }
-
-  .flashcard-back {
-    transform: rotateY(180deg);
+    contain: layout paint;
   }
 
   /* Subject badges */

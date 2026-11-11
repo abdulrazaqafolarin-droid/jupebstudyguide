@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { encryptApiKey, decryptApiKey, isVaultProvider } from "../_shared/keyVault.ts";
 import { validateKey } from "../_shared/ai-router.ts";
+import { checkAuthSessionActive } from "../_shared/auth-session.ts";
 
 /// DEPLOYMENT — FIRST-TIME SETUP
 /// ==============================
@@ -68,6 +69,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
   const supabase = createClient(supabaseUrl, supabaseKey);
   const token = authHeader.replace("Bearer ", "");
 
@@ -76,6 +78,14 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ error: "Invalid authentication" }),
       { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  const sessionActive = await checkAuthSessionActive(supabaseUrl, anonKey, token);
+  if (sessionActive !== true) {
+    return new Response(
+      JSON.stringify({ error: sessionActive === false ? "This device session is no longer active. Please sign in again." : "Could not verify this device session." }),
+      { status: sessionActive === false ? 401 : 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }
 

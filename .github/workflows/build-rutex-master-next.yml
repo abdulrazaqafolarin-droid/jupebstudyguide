@@ -4,6 +4,12 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened]
   workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publish the verified successor APK and manifest to public Supabase Storage"
+        required: true
+        default: false
+        type: boolean
 permissions:
   contents: read
 concurrency:
@@ -96,8 +102,10 @@ jobs:
           XML
       - name: Calculate successor version
         run: |
-          echo "APK_VERSION_CODE=$((200000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
-          echo "APK_VERSION_NAME=2.0.$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+          # Reserve 100 version-code slots per workflow run so a manual rerun
+          # (GITHUB_RUN_ATTEMPT) still produces a strictly newer Android build.
+          echo "APK_VERSION_CODE=$((200000 + GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT))" >> "$GITHUB_ENV"
+          echo "APK_VERSION_NAME=2.0.$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
       - name: Build with permanent successor key
         shell: bash
         env:
@@ -111,8 +119,8 @@ jobs:
           APK="android/app/build/outputs/apk/release/app-release.apk"
           test -s "$APK"
           mkdir -p dist-successor
-          cp "$APK" dist-successor/rutex-master-next.apk
-          echo "APK_PATH=dist-successor/rutex-master-next.apk" >> "$GITHUB_ENV"
+          cp "$APK" "dist-successor/rutex-master-next-${APK_VERSION_CODE}.apk"
+          echo "APK_PATH=dist-successor/rutex-master-next-${APK_VERSION_CODE}.apk" >> "$GITHUB_ENV"
       - name: Verify package, version, SDK and signing certificate
         id: verify
         shell: bash
@@ -148,16 +156,18 @@ jobs:
         run: |
           set -euo pipefail
           HASH="$(sha256sum "$APK_PATH" | awk '{print $1}')"
-          python3 - "$APK_VERSION_CODE" "$APK_VERSION_NAME" "$GITHUB_SHA" "$HASH" "$SIGNER_SHA256" <<'PY'
+          APK_NAME="$(basename "$APK_PATH")"
+          APK_URL="https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next/${APK_NAME}"
+          python3 - "$APK_VERSION_CODE" "$APK_VERSION_NAME" "$GITHUB_SHA" "$HASH" "$SIGNER_SHA256" "$APK_URL" "$APK_NAME" <<'PY'
           import datetime, json, sys
-          code, name, commit, apk_hash, signer = sys.argv[1:]
+          code, name, commit, apk_hash, signer, apk_url, apk_name = sys.argv[1:]
           manifest = {
               "packageName": "com.rutex.jupebmaster",
               "versionCode": int(code),
               "versionName": name,
               "commit": commit,
               "builtAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              "url": "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next/rutex-master-next.apk",
+              "url": apk_url,
               "sha256": apk_hash,
               "signingCertificateSha256": signer,
               "requiresReinstall": False
@@ -165,7 +175,7 @@ jobs:
           with open("dist-successor/version.json", "w", encoding="utf-8") as f:
               json.dump(manifest, f, separators=(",", ":"))
           with open("dist-successor/SHA256SUMS", "w", encoding="utf-8") as f:
-              f.write(apk_hash + "  rutex-master-next.apk\n")
+              f.write(apk_hash + "  " + apk_name + "\n")
           PY
       - name: Upload verified artifact only
         uses: actions/upload-artifact@v4
@@ -174,6 +184,46 @@ jobs:
           path: dist-successor/*
           if-no-files-found: error
           retention-days: 30
+      - name: Publish immutable successor APK and current manifest to Supabase
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release }}
+        shell: bash
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$SUPABASE_SERVICE_ROLE_KEY" || {
+            echo "::error::Add the SUPABASE_SERVICE_ROLE_KEY repository secret before publishing."
+            exit 1
+          }
+          STORAGE_API="https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1"
+          PUBLIC_BASE="https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next"
+          APK_NAME="$(basename "$APK_PATH")"
+          APK_URL="$PUBLIC_BASE/$APK_NAME"
+          EXPECTED_HASH="$(sha256sum "$APK_PATH" | awk '{print $1}')"
+
+          # APK paths are version-specific and immutable; only version.json is replaced.
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors \
+            -X POST "$STORAGE_API/object/app-releases/rutex-master-next/$APK_NAME" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            -H "Cache-Control: max-age=31536000, immutable" \
+            --data-binary "@$APK_PATH" >/dev/null
+
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors \
+            -X POST "$STORAGE_API/object/app-releases/rutex-master-next/version.json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Cache-Control: no-cache, no-store, max-age=0, must-revalidate" \
+            -H "x-upsert: true" \
+            --data-binary "@dist-successor/version.json" >/dev/null
+
+          REMOTE_MANIFEST="$(curl --fail --silent --show-error "$PUBLIC_BASE/version.json")"
+          printf '%s' "$REMOTE_MANIFEST" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["versionCode"] == int(sys.argv[1]); assert d["url"] == sys.argv[2]; assert d["sha256"] == sys.argv[3]' "$APK_VERSION_CODE" "$APK_URL" "$EXPECTED_HASH"
+          REMOTE_HASH="$(curl --fail --silent --show-error "$APK_URL" | sha256sum | awk '{print $1}')"
+          test "$REMOTE_HASH" = "$EXPECTED_HASH"
+          echo "Published and publicly verified successor release $APK_VERSION_NAME ($APK_VERSION_CODE)." >> "$GITHUB_STEP_SUMMARY"
       - name: Remove temporary private signing material
         if: always()
         shell: bash
@@ -186,4 +236,8 @@ jobs:
           echo "Rutex Master Next built and verified." >> "$GITHUB_STEP_SUMMARY"
           echo "Package: com.rutex.jupebmaster" >> "$GITHUB_STEP_SUMMARY"
           echo "Version: $APK_VERSION_NAME ($APK_VERSION_CODE)" >> "$GITHUB_STEP_SUMMARY"
-          echo "Artifact only. No app updater or production data was changed." >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ inputs.publish_release }}" == "true" ]]; then
+            echo "Successor release was published and verified in the isolated public release folder." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Artifact only. No app updater storage or production data was changed." >> "$GITHUB_STEP_SUMMARY"
+          fi

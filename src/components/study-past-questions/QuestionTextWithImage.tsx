@@ -105,7 +105,7 @@ export function QuestionTextWithImage({
     );
   }
 
-  return <div className={cn("w-full min-w-0", className)}>{parts}</div>;
+  return <div className={cn("w-full min-w-0 protected-study-content", className)}>{parts}</div>;
 }
 
 export default QuestionTextWithImage;

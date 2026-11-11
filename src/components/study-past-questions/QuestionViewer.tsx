@@ -435,7 +435,11 @@ export function QuestionViewer({
             animate="center"
             exit="exit"
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="space-y-5"
+            className="space-y-5 protected-study-content"
+            onCopy={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+            onCut={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+            onContextMenu={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+            onDragStart={(event) => event.preventDefault()}
           >
             <div>
               {category === "practical" && (

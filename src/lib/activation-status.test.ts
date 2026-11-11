@@ -5,6 +5,8 @@ const cached = (overrides: Partial<ActivationStatusSnapshot> = {}): ActivationSt
   is_activated: true,
   is_admin: false,
   trial_expires_at: null,
+  subscription_expires_at: null,
+  subscription_duration_days: null,
   checking: false,
   ...overrides,
 });
@@ -14,10 +16,10 @@ describe("resolveActivationFailure", () => {
     expect(resolveActivationFailure(false, cached())).toEqual(cached({ check_error: false }));
   });
 
-  it("preserves a still-live trial snapshot for offline navigation", () => {
+  it("preserves a previously verified subscription expiry for offline navigation", () => {
     const trial = cached({
       is_activated: false,
-      trial_expires_at: "2026-11-08T12:00:00.000Z",
+      subscription_expires_at: "2026-11-18T12:00:00.000Z",
     });
     expect(resolveActivationFailure(false, trial)).toEqual({ ...trial, check_error: false });
   });
@@ -32,6 +34,8 @@ describe("resolveActivationFailure", () => {
       is_activated: false,
       is_admin: false,
       trial_expires_at: null,
+      subscription_expires_at: null,
+      subscription_duration_days: null,
       checking: false,
       check_error: true,
     });

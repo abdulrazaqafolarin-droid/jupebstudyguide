@@ -260,15 +260,17 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_actor uuid := auth.uid();
+  v_actor uuid;
   v_code text;
   v_i integer;
   v_type text;
 BEGIN
-  IF v_actor IS NULL THEN
-    -- This overload is only used by the authenticated admin Edge Function
-    -- when invoked with the verified owner's identity.
+  IF (auth.jwt() ->> 'role') = 'service_role' THEN
+    -- The Edge Function has already authenticated the request and verified
+    -- the owner email; still independently verify the referenced admin row.
     v_actor := p_created_by;
+  ELSE
+    v_actor := auth.uid();
   END IF;
 
   IF v_actor IS NULL OR v_actor <> p_created_by

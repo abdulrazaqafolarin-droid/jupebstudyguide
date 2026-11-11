@@ -14,11 +14,25 @@ export function isInlineImagePosition(position?: string | null): boolean {
 }
 
 /** Read the saved character anchor and clamp it to the current question text. */
-export function getInlineImageOffset(position: string | null | undefined, content: string): number {
+export function getInlineImageOffsets(
+  position: string | null | undefined,
+  content: string,
+  imageCount: number,
+): number[] {
   const match = INLINE_IMAGE_POSITION.exec(position || "");
-  const parsed = match ? Number(match[1]) : 0;
-  const requested = Number.isSafeInteger(parsed) ? parsed : 0;
-  return getSafeQuestionImageOffset(content, requested);
+  const savedOffsets = match ? match[1].split(",") : [];
+  const count = Math.max(0, Math.floor(Number.isFinite(imageCount) ? imageCount : 0));
+
+  return Array.from({ length: count }, (_, index) => {
+    const parsed = Number(savedOffsets[index]);
+    const requested = Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : 0;
+    return getSafeQuestionImageOffset(content, requested);
+  });
+}
+
+/** Backwards-compatible first-image accessor for existing single-image callers. */
+export function getInlineImageOffset(position: string | null | undefined, content: string): number {
+  return getInlineImageOffsets(position, content, 1)[0] ?? 0;
 }
 
 /** Clamp an anchor and keep it outside LaTeX, code, and Markdown emphasis spans. */
@@ -39,9 +53,13 @@ export function getSafeQuestionImageOffset(content: string, requestedOffset: num
 }
 
 /** Create the durable character offset stored in study_questions.image_position. */
-export function createInlineImagePosition(offset: number): QuestionImagePosition {
-  const safeOffset = Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
-  return ("image-inline:" + safeOffset) as `image-inline:${number}`;
+export function createInlineImagePosition(offset: number | readonly number[]): QuestionImagePosition {
+  const offsets = Array.isArray(offset) ? offset : [offset];
+  const safeOffsets = offsets.map((value) =>
+    Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0
+  );
+  const normalized = safeOffsets.length > 0 ? safeOffsets : [0];
+  return ("image-inline:" + normalized.join(",")) as QuestionImagePosition;
 }
 
 /** Split question content at a safe saved character anchor. */

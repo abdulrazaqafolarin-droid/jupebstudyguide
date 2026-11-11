@@ -134,6 +134,28 @@ CREATE TRIGGER guard_profile_security_flags_insert
   FOR EACH ROW
   EXECUTE FUNCTION public.guard_profile_security_flags();
 
+-- Existing student activations do not carry a recorded subscription term.
+-- The owner administrator is exempt. Revoke every currently active Supabase
+-- session for previously activated students and clear their legacy activation
+-- flag so they must sign in again and redeem a new duration-based code.
+SELECT set_config('request.jwt.claim', '{"role":"service_role"}', true);
+
+DELETE FROM auth.sessions AS s
+USING public.profiles AS p
+JOIN auth.users AS u ON u.id = p.user_id
+WHERE s.user_id = p.user_id
+  AND p.is_admin IS NOT TRUE
+  AND p.is_activated IS TRUE
+  AND lower(u.email) <> 'abdulrazaqafolarin@gmail.com';
+
+UPDATE public.profiles AS p
+SET is_activated = false
+FROM auth.users AS u
+WHERE u.id = p.user_id
+  AND p.is_admin IS NOT TRUE
+  AND p.is_activated IS TRUE
+  AND lower(u.email) <> 'abdulrazaqafolarin@gmail.com';
+
 -- Signups no longer receive an automatic free trial. Preserve the existing
 -- welcome conversation behaviour for new student accounts.
 CREATE OR REPLACE FUNCTION public.handle_new_user()

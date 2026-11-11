@@ -25,6 +25,7 @@ export default function AdminActivationCodes() {
 
   const [count, setCount] = useState(5);
   const [durationDays, setDurationDays] = useState("7");
+  const [assignDurationDays, setAssignDurationDays] = useState("7");
   const [targetEmail, setTargetEmail] = useState("");
   const [assigning, setAssigning] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -68,7 +69,7 @@ export default function AdminActivationCodes() {
       body: {
         action: "assign-subscription",
         target_email: targetEmail.trim(),
-        duration_days: Number(durationDays),
+        duration_days: Number(assignDurationDays),
       },
     });
     setAssigning(false);
@@ -265,7 +266,7 @@ export default function AdminActivationCodes() {
             </div>
             <div className="w-full sm:w-56 space-y-1.5">
               <label className="text-sm text-muted-foreground">Purchased duration</label>
-              <Select value={durationDays} onValueChange={setDurationDays}>
+              <Select value={assignDurationDays} onValueChange={setAssignDurationDays}>
                 <SelectTrigger className="bg-background/50"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="7">1 Week (7 days)</SelectItem>

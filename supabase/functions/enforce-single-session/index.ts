@@ -53,8 +53,19 @@ Deno.serve(async (req) => {
 
   // Only the single established owner account is exempt from single-device
   // enforcement. A profile flag alone never grants an exemption.
-  if (user.email?.toLowerCase() === OWNER_EMAIL && profile?.is_admin === true) {
+  if (user.email?.trim().toLowerCase() === OWNER_EMAIL && profile?.is_admin === true) {
     return json({ success: true, admin: true, device_limit: "unlimited" });
+  }
+
+  // Enforce MFA at the server boundary as well as in the app. Never revoke
+  // another device while this login is still at AAL1 and must reach AAL2.
+  const { data: assurance, error: assuranceError } =
+    await userClient.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (assuranceError) {
+    return json({ error: "Could not verify multi-factor authentication. Please retry." }, 503);
+  }
+  if (assurance?.nextLevel === "aal2" && assurance.currentLevel !== "aal2") {
+    return json({ error: "Complete multi-factor authentication before securing this device." }, 403);
   }
 
   const { error: revokeError } = await admin.auth.admin.signOut(token, "others");

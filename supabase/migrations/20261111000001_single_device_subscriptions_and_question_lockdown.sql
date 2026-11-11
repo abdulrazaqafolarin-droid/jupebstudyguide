@@ -211,10 +211,9 @@ USING (
   AND EXISTS (
     SELECT 1
     FROM public.profiles AS p
-    JOIN auth.users AS u ON u.id = p.user_id
     WHERE p.user_id = (SELECT auth.uid())
       AND (
-        (p.is_admin IS TRUE AND lower(u.email) = 'abdulrazaqafolarin@gmail.com')
+        p.is_admin IS TRUE
         OR (
           p.subscription_expires_at > statement_timestamp()
           AND public.study_questions.hidden IS FALSE
@@ -234,10 +233,8 @@ USING (
   AND EXISTS (
     SELECT 1
     FROM public.profiles AS p
-    JOIN auth.users AS u ON u.id = p.user_id
     WHERE p.user_id = (SELECT auth.uid())
       AND p.is_admin IS TRUE
-      AND lower(u.email) = 'abdulrazaqafolarin@gmail.com'
   )
 );
 

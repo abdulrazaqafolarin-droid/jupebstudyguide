@@ -2,6 +2,8 @@ export interface ActivationStatusSnapshot {
   is_activated: boolean;
   is_admin: boolean;
   trial_expires_at: string | null;
+  subscription_expires_at: string | null;
+  subscription_duration_days: number | null;
   checking: boolean;
   /** True only when the first verification failed and no trusted cache exists. */
   check_error?: boolean;
@@ -24,7 +26,9 @@ export function resolveActivationFailure(
     is_activated: false,
     is_admin: isAdminEmail,
     trial_expires_at: null,
-    checking: false,
+    subscription_expires_at: null,
+    subscription_duration_days: null,
+    checking: false;
     check_error: !isAdminEmail,
   };
 }

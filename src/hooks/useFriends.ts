@@ -29,7 +29,15 @@ export function useFriends() {
   const fetchVersionRef = useRef(0);
 
   const fetchData = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      // Invalidate any in-flight request from the previous signed-in account.
+      fetchVersionRef.current += 1;
+      setFriends([]);
+      setIncomingRequests([]);
+      setOutgoingRequests([]);
+      setLoading(false);
+      return;
+    }
     const requestVersion = ++fetchVersionRef.current;
     setLoading(true);
 
@@ -113,7 +121,7 @@ export function useFriends() {
   useEffect(() => {
     if (!user) return;
     const channel = supabase
-      .channel('friend-requests-live')
+      .channel(`friend-requests-live-${user.id}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'friend_requests', filter: `receiver_id=eq.${user.id}` },

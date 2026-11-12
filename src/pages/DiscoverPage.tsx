@@ -247,7 +247,9 @@ export default function DiscoverPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-8 w-8 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        aria-label={`Message ${u.display_name || "user"}`}
+                        title={`Message ${u.display_name || "user"}`}
                         onClick={() => handleChat(u.user_id)}
                         disabled={startingChat === u.user_id}
                       >
@@ -322,7 +324,9 @@ export default function DiscoverPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-8 w-8 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                        aria-label={`Message ${u.display_name || "user"}`}
+                        title={`Message ${u.display_name || "user"}`}
                         onClick={() => handleChat(u.user_id)}
                         disabled={startingChat === u.user_id}
                       >

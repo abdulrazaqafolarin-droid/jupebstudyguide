@@ -22,17 +22,23 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
   const [showActivationEntry, setShowActivationEntry] = useState(false);
   const [activationCode, setActivationCode] = useState("");
   const subscriptionExpiresAt = status.subscription_expires_at ? Date.parse(status.subscription_expires_at) : Number.NaN;
+  const trialExpiresAt = status.trial_expires_at ? Date.parse(status.trial_expires_at) : Number.NaN;
 
   useEffect(() => {
-    if (!Number.isFinite(subscriptionExpiresAt)) return;
+    const hasTimedAccess =
+      (Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > Date.now()) ||
+      (Number.isFinite(trialExpiresAt) && trialExpiresAt > Date.now());
+    if (!hasTimedAccess) return;
+
     const tick = () => setClockNow(Date.now());
     tick();
-    if (subscriptionExpiresAt <= Date.now()) return;
     const interval = window.setInterval(tick, 1000);
     return () => window.clearInterval(interval);
-  }, [subscriptionExpiresAt]);
+  }, [subscriptionExpiresAt, trialExpiresAt]);
 
   const subscriptionActive = Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > clockNow;
+  const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
+  const activeExpiry = subscriptionActive ? subscriptionExpiresAt : trialExpiresAt;
 
   const handleTrialActivation = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,7 +65,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.check_error && !status.is_admin && !subscriptionActive) {
+  if (status.check_error && !status.is_admin && !subscriptionActive && !trialActive) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-border/50 shadow-xl">
@@ -89,11 +95,11 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.is_admin || subscriptionActive) {
+  if (status.is_admin || subscriptionActive || trialActive) {
     return (
       <div className="activation-gate-shell min-h-[100dvh] w-full bg-background">
         <AnimatePresence initial={false}>
-          {subscriptionActive && !status.is_admin && (
+          {(subscriptionActive || trialActive) && !status.is_admin && (
             <motion.div
               key="subscription-status-banner"
               initial={{ height: 0, opacity: 0 }}
@@ -113,10 +119,10 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
               >
                 <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
                   <Clock className="h-3.5 w-3.5" />
-                  <strong>{status.subscription_duration_days ?? "Paid"}-day subscription active</strong>
+                  <strong>{subscriptionActive ? `${status.subscription_duration_days ?? "Paid"}-day subscription active` : "1-day free trial active"}</strong>
                   <span aria-hidden="true">·</span>
                   <span className="font-mono tabular-nums" aria-live="off">
-                    {formatTrialCountdown(subscriptionExpiresAt - clockNow)} remaining
+                    {formatTrialCountdown(activeExpiry - clockNow)} remaining
                   </span>
                   <Button
                     type="button"
@@ -127,7 +133,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                     aria-controls="trial-activation-entry"
                   >
                     <Key className="mr-1.5 h-3 w-3" />
-                    Add Time
+{subscriptionActive ? "Add Time" : "Enter Code"}
                   </Button>
                 </div>
               </div>
@@ -161,7 +167,9 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                     </div>
                   </form>
                   <p className="mx-auto mt-2 max-w-2xl text-[11px] text-muted-foreground">
-                    Your current subscription remains active while you enter another code. Any new term will extend its expiry date.
+                    {subscriptionActive
+                      ? "Your current paid subscription remains active while you enter another code. Any new term extends its expiry date."
+                      : "Your 24-hour trial is active. Redeeming a code starts your paid subscription immediately."}
                   </p>
                 </div>
               )}

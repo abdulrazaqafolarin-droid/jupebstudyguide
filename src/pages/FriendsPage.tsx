@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MessageCircle, Search, UserCheck, UserPlus, Users } from "lucide-react";
+import { ArrowLeft, Loader2, MessageCircle, Search, UserCheck, UserPlus, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFriends } from "@/hooks/useFriends";
 import { useChat, Profile } from "@/hooks/useChat";
@@ -27,6 +27,7 @@ export default function FriendsPage() {
   const [searchingUsers, setSearchingUsers] = useState(false);
   const [profileTarget, setProfileTarget] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [startingConversation, setStartingConversation] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
@@ -49,11 +50,17 @@ export default function FriendsPage() {
   }, [addFriendQuery, chat.searchUsers]);
 
   const handleStartConversation = async (userId: string) => {
+    if (startingConversation) return;
+    setStartingConversation(userId);
     try {
       const convId = await chat.startConversation(userId);
-      navigate(convId ? `/chat?conversation=${convId}` : "/chat");
+      if (!convId) throw new Error("Could not open this direct message. Please try again.");
+      navigate(`/chat?conversation=${encodeURIComponent(convId)}`);
     } catch (err) {
-      toast.error(String(err));
+      console.error("[Friends] Failed to open direct message:", err);
+      toast.error(err instanceof Error ? err.message : "Could not open this direct message.");
+    } finally {
+      setStartingConversation(null);
     }
   };
 
@@ -244,7 +251,12 @@ export default function FriendsPage() {
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
             All Friends ({friends.friends.length})
           </h3>
-          {friends.friends.length === 0 ? (
+          {friends.loading && friends.friends.length === 0 ? (
+            <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Loading friends…
+            </div>
+          ) : friends.friends.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -304,11 +316,16 @@ export default function FriendsPage() {
                       className="h-8 text-xs rounded-lg shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleStartConversation(f.user_id);
+                        void handleStartConversation(f.user_id);
                       }}
+                      disabled={startingConversation === f.user_id}
                     >
-                      <MessageCircle className="w-3.5 h-3.5 mr-1" />
-                      Chat
+                      {startingConversation === f.user_id ? (
+                        <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+                      ) : (
+                        <MessageCircle className="w-3.5 h-3.5 mr-1" />
+                      )}
+                      {startingConversation === f.user_id ? "Opening…" : "Chat"}
                     </Button>
                   </div>
                 </motion.div>

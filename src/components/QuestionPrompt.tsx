@@ -64,10 +64,11 @@ export function QuestionPrompt({
     return (
       <QuestionTextWithImage
         content={question.question}
-        images={imageUrls.map((src, index) => ({
+        images={allImageUrls.map((src, index) => ({
           id: question.id + "-image-" + index,
           src,
-          alt: imageUrls.length > 1 ? alt + " " + (index + 1) : alt,
+          alt: allImageUrls.length > 1 ? alt + " " + (index + 1) : alt,
+          visible: !failedUrls.has(src),
           onError: () => markFailed(src),
         }))}
         imagePosition={question.imagePosition!}

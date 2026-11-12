@@ -621,7 +621,7 @@ export default function StudyPastQuestions() {
                 <div className="rounded-2xl bg-card border p-4">
                   <h2 className="text-sm font-semibold mb-2 text-muted-foreground">Subject</h2>
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-                    {SUBJECTS.map((s) => {
+                    {SUBJECTS.filter((s) => (subjectCounts[s] ?? 0) > 0).map((s) => {
                       const info = STUDY_SUBJECT_INFO[s];
                       const isActive = selectedSubject === s;
                       const subjCount = subjectCounts[s] ?? 0;

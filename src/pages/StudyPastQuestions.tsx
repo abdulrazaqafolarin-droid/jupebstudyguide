@@ -207,6 +207,16 @@ export default function StudyPastQuestions() {
     return counts;
   }, [selectedSubject, selectedCategory, cacheTick]);
 
+  // Only show years that actually contain questions for the selected
+  // subject and category. The shared year constant is intentionally broader
+  // because different subjects/categories have different coverage.
+  const availableYears = useMemo(() => {
+    if (!selectedSubject) return [];
+    return STUDY_YEARS.filter(
+      (year) => getStudyQuestionsBySubject(selectedSubject, year, selectedCategory).length > 0
+    );
+  }, [selectedSubject, selectedCategory, cacheTick]);
+
   const yearCategoryCounts = useMemo(() => {
     if (!selectedSubject) return {} as Record<number, Record<StudyCategory, number>>;
     const result: Record<number, Record<StudyCategory, number>> = {};
@@ -639,7 +649,7 @@ export default function StudyPastQuestions() {
                     Select Year
                   </h2>
                   <YearAccordion
-                    years={STUDY_YEARS}
+                    years={availableYears}
                     counts={yearCounts}
                     categoryCounts={yearCategoryCounts}
                     selectedYear={selectedYear}

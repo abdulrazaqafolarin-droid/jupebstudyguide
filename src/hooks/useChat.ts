@@ -551,14 +551,15 @@ export function useChat() {
 
     const { data, error } = await query;
 
+    // An older request can finish after the user has opened another DM or
+    // after a newer retry has started. Ignore stale success AND failure
+    // results so they cannot show a false load-error toast or hide the active
+    // conversation's loading indicator.
+    if (gen !== messagesFetchGenRef.current) return;
+
     if (error) {
       console.error('Error fetching messages:', error);
       toast.error('Could not load this conversation. Check your connection and try again.');
-      setMessagesLoading(false);
-      return;
-    }
-
-    if (gen !== messagesFetchGenRef.current) {
       setMessagesLoading(false);
       return;
     }

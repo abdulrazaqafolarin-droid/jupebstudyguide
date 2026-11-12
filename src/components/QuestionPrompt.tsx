@@ -6,6 +6,15 @@ import { QuestionTextWithImage } from "@/components/study-past-questions/Questio
 import { isInlineImagePosition } from "@/lib/question-image-position";
 import { cn } from "@/lib/utils";
 
+function normalizeQuestionImageUrl(value: string): string {
+  const url = value.trim();
+  const commaIndex = url.indexOf(",");
+  if (/^data:image\/[^;,]+;base64,/i.test(url) && commaIndex >= 0) {
+    return url.slice(0, commaIndex + 1) + url.slice(commaIndex + 1).replace(/\s+/g, "");
+  }
+  return url;
+}
+
 interface QuestionPromptProps {
   question: Pick<Question, "id" | "question" | "imageUrl" | "imageUrls" | "imagePosition">;
   alt?: string;
@@ -35,7 +44,8 @@ export function QuestionPrompt({
     () => [...new Set([
       ...(question.imageUrls ?? []),
       question.imageUrl ?? "",
-    ].filter((url): url is string => typeof url === "string" && url.trim().length > 0))],
+    ].filter((url): url is string => typeof url === "string" && url.trim().length > 0)
+      .map(normalizeQuestionImageUrl))],
     [question.imageUrl, question.imageUrls],
   );
   const failedUrls = failed.questionId === question.id ? failed.urls : new Set<string>();

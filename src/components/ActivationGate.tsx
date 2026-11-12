@@ -133,7 +133,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                     aria-controls="trial-activation-entry"
                   >
                     <Key className="mr-1.5 h-3 w-3" />
-                    Enter Code
+{subscriptionActive ? "Add Time" : "Enter Code"}
                   </Button>
                 </div>
               </div>

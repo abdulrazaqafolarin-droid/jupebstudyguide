@@ -48,6 +48,7 @@ const DiscoverPage = lazy(() => import("./pages/DiscoverPage"));
 const StudyPastQuestions = lazy(() => import("./pages/StudyPastQuestions"));
 const FriendsPage = lazy(() => import("./pages/FriendsPage"));
 const DownloadApp = lazy(() => import("./pages/DownloadApp"));
+const InstallPWA = lazy(() => import("./pages/InstallPWA"));
 const ActivationCodes = lazy(() => import("./pages/admin/ActivationCodes"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const SyllabusPage = lazy(() => import("./pages/SyllabusPage"));
@@ -120,6 +121,7 @@ function AnimatedRoutes() {
         <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
         <Route path="/download" element={<ErrorBoundary><DownloadApp /></ErrorBoundary>} />
+        <Route path="/install" element={<ErrorBoundary><InstallPWA /></ErrorBoundary>} />
         <Route 
           path="/" 
           element={
@@ -387,10 +389,10 @@ const App = () => {
           <ProfilePhotoViewerProvider>
             <Toaster />
             <Sonner />
-            <InstallPrompt />
             <SWUpdatePrompt />
             <AppUpdatePrompt />
             <BrowserRouter>
+              <InstallPrompt />
               {/* Router-root providers: presence channels and notification
                   state persist across route changes instead of churning on
                   every navigation (see ProtectedLayout note). */}

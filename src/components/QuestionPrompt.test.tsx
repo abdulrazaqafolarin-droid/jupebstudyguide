@@ -55,6 +55,19 @@ describe("QuestionPrompt", () => {
     expect(screen.getAllByTestId("inline-question-image-item")).toHaveLength(2);
   });
 
+  it("removes embedded whitespace from base64 image data URLs", () => {
+    render(
+      <QuestionPrompt
+        question={{
+          ...baseQuestion,
+          imageUrl: "data:image/svg+xml;base64,PHN2\nZy8+",
+        }}
+      />,
+    );
+    expect(screen.getByRole("img", { name: "Question illustration" }))
+      .toHaveAttribute("src", "data:image/svg+xml;base64,PHN2Zy8+");
+  });
+
   it("does not display attachments when the saved position is text-only", () => {
     render(
       <QuestionPrompt

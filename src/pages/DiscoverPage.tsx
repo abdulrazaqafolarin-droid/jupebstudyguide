@@ -17,7 +17,6 @@ interface DiscoverUser {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
-  last_seen_at: string | null;
   total_score: number;
 }
 
@@ -46,7 +45,7 @@ export default function DiscoverPage() {
         const [profilesRes, leaderboardRes] = await Promise.all([
           supabase
             .from('profiles')
-            .select('user_id, display_name, avatar_url, last_seen_at')
+            .select('user_id, display_name, avatar_url')
             .neq('user_id', user.id)
             .order('display_name')
             .range(0, 49),
@@ -69,7 +68,6 @@ export default function DiscoverPage() {
           user_id: profile.user_id,
           display_name: profile.display_name,
           avatar_url: profile.avatar_url,
-          last_seen_at: profile.last_seen_at,
           total_score: scoreMap.get(profile.user_id) ?? 0,
         }));
 
@@ -304,12 +302,12 @@ export default function DiscoverPage() {
                             <Trophy className="w-3 h-3" />
                             {u.total_score.toLocaleString()} pts
                           </span>
-                          {(getLastSeen(u.user_id) || u.last_seen_at) && !isOnline(u.user_id) && (
+                          {getLastSeen(u.user_id) && !isOnline(u.user_id) && (
                             <>
                               <span className="text-muted-foreground/40">&middot;</span>
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                {formatDistanceToNow(new Date((getLastSeen(u.user_id) || u.last_seen_at)!), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(getLastSeen(u.user_id)!), { addSuffix: true })}
                               </span>
                             </>
                           )}

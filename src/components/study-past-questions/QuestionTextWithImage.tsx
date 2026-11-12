@@ -7,6 +7,7 @@ interface InlineQuestionImage {
   id: string;
   src: string;
   alt?: string;
+  visible?: boolean;
   onError?: () => void;
 }
 
@@ -71,6 +72,7 @@ export function QuestionTextWithImage({
           <figure
             key={image.id || "question-image-" + index}
             data-testid="inline-question-image-item"
+            hidden={image.visible === false}
             className="m-0 w-full min-w-0"
           >
             <img

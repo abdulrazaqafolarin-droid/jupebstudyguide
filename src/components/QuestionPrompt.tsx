@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Question } from "@/types/question";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
@@ -31,10 +31,6 @@ export function QuestionPrompt({
     urls: new Set(),
   });
 
-  useEffect(() => {
-    setFailed({ questionId: question.id, urls: new Set() });
-  }, [question.id]);
-
   const allImageUrls = useMemo(
     () => [...new Set([
       ...(question.imageUrls ?? []),
@@ -66,6 +62,7 @@ export function QuestionPrompt({
         }))}
         imagePosition={question.imagePosition!}
         className={cn("text-base font-medium leading-relaxed", className)}
+        textClassName={textClassName}
       />
     );
   }

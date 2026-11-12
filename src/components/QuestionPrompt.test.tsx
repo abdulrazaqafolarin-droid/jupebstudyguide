@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Question } from "@/types/question";
 import { QuestionPrompt } from "./QuestionPrompt";

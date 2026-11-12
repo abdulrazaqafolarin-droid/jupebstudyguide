@@ -7,7 +7,7 @@ import { SUBJECT_INFO, type Question } from "@/types/question";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
 import { prepareRecoveryAttempt, submitMissionAttempt } from "@/lib/daily-mission-engine";
 import QuestionMath from "@/components/QuestionMath";
-import QuestionImage from "@/components/QuestionImage";
+import QuestionPrompt from "@/components/QuestionPrompt";
 import MistakeExplanation from "@/components/MistakeExplanation";
 
 interface DailyMissionExperienceProps {
@@ -137,10 +137,12 @@ export function DailyMissionExperience({
             ) : currentQuestions.map((question, index) => (
               <fieldset key={question.id} className="space-y-3 rounded-xl border border-border p-4">
                 <legend className="px-2 text-sm font-semibold">Question {index + 1} of {currentQuestions.length} · {SUBJECT_INFO[question.subject].name}</legend>
-                {question.imageUrl && (
-                  <QuestionImage imageUrl={question.imageUrl} alt={`Illustration for question ${index + 1}`} />
-                )}
-                <p className="leading-6"><QuestionMath inline content={question.question} /></p>
+                <QuestionPrompt
+                  question={question}
+                  alt={`Illustration for question ${index + 1}`}
+                  textClassName="leading-6"
+                  inlineMath
+                />
                 <div className="space-y-2">
                   {(question.options ?? []).map((option) => (
                     <label

@@ -199,10 +199,12 @@ export function DailyMissionExperience({
               return (
                 <div key={questionId} className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Review question {index + 1} of {reviewItems.length}</p>
-                  {question.imageUrl && (
-                    <QuestionImage imageUrl={question.imageUrl} alt={`Illustration for question ${index + 1}`} />
-                  )}
-                  <p className="font-medium"><QuestionMath inline content={question.question} /></p>
+                  <QuestionPrompt
+                    question={question}
+                    alt={`Illustration for question ${index + 1}`}
+                    textClassName="font-medium"
+                    inlineMath
+                  />
                   {answer && (
                     <p className="text-sm"><span className="font-semibold">Your answer:</span> {answer.selectedAnswer || "—"}{userOption ? <> — <QuestionMath inline content={userOption.text} /></> : ""}</p>
                   )}

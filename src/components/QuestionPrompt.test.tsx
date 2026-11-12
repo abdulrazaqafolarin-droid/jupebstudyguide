@@ -68,6 +68,28 @@ describe("QuestionPrompt", () => {
       .toHaveAttribute("src", "data:image/svg+xml;base64,PHN2Zy8+");
   });
 
+  it("keeps remaining images at their original inline anchors when an image fails", () => {
+    const first = "https://example.com/broken-first.png";
+    const second = "https://example.com/second.png";
+    render(
+      <QuestionPrompt
+        question={{
+          ...baseQuestion,
+          imageUrls: [first, second],
+          imagePosition: "image-inline:5,18",
+        }}
+      />,
+    );
+
+    fireEvent.error(screen.getByRole("img", { name: "Question illustration 1" }));
+
+    const groups = screen.getAllByTestId("inline-question-image-group");
+    expect(groups).toHaveLength(2);
+    expect(groups[0]).toHaveAttribute("data-image-position", "5");
+    expect(groups[1]).toHaveAttribute("data-image-position", "18");
+    expect(screen.getByRole("img", { name: "Question illustration 2" })).toHaveAttribute("src", second);
+  });
+
   it("does not display attachments when the saved position is text-only", () => {
     render(
       <QuestionPrompt

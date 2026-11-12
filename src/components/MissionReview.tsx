@@ -8,7 +8,7 @@ import { SUBJECT_INFO, type Question } from "@/types/question";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
 import { buildMissionReview } from "@/lib/mission-review";
 import QuestionMath from "@/components/QuestionMath";
-import QuestionImage from "@/components/QuestionImage";
+import QuestionPrompt from "@/components/QuestionPrompt";
 
 interface MissionReviewProps {
   mission: DailyMissionRecord;
@@ -94,12 +94,12 @@ export function MissionReview({ mission, questions, onBack }: MissionReviewProps
                   )}
                 </div>
 
-                {question.imageUrl && (
-                  <QuestionImage imageUrl={question.imageUrl} alt={`Illustration for question ${index + 1}`} />
-                )}
-                <p className="font-medium">
-                  <QuestionMath inline content={question.question} />
-                </p>
+                <QuestionPrompt
+                  question={question}
+                  alt={`Illustration for question ${index + 1}`}
+                  textClassName="font-medium"
+                  inlineMath
+                />
 
                 <div className="space-y-2">
                   {(question.options ?? []).map((option) => {

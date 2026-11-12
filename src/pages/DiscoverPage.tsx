@@ -118,7 +118,7 @@ export default function DiscoverPage() {
         throw new Error('The direct message could not be created. Please try again.');
       }
 
-      navigate(`/chat?conversation=${encodeURIComponent(result.conversation_id)}`);
+      navigate(`/chat/${encodeURIComponent(result.conversation_id)}`);
     } catch (err) {
       console.error('[Discover] Failed to open direct message:', err);
       toast.error(err instanceof Error ? err.message : 'Could not open this direct message.');

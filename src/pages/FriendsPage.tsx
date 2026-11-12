@@ -55,7 +55,7 @@ export default function FriendsPage() {
     try {
       const convId = await chat.startConversation(userId);
       if (!convId) throw new Error("Could not open this direct message. Please try again.");
-      navigate(`/chat?conversation=${encodeURIComponent(convId)}`);
+      navigate(`/chat/${encodeURIComponent(convId)}`);
     } catch (err) {
       console.error("[Friends] Failed to open direct message:", err);
       toast.error(err instanceof Error ? err.message : "Could not open this direct message.");

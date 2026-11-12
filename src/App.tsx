@@ -88,7 +88,7 @@ function AppNotificationBar() {
   return (
     <InAppNotificationBar
       onOpenConversation={(convId) => {
-        navigate(`/chat?conversation=${convId}`);
+        navigate(`/chat/${encodeURIComponent(convId)}`);
       }}
       onOpenFriendsTab={() => navigate('/friends')}
     />
@@ -133,7 +133,7 @@ function AnimatedRoutes() {
           } 
         />
         <Route 
-          path="/chat" 
+          path="/chat/:conversationId?" 
           element={
             <ProtectedRoute>
               <ErrorBoundary>

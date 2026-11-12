@@ -7,6 +7,7 @@ interface InlineQuestionImage {
   id: string;
   src: string;
   alt?: string;
+  visible?: boolean;
   onError?: () => void;
 }
 
@@ -15,6 +16,7 @@ interface QuestionTextWithImageProps {
   images: InlineQuestionImage[];
   imagePosition: string;
   className?: string;
+  textClassName?: string;
 }
 
 /**
@@ -27,6 +29,7 @@ export function QuestionTextWithImage({
   images,
   imagePosition,
   className,
+  textClassName,
 }: QuestionTextWithImageProps) {
   const offsets = getInlineImageOffsets(imagePosition, content, images.length);
   const placements = images
@@ -53,7 +56,7 @@ export function QuestionTextWithImage({
         <QuestionMath
           key={"question-text-" + cursor}
           content={content.slice(cursor, safeOffset)}
-          className="text-base font-medium leading-relaxed"
+          className={cn("text-base font-medium leading-relaxed", textClassName)}
         />
       );
     }
@@ -69,6 +72,7 @@ export function QuestionTextWithImage({
           <figure
             key={image.id || "question-image-" + index}
             data-testid="inline-question-image-item"
+            hidden={image.visible === false}
             className="m-0 w-full min-w-0"
           >
             <img
@@ -90,7 +94,7 @@ export function QuestionTextWithImage({
       <QuestionMath
         key={"question-text-" + cursor}
         content={content.slice(cursor)}
-        className="text-base font-medium leading-relaxed"
+        className={cn("text-base font-medium leading-relaxed", textClassName)}
       />
     );
   }

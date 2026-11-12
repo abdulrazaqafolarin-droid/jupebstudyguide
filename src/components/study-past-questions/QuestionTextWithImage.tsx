@@ -92,7 +92,7 @@ export function QuestionTextWithImage({
       <QuestionMath
         key={"question-text-" + cursor}
         content={content.slice(cursor)}
-        className="text-base font-medium leading-relaxed"
+        className={cn("text-base font-medium leading-relaxed", textClassName)}
       />
     );
   }

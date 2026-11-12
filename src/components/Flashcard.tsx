@@ -6,9 +6,7 @@ import { Button } from './ui/button';
 import { AITutor } from './AITutor';
 import { QuestionMath } from './QuestionMath';
 import { MathRenderer } from './MathRenderer';
-import { QuestionImage } from './QuestionImage';
-import { QuestionTextWithImage } from './study-past-questions/QuestionTextWithImage';
-import { isInlineImagePosition } from '@/lib/question-image-position';
+import { QuestionPrompt } from './QuestionPrompt';
 import { streamChat } from '@/lib/ai-service';
 import type { AIChatMessage } from '@/lib/ai-service';
 
@@ -36,7 +34,6 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   const [aiTheoryAnswer, setAiTheoryAnswer] = useState('');
   const [aiTheoryError, setAiTheoryError] = useState<string | null>(null);
   const [aiTheoryLoading, setAiTheoryLoading] = useState(false);
-  const [brokenQuestionImages, setBrokenQuestionImages] = useState<Set<string>>(() => new Set());
   const aiAnswerAbortRef = useRef<AbortController | null>(null);
   const aiAnswerAccumRef = useRef('');
 
@@ -49,7 +46,6 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
     setAiTheoryAnswer('');
     setAiTheoryError(null);
     setAiTheoryLoading(false);
-    setBrokenQuestionImages(new Set());
     return () => {
       aiAnswerAbortRef.current?.abort();
       aiAnswerAbortRef.current = null;
@@ -131,14 +127,6 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   };
 
   const isCorrect = selectedOption === question.correctAnswer;
-  const questionImageUrls = [...new Set(
-    (question.imageUrls?.length ? question.imageUrls : question.imageUrl ? [question.imageUrl] : [])
-      .filter((url): url is string => typeof url === "string" && url.length > 0)
-      .filter((url) => !brokenQuestionImages.has(url))
-  )];
-  const hasInlineQuestionImages = questionImageUrls.length > 0 && isInlineImagePosition(question.imagePosition);
-  const showQuestionImages = question.imagePosition !== "text-only";
-
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* AI Tutor Button */}
@@ -207,36 +195,10 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                       : "h-auto max-h-[min(52dvh,480px)] shrink-0"
                   )}
                 >
-                  {hasInlineQuestionImages ? (
-                    <QuestionTextWithImage
-                      content={question.question}
-                      images={questionImageUrls.map((src, index) => ({
-                        id: src + "-" + index,
-                        src,
-                        alt: "Question illustration " + (index + 1),
-                        onError: () => setBrokenQuestionImages((previous) => new Set(previous).add(src)),
-                      }))}
-                      imagePosition={question.imagePosition!}
-                      className="text-lg font-medium leading-relaxed"
-                    />
-                  ) : question.imagePosition === "image-beside" && showQuestionImages && questionImageUrls.length > 0 ? (
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-3">
-                      <QuestionImage
-                        imageUrls={questionImageUrls}
-                        className="sm:w-1/2 shrink-0"
-                      />
-                      <div className="min-w-0 flex-1 text-lg font-medium leading-relaxed">
-                        <QuestionMath content={question.question} />
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {showQuestionImages && <QuestionImage imageUrls={questionImageUrls} />}
-                      <div className="text-lg font-medium leading-relaxed">
-                        <QuestionMath content={question.question} />
-                      </div>
-                    </>
-                  )}
+                  <QuestionPrompt
+                    question={question}
+                    textClassName="text-lg font-medium leading-relaxed"
+                  />
                 </div>
 
                 {/* MCQ options have their own independent scroll area. */}

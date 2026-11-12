@@ -89,6 +89,7 @@ export interface Message {
 }
 
 const MESSAGES_PAGE_SIZE = 50;
+const CONVERSATION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export function useChat() {
   const { user } = useAuth();
@@ -519,6 +520,17 @@ export function useChat() {
   const fetchMessages = useCallback(async (conversationId: string, loadMore = false) => {
     const gen = ++messagesFetchGenRef.current;
     setMessagesLoading(true);
+
+    // Never send malformed route parameters (for example, "undefined") to
+    // PostgREST as UUID filters. Those were surfacing as a misleading
+    // "Failed to load messages" toast after Discover tried to open a DM.
+    if (!CONVERSATION_ID_PATTERN.test(conversationId)) {
+      console.warn('[useChat] Refusing to load a conversation with an invalid id:', conversationId);
+      setMessages([]);
+      setHasMoreMessages(false);
+      setMessagesLoading(false);
+      return;
+    }
     if (!loadMore) {
       messagesCursorRef.current = null;
       setHasMoreMessages(true);
@@ -541,7 +553,7 @@ export function useChat() {
 
     if (error) {
       console.error('Error fetching messages:', error);
-      toast.error('Failed to load messages');
+      toast.error('Could not load this conversation. Check your connection and try again.');
       setMessagesLoading(false);
       return;
     }
@@ -980,6 +992,15 @@ void (async () => {
   }, [user?.id]);
 
   const openConversation = useCallback(async (conversationId: string) => {
+    if (!CONVERSATION_ID_PATTERN.test(conversationId)) {
+      console.warn('[useChat] Ignoring an invalid conversation route parameter:', conversationId);
+      setActiveConversation(null);
+      setMessages([]);
+      setHasMoreMessages(false);
+      setMessagesLoading(false);
+      toast.error('This chat link is invalid. Open the person’s profile and tap Message again.');
+      return;
+    }
     setActiveConversation(conversationId);
     setMessages([]);
     setHasMoreMessages(true);

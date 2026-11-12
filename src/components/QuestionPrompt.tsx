@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Question } from "@/types/question";
-import { QuestionMath } from "@/components/QuestionMath";
+import QuestionMath from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionTextWithImage } from "@/components/study-past-questions/QuestionTextWithImage";
 import { isInlineImagePosition } from "@/lib/question-image-position";

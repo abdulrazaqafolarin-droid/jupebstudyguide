@@ -63,6 +63,33 @@ describe("ActivationGate subscription banner", () => {
     expect(screen.getByText("Protected study content")).toBeInTheDocument();
   });
 
+  it("restores the one-day free trial and provides activation-code entry", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: false,
+        is_admin: false,
+        trial_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        subscription_expires_at: null,
+        subscription_duration_days: null,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate>
+        <div>Protected study content</div>
+      </ActivationGate>,
+    );
+
+    expect(screen.getByText("1-day free trial active")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enter Code" })).toBeVisible();
+    expect(screen.getByText("Protected study content")).toBeInTheDocument();
+  });
+
   it("shows a live subscription countdown that updates every second", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-06T12:00:00.000Z"));

@@ -8,7 +8,7 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
-import { QuestionImage } from '@/components/QuestionImage';
+import { QuestionPrompt } from '@/components/QuestionPrompt';
 import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
 import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
 
@@ -368,11 +368,11 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
           </span>
         </div>
 
-        {/* Image is shown alongside the complete written prompt when available. */}
-        <QuestionImage imageUrl={currentQuestion.imageUrl} />
-        <h3 className="text-lg font-medium mb-6 leading-relaxed">
-          <QuestionMath content={currentQuestion.question} inline />
-        </h3>
+        <QuestionPrompt
+          question={currentQuestion}
+          textClassName="text-lg font-medium mb-6 leading-relaxed"
+          inlineMath
+        />
 
         {/* Options */}
         <div className="space-y-3">

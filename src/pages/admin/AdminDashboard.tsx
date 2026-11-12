@@ -376,7 +376,7 @@ export default function AdminDashboard() {
                           <DollarSign className="w-4 h-4 text-primary" />
                           Plan Distribution
                         </CardTitle>
-                        <CardDescription>Codes by plan type</CardDescription>
+                        <CardDescription>Codes by subscription duration</CardDescription>
                       </div>
                       <PieChart className="w-8 h-8 text-muted-foreground/30" />
                     </div>
@@ -557,7 +557,7 @@ export default function AdminDashboard() {
                       </div>
                       <div className="bg-secondary/30 rounded-lg p-3 max-h-48 overflow-y-auto border border-border/30">
                         {generatedCodes.map((c, i: number) => (
-                          <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
+                          <div key={c.code} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                             <code className="font-mono text-sm tracking-wider text-primary">{c.code}</code>
                             <span className="text-xs text-muted-foreground">{c.duration_days ? `${c.duration_days} days` : "Legacy / no term"}</span>
                             <button
@@ -627,7 +627,7 @@ export default function AdminDashboard() {
                         </thead>
                         <tbody>
                           {codes.map((c) => (
-                            <tr key={c.id} className="border-b border-border/50 hover:bg-secondary/20 transition-colors">
+                            <tr key={c.id || c.code} className="border-b border-border/50 hover:bg-secondary/20 transition-colors">
                               <td className="py-2 px-2">
                                 <code className="font-mono text-xs bg-secondary/50 px-1.5 py-0.5 rounded">{c.code}</code>
                               </td>

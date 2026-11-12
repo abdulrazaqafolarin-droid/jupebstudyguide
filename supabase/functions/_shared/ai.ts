@@ -82,14 +82,14 @@ export async function guardAiAccess(
   const supabase = supabaseClient as AiAccessClient;
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin, subscription_expires_at")
+    .select("is_admin, trial_expires_at, subscription_expires_at")
     .eq("user_id", user.id)
     .maybeSingle();
   const isOwnerAdmin =
     user.email?.trim().toLowerCase() === OWNER_EMAIL &&
     profile?.is_admin === true;
   const accessProfile: AiAccessProfile | null = profile
-    ? { is_admin: isOwnerAdmin, subscription_expires_at: profile.subscription_expires_at }
+    ? { is_admin: isOwnerAdmin, trial_expires_at: profile.trial_expires_at, subscription_expires_at: profile.subscription_expires_at }
     : null;
 
   if (!hasAiAccountAccess(accessProfile)) {

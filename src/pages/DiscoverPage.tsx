@@ -1,29 +1,30 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, MessageCircle, User, Users, Trophy, Clock, ArrowLeft, Loader2, Compass } from 'lucide-react';
+import { Search, MessageCircle, Users, Trophy, Clock, ArrowLeft, Loader2, Compass } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePresenceContext } from '@/contexts/PresenceContext';
 import { UserAvatar } from '@/components/UserAvatar';
 import { UserProfileDialog } from '@/components/profile/UserProfileDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
 interface DiscoverUser {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
-  email: string | null;
   last_seen_at: string | null;
   total_score: number;
-  is_online: boolean;
 }
 
 export default function DiscoverPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isOnline, getLastSeen } = usePresenceContext();
   const [users, setUsers] = useState<DiscoverUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,79 +33,100 @@ export default function DiscoverPage() {
   const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
-    if (!user) return;
-    setLoading(true);
-
-    Promise.all([
-      supabase.from('profiles').select('user_id, display_name, avatar_url, last_seen_at').neq('user_id', user.id).order('display_name').range(0, 49),
-      supabase.rpc('get_weekly_leaderboard', { p_week_start: new Date().toISOString().slice(0, 10) }),
-    ]).then(([profilesRes, leaderboardRes]) => {
-      const profileData = profilesRes.data ?? [];
-      const leaderboardData = (leaderboardRes.data ?? []) as { user_id: string; week_score: number }[];
-      const scoreMap = new Map(leaderboardData.map(l => [l.user_id, l.week_score]));
-
-      const enriched: DiscoverUser[] = profileData.map(p => ({
-        user_id: p.user_id,
-        display_name: p.display_name,
-        avatar_url: p.avatar_url,
-        email: null,
-        last_seen_at: p.last_seen_at,
-        total_score: scoreMap.get(p.user_id) ?? 0,
-        is_online: false, // will be refined after privacy check
-      }));
-
-      enriched.sort((a, b) => b.total_score - a.total_score);
-      setUsers(enriched);
-
-      // Privacy-respecting online status check
-      if (user) {
-        const onlineIds: string[] = [];
-        profileData.forEach(p => {
-          if (p.last_seen_at && Date.now() - new Date(p.last_seen_at).getTime() < 5 * 60 * 1000) {
-            onlineIds.push(p.user_id);
-          }
-        });
-        if (onlineIds.length > 0) {
-          supabase.rpc('can_view_online_status_many', {
-            p_user_ids: onlineIds.slice(0, 50),
-          }).then(({ data }) => {
-            const visibleOnlineIds = new Set(
-              ((data ?? []) as { user_id: string; allowed: boolean }[])
-                .filter(r => r.allowed)
-                .map(r => r.user_id)
-            );
-            setUsers(prev => prev.map(u => ({
-              ...u,
-              is_online: visibleOnlineIds.has(u.user_id),
-            })));
-          });
-        }
-      }
-
+    if (!user) {
+      setUsers([]);
       setLoading(false);
-    });
+      return;
+    }
+
+    let isCurrent = true;
+    const loadDiscoverUsers = async () => {
+      setLoading(true);
+      try {
+        const [profilesRes, leaderboardRes] = await Promise.all([
+          supabase
+            .from('profiles')
+            .select('user_id, display_name, avatar_url, last_seen_at')
+            .neq('user_id', user.id)
+            .order('display_name')
+            .range(0, 49),
+          supabase.rpc('get_weekly_leaderboard', {
+            p_week_start: new Date().toISOString().slice(0, 10),
+          }),
+        ]);
+
+        if (profilesRes.error) throw profilesRes.error;
+        if (leaderboardRes.error) throw leaderboardRes.error;
+
+        const profileData = profilesRes.data ?? [];
+        const leaderboardData = (leaderboardRes.data ?? []) as {
+          user_id: string;
+          week_score: number;
+        }[];
+        const scoreMap = new Map(leaderboardData.map((row) => [row.user_id, row.week_score]));
+
+        const enriched: DiscoverUser[] = profileData.map((profile) => ({
+          user_id: profile.user_id,
+          display_name: profile.display_name,
+          avatar_url: profile.avatar_url,
+          last_seen_at: profile.last_seen_at,
+          total_score: scoreMap.get(profile.user_id) ?? 0,
+        }));
+
+        enriched.sort((a, b) => b.total_score - a.total_score);
+        if (isCurrent) setUsers(enriched);
+      } catch (err) {
+        console.error('[Discover] Failed to load members:', err);
+        if (isCurrent) {
+          setUsers([]);
+          toast.error('Could not load members. Check your connection and try again.');
+        }
+      } finally {
+        if (isCurrent) setLoading(false);
+      }
+    };
+
+    void loadDiscoverUsers();
+    return () => {
+      isCurrent = false;
+    };
   }, [user]);
+
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return users;
     const q = searchQuery.toLowerCase();
     return users.filter(u =>
-      u.display_name?.toLowerCase().includes(q) ||
-      u.email?.toLowerCase().includes(q)
+      u.display_name?.toLowerCase().includes(q)
     );
   }, [users, searchQuery]);
 
-  const onlineUsers = useMemo(() => filtered.filter(u => u.is_online), [filtered]);
+  // PresenceContext receives Supabase Presence updates directly; no polling is needed here.
+  const onlineUsers = useMemo(() => filtered.filter(u => isOnline(u.user_id)), [filtered, isOnline]);
   const topUsers = useMemo(() => [...filtered].sort((a, b) => b.total_score - a.total_score).slice(0, 20), [filtered]);
 
   const handleChat = async (otherUserId: string) => {
-    if (!user) return;
+    if (!user || startingChat) return;
     setStartingChat(otherUserId);
-    const { data, error } = await supabase.rpc('find_or_create_dm', { other_user_id: otherUserId });
-    setStartingChat(null);
-    if (error || !data) return;
-    const dm = data as unknown as { id: string };
-    navigate(`/chat?conversation=${dm.id}`);
+    try {
+      const { data, error } = await supabase.rpc('find_or_create_dm', {
+        other_user_id: otherUserId,
+      });
+      if (error) throw error;
+
+      const result = data as { conversation_id?: string; error?: string } | null;
+      if (result?.error) throw new Error(result.error);
+      if (!result?.conversation_id) {
+        throw new Error('The direct message could not be created. Please try again.');
+      }
+
+      navigate(`/chat?conversation=${encodeURIComponent(result.conversation_id)}`);
+    } catch (err) {
+      console.error('[Discover] Failed to open direct message:', err);
+      toast.error(err instanceof Error ? err.message : 'Could not open this direct message.');
+    } finally {
+      setStartingChat(null);
+    }
   };
 
   const openProfile = (targetUserId: string) => {
@@ -211,7 +233,7 @@ export default function DiscoverPage() {
                       </span>
                       <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-9 h-9 ring-0" targetUserId={u.user_id} />
-                        {u.is_online && (
+                        {isOnline(u.user_id) && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
                         )}
                       </button>
@@ -266,7 +288,7 @@ export default function DiscoverPage() {
                     >
                       <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-10 h-10 ring-0" targetUserId={u.user_id} />
-                        {u.is_online && (
+                        {isOnline(u.user_id) && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
                         )}
                       </button>
@@ -282,16 +304,16 @@ export default function DiscoverPage() {
                             <Trophy className="w-3 h-3" />
                             {u.total_score.toLocaleString()} pts
                           </span>
-                          {u.last_seen_at && !u.is_online && (
+                          {(getLastSeen(u.user_id) || u.last_seen_at) && !isOnline(u.user_id) && (
                             <>
                               <span className="text-muted-foreground/40">&middot;</span>
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                {formatDistanceToNow(new Date(u.last_seen_at), { addSuffix: true })}
+                                {formatDistanceToNow(new Date((getLastSeen(u.user_id) || u.last_seen_at)!), { addSuffix: true })}
                               </span>
                             </>
                           )}
-                          {u.is_online && (
+                          {isOnline(u.user_id) && (
                             <>
                               <span className="text-muted-foreground/40">&middot;</span>
                               <span className="text-emerald-500 font-medium">Online</span>

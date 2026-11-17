@@ -37,14 +37,18 @@ The initial supplied pack covers Physics, Chemistry and Biology only. Use of Eng
 
 The JAMB foundation is now applied in `supabase/migrations/20261117215633_create_jamb_workspace.sql` to the existing `gzyczowqqywesqhqqpdi` project. It extends the existing `study_questions` table with a default JUPEB programme tag, review/provenance fields and programme-scoped retrieval. It preserves the live JUPEB `search_document` generated column and its GIN index by adding a separate programme-aware search document.
 
-Remaining release gates:
-1. Deploy the programme-aware AI/CBT/import Edge Functions to this same project and verify their versions and JWT/session protections.
-2. Run JUPEB and JAMB integration checks against the live project.
-3. Stage the three committed source packs through the authenticated admin review flow; preserve original file hashes and figure assets.
-4. Review each question's source year, wording, options and diagrams. Publish ungraded where no reliable answer key exists; publish a key only after independent verification.
-5. Enable `VITE_ENABLE_JAMB=true` on the feature-branch Preview environment for acceptance testing. Keep Production disabled until content and preview checks pass.
+Completed deployment gates:
+1. Programme-aware AI, CBT and import Edge Functions are deployed to the existing project; their live versions and JWT settings are recorded in `docs/JAMB_RELEASE_STATE.md`.
+2. The shared database migration, question retrieval isolation probe and JUPEB row-count regression have been verified against the live project.
+3. The branch Preview is deployed and Ready with `VITE_ENABLE_JAMB=true` scoped only to `feat/rutex-jamb-workspace`. Production remains disabled.
 
-The feature flag is deliberately off by default. The Vercel Git integration may create an automatic Preview deployment for this pull request; it is not a production release. The database foundation is applied, but new Edge Functions have not yet been deployed and no JAMB source questions have been staged or published. No Production deployment has been performed.
+Remaining content/acceptance gates:
+1. Sign in as an authorised Rutex admin and stage the committed Physics, Chemistry and Biology source packs through the import/review UI.
+2. Review source years, wording, options, duplicates and original figures. Publish ungraded when there is no reliable answer key; publish keys/explanations only after independent verification.
+3. Load and verify the current official JAMB syllabus and Use of English before enabling full official-format UTME mock mode.
+4. Complete a signed-in mobile Preview walkthrough with a real student/admin session; protected Vercel Preview pages cannot be verified as an authenticated user without that session.
+
+The feature flag is off by default globally, but is explicitly enabled for the `feat/rutex-jamb-workspace` Preview environment only. The latest Preview is Ready; Production remains disabled and has not been deployed. The database and six relevant Edge Functions are deployed to the existing shared Supabase project. No JAMB source questions have been staged or published pending authenticated admin review.
 
 ## Applied database state — 17 November 2026
 
@@ -67,4 +71,4 @@ The security advisor lists nine new server-owned JAMB tables as RLS-enabled with
 - Importer regression tests parse all three committed source files and assert that no answer key or explanation is invented.
 - Import staging verifies active admin sessions and the uploaded source file's SHA-256 on the server.
 - Deno type checks cover the new JAMB Edge Functions and the shared study-access guard.
-- The shared Supabase migration is applied and post-checked; Production remains unchanged and the Preview feature flag remains off until the new Edge Functions and source-review path are verified.
+- The shared Supabase migration and relevant Edge Functions are applied and post-checked. The feature flag is on for the feature Preview only; Production remains unchanged. Source questions remain private until an admin reviews them.

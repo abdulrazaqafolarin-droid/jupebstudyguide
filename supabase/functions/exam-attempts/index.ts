@@ -353,7 +353,12 @@ Deno.serve(async (request: Request) => {
       if (answerError) throw new Error(answerError.message);
       return reply({
         attempt: { ...attempt, status: effectiveStatus },
-        questions: questions ?? [],
+        questions: (questions ?? []).map((item) => ({
+          sequence: item.sequence,
+          question_id: item.question_id,
+          subject: item.subject_code,
+          question_snapshot: item.question_snapshot,
+        })),
         answers: answers ?? [],
         result: expiry.result,
       });

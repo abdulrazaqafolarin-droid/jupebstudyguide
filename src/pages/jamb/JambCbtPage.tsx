@@ -285,16 +285,16 @@ export default function JambCbtPage() {
           {question.question_snapshot.imageUrls?.map((imageUrl) => <QuestionImage key={imageUrl} imageUrl={imageUrl} alt="JAMB question illustration" />)}
           <div className="mt-5 space-y-2">
             {question.question_snapshot.options.map((option) => (
-              <button key={option.label} onClick={() => void saveAnswer(question.sequence, option.label)} aria-pressed={selectedOption === option.label}
+              <button key={option.label} disabled={submitting} onClick={() => void saveAnswer(question.sequence, option.label)} aria-pressed={selectedOption === option.label}
                 className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left text-sm ${selectedOption === option.label ? "border-primary bg-primary/10" : "border-border hover:bg-accent/50"}`}>
                 <strong className="text-primary">{option.label}.</strong><QuestionMath content={option.text} inline />
               </button>
             ))}
           </div>
-          <button onClick={() => void saveAnswer(question.sequence, selectedOption || null, !flagged)} className={`mt-4 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium ${flagged ? "bg-amber-500/15 text-amber-700" : "bg-muted text-muted-foreground"}`}><Flag className="h-4 w-4" />{flagged ? "Marked for review" : "Mark for review"}</button>
+          <button disabled={submitting} onClick={() => void saveAnswer(question.sequence, selectedOption || null, !flagged)} className={`mt-4 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium ${flagged ? "bg-amber-500/15 text-amber-700" : "bg-muted text-muted-foreground"}`}><Flag className="h-4 w-4" />{flagged ? "Marked for review" : "Mark for review"}</button>
           <div className="mt-6 flex items-center justify-between gap-2">
-            <Button variant="outline" disabled={current === 0} onClick={() => setCurrent((value) => value - 1)}><ArrowLeft className="mr-1 h-4 w-4" /> Previous</Button>
-            {current < payload.questions.length - 1 ? <Button onClick={() => setCurrent((value) => value + 1)}>Next question <ArrowRight className="ml-1 h-4 w-4" /></Button> : <Button onClick={() => void submitAttempt(false)} disabled={submitting}><Send className="mr-1 h-4 w-4" />Submit practice</Button>}
+            <Button variant="outline" disabled={submitting || current === 0} onClick={() => setCurrent((value) => value - 1)}><ArrowLeft className="mr-1 h-4 w-4" /> Previous</Button>
+            {current < payload.questions.length - 1 ? <Button disabled={submitting} onClick={() => setCurrent((value) => value + 1)}>Next question <ArrowRight className="ml-1 h-4 w-4" /></Button> : <Button onClick={() => void submitAttempt(false)} disabled={submitting}><Send className="mr-1 h-4 w-4" />Submit practice</Button>}
           </div>
         </section>
 
@@ -303,13 +303,13 @@ export default function JambCbtPage() {
           <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
             {payload.questions.map((item, index) => {
               const isAnswered = Boolean(answers[item.sequence]);
-              return <button key={item.sequence} onClick={() => setCurrent(index)} aria-label={`Go to question ${index + 1}`} aria-current={current === index ? "step" : undefined}
+              return <button key={item.sequence} disabled={submitting} onClick={() => setCurrent(index)} aria-label={`Go to question ${index + 1}`} aria-current={current === index ? "step" : undefined}
                 className={`aspect-square rounded-lg border text-xs font-semibold ${current === index ? "border-primary bg-primary text-primary-foreground" : marked[item.sequence] ? "border-amber-500 bg-amber-500/10" : isAnswered ? "border-emerald-500 bg-emerald-500/10" : "border-border bg-muted"}`}>{index + 1}</button>;
             })}
           </div>
         </section>
 
-        <Button variant="destructive" className="w-full" onClick={() => void submitAttempt(false)} disabled={submitting}>{submitting ? "Submitting…" : "Submit attempt"}</Button>
+        <Button variant="destructive" className="w-full" onClick={() => void submitAttempt(false)} disabled={submitting || saving}>{submitting ? "Submitting…" : "Submit attempt"}</Button>
       </div>
     </main>
   );

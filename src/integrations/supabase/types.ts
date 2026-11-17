@@ -6,20 +6,11 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-
-
-type GeneratedTable<Row extends Record<string, unknown>, RequiredInsert extends keyof Row = never> = {
-  Row: Row;
-  Insert: Pick<Row, RequiredInsert> & Partial<Omit<Row, RequiredInsert>>;
-  Update: Partial<Row>;
-  Relationships: [];
-};
-
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
@@ -28,6 +19,7 @@ export type Database = {
           code: string
           created_at: string
           created_by: string
+          duration_days: number | null
           expires_at: string | null
           id: string
           is_used: boolean
@@ -39,6 +31,7 @@ export type Database = {
           code: string
           created_at?: string
           created_by: string
+          duration_days?: number | null
           expires_at?: string | null
           id?: string
           is_used?: boolean
@@ -50,6 +43,7 @@ export type Database = {
           code?: string
           created_at?: string
           created_by?: string
+          duration_days?: number | null
           expires_at?: string | null
           id?: string
           is_used?: boolean
@@ -62,9 +56,6 @@ export type Database = {
       ai_api_keys: {
         Row: {
           api_key: string
-          // PENDING MIGRATION: see supabase/pending-migrations.sql (not yet applied live)
-          provider: string
-          last_error: string | null
           consecutive_failures: number
           cooldown_until: string | null
           created_at: string
@@ -73,16 +64,16 @@ export type Database = {
           is_active: boolean
           key_preview: string
           label: string
+          last_error: string | null
           last_used_at: string | null
           priority: number
+          provider: string
           token_exhausted: boolean
           total_requests: number
           total_tokens_used: number
         }
         Insert: {
           api_key: string
-          provider?: string
-          last_error?: string | null
           consecutive_failures?: number
           cooldown_until?: string | null
           created_at?: string
@@ -91,16 +82,16 @@ export type Database = {
           is_active?: boolean
           key_preview: string
           label: string
+          last_error?: string | null
           last_used_at?: string | null
           priority?: number
+          provider?: string
           token_exhausted?: boolean
           total_requests?: number
           total_tokens_used?: number
         }
         Update: {
           api_key?: string
-          provider?: string
-          last_error?: string | null
           consecutive_failures?: number
           cooldown_until?: string | null
           created_at?: string
@@ -109,8 +100,10 @@ export type Database = {
           is_active?: boolean
           key_preview?: string
           label?: string
+          last_error?: string | null
           last_used_at?: string | null
           priority?: number
+          provider?: string
           token_exhausted?: boolean
           total_requests?: number
           total_tokens_used?: number
@@ -212,6 +205,27 @@ export type Database = {
           topic_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      ai_rate_limits: {
+        Row: {
+          request_count: number
+          updated_at: string
+          user_id: string
+          window_date: string
+        }
+        Insert: {
+          request_count?: number
+          updated_at?: string
+          user_id: string
+          window_date?: string
+        }
+        Update: {
+          request_count?: number
+          updated_at?: string
+          user_id?: string
+          window_date?: string
         }
         Relationships: []
       }
@@ -513,11 +527,36 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_missions: {
+        Row: {
+          created_at: string
+          local_date: string
+          mission: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          local_date: string
+          mission: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          local_date?: string
+          mission?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       device_tokens: {
         Row: {
           created_at: string
           id: string
           platform: string
+          supports_notification_actions: boolean
           token: string
           updated_at: string
           user_id: string
@@ -526,6 +565,7 @@ export type Database = {
           created_at?: string
           id?: string
           platform?: string
+          supports_notification_actions?: boolean
           token: string
           updated_at?: string
           user_id: string
@@ -534,11 +574,490 @@ export type Database = {
           created_at?: string
           id?: string
           platform?: string
+          supports_notification_actions?: boolean
           token?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      exam_attempt_answers: {
+        Row: {
+          answered_at: string | null
+          attempt_id: string
+          marked_for_review: boolean
+          question_sequence: number
+          selected_option: string | null
+          updated_at: string
+        }
+        Insert: {
+          answered_at?: string | null
+          attempt_id: string
+          marked_for_review?: boolean
+          question_sequence: number
+          selected_option?: string | null
+          updated_at?: string
+        }
+        Update: {
+          answered_at?: string | null
+          attempt_id?: string
+          marked_for_review?: boolean
+          question_sequence?: number
+          selected_option?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_attempt_answers_attempt_id_question_sequence_fkey"
+            columns: ["attempt_id", "question_sequence"]
+            isOneToOne: true
+            referencedRelation: "exam_attempt_questions"
+            referencedColumns: ["attempt_id", "sequence"]
+          },
+        ]
+      }
+      exam_attempt_questions: {
+        Row: {
+          attempt_id: string
+          question_id: string
+          question_snapshot: Json
+          sequence: number
+          subject_code: string
+        }
+        Insert: {
+          attempt_id: string
+          question_id: string
+          question_snapshot: Json
+          sequence: number
+          subject_code: string
+        }
+        Update: {
+          attempt_id?: string
+          question_id?: string
+          question_snapshot?: Json
+          sequence?: number
+          subject_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_attempt_questions_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "exam_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_attempt_questions_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "study_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_attempts: {
+        Row: {
+          attempt_kind: string
+          config_version: string
+          created_at: string
+          duration_minutes: number
+          exam_program_id: string
+          exam_year: number
+          expires_at: string
+          id: string
+          idempotency_key: string | null
+          score_summary: Json | null
+          started_at: string
+          status: string
+          subject_code: string
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempt_kind?: string
+          config_version: string
+          created_at?: string
+          duration_minutes: number
+          exam_program_id: string
+          exam_year: number
+          expires_at: string
+          id?: string
+          idempotency_key?: string | null
+          score_summary?: Json | null
+          started_at?: string
+          status?: string
+          subject_code: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempt_kind?: string
+          config_version?: string
+          created_at?: string
+          duration_minutes?: number
+          exam_program_id?: string
+          exam_year?: number
+          expires_at?: string
+          id?: string
+          idempotency_key?: string | null
+          score_summary?: Json | null
+          started_at?: string
+          status?: string
+          subject_code?: string
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_attempts_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_configurations: {
+        Row: {
+          config_version: string
+          created_at: string
+          exam_program_id: string
+          exam_year: number
+          full_mock_enabled: boolean
+          id: string
+          official_format_verified: boolean
+          published_at: string | null
+          settings: Json
+          source_document: string | null
+          source_sha256: string | null
+          source_url: string | null
+          status: string
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          config_version: string
+          created_at?: string
+          exam_program_id: string
+          exam_year: number
+          full_mock_enabled?: boolean
+          id?: string
+          official_format_verified?: boolean
+          published_at?: string | null
+          settings?: Json
+          source_document?: string | null
+          source_sha256?: string | null
+          source_url?: string | null
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          config_version?: string
+          created_at?: string
+          exam_program_id?: string
+          exam_year?: number
+          full_mock_enabled?: boolean
+          id?: string
+          official_format_verified?: boolean
+          published_at?: string | null
+          settings?: Json
+          source_document?: string | null
+          source_sha256?: string | null
+          source_url?: string | null
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_configurations_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_program_subjects: {
+        Row: {
+          created_at: string
+          display_name: string
+          exam_program_id: string
+          id: string
+          is_available: boolean
+          is_compulsory: boolean
+          metadata: Json
+          sort_order: number
+          subject_code: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          exam_program_id: string
+          id?: string
+          is_available?: boolean
+          is_compulsory?: boolean
+          metadata?: Json
+          sort_order?: number
+          subject_code: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          exam_program_id?: string
+          id?: string
+          is_available?: boolean
+          is_compulsory?: boolean
+          metadata?: Json
+          sort_order?: number
+          subject_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_program_subjects_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_programs: {
+        Row: {
+          config_version: string
+          created_at: string
+          current_exam_year: number | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          config_version?: string
+          created_at?: string
+          current_exam_year?: number | null
+          description?: string | null
+          display_name: string
+          id: string
+          is_active?: boolean
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          config_version?: string
+          created_at?: string
+          current_exam_year?: number | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      exam_syllabus_topics: {
+        Row: {
+          description: string | null
+          id: string
+          objectives: Json
+          parent_topic_id: string | null
+          sort_order: number
+          source_ref: string | null
+          status: string
+          subject_code: string
+          syllabus_version_id: string
+          title: string
+          topic_code: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          objectives?: Json
+          parent_topic_id?: string | null
+          sort_order?: number
+          source_ref?: string | null
+          status?: string
+          subject_code: string
+          syllabus_version_id: string
+          title: string
+          topic_code: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          objectives?: Json
+          parent_topic_id?: string | null
+          sort_order?: number
+          source_ref?: string | null
+          status?: string
+          subject_code?: string
+          syllabus_version_id?: string
+          title?: string
+          topic_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_syllabus_topics_parent_topic_id_fkey"
+            columns: ["parent_topic_id"]
+            isOneToOne: false
+            referencedRelation: "exam_syllabus_topics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_syllabus_topics_syllabus_version_id_fkey"
+            columns: ["syllabus_version_id"]
+            isOneToOne: false
+            referencedRelation: "exam_syllabus_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_syllabus_versions: {
+        Row: {
+          created_at: string
+          exam_program_id: string
+          exam_year: number
+          id: string
+          published_at: string | null
+          source_document_path: string | null
+          source_sha256: string | null
+          source_title: string | null
+          source_url: string | null
+          status: string
+          verified_at: string | null
+          verified_by: string | null
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          exam_program_id: string
+          exam_year: number
+          id?: string
+          published_at?: string | null
+          source_document_path?: string | null
+          source_sha256?: string | null
+          source_title?: string | null
+          source_url?: string | null
+          status?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          version: string
+        }
+        Update: {
+          created_at?: string
+          exam_program_id?: string
+          exam_year?: number
+          id?: string
+          published_at?: string | null
+          source_document_path?: string | null
+          source_sha256?: string | null
+          source_title?: string | null
+          source_url?: string | null
+          status?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_syllabus_versions_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_user_bookmarks: {
+        Row: {
+          created_at: string
+          exam_program_id: string
+          question_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exam_program_id: string
+          question_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exam_program_id?: string
+          question_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_user_bookmarks_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_user_bookmarks_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "study_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exam_user_progress: {
+        Row: {
+          exam_program_id: string
+          last_answered_at: string | null
+          last_selected_option: string | null
+          last_viewed_at: string
+          question_id: string
+          user_id: string
+          viewed_count: number
+        }
+        Insert: {
+          exam_program_id: string
+          last_answered_at?: string | null
+          last_selected_option?: string | null
+          last_viewed_at?: string
+          question_id: string
+          user_id: string
+          viewed_count?: number
+        }
+        Update: {
+          exam_program_id?: string
+          last_answered_at?: string | null
+          last_selected_option?: string | null
+          last_viewed_at?: string
+          question_id?: string
+          user_id?: string
+          viewed_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_user_progress_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exam_user_progress_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "study_questions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       friend_requests: {
         Row: {
@@ -602,9 +1121,35 @@ export type Database = {
           },
         ]
       }
+      login_security_counters: {
+        Row: {
+          failed_attempts: number
+          locked_until: string | null
+          scope: string
+          subject_hash: string
+          updated_at: string
+          window_started_at: string
+        }
+        Insert: {
+          failed_attempts?: number
+          locked_until?: string | null
+          scope: string
+          subject_hash: string
+          updated_at?: string
+          window_started_at?: string
+        }
+        Update: {
+          failed_attempts?: number
+          locked_until?: string | null
+          scope?: string
+          subject_hash?: string
+          updated_at?: string
+          window_started_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
-          // PENDING MIGRATION: see supabase/pending-migrations.sql (not yet applied live)
           client_msg_id: string | null
           content: string
           conversation_id: string
@@ -738,7 +1283,57 @@ export type Database = {
           },
         ]
       }
-      // PENDING MIGRATION: table does not exist live yet — see supabase/pending-migrations.sql
+      notification_action_tokens: {
+        Row: {
+          action: string
+          consumed_at: string | null
+          conversation_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          recipient_id: string
+          source_message_id: string
+          token_hash: string
+        }
+        Insert: {
+          action: string
+          consumed_at?: string | null
+          conversation_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          recipient_id: string
+          source_message_id: string
+          token_hash: string
+        }
+        Update: {
+          action?: string
+          consumed_at?: string | null
+          conversation_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          recipient_id?: string
+          source_message_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_action_tokens_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_action_tokens_source_message_id_fkey"
+            columns: ["source_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_subscriptions: {
         Row: {
           auth: string
@@ -789,7 +1384,6 @@ export type Database = {
           is_activated: boolean
           is_admin: boolean
           last_seen_at: string | null
-          // PENDING MIGRATION: see supabase/pending-migrations.sql (not yet applied live)
           mfa_enrolled: boolean
           mfa_enrolled_at: string | null
           onboarding_completed_at: string | null
@@ -803,6 +1397,9 @@ export type Database = {
           privacy_read_receipts: string
           public_key: string | null
           school_name: string | null
+          subscription_duration_days: number | null
+          subscription_expires_at: string | null
+          subscription_started_at: string | null
           theme_preference: string | null
           trial_expires_at: string | null
           trial_started_at: string | null
@@ -833,6 +1430,9 @@ export type Database = {
           privacy_read_receipts?: string
           public_key?: string | null
           school_name?: string | null
+          subscription_duration_days?: number | null
+          subscription_expires_at?: string | null
+          subscription_started_at?: string | null
           theme_preference?: string | null
           trial_expires_at?: string | null
           trial_started_at?: string | null
@@ -863,6 +1463,9 @@ export type Database = {
           privacy_read_receipts?: string
           public_key?: string | null
           school_name?: string | null
+          subscription_duration_days?: number | null
+          subscription_expires_at?: string | null
+          subscription_started_at?: string | null
           theme_preference?: string | null
           trial_expires_at?: string | null
           trial_started_at?: string | null
@@ -870,6 +1473,153 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      question_import_batches: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_count: number
+          created_at: string
+          exam_program_id: string
+          expected_items: number
+          id: string
+          imported_by: string
+          needs_review_count: number
+          published_at: string | null
+          published_count: number
+          rights_confirmed: boolean
+          rights_note: string | null
+          source_document: string
+          source_sha256: string
+          source_storage_path: string | null
+          status: string
+          subject_code: string
+          total_items: number
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_count?: number
+          created_at?: string
+          exam_program_id: string
+          expected_items?: number
+          id?: string
+          imported_by: string
+          needs_review_count?: number
+          published_at?: string | null
+          published_count?: number
+          rights_confirmed?: boolean
+          rights_note?: string | null
+          source_document: string
+          source_sha256: string
+          source_storage_path?: string | null
+          status?: string
+          subject_code: string
+          total_items?: number
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_count?: number
+          created_at?: string
+          exam_program_id?: string
+          expected_items?: number
+          id?: string
+          imported_by?: string
+          needs_review_count?: number
+          published_at?: string | null
+          published_count?: number
+          rights_confirmed?: boolean
+          rights_note?: string | null
+          source_document?: string
+          source_sha256?: string
+          source_storage_path?: string | null
+          status?: string
+          subject_code?: string
+          total_items?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_import_batches_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_import_items: {
+        Row: {
+          batch_id: string
+          created_at: string
+          duplicate_of: string | null
+          id: string
+          item_number: number
+          normalized_payload: Json
+          published_question_id: string | null
+          raw_payload: Json
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          validation_errors: Json
+        }
+        Insert: {
+          batch_id: string
+          created_at?: string
+          duplicate_of?: string | null
+          id?: string
+          item_number: number
+          normalized_payload: Json
+          published_question_id?: string | null
+          raw_payload: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          validation_errors?: Json
+        }
+        Update: {
+          batch_id?: string
+          created_at?: string
+          duplicate_of?: string | null
+          id?: string
+          item_number?: number
+          normalized_payload?: Json
+          published_question_id?: string | null
+          raw_payload?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          validation_errors?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_import_items_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "question_import_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_import_items_duplicate_of_fkey"
+            columns: ["duplicate_of"]
+            isOneToOne: false
+            referencedRelation: "question_import_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_import_items_published_question_id_fkey"
+            columns: ["published_question_id"]
+            isOneToOne: false
+            referencedRelation: "study_questions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       score_events: {
         Row: {
@@ -906,114 +1656,122 @@ export type Database = {
           },
         ]
       }
-      exam_programs: GeneratedTable<{
-        id: string; display_name: string; slug: string; description: string | null;
-        is_active: boolean; current_exam_year: number | null; config_version: string; created_at: string; updated_at: string;
-      }, "id" | "display_name" | "slug">;
-      exam_program_subjects: GeneratedTable<{
-        id: string; exam_program_id: string; subject_code: string; display_name: string; is_compulsory: boolean;
-        is_available: boolean; sort_order: number; metadata: Json; created_at: string;
-      }, "exam_program_id" | "subject_code" | "display_name">;
-      exam_configurations: GeneratedTable<{
-        id: string; exam_program_id: string; exam_year: number; config_version: string; settings: Json;
-        source_url: string | null; source_document: string | null; source_sha256: string | null;
-        official_format_verified: boolean; full_mock_enabled: boolean; status: string; verified_by: string | null;
-        verified_at: string | null; published_at: string | null; created_at: string; updated_at: string;
-      }, "exam_program_id" | "exam_year" | "config_version">;
-      question_import_batches: GeneratedTable<{
-        id: string; exam_program_id: string; source_document: string; source_storage_path: string | null;
-        source_sha256: string; subject_code: string; rights_confirmed: boolean; rights_note: string | null;
-        status: string; total_items: number; expected_items: number; needs_review_count: number;
-        approved_count: number; published_count: number; imported_by: string; approved_by: string | null;
-        approved_at: string | null; published_at: string | null; created_at: string; updated_at: string;
-      }, "exam_program_id" | "source_document" | "source_sha256" | "subject_code" | "imported_by">;
-      question_import_items: GeneratedTable<{
-        id: string; batch_id: string; item_number: number; raw_payload: Json; normalized_payload: Json;
-        validation_errors: Json; status: string; duplicate_of: string | null; published_question_id: string | null;
-        reviewed_by: string | null; reviewed_at: string | null; created_at: string; updated_at: string;
-      }, "batch_id" | "item_number" | "raw_payload" | "normalized_payload">;
-      study_question_answer_keys: GeneratedTable<{
-        question_id: string; correct_answer: string; explanation: string | null; review_status: string;
-        source_ref: string | null; reviewed_by: string | null; reviewed_at: string | null; created_at: string; updated_at: string;
-      }, "question_id" | "correct_answer">;
-      exam_syllabus_versions: GeneratedTable<{
-        id: string; exam_program_id: string; exam_year: number; version: string; source_title: string | null;
-        source_url: string | null; source_document_path: string | null; source_sha256: string | null; status: string;
-        verified_by: string | null; verified_at: string | null; published_at: string | null; created_at: string;
-      }, "exam_program_id" | "exam_year" | "version">;
-      exam_syllabus_topics: GeneratedTable<{
-        id: string; syllabus_version_id: string; subject_code: string; topic_code: string; title: string;
-        description: string | null; objectives: Json; parent_topic_id: string | null; sort_order: number; status: string; source_ref: string | null;
-      }, "syllabus_version_id" | "subject_code" | "topic_code" | "title">;
-      exam_attempts: GeneratedTable<{
-        id: string; user_id: string; exam_program_id: string; exam_year: number; config_version: string;
-        subject_code: string; attempt_kind: string; status: string; duration_minutes: number; started_at: string;
-        expires_at: string; submitted_at: string | null; score_summary: Json | null; idempotency_key: string | null;
-        created_at: string; updated_at: string;
-      }, "user_id" | "exam_program_id" | "exam_year" | "config_version" | "subject_code" | "duration_minutes" | "expires_at">;
-      exam_attempt_questions: GeneratedTable<{
-        attempt_id: string; sequence: number; question_id: string; subject_code: string; question_snapshot: Json;
-      }, "attempt_id" | "sequence" | "question_id" | "subject_code" | "question_snapshot">;
-      exam_attempt_answers: GeneratedTable<{
-        attempt_id: string; question_sequence: number; selected_option: string | null; marked_for_review: boolean;
-        answered_at: string | null; updated_at: string;
-      }, "attempt_id" | "question_sequence">;
-      exam_user_bookmarks: {
+      study_question_answer_keys: {
         Row: {
+          correct_answer: string
           created_at: string
-          exam_program_id: string
+          explanation: string | null
           question_id: string
-          user_id: string
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_ref: string | null
+          updated_at: string
         }
         Insert: {
+          correct_answer: string
           created_at?: string
-          exam_program_id: string
+          explanation?: string | null
           question_id: string
-          user_id: string
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_ref?: string | null
+          updated_at?: string
         }
         Update: {
+          correct_answer?: string
           created_at?: string
-          exam_program_id?: string
+          explanation?: string | null
           question_id?: string
-          user_id?: string
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_ref?: string | null
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "study_question_answer_keys_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: true
+            referencedRelation: "study_questions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      exam_user_progress: {
+      study_question_embedding_jobs: {
         Row: {
-          exam_program_id: string
-          last_answered_at: string | null
-          last_selected_option: string | null
-          last_viewed_at: string
+          attempts: number
+          last_error: string | null
+          locked_at: string | null
+          next_attempt_at: string
           question_id: string
-          user_id: string
-          viewed_count: number
+          requested_at: string
         }
         Insert: {
-          exam_program_id: string
-          last_answered_at?: string | null
-          last_selected_option?: string | null
-          last_viewed_at?: string
+          attempts?: number
+          last_error?: string | null
+          locked_at?: string | null
+          next_attempt_at?: string
           question_id: string
-          user_id: string
-          viewed_count?: number
+          requested_at?: string
         }
         Update: {
-          exam_program_id?: string
-          last_answered_at?: string | null
-          last_selected_option?: string | null
-          last_viewed_at?: string
+          attempts?: number
+          last_error?: string | null
+          locked_at?: string | null
+          next_attempt_at?: string
           question_id?: string
-          user_id?: string
-          viewed_count?: number
+          requested_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "study_question_embedding_jobs_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: true
+            referencedRelation: "study_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      study_question_embeddings: {
+        Row: {
+          content_hash: string | null
+          embedding: string
+          question_id: string
+          source_updated_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content_hash?: string | null
+          embedding: string
+          question_id: string
+          source_updated_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content_hash?: string | null
+          embedding?: string
+          question_id?: string
+          source_updated_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_question_embeddings_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: true
+            referencedRelation: "study_questions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_questions: {
         Row: {
           category: string
-          correct_answer: string | null
           content_hash: string | null
+          correct_answer: string | null
           course: string | null
           created_at: string | null
           difficulty: string | null
@@ -1029,6 +1787,8 @@ export type Database = {
           review_status: string
           reviewed_at: string | null
           reviewed_by: string | null
+          search_document: unknown
+          search_document_program: unknown
           sort_order: number | null
           source_batch_id: string | null
           source_document: string | null
@@ -1036,12 +1796,13 @@ export type Database = {
           source_question_number: string | null
           source_ref: string | null
           subject: string
+          updated_at: string
           year: number
         }
         Insert: {
           category: string
-          correct_answer?: string | null
           content_hash?: string | null
+          correct_answer?: string | null
           course?: string | null
           created_at?: string | null
           difficulty?: string | null
@@ -1057,6 +1818,8 @@ export type Database = {
           review_status?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          search_document?: unknown
+          search_document_program?: unknown
           sort_order?: number | null
           source_batch_id?: string | null
           source_document?: string | null
@@ -1064,12 +1827,13 @@ export type Database = {
           source_question_number?: string | null
           source_ref?: string | null
           subject: string
+          updated_at?: string
           year: number
         }
         Update: {
           category?: string
-          correct_answer?: string | null
           content_hash?: string | null
+          correct_answer?: string | null
           course?: string | null
           created_at?: string | null
           difficulty?: string | null
@@ -1085,6 +1849,8 @@ export type Database = {
           review_status?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          search_document?: unknown
+          search_document_program?: unknown
           sort_order?: number | null
           source_batch_id?: string | null
           source_document?: string | null
@@ -1092,36 +1858,25 @@ export type Database = {
           source_question_number?: string | null
           source_ref?: string | null
           subject?: string
+          updated_at?: string
           year?: number
         }
-        Relationships: []
-      }
-      daily_missions: {
-        Row: {
-          created_at: string
-          id: string
-          local_date: string
-          mission: Json
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          local_date: string
-          mission: Json
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          local_date?: string
-          mission?: Json
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "study_questions_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "study_questions_source_batch_id_fkey"
+            columns: ["source_batch_id"]
+            isOneToOne: false
+            referencedRelation: "question_import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_sessions: {
         Row: {
@@ -1144,7 +1899,6 @@ export type Database = {
         }
         Relationships: []
       }
-      // PENDING MIGRATION: table does not exist live yet — see supabase/pending-migrations.sql
       syllabus_progress: {
         Row: {
           created_at: string
@@ -1163,24 +1917,6 @@ export type Database = {
           data?: Json
           updated_at?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      test_migration: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
         }
         Relationships: []
       }
@@ -1369,7 +2105,6 @@ export type Database = {
       }
     }
     Functions: {
-      publish_jamb_question_batch: { Args: { p_batch_id: string; p_actor: string }; Returns: Json }
       admin_delete_question: { Args: { p_question_id: string }; Returns: Json }
       auto_weekly_champion: { Args: never; Returns: undefined }
       award_score: {
@@ -1388,17 +2123,16 @@ export type Database = {
         Args: { p_target_user_id: string }
         Returns: boolean
       }
-      // PENDING REGEN: added by migration 20261011000003 (regenerate types to refresh)
-      can_view_online_status_many: {
-        Args: { p_user_ids: string[] }
-        Returns: {
-          user_id: string
-          allowed: boolean
-        }[]
-      }
       can_view_online_status: {
         Args: { p_target_user_id: string }
         Returns: boolean
+      }
+      can_view_online_status_many: {
+        Args: { p_user_ids: string[] }
+        Returns: {
+          allowed: boolean
+          user_id: string
+        }[]
       }
       can_view_profile: { Args: { target_user_id: string }; Returns: boolean }
       can_view_profile_photo: {
@@ -1409,27 +2143,66 @@ export type Database = {
         Args: { p_target_user_id: string }
         Returns: boolean
       }
+      check_ai_rate_limit: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: boolean
+      }
+      check_login_allowed: {
+        Args: { p_account_hash: string; p_ip_hash: string }
+        Returns: Json
+      }
+      claim_study_question_embedding_jobs: {
+        Args: { p_limit?: number }
+        Returns: {
+          attempts: number
+          question_id: string
+          requested_at: string
+        }[]
+      }
+      clear_login_failures: {
+        Args: { p_account_hash: string; p_ip_hash: string }
+        Returns: undefined
+      }
       consume_activation_code: {
         Args: { p_code: string; p_user_id: string }
         Returns: Json
       }
+      consume_notification_action: {
+        Args: { p_action: string; p_content?: string; p_token_hash: string }
+        Returns: Json
+      }
+      current_auth_session_is_active: { Args: never; Returns: boolean }
       current_week_end: { Args: never; Returns: string }
       current_week_start: { Args: never; Returns: string }
       delete_expired_messages: { Args: never; Returns: number }
       delete_my_account: { Args: never; Returns: undefined }
       find_or_create_dm: { Args: { other_user_id: string }; Returns: Json }
-      generate_activation_codes: {
-        Args: {
-          p_created_by: string
-          p_count?: number
-          p_plan_type?: string
-        }
-        Returns: {
-          code: string
-          expires_at: string
-          plan_type: string
-        }[]
-      }
+      generate_activation_codes:
+        | {
+            Args: {
+              p_count?: number
+              p_created_by?: string
+              p_plan_type?: string
+            }
+            Returns: {
+              code: string
+              expires_at: string
+              plan_type: string
+            }[]
+          }
+        | {
+            Args: {
+              p_count?: number
+              p_created_by: string
+              p_duration_days?: number
+            }
+            Returns: {
+              code: string
+              duration_days: number
+              expires_at: string
+              plan_type: string
+            }[]
+          }
       get_admin_dashboard_stats: {
         Args: { p_admin_email?: string }
         Returns: Json
@@ -1523,8 +2296,54 @@ export type Database = {
         Args: { p_conversation_id: string; p_user_id: string }
         Returns: Json
       }
+      match_study_questions: {
+        Args: {
+          filter_category?: string
+          filter_exam_program?: string
+          filter_subject?: string
+          filter_year?: number
+          match_count: number
+          match_threshold: number
+          query_embedding: string
+        }
+        Returns: {
+          category: string
+          correct_answer: string
+          exam_program_id: string
+          explanation: string
+          options: Json
+          question: string
+          question_id: string
+          similarity: number
+          subject: string
+          year: number
+        }[]
+      }
+      match_study_questions_text: {
+        Args: {
+          filter_category?: string
+          filter_exam_program?: string
+          filter_subject?: string
+          filter_year?: number
+          match_count?: number
+          query_text: string
+        }
+        Returns: {
+          category: string
+          correct_answer: string
+          exam_program_id: string
+          explanation: string
+          options: Json
+          question: string
+          question_id: string
+          similarity: number
+          subject: string
+          year: number
+        }[]
+      }
       match_textbook_chunks: {
         Args: {
+          filter_subject?: string
           match_count: number
           match_threshold: number
           query_embedding: string
@@ -1536,6 +2355,14 @@ export type Database = {
           textbook_id: string
           textbook_title: string
         }[]
+      }
+      publish_jamb_question_batch: {
+        Args: { p_actor: string; p_batch_id: string }
+        Returns: Json
+      }
+      record_login_failure: {
+        Args: { p_account_hash: string; p_ip_hash: string }
+        Returns: Json
       }
       report_user: {
         Args: {

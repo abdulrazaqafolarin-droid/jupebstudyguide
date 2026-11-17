@@ -35,16 +35,22 @@ The initial supplied pack covers Physics, Chemistry and Biology only. Use of Eng
 
 ## Database rollout gate
 
-`supabase/pending/jamb_workspace.sql` is a **pending migration candidate**, not an applied migration. The live Supabase project was inspected read-only. The migration extends the existing `study_questions` table with a default JUPEB programme tag, review/provenance fields and programme-scoped retrieval. It preserves the live JUPEB `search_document` generated column and its GIN index by adding a separate programme-aware search document.
+The JAMB foundation is now applied in `supabase/migrations/20261117215633_create_jamb_workspace.sql` to the existing `gzyczowqqywesqhqqpdi` project. It extends the existing `study_questions` table with a default JUPEB programme tag, review/provenance fields and programme-scoped retrieval. It preserves the live JUPEB `search_document` generated column and its GIN index by adding a separate programme-aware search document.
 
-Before application:
-1. Read `docs/MIGRATION_RECONCILIATION_REQUIRED.md` and recover the five remote-only migration sources into repository history.
-2. Review the RLS, security-definer functions, grants and source-storage policy against the live database catalog.
-3. Apply the additive JAMB migration to the existing Rutex Supabase project only after this reconciliation is complete, then test both JUPEB and JAMB session cases.
-4. Stage the committed source packs privately, review every flagged item, and publish only questions with verified provenance and independently checked answer keys.
-5. Only after the migration, Edge Functions and content review pass should an operator set `VITE_ENABLE_JAMB=true`.
+Remaining release gates:
+1. Deploy the programme-aware AI/CBT/import Edge Functions to this same project and verify their versions and JWT/session protections.
+2. Run JUPEB and JAMB integration checks against the live project.
+3. Stage the three committed source packs through the authenticated admin review flow; preserve original file hashes and figure assets.
+4. Review each question's source year, wording, options and diagrams. Publish ungraded where no reliable answer key exists; publish a key only after independent verification.
+5. Enable `VITE_ENABLE_JAMB=true` on the feature-branch Preview environment for acceptance testing. Keep Production disabled until content and preview checks pass.
 
-The current feature flag is deliberately off by default. The Vercel Git integration may create an automatic Preview deployment for this pull request; it is not a production release. No Supabase migration, Edge Function deployment, production deployment or question-content import is performed by this branch.
+The feature flag is deliberately off by default. The Vercel Git integration may create an automatic Preview deployment for this pull request; it is not a production release. The database foundation is applied, but new Edge Functions have not yet been deployed and no JAMB source questions have been staged or published. No Production deployment has been performed.
+
+## Applied database state — 17 November 2026
+
+The migration `20261117215633_create_jamb_workspace` is applied to the existing Supabase project `gzyczowqqywesqhqqpdi`. The same SQL first passed a rollback-only transaction preflight against the live schema. The real migration returned success. Post-apply checks confirmed all 13 JAMB tables, programme-aware vector/text RPCs, the transactional publish RPC and the private source-document bucket. The two programme records are JUPEB and JAMB; the initial JAMB configuration enables only 10/20/40-question subject practice. Live counts after migration: 3,227 JUPEB questions (2,984 visible published) and 0 JAMB questions. No legacy question was relabelled and no JAMB content was automatically published.
+
+The security advisor lists nine new server-owned JAMB tables as RLS-enabled without policies. This is intentional deny-by-default: `anon` and `authenticated` have no grants on those tables; only `service_role` has CRUD, behind Edge Functions that authenticate the bearer token, check the active device session and enforce user/admin ownership. Existing project-wide SECURITY DEFINER view/RPC and mutable search-path warnings pre-date JAMB and are documented in `docs/MIGRATION_RECONCILIATION_REQUIRED.md`.
 
 ## Admin review rules
 
@@ -61,4 +67,4 @@ The current feature flag is deliberately off by default. The Vercel Git integrat
 - Importer regression tests parse all three committed source files and assert that no answer key or explanation is invented.
 - Import staging verifies active admin sessions and the uploaded source file's SHA-256 on the server.
 - Deno type checks cover the new JAMB Edge Functions and the shared study-access guard.
-- Production remains unchanged until the migration is reconciled, approved, applied, the JAMB content is reviewed and the feature flag is intentionally enabled.
+- The shared Supabase migration is applied and post-checked; Production remains unchanged and the Preview feature flag remains off until the new Edge Functions and source-review path are verified.

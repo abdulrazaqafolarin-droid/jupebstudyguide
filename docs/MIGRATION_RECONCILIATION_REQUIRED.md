@@ -29,9 +29,15 @@ The candidate retains the legacy direct admin editor for JUPEB but explicitly pr
 
 ## JAMB migration status
 
-The five remote-only migration sources are now restored, so the missing-history blocker is closed. The JAMB SQL remains under `supabase/pending/` and has **not** been applied yet. It remains a separate additive migration against the reconciled live schema. Apply it only after a non-destructive SQL preflight and final policy/function review; then deploy the programme-aware Edge Functions and run the post-migration checks plus Supabase security/performance advisors.
+The five remote-only migration sources have been restored. The additive JAMB foundation is applied successfully to the same live project and recorded as `20261117215633_create_jamb_workspace`. The exact SQL passed a rollback-only transaction preflight before execution; subsequent checks confirmed the new tables, programme-scoped RPCs, source bucket and deny-by-default table grants. The source is now `supabase/migrations/20261117215633_create_jamb_workspace.sql`.
 
-Do not run `db reset` or use destructive schema synchronization. There is no need to change or reinsert any existing migration history row. The recovered five files describe already-applied migrations and are repository history restoration only; do not execute them again on the live project.
+Do not rerun this migration against the live project. Do not use `db reset` or destructive schema synchronization. The five recovered files represent already-applied history and must not be re-executed. Deploy the Edge Functions, run JUPEB/JAMB integration checks, and stage/review source material before enabling the Preview feature flag.
+
+## Security advisor interpretation after JAMB migration
+
+The advisor lists nine new JAMB tables as RLS-enabled with no policies. This is intentional deny-by-default: the migration revokes `PUBLIC`, `anon` and `authenticated` privileges for answer keys, import data, configuration, syllabus and CBT attempt tables; only `service_role` receives access. Edge Functions must remain the only application access path and must authenticate the bearer token, check the active device session and enforce ownership/admin status. Per-user bookmark/progress tables have authenticated owner policies; programme registry reads require an active session.
+
+Other security findings (including the `current_leaderboard` SECURITY DEFINER view, pre-existing elevated RPCs and mutable search paths) were observed before this migration and are not introduced by JAMB. They are not bulk-modified in this feature.
 
 ## Required post-migration verification
 

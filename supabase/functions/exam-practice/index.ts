@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import type { Database } from "../../../src/integrations/supabase/types.ts";
+import type { Database } from "../_shared/rutex-database.types.ts";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 

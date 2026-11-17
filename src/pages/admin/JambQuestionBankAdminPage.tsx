@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
+import { getQuestionEmbeddingQueueStatus, processPendingQuestionEmbeddings, type QuestionEmbeddingQueueStatus } from "@/lib/question-rag-indexer";
 import type { Subject } from "@/types/question";
 
 interface ImportPackage {
@@ -94,6 +95,40 @@ export default function JambQuestionBankAdminPage() {
   const [savingReview, setSavingReview] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [embeddingQueue, setEmbeddingQueue] = useState<QuestionEmbeddingQueueStatus | null>(null);
+  const [indexingEmbeddings, setIndexingEmbeddings] = useState(false);
+
+  const refreshEmbeddingQueue = useCallback(async () => {
+    try {
+      const status = await getQuestionEmbeddingQueueStatus();
+      setEmbeddingQueue(status);
+      return status;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not read the question-search queue.");
+      return null;
+    }
+  }, []);
+
+  const runEmbeddingIndexing = useCallback(async () => {
+    if (indexingEmbeddings) return;
+    setIndexingEmbeddings(true);
+    try {
+      const result = await processPendingQuestionEmbeddings({ maxBatches: 10, batchSize: 5 });
+      const status = await refreshEmbeddingQueue();
+      if (result.failed > 0) {
+        toast.warning(`Indexed ${result.indexed}; ${result.failed} need retry. ${status?.queuedJobs ?? result.queuedRemaining} remain queued.`);
+      } else if (result.indexed > 0) {
+        toast.success(`Indexed ${result.indexed} question embeddings. ${status?.queuedJobs ?? result.queuedRemaining} remain queued.`);
+      } else {
+        toast.info("No pending question embeddings were processed.");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Question-search indexing failed; queued jobs are retained for retry.");
+      await refreshEmbeddingQueue();
+    } finally {
+      setIndexingEmbeddings(false);
+    }
+  }, [indexingEmbeddings, refreshEmbeddingQueue]);
 
   const selectedBatch = useMemo(() => batches.find((batch) => batch.id === selectedBatchId) ?? null, [batches, selectedBatchId]);
   const currentItem = useMemo(() => items[0] ?? null, [items]);
@@ -123,6 +158,7 @@ export default function JambQuestionBankAdminPage() {
   }, []);
 
   useEffect(() => { void refreshBatches(); }, [refreshBatches]);
+  useEffect(() => { void refreshEmbeddingQueue(); }, [refreshEmbeddingQueue]);
   useEffect(() => {
     if (!selectedBatchId) {
       setItems([]);
@@ -281,6 +317,7 @@ export default function JambQuestionBankAdminPage() {
       toast.success("JAMB batch published: " + String(data?.result?.published_count ?? 0) + " questions.");
       await refreshBatches();
       await loadItems(selectedBatch.id, 0);
+      await runEmbeddingIndexing();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Batch publication failed.");
     } finally {
@@ -299,6 +336,35 @@ export default function JambQuestionBankAdminPage() {
           </div>
           <Button variant="outline" size="icon" onClick={() => void refreshBatches()} aria-label="Refresh batches"><RefreshCw className="h-4 w-4" /></Button>
         </header>
+
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold">Question-search indexing</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {embeddingQueue
+                  ? `${embeddingQueue.queuedJobs.toLocaleString()} queued · ${embeddingQueue.embeddingsStored.toLocaleString()} embeddings stored`
+                  : "Checking the shared question-search queue…"}
+              </p>
+              {embeddingQueue && embeddingQueue.missingEmbeddings > 0 && (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {embeddingQueue.missingEmbeddings.toLocaleString()} visible questions are not indexed yet. New published questions enter this shared queue automatically.
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={() => void refreshEmbeddingQueue()} disabled={indexingEmbeddings}>
+                <RefreshCw className="mr-2 h-3.5 w-3.5" />Refresh
+              </Button>
+              <Button size="sm" onClick={() => void runEmbeddingIndexing()} disabled={indexingEmbeddings || !embeddingQueue || embeddingQueue.queuedJobs === 0}>
+                {indexingEmbeddings ? <><Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />Indexing…</> : "Index next 50"}
+              </Button>
+            </div>
+          </div>
+          <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">
+            Uses the existing Rutex embedding worker and configured Gemini embedding key. Each run is bounded to 50 questions; failed jobs stay queued for retry.
+          </p>
+        </section>
 
         <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2"><CloudUpload className="h-5 w-5 text-primary" /><h2 className="font-semibold">Stage a source collection</h2></div>

@@ -29,7 +29,11 @@ class JambImportParserTests(unittest.TestCase):
         packages, report = build_all()
         self.assertEqual({package["subject"] for package in packages}, {"physics", "chemistry", "biology"})
         self.assertEqual(report["exam_program_id"], "jamb")
-        self.assertGreater(sum(package["candidate_count"] for package in packages), 1000)
+        self.assertEqual(
+            {package["subject"]: package["candidate_count"] for package in packages},
+            {"physics": 896, "chemistry": 1940, "biology": 1833},
+        )
+        self.assertEqual(sum(package["candidate_count"] for package in packages), 4669)
         for package in packages:
             self.assertEqual(len(package["source_sha256"]), 64)
             self.assertEqual(package["candidate_count"], len(package["items"]))

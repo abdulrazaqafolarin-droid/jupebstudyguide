@@ -72,3 +72,11 @@ The security advisor lists nine new server-owned JAMB tables as RLS-enabled with
 - Import staging verifies active admin sessions and the uploaded source file's SHA-256 on the server.
 - Deno type checks cover the new JAMB Edge Functions and the shared study-access guard.
 - The shared Supabase migration and relevant Edge Functions are applied and post-checked. The feature flag is on for the feature Preview only; Production remains unchanged. Source questions remain private until an admin reviews them.
+
+
+## CBT reliability and post-submit review
+- Per-question answer writes are serialized so a fast sequence of option changes cannot finish out of order on the server.
+- Manual submission flushes the latest local answer and review-flag state for every question before the attempt is locked and scored.
+- The attempt read endpoint never returns answer keys. A separate owner-authenticated `review` action is rejected while the attempt is in progress and is available only after submission/expiry.
+- Post-submit review shows the candidate's selection, an independently approved key and explanation where one exists. Missing keys are explicitly ungraded and excluded from the scored denominator.
+- The server maps the database's `subject_code` into the stable `subject` field expected by the CBT UI.

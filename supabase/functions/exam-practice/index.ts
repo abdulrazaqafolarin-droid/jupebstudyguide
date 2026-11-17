@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import type { Database } from "../../../src/integrations/supabase/types.ts";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 
@@ -17,7 +18,7 @@ Deno.serve(async (request: Request) => {
   const url = Deno.env.get("SUPABASE_URL");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !key) return reply({ error: "Server configuration is incomplete" }, 500);
-  const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const supabase = createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: { user }, error: authError } = await supabase.auth.getUser(authorization.slice(7));
   if (authError || !user) return reply({ error: "Invalid authentication" }, 401);
   const access = await hasActiveStudyAccess(url, key, authorization.slice(7), user.id);

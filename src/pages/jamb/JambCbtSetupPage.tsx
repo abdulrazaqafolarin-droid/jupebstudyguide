@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock3, Info, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -12,10 +12,13 @@ export default function JambCbtSetupPage() {
   const [subject, setSubject] = useState<Exclude<Subject, "math">>("physics");
   const [presetIndex, setPresetIndex] = useState(1);
   const [starting, setStarting] = useState(false);
+  const idempotencyKeyRef = useRef<string | null>(null);
   const preset = JAMB_CBT_PRACTICE_PRESETS[presetIndex];
 
   const startPractice = async () => {
     setStarting(true);
+    const idempotencyKey = idempotencyKeyRef.current ?? crypto.randomUUID();
+    idempotencyKeyRef.current = idempotencyKey;
     try {
       const { data, error } = await supabase.functions.invoke("exam-attempts", {
         body: {
@@ -26,6 +29,7 @@ export default function JambCbtSetupPage() {
           question_count: preset.questionCount,
           duration_minutes: preset.durationMinutes,
           attempt_kind: "subject_practice",
+          idempotency_key: idempotencyKey,
         },
       });
       if (error) throw error;
@@ -50,7 +54,7 @@ export default function JambCbtSetupPage() {
           <p className="mt-1 text-xs text-muted-foreground">These sessions use the approved JAMB question bank, not JUPEB questions.</p>
           <div className="mt-3 grid grid-cols-3 gap-2">
             {JAMB_SUBJECTS.map((item) => (
-              <button key={item} onClick={() => setSubject(item)} aria-pressed={subject === item}
+              <button key={item} disabled={starting} onClick={() => { idempotencyKeyRef.current = null; setSubject(item); }} aria-pressed={subject === item}
                 className={`rounded-xl border px-2 py-4 text-sm font-semibold ${subject === item ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-accent"}`}>
                 <span className="block text-xl">{JAMB_SUBJECT_INFO[item].icon}</span>{JAMB_SUBJECT_INFO[item].label}
               </button>
@@ -61,7 +65,7 @@ export default function JambCbtSetupPage() {
           <h2 className="font-semibold">Practice length</h2>
           <div className="mt-3 space-y-2">
             {JAMB_CBT_PRACTICE_PRESETS.map((item, index) => (
-              <button key={item.questionCount} onClick={() => setPresetIndex(index)} aria-pressed={presetIndex === index}
+              <button key={item.questionCount} disabled={starting} onClick={() => { idempotencyKeyRef.current = null; setPresetIndex(index); }} aria-pressed={presetIndex === index}
                 className={`flex w-full items-center justify-between rounded-xl border p-3 text-left text-sm ${presetIndex === index ? "border-primary bg-primary/10" : "border-border hover:bg-accent"}`}>
                 <span className="font-medium">{item.label}</span><span className="text-xs text-muted-foreground">{item.durationMinutes} min</span>
               </button>

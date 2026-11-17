@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.import_jamb_sources import parse_subject, split_question_blocks, parse_options_and_stem
+from scripts.import_jamb_sources import build_all, parse_subject, split_question_blocks, parse_options_and_stem
 
 
 class JambImportParserTests(unittest.TestCase):
@@ -24,6 +24,20 @@ class JambImportParserTests(unittest.TestCase):
         blocks = split_question_blocks(text)
         self.assertEqual([item[1] for item in blocks], [1, 2])
         self.assertEqual(len(blocks), 2)
+
+    def test_all_three_committed_sources_are_parseable_and_review_only(self):
+        packages, report = build_all()
+        self.assertEqual({package["subject"] for package in packages}, {"physics", "chemistry", "biology"})
+        self.assertEqual(report["exam_program_id"], "jamb")
+        self.assertGreater(sum(package["candidate_count"] for package in packages), 1000)
+        for package in packages:
+            self.assertEqual(len(package["source_sha256"]), 64)
+            self.assertEqual(package["candidate_count"], len(package["items"]))
+            self.assertGreater(package["candidate_count"], 0)
+            self.assertTrue(all(item["correct_answer"] is None for item in package["items"]))
+            self.assertTrue(all(item["explanation"] is None for item in package["items"]))
+            self.assertTrue(all(item["review_status"] == "needs_review" for item in package["items"]))
+        self.assertTrue(all(subject["publishable_without_human_review"] == 0 for subject in report["subjects"]))
 
     def test_unreferenced_and_figure_questions_remain_ungraded_review_items(self):
         text = "1. Figure question [Figure: a labelled cell diagram] A. a B. b C. c D. d\n"

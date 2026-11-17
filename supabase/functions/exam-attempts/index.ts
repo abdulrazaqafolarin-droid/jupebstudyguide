@@ -1,4 +1,6 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import type { Database } from "../../../src/integrations/supabase/types.ts";
+import { scoreAttempt } from "../_shared/exam-scoring.ts";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 
@@ -49,7 +51,9 @@ function safeSnapshot(row: Record<string, unknown>) {
   };
 }
 
-type AuthenticatedContext = { supabase: any; user: { id: string } };
+type AdminSupabase = SupabaseClient<Database>;
+type AttemptRecord = Pick<Database["public"]["Tables"]["exam_attempts"]["Row"], "id" | "user_id" | "exam_program_id" | "exam_year" | "config_version" | "subject_code" | "attempt_kind" | "status" | "duration_minutes" | "started_at" | "expires_at" | "submitted_at" | "score_summary">;
+type AuthenticatedContext = { supabase: AdminSupabase; user: { id: string } };
 type AuthenticationResult = AuthenticatedContext | { error: Response };
 
 async function authenticate(request: Request): Promise<AuthenticationResult> {
@@ -58,7 +62,7 @@ async function authenticate(request: Request): Promise<AuthenticationResult> {
   const url = Deno.env.get("SUPABASE_URL");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url || !key) return { error: reply({ error: "Server configuration is incomplete" }, 500) };
-  const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const supabase = createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const token = authorization.slice(7);
   const { data: { user }, error } = await supabase.auth.getUser(token);
   if (error || !user) return { error: reply({ error: "Invalid authentication" }, 401) };
@@ -67,7 +71,7 @@ async function authenticate(request: Request): Promise<AuthenticationResult> {
   return { supabase, user };
 }
 
-async function readOwnedAttempt(supabase: any, attemptId: string, userId: string) {
+async function readOwnedAttempt(supabase: AdminSupabase, attemptId: string, userId: string): Promise<AttemptRecord> {
   const { data, error } = await supabase
     .from("exam_attempts")
     .select("id,user_id,exam_program_id,exam_year,config_version,subject_code,attempt_kind,status,duration_minutes,started_at,expires_at,submitted_at,score_summary")
@@ -81,8 +85,8 @@ async function readOwnedAttempt(supabase: any, attemptId: string, userId: string
 }
 
 async function markExpiredIfNeeded(
-  supabase: ReturnType<typeof createClient>,
-  attempt: Record<string, unknown>,
+  supabase: AdminSupabase,
+  attempt: AttemptRecord,
 ): Promise<{ status: string; result: Record<string, unknown> | null }> {
   if (attempt.status === "in_progress" && new Date(String(attempt.expires_at)).getTime() <= Date.now()) {
     const result = await scoreAndFinish(supabase, attempt, "expired");
@@ -97,8 +101,8 @@ async function markExpiredIfNeeded(
 }
 
 async function scoreAndFinish(
-  supabase: ReturnType<typeof createClient>,
-  attempt: Record<string, unknown>,
+  supabase: AdminSupabase,
+  attempt: AttemptRecord,
   finalStatus: "submitted" | "expired",
 ) {
   const attemptId = String(attempt.id);
@@ -124,30 +128,7 @@ async function scoreAndFinish(
   if (answerError) throw new Error(answerError.message);
   if (keyError) throw new Error(keyError.message);
 
-  const answerBySequence = new Map((answers ?? []).map((answer) => [answer.question_sequence, answer.selected_option]));
-  const keyByQuestionId = new Map((answerKeys ?? []).map((key) => [key.question_id, String(key.correct_answer).toUpperCase()]));
-  let correct = 0;
-  let wrong = 0;
-  let ungraded = 0;
-  for (const item of questions ?? []) {
-    const answerKey = keyByQuestionId.get(item.question_id);
-    if (!answerKey) {
-      ungraded++;
-      continue;
-    }
-    const selected = answerBySequence.get(item.sequence);
-    if (selected && String(selected).toUpperCase() === answerKey) correct++;
-    else wrong++;
-  }
-  const gradable = correct + wrong;
-  const result = {
-    score: gradable > 0 ? Math.round((correct / gradable) * 100) : null,
-    correct,
-    wrong,
-    ungraded,
-    total: (questions ?? []).length,
-    gradable,
-  };
+  const result = scoreAttempt(questions ?? [], answers ?? [], answerKeys ?? []);
   const now = new Date().toISOString();
   const { error: updateError } = await supabase.from("exam_attempts")
     .update({
@@ -206,6 +187,24 @@ Deno.serve(async (request: Request) => {
         return reply({ error: "This subject and practice length are not enabled in the published JAMB practice configuration." }, 400);
       }
 
+      const idempotencyKey = String(body.idempotency_key ?? crypto.randomUUID()).trim().slice(0, 128);
+      if (!idempotencyKey) return reply({ error: "A valid idempotency key is required." }, 400);
+      const { data: existingAttempt, error: existingError } = await supabase
+        .from("exam_attempts")
+        .select("id,exam_year,config_version")
+        .eq("user_id", user.id)
+        .eq("exam_program_id", "jamb")
+        .eq("idempotency_key", idempotencyKey)
+        .maybeSingle();
+      if (existingError) return reply({ error: existingError.message }, 500);
+      if (existingAttempt) {
+        const { count, error: countError } = await supabase.from("exam_attempt_questions")
+          .select("sequence", { count: "exact", head: true })
+          .eq("attempt_id", existingAttempt.id);
+        if (countError) return reply({ error: countError.message }, 500);
+        return reply({ attempt_id: existingAttempt.id, exam_year: existingAttempt.exam_year, config_version: existingAttempt.config_version, question_count: count ?? 0, idempotent_replay: true });
+      }
+
       const { data: candidates, error: candidateError } = await supabase
         .from("study_questions")
         .select("id,subject,year,question,options,course,image_url,image_urls")
@@ -231,7 +230,6 @@ Deno.serve(async (request: Request) => {
       const selected = shuffle(validCandidates).slice(0, questionCount);
       const now = new Date();
       const expiresAt = new Date(now.getTime() + durationMinutes * 60_000);
-      const idempotencyKey = String(body.idempotency_key ?? crypto.randomUUID()).slice(0, 128);
       const { data: attempt, error: insertError } = await supabase
         .from("exam_attempts")
         .insert({
@@ -249,7 +247,18 @@ Deno.serve(async (request: Request) => {
         })
         .select("id")
         .single();
-      if (insertError || !attempt) return reply({ error: insertError?.message ?? "Could not create attempt." }, 500);
+      if (insertError || !attempt) {
+        if (insertError?.code === "23505") {
+          const { data: racedAttempt } = await supabase.from("exam_attempts")
+            .select("id,exam_year,config_version")
+            .eq("user_id", user.id)
+            .eq("exam_program_id", "jamb")
+            .eq("idempotency_key", idempotencyKey)
+            .maybeSingle();
+          if (racedAttempt) return reply({ attempt_id: racedAttempt.id, exam_year: racedAttempt.exam_year, config_version: racedAttempt.config_version, idempotent_replay: true });
+        }
+        return reply({ error: insertError?.message ?? "Could not create attempt." }, 500);
+      }
 
       const snapshotRows = selected.map((question, index) => ({
         attempt_id: attempt.id,
@@ -263,7 +272,7 @@ Deno.serve(async (request: Request) => {
         await supabase.from("exam_attempts").delete().eq("id", attempt.id).eq("user_id", user.id);
         return reply({ error: "Could not prepare the CBT question snapshots: " + snapshotError.message }, 500);
       }
-      return reply({ attempt_id: attempt.id, exam_year: config.exam_year, config_version: config.config_version, question_count: questionCount });
+      return reply({ attempt_id: attempt.id, exam_year: config.exam_year, config_version: config.config_version, question_count: questionCount, idempotent_replay: false });
     }
 
     const attemptId = String(body.attempt_id ?? "");

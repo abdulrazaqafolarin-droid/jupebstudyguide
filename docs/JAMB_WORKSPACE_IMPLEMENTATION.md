@@ -38,10 +38,11 @@ The initial supplied pack covers Physics, Chemistry and Biology only. Use of Eng
 `supabase/pending/jamb_workspace.sql` is a **pending migration candidate**, not an applied migration. The live Supabase project was inspected read-only. The migration extends the existing `study_questions` table with a default JUPEB programme tag, review/provenance fields and programme-scoped retrieval. It preserves the live JUPEB `search_document` generated column and its GIN index by adding a separate programme-aware search document.
 
 Before application:
-1. Reconcile this candidate against the current remote migration history and the exact production schema.
-2. Review the RLS, security-definer functions, grants and source-storage policy.
-3. Apply the migration to a non-production environment and test both JUPEB and JAMB account/session cases.
-4. Only after the migration and content-review flow pass should an operator set `VITE_ENABLE_JAMB=true`.
+1. Read `docs/MIGRATION_RECONCILIATION_REQUIRED.md` and recover the five remote-only migration sources into repository history.
+2. Review the RLS, security-definer functions, grants and source-storage policy against the live database catalog.
+3. Apply the additive JAMB migration to the existing Rutex Supabase project only after this reconciliation is complete, then test both JUPEB and JAMB session cases.
+4. Stage the committed source packs privately, review every flagged item, and publish only questions with verified provenance and independently checked answer keys.
+5. Only after the migration, Edge Functions and content review pass should an operator set `VITE_ENABLE_JAMB=true`.
 
 The current feature flag is deliberately off by default. No Supabase migration, edge-function deployment, Vercel deployment or production content import is performed by this branch.
 
@@ -50,12 +51,14 @@ The current feature flag is deliberately off by default. No Supabase migration, 
 - Every candidate must have a verified source year, a readable stem, complete A–D or A–E options and the original figure attached where a diagram is required.
 - Approve as `approved_ungraded` when the question is sound but there is no independently verified key.
 - Approve as `approved` only when the correct option is verified and matches one of the question's options.
-- The publish RPC rechecks all of these conditions and the batch source-rights confirmation in one transaction.
+- The publish RPC rechecks all of these conditions, prevents duplicate fingerprints, preserves verified historical E answers, and enforces source-rights confirmation in one transaction.
 - Published answer keys remain outside the public student question projection and CBT snapshots.
 
 ## Current acceptance checks and release gates
 
 - Web TypeScript/unit tests, importer tests, lint, web build and Android debug build are run by the PR workflow.
-- Deno tests cover programme-aware question retrieval and embedding prefixes.
+- Deno tests cover programme-aware retrieval, embedding prefixes and reviewed-answer scoring.
+- Importer regression tests parse all three committed source files and assert that no answer key or explanation is invented.
+- Import staging verifies active admin sessions and the uploaded source file's SHA-256 on the server.
 - Deno type checks cover the new JAMB Edge Functions and the shared study-access guard.
 - Production remains unchanged until the migration is reconciled, approved, applied, the JAMB content is reviewed and the feature flag is intentionally enabled.

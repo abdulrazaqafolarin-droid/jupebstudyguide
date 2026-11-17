@@ -6,6 +6,15 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+
+
+type GeneratedTable<Row extends Record<string, unknown>, RequiredInsert extends keyof Row = never> = {
+  Row: Row;
+  Insert: Pick<Row, RequiredInsert> & Partial<Omit<Row, RequiredInsert>>;
+  Update: Partial<Row>;
+  Relationships: [];
+};
+
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -897,6 +906,58 @@ export type Database = {
           },
         ]
       }
+      exam_programs: GeneratedTable<{
+        id: string; display_name: string; slug: string; description: string | null;
+        is_active: boolean; current_exam_year: number | null; config_version: string; created_at: string; updated_at: string;
+      }, "id" | "display_name" | "slug">;
+      exam_program_subjects: GeneratedTable<{
+        id: string; exam_program_id: string; subject_code: string; display_name: string; is_compulsory: boolean;
+        is_available: boolean; sort_order: number; metadata: Json; created_at: string;
+      }, "exam_program_id" | "subject_code" | "display_name">;
+      exam_configurations: GeneratedTable<{
+        id: string; exam_program_id: string; exam_year: number; config_version: string; settings: Json;
+        source_url: string | null; source_document: string | null; source_sha256: string | null;
+        official_format_verified: boolean; full_mock_enabled: boolean; status: string; verified_by: string | null;
+        verified_at: string | null; published_at: string | null; created_at: string; updated_at: string;
+      }, "exam_program_id" | "exam_year" | "config_version">;
+      question_import_batches: GeneratedTable<{
+        id: string; exam_program_id: string; source_document: string; source_storage_path: string | null;
+        source_sha256: string; subject_code: string; rights_confirmed: boolean; rights_note: string | null;
+        status: string; total_items: number; expected_items: number; needs_review_count: number;
+        approved_count: number; published_count: number; imported_by: string; approved_by: string | null;
+        approved_at: string | null; published_at: string | null; created_at: string; updated_at: string;
+      }, "exam_program_id" | "source_document" | "source_sha256" | "subject_code" | "imported_by">;
+      question_import_items: GeneratedTable<{
+        id: string; batch_id: string; item_number: number; raw_payload: Json; normalized_payload: Json;
+        validation_errors: Json; status: string; duplicate_of: string | null; published_question_id: string | null;
+        reviewed_by: string | null; reviewed_at: string | null; created_at: string; updated_at: string;
+      }, "batch_id" | "item_number" | "raw_payload" | "normalized_payload">;
+      study_question_answer_keys: GeneratedTable<{
+        question_id: string; correct_answer: string; explanation: string | null; review_status: string;
+        source_ref: string | null; reviewed_by: string | null; reviewed_at: string | null; created_at: string; updated_at: string;
+      }, "question_id" | "correct_answer">;
+      exam_syllabus_versions: GeneratedTable<{
+        id: string; exam_program_id: string; exam_year: number; version: string; source_title: string | null;
+        source_url: string | null; source_document_path: string | null; source_sha256: string | null; status: string;
+        verified_by: string | null; verified_at: string | null; published_at: string | null; created_at: string;
+      }, "exam_program_id" | "exam_year" | "version">;
+      exam_syllabus_topics: GeneratedTable<{
+        id: string; syllabus_version_id: string; subject_code: string; topic_code: string; title: string;
+        description: string | null; objectives: Json; parent_topic_id: string | null; sort_order: number; status: string; source_ref: string | null;
+      }, "syllabus_version_id" | "subject_code" | "topic_code" | "title">;
+      exam_attempts: GeneratedTable<{
+        id: string; user_id: string; exam_program_id: string; exam_year: number; config_version: string;
+        subject_code: string; attempt_kind: string; status: string; duration_minutes: number; started_at: string;
+        expires_at: string; submitted_at: string | null; score_summary: Json | null; idempotency_key: string | null;
+        created_at: string; updated_at: string;
+      }, "user_id" | "exam_program_id" | "exam_year" | "config_version" | "subject_code" | "duration_minutes" | "expires_at">;
+      exam_attempt_questions: GeneratedTable<{
+        attempt_id: string; sequence: number; question_id: string; subject_code: string; question_snapshot: Json;
+      }, "attempt_id" | "sequence" | "question_id" | "subject_code" | "question_snapshot">;
+      exam_attempt_answers: GeneratedTable<{
+        attempt_id: string; question_sequence: number; selected_option: string | null; marked_for_review: boolean;
+        answered_at: string | null; updated_at: string;
+      }, "attempt_id" | "question_sequence">;
       exam_user_bookmarks: {
         Row: {
           created_at: string
@@ -1308,6 +1369,7 @@ export type Database = {
       }
     }
     Functions: {
+      publish_jamb_question_batch: { Args: { p_batch_id: string; p_actor: string }; Returns: Json }
       admin_delete_question: { Args: { p_question_id: string }; Returns: Json }
       auto_weekly_champion: { Args: never; Returns: undefined }
       award_score: {

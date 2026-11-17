@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Test question-source importer
+      - name: Test question-source importer against fixtures and committed JAMB content
         run: python -m unittest scripts.test_import_jamb_sources
 
       - name: Setup Deno
@@ -53,11 +53,11 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Test programme-aware question retrieval
-        run: deno test supabase/functions/_shared/question-retrieve.test.ts
+      - name: Test programme-aware question retrieval and CBT scoring
+        run: deno test supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/exam-scoring.test.ts
 
       - name: Type-check JAMB Edge Functions
-        run: deno check supabase/functions/_shared/exam-access.ts supabase/functions/question-import/index.ts supabase/functions/exam-attempts/index.ts supabase/functions/exam-practice/index.ts
+        run: deno check supabase/functions/_shared/exam-access.ts supabase/functions/_shared/exam-scoring.ts supabase/functions/question-import/index.ts supabase/functions/exam-attempts/index.ts supabase/functions/exam-practice/index.ts
 
       - name: Validate Firebase Android client
         run: |

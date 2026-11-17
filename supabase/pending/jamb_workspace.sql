@@ -559,6 +559,33 @@ BEGIN
     RAISE EXCEPTION 'Administrator permission required';
   END IF;
 
+
+  IF EXISTS (
+    SELECT 1
+    FROM public.question_import_items
+    WHERE batch_id = p_batch_id
+      AND status IN ('approved', 'approved_ungraded')
+      AND NULLIF(normalized_payload->>'content_hash', '') IS NOT NULL
+    GROUP BY normalized_payload->>'content_hash'
+    HAVING count(*) > 1
+  ) THEN
+    RAISE EXCEPTION 'The batch contains duplicate question fingerprints; reject or correct duplicate items before publication';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM public.question_import_items i
+    JOIN public.study_questions q
+      ON q.exam_program_id = 'jamb'
+     AND q.subject = i.normalized_payload->>'subject'
+     AND q.content_hash = i.normalized_payload->>'content_hash'
+    WHERE i.batch_id = p_batch_id
+      AND i.status IN ('approved', 'approved_ungraded')
+      AND NULLIF(i.normalized_payload->>'content_hash', '') IS NOT NULL
+  ) THEN
+    RAISE EXCEPTION 'One or more approved items already exist in the published JAMB question bank';
+  END IF;
+
   FOR v_item IN
     SELECT * FROM public.question_import_items
     WHERE batch_id = p_batch_id
@@ -607,8 +634,15 @@ BEGIN
        AND coalesce(jsonb_array_length(v_payload->'image_urls'), 0) = 0 THEN
       RAISE EXCEPTION 'Figure-based item % must have its original image attached and reviewed', v_item.item_number;
     END IF;
-    IF v_answer_verified AND (v_answer IS NULL OR v_answer NOT IN ('A', 'B', 'C', 'D')) THEN
-      RAISE EXCEPTION 'Verified answer key must be one of A-D on item %', v_item.item_number;
+    IF v_answer_verified AND (
+      v_answer IS NULL
+      OR v_answer NOT IN ('A', 'B', 'C', 'D', 'E')
+      OR NOT EXISTS (
+        SELECT 1 FROM jsonb_array_elements(v_options) AS option
+        WHERE upper(option->>'label') = v_answer
+      )
+    ) THEN
+      RAISE EXCEPTION 'Verified answer key must match one of the source options on item %', v_item.item_number;
     END IF;
     IF v_item.status = 'approved' AND NOT v_answer_verified THEN
       RAISE EXCEPTION 'Use approved_ungraded for an item without a reviewed answer key (item %)', v_item.item_number;
@@ -756,13 +790,14 @@ TO service_role;
 DROP POLICY IF EXISTS exam_programs_read_authenticated ON public.exam_programs;
 CREATE POLICY exam_programs_read_authenticated
   ON public.exam_programs FOR SELECT TO authenticated
-  USING (is_active IS TRUE);
+  USING (is_active IS TRUE AND public.current_auth_session_is_active());
 
 DROP POLICY IF EXISTS exam_program_subjects_read_authenticated ON public.exam_program_subjects;
 CREATE POLICY exam_program_subjects_read_authenticated
   ON public.exam_program_subjects FOR SELECT TO authenticated
   USING (
-    EXISTS (
+    public.current_auth_session_is_active()
+    AND EXISTS (
       SELECT 1 FROM public.exam_programs p
       WHERE p.id = exam_program_id AND p.is_active IS TRUE
     )
@@ -840,6 +875,37 @@ USING (
   )
 );
 
+
+-- Keep the existing direct admin editor JUPEB-only. JAMB content must pass
+-- private-source staging, source-rights confirmation, human review and publish.
+DROP POLICY IF EXISTS study_questions_insert_policy ON public.study_questions;
+CREATE POLICY study_questions_insert_policy
+  ON public.study_questions FOR INSERT TO public
+  WITH CHECK (
+    coalesce(exam_program_id, 'jupeb') = 'jupeb'
+    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+  );
+
+DROP POLICY IF EXISTS study_questions_update_policy ON public.study_questions;
+CREATE POLICY study_questions_update_policy
+  ON public.study_questions FOR UPDATE TO authenticated
+  USING (
+    exam_program_id = 'jupeb'
+    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+  )
+  WITH CHECK (
+    exam_program_id = 'jupeb'
+    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+  );
+
+DROP POLICY IF EXISTS study_questions_delete_policy ON public.study_questions;
+CREATE POLICY study_questions_delete_policy
+  ON public.study_questions FOR DELETE TO public
+  USING (
+    exam_program_id = 'jupeb'
+    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+  );
+
 -- ---------------------------------------------------------------------------
 -- 8. Private original-source storage
 -- ---------------------------------------------------------------------------
@@ -870,6 +936,7 @@ FOR ALL
 TO authenticated
 USING (
   bucket_id = 'question-source-documents'
+  AND public.current_auth_session_is_active()
   AND EXISTS (
     SELECT 1 FROM public.profiles p
     WHERE p.user_id = (SELECT auth.uid()) AND p.is_admin IS TRUE
@@ -877,6 +944,7 @@ USING (
 )
 WITH CHECK (
   bucket_id = 'question-source-documents'
+  AND public.current_auth_session_is_active()
   AND EXISTS (
     SELECT 1 FROM public.profiles p
     WHERE p.user_id = (SELECT auth.uid()) AND p.is_admin IS TRUE

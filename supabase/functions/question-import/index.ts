@@ -1,6 +1,9 @@
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/ai.ts";
+import type { Database } from "../../../src/integrations/supabase/types.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
+
+type AdminSupabase = SupabaseClient<Database>;
 
 const SUBJECTS = new Set(["physics", "chemistry", "biology"]);
 const MAX_ITEMS_PER_REQUEST = 50;
@@ -79,7 +82,7 @@ function normalizeItem(item: JsonObject, batch: {
   return { raw: item, normalized, errors: [...new Set(errors)] };
 }
 
-async function requireAdmin(supabase: SupabaseClient<any>, userId: string): Promise<boolean> {
+async function requireAdmin(supabase: AdminSupabase, userId: string): Promise<boolean> {
   const { data, error } = await supabase
     .from("profiles")
     .select("is_admin")
@@ -99,12 +102,14 @@ Deno.serve(async (request: Request) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !serviceKey) return respond({ error: "Server configuration is incomplete" }, 500);
 
-  const supabase = createClient(supabaseUrl, serviceKey, {
+  const supabase = createClient<Database>(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const token = authorization.slice("Bearer ".length);
   const { data: { user }, error: userError } = await supabase.auth.getUser(token);
   if (userError || !user) return respond({ error: "Invalid authentication" }, 401);
+  const access = await hasActiveStudyAccess(supabaseUrl, serviceKey, token, user.id);
+  if (!access.allowed) return respond({ error: access.reason ?? "Active study session required" }, 403);
   if (!(await requireAdmin(supabase, user.id))) return respond({ error: "Administrator permission required" }, 403);
 
   try {
@@ -131,9 +136,26 @@ Deno.serve(async (request: Request) => {
       if (!rightsConfirmed || asText(body.rights_note).length < 12) {
         return respond({ error: "Confirm source-use permission and enter a short rights/permission note before staging" }, 400);
       }
-      if (!sourceStoragePath.startsWith("jamb/" + user.id + "/")) {
-        return respond({ error: "Upload the original source document to the private question-source-documents bucket first" }, 400);
+      const sourcePathParts = sourceStoragePath.split("/");
+      if (!sourceStoragePath.startsWith("jamb/" + user.id + "/") || sourcePathParts.some((part) => !part || part === "." || part === "..")) {
+        return respond({ error: "Upload the original source document to your private JAMB source folder first" }, 400);
       }
+      const { data: sourceFile, error: sourceDownloadError } = await supabase.storage
+        .from("question-source-documents")
+        .download(sourceStoragePath);
+      if (sourceDownloadError || !sourceFile) return respond({ error: "The original source document could not be verified in private storage" }, 422);
+      const sourceDigest = await crypto.subtle.digest("SHA-256", await sourceFile.arrayBuffer());
+      const storedSourceHash = Array.from(new Uint8Array(sourceDigest)).map((value) => value.toString(16).padStart(2, "0")).join("");
+      if (storedSourceHash !== sourceSha) return respond({ error: "The uploaded original source does not match the supplied SHA-256 hash" }, 422);
+      const { data: duplicateBatch, error: duplicateError } = await supabase
+        .from("question_import_batches")
+        .select("id,status")
+        .eq("exam_program_id", "jamb")
+        .eq("subject_code", subject)
+        .eq("source_sha256", sourceSha)
+        .maybeSingle();
+      if (duplicateError) return respond({ error: duplicateError.message }, 500);
+      if (duplicateBatch) return respond({ error: "This exact source file has already been staged in batch " + duplicateBatch.id + " (" + duplicateBatch.status + "). Open that batch instead of importing it again." }, 409);
       const { data: batch, error: batchError } = await supabase
         .from("question_import_batches")
         .insert({

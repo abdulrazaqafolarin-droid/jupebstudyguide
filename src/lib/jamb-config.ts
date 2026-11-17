@@ -1,6 +1,6 @@
 import type { Subject } from "@/types/question";
 
-export const JAMB_SUBJECTS: Subject[] = ["physics", "chemistry", "biology"];
+export const JAMB_SUBJECTS: Array<Exclude<Subject, "math">> = ["physics", "chemistry", "biology"];
 
 export const JAMB_SUBJECT_INFO: Record<Subject, {
   label: string;

@@ -16,7 +16,7 @@ export default function JambPastQuestionsPage() {
   const routeParams = useParams();
   const routeSubject = routeParams.subject?.toLowerCase();
   const requestedSubject = routeSubject ?? searchParams.get("subject");
-  const initialSubject = JAMB_SUBJECTS.includes(requestedSubject as Subject)
+  const initialSubject = JAMB_SUBJECTS.includes(requestedSubject as Exclude<Subject, "math">)
     ? requestedSubject as Exclude<Subject, "math">
     : "physics";
   const [subject, setSubject] = useState<Exclude<Subject, "math">>(initialSubject);

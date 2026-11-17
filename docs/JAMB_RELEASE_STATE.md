@@ -10,7 +10,7 @@ Checked 17 November 2026 against PR #78, the Ready Vercel Preview and live Supab
 - Edge Functions are deployed and ACTIVE on the same project: `exam-attempts` v3 (JWT on), `exam-practice` v1 (JWT on), `question-import` v1 (JWT on), `ai-tutor` v100, `chat-proxy` v131, and `question-rag-index` v3.
 - CBT answer writes are serialized per question; manual submit flushes the latest answers before scoring. In-progress question payloads do not contain keys or explanations. Owner-only answer review is available only after submit/expiry, and returns only independently approved keys/explanations.
 - RLS and grants keep answer/import/attempt data server-owned. The new Edge Functions authenticate active sessions and enforce user/admin ownership.
-- Vercel Preview for branch `feat/rutex-jamb-workspace` is Ready: [Open JAMB Preview](https://jupebstudyguide-git-f-29dfec-abdulrazaqafolarin-droids-projects.vercel.app). Deployment `DJrosXASPFap7mjxQrbYkjAr1zN2` was built from commit `81db339ae6aa45ef8e9d1759532dbd2d3fa54f5d`.
+- Vercel Preview for branch `feat/rutex-jamb-workspace` is Ready: [Open JAMB Preview](https://jupebstudyguide-git-f-29dfec-abdulrazaqafolarin-droids-projects.vercel.app). Latest checked deployment `dpl_8mUM6EFd3FMh8uks5mvjbSJxKYaD` was built from commit `222797586db6dbb55c401afe375a60e62f1d3fed`.
 - `VITE_ENABLE_JAMB=true` is scoped to that branch's **Preview only**. No Production target was added, and no Production deployment was performed.
 
 ## Live database verification
@@ -21,6 +21,7 @@ Checked 17 November 2026 against PR #78, the Ready Vercel Preview and live Supab
 - Programme-aware vector/text retrieval RPCs and transactional question-batch publication RPC exist.
 - Private `question-source-documents` bucket exists alongside the existing `question-images` bucket.
 - Live retrieval isolation probe: the same Physics query returns 0 JAMB rows and 30 JUPEB matches. This is expected until JAMB questions are reviewed and published.
+- Embedding worker audit: the database trigger durably queues each published JAMB question. There is no `pg_cron` job for this worker, so the JAMB admin page now drains the shared `question-rag-index` queue after a publish (up to 50 per run) and offers a visible queue counter plus a manual `Index next 50` action. Failed provider jobs remain queued for retry. Current queue: 0; stored embeddings: 2,984 (existing JUPEB only); published JAMB: 0.
 
 ## Committed source inventory
 The importer regression test now pins the exact candidate counts from the current committed source files. See `docs/JAMB_SOURCE_INTAKE_REPORT.md` for year/reference, option-pattern and figure-placeholder counts. These are candidates for admin review, not approved or published student questions.
@@ -37,4 +38,4 @@ The importer regression test now pins the exact candidate counts from the curren
 3. Verify and version the current official JAMB syllabus and Use of English content before offering a full official-format UTME mock. Current 10/20/40 sessions are explicitly Rutex study drills, not an official mock.
 4. Complete a signed-in mobile Preview walkthrough with a real admin/student account. A protected Preview cannot be fully exercised as an authenticated student/admin without that user's session.
 
-The implementation and backend are deployed to the feature Preview. Student question-bank content remains gated on human source/content review rather than guessing answers or publishing unverified material. Production remains unchanged.
+The implementation and backend are deployed to the feature Preview. Student question-bank content remains gated on authenticated admin source-rights attestation and human content review rather than guessing answers or publishing unverified material. Production remains unchanged.

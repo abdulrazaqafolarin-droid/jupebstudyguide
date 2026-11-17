@@ -80,3 +80,10 @@ The security advisor lists nine new server-owned JAMB tables as RLS-enabled with
 - The attempt read endpoint never returns answer keys. A separate owner-authenticated `review` action is rejected while the attempt is in progress and is available only after submission/expiry.
 - Post-submit review shows the candidate's selection, an independently approved key and explanation where one exists. Missing keys are explicitly ungraded and excluded from the scored denominator.
 - The server maps the database's `subject_code` into the stable `subject` field expected by the CBT UI.
+
+
+## Shared semantic-index queue
+- Publishing approved JAMB rows invokes the same `study_questions` trigger used by JUPEB; it writes a durable `study_question_embedding_jobs` row.
+- JAMB admin uses the existing `processPendingQuestionEmbeddings` client helper and the already-deployed `question-rag-index` Edge Function; no duplicate model/indexing pipeline was added.
+- After a successful batch publish the admin UI processes up to 50 jobs. The queue panel shows queued jobs and stored embeddings and can process another bounded 50. Provider failures are kept in the retry queue with backoff.
+- The live project has no `pg_cron` schedule for this worker. Processing is therefore an explicit authenticated-admin action, not a claimed always-on background worker. The JAMB tutor still works with programme-filtered lexical retrieval while embedding jobs await processing.

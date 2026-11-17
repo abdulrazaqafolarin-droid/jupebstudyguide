@@ -42,3 +42,7 @@ The generated JSON appears under `private-question-sources/generated-json/jamb/`
 ## Live database state at inspection
 
 The shared Supabase migration is applied, but the JAMB question count remains **0**. No source batch has been marked reviewed or published. Existing JUPEB rows remain untouched (3,227 total; 2,984 visible published). This is the intended safe state until the content review and source-rights attestation are completed.
+
+
+## Semantic indexing after publication
+Publishing a reviewed question triggers the existing shared embedding-job queue. The JAMB admin screen processes up to 50 queued items after publication and exposes an additional bounded indexing action. The worker uses the configured Gemini embedding key. If that key is unavailable or the provider fails, the source questions remain published, lexical retrieval remains available, and failed vector jobs stay queued for retry; no source question is discarded.

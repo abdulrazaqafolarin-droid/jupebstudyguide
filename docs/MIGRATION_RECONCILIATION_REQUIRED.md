@@ -42,3 +42,9 @@ The JAMB SQL remains under `supabase/pending/` and has not been applied. Do not 
 5. CBT snapshots contain no answer keys. Only independently reviewed keys contribute to scoring; questions without keys remain ungraded.
 6. JAMB retrieval/embeddings are programme-isolated; legacy JUPEB retrieval defaults to JUPEB.
 7. Verify RLS, grants, storage policies, Edge Function deployment and Vercel preview before enabling `VITE_ENABLE_JAMB`.
+
+## Existing advisor baseline (checked before applying JAMB SQL)
+
+The Supabase security and performance advisors were run read-only against the live project before the pending JAMB migration was applied. They reported existing findings unrelated to JAMB: three RLS-enabled tables without policies (`login_security_counters`, `notification_action_tokens`, and `study_question_embedding_jobs`); one SECURITY DEFINER view (`current_leaderboard`); 27 functions with mutable search paths; and many existing SECURITY DEFINER RPC grants exposed to anon/authenticated roles. The performance advisor also reported existing unindexed foreign keys, RLS init-plan warnings, multiple permissive policies, a duplicate index and unused indexes.
+
+These findings are recorded as a pre-existing project baseline, not introduced by this JAMB branch. They must be triaged separately with the existing JUPEB application owner. The new JAMB policies use scalar subqueries for auth/session checks where appropriate to avoid per-row re-evaluation; do not weaken or bulk-rewrite unrelated production policies as part of this feature.

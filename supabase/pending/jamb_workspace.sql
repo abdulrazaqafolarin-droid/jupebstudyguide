@@ -790,13 +790,13 @@ TO service_role;
 DROP POLICY IF EXISTS exam_programs_read_authenticated ON public.exam_programs;
 CREATE POLICY exam_programs_read_authenticated
   ON public.exam_programs FOR SELECT TO authenticated
-  USING (is_active IS TRUE AND public.current_auth_session_is_active());
+  USING (is_active IS TRUE AND (SELECT public.current_auth_session_is_active()));
 
 DROP POLICY IF EXISTS exam_program_subjects_read_authenticated ON public.exam_program_subjects;
 CREATE POLICY exam_program_subjects_read_authenticated
   ON public.exam_program_subjects FOR SELECT TO authenticated
   USING (
-    public.current_auth_session_is_active()
+    (SELECT public.current_auth_session_is_active())
     AND EXISTS (
       SELECT 1 FROM public.exam_programs p
       WHERE p.id = exam_program_id AND p.is_active IS TRUE
@@ -810,11 +810,11 @@ CREATE POLICY exam_user_bookmarks_owner_all
   ON public.exam_user_bookmarks FOR ALL TO authenticated
   USING (
     user_id = (SELECT auth.uid())
-    AND public.current_auth_session_is_active()
+    AND (SELECT public.current_auth_session_is_active())
   )
   WITH CHECK (
     user_id = (SELECT auth.uid())
-    AND public.current_auth_session_is_active()
+    AND (SELECT public.current_auth_session_is_active())
     AND EXISTS (
       SELECT 1 FROM public.study_questions q
       WHERE q.id = public.exam_user_bookmarks.question_id
@@ -829,11 +829,11 @@ CREATE POLICY exam_user_progress_owner_all
   ON public.exam_user_progress FOR ALL TO authenticated
   USING (
     user_id = (SELECT auth.uid())
-    AND public.current_auth_session_is_active()
+    AND (SELECT public.current_auth_session_is_active())
   )
   WITH CHECK (
     user_id = (SELECT auth.uid())
-    AND public.current_auth_session_is_active()
+    AND (SELECT public.current_auth_session_is_active())
     AND EXISTS (
       SELECT 1 FROM public.study_questions q
       WHERE q.id = public.exam_user_progress.question_id
@@ -857,7 +857,7 @@ ON public.study_questions
 FOR SELECT
 TO authenticated
 USING (
-  public.current_auth_session_is_active()
+  (SELECT public.current_auth_session_is_active())
   AND EXISTS (
     SELECT 1 FROM public.profiles AS p
     WHERE p.user_id = (SELECT auth.uid())
@@ -883,7 +883,7 @@ CREATE POLICY study_questions_insert_policy
   ON public.study_questions FOR INSERT TO public
   WITH CHECK (
     coalesce(exam_program_id, 'jupeb') = 'jupeb'
-    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+    AND (SELECT auth.uid()) IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
   );
 
 DROP POLICY IF EXISTS study_questions_update_policy ON public.study_questions;
@@ -891,11 +891,11 @@ CREATE POLICY study_questions_update_policy
   ON public.study_questions FOR UPDATE TO authenticated
   USING (
     exam_program_id = 'jupeb'
-    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+    AND (SELECT auth.uid()) IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
   )
   WITH CHECK (
     exam_program_id = 'jupeb'
-    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+    AND (SELECT auth.uid()) IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
   );
 
 DROP POLICY IF EXISTS study_questions_delete_policy ON public.study_questions;
@@ -903,7 +903,7 @@ CREATE POLICY study_questions_delete_policy
   ON public.study_questions FOR DELETE TO public
   USING (
     exam_program_id = 'jupeb'
-    AND auth.uid() IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
+    AND (SELECT auth.uid()) IN (SELECT p.user_id FROM public.profiles p WHERE p.is_admin IS TRUE)
   );
 
 -- ---------------------------------------------------------------------------
@@ -936,7 +936,7 @@ FOR ALL
 TO authenticated
 USING (
   bucket_id = 'question-source-documents'
-  AND public.current_auth_session_is_active()
+  AND (SELECT public.current_auth_session_is_active())
   AND EXISTS (
     SELECT 1 FROM public.profiles p
     WHERE p.user_id = (SELECT auth.uid()) AND p.is_admin IS TRUE
@@ -944,7 +944,7 @@ USING (
 )
 WITH CHECK (
   bucket_id = 'question-source-documents'
-  AND public.current_auth_session_is_active()
+  AND (SELECT public.current_auth_session_is_active())
   AND EXISTS (
     SELECT 1 FROM public.profiles p
     WHERE p.user_id = (SELECT auth.uid()) AND p.is_admin IS TRUE

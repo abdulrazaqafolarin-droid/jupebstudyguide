@@ -202,6 +202,7 @@ Deno.serve(async (request: Request) => {
           .select("sequence", { count: "exact", head: true })
           .eq("attempt_id", existingAttempt.id);
         if (countError) return reply({ error: countError.message }, 500);
+        if ((count ?? 0) !== questionCount) return reply({ error: "This request is still preparing its question snapshots. Retry the same request key." }, 409);
         return reply({ attempt_id: existingAttempt.id, exam_year: existingAttempt.exam_year, config_version: existingAttempt.config_version, question_count: count ?? 0, idempotent_replay: true });
       }
 
@@ -255,7 +256,14 @@ Deno.serve(async (request: Request) => {
             .eq("exam_program_id", "jamb")
             .eq("idempotency_key", idempotencyKey)
             .maybeSingle();
-          if (racedAttempt) return reply({ attempt_id: racedAttempt.id, exam_year: racedAttempt.exam_year, config_version: racedAttempt.config_version, idempotent_replay: true });
+          if (racedAttempt) {
+            const { count: racedCount, error: racedCountError } = await supabase.from("exam_attempt_questions")
+              .select("sequence", { count: "exact", head: true })
+              .eq("attempt_id", racedAttempt.id);
+            if (racedCountError) return reply({ error: racedCountError.message }, 500);
+            if ((racedCount ?? 0) !== questionCount) return reply({ error: "This request is still preparing its question snapshots. Retry the same request key." }, 409);
+            return reply({ attempt_id: racedAttempt.id, exam_year: racedAttempt.exam_year, config_version: racedAttempt.config_version, question_count: racedCount ?? 0, idempotent_replay: true });
+          }
         }
         return reply({ error: insertError?.message ?? "Could not create attempt." }, 500);
       }

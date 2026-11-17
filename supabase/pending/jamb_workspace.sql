@@ -464,7 +464,7 @@ AS $function$
     q.options,
     coalesce(ak.correct_answer, q.correct_answer) AS correct_answer,
     coalesce(ak.explanation, q.explanation) AS explanation,
-    ts_rank_cd(q.search_document, websearch_to_tsquery('simple', query_text))::FLOAT AS similarity
+    ts_rank_cd(q.search_document_program, websearch_to_tsquery('simple', query_text))::FLOAT AS similarity
   FROM public.study_questions AS q
   LEFT JOIN public.study_question_answer_keys AS ak
     ON ak.question_id = q.id AND ak.review_status = 'approved'

@@ -289,6 +289,56 @@ Deno.serve(async (request: Request) => {
     const expiry = await markExpiredIfNeeded(supabase, attempt);
     const effectiveStatus = expiry.status;
 
+    if (action === "review") {
+      if (effectiveStatus !== "submitted" && effectiveStatus !== "expired") {
+        return reply({ error: "Answer review is available only after the attempt has been submitted." }, 409);
+      }
+      const [{ data: questions, error: questionError }, { data: answers, error: answerError }] = await Promise.all([
+        supabase.from("exam_attempt_questions")
+          .select("sequence,question_id,question_snapshot")
+          .eq("attempt_id", attemptId)
+          .order("sequence", { ascending: true }),
+        supabase.from("exam_attempt_answers")
+          .select("question_sequence,selected_option,marked_for_review")
+          .eq("attempt_id", attemptId),
+      ]);
+      if (questionError) throw new Error(questionError.message);
+      if (answerError) throw new Error(answerError.message);
+      const questionIds = (questions ?? []).map((item) => item.question_id);
+      const { data: answerKeys, error: keyError } = questionIds.length
+        ? await supabase.from("study_question_answer_keys")
+            .select("question_id,correct_answer,explanation")
+            .in("question_id", questionIds)
+            .eq("review_status", "approved")
+        : { data: [], error: null };
+      if (keyError) throw new Error(keyError.message);
+
+      const answerBySequence = new Map((answers ?? []).map((answer) => [answer.question_sequence, answer]));
+      const keyByQuestionId = new Map((answerKeys ?? []).map((key) => [key.question_id, key]));
+      const review = (questions ?? []).map((item) => {
+        const answer = answerBySequence.get(item.sequence);
+        const key = keyByQuestionId.get(item.question_id);
+        const correctAnswer = key?.correct_answer?.trim().toUpperCase() ?? null;
+        const selectedAnswer = answer?.selected_option?.trim().toUpperCase() ?? null;
+        return {
+          sequence: item.sequence,
+          question_id: item.question_id,
+          question_snapshot: item.question_snapshot,
+          selected_option: selectedAnswer,
+          marked_for_review: answer?.marked_for_review === true,
+          gradable: Boolean(correctAnswer),
+          correct_answer: correctAnswer,
+          is_correct: correctAnswer ? selectedAnswer === correctAnswer : null,
+          explanation: key?.explanation ?? null,
+        };
+      });
+      return reply({
+        attempt: { ...attempt, status: effectiveStatus },
+        review,
+        result: expiry.result,
+      });
+    }
+
     if (action === "get") {
       const [{ data: questions, error: questionError }, { data: answers, error: answerError }] = await Promise.all([
         supabase.from("exam_attempt_questions")

@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 
@@ -64,7 +64,7 @@ async function authenticate(request: Request) {
   return { supabase, user };
 }
 
-async function readOwnedAttempt(supabase: ReturnType<typeof createClient>, attemptId: string, userId: string) {
+async function readOwnedAttempt(supabase: SupabaseClient<any>, attemptId: string, userId: string) {
   const { data, error } = await supabase
     .from("exam_attempts")
     .select("id,user_id,exam_program_id,exam_year,config_version,subject_code,attempt_kind,status,duration_minutes,started_at,expires_at,submitted_at,score_summary")
@@ -154,7 +154,7 @@ async function scoreAndFinish(
       updated_at: now,
     })
     .eq("id", attemptId)
-    .eq("user_id", attempt.user_id)
+    .eq("user_id", String(attempt.user_id))
     .eq("status", "in_progress");
   if (updateError) throw new Error(updateError.message);
   return result;
@@ -165,7 +165,7 @@ Deno.serve(async (request: Request) => {
   if (request.method !== "POST") return reply({ error: "Method not allowed" }, 405);
 
   const auth = await authenticate(request);
-  if ("error" in auth) return auth.error;
+  if (!("supabase" in auth)) return auth.error;
   const { supabase, user } = auth;
 
   try {

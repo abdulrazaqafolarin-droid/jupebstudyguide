@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 
@@ -79,7 +79,7 @@ function normalizeItem(item: JsonObject, batch: {
   return { raw: item, normalized, errors: [...new Set(errors)] };
 }
 
-async function requireAdmin(supabase: ReturnType<typeof createClient>, userId: string): Promise<boolean> {
+async function requireAdmin(supabase: SupabaseClient<any>, userId: string): Promise<boolean> {
   const { data, error } = await supabase
     .from("profiles")
     .select("is_admin")

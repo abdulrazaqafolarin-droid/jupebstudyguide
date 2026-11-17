@@ -58,6 +58,7 @@ function notifyListeners() {
 }
 
 async function fetchAll() {
+  let supportsExamProgramFilter = true;
   // Concurrent route mounts share one live Supabase request. No question bank
   // is bundled in the APK or persisted as an offline/downloadable file.
   if (fetchInFlight) return fetchInFlight;
@@ -75,14 +76,27 @@ async function fetchAll() {
     let from = 0;
 
     while (true) {
-      const { data, error } = await supabase
-        .from("study_questions")
-        .select(columns)
-        .eq("hidden", false)
-        .order("id", { ascending: true })
-        .range(from, from + PAGE_SIZE - 1)
-        .abortSignal(AbortSignal.timeout(15_000));
+      const buildPageQuery = () => {
+        let query = supabase
+          .from("study_questions")
+          .select(columns);
+        // The programme column is added by the JAMB workspace migration.
+        // Until that migration is reconciled and applied, retain legacy JUPEB
+        // reads rather than breaking the existing app during a staged rollout.
+        if (supportsExamProgramFilter) query = query.eq("exam_program_id", "jupeb");
+        return query
+          .eq("hidden", false)
+          .order("id", { ascending: true })
+          .range(from, from + PAGE_SIZE - 1)
+          .abortSignal(AbortSignal.timeout(15_000));
+      };
 
+      let { data, error } = await buildPageQuery();
+      if (error && supportsExamProgramFilter &&
+          (error.code === "42703" || error.code === "PGRST204" || /exam_program_id.*(column|schema cache)/i.test(error.message))) {
+        supportsExamProgramFilter = false;
+        ({ data, error } = await buildPageQuery());
+      }
       if (error) throw error;
       if (!data || data.length === 0) break;
 

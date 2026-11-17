@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, MessageSquare, Trophy, User, Menu } from "lucide-react";
+import { Home, BookOpen, MessageSquare, Trophy, User, Menu, Clock3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import HamburgerMenu, { type HamburgerMenuHandle } from "@/components/HamburgerMenu";
 import { useChatUnreadCount } from "@/contexts/ChatUnreadContext";
@@ -17,13 +17,22 @@ export default function BottomNav() {
   const location = useLocation();
   const menuRef = useRef<HamburgerMenuHandle>(null);
   const { totalUnread, staleUnread } = useChatUnreadCount();
+  const jambEnabled = import.meta.env.VITE_ENABLE_JAMB === "true";
+  const isJamb = jambEnabled && (location.pathname === "/jamb" || location.pathname.startsWith("/jamb/"));
+  const visibleNavItems = useMemo(() => isJamb ? [
+    { path: "/jamb", label: "Home", icon: Home },
+    { path: "/jamb/past-questions", label: "Questions", icon: BookOpen },
+    { path: "/jamb/ai", label: "AI Tutor", icon: MessageSquare },
+    { path: "/jamb/cbt/setup", label: "CBT", icon: Clock3 },
+    { path: "/profile", label: "Profile", icon: User },
+  ] : navItems, [isJamb]);
 
   return (
     <>
       <HamburgerMenu ref={menuRef} />
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border pb-safe">
         <div className="flex items-center justify-around max-w-lg mx-auto px-2 py-1">
-          {navItems.map(({ path, label, icon: Icon }) => {
+          {visibleNavItems.map(({ path, label, icon: Icon }) => {
             const isActive =
               path === "/"
                 ? location.pathname === "/"

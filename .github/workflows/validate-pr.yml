@@ -40,6 +40,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test question-source importer
+        run: python -m unittest scripts.test_import_jamb_sources
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Test programme-aware question retrieval
+        run: deno test supabase/functions/_shared/question-retrieve.test.ts
+
+      - name: Type-check JAMB Edge Functions
+        run: deno check supabase/functions/_shared/exam-access.ts supabase/functions/question-import/index.ts supabase/functions/exam-attempts/index.ts supabase/functions/exam-practice/index.ts
+
       - name: Validate Firebase Android client
         run: |
           test -s android/app/google-services.json

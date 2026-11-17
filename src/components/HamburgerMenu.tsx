@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
   Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library, Lock, Award,
-  Users, TrendingUp, Compass, Sparkles
+  Users, TrendingUp, Compass, Sparkles, Clock3, GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
@@ -15,6 +15,7 @@ import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { ExamWorkspaceSwitcher } from "@/components/ExamWorkspaceSwitcher";
 
 const navLinks = [
   { path: "/", label: "Home", icon: Home },
@@ -43,6 +44,8 @@ interface HamburgerMenuProps {
 const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ streakData }, ref) => {
   const { user, signOut } = useAuth();
   const location = useLocation();
+  const jambEnabled = import.meta.env.VITE_ENABLE_JAMB === "true";
+  const isJambWorkspace = jambEnabled && (location.pathname === "/jamb" || location.pathname.startsWith("/jamb/"));
   const [open, setOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileName, setProfileName] = useState<string | null>(null);
@@ -84,9 +87,19 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     fetchProfile();
   }, [fetchProfile]);
 
-  const allLinks = isAdmin
-    ? [...navLinks, { path: "/admin", label: "Admin", icon: Shield }]
-    : navLinks;
+  const jambLinks = [
+    { path: "/jamb", label: "JAMB Home", icon: GraduationCap },
+    { path: "/jamb/past-questions", label: "JAMB Past Questions", icon: BookOpen },
+    { path: "/jamb/cbt/setup", label: "Timed CBT Practice", icon: Clock3 },
+    { path: "/jamb/syllabus", label: "JAMB Syllabus", icon: Library },
+    { path: "/jamb/ai", label: "JAMB AI Tutor", icon: Sparkles },
+    { path: "/profile", label: "Profile", icon: User },
+    { path: "/settings/profile", label: "Settings", icon: Lock },
+  ];
+
+  const allLinks = isJambWorkspace
+    ? (isAdmin ? [...jambLinks, { path: "/admin/jamb-questions", label: "JAMB Question Review", icon: Shield }] : jambLinks)
+    : (isAdmin ? [...navLinks, { path: "/admin", label: "Admin", icon: Shield }, ...(jambEnabled ? [{ path: "/jamb", label: "JAMB Workspace", icon: GraduationCap }] : [])] : [...navLinks, ...(jambEnabled ? [{ path: "/jamb", label: "JAMB Workspace", icon: GraduationCap }] : [])]);
 
   const close = () => setOpen(false);
 
@@ -174,6 +187,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                 </div>
 
                 <div className="flex-1 py-2 overflow-y-auto overscroll-contain">
+                  {jambEnabled && <div className="px-3 pb-2"><ExamWorkspaceSwitcher /></div>}
                   {allLinks.map(({ path, label, icon: Icon }) => {
                     const isActive =
                       path === "/"

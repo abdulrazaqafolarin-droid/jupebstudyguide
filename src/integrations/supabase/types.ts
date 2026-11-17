@@ -897,55 +897,139 @@ export type Database = {
           },
         ]
       }
+      exam_user_bookmarks: {
+        Row: {
+          created_at: string
+          exam_program_id: string
+          question_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exam_program_id: string
+          question_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exam_program_id?: string
+          question_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      exam_user_progress: {
+        Row: {
+          exam_program_id: string
+          last_answered_at: string | null
+          last_selected_option: string | null
+          last_viewed_at: string
+          question_id: string
+          user_id: string
+          viewed_count: number
+        }
+        Insert: {
+          exam_program_id: string
+          last_answered_at?: string | null
+          last_selected_option?: string | null
+          last_viewed_at?: string
+          question_id: string
+          user_id: string
+          viewed_count?: number
+        }
+        Update: {
+          exam_program_id?: string
+          last_answered_at?: string | null
+          last_selected_option?: string | null
+          last_viewed_at?: string
+          question_id?: string
+          user_id?: string
+          viewed_count?: number
+        }
+        Relationships: []
+      }
       study_questions: {
         Row: {
           category: string
           correct_answer: string | null
+          content_hash: string | null
           course: string | null
           created_at: string | null
           difficulty: string | null
+          exam_program_id: string
           explanation: string | null
           hidden: boolean
           id: string
           image_position: string | null
           image_url: string | null
+          image_urls: Json
           options: Json | null
           question: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           sort_order: number | null
+          source_batch_id: string | null
+          source_document: string | null
+          source_page: number | null
+          source_question_number: string | null
+          source_ref: string | null
           subject: string
           year: number
         }
         Insert: {
           category: string
           correct_answer?: string | null
+          content_hash?: string | null
           course?: string | null
           created_at?: string | null
           difficulty?: string | null
+          exam_program_id?: string
           explanation?: string | null
           hidden?: boolean
           id: string
           image_position?: string | null
           image_url?: string | null
+          image_urls?: Json
           options?: Json | null
           question?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           sort_order?: number | null
+          source_batch_id?: string | null
+          source_document?: string | null
+          source_page?: number | null
+          source_question_number?: string | null
+          source_ref?: string | null
           subject: string
           year: number
         }
         Update: {
           category?: string
           correct_answer?: string | null
+          content_hash?: string | null
           course?: string | null
           created_at?: string | null
           difficulty?: string | null
+          exam_program_id?: string
           explanation?: string | null
           hidden?: boolean
           id?: string
           image_position?: string | null
           image_url?: string | null
+          image_urls?: Json
           options?: Json | null
           question?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           sort_order?: number | null
+          source_batch_id?: string | null
+          source_document?: string | null
+          source_page?: number | null
+          source_question_number?: string | null
+          source_ref?: string | null
           subject?: string
           year?: number
         }

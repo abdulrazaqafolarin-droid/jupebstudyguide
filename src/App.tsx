@@ -23,6 +23,7 @@ import AppUpdatePrompt from "./components/AppUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
+import { ExamProgramProvider, useExamProgram } from "@/contexts/ExamProgramContext";
 
 type WindowAppearancePlugin = {
   setSystemBarSurface(options: { color: string }): Promise<void>;
@@ -52,6 +53,15 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const SyllabusPage = lazy(() => import("./pages/SyllabusPage"));
 const StudyChatPage = lazy(() => import("./pages/StudyChatPage"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const JambHomePage = lazy(() => import("./pages/jamb/JambHomePage"));
+const JambPastQuestionsPage = lazy(() => import("./pages/jamb/JambPastQuestionsPage"));
+const JambCbtSetupPage = lazy(() => import("./pages/jamb/JambCbtSetupPage"));
+const JambCbtPage = lazy(() => import("./pages/jamb/JambCbtPage"));
+const JambAITutorPage = lazy(() => import("./pages/jamb/JambAITutorPage"));
+const JambSyllabusPage = lazy(() => import("./pages/jamb/JambSyllabusPage"));
+const JambAdminQuestionPage = lazy(() => import("./pages/admin/JambQuestionBankAdminPage"));
+
+const JAMB_ENABLED = import.meta.env.VITE_ENABLE_JAMB === "true";
 
 
 const queryClient = new QueryClient();
@@ -213,6 +223,18 @@ function AnimatedRoutes() {
             </ProtectedRoute>
           } 
         />
+        {JAMB_ENABLED && (
+          <>
+            <Route path="/jamb" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambHomePage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/past-questions" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambPastQuestionsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/practice/:subject" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambPastQuestionsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/cbt/setup" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambCbtSetupPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/cbt/:attemptId" element={<ProtectedRoute><ErrorBoundary><JambCbtPage /></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/syllabus" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambSyllabusPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/ai" element={<ProtectedRoute><ErrorBoundary><ProtectedChatLayout><JambAITutorPage /></ProtectedChatLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/admin/jamb-questions" element={<AdminRoute><ErrorBoundary><ProtectedLayout><JambAdminQuestionPage /></ProtectedLayout></ErrorBoundary></AdminRoute>} />
+          </>
+        )}
         <Route 
           path="/leaderboard" 
           element={
@@ -335,6 +357,18 @@ function PageTransition({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ProgramAwareFloatingTutor() {
+  const { isJambWorkspace } = useExamProgram();
+  if (isJambWorkspace) return null;
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={null}>
+        <FloatingAITutor />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
 function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -396,12 +430,10 @@ const App = () => {
                 <NotificationsProvider>
                   <NativeNotificationBridge />
                   <NativeAuthDeepLinkBridge />
-                  <AnimatedRoutes />
-                  <ErrorBoundary>
-                  <Suspense fallback={null}>
-                    <FloatingAITutor />
-                  </Suspense>
-                  </ErrorBoundary>
+                  <ExamProgramProvider>
+                    <AnimatedRoutes />
+                    <ProgramAwareFloatingTutor />
+                  </ExamProgramProvider>
                 </NotificationsProvider>
               </PresenceProvider>
             </BrowserRouter>

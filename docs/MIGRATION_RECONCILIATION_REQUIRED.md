@@ -9,7 +9,7 @@
 
 ## Read-only reconciliation performed 17 November 2026
 
-The connected project's remote migration ledger includes five migrations not present in this repository's `supabase/migrations/` directory:
+The connected project's remote migration ledger contains five migrations that were missing from the local `supabase/migrations/` directory at the start of this implementation:
 
 | Version | Remote migration name |
 |---|---|
@@ -19,7 +19,7 @@ The connected project's remote migration ledger includes five migrations not pre
 | `20261111234530` | `single_device_subscriptions_and_question_lockdown` |
 | `20261112011529` | `restore_one_day_trial_and_fix_social_access` |
 
-These versions exist in the live migration ledger, but their SQL files were not found in this repository snapshot. The local migration directory contains 80 SQL files and ends at `20261106235900_ai_chat_question_references.sql`. Local and remote histories must not be treated as interchangeable.
+The SQL bodies were recovered read-only from the live `supabase_migrations.schema_migrations.statements` arrays and restored verbatim as the five timestamped migration files under `supabase/migrations/`. The recovered files contain the original statement text stored by Supabase. The migration directory now contains 85 files and ends at `20261112011529_restore_one_day_trial_and_fix_social_access.sql`. The remote migration ledger and repository source are now reconciled through this version; no migration history rows were changed to achieve that reconciliation.
 
 The live `public.study_questions` table was inspected directly. Its current columns include the original JUPEB question fields, `search_document` (tsvector), and `image_urls` (jsonb). The live `public.study_question_embeddings` table stores `question_id`, vector `embedding`, `updated_at`, `source_updated_at` and `content_hash`. The JAMB candidate adds a separate programme-aware search document and does not replace the existing live `search_document` column or index.
 
@@ -27,11 +27,11 @@ The live `study_questions_select_policy` was confirmed to require an active auth
 
 The candidate retains the legacy direct admin editor for JUPEB but explicitly prevents it from inserting/updating/deleting JAMB rows. JAMB writes use private source staging, human review and transactional publication. The new programme catalogue and source-document storage policies check the active auth session.
 
-## Why this remains a release gate
+## JAMB migration status
 
-This catalog comparison confirms the current live shape, but it does **not** reconstruct the SQL bodies of the five remote-only migrations above. Recover those files from deployment history or another authoritative source and check them into the repository before CLI replay, database reset or schema push is considered safe.
+The five remote-only migration sources are now restored, so the missing-history blocker is closed. The JAMB SQL remains under `supabase/pending/` and has **not** been applied yet. It remains a separate additive migration against the reconciled live schema. Apply it only after a non-destructive SQL preflight and final policy/function review; then deploy the programme-aware Edge Functions and run the post-migration checks plus Supabase security/performance advisors.
 
-The JAMB SQL remains under `supabase/pending/` and has not been applied. Do not use `db reset`, `db push` or destructive schema synchronization to force the histories together. After recovering those files and reviewing the pending migration, apply only the additive JAMB migration to this existing project, then run the post-migration checks and Supabase security/performance advisors.
+Do not run `db reset` or use destructive schema synchronization. There is no need to change or reinsert any existing migration history row. The recovered five files describe already-applied migrations and are repository history restoration only; do not execute them again on the live project.
 
 ## Required post-migration verification
 

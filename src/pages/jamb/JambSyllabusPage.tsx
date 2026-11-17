@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, BookOpenCheck, ShieldAlert } from "lucide-react";
+import { ArrowLeft, BookOpenCheck, ExternalLink, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function JambSyllabusPage() {
@@ -21,6 +21,17 @@ export default function JambSyllabusPage() {
               </p>
             </div>
           </div>
+        </section>
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <div className="flex items-center gap-3"><BookOpenCheck className="h-5 w-5 text-primary" /><h2 className="font-semibold">Official JAMB syllabus source</h2></div>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Open the Joint Admissions and Matriculation Board’s Integrated Brochure and Syllabus System (IBASS) to view the current subject PDFs directly. Rutex has not yet imported and versioned those documents into topic-by-topic progress tracking.
+          </p>
+          <Button asChild variant="outline" className="mt-4">
+            <a href="https://ibass.jamb.gov.ng/" target="_blank" rel="noreferrer">
+              <ExternalLink className="mr-2 h-4 w-4" />Open official IBASS
+            </a>
+          </Button>
         </section>
         <section className="rounded-2xl border border-border bg-card p-5">
           <div className="flex items-center gap-3"><BookOpenCheck className="h-5 w-5 text-primary" /><h2 className="font-semibold">Continue preparing</h2></div>

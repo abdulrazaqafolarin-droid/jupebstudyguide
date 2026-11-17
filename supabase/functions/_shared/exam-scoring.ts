@@ -1,4 +1,6 @@
 export interface ExamScoreSummary {
+  /** Makes the validated score shape compatible with Supabase JSON and JSON records. */
+  [key: string]: number | null;
   score: number | null;
   correct: number;
   wrong: number;

@@ -1,6 +1,6 @@
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/ai.ts";
-import type { Database } from "../../../src/integrations/supabase/types.ts";
+import type { Database, Json } from "../../../src/integrations/supabase/types.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 
 type AdminSupabase = SupabaseClient<Database>;
@@ -8,7 +8,7 @@ type AdminSupabase = SupabaseClient<Database>;
 const SUBJECTS = new Set(["physics", "chemistry", "biology"]);
 const MAX_ITEMS_PER_REQUEST = 50;
 
-type JsonObject = Record<string, unknown>;
+type JsonObject = { [key: string]: Json | undefined };
 
 function respond(body: JsonObject, status = 200) {
   return new Response(JSON.stringify(body), {

@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import type { Database } from "../_shared/rutex-database.types.ts";
 import { scoreAttempt } from "../_shared/exam-scoring.ts";
-import { CORS_HEADERS } from "../_shared/ai.ts";
+import { CORS_HEADERS } from "../_shared/jamb-http.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 
 type JsonRecord = Record<string, unknown>;

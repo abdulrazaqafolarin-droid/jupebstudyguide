@@ -476,7 +476,7 @@ AS $function$
     AND (filter_subject IS NULL OR q.subject = filter_subject)
     AND (filter_year IS NULL OR q.year = filter_year)
     AND (filter_category IS NULL OR q.category = filter_category)
-  ORDER BY ts_rank_cd(q.search_document, websearch_to_tsquery('simple', query_text)) DESC,
+  ORDER BY ts_rank_cd(q.search_document_program, websearch_to_tsquery('simple', query_text)) DESC,
            q.year DESC,
            q.id
   LIMIT LEAST(GREATEST(COALESCE(match_count, 8), 1), 30);

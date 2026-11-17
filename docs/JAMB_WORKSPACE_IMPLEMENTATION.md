@@ -44,7 +44,7 @@ Before application:
 4. Stage the committed source packs privately, review every flagged item, and publish only questions with verified provenance and independently checked answer keys.
 5. Only after the migration, Edge Functions and content review pass should an operator set `VITE_ENABLE_JAMB=true`.
 
-The current feature flag is deliberately off by default. No Supabase migration, edge-function deployment, Vercel deployment or production content import is performed by this branch.
+The current feature flag is deliberately off by default. The Vercel Git integration may create an automatic Preview deployment for this pull request; it is not a production release. No Supabase migration, Edge Function deployment, production deployment or question-content import is performed by this branch.
 
 ## Admin review rules
 

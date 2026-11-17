@@ -144,7 +144,7 @@ export default function JambQuestionBankAdminPage() {
     setStaging(true);
     try {
       const parsed = JSON.parse(await jsonFile.text()) as ImportPackage;
-      if (parsed.schema_version !== 1 || parsed.exam_program_id !== "jamb" || !JAMB_SUBJECTS.includes(parsed.subject as Subject) || !Array.isArray(parsed.items)) {
+      if (parsed.schema_version !== 1 || parsed.exam_program_id !== "jamb" || !JAMB_SUBJECTS.includes(parsed.subject as Exclude<Subject, "math">) || !Array.isArray(parsed.items)) {
         throw new Error("This is not a valid Rutex JAMB import package.");
       }
       const sourceHash = await sha256(sourceFile);

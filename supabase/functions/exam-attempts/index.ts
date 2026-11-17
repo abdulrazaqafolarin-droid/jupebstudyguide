@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 
@@ -49,7 +49,10 @@ function safeSnapshot(row: Record<string, unknown>) {
   };
 }
 
-async function authenticate(request: Request) {
+type AuthenticatedContext = { supabase: any; user: { id: string } };
+type AuthenticationResult = AuthenticatedContext | { error: Response };
+
+async function authenticate(request: Request): Promise<AuthenticationResult> {
   const authorization = request.headers.get("Authorization") ?? "";
   if (!authorization.startsWith("Bearer ")) return { error: reply({ error: "Authentication required" }, 401) };
   const url = Deno.env.get("SUPABASE_URL");
@@ -64,7 +67,7 @@ async function authenticate(request: Request) {
   return { supabase, user };
 }
 
-async function readOwnedAttempt(supabase: SupabaseClient<any>, attemptId: string, userId: string) {
+async function readOwnedAttempt(supabase: any, attemptId: string, userId: string) {
   const { data, error } = await supabase
     .from("exam_attempts")
     .select("id,user_id,exam_program_id,exam_year,config_version,subject_code,attempt_kind,status,duration_minutes,started_at,expires_at,submitted_at,score_summary")
@@ -165,7 +168,7 @@ Deno.serve(async (request: Request) => {
   if (request.method !== "POST") return reply({ error: "Method not allowed" }, 405);
 
   const auth = await authenticate(request);
-  if (!("supabase" in auth)) return auth.error;
+  if ("error" in auth) return auth.error;
   const { supabase, user } = auth;
 
   try {

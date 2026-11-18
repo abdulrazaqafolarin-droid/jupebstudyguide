@@ -117,8 +117,7 @@ describe("parseReleaseInfo", () => {
       .toMatchObject({ packageName: "com.rutex.jupebmaster", versionCode: 212801 });
     expect(parseReleaseInfo({ ...release, packageName: "com.jupeb.master" }, "com.rutex.jupebmaster"))
       .toBeNull();
-    const { packageName: _packageName, ...missingPackage } = release;
-    expect(parseReleaseInfo(missingPackage, "com.rutex.jupebmaster")).toBeNull();
+    expect(parseReleaseInfo({ ...release, packageName: undefined }, "com.rutex.jupebmaster")).toBeNull();
   });
 
   it("preserves the explicit one-time reinstall flag", () => {

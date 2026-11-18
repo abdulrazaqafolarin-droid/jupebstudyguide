@@ -37,7 +37,7 @@ export interface ActiveStudyTopic {
 export function useStudyChat(
   examProgramId: ExamProgramId = 'jupeb',
   customSystemPrompt?: string,
-  extraSystemContext = '',
+  extraSystemContext: string | ((chat: StudyChatMeta | null) => string) = '',
 ) {
   const { user, loading: authLoading } = useAuth();
   const [chats, setChats] = useState<StudyChatMeta[]>([]);
@@ -191,11 +191,17 @@ export function useStudyChat(
   }, [adoptChat]);
 
   /** Sidebar "+ New chat": a topic-less thread (generic tutor prompt). */
-  const newChat = useCallback(async (subject?: string): Promise<string | null> => {
+  const newChat = useCallback(async (subject?: string, topicId?: string): Promise<string | null> => {
     if (!user) return null;
     const { data, error } = await supabase
       .from('ai_chats')
-      .insert({ user_id: user.id, exam_program_id: examProgramId, title: 'New Chat', subject: subject ?? null })
+      .insert({
+        user_id: user.id,
+        exam_program_id: examProgramId,
+        title: 'New Chat',
+        subject: subject ?? null,
+        topic_id: topicId ?? null,
+      })
       .select(CHAT_SELECT_COLS)
       .single();
     if (error || !data) {
@@ -327,13 +333,16 @@ export function useStudyChat(
     if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
 
     const topic = activeTopicRef.current;
+    const activeChat = chatsRef.current.find((chat) => chat.id === chatId) ?? null;
+    const chatExtraSystemContext = typeof extraSystemContext === 'function'
+      ? extraSystemContext(activeChat)
+      : extraSystemContext;
     const systemPrompt = topic && examProgramId === 'jupeb'
       ? buildTopicSystemPrompt(topic.topic, topic.subject, topic.subtopic)
       : examProgramId === 'jamb'
-        ? (customSystemPrompt ?? TUTOR_SYSTEM_PROMPT) + extraSystemContext
-        : (customSystemPrompt ?? TUTOR_SYSTEM_PROMPT) + '\n\n' + GENERAL_CHAT_PROMPT + getSyllabusContext() + extraSystemContext;
-    const subject = topic?.subject
-      ?? (chatsRef.current.find((c) => c.id === chatId)?.subject ?? undefined);
+        ? (customSystemPrompt ?? TUTOR_SYSTEM_PROMPT) + chatExtraSystemContext
+        : (customSystemPrompt ?? TUTOR_SYSTEM_PROMPT) + '\n\n' + GENERAL_CHAT_PROMPT + getSyllabusContext() + chatExtraSystemContext;
+    const subject = topic?.subject ?? (activeChat?.subject ?? undefined);
 
     let acc = '';
     let firstToken = true;

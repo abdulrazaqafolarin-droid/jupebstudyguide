@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft, BookOpen, Bot, Menu, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Composer } from "@/components/study-chat/Composer";
 import { getJambPublishedQuestionById } from "@/lib/jamb-question-service";
 import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
 import { getJambSyllabusSubject, getJambSyllabusTopic, JAMB_SYLLABUS_REVIEW_NOTICE } from "@/lib/jamb-syllabus";
+import type { StudyChatMeta } from "@/lib/study-chat";
 import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
 import { toast } from "sonner";
 
@@ -27,7 +28,7 @@ export default function JambAITutorPage() {
   const syllabusSubject = requestedSubject ? getJambSyllabusSubject(requestedSubject) : undefined;
   const requestedTopicId = searchParams.get("topic");
   const syllabusTopic = requestedSubject && requestedTopicId
-    ? getJambSyllabusTopic(requestedSubject as import("@/lib/jamb-syllabus").JambSyllabusSubjectId, requestedTopicId)
+    ? getJambSyllabusTopic(requestedSubject, requestedTopicId)
     : undefined;
   const questionId = searchParams.get("questionId");
   const tutorSubjectLabel = syllabusSubject?.label ?? (subject ? JAMB_SUBJECT_INFO[subject].label : undefined);
@@ -41,16 +42,20 @@ export default function JambAITutorPage() {
   const [showTextbooks, setShowTextbooks] = useState(false);
   const openedInitialChatRef = useRef(false);
 
-  const extraSystemContext = useMemo(() => {
+  const extraSystemContext = useCallback((chat: StudyChatMeta | null) => {
     const parts: string[] = [];
     if (questionContext) {
       parts.push(`The student opened this JAMB tutor from a published question. Use it as current context only when relevant. Do not infer an official answer key from it.\n${questionContext}`);
     }
-    if (syllabusTopic && syllabusSubject) {
-      parts.push(`The student selected the syllabus topic "${syllabusTopic.title}" in ${syllabusSubject.label}. Use these uploaded-source outline points as a study scope: ${syllabusTopic.outline.join("; ")}. Source pages: ${syllabusTopic.sourcePages.join(", ")}. IMPORTANT: ${JAMB_SYLLABUS_REVIEW_NOTICE} Explain the material helpfully, but do not claim this source copy is the verified current official syllabus.`);
+    const contextSubject = chat?.subject ? getJambSyllabusSubject(chat.subject) : null;
+    const contextTopic = chat?.topic_id && contextSubject
+      ? getJambSyllabusTopic(contextSubject.id, chat.topic_id)
+      : undefined;
+    if (contextTopic && contextSubject) {
+      parts.push(`The student selected the syllabus topic "${contextTopic.title}" in ${contextSubject.label}. Use these uploaded-source outline points as a study scope: ${contextTopic.outline.join("; ")}. Source pages: ${contextTopic.sourcePages.join(", ")}. IMPORTANT: ${JAMB_SYLLABUS_REVIEW_NOTICE} Explain the material helpfully, but do not claim this source copy is the verified current official syllabus.`);
     }
     return parts.length ? "\n\n" + parts.join("\n\n") : "";
-  }, [questionContext, syllabusTopic, syllabusSubject]);
+  }, [questionContext]);
 
   const {
     chats,
@@ -103,14 +108,14 @@ export default function JambAITutorPage() {
   }, [listLoading, activeChatId, chats, switchChat]);
 
   const createChat = useCallback(async () => {
-    const id = await newChat(tutorSubjectValue);
+    const id = await newChat(tutorSubjectValue, syllabusTopic?.id);
     if (id) {
       setInput("");
       setEditingIndex(null);
       setDrawerOpen(false);
     }
     return id;
-  }, [newChat, tutorSubjectValue]);
+  }, [newChat, tutorSubjectValue, syllabusTopic?.id]);
 
   const handleSend = useCallback(async (
     attachment: { base64: string; mimeType: string; name: string } | null,
@@ -150,6 +155,16 @@ export default function JambAITutorPage() {
     setEditingIndex(null);
     setInput("");
   }, [switchChat]);
+
+  const activeChatMeta = chats.find((chat) => chat.id === activeChatId) ?? null;
+  const activeChatSubject = activeChatMeta?.subject
+    ? getJambSyllabusSubject(activeChatMeta.subject)
+    : undefined;
+  const activeChatTopic = activeChatMeta?.topic_id && activeChatSubject
+    ? getJambSyllabusTopic(activeChatSubject.id, activeChatMeta.topic_id)
+    : undefined;
+  const visibleTutorSubject = activeChatSubject ?? syllabusSubject;
+  const visibleTutorTopic = activeChatTopic ?? (activeChatMeta ? undefined : syllabusTopic);
 
   const sidebar = (
     <HistorySidebar
@@ -213,7 +228,7 @@ export default function JambAITutorPage() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-sm font-semibold">
-                {tutorSubjectLabel ? `${tutorSubjectLabel} Tutor` : "JAMB AI Study Tutor"}
+                {visibleTutorSubject?.label ? `${visibleTutorSubject.label} Tutor` : tutorSubjectLabel ? `${tutorSubjectLabel} Tutor` : "JAMB AI Study Tutor"}
               </h1>
               <p className="truncate text-[10px] text-muted-foreground">{syllabusTopic ? syllabusTopic.title + " · " : ""}JAMB · Saved conversation</p>
             </div>
@@ -280,7 +295,7 @@ export default function JambAITutorPage() {
                 onStarter={(prompt) => void handleStarter(prompt)}
                 starterPrompts={JAMB_TUTOR_STARTERS}
                 emptyTitle="JAMB AI Study Tutor"
-                emptyDescription={syllabusTopic ? `Study ${syllabusTopic.title} with the JAMB tutor. This outline comes from an uploaded source copy pending current IBASS verification.` : "Ask about Physics, Chemistry, Biology, Mathematics or Use of English. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."}
+                emptyDescription={visibleTutorTopic ? `Study ${visibleTutorTopic.title} with the JAMB tutor. This outline comes from an uploaded source copy pending current IBASS verification.` : "Ask about Physics, Chemistry, Biology, Mathematics or Use of English. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."}
               />
             ) : chats.length > 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">

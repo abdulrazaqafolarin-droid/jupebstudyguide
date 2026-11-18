@@ -28,7 +28,7 @@ export function useJambPracticeProgress() {
       const userId = user.id;
       const { data, error } = await supabase
         .from("exam_user_progress")
-        .select("question_id,last_selected_option,last_answered_at")
+        .select("question_id,last_selected_option,last_answered_at,viewed_count")
         .eq("user_id", userId)
         .eq("exam_program_id", "jamb");
       if (!active) return;
@@ -52,6 +52,7 @@ export function useJambPracticeProgress() {
 
       if (pendingUpserts.length > 0) {
         const now = new Date().toISOString();
+        const viewedCounts = new Map((data ?? []).map((row) => [row.question_id, row.viewed_count ?? 1]));
         const { error: syncError } = await supabase.from("exam_user_progress").upsert(
           pendingUpserts.map(([questionId, answer]) => {
             const savedAt = new Date(answer.savedAt || Date.now()).toISOString();

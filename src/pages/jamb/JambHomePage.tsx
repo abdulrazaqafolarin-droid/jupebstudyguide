@@ -258,6 +258,9 @@ function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; 
       <p className="border-t border-border pt-3 text-center text-[10px] text-muted-foreground">
         These milestones use JAMB activity only and do not affect JUPEB achievements.
       </p>
+      <Link to="/jamb/achievements" className="flex items-center justify-center gap-1 text-xs font-semibold text-primary hover:underline">
+        View all JAMB achievements <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
     </div>
   );
 }

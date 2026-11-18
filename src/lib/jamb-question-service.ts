@@ -139,6 +139,43 @@ export async function getJambSubjectSummaries(): Promise<JambSubjectSummary[]> {
   return results;
 }
 
+export interface JambQuestionMetadata {
+  id: string;
+  subject: Exclude<Subject, "math">;
+  year: number;
+}
+
+/** Read only public metadata needed to group a learner's JAMB activity. */
+export async function getJambQuestionMetadataByIds(questionIds: string[]): Promise<JambQuestionMetadata[]> {
+  const uniqueIds = [...new Set(questionIds.filter((id) => typeof id === "string" && id.length > 0))];
+  if (uniqueIds.length === 0) return [];
+
+  const chunks: string[][] = [];
+  for (let index = 0; index < uniqueIds.length; index += 100) {
+    chunks.push(uniqueIds.slice(index, index + 100));
+  }
+
+  const rows = await Promise.all(chunks.map(async (ids) => {
+    const { data, error } = await supabase
+      .from("study_questions")
+      .select("id,subject,year")
+      .eq("exam_program_id", "jamb")
+      .eq("review_status", "published")
+      .eq("hidden", false)
+      .in("id", ids);
+
+    if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
+    if (error) throw error;
+    return (data ?? []).map((row) => ({
+      id: row.id,
+      subject: row.subject as Exclude<Subject, "math">,
+      year: row.year,
+    }));
+  }));
+
+  return rows.flat();
+}
+
 export async function getJambQuestionYears(
   subject: Exclude<Subject, "math">,
 ): Promise<number[]> {

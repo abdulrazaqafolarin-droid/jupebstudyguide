@@ -36,3 +36,28 @@ A signed-in student/admin mobile walkthrough is still outstanding. A successful 
 The JAMB subject bank still contains zero published question rows and zero import batches. The committed Physics, Chemistry and Biology packs parse to candidate source material, not independently approved questions. Before staging, an authorised administrator must attest to source-use rights; candidates then require human checks for year, wording, option order, duplicates and figures. Missing answer keys must not be invented.
 
 The JAMB syllabus is not marked verified, and a complete official UTME mock remains disabled until the compulsory Use of English content, official exam configuration and source review are complete. Matching the JUPEB UI does not make unverified JAMB content official or gradable.
+
+
+## Route and feature parity audit — 18 November 2026
+
+| JUPEB area | JAMB equivalent | Assessment |
+| --- | --- | --- |
+| Home dashboard | `/jamb` | Visual and navigation parity. The JAMB daily card currently starts a timed drill; it is not yet a tracked guided mission with mission history. |
+| Past questions and saved questions | `/jamb/past-questions` | Equivalent staged practice flow with JAMB-only questions, saved answers and bookmarks. Availability depends on approved JAMB records. |
+| Syllabus | `/jamb/syllabus` | UI parity only. Official topic catalogue and topic tracking remain unavailable until the JAMB syllabus is verified and published. |
+| Study Chat / AI tutor | `/jamb/ai` | Shared conversation UI with JAMB prompt, JAMB history partition and no JUPEB syllabus/RAG inheritance. |
+| Timed practice | `/jamb/cbt/setup` and `/jamb/cbt/:attemptId` | JAMB server-authoritative practice flow. This is not represented as the full official UTME mock. |
+| Study stats | `/jamb/stats` | Dedicated JAMB-only analytics: saved-answer activity, JAMB question coverage, subject distribution, bookmarks, days studied, streaks and recent activity. |
+| Achievements | `/jamb/achievements` | Dedicated JAMB-only milestones for practice, consistency and bookmarks. These are Rutex milestones, not official JAMB awards. |
+| Chat, friends, leaderboard, discover | Shared platform routes | Intentionally shared social/community features, not exam-content pages. |
+| Profile, profile settings, security, notifications, app download | Shared platform routes/components | Intentionally shared account and app services. |
+| Admin question operations | `/admin/jamb-questions` | JAMB-specific review/import path; platform admin and activation-code pages remain shared administration. |
+
+### Remaining non-parity items and their blockers
+
+- **Guided daily mission and mission history:** not fully implemented as a JAMB workflow. JUPEB's equivalent depends on a verified topic calendar and topic-linked questions. The JAMB dashboard's current timed-practice shortcut is deliberately not described as a mission. A true version must be driven by reviewed JAMB questions and a verified JAMB topic plan.
+- **Official syllabus and topic tracking:** blocked on obtaining, versioning and verifying the applicable JAMB syllabus. No JUPEB topics are substituted.
+- **Accuracy, mastery and score-derived awards:** must remain unavailable or explicitly ungraded until approved JAMB answer keys and scored attempt records are available. Saved option selections are not evidence of correctness.
+- **Full official UTME mock:** remains disabled pending compulsory Use of English content, verified current exam configuration and sufficient approved question coverage.
+
+The following pages remain intentionally shared because they are account or platform services rather than exam-specific learning data: chat, friends, leaderboard, discover, profile, profile settings, security settings, notifications and app download. Shared visibility does not grant these routes access to JUPEB-only question or progress data.

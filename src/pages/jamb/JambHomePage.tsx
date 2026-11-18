@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import StreakDisplay from "@/components/StreakDisplay";
+import { LeaderboardPanel } from "@/components/LeaderboardPanel";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import {
@@ -344,6 +345,11 @@ export default function JambHomePage() {
             hasStudiedToday={progressReady && jambActivity.hasStudiedToday}
           />
           <JambMilestonesPanel answeredCount={totalAnswered} ready={progressReady} />
+        </section>
+
+        {/* Shared community leaderboard — this is a platform-wide feature, not exam progress. */}
+        <section className="mb-12 animate-in-up stagger-3">
+          <LeaderboardPanel />
         </section>
 
         {/* The two large action panels mirror the JUPEB dashboard's activity row. */}

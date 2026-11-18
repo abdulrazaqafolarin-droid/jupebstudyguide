@@ -181,7 +181,8 @@ export function useJambBookmarks() {
         return;
       }
       if (exists) {
-        setDeletedBookmarkIds((previous) => previous.filter((id) => id !== questionId));
+        deletedBookmarkIdsRef.current = deletedBookmarkIdsRef.current.filter((id) => id !== questionId);
+        setDeletedBookmarkIds(deletedBookmarkIdsRef.current);
       }
     });
   }, [isReady, isDeletedReady, setBookmarks, setDeletedBookmarkIds, user?.id]);

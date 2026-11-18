@@ -150,6 +150,7 @@ export default function JambAITutorPage() {
   const sidebar = (
     <HistorySidebar
       heading="JAMB Tutor History"
+      emptyMessage="Start a new chat to save your JAMB study conversations."
       chats={chats}
       activeChatId={activeChatId}
       loading={listLoading}

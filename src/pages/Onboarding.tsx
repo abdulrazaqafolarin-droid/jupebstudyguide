@@ -216,7 +216,7 @@ export default function Onboarding() {
         break;
       }
     }
-  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, schoolName, seatNumber, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal]);
+  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, jambSubjects, jambExamTarget, jambDailyGoal, schoolName, seatNumber, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal]);
 
   const handleSkip = useCallback(async () => {
     // In a replay the student already finalized once — skipping must not

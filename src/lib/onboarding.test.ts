@@ -95,6 +95,32 @@ describe('mergeOnboardingData', () => {
   });
 });
 
+describe('JAMB onboarding preference isolation', () => {
+  it('saves JAMB preferences without overwriting JUPEB subject-plan fields', () => {
+    const previous = {
+      subjects: ['physics', 'chemistry', 'biology'],
+      examTarget: 'next-session',
+      dailyGoalMinutes: 60,
+    };
+    const next = mergeOnboardingData(previous, 'jamb-study', {
+      jambStudy: {
+        subjects: ['physics', 'biology'],
+        examTarget: 'early',
+        dailyGoalMinutes: 15,
+      },
+    });
+    expect(next.subjects).toEqual(previous.subjects);
+    expect(next.examTarget).toBe('next-session');
+    expect(next.dailyGoalMinutes).toBe(60);
+    expect(next.jambStudy).toEqual({
+      subjects: ['physics', 'biology'],
+      examTarget: 'early',
+      dailyGoalMinutes: 15,
+    });
+    expect(next.completedSteps).toContain('jamb-study');
+  });
+});
+
 describe('normalizeOnboardingData', () => {
   it('survives null, arrays, strings and garbage', () => {
     expect(normalizeOnboardingData(null)).toEqual({});

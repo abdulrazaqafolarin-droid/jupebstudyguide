@@ -1,6 +1,8 @@
--- Restore consistency between the JUPEB activation gate and question-bank RLS.
--- Keep the session-validity requirement, published-only student access, and
--- JUPEB program scope. Activated accounts retain access as the app already allows.
+-- Keep the live JUPEB question policy aligned with the app's activation gate.
+-- A verified activation flag remains valid even when the free-trial timestamp
+-- has elapsed or a time-limited subscription has ended.
+-- Anonymous access remains revoked; active sessions and published/visible
+-- JUPEB filtering remain enforced for student accounts.
 
 DROP POLICY IF EXISTS study_questions_select_policy ON public.study_questions;
 

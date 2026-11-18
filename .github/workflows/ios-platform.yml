@@ -118,7 +118,8 @@ jobs:
 
       - name: Install and launch on an iPhone simulator
         # A first-boot iPhone can spend up to eight minutes in system data
-        # migration; allow boot, installation, launch and screenshot to finish.
+        # migration. Installation and launch are mandatory; screenshot capture
+        # is retried and recorded as a diagnostic if the hosted simulator stalls.
         timeout-minutes: 16
         run: |
           set -euo pipefail

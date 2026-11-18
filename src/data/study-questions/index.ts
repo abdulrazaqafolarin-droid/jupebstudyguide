@@ -109,6 +109,7 @@ async function fetchAll() {
   // is bundled in the APK or persisted as an offline/downloadable file.
   if (fetchInFlight) return fetchInFlight;
 
+  let requestGeneration = fetchGeneration;
   const task = (async () => {
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) throw sessionError;
@@ -120,7 +121,7 @@ async function fetchAll() {
     }
 
     setDataOwner(userId);
-    const requestGeneration = fetchGeneration;
+    requestGeneration = fetchGeneration;
     const locallyDeleted = getPersistedDeletedIds();
     const PAGE_SIZE = 1000;
     const columns = [
@@ -170,6 +171,7 @@ async function fetchAll() {
       _lastError = "No JUPEB questions were returned for this session. Check your account access or sign in again, then retry.";
     }
     _ready = true;
+    if (currentData.length === 0) fetchStarted = false;
     notifyListeners();
   })();
 
@@ -177,6 +179,7 @@ async function fetchAll() {
   try {
     await task;
   } catch (error) {
+    if (requestGeneration !== fetchGeneration) return;
     console.error("Failed to load study questions from Supabase:", error);
     _lastError = error instanceof Error
       ? error.message
@@ -223,7 +226,9 @@ export function initDataLayer(priority: "idle" | "immediate" = "idle") {
   }
 
   const retryWhenOnline = () => {
-    if (!_ready && !fetchStarted) initDataLayer("immediate");
+    if ((!_ready || _lastError || currentData.length === 0) && !fetchStarted) {
+      initDataLayer("immediate");
+    }
   };
   window.addEventListener("online", retryWhenOnline, { once: true });
 }

@@ -7,6 +7,8 @@ export interface JambMissionAnswer {
   gradable: boolean;
   isCorrect: boolean | null;
   checkedAt: string | null;
+  correctOption?: string | null;
+  explanation?: string | null;
 }
 
 export interface JambDailyMissionRecord {
@@ -95,7 +97,7 @@ export function selectJambMissionAnswer(
 export function applyJambMissionAnswerCheck(
   mission: JambDailyMissionRecord,
   questionId: string,
-  result: { gradable: boolean; isCorrect?: boolean },
+  result: { gradable: boolean; isCorrect?: boolean; correctOption?: string | null; explanation?: string | null },
   now = new Date(),
 ): JambDailyMissionRecord {
   const existing = mission.answers[questionId];
@@ -108,6 +110,8 @@ export function applyJambMissionAnswerCheck(
       checked: true,
       gradable: result.gradable,
       isCorrect: result.gradable ? result.isCorrect === true : null,
+      correctOption: result.gradable ? result.correctOption ?? null : null,
+      explanation: result.gradable ? result.explanation ?? null : null,
       checkedAt: now.toISOString(),
     },
   };

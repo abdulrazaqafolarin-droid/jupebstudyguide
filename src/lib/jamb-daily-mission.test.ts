@@ -43,6 +43,23 @@ describe("JAMB daily mission records", () => {
     expect(mission.completedAt).toBe(fixedNow.toISOString());
   });
 
+  it("preserves only server-approved answer feedback for later mission review", () => {
+    let mission = createJambDailyMission("2026-11-18", "physics", ["q1", "q2", "q3"], fixedNow)!;
+    mission = selectJambMissionAnswer(mission, "q1", "B", fixedNow);
+    mission = applyJambMissionAnswerCheck(mission, "q1", {
+      gradable: true,
+      isCorrect: false,
+      correctOption: "C",
+      explanation: "The answer follows from the approved key and explanation.",
+    }, fixedNow);
+    expect(mission.answers.q1.correctOption).toBe("C");
+    expect(mission.answers.q1.explanation).toContain("approved key");
+    mission = selectJambMissionAnswer(mission, "q1", "C", fixedNow);
+    expect(mission.answers.q1.checked).toBe(false);
+    expect(mission.answers.q1.correctOption).toBeUndefined();
+    expect(mission.answers.q1.explanation).toBeUndefined();
+  });
+
   it("does not count ungraded selections in the accuracy denominator", () => {
     let mission = createJambDailyMission("2026-11-18", "biology", ["q1", "q2", "q3"], fixedNow)!;
     mission = selectJambMissionAnswer(mission, "q1", "A", fixedNow);

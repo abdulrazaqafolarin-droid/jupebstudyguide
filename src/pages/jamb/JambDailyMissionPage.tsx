@@ -57,6 +57,7 @@ export default function JambDailyMissionPage() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [answerErrors, setAnswerErrors] = useState<Record<string, string>>({});
   const [checking, setChecking] = useState<Record<string, boolean>>({});
+  const [showAllHistory, setShowAllHistory] = useState(false);
   const requestSequence = useRef<Record<string, number>>({});
 
   const today = jambLocalDateKey();
@@ -164,6 +165,8 @@ export default function JambDailyMissionPage() {
       updateMission(mission.id, (current) => applyJambMissionAnswerCheck(current, questionId, {
         gradable: data?.gradable === true,
         isCorrect: data?.gradable === true ? data.is_correct === true : undefined,
+        correctOption: typeof data?.correct_option === "string" ? data.correct_option : undefined,
+        explanation: typeof data?.explanation === "string" ? data.explanation : undefined,
       }));
       if (data?.gradable !== true && data?.message) {
         setAnswerErrors((previous) => ({ ...previous, [questionId]: String(data.message) }));
@@ -185,8 +188,8 @@ export default function JambDailyMissionPage() {
 
   const activeSummary = activeMission ? getJambMissionSummary(activeMission) : null;
   const historyRows = [...history]
-    .sort((a, b) => b.localDate.localeCompare(a.localDate) || b.updatedAt.localeCompare(a.updatedAt))
-    .slice(0, 20);
+    .sort((a, b) => b.localDate.localeCompare(a.localDate) || b.updatedAt.localeCompare(a.updatedAt));
+  const visibleHistoryRows = showAllHistory ? historyRows : historyRows.slice(0, 20);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -318,6 +321,7 @@ export default function JambDailyMissionPage() {
                 {questions.map((question, index) => {
                   const answer = activeMission.answers[question.id];
                   const canChange = activeMission.status !== "completed" || (answer?.checked && !answer.gradable);
+                  const correctOption = question.options.find((option) => option.label === answer?.correctOption);
                   return (
                     <article key={question.id} className="rounded-2xl border border-border bg-card p-4 sm:p-5">
                       <div className="mb-3 flex items-center justify-between gap-3">
@@ -370,6 +374,21 @@ export default function JambDailyMissionPage() {
                       {answer && !answer.checked && !checking[question.id] && (
                         <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><RefreshCw className="h-3.5 w-3.5" /> Choose an option to save it and request a secure answer check.</p>
                       )}
+                      {answer?.checked && answer.gradable && (
+                        <div className="mt-3 space-y-2 rounded-lg border border-border bg-muted/30 p-3">
+                          {answer.correctOption && (
+                            <p className="text-xs font-semibold">
+                              Correct answer: {answer.correctOption}
+                              {correctOption && <> — <QuestionMath inline content={correctOption.text} /></>}
+                            </p>
+                          )}
+                          {answer.explanation && (
+                            <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                              <QuestionMath inline content={answer.explanation} />
+                            </p>
+                          )}
+                        </div>
+                      )}
                       {answer?.checked && !answer.gradable && (
                         <p className="mt-3 text-xs text-muted-foreground">This answer is saved, but it is excluded from accuracy because an approved key is not available.</p>
                       )}
@@ -395,7 +414,7 @@ export default function JambDailyMissionPage() {
             <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Your completed and in-progress JAMB daily practice sessions will appear here.</div>
           ) : (
             <div className="space-y-2">
-              {historyRows.map((mission) => {
+              {visibleHistoryRows.map((mission) => {
                 const summary = getJambMissionSummary(mission);
                 const selected = mission.id === activeMissionId;
                 return (
@@ -415,6 +434,11 @@ export default function JambDailyMissionPage() {
                 );
               })}
             </div>
+          )}
+          {historyRows.length > 20 && (
+            <Button variant="ghost" size="sm" className="w-full" onClick={() => setShowAllHistory((value) => !value)}>
+              {showAllHistory ? "Show recent 20 missions" : `Show all ${historyRows.length} missions`}
+            </Button>
           )}
         </section>
 

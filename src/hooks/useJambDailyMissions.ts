@@ -28,11 +28,30 @@ export function useJambDailyMissions() {
   );
   const [remoteReady, setRemoteReady] = useState(false);
   const [remoteSupported, setRemoteSupported] = useState(true);
+  const [syncSignal, setSyncSignal] = useState(0);
   const loadedUserRef = useRef<string | null>(null);
   const observedUserRef = useRef<string | null>(user?.id ?? null);
   const syncHashRef = useRef("");
   const syncQueueRef = useRef<Promise<void>>(Promise.resolve());
   const syncFailedRef = useRef(false);
+
+  useEffect(() => {
+    const requestRetry = () => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) return;
+      setSyncSignal((current) => current + 1);
+    };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") requestRetry();
+    };
+    window.addEventListener("online", requestRetry);
+    window.addEventListener("focus", requestRetry);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("online", requestRetry);
+      window.removeEventListener("focus", requestRetry);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     const userId = user?.id ?? null;
@@ -118,7 +137,7 @@ export function useJambDailyMissions() {
     }, 700);
 
     return () => window.clearTimeout(timeout);
-  }, [history, remoteReady, remoteSupported, storage.isReady, user]);
+  }, [history, remoteReady, remoteSupported, storage.isReady, syncSignal, user]);
 
   const createMission = useCallback(async (candidate: JambDailyMissionRecord) => {
     const existing = history.find((mission) => mission.id === candidate.id);

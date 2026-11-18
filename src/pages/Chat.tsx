@@ -123,10 +123,11 @@ const Chat = () => {
   // Update document title and favicon with total unread count
   const totalUnread = chat.totalUnreadCount;
   useEffect(() => {
-    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] JUPEB Study Guide` : 'JUPEB Study Guide';
+    const programmeTitle = isJambWorkspace ? 'JAMB Study Guide' : 'JUPEB Study Guide';
+    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] ${programmeTitle}` : programmeTitle;
     document.title = title;
     updateFaviconBadge(totalUnread);
-  }, [totalUnread]);
+  }, [totalUnread, isJambWorkspace]);
 
   useEffect(() => {
     if (addFriendQuery.trim().length < 2) { setAddFriendResults([]); return; }

@@ -186,7 +186,7 @@ export default function ProfilePage() {
                 <GraduationCap className="w-4 h-4 text-primary" />
                 School
               </h3>
-              <Link to="/settings/profile" className="text-xs text-primary hover:underline">
+              <Link to={getWorkspacePath('/settings/profile', programId)} className="text-xs text-primary hover:underline">
                 Edit
               </Link>
             </div>

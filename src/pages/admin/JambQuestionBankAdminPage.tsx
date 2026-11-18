@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
+import { supportsResumableJambImport } from "@/lib/jamb-import-client";
 import { getQuestionEmbeddingQueueStatus, processPendingQuestionEmbeddings, type QuestionEmbeddingQueueStatus } from "@/lib/question-rag-indexer";
 import type { Subject } from "@/types/question";
 
@@ -197,12 +198,7 @@ export default function JambQuestionBankAdminPage() {
       } catch {
         throw new Error("The JAMB source importer update is not deployed yet. No source file was uploaded. Retry after the admin importer service has been updated.");
       }
-      if (
-        capabilities.protocol_version !== 2 ||
-        capabilities.resumable_source_chunks !== true ||
-        capabilities.stable_item_offsets !== true ||
-        capabilities.duplicate_chunk_retries !== true
-      ) {
+      if (!supportsResumableJambImport(capabilities)) {
         throw new Error("The deployed JAMB importer does not support safe resumable uploads yet. No source file was uploaded.");
       }
 

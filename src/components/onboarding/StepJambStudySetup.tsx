@@ -94,6 +94,14 @@ export function StepJambStudySetup({
               </motion.button>
             );
           })}
+          <div className="flex items-center gap-2.5 rounded-xl border-2 border-dashed border-border bg-secondary/20 p-3 opacity-80" aria-disabled="true">
+            <span className="text-2xl">{JAMB_SUBJECT_INFO.math.icon}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-semibold">{JAMB_SUBJECT_INFO.math.label}</span>
+              <span className="block text-[10px] text-muted-foreground">Rutex question content pending review</span>
+            </span>
+            <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
+          </div>
         </div>
         <p className="text-[10px] leading-relaxed text-muted-foreground">
           Select any of the science subjects currently available in Rutex. Your preferences do not change your official UTME subject combination. More subjects will appear when their question content has been reviewed and published.

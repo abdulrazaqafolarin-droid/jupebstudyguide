@@ -37,7 +37,7 @@ A signed-in student/admin mobile walkthrough is still outstanding. A successful 
 
 The JAMB subject bank still contains zero published question rows and zero import batches. The committed Physics, Chemistry and Biology packs parse to candidate source material, not independently approved questions. Before staging, an authorised administrator must attest to source-use rights; candidates then require human checks for year, wording, option order, duplicates and figures. Missing answer keys must not be invented.
 
-The JAMB syllabus is not marked verified, and a complete official UTME mock remains disabled until the compulsory Use of English content, official exam configuration and source review are complete. Matching the JUPEB UI does not make unverified JAMB content official or gradable.
+The JAMB syllabus is not marked verified, and a complete official UTME mock remains disabled until the compulsory Use of English content, official exam configuration and source review are complete. Mathematics is visibly locked in the onboarding subject guide until its Rutex question content is reviewed and published. Matching the JUPEB UI does not make unverified JAMB content official or gradable.
 
 
 ## Route and feature parity audit — 18 November 2026

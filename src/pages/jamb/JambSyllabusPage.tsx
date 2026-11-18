@@ -54,7 +54,7 @@ export default function JambSyllabusPage() {
             <div>
               <h1 className="font-semibold heading text-sm">JAMB Syllabus</h1>
               <p className="text-[11px] text-muted-foreground">
-                {JAMB_SUBJECTS.length} subjects · {JAMB_SYLLABUS_VERIFIED ? "verified source" : "verification pending"}
+                {JAMB_SUBJECTS.length} supported content subjects · {JAMB_SYLLABUS_VERIFIED ? "verified source" : "verification pending"}
               </p>
             </div>
           </div>
@@ -77,7 +77,7 @@ export default function JambSyllabusPage() {
               <h2 className="font-semibold">Your JAMB subject guide</h2>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 This page follows the same subject-and-topic browsing layout as the JUPEB syllabus.
-                JAMB topic lists will only appear after the current official syllabus has been verified and versioned.
+                JAMB topic lists will only appear after the current official syllabus has been verified and versioned. This browser currently lists only the three subjects with supplied Rutex question packs; other exam subjects, including Mathematics and compulsory Use of English, remain unavailable in the question bank.
               </p>
               {!JAMB_SYLLABUS_VERIFIED && (
                 <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/25 bg-amber-500/5 p-3">

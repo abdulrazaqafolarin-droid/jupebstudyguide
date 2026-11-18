@@ -4,27 +4,27 @@
 **Repository:** `abdulrazaqafolarin-droid/jupebstudyguide`  
 **Pull request:** [#78 — Add a separate JAMB study workspace](https://github.com/abdulrazaqafolarin-droid/jupebstudyguide/pull/78)  
 **Feature branch:** `feat/rutex-jamb-workspace`  
-**Branch head at this update:** `1975d064c6d50dd222629aa9cabfc3c82855ec3a`  
 **Supabase project:** `gzyczowqqywesqhqqpdi` (existing Rutex/JUPEB project)
 
 ## Release boundary
 
-PR #78 remains open as a **Draft**. JAMB is a separate workspace in the existing Rutex application and account system. Production remains on `main`; the feature branch is for Preview acceptance only.
+PR #78 remains open as a **Draft**. JAMB is a separate workspace in the existing Rutex application and account system. Production UI remains on `main`; the feature branch is for Preview acceptance only.
 
-The `VITE_ENABLE_JAMB=true` environment variable is scoped to the `feat/rutex-jamb-workspace` Preview branch in both connected Vercel projects (`rutexjupebmaster` and `jupebstudyguide`). No Production-scoped JAMB flag was added. The latest checked Production deployments for both projects still use `main` commit `fd61595f0a88dccd557e977a8a8f2fa56c968822`; no Production deployment was performed for this feature.
+The `VITE_ENABLE_JAMB=true` environment variable is scoped to the `feat/rutex-jamb-workspace` Preview branch in both connected Vercel projects (`rutexjupebmaster` and `jupebstudyguide`). No Production-scoped JAMB flag was added. The latest checked Production deployments for both projects still use `main` commit `fd61595f0a88dccd557e977a8a8f2fa56c968822`; no Production UI deployment was performed for this feature.
 
 ## Implemented and deployed
 
 - Dedicated JAMB home, past-question browser, timed subject-practice CBT, JAMB-aware AI tutor, syllabus status page and admin source import/review/publish UI.
 - Programme scoping for question reads/search/RAG, answer references, bookmarks and practice progress; existing JUPEB question retrieval remains scoped to JUPEB.
 - Additive migration `20261117215633_create_jamb_workspace` is applied to the existing Supabase project. The migration passed a rollback-only SQL preflight first.
+- Additive migration `20261118123742_scope_ai_chat_history_by_exam_program` is also applied. It adds the programme discriminator to persistent AI chat history, defaults existing rows to JUPEB, adds a foreign key to the exam-program registry and adds a programme-scoped index.
 - Five remote-only historical migration sources were restored verbatim, reconciling local migration history through `20261112011529`.
 - Server-owned CBT attempt lifecycle, answer persistence, expiry and scoring. In-progress snapshots omit answer keys and explanations. Post-submit review is owner-authenticated and exposes only independently approved keys/explanations.
 - Source intake preserves original hashes, question/source references, options and figure placeholders. The importer does not synthesize answers, discard E options or publish automatically.
 
 ### Live Edge Function deployment
 
-All six relevant functions are `ACTIVE` on the existing project. Their entrypoints and bundled helper files were compared against the feature-branch source and matched byte-for-byte. Later branch commits changed Android/build workflow files, not these function sources.
+All six relevant functions are `ACTIVE` on the existing project. Their entrypoints and bundled helper files were compared against the feature-branch source and matched byte-for-byte.
 
 | Function | Live version | Gateway `verify_jwt` |
 |---|---:|---|
@@ -46,6 +46,7 @@ Read-only checks on 18 November 2026 confirmed:
 - JAMB subjects: Physics, Chemistry and Biology available; Use of English compulsory but unavailable; Mathematics unavailable.
 - The published `rutex-practice-v1` configuration permits 10/20/40-question subject drills. `official_format_verified=false` and `full_mock_enabled=false`.
 - No JAMB source material has been staged or published. Existing JUPEB rows were not relabelled.
+- Persistent AI chat history: **321** existing rows are still scoped to `jupeb`; **0** rows are scoped to `jamb`; **0** unexpected programme values exist. The new schema default preserved all existing JUPEB records.
 
 ### Access-control checks
 
@@ -70,18 +71,24 @@ Before staging, an authorised administrator must attest to the right to store/us
 
 ## Validation and build state
 
-- The JAMB PR validation workflow on commit `50d95f27d6edef0230b3e71976a1264b5d1411df` passed importer regression tests against all three committed source packs, Deno programme-aware retrieval/scoring tests, JAMB Edge Function type checks, TypeScript, unit tests, lint, web build, Capacitor sync and Android debug compilation (workflow run `44256531973`).
-- The repository-wide validation workflow on the same commit passed its full check set, including Supabase function typing/tests, application TypeScript, importer tooling, unit tests, lint, production build, Android debug build/package identity, production health and updater endpoint checks (workflow run `44256532012`).
-- The separate Rutex Master Next artifact-only job succeeded on commit `c90f8cdd178ee1dbd1c29850bcb3f59f848478d1`: Gradle built the APK; package/version/minimum SDK checks passed; the APK signing certificate matched the dedicated successor keystore; and the verified artifact was uploaded to GitHub Actions as artifact `14404831797`. The Supabase updater-publication step was skipped, so no release file or updater manifest was changed.
-- The APK mismatch was caused by a hard-coded original Android application ID. Capacitor and Gradle now accept the explicit successor identity from CI while retaining `com.jupeb.master` as the default for normal builds.
-- The successor APK workflow is now scoped to the successor PR and its stacked UI PR; unrelated JAMB PR changes no longer need to build that separate release artifact.
-- The iOS simulator workflow passed on commit `50d95f27d6edef0230b3e71976a1264b5d1411df` (workflow run `44256531970`): Capacitor iOS sync, Xcode simulator build, bundle identity, simulator installation, app launch and screenshot all passed. The workflow uploaded the simulator app and generated Xcode project, then committed four generated iOS icon/splash assets as `1975d064c6d50dd222629aa9cabfc3c82855ec3a`. Comparing that bot commit with its parent confirmed those four image assets are its only changes; no JAMB logic, application code, SQL or Edge Function source changed. GitHub marks checks on the bot-authored asset commit as `action_required`; the full validation workflows passed on its parent commit. A normal-authored documentation commit is being used to trigger fresh checks against the final branch state.
+On code commit `7a55bd2818281529fc8470fefc65da201fd0c647`:
+
+- **Validate pull requests** passed (workflow run `44302994787`), including TypeScript, unit tests, lint, web build, Capacitor sync and Android debug APK compilation.
+- **JUPEB Repository Validation** passed (workflow run `44302994884`).
+- **Native iOS build** passed end-to-end (workflow run `44302994786`), including simulator app build, bundle-identity verification, install, launch and screenshot.
+- The separate **Rutex Master Next artifact-only** workflow passed (run `44302995092`). No updater release was published; its publication step was skipped.
+
+The migration filename reconciliation and documentation changes that follow this validated code head are being rechecked by CI. The connected Preview routes had returned HTTP 200 at SPA-shell level, but a signed-in student/admin mobile walkthrough has not yet been completed.
+
+## Post-migration advisor review
+
+The Supabase advisor scan after the chat-history migration reported existing project-wide findings, including RLS-enabled server-only tables without student policies (intentional for service-role access), one pre-existing security-definer view, older public-schema function warnings and unrelated legacy index/policy performance notices. No unrelated policy, function or view changes were made as part of this JAMB migration. The new chat-history index is expected to appear unused until programme-specific chat traffic exercises it.
 
 ## Remaining release gates
 
-1. Complete a signed-in mobile Preview walkthrough with a real student and authorised administrator. A successful unauthenticated HTTP 200 from the SPA shell is not a substitute for testing authenticated student/admin journeys.
+1. Complete the signed-in mobile Preview walkthrough with a real student and authorised administrator. A successful unauthenticated HTTP 200 from the SPA shell is not a substitute for testing authenticated student/admin journeys.
 2. Stage the three source packs only after source-rights attestation. Review and approve every item before publication; do not guess missing answer keys or explanations.
 3. Verify and version the current official JAMB syllabus and load reviewed Use of English content before enabling a full official-format UTME mock. Until then, the 10/20/40 sessions must remain clearly labelled Rutex practice drills.
-4. Keep PR #78 in Draft and Production disabled until the remaining acceptance gates and release review are complete.
+4. Keep PR #78 in Draft and Production UI disabled until the remaining acceptance gates and release review are complete.
 
-**No Production UI deployment, additional database migration, JAMB source publication or updater-release publication was performed during this continuation.**
+**No Production UI deployment, JAMB source publication or updater-release publication was performed during this continuation.** The two additive database migrations and six Edge Function deployments described above remain live on the existing connected Supabase project.

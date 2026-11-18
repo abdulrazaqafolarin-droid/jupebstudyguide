@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, MessageSquare, Trophy, User, Menu, Clock3 } from "lucide-react";
+import { Home, BookOpen, MessageSquare, Trophy, User, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import HamburgerMenu, { type HamburgerMenuHandle } from "@/components/HamburgerMenu";
 import { useChatUnreadCount } from "@/contexts/ChatUnreadContext";

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, Info, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Clock3, GraduationCap, Info, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
@@ -43,13 +43,17 @@ export default function JambCbtSetupPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background px-4 pb-24 pt-4">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-10 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
+          <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"><ArrowLeft className="h-5 w-5" /></Link>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10"><GraduationCap className="h-5 w-5 text-primary" /></div>
+          <div><p className="text-[11px] text-muted-foreground">JAMB workspace</p><h1 className="text-sm font-semibold">Timed CBT practice</h1></div>
+        </div>
+      </header>
+      <main className="mx-auto max-w-4xl px-4 py-6 pb-28">
       <div className="mx-auto max-w-xl space-y-5">
-        <header className="flex items-center gap-3">
-          <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg border border-border p-2 hover:bg-accent"><ArrowLeft className="h-4 w-4" /></Link>
-          <div><p className="text-xs text-muted-foreground">JAMB workspace</p><h1 className="text-2xl font-bold">Timed CBT practice</h1></div>
-        </header>
-        <section className="rounded-2xl border border-border bg-card p-5">
+        <section className="rounded-2xl border border-border bg-card p-5 chalk-texture">
           <h2 className="font-semibold">Choose a subject</h2>
           <p className="mt-1 text-xs text-muted-foreground">These sessions use the approved JAMB question bank, not JUPEB questions.</p>
           <div className="mt-3 grid grid-cols-3 gap-2">
@@ -73,7 +77,7 @@ export default function JambCbtSetupPage() {
           </div>
           <div className="mt-4 flex items-center gap-2 rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground"><Clock3 className="h-4 w-4 shrink-0" />The timer begins when the server creates your attempt. Refreshing the page will not restart it.</div>
         </section>
-        <section className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+        <section className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5">
           <div className="flex items-start gap-2"><Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" /><p className="text-xs leading-relaxed text-muted-foreground">
             This is a single-subject timed practice session, not a complete official UTME mock. Use of English is compulsory in UTME and is not part of the initial supplied question set. The current official manual and syllabus must be verified before full-mock settings are enabled.
           </p></div>
@@ -82,6 +86,8 @@ export default function JambCbtSetupPage() {
           {starting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing session…</> : <><ShieldCheck className="mr-2 h-4 w-4" />Start timed practice</>}
         </Button>
       </div>
-    </main>
+      </div>
+      </main>
+    </div>
   );
 }

@@ -3,10 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
   ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, Clock3,
-  GraduationCap, Library, ShieldAlert, Sparkles, Target,
+  GraduationCap, Library, ShieldAlert, Sparkles, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
+import StreakDisplay from "@/components/StreakDisplay";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import {
@@ -83,6 +84,107 @@ function loadingText(summary?: JambSubjectSummary) {
   return summary ? `${summary.count.toLocaleString()} questions` : "Question bank";
 }
 
+function getJambActivityStats(savedAnswers: Record<string, { selected: string; savedAt: number }>) {
+  const toKey = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  const days = new Set(
+    Object.values(savedAnswers)
+      .filter((answer) => Number.isFinite(answer.savedAt) && answer.savedAt > 0)
+      .map((answer) => toKey(new Date(answer.savedAt))),
+  );
+  const today = new Date();
+  const todayKey = toKey(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayKey = toKey(yesterday);
+
+  let currentStreak = 0;
+  if (days.has(todayKey) || days.has(yesterdayKey)) {
+    const cursor = new Date(days.has(todayKey) ? today : yesterday);
+    while (days.has(toKey(cursor))) {
+      currentStreak += 1;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+  }
+
+  const sorted = [...days].sort();
+  let run = 0;
+  let longestStreak = 0;
+  let previousDay: number | null = null;
+  for (const key of sorted) {
+    const [year, month, day] = key.split("-").map(Number);
+    const currentDay = Date.UTC(year, month - 1, day);
+    run = previousDay !== null && currentDay - previousDay === 86_400_000 ? run + 1 : 1;
+    longestStreak = Math.max(longestStreak, run);
+    previousDay = currentDay;
+  }
+
+  return {
+    currentStreak,
+    longestStreak,
+    totalDaysStudied: days.size,
+    hasStudiedToday: days.has(todayKey),
+  };
+}
+
+const JAMB_MILESTONES = [
+  { id: "first", label: "First answer", target: 1, description: "Save your first practice answer" },
+  { id: "ten", label: "Getting started", target: 10, description: "Save 10 practice answers" },
+  { id: "fifty", label: "Consistent learner", target: 50, description: "Save 50 practice answers" },
+  { id: "hundred", label: "Question explorer", target: 100, description: "Save 100 practice answers" },
+  { id: "five-hundred", label: "JAMB champion", target: 500, description: "Save 500 practice answers" },
+];
+
+function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; ready: boolean }) {
+  const unlocked = JAMB_MILESTONES.filter((milestone) => answeredCount >= milestone.target);
+  const progress = Math.min(100, Math.round((unlocked.length / JAMB_MILESTONES.length) * 100));
+  return (
+    <div className="bg-card rounded-xl border border-border p-5 space-y-4 transition-all duration-300 hover:border-primary/30 hover:shadow-md">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+            <Trophy className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <span className="font-semibold">JAMB Achievements</span>
+            <p className="text-[10px] text-muted-foreground">Personal practice milestones</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <span className="text-sm font-bold tabular-nums">{ready ? unlocked.length : "—"}</span>
+          <span className="text-sm text-muted-foreground">/{JAMB_MILESTONES.length}</span>
+        </div>
+      </div>
+      <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary">
+        <div className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-700" style={{ width: ready ? `${progress}%` : "0%" }} />
+      </div>
+      {ready && unlocked.length > 0 ? (
+        <div className="space-y-2">
+          {unlocked.slice(0, 4).map((milestone) => (
+            <div key={milestone.id} className="flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-2">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">★</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold">{milestone.label}</p>
+                <p className="text-[10px] text-muted-foreground">{milestone.description}</p>
+              </div>
+              <span className="text-[10px] font-semibold text-primary">Unlocked</span>
+            </div>
+          ))}
+          {unlocked.length > 4 && <p className="text-center text-xs text-muted-foreground">+{unlocked.length - 4} more unlocked</p>}
+        </div>
+      ) : (
+        <div className="py-3 text-center">
+          <Trophy className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">Save a JAMB practice answer to unlock your first milestone.</p>
+        </div>
+      )}
+      <p className="border-t border-border pt-3 text-center text-[10px] text-muted-foreground">
+        These milestones use JAMB activity only and do not affect JUPEB achievements.
+      </p>
+    </div>
+  );
+}
+
 export default function JambHomePage() {
   const navigate = useNavigate();
   const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);
@@ -115,6 +217,7 @@ export default function JambHomePage() {
     () => [...new Set(summaries.flatMap((row) => row.years))].sort((a, b) => b - a),
     [summaries],
   );
+  const jambActivity = useMemo(() => getJambActivityStats(savedAnswers), [savedAnswers]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -230,6 +333,17 @@ export default function JambHomePage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* JAMB-only streak and milestone panels mirror JUPEB's personal progress row. */}
+        <section className="mb-12 grid gap-4 md:grid-cols-2 animate-in-up stagger-2">
+          <StreakDisplay
+            currentStreak={progressReady ? jambActivity.currentStreak : 0}
+            longestStreak={progressReady ? jambActivity.longestStreak : 0}
+            totalDaysStudied={progressReady ? jambActivity.totalDaysStudied : 0}
+            hasStudiedToday={progressReady && jambActivity.hasStudiedToday}
+          />
+          <JambMilestonesPanel answeredCount={totalAnswered} ready={progressReady} />
         </section>
 
         {/* The two large action panels mirror the JUPEB dashboard's activity row. */}

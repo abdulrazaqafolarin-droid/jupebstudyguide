@@ -18,21 +18,21 @@ export function useJambPracticeProgress() {
     {},
   );
   const savedAnswersRef = useRef(savedAnswers);
-  const syncInFlightRef = useRef(false);
-  const syncRequestedRef = useRef(false);
   const answerWriteQueuesRef = useRef(new Map<string, Promise<void>>());
   useEffect(() => { savedAnswersRef.current = savedAnswers; }, [savedAnswers]);
 
   useEffect(() => {
     if (loading || !user?.id || !isReady) return;
     let active = true;
+    let syncInFlight = false;
+    let syncRequested = false;
 
     const sync = async () => {
-      if (syncInFlightRef.current) {
-        syncRequestedRef.current = true;
+      if (syncInFlight) {
+        syncRequested = true;
         return;
       }
-      syncInFlightRef.current = true;
+      syncInFlight = true;
       try {
       const userId = user.id;
       const { data, error } = await supabase
@@ -80,9 +80,9 @@ export function useJambPracticeProgress() {
         if (syncError) console.warn("[JAMB progress] Could not sync local answers:", syncError.message);
       }
       } finally {
-        syncInFlightRef.current = false;
-        if (syncRequestedRef.current && active) {
-          syncRequestedRef.current = false;
+        syncInFlight = false;
+        if (syncRequested && active) {
+          syncRequested = false;
           void sync();
         }
       }
@@ -113,7 +113,8 @@ export function useJambPracticeProgress() {
       ...savedAnswersRef.current,
       [questionId]: { selected, savedAt },
     };
-    const previousWrite = answerWriteQueuesRef.current.get(questionId) ?? Promise.resolve();
+    const writeKey = user.id + ":" + questionId;
+    const previousWrite = answerWriteQueuesRef.current.get(writeKey) ?? Promise.resolve();
     const nextWrite = previousWrite.catch(() => undefined).then(async () => {
       const { data: existing, error: readError } = await supabase
         .from("exam_user_progress")
@@ -139,11 +140,11 @@ export function useJambPracticeProgress() {
       }, { onConflict: "user_id,exam_program_id,question_id" });
       if (error) console.warn("[JAMB progress] Cloud write failed; local answer retained:", error.message);
     }).finally(() => {
-      if (answerWriteQueuesRef.current.get(questionId) === nextWrite) {
-        answerWriteQueuesRef.current.delete(questionId);
+      if (answerWriteQueuesRef.current.get(writeKey) === nextWrite) {
+        answerWriteQueuesRef.current.delete(writeKey);
       }
     });
-    answerWriteQueuesRef.current.set(questionId, nextWrite);
+    answerWriteQueuesRef.current.set(writeKey, nextWrite);
   }, [isReady, setSavedAnswers, user?.id]);
 
   return { savedAnswers, saveAnswer, isReady };

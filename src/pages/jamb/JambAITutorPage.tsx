@@ -1,215 +1,192 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Bot } from "lucide-react";
+import { ArrowLeft, Bot, Menu, Plus, Sparkles, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useStudyChat } from "@/hooks/useStudyChat";
+import { HistorySidebar } from "@/components/study-chat/HistorySidebar";
 import { ThreadView } from "@/components/study-chat/ThreadView";
 import { Composer } from "@/components/study-chat/Composer";
-import { useIsMobile } from "@/hooks/use-mobile";
-import type { AIMessage } from "@/hooks/useAITutorChats";
-import { streamChat, type AIChatMessage } from "@/lib/ai-service";
-import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
 import { getJambPublishedQuestionById } from "@/lib/jamb-question-service";
-import { JAMB_SUBJECTS } from "@/lib/jamb-config";
+import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
+import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
+import type { AIMessage } from "@/hooks/useAITutorChats";
 import { toast } from "sonner";
 
-const JAMB_EMPTY_DESCRIPTION =
-  "Ask about Physics, Chemistry or Biology. Your tutor uses the JAMB question context and keeps JAMB references separate from JUPEB.";
+function isJambSubject(value: string | null): value is (typeof JAMB_SUBJECTS)[number] {
+  return Boolean(value && JAMB_SUBJECTS.includes(value as (typeof JAMB_SUBJECTS)[number]));
+}
 
 export default function JambAITutorPage() {
-  const [params] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
-  const requestedSubject = params.get("subject")?.toLowerCase();
-  const subject = JAMB_SUBJECTS.includes(requestedSubject as (typeof JAMB_SUBJECTS)[number])
-    ? requestedSubject
-    : undefined;
-  const questionId = params.get("questionId");
+  const requestedSubject = searchParams.get("subject")?.toLowerCase() ?? null;
+  const subject = isJambSubject(requestedSubject) ? requestedSubject : undefined;
+  const questionId = searchParams.get("questionId");
 
   const [questionContext, setQuestionContext] = useState("");
-  const [messages, setMessages] = useState<AIMessage[]>([]);
+  const [questionContextTitle, setQuestionContextTitle] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [streamError, setStreamError] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const openedInitialChatRef = useRef(false);
+
+  const extraSystemContext = useMemo(
+    () => questionContext
+      ? `\n\nThe student opened this JAMB tutor from a published question. Use it as the current context only when relevant. Do not infer an official answer key from it.\n${questionContext}`
+      : "",
+    [questionContext],
+  );
+
+  const {
+    chats,
+    activeChatId,
+    messages,
+    isStreaming,
+    listLoading,
+    streamError,
+    activeTopic,
+    switchChat,
+    newChat,
+    deleteChat,
+    renameChat,
+    sendMessage,
+    sendEdited,
+    retry,
+    stop,
+  } = useStudyChat("jamb", JAMB_TUTOR_PROMPT, extraSystemContext);
 
   useEffect(() => {
     let active = true;
     if (!questionId) {
       setQuestionContext("");
+      setQuestionContextTitle("");
       return;
     }
     getJambPublishedQuestionById(questionId)
       .then((question) => {
         if (!active || !question) return;
         setQuestionContext([
-          `Subject: ${question.subject}`,
+          `Subject: ${JAMB_SUBJECT_INFO[question.subject].label}`,
           `Year: ${question.year}`,
           `Question: ${question.question}`,
           `Options: ${question.options.map((option) => `${option.label}. ${option.text}`).join("\n")}`,
         ].join("\n"));
+        setQuestionContextTitle(`${JAMB_SUBJECT_INFO[question.subject].label} · ${question.year}`);
       })
-      .catch((reason) => {
+      .catch((reason: unknown) => {
         if (active) toast.error(reason instanceof Error ? reason.message : "Could not load the question context.");
       });
     return () => { active = false; };
   }, [questionId]);
 
-  const stop = useCallback(() => {
-    abortRef.current?.abort();
-    abortRef.current = null;
-    setLoading(false);
-  }, []);
+  // Resume the newest JAMB-only thread when entering the tutor without a
+  // selected conversation. JUPEB rows are filtered in the shared hook.
+  useEffect(() => {
+    if (openedInitialChatRef.current || listLoading || activeChatId || chats.length === 0) return;
+    openedInitialChatRef.current = true;
+    void switchChat(chats[0].id);
+  }, [listLoading, activeChatId, chats, switchChat]);
 
   useEffect(() => () => {
-    abortRef.current?.abort();
+    // The shared hook also aborts on unmount. This local cleanup only resets
+    // the staged editor so no pending text leaks across route remounts.
+    setEditingIndex(null);
   }, []);
 
-  const send = useCallback(async (
-    value: string,
-    attachment: { base64: string; mimeType: string; name: string } | null = null,
-    rewindIndex?: number,
+  const createChat = useCallback(async () => {
+    const id = await newChat(subject);
+    if (id) {
+      setInput("");
+      setEditingIndex(null);
+      setDrawerOpen(false);
+    }
+    return id;
+  }, [newChat, subject]);
+
+  const handleSend = useCallback(async (
+    attachment: { base64: string; mimeType: string; name: string } | null,
   ) => {
-    const trimmed = value.trim();
-    if ((!trimmed && !attachment) || loading) return;
+    const text = input.trim();
+    if ((!text && !attachment) || isStreaming) return;
 
-    const base = rewindIndex !== undefined
-      ? messages.slice(0, rewindIndex)
-      : editingIndex !== null
-        ? messages.slice(0, editingIndex)
-        : messages;
-    const userMessage: AIMessage = {
-      role: "user",
-      content: trimmed || `[Attached: ${attachment?.name ?? "file"}]`,
-      attachment,
-    };
-    const next = [...base, userMessage];
-    setMessages(next);
+    // First message creates a dedicated JAMB chat row; newChat updates the
+    // hook's active-chat ref before resolving, so the message is persisted
+    // against the correct programme-scoped conversation.
+    if (!activeChatId) {
+      const id = await createChat();
+      if (!id) return;
+    }
+
     setInput("");
-    setEditingIndex(null);
-    setLoading(true);
-    setStreamError(null);
+    if (editingIndex !== null) {
+      const index = editingIndex;
+      setEditingIndex(null);
+      void sendEdited(text, index);
+    } else {
+      void sendMessage(text, attachment);
+    }
+  }, [input, isStreaming, activeChatId, createChat, editingIndex, sendEdited, sendMessage]);
 
-    const ac = new AbortController();
-    abortRef.current = ac;
-    const history: AIChatMessage[] = next.map((message) => ({
-      role: message.role,
-      content: message.content,
-      attachment: message.attachment?.base64
-        ? {
-            base64: message.attachment.base64,
-            mimeType: message.attachment.mimeType,
-            name: message.attachment.name,
-          }
-        : undefined,
-    }));
-    const context = questionContext
-      ? `\n\nCurrent JAMB question (ungraded source projection):\n${questionContext}`
-      : "";
-    const retrievalQuery = [subject, questionContext, trimmed].filter(Boolean).join("\n");
-
-    const updateAssistant = (patch: Partial<AIMessage>) => {
-      setMessages((previous) => {
-        const copy = [...previous];
-        const lastIndex = copy.length - 1;
-        if (copy[lastIndex]?.role === "assistant") {
-          copy[lastIndex] = { ...copy[lastIndex], ...patch };
-        } else {
-          copy.push({ role: "assistant", content: "", ...patch });
-        }
-        return copy;
-      });
-    };
-
-    await streamChat(
-      JAMB_TUTOR_PROMPT + context,
-      history,
-      {
-        onDelta: (delta) => {
-          setMessages((previous) => {
-            const copy = [...previous];
-            const lastIndex = copy.length - 1;
-            if (copy[lastIndex]?.role === "assistant") {
-              copy[lastIndex] = { ...copy[lastIndex], content: copy[lastIndex].content + delta };
-            } else {
-              copy.push({ role: "assistant", content: delta });
-            }
-            return copy;
-          });
-        },
-        onQuestionReferences: (refs) => updateAssistant({ questionRefs: refs }),
-        onDone: () => {
-          if (abortRef.current === ac) abortRef.current = null;
-          setLoading(false);
-        },
-        onError: (message) => {
-          if (abortRef.current === ac) abortRef.current = null;
-          setStreamError(message);
-          setLoading(false);
-        },
-      },
-      undefined,
-      subject,
-      ac.signal,
-      retrievalQuery,
-      "jamb",
-    );
-  }, [editingIndex, loading, messages, questionContext, subject]);
+  const handleStarter = useCallback(async (text: string) => {
+    if (isStreaming) return;
+    if (!activeChatId) {
+      const id = await createChat();
+      if (!id) return;
+    }
+    void sendMessage(text);
+  }, [isStreaming, activeChatId, createChat, sendMessage]);
 
   const handleEdit = useCallback((index: number, text: string) => {
     setEditingIndex(index);
     setInput(text);
   }, []);
 
-  const handleRetry = useCallback(() => {
-    const lastUserIndex = messages.map((message) => message.role).lastIndexOf("user");
-    if (lastUserIndex < 0) return;
-    const message = messages[lastUserIndex];
-    void send(
-      message.content,
-      message.attachment?.base64
-        ? {
-            base64: message.attachment.base64,
-            mimeType: message.attachment.mimeType,
-            name: message.attachment.name,
-          }
-        : null,
-      lastUserIndex,
-    );
-  }, [messages, send]);
+  const handleCancelEdit = useCallback(() => {
+    setEditingIndex(null);
+    setInput("");
+  }, []);
 
-  const handleSend = useCallback((attachment: { base64: string; mimeType: string; name: string } | null) => {
-    void send(input, attachment);
-  }, [input, send]);
+  const handleSelectChat = useCallback((id: string) => {
+    void switchChat(id);
+    setDrawerOpen(false);
+    setEditingIndex(null);
+    setInput("");
+  }, [switchChat]);
+
+  const sidebar = (
+    <HistorySidebar
+      heading="JAMB Tutor History"
+      chats={chats}
+      activeChatId={activeChatId}
+      loading={listLoading}
+      onSelect={handleSelectChat}
+      onNewChat={() => { void createChat(); }}
+      onRename={(id, next) => void renameChat(id, next)}
+      onDelete={(id) => void deleteChat(id)}
+      onClose={isMobile ? () => setDrawerOpen(false) : undefined}
+    />
+  );
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        {!isMobile && (
-          <aside className="hidden w-[280px] shrink-0 border-r border-border/60 bg-card/30 md:flex md:flex-col">
-            <div className="border-b border-border/60 px-4 py-3">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/15">
-                  <Bot className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <span className="text-sm font-semibold">JAMB Study Room</span>
-              </div>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                A separate study space for UTME preparation.
-              </p>
+        <aside className="hidden w-[280px] shrink-0 border-r border-border/60 bg-card/30 md:block">
+          {sidebar}
+        </aside>
+
+        {isMobile && drawerOpen && (
+          <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label="JAMB tutor history">
+            <div className="flex h-full w-[85%] max-w-[320px] flex-col border-r border-border/60 bg-background shadow-2xl">
+              {sidebar}
             </div>
-            <div className="flex-1 space-y-1 p-3">
-              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Study spaces</p>
-              <Link to="/jamb/past-questions" className="block rounded-lg px-3 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground">Past questions</Link>
-              <Link to="/jamb/cbt/setup" className="block rounded-lg px-3 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground">Timed CBT practice</Link>
-              <Link to="/jamb/syllabus" className="block rounded-lg px-3 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground">Syllabus status</Link>
-              <Link to="/jamb" className="block rounded-lg px-3 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground">JAMB dashboard</Link>
-            </div>
-            <div className="border-t border-border/60 p-3">
-              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-                <p className="text-xs font-semibold text-primary">JAMB-aware tutor</p>
-                <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">Question references and study prompts stay within the JAMB workspace.</p>
-              </div>
-            </div>
-          </aside>
+            <button
+              type="button"
+              className="flex-1 bg-black/50"
+              aria-label="Close history"
+              onClick={() => setDrawerOpen(false)}
+            />
+          </div>
         )}
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -222,48 +199,99 @@ export default function JambAITutorPage() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <div className="min-w-0 flex-1">
-              <h1 className="truncate text-sm font-semibold">AI Study Tutor</h1>
-              <p className="truncate text-[10px] text-muted-foreground">
-                {subject ? `${subject.charAt(0).toUpperCase() + subject.slice(1)} · JAMB study room` : "JAMB study room"}
-              </p>
+            {isMobile && (
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                aria-label="Open JAMB tutor history"
+                title="Conversation history"
+              >
+                <Menu className="h-4 w-4" />
+              </button>
+            )}
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15">
+              <Bot className="h-3.5 w-3.5 text-primary" />
             </div>
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
-              <Bot className="h-3 w-3" /> JAMB-aware
-            </span>
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-sm font-semibold">
+                {subject ? `${JAMB_SUBJECT_INFO[subject].label} Tutor` : "JAMB AI Study Tutor"}
+              </h1>
+              <p className="truncate text-[10px] text-muted-foreground">JAMB · UTME study room · Saved conversation</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 shrink-0 gap-1 px-2 text-xs"
+              onClick={() => { void createChat(); }}
+              title="New JAMB chat"
+            >
+              <Plus className="h-3 w-3" />
+              <span className="hidden sm:inline">New chat</span>
+            </Button>
           </header>
 
           <main className="min-h-0 flex-1 overflow-y-auto">
+            {questionContext && (
+              <div className="mx-auto w-full max-w-3xl px-4 pt-4">
+                <section className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 shrink-0 text-primary" />
+                    <p className="min-w-0 flex-1 truncate text-xs font-semibold text-primary">
+                      Opened from a JAMB question{questionContextTitle ? ` · ${questionContextTitle}` : ""}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { setQuestionContext(""); setQuestionContextTitle(""); }}
+                      aria-label="Remove question context"
+                      className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">{questionContext}</p>
+                </section>
+              </div>
+            )}
+
             <ThreadView
-              messages={messages}
-              isStreaming={loading}
+              messages={messages as AIMessage[]}
+              isStreaming={isStreaming}
               streamError={streamError}
               editingIndex={editingIndex}
-              activeTopic={null}
+              activeTopic={activeTopic}
               onEdit={handleEdit}
-              onRetry={handleRetry}
-              onStarter={(prompt) => void send(prompt)}
+              onRetry={() => void retry()}
+              onStarter={(prompt) => void handleStarter(prompt)}
               starterPrompts={JAMB_TUTOR_STARTERS}
               emptyTitle="JAMB AI Study Tutor"
-              emptyDescription={JAMB_EMPTY_DESCRIPTION}
+              emptyDescription="Ask about Physics, Chemistry or Biology. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."
             />
+
+            {!listLoading && chats.length === 0 && !activeChatId && (
+              <div className="mx-auto -mt-2 max-w-xl px-4 pb-8 text-center">
+                <Button onClick={() => { void createChat(); }} className="gap-2">
+                  <Plus className="h-4 w-4" /> Start your first JAMB chat
+                </Button>
+              </div>
+            )}
           </main>
 
           <Composer
             value={input}
             onChange={setInput}
-            onSend={handleSend}
+            onSend={(attachment) => { void handleSend(attachment); }}
             onStop={stop}
-            isStreaming={loading}
+            isStreaming={isStreaming}
             placeholder={
               editingIndex !== null
                 ? "Edit your message…"
                 : subject
-                  ? `Ask about ${subject}…`
+                  ? `Ask about ${JAMB_SUBJECT_INFO[subject].label}…`
                   : "Ask your JAMB tutor…"
             }
             editing={editingIndex !== null}
-            onCancelEdit={() => { setEditingIndex(null); setInput(""); }}
+            onCancelEdit={handleCancelEdit}
           />
         </div>
       </div>

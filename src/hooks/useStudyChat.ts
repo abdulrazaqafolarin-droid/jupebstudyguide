@@ -319,7 +319,7 @@ export function useStudyChat(
 
     let ragContext = '';
     try {
-      if (examProgramId === 'jupeb') ragContext = await searchRelevantChunks(userText);
+      if (user?.id) ragContext = await searchRelevantChunks(userText, examProgramId, user.id);
     } catch (e) {
       console.warn('RAG search failed:', e);
     }

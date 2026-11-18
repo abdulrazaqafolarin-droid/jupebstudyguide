@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Menu, Plus, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { TextbookUploader } from '@/components/TextbookUploader';
 import { SUBJECT_INFO } from '@/types/question';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useStudyChat } from '@/hooks/useStudyChat';
@@ -42,6 +44,7 @@ export default function StudyChatPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [input, setInput] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [showTextbooks, setShowTextbooks] = useState(searchParams.get('textbooks') === '1');
 
   const topicParam = searchParams.get('topic');
   const subParam = searchParams.get('sub');
@@ -188,6 +191,17 @@ export default function StudyChatPage() {
               variant="outline"
               size="sm"
               className="h-7 shrink-0 gap-1 px-2 text-xs"
+              onClick={() => setShowTextbooks(true)}
+              title="Open your JUPEB textbook library"
+              aria-label="Open JUPEB textbook library"
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Textbooks</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 shrink-0 gap-1 px-2 text-xs"
               onClick={() => {
                 void newChat();
                 setEditingIndex(null);
@@ -257,6 +271,11 @@ export default function StudyChatPage() {
           )}
         </div>
       </div>
+      <Dialog open={showTextbooks} onOpenChange={setShowTextbooks}>
+        <DialogContent className="max-h-[90dvh] max-w-xl overflow-y-auto p-0">
+          <TextbookUploader programId="jupeb" />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

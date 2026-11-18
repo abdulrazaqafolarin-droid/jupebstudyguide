@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Bot, Menu, Plus, Sparkles, X } from "lucide-react";
+import { ArrowLeft, BookOpen, Bot, Menu, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { TextbookUploader } from "@/components/TextbookUploader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useStudyChat } from "@/hooks/useStudyChat";
 import { HistorySidebar } from "@/components/study-chat/HistorySidebar";
@@ -28,6 +30,7 @@ export default function JambAITutorPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [input, setInput] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [showTextbooks, setShowTextbooks] = useState(false);
   const openedInitialChatRef = useRef(false);
 
   const extraSystemContext = useMemo(
@@ -206,6 +209,17 @@ export default function JambAITutorPage() {
               variant="outline"
               size="sm"
               className="h-7 shrink-0 gap-1 px-2 text-xs"
+              onClick={() => setShowTextbooks(true)}
+              title="Open your JAMB textbook library"
+              aria-label="Open JAMB textbook library"
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Textbooks</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 shrink-0 gap-1 px-2 text-xs"
               onClick={() => { void createChat(); }}
               title="New JAMB chat"
             >
@@ -297,6 +311,11 @@ export default function JambAITutorPage() {
           )}
         </div>
       </div>
+      <Dialog open={showTextbooks} onOpenChange={setShowTextbooks}>
+        <DialogContent className="max-h-[90dvh] max-w-xl overflow-y-auto p-0">
+          <TextbookUploader programId="jamb" />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

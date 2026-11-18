@@ -53,8 +53,8 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Test programme-aware question retrieval and CBT scoring
-        run: deno test supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/exam-scoring.test.ts
+      - name: Test programme-aware retrieval, CBT scoring and JAMB import recovery
+        run: deno test supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/exam-scoring.test.ts supabase/functions/_shared/jamb-import-range.test.ts
 
       - name: Type-check JAMB Edge Functions
         run: deno check supabase/functions/_shared/exam-access.ts supabase/functions/_shared/exam-scoring.ts supabase/functions/question-import/index.ts supabase/functions/exam-attempts/index.ts supabase/functions/exam-practice/index.ts

@@ -45,6 +45,35 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install PDF extraction dependency
+        run: python -m pip install --disable-pip-version-check pymupdf==1.26.6
+
+      - name: Extract committed JAMB syllabus source PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_COMMIT="e1d9b81b82be717567f47972c39a6ce702bf6b92"
+          SOURCE_DIR="$RUNNER_TEMP/jamb-syllabus-inputs"
+          OUTPUT_DIR="$GITHUB_WORKSPACE/artifacts/jamb-syllabus"
+          mkdir -p "$SOURCE_DIR"
+          git fetch --no-tags --depth=1 origin "$SOURCE_COMMIT"
+          for file in "Biology-1.pdf" "Chemistry-1.pdf" "Mathematics.pdf" "Physics-1.pdf" "Use of English.pdf"; do
+            git show "$SOURCE_COMMIT:$file" > "$SOURCE_DIR/$file"
+            test -s "$SOURCE_DIR/$file"
+          done
+          python scripts/extract_jamb_syllabus_sources.py --source-dir "$SOURCE_DIR" --output-dir "$OUTPUT_DIR"
+
+      - name: Upload extracted JAMB syllabus review pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: jamb-syllabus-source-extraction
+          path: artifacts/jamb-syllabus/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Test JAMB syllabus extraction
+        run: python -m unittest scripts.test_jamb_syllabus_sources
+
       - name: Test question-source importer against fixtures and committed JAMB content
         run: python -m unittest scripts.test_import_jamb_sources
 

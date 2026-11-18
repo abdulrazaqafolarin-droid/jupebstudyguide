@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, Loader2, Send, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionMath } from "@/components/QuestionMath";
@@ -271,14 +271,21 @@ export default function JambCbtPage() {
   const flagged = marked[question.sequence] ?? false;
 
   return (
-    <main className="min-h-screen bg-background px-3 pb-6 pt-3 sm:px-5">
-      <div className="mx-auto max-w-4xl space-y-4">
-        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 rounded-xl border border-border bg-background/95 p-3 backdrop-blur">
-          <div className="min-w-0"><p className="text-[10px] uppercase tracking-widest text-muted-foreground">JAMB · Subject practice</p><p className="truncate text-sm font-semibold">{question.subject.charAt(0).toUpperCase() + question.subject.slice(1)}</p></div>
-          <div className={`flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-sm font-bold ${secondsLeft < 60 ? "bg-destructive/10 text-destructive" : "bg-muted"}`}><Clock3 className="h-4 w-4" />{formatTime(secondsLeft)}</div>
-        </header>
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-20 border-b border-border/60 bg-background/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3">
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">JAMB · Subject practice</p>
+            <p className="truncate text-sm font-semibold">{question.subject.charAt(0).toUpperCase() + question.subject.slice(1)}</p>
+          </div>
+          <div className={`flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-sm font-bold ${secondsLeft < 60 ? "bg-destructive/10 text-destructive" : "bg-muted"}`}>
+            <Clock3 className="h-4 w-4" />{formatTime(secondsLeft)}
+          </div>
+        </div>
+      </header>
+      <main className="mx-auto max-w-4xl space-y-4 px-3 py-5 pb-28 sm:px-5">
 
-        <section className="rounded-2xl border border-border bg-card p-4 sm:p-6">
+        <section className="rounded-2xl border border-border bg-card p-5 sm:p-7 chalk-texture">
           <div className="flex items-center justify-between text-xs text-muted-foreground"><span>Question {current + 1} of {payload.questions.length}</span><span>{answeredCount} answered {saving ? "· Saving…" : "· Saved"}</span></div>
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${((current + 1) / payload.questions.length) * 100}%` }} /></div>
           <div className="mt-5 text-base font-medium leading-relaxed"><QuestionMath content={question.question_snapshot.question} /></div>
@@ -298,7 +305,7 @@ export default function JambCbtPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-border bg-card p-4">
+        <section className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold">Question navigator</h2><span className="text-xs text-muted-foreground">Tap to revisit</span></div>
           <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
             {payload.questions.map((item, index) => {
@@ -310,7 +317,7 @@ export default function JambCbtPage() {
         </section>
 
         <Button variant="destructive" className="w-full" onClick={() => void submitAttempt(false)} disabled={submitting || saving}>{submitting ? "Submitting…" : "Submit attempt"}</Button>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

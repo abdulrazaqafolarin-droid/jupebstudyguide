@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
-  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, Clock3,
+  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronRight, Clock3,
   GraduationCap, Library, ShieldAlert, Sparkles, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,19 @@ function JambSubjectCard({
 }) {
   const info = JAMB_SUBJECT_INFO[subject];
   const count = summary?.count ?? 0;
+  const years = summary?.years ?? [];
+
+  const subjectCardTone = subject === "physics"
+    ? "border-physics/20 hover:border-physics/50 hover:bg-physics/[0.03]"
+    : subject === "chemistry"
+      ? "border-chemistry/20 hover:border-chemistry/50 hover:bg-chemistry/[0.03]"
+      : "border-biology/20 hover:border-biology/50 hover:bg-biology/[0.03]";
+
+  const glowTone = subject === "physics"
+    ? "bg-gradient-to-br from-physics/10 to-transparent"
+    : subject === "chemistry"
+      ? "bg-gradient-to-br from-chemistry/10 to-transparent"
+      : "bg-gradient-to-br from-biology/10 to-transparent";
 
   return (
     <motion.button
@@ -49,38 +62,60 @@ function JambSubjectCard({
       whileHover={{ y: -10, scale: 1.02, transition: fastSpring }}
       whileTap={{ scale: 0.96, transition: fastSpring }}
     >
-      <div className="bg-card rounded-2xl border border-border p-6 chalk-texture relative overflow-hidden transition-colors hover:border-primary/40">
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/10 to-transparent" />
+      <div className={`bg-card rounded-2xl border p-6 chalk-texture relative overflow-hidden transition-colors ${subjectCardTone}`}>
+        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${glowTone}`} />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
             <motion.div
               className="flex items-center gap-3"
               whileHover={{ x: 4, transition: { type: "spring", stiffness: 300 } }}
             >
-              <span className="text-3xl inline-block transition-transform duration-300 group-hover:scale-110">{info.icon}</span>
+              <span className="text-3xl transition-transform duration-300 group-hover:scale-110 inline-block">{info.icon}</span>
               <div>
                 <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">{info.label}</h3>
                 <p className="text-sm text-muted-foreground">{loadingText(summary)}</p>
               </div>
             </motion.div>
-            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-200" />
+            <motion.div whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 300 }}>
+              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-200" />
+            </motion.div>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed min-h-10">{info.description}</p>
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/70 text-xs">
-            <span className="text-muted-foreground">Available years</span>
-            <span className="font-semibold text-primary tabular-nums">
-              {summary ? (summary.years.length ? summary.years.join(" · ") : "Awaiting reviewed content") : "Loading…"}
-            </span>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Published question bank</span>
+              <span className="font-medium text-primary tabular-nums">{count.toLocaleString()}</span>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-secondary/30 px-3 py-3 min-h-[76px]">
+              <p className="text-[11px] font-medium text-muted-foreground mb-2">Available examination years</p>
+              {years.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {years.slice(0, 6).map((year) => (
+                    <span key={year} className="rounded-full bg-background/80 border border-border/50 px-2 py-0.5 text-[11px] font-medium tabular-nums">{year}</span>
+                  ))}
+                  {years.length > 6 && <span className="text-[11px] text-muted-foreground self-center">+{years.length - 6} more</span>}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">{summary ? "Awaiting reviewed content" : "Loading question coverage…"}</p>
+              )}
+            </div>
           </div>
-          <p className="mt-3 text-xs font-medium text-muted-foreground">
-            {count.toLocaleString()} published practice questions
-          </p>
+
+          <div className="flex gap-4 mt-4 text-sm">
+            <div className="bg-secondary/40 rounded-lg px-2.5 py-1">
+              <span className="text-muted-foreground">Published </span>
+              <span className="font-medium text-foreground tabular-nums">{count.toLocaleString()}</span>
+            </div>
+            <div className="bg-accent/10 rounded-lg px-2.5 py-1">
+              <span className="text-muted-foreground">Years </span>
+              <span className="font-medium text-accent tabular-nums">{years.length}</span>
+            </div>
+          </div>
         </div>
       </div>
     </motion.button>
   );
 }
-
 function loadingText(summary?: JambSubjectSummary) {
   return summary ? `${summary.count.toLocaleString()} questions` : "Question bank";
 }
@@ -234,12 +269,13 @@ export default function JambHomePage() {
         <div className="relative w-full max-w-4xl mx-auto px-4 py-16 md:py-24">
           <div className="text-center">
             <div className="flex justify-center mb-6 animate-in-up stagger-1">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/10 text-primary">
-                <Target className="w-4 h-4" />
-                <span className="text-sm font-semibold">
-                  {progressReady ? totalAnswered.toLocaleString() : "—"} JAMB answers saved
-                </span>
-              </div>
+              <StreakDisplay
+                currentStreak={progressReady ? jambActivity.currentStreak : 0}
+                longestStreak={progressReady ? jambActivity.longestStreak : 0}
+                totalDaysStudied={progressReady ? jambActivity.totalDaysStudied : 0}
+                hasStudiedToday={progressReady && jambActivity.hasStudiedToday}
+                compact
+              />
             </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 animate-in-up stagger-2">
               <GraduationCap className="w-5 h-5 text-primary" />
@@ -388,7 +424,7 @@ export default function JambHomePage() {
             </motion.span>
           </div>
           <motion.div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
@@ -422,7 +458,7 @@ export default function JambHomePage() {
                 <motion.button
                   key={subject}
                   onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
-                  className="p-4 rounded-xl border border-primary/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"
+                  className={`p-4 rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${subject === "physics" ? "border-physics/30 hover:border-physics hover:bg-physics/5" : subject === "chemistry" ? "border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5" : "border-biology/30 hover:border-biology hover:bg-biology/5"}`}
                   variants={cardVariants}
                   whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
                   whileTap={{ scale: 0.95, transition: fastSpring }}

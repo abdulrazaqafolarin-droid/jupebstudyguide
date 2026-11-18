@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-  ArrowLeft, BookOpen, Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
+  ArrowLeft, Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
   Clock3, Loader2, RefreshCw, ShieldCheck, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

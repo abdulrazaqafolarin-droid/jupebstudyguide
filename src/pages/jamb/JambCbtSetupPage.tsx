@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Check, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
 import { toast } from "sonner";
@@ -7,14 +7,23 @@ import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/l
 import type { Subject } from "@/types/question";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
 
 export default function JambCbtSetupPage() {
   const navigate = useNavigate();
+  const { preferences, isReady: preferencesReady } = useJambStudyPreferences();
+  const hasManuallySelectedSubject = useRef(false);
   const [subject, setSubject] = useState<Exclude<Subject, "math">>("physics");
   const [presetIndex, setPresetIndex] = useState(1);
   const [starting, setStarting] = useState(false);
   const idempotencyKeyRef = useRef<string | null>(null);
   const preset = JAMB_CBT_PRACTICE_PRESETS[presetIndex];
+
+  useEffect(() => {
+    if (!preferencesReady || hasManuallySelectedSubject.current) return;
+    const preferred = preferences.subjects[0];
+    if (preferred && JAMB_SUBJECTS.includes(preferred)) setSubject(preferred);
+  }, [preferencesReady, preferences.subjects]);
 
   const startPractice = async () => {
     setStarting(true);
@@ -82,6 +91,7 @@ export default function JambCbtSetupPage() {
                       disabled={starting}
                       onClick={() => {
                         idempotencyKeyRef.current = null;
+                        hasManuallySelectedSubject.current = true;
                         setSubject(item);
                       }}
                       aria-pressed={selected}

@@ -29,6 +29,8 @@ import {
   type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
+import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
+import { orderJambSubjectsByPreference } from "@/lib/jamb-study-preferences";
 
 function formatDate(value: string): string {
   const [year, month, day] = value.split("-").map(Number);
@@ -49,6 +51,8 @@ export default function JambDailyMissionPage() {
   const { history, ready, remoteSupported, createMission, updateMission } = useJambDailyMissions();
   const { bookmarks, toggle: toggleBookmark, isReady: bookmarksReady } = useJambBookmarks();
   const { saveAnswer: savePracticeAnswer } = useJambPracticeProgress();
+  const { preferences: studyPreferences, isReady: studyPreferencesReady } = useJambStudyPreferences();
+  const orderedSubjects = useMemo(() => orderJambSubjectsByPreference(JAMB_SUBJECTS, studyPreferences), [studyPreferences]);
   const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);
   const [loadingBank, setLoadingBank] = useState(true);
   const [startingSubject, setStartingSubject] = useState<JambMissionSubject | null>(null);
@@ -245,11 +249,14 @@ export default function JambDailyMissionPage() {
         {!activeMission && (
           <section className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="font-semibold">Choose today's subject</h2>
+              <div>
+                <h2 className="font-semibold">Choose today's subject</h2>
+                {studyPreferencesReady && <p className="mt-0.5 text-xs text-muted-foreground">Daily goal: {studyPreferences.dailyGoalMinutes} minutes · Preferred subjects appear first</p>}
+              </div>
               <span className="text-xs text-muted-foreground">{today}</span>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              {JAMB_SUBJECTS.map((subject) => {
+              {orderedSubjects.map((subject) => {
                 const info = JAMB_SUBJECT_INFO[subject];
                 const count = summaries.find((row) => row.subject === subject)?.count ?? 0;
                 const existing = todayMissions.find((mission) => mission.subject === subject);
@@ -260,6 +267,7 @@ export default function JambDailyMissionPage() {
                       <span className="text-2xl">{info.icon}</span>
                       <div className="min-w-0 flex-1">
                         <h3 className="font-semibold">{info.label}</h3>
+                        {studyPreferencesReady && studyPreferences.subjects.includes(subject) && <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Your focus</span>}
                         <p className="text-xs text-muted-foreground">{loadingBank ? "Loading…" : `${count.toLocaleString()} published questions`}</p>
                       </div>
                     </div>

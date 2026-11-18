@@ -15,6 +15,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import { usePushNotificationsContext } from '@/contexts/PushNotificationsContext';
 import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { useUserStorage } from '@/hooks/useUserStorage';
+import { useJambStudyPreferences } from '@/hooks/useJambStudyPreferences';
 import { firstIncompleteStep, getOnboardingFlow, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
 import { normalizeSchoolName, parseSeatNumber } from '@/lib/profile-fields';
 import type { Subject } from '@/types/question';
@@ -47,6 +48,7 @@ export default function Onboarding() {
   const { loading, flow, data, displayName, isReplay, profileSchoolName, profileSeatNumber, saveStep, complete } = useOnboarding();
   const [, setStoredElectives] = useUserStorage<string[]>('onboarding-subjects', []);
   const [, setStoredDailyGoal] = useUserStorage<number>('onboarding-daily-goal', 30);
+  const { preferences: storedJambPreferences, setPreferences: setStoredJambPreferences, isReady: jambPreferencesReady } = useJambStudyPreferences();
   const workspaceFlow = useMemo(() => getOnboardingFlow(flow, programId), [flow, programId]);
 
   const [stepIdx, setStepIdx] = useState(0);
@@ -77,22 +79,22 @@ export default function Onboarding() {
   // initial state ran while flow was still empty).
   const seededRef = useRef(false);
   useEffect(() => {
-    if (loading || workspaceFlow.length === 0 || seededRef.current) return;
+    if (loading || (programId === 'jamb' && !jambPreferencesReady) || workspaceFlow.length === 0 || seededRef.current) return;
     seededRef.current = true;
     const target = isReplay ? workspaceFlow[0] : firstIncompleteStep(workspaceFlow, data.completedSteps ?? []);
     setStepIdx(Math.max(0, workspaceFlow.indexOf(target)));
     setElectives((data.subjects ?? []).filter((s): s is Subject => s === 'biology' || s === 'math'));
     setExamTarget(data.examTarget ?? 'this-session');
     setDailyGoal(data.dailyGoalMinutes ?? 30);
-    setJambSubjects((data.jambStudy?.subjects ?? []).filter((s): s is JambSubject => JAMB_SUBJECTS.includes(s as JambSubject)));
-    setJambExamTarget(data.jambStudy?.examTarget ?? 'this-session');
-    setJambDailyGoal(data.jambStudy?.dailyGoalMinutes ?? 30);
+    setJambSubjects((data.jambStudy?.subjects ?? storedJambPreferences.subjects).filter((s): s is JambSubject => JAMB_SUBJECTS.includes(s as JambSubject)));
+    setJambExamTarget(data.jambStudy?.examTarget ?? storedJambPreferences.examTarget);
+    setJambDailyGoal(data.jambStudy?.dailyGoalMinutes ?? storedJambPreferences.dailyGoalMinutes);
     setSchoolName(data.schoolName ?? profileSchoolName ?? '');
     setSeatNumber(data.examSeatNumber ?? profileSeatNumber ?? '');
     setChatOnline(data.chat?.online ?? true);
     setChatReceipts(data.chat?.receipts ?? true);
     setChatDiscover(data.chat?.discover ?? true);
-  }, [loading, workspaceFlow, data, isReplay, profileSchoolName, profileSeatNumber]);
+  }, [loading, workspaceFlow, data, isReplay, profileSchoolName, profileSeatNumber, programId, jambPreferencesReady, storedJambPreferences]);
 
   const step = workspaceFlow[stepIdx];
   const goHome = useCallback(
@@ -168,6 +170,7 @@ export default function Onboarding() {
           return;
         }
         const school = normalizeSchoolName(schoolName);
+        setStoredJambPreferences({ subjects: jambSubjects, examTarget: jambExamTarget as 'this-session' | 'next-session' | 'early', dailyGoalMinutes: jambDailyGoal });
         await persistAndAdvance(
           'jamb-study',
           {
@@ -216,7 +219,7 @@ export default function Onboarding() {
         break;
       }
     }
-  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, jambSubjects, jambExamTarget, jambDailyGoal, schoolName, seatNumber, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal]);
+  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, jambSubjects, jambExamTarget, jambDailyGoal, schoolName, seatNumber, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal, setStoredJambPreferences]);
 
   const handleSkip = useCallback(async () => {
     // In a replay the student already finalized once — skipping must not

@@ -177,6 +177,7 @@ export type Database = {
       }
       ai_chats: {
         Row: {
+          exam_program_id: string
           created_at: string
           id: string
           subject: string | null
@@ -187,6 +188,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          exam_program_id?: string
           created_at?: string
           id?: string
           subject?: string | null
@@ -197,6 +199,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          exam_program_id?: string
           created_at?: string
           id?: string
           subject?: string | null

@@ -90,6 +90,7 @@ describe("parseReleaseInfo", () => {
         builtAt: "2026-10-16T15:00:00Z",
         url: getReleaseApkUrl(41),
         sha256: "a".repeat(64),
+        packageName: "com.rutex.jupebmaster",
       }),
     ).toEqual({
       versionCode: 41,
@@ -99,6 +100,7 @@ describe("parseReleaseInfo", () => {
       url: getReleaseApkUrl(41),
       sha256: "a".repeat(64),
       requiresReinstall: false,
+      packageName: "com.rutex.jupebmaster",
     });
   });
 
@@ -125,6 +127,7 @@ describe("parseReleaseInfo", () => {
       versionCode: 42,
       url: getReleaseApkUrl(42),
       sha256: "b".repeat(64),
+      packageName: "com.rutex.jupebmaster",
       requiresReinstall: true,
     })).toMatchObject({
       versionCode: 42,
@@ -136,6 +139,7 @@ describe("parseReleaseInfo", () => {
       versionCode: 43,
       url: getReleaseApkUrl(43),
       sha256: "c".repeat(64),
+      packageName: "com.rutex.jupebmaster",
     })?.requiresReinstall).toBe(false);
   });
 

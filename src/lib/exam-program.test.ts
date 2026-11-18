@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EXAM_PROGRAMS, getExamProgramRoute, getExamProgramStorageKey, getWorkspacePath, isExamProgramId, isJambWorkspacePath } from "./exam-program";
+import { EXAM_PROGRAMS, getExamProgramRoute, getExamProgramStorageKey, getWorkspacePath, isExamProgramId, isJambWorkspacePath, isNavigationPathActive } from "./exam-program";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_FULL_MOCK_ENABLED, JAMB_SUBJECTS, JAMB_SYLLABUS_VERIFIED } from "./jamb-config";
 import { JAMB_TUTOR_PROMPT } from "./jamb-prompts";
 
@@ -26,6 +26,15 @@ describe("separate JAMB workspace configuration", () => {
     expect(isJambWorkspacePath("/jamb/settings/profile")).toBe(true);
     expect(isJambWorkspacePath("/jamb/settings/security")).toBe(true);
     expect(isJambWorkspacePath("/settings/profile")).toBe(false);
+  });
+
+  it("does not mark JAMB Home active on nested workspace routes", () => {
+    expect(isNavigationPathActive("/jamb", "/jamb")).toBe(true);
+    expect(isNavigationPathActive("/jamb/past-questions", "/jamb")).toBe(false);
+    expect(isNavigationPathActive("/jamb/settings/profile", "/jamb")).toBe(false);
+    expect(isNavigationPathActive("/jamb/settings/profile", "/jamb/settings/profile")).toBe(true);
+    expect(isNavigationPathActive("/jamb/profile", "/jamb/profile")).toBe(true);
+    expect(isNavigationPathActive("/settings/profile", "/")).toBe(false);
   });
 
   it("limits the initial pack to the three supplied science subjects", () => {

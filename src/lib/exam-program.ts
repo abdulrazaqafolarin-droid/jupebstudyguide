@@ -68,3 +68,9 @@ export function getWorkspacePath(pathname: string, program: ExamProgramId): stri
   if (program !== "jamb") return pathname;
   return JAMB_ROUTE_ALIASES[pathname] ?? pathname;
 }
+
+/** Root workspace routes must be exact matches, not prefixes of every child route. */
+export function isNavigationPathActive(pathname: string, route: string): boolean {
+  if (route === "/" || route === "/jamb") return pathname === route;
+  return pathname === route || pathname.startsWith(`${route}/`);
+}

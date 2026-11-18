@@ -11,6 +11,7 @@ import { useNotificationsContext } from "@/contexts/NotificationsContext";
 import { usePushNotificationsContext } from "@/contexts/PushNotificationsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { getWorkspacePath, isJambWorkspacePath, isNavigationPathActive } from "@/lib/exam-program";
 import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
 import { UserAvatar } from "@/components/UserAvatar";
 import { NotificationCenter } from "@/components/NotificationCenter";
@@ -210,10 +211,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                 <div className="flex-1 py-2 overflow-y-auto overscroll-contain">
                   {jambEnabled && <div className="px-3 pb-2"><ExamWorkspaceSwitcher /></div>}
                   {allLinks.map(({ path, label, icon: Icon }) => {
-                    const isActive =
-                      path === "/"
-                        ? location.pathname === "/"
-                        : location.pathname.startsWith(path);
+                    const isActive = isNavigationPathActive(location.pathname, path);
                     return (
                       <div key={path}>
                         <Link

@@ -43,11 +43,17 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
   // is not running, so the UI gate stays in step with the database policy.
   useEffect(() => {
     if (!Number.isFinite(subscriptionExpiresAt)) return;
-    const remaining = subscriptionExpiresAt - Date.now();
+    const remaining = subscriptionExpiresAt - clockNow;
     if (remaining <= 0) return;
-    const timeoutId = window.setTimeout(() => setClockNow(Date.now()), remaining + 25);
+    // Wake at most once per minute while a long subscription is active, then
+    // re-check at its exact expiry. This avoids browser timeout overflow for
+    // 30- and 90-day codes.
+    const timeoutId = window.setTimeout(
+      () => setClockNow(Date.now()),
+      Math.min(remaining + 25, 60_000),
+    );
     return () => window.clearTimeout(timeoutId);
-  }, [subscriptionExpiresAt]);
+  }, [subscriptionExpiresAt, clockNow]);
 
   const handleTrialActivation = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

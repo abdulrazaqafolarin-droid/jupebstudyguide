@@ -14,6 +14,7 @@ export function useJambBookmarks() {
   );
   const bookmarksRef = useRef(bookmarks);
   const deletedBookmarkIdsRef = useRef(deletedBookmarkIds);
+  const bookmarkChangeVersionRef = useRef(0);
   const bookmarkWriteQueuesRef = useRef(new Map<string, Promise<void>>());
 
   useEffect(() => { bookmarksRef.current = bookmarks; }, [bookmarks]);
@@ -31,6 +32,7 @@ export function useJambBookmarks() {
         return;
       }
       syncInFlight = true;
+      const versionAtStart = bookmarkChangeVersionRef.current;
       try {
       const userId = user.id;
       const { data, error } = await supabase
@@ -122,7 +124,7 @@ export function useJambBookmarks() {
       }
       } finally {
         syncInFlight = false;
-        if (syncRequested && active) {
+        if ((syncRequested || bookmarkChangeVersionRef.current !== versionAtStart) && active) {
           syncRequested = false;
           void sync();
         }
@@ -147,6 +149,7 @@ export function useJambBookmarks() {
 
   const toggle = useCallback((questionId: string) => {
     if (!isReady || !isDeletedReady || !questionId) return;
+    bookmarkChangeVersionRef.current += 1;
     const currentBookmarks = bookmarksRef.current;
     const exists = currentBookmarks.includes(questionId);
     const nextBookmarks = exists

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import StreakDisplay from "@/components/StreakDisplay";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
+import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import {
   JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
@@ -270,6 +271,13 @@ export default function JambHomePage() {
   const [error, setError] = useState<string | null>(null);
   const { savedAnswers, isReady: progressReady } = useJambPracticeProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
+  const { preferences: studyPreferences, isReady: studyPreferencesReady } = useJambStudyPreferences();
+  const focusSubjectsLabel = studyPreferences.subjects.length > 0
+    ? studyPreferences.subjects.map((subject) => JAMB_SUBJECT_INFO[subject].label).join(", ")
+    : "Not selected";
+  const examTargetLabel = studyPreferences.examTarget === "next-session"
+    ? "Next session"
+    : studyPreferences.examTarget === "early" ? "Preparing early" : "This session";
 
   useEffect(() => {
     let active = true;
@@ -395,6 +403,22 @@ export default function JambHomePage() {
               <p className="text-sm leading-relaxed text-muted-foreground">
                 Complete up to 10 reviewed JAMB questions in a subject you choose. Your mission progress and history are kept separate from JUPEB. Syllabus-led lessons will be added only after the official JAMB syllabus and topic mapping are verified.
               </p>
+              {studyPreferencesReady && (
+                <div className="grid grid-cols-1 gap-2 rounded-xl border border-border/70 bg-secondary/20 p-3 text-xs sm:grid-cols-3">
+                  <div>
+                    <p className="text-muted-foreground">Focus subjects</p>
+                    <p className="mt-0.5 font-semibold">{focusSubjectsLabel}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Exam target</p>
+                    <p className="mt-0.5 font-semibold">{examTargetLabel}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Daily goal</p>
+                    <p className="mt-0.5 font-semibold">{studyPreferences.dailyGoalMinutes} minutes</p>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2">
                 <Button onClick={() => navigate("/jamb/daily-mission")} className="gap-2">
                   <CalendarDays className="h-4 w-4" /> Open today's mission

@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - feat/independent-question-scroll-multi-inline-crop-2026-11-11
+      - feat/rutex-jamb-workspace
   workflow_dispatch:
     inputs:
       publish_release:

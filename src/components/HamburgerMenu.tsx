@@ -3,8 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
-  Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library, Lock, Award,
-  Users, TrendingUp, Compass, Sparkles, Clock3, GraduationCap
+  X, LogOut, BookOpen, Library, Award,
+  Users, TrendingUp, Compass, Sparkles, GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
@@ -12,7 +12,6 @@ import { usePushNotificationsContext } from "@/contexts/PushNotificationsContext
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
-import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { ExamWorkspaceSwitcher } from "@/components/ExamWorkspaceSwitcher";

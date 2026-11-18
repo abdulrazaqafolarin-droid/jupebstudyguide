@@ -91,12 +91,11 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
   // remain shared. JAMB question review remains a separate admin destination.
   const workspaceLinks = isJambWorkspace
     ? navLinks
-        .filter((item) => item.path !== "/study-chat")
         .map((item) => {
           if (item.path === "/") return { ...item, path: "/jamb" };
           if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
-          if (item.path === "/chat") return { ...item, path: "/jamb/ai", label: "AI Tutor" };
           if (item.path === "/syllabus") return { ...item, path: "/jamb/syllabus" };
+          if (item.path === "/study-chat") return { ...item, path: "/jamb/ai", label: "AI Tutor" };
           return item;
         })
     : navLinks;

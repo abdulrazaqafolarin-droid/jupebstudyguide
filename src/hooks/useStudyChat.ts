@@ -11,6 +11,7 @@ import { searchRelevantChunks } from '@/lib/rag';
 import type { AIMessage } from '@/hooks/useAITutorChats';
 import type { SyllabusTopic } from '@/types/syllabus';
 import type { Subject } from '@/types/question';
+import type { ExamProgramId } from '@/lib/exam-program';
 import {
   CHAT_SELECT_COLS,
   type StudyChatMeta,
@@ -32,7 +33,11 @@ export interface ActiveStudyTopic {
  * streaming, stop, edit-rewind, find-or-create per syllabus topic, and an
  * inline retry card when a stream dies before its first token.
  */
-export function useStudyChat() {
+export function useStudyChat(
+  examProgramId: ExamProgramId = 'jupeb',
+  customSystemPrompt?: string,
+  extraSystemContext = '',
+) {
   const { user, loading: authLoading } = useAuth();
   const [chats, setChats] = useState<StudyChatMeta[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
@@ -63,11 +68,12 @@ export function useStudyChat() {
       .from('ai_chats')
       .select(CHAT_SELECT_COLS)
       .eq('user_id', user.id)
+      .eq('exam_program_id', examProgramId)
       .order('updated_at', { ascending: false });
     const rows = (data ?? []) as unknown as StudyChatMeta[];
     setChats(rows);
     return rows;
-  }, [user]);
+  }, [user, examProgramId]);
 
   const loadMessages = useCallback(async (chatId: string) => {
     const generation = ++messageLoadGenerationRef.current;
@@ -123,6 +129,7 @@ export function useStudyChat() {
       .from('ai_chats')
       .insert({
         user_id: user.id,
+        exam_program_id: examProgramId,
         title: topicChatTitle(topic.name),
         topic_id: topic.id,
         subtopic: subtopic ?? null,
@@ -142,7 +149,7 @@ export function useStudyChat() {
     setStreamError(null);
     setActiveTopic({ topic, subject, subtopic: subtopic ?? null });
     return row.id;
-  }, [user]);
+  }, [user, examProgramId]);
 
   /** Syllabus entry point: resume the topic's newest thread, else create one. */
   const openTopic = useCallback(async (
@@ -155,6 +162,7 @@ export function useStudyChat() {
       .from('ai_chats')
       .select(CHAT_SELECT_COLS)
       .eq('user_id', user.id)
+      .eq('exam_program_id', examProgramId)
       .eq('topic_id', topic.id)
       .order('updated_at', { ascending: false })
       .limit(1)
@@ -173,7 +181,7 @@ export function useStudyChat() {
       return row.id;
     }
     return createTopicChat(topic, subject, subtopic);
-  }, [user, adoptChat, createTopicChat]);
+  }, [user, examProgramId, adoptChat, createTopicChat]);
 
   const switchChat = useCallback(async (chatId: string) => {
     const row = chatsRef.current.find((c) => c.id === chatId) ?? null;
@@ -186,7 +194,7 @@ export function useStudyChat() {
     if (!user) return null;
     const { data, error } = await supabase
       .from('ai_chats')
-      .insert({ user_id: user.id, title: 'New Chat' })
+      .insert({ user_id: user.id, exam_program_id: examProgramId, title: 'New Chat' })
       .select(CHAT_SELECT_COLS)
       .single();
     if (error || !data) {
@@ -197,27 +205,28 @@ export function useStudyChat() {
     setChats((prev) => [row, ...prev]);
     await adoptChat(row);
     return row.id;
-  }, [user, adoptChat]);
+  }, [user, examProgramId, adoptChat]);
 
   const deleteChat = useCallback(async (chatId: string) => {
     if (!user) return;
-    await supabase.from('ai_chats').delete().eq('id', chatId);
+    await supabase.from('ai_chats').delete().eq('id', chatId).eq('user_id', user.id).eq('exam_program_id', examProgramId);
     const remaining = chatsRef.current.filter((c) => c.id !== chatId);
     setChats(remaining);
     if (activeChatIdRef.current === chatId) {
       await adoptChat(remaining[0] ?? null);
     }
-  }, [user, adoptChat]);
+  }, [user, examProgramId, adoptChat]);
 
   const renameChat = useCallback(async (chatId: string, title: string) => {
     const clean = title.trim().slice(0, 60) || 'New Chat';
-    const { error } = await supabase.from('ai_chats').update({ title }).eq('id', chatId);
+    if (!user) return;
+    const { error } = await supabase.from('ai_chats').update({ title: clean }).eq('id', chatId).eq('user_id', user.id).eq('exam_program_id', examProgramId);
     if (error) {
       toast.error('Could not rename the chat.');
       return;
     }
     setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, title: clean } : c)));
-  }, []);
+  }, [user, examProgramId]);
 
   /** Rewind stored history from an edit point (same contract as the floating tutor). */
   const deleteMessagesFrom = useCallback(async (
@@ -293,10 +302,11 @@ export function useStudyChat() {
             const { error } = await supabase
               .from('ai_chats')
               .update({ title, updated_at: new Date().toISOString() })
-              .eq('id', chatId);
+              .eq('id', chatId)
+              .eq('exam_program_id', examProgramId);
             if (!error) setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, title } : c)));
           } else {
-            await supabase.from('ai_chats').update({ updated_at: new Date().toISOString() }).eq('id', chatId);
+            await supabase.from('ai_chats').update({ updated_at: new Date().toISOString() }).eq('id', chatId).eq('exam_program_id', examProgramId);
           }
         } catch {
           /* best-effort bookkeeping — next message retries the bump */
@@ -308,7 +318,7 @@ export function useStudyChat() {
 
     let ragContext = '';
     try {
-      ragContext = await searchRelevantChunks(userText);
+      if (examProgramId === 'jupeb') ragContext = await searchRelevantChunks(userText);
     } catch (e) {
       console.warn('RAG search failed:', e);
     }
@@ -318,7 +328,9 @@ export function useStudyChat() {
     const topic = activeTopicRef.current;
     const systemPrompt = topic
       ? buildTopicSystemPrompt(topic.topic, topic.subject, topic.subtopic)
-      : TUTOR_SYSTEM_PROMPT + '\n\n' + GENERAL_CHAT_PROMPT + getSyllabusContext();
+      : examProgramId === 'jamb'
+        ? (customSystemPrompt ?? TUTOR_SYSTEM_PROMPT) + extraSystemContext
+        : (customSystemPrompt ?? TUTOR_SYSTEM_PROMPT) + '\n\n' + GENERAL_CHAT_PROMPT + getSyllabusContext() + extraSystemContext;
     const subject = topic?.subject
       ?? (chatsRef.current.find((c) => c.id === chatId)?.subject ?? undefined);
 
@@ -435,8 +447,9 @@ export function useStudyChat() {
         topic?.subtopic || "",
         userText,
       ].filter(Boolean).join("\n"),
+      examProgramId,
     );
-  }, [user]);
+  }, [user, examProgramId, customSystemPrompt, extraSystemContext]);
 
   const sendMessage = useCallback(async (text: string, attachment?: { base64: string; mimeType: string; name: string } | null) => {
     await runTurn(messagesRef.current, text || (attachment ? `[Attached: ${attachment.name}]` : ''), { attachment });

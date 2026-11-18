@@ -63,6 +63,7 @@ const JambSyllabusPage = lazy(() => import("./pages/jamb/JambSyllabusPage"));
 const JambAchievementsPage = lazy(() => import("./pages/jamb/JambAchievementsPage"));
 const JambStatsPage = lazy(() => import("./pages/jamb/JambStatsPage"));
 const JambLeaderboardPage = lazy(() => import("./pages/jamb/JambLeaderboardPage"));
+const JambDailyMissionPage = lazy(() => import("./pages/jamb/JambDailyMissionPage"));
 const JambAdminQuestionPage = lazy(() => import("./pages/admin/JambQuestionBankAdminPage"));
 
 const JAMB_ENABLED = import.meta.env.VITE_ENABLE_JAMB === "true";
@@ -238,6 +239,8 @@ function AnimatedRoutes() {
             <Route path="/jamb/achievements" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambAchievementsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/stats" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambStatsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/leaderboard" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambLeaderboardPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/daily-mission" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/daily-mission/:missionId" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/ai" element={<ProtectedRoute><ErrorBoundary><ProtectedChatLayout><JambAITutorPage /></ProtectedChatLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/admin/jamb-questions" element={<AdminRoute><ErrorBoundary><ProtectedLayout><JambAdminQuestionPage /></ProtectedLayout></ErrorBoundary></AdminRoute>} />
           </>

@@ -44,6 +44,7 @@ The JAMB syllabus is not marked verified, and a complete official UTME mock rema
 | --- | --- | --- |
 | Home dashboard | `/jamb` | Visual and navigation parity. The JAMB daily card currently starts a timed drill; it is not yet a tracked guided mission with mission history. |
 | Past questions and saved questions | `/jamb/past-questions` | Equivalent staged practice flow with JAMB-only questions, saved answers and bookmarks. Availability depends on approved JAMB records. |
+| Daily mission and mission history | `/jamb/daily-mission` | Practice-only daily subject sets, resumable answer checks and JAMB-only mission history. It does not claim syllabus lessons or a topic calendar before official verification. |
 | Syllabus | `/jamb/syllabus` | UI parity only. Official topic catalogue and topic tracking remain unavailable until the JAMB syllabus is verified and published. |
 | Study Chat / AI tutor | `/jamb/ai` | Shared conversation UI with JAMB prompt, JAMB history partition and no JUPEB syllabus/RAG inheritance. |
 | Timed practice | `/jamb/cbt/setup` and `/jamb/cbt/:attemptId` | JAMB server-authoritative practice flow. This is not represented as the full official UTME mock. |
@@ -56,9 +57,9 @@ The JAMB syllabus is not marked verified, and a complete official UTME mock rema
 
 ### Remaining non-parity items and their blockers
 
-- **Guided daily mission and mission history:** not fully implemented as a JAMB workflow. JUPEB's equivalent depends on a verified topic calendar and topic-linked questions. The JAMB dashboard's current timed-practice shortcut is deliberately not described as a mission. A true version must be driven by reviewed JAMB questions and a verified JAMB topic plan.
+- **Syllabus-led daily lessons and topic calendar:** still blocked on obtaining and verifying the applicable official JAMB syllabus and mapping reviewed questions to it. The JAMB practice-only daily mission is implemented, but it does not invent topic lessons or pretend to be the JUPEB 30-day syllabus journey.
 - **Official syllabus and topic tracking:** blocked on obtaining, versioning and verifying the applicable JAMB syllabus. No JUPEB topics are substituted.
 - **Accuracy, mastery, score-derived awards and ranked leaderboard:** must remain unavailable or explicitly ungraded until approved JAMB answer keys, scored attempt records and a programme-scoped ranking feed are available. Saved option selections are not evidence of correctness.
 - **Full official UTME mock:** remains disabled pending compulsory Use of English content, verified current exam configuration and sufficient approved question coverage.
 
-The following pages remain intentionally shared because they are account or platform services rather than exam-specific learning data: chat, friends, leaderboard, discover, profile, profile settings, security settings, notifications and app download. Shared visibility does not grant these routes access to JUPEB-only question or progress data.
+JAMB daily mission records use a separate `jamb_daily_missions` table with owner-only RLS. The migration is included in this branch; until it is applied, the feature falls back to per-account local storage and displays a local-sync fallback. The following pages remain intentionally shared because they are account or platform services rather than exam-specific learning data: chat, friends, leaderboard, discover, profile, profile settings, security settings, notifications and app download. Shared visibility does not grant these routes access to JUPEB-only question or progress data.

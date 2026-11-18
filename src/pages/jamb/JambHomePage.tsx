@@ -376,8 +376,7 @@ export default function JambHomePage() {
           </section>
         )}
 
-        {/* Daily Mission visual parity. Topic-led missions stay gated until
-            an official JAMB syllabus and its question mapping are verified. */}
+        {/* Practice-only mission workflow; syllabus lessons remain gated until verified. */}
         <section className="mb-8 animate-in-up">
           <div className="overflow-hidden rounded-2xl border border-border bg-card">
             <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-accent/5 p-5 md:p-6">
@@ -386,21 +385,19 @@ export default function JambHomePage() {
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg font-bold">Daily Mission</h2>
-                <p className="text-sm text-muted-foreground">A focused JAMB practice session to build consistency.</p>
+                <p className="text-sm text-muted-foreground">A focused JAMB question set, saved answers and mission history.</p>
               </div>
               <span className="hidden rounded-full border border-amber-500/25 bg-amber-500/5 px-3 py-1 text-[10px] font-semibold text-amber-700 sm:inline-flex">
-                Topic plan pending verification
+                Practice-only
               </span>
             </div>
             <div className="space-y-4 p-5 md:p-6">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                JUPEB's guided mission uses its verified 30-day syllabus and topic-linked question pool.
-                JAMB topic lessons remain disabled until the official JAMB syllabus is checked and mapped.
-                You can still complete a timed subject drill today without using unverified lesson content.
+                Complete up to 10 reviewed JAMB questions in a subject you choose. Your mission progress and history are kept separate from JUPEB. Syllabus-led lessons will be added only after the official JAMB syllabus and topic mapping are verified.
               </p>
               <div className="flex flex-wrap gap-2">
-                <Button onClick={() => navigate("/jamb/cbt/setup")} className="gap-2">
-                  <Clock3 className="h-4 w-4" /> Start today's practice
+                <Button onClick={() => navigate("/jamb/daily-mission")} className="gap-2">
+                  <CalendarDays className="h-4 w-4" /> Open today's mission
                 </Button>
                 <Button variant="outline" onClick={() => navigate("/jamb/syllabus")}>
                   Check syllabus status

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
-  X, LogOut, BookOpen, Library, Award,
+  X, LogOut, BookOpen, Library, Award, CalendarDays,
   Users, TrendingUp, Compass, Sparkles, GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -105,6 +105,7 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
 
   const allLinks = [
     ...workspaceLinks,
+    ...(isJambWorkspace ? [{ path: "/jamb/daily-mission", label: "Daily Mission & History", icon: CalendarDays }] : []),
     ...(isAdmin
       ? [{
           path: isJambWorkspace ? "/admin/jamb-questions" : "/admin",

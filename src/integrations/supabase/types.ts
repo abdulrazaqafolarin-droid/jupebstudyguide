@@ -530,6 +530,33 @@ export type Database = {
         }
         Relationships: []
       }
+      jamb_daily_missions: {
+        Row: {
+          created_at: string
+          local_date: string
+          mission: Json
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          local_date: string
+          mission: Json
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          local_date?: string
+          mission?: Json
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_missions: {
         Row: {
           created_at: string

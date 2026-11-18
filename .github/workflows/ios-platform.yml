@@ -117,7 +117,9 @@ jobs:
           echo "iOS Simulator application built and identity verified."
 
       - name: Install and launch on an iPhone simulator
-        timeout-minutes: 8
+        # Hosted simulators can take several minutes to boot and install; allow
+        # the bounded command timeouts below to complete without truncation.
+        timeout-minutes: 12
         run: |
           set -euo pipefail
           APP="$RUNNER_TEMP/rutex-ios-derived/Build/Products/Debug-iphonesimulator/App.app"

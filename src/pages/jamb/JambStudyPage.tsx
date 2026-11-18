@@ -80,7 +80,7 @@ export default function JambStudyPage() {
     return () => { active = false; };
   }, []);
 
-  const loadQuestions = useCallback(async (subject: JambSubject, append = false) => {
+  const loadQuestions = useCallback(async (subject: JambSubject, append = false): Promise<JambQuestion[]> => {
     const sequence = ++requestSequence.current;
     const offset = append ? questions.length : 0;
     setLoadingQuestions(true);
@@ -95,18 +95,20 @@ export default function JambStudyPage() {
     }
     try {
       const result = await searchJambQuestions({ subject, offset, limit: PAGE_SIZE });
-      if (requestSequence.current !== sequence) return;
+      if (requestSequence.current !== sequence) return [];
       setQuestions((previous) => {
         if (!append) return result.questions;
         const seen = new Set(previous.map((question) => question.id));
         return [...previous, ...result.questions.filter((question) => !seen.has(question.id))];
       });
       setTotalCount(result.count);
+      return result.questions;
     } catch (reason) {
       if (requestSequence.current !== sequence) return;
       setPageError(reason instanceof JambSchemaUnavailableError
         ? "The JAMB question database is not available yet."
         : reason instanceof Error ? reason.message : "Could not load JAMB revision cards.");
+      return [];
     } finally {
       if (requestSequence.current === sequence) setLoadingQuestions(false);
     }
@@ -198,19 +200,12 @@ export default function JambStudyPage() {
     nextCard();
   };
 
-  const loadMore = () => {
+  const loadMore = async () => {
     if (!selectedSubject || loadingQuestions || questions.length >= totalCount) return;
-    const previousIds = new Set(questions.map((item) => item.id));
-    void loadQuestions(selectedSubject, true);
-    if (mode === "review") {
-      // Newly fetched cards join this review session only when they are due.
-      window.setTimeout(() => {
-        const newlyLoaded = questions.filter((item) => !previousIds.has(item.id));
-        if (newlyLoaded.length) setReviewQueueIds((previous) => [
-          ...previous,
-          ...dueQuestionIds(newlyLoaded.map((item) => item.id)),
-        ]);
-      }, 0);
+    const newlyLoaded = await loadQuestions(selectedSubject, true);
+    if (mode === "review" && newlyLoaded.length > 0) {
+      const newlyDue = dueQuestionIds(newlyLoaded.map((item) => item.id));
+      setReviewQueueIds((previous) => [...previous, ...newlyDue.filter((id) => !previous.includes(id))]);
     }
   };
 

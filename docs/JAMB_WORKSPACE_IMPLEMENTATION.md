@@ -40,7 +40,7 @@ The JAMB foundation is now applied in `supabase/migrations/20261117215633_create
 Completed deployment gates:
 1. Programme-aware AI, CBT and import Edge Functions are deployed to the existing project; their live versions and JWT settings are recorded in `docs/JAMB_RELEASE_STATE.md`.
 2. The shared database migration, question retrieval isolation probe and JUPEB row-count regression have been verified against the live project.
-3. The branch Preview is deployed and Ready with `VITE_ENABLE_JAMB=true` scoped only to `feat/rutex-jamb-workspace`. Production remains disabled.
+3. The JAMB feature flag is scoped only to `feat/rutex-jamb-workspace` Preview. The latest Preview build attempts are currently rate-limited by the connected Vercel daily build cap; this is not an application CI failure. Production remains disabled.
 
 Remaining content/acceptance gates:
 1. Sign in as an authorised Rutex admin and stage the committed Physics, Chemistry and Biology source packs through the import/review UI.
@@ -48,7 +48,7 @@ Remaining content/acceptance gates:
 3. Load and verify the current official JAMB syllabus and Use of English before enabling full official-format UTME mock mode.
 4. Complete a signed-in mobile Preview walkthrough with a real student/admin session; protected Vercel Preview pages cannot be verified as an authenticated user without that session.
 
-The feature flag is off by default globally, but is explicitly enabled for the `feat/rutex-jamb-workspace` Preview environment only. The latest Preview is Ready; Production remains disabled and has not been deployed. The database and six relevant Edge Functions are deployed to the existing shared Supabase project. No JAMB source questions have been staged or published pending authenticated admin review.
+The feature flag is off by default globally, but is explicitly enabled for the `feat/rutex-jamb-workspace` Preview environment only. The most recent Vercel checks for the updated branch are blocked by the connected account's daily build-rate limit; no fresh Preview was produced for the latest commits. Production remains disabled and has not been deployed. The database and six relevant Edge Functions are deployed to the existing shared Supabase project. No JAMB source questions have been staged or published pending authenticated admin review.
 
 ## Applied database state — 17 November 2026
 
@@ -73,6 +73,28 @@ The security advisor lists nine new server-owned JAMB tables as RLS-enabled with
 - Deno type checks cover the new JAMB Edge Functions and the shared study-access guard.
 - The shared Supabase migration and relevant Edge Functions are applied and post-checked. The feature flag is on for the feature Preview only; Production remains unchanged. Source questions remain private until an admin reviews them.
 
+
+
+## Persistent tutor-history separation — 18 November 2026
+
+The shared `ai_chats` table now has an `exam_program_id` discriminator through `20261118123742_scope_ai_chat_history_by_exam_program.sql`. Existing rows receive the JUPEB default, the foreign key points to the active exam-program registry, and `(user_id, exam_program_id, updated_at DESC)` supports scoped history lists. The migration was applied to the shared Rutex Supabase project and checked: all 321 existing tutor chats remain tagged `jupeb`; there are zero JAMB chat rows and zero unexpected programme IDs. Existing owner RLS policies were not weakened. The JAMB tutor stores, lists, renames, updates and deletes chats under `jamb`; JUPEB history remains isolated.
+
+## Local-first answer and bookmark reconciliation
+
+JAMB progress and bookmarks remain namespaced per signed-in user in local storage and synchronize to their programme-scoped cloud rows. Reconnect handling now has explicit reconciliation:
+
+- A newer local answer is pushed to the cloud; a newer cloud answer is merged into local state. Equal-timestamp conflicts retain the local answer and schedule it for upload.
+- Per-account sync operations are serialized and re-run once when a reconnect/focus event arrives during an active sync. Per-user/per-question answer writes are queued so rapid answer changes cannot complete out of order.
+- Bookmark removals create persisted local tombstones. Reconciliation deletes the cloud row before clearing a tombstone; a re-add while a cloud delete is in flight is restored instead of lost.
+- Reconnect sync is retried on browser online, focus and visible-page events. Failed writes leave the local value/tombstone available for retry.
+
+Pure reconciliation helpers and unit tests cover newer local/cloud answers, missing rows, tie handling, deleted bookmark tombstones, deduplication and re-addition. A browser-level offline/online walkthrough is still part of signed-in mobile acceptance.
+
+## Resumable and idempotent source upload
+
+Admin staging uses the original source SHA-256 to find an existing batch and resume a partial upload. Every chunk carries a stable zero-based source offset. The Edge Function maps it to one-based item numbers and upserts against the database's unique `(batch_id, item_number)` key with duplicate conflicts ignored, preserving already-reviewed rows when a timed-out request is retried. Batch counters are recalculated from stored item states instead of assuming each HTTP response was received. A bounded range helper has Deno tests for explicit offsets, legacy offset fallback and invalid/overflowing chunks.
+
+The admin UI only resumes a matching source hash and candidate count; it does not create duplicate batches or silently replace human review. Previously published source batches are not restaged.
 
 ## CBT reliability and post-submit review
 - Per-question answer writes are serialized so a fast sequence of option changes cannot finish out of order on the server.

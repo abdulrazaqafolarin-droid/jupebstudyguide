@@ -59,7 +59,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
     const { data, error } = await withActivationTimeout(
       (signal) => supabase
         .from("profiles")
-        .select("is_activated, is_admin, trial_expires_at")
+        .select("is_activated, is_admin, trial_expires_at, subscription_expires_at")
         .eq("user_id", user.id)
         .abortSignal(signal)
         .single(),
@@ -76,6 +76,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
         is_activated: data?.is_activated ?? false,
         is_admin: isAdminEmail || (data?.is_admin ?? false),
         trial_expires_at: data?.trial_expires_at ?? null,
+        subscription_expires_at: data?.subscription_expires_at ?? null,
         checking: false,
       },
       cacheable: true,
@@ -114,7 +115,7 @@ export function useActivation() {
   const [status, setStatus] = useState<ActivationStatus>(
     cachedForUser
       ? cachedForUser.status
-      : { is_activated: false, is_admin: false, trial_expires_at: null, checking: !!user },
+      : { is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, checking: !!user },
   );
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -123,7 +124,7 @@ export function useActivation() {
     async (force = false) => {
       if (!user) {
         activationCache = null;
-        setStatus({ is_activated: false, is_admin: false, trial_expires_at: null, checking: false });
+        setStatus({ is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, checking: false });
         return;
       }
 
@@ -178,7 +179,16 @@ export function useActivation() {
 
       const result = data as Record<string, unknown> | null;
       if (result?.success) {
-        const next: ActivationStatus = { is_activated: true, is_admin: status.is_admin, trial_expires_at: status.trial_expires_at, checking: false };
+        const next: ActivationStatus = {
+          is_activated: true,
+          is_admin: status.is_admin,
+          trial_expires_at: null,
+          subscription_expires_at:
+            typeof result.subscription_expires_at === "string"
+              ? result.subscription_expires_at
+              : status.subscription_expires_at ?? null,
+          checking: false,
+        };
         activationCache = { userId: user.id, status: next, fetchedAt: Date.now() };
         setStatus(next);
         setValidating(false);
@@ -195,7 +205,7 @@ export function useActivation() {
       setValidating(false);
       return { success: false, error: msg };
     }
-  }, [user, status.is_admin]);
+  }, [user, status.is_admin, status.subscription_expires_at]);
 
   const refreshStatus = useCallback(() => checkStatus(true), [checkStatus]);
 

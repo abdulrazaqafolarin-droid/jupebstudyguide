@@ -283,10 +283,12 @@ export function getJambSyllabusSubject(id: string): JambSyllabusSubject | undefi
 }
 
 export function getJambSyllabusTopic(
-  subjectId: JambSyllabusSubjectId,
+  subjectId: string,
   topicId: string,
 ): JambSyllabusTopic | undefined {
-  return JAMB_SYLLABUS[subjectId].sections
+  const subject = getJambSyllabusSubject(subjectId);
+  if (!subject || !topicId.trim()) return undefined;
+  return subject.sections
     .flatMap((section) => section.topics)
     .find((item) => item.id === topicId);
 }

@@ -35,6 +35,8 @@ describe("JAMB syllabus catalogue", () => {
     );
     expect(new Set(ids).size).toBe(ids.length);
     expect(getJambSyllabusTopic("physics", "phy-01-measurements")?.title).toBe("Measurements and Units");
+    expect(getJambSyllabusTopic("not-a-subject", "phy-01-measurements")).toBeUndefined();
+    expect(getJambSyllabusTopic("physics", "unknown-topic")).toBeUndefined();
     expect(getJambSyllabusTopicCount()).toBe(108);
   });
 });

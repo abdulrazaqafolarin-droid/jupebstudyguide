@@ -8,7 +8,7 @@ import { reconcileJambBookmarks } from "@/lib/jamb-local-sync";
 export function useJambBookmarks() {
   const { user, loading } = useAuth();
   const [bookmarks, setBookmarks, { isReady }] = useUserStorage<string[]>("jamb-bookmarks", []);
-  const [deletedBookmarkIds, setDeletedBookmarkIds] = useUserStorage<string[]>(
+  const [deletedBookmarkIds, setDeletedBookmarkIds, { isReady: isDeletedReady }] = useUserStorage<string[]>(
     "jamb-bookmark-deletions",
     [],
   );
@@ -19,7 +19,7 @@ export function useJambBookmarks() {
   useEffect(() => { deletedBookmarkIdsRef.current = deletedBookmarkIds; }, [deletedBookmarkIds]);
 
   useEffect(() => {
-    if (loading || !user?.id || !isReady) return;
+    if (loading || !user?.id || !isReady || !isDeletedReady) return;
     let active = true;
 
     const sync = async () => {
@@ -102,10 +102,10 @@ export function useJambBookmarks() {
       window.removeEventListener("focus", syncWhenAvailable);
       document.removeEventListener("visibilitychange", syncWhenVisible);
     };
-  }, [user?.id, loading, isReady, setBookmarks, setDeletedBookmarkIds]);
+  }, [user?.id, loading, isReady, isDeletedReady, setBookmarks, setDeletedBookmarkIds]);
 
   const toggle = useCallback((questionId: string) => {
-    if (!isReady || !questionId) return;
+    if (!isReady || !isDeletedReady || !questionId) return;
     const exists = bookmarksRef.current.includes(questionId);
     if (exists) {
       setBookmarks((previous) => previous.filter((id) => id !== questionId));
@@ -133,12 +133,12 @@ export function useJambBookmarks() {
         setDeletedBookmarkIds((previous) => previous.filter((id) => id !== questionId));
       }
     });
-  }, [isReady, setBookmarks, setDeletedBookmarkIds, user?.id]);
+  }, [isReady, isDeletedReady, setBookmarks, setDeletedBookmarkIds, user?.id]);
 
   const isBookmarked = useCallback(
     (questionId: string) => bookmarks.includes(questionId),
     [bookmarks],
   );
 
-  return { bookmarks, toggle, isBookmarked, isReady };
+  return { bookmarks, toggle, isBookmarked, isReady: isReady && isDeletedReady };
 }

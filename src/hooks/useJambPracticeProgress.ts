@@ -63,7 +63,7 @@ export function useJambPracticeProgress() {
               last_selected_option: answer.selected,
               last_answered_at: savedAt,
               last_viewed_at: now,
-              viewed_count: 1,
+              viewed_count: viewedCounts.get(questionId) ?? 1,
             };
           }),
           { onConflict: "user_id,exam_program_id,question_id" },

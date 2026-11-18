@@ -102,6 +102,25 @@ describe("parseReleaseInfo", () => {
     });
   });
 
+  it("requires the exact successor package identity when the build declares one", () => {
+    const release = {
+      versionCode: 212801,
+      versionName: "2.0.128.1",
+      commit: "abc123",
+      builtAt: "2026-11-18T09:49:35Z",
+      url: getReleaseApkUrl(212801),
+      sha256: "d".repeat(64),
+      packageName: "com.rutex.jupebmaster",
+    };
+
+    expect(parseReleaseInfo(release, "com.rutex.jupebmaster"))
+      .toMatchObject({ packageName: "com.rutex.jupebmaster", versionCode: 212801 });
+    expect(parseReleaseInfo({ ...release, packageName: "com.jupeb.master" }, "com.rutex.jupebmaster"))
+      .toBeNull();
+    const { packageName: _packageName, ...missingPackage } = release;
+    expect(parseReleaseInfo(missingPackage, "com.rutex.jupebmaster")).toBeNull();
+  });
+
   it("preserves the explicit one-time reinstall flag", () => {
     expect(parseReleaseInfo({
       versionCode: 42,

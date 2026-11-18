@@ -178,6 +178,7 @@ export default function JambQuestionBankAdminPage() {
       return;
     }
     setStaging(true);
+    let activeBatchId = "";
     try {
       const parsed = JSON.parse(await jsonFile.text()) as ImportPackage;
       if (parsed.schema_version !== 1 || parsed.exam_program_id !== "jamb" || !JAMB_SUBJECTS.includes(parsed.subject as Exclude<Subject, "math">) || !Array.isArray(parsed.items)) {
@@ -194,29 +195,68 @@ export default function JambQuestionBankAdminPage() {
         .upload(storagePath, sourceFile, { upsert: false, contentType: sourceFile.type || "text/plain" });
       if (uploadError && !/already exists/i.test(uploadError.message)) throw uploadError;
 
-      const staged = await invokeImport({
-        action: "stage",
-        subject: parsed.subject,
-        source_document: parsed.source_document || sourceFile.name,
-        source_sha256: sourceHash,
-        source_storage_path: storagePath,
-        rights_confirmed: true,
-        rights_note: rightsNote.trim(),
-        expected_items: parsed.items.length,
-      });
-      const batchId = String(staged?.batch?.id ?? "");
-      if (!batchId) throw new Error("The import batch was not created.");
+      // Refresh first so a previous partially uploaded batch can be resumed
+      // even after this page was reloaded.
+      const listed = await invokeImport({ action: "list-batches" });
+      const latestBatches = (listed?.batches ?? []) as Batch[];
+      setBatches(latestBatches);
+      const existingBatch = latestBatches.find((batch) =>
+        batch.subject_code === parsed.subject &&
+        batch.source_sha256.toLowerCase() === sourceHash.toLowerCase()
+      );
 
-      for (let index = 0; index < parsed.items.length; index += 50) {
-        await invokeImport({
-          action: "append-items",
-          batch_id: batchId,
-          items: parsed.items.slice(index, index + 50),
+      let nextOffset = 0;
+      if (existingBatch) {
+        if (existingBatch.expected_items !== parsed.items.length) {
+          throw new Error("This source hash is already attached to a batch with a different candidate count. Review that batch instead of changing its package.");
+        }
+        if (existingBatch.status === "published") {
+          setSelectedBatchId(existingBatch.id);
+          throw new Error("This exact source package has already been published. Its existing batch is now selected for review.");
+        }
+        activeBatchId = existingBatch.id;
+        nextOffset = Math.min(existingBatch.total_items, parsed.items.length);
+      } else {
+        const staged = await invokeImport({
+          action: "stage",
+          subject: parsed.subject,
+          source_document: parsed.source_document || sourceFile.name,
+          source_sha256: sourceHash,
+          source_storage_path: storagePath,
+          rights_confirmed: true,
+          rights_note: rightsNote.trim(),
+          expected_items: parsed.items.length,
         });
+        activeBatchId = String(staged?.batch?.id ?? "");
+        if (!activeBatchId) throw new Error("The import batch was not created.");
       }
-      toast.success("JAMB source staged for human review. No question was published.");
-      setSelectedBatchId(batchId);
+
+      setSelectedBatchId(activeBatchId);
       setItemOffset(0);
+
+      for (let index = nextOffset; index < parsed.items.length; index += 50) {
+        const chunkRequest = {
+          action: "append-items",
+          batch_id: activeBatchId,
+          item_offset: index,
+          items: parsed.items.slice(index, index + 50),
+        };
+        try {
+          await invokeImport(chunkRequest);
+        } catch (firstError) {
+          // The server upserts by (batch_id, item_number), so repeating the
+          // exact same offset after a lost response cannot duplicate rows or
+          // overwrite completed human review decisions.
+          try {
+            await invokeImport(chunkRequest);
+          } catch {
+            throw firstError;
+          }
+        }
+      }
+      toast.success(nextOffset > 0
+        ? "JAMB source upload resumed and completed. Questions remain in human review."
+        : "JAMB source staged for human review. No question was published.");
       setJsonFile(null);
       setSourceFile(null);
       setRightsConfirmed(false);
@@ -224,6 +264,10 @@ export default function JambQuestionBankAdminPage() {
       await refreshBatches();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "JAMB import staging failed.");
+      if (activeBatchId) {
+        setSelectedBatchId(activeBatchId);
+        setItemOffset(0);
+      }
       await refreshBatches();
     } finally {
       setStaging(false);

@@ -66,7 +66,7 @@ export default function JambStudyPage() {
   const { bookmarks, toggle: toggleBookmark, isReady: bookmarksReady } = useJambBookmarks();
   const { saveAnswer } = useJambPracticeProgress();
   const {
-    progress, rateQuestion, dueQuestionIds, getStats, isReady: reviewReady,
+    rateQuestion, dueQuestionIds, getStats, isReady: reviewReady,
   } = useJambReviewProgress();
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getTextbookDatabaseName } from "@/lib/rag";
+import { getTextbookDatabaseName } from "@/lib/textbook-library";
 
 describe("programme and account scoped textbook indexes", () => {
   it("uses a distinct local index for each exam programme", () => {

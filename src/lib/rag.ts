@@ -1,5 +1,7 @@
 import { generateEmbedding } from "./ai-service";
 import type { ExamProgramId } from "@/lib/exam-program";
+import { getTextbookDatabaseName } from "@/lib/textbook-library";
+export { getTextbookDatabaseName } from "@/lib/textbook-library";
 let pdfjsLib: typeof import("pdfjs-dist") | null = null;
 async function getPDFJS() {
   if (!pdfjsLib) {
@@ -9,12 +11,6 @@ async function getPDFJS() {
   return pdfjsLib;
 }
 interface TextbookChunk { id: string; title: string; text: string; embedding: number[]; }
-/** Local indexes are isolated by both exam programme and authenticated account. */
-export function getTextbookDatabaseName(program: ExamProgramId, userId: string): string {
-  const safeUserId = userId.trim();
-  if (!safeUserId) throw new Error("A signed-in account is required for a textbook library.");
-  return `${program}-rag-${safeUserId}`;
-}
 const DB_VERSION = 1;
 const STORE_NAME = "textbook-chunks";
 function openDB(program: ExamProgramId, userId: string): Promise<IDBDatabase> {

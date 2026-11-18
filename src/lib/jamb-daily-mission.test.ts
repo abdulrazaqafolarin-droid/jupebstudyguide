@@ -22,6 +22,9 @@ describe("JAMB daily mission records", () => {
     expect(mission?.questionIds).toEqual(["q1", "q2", "q3"]);
     expect(mission?.status).toBe("in_progress");
     expect(createJambDailyMission("2026-11-18", "biology", ["q1", "q2"], fixedNow)).toBeNull();
+    const chemistry = createJambDailyMission("2026-11-18", "chemistry", ["c1", "c2", "c3"], fixedNow);
+    expect(chemistry).not.toBeNull();
+    expect(chemistry?.id).not.toBe(mission?.id);
   });
 
   it("does not allow answers for questions outside the saved mission or invalid options", () => {

@@ -66,10 +66,12 @@ export default function JambDailyMissionPage() {
       .sort((a, b) => a.subject.localeCompare(b.subject)),
     [history, today],
   );
-  const activeMission = useMemo(() => {
-    if (missionId) return history.find((mission) => mission.id === missionId) ?? null;
-    return todayMissions.find((mission) => mission.status === "in_progress") ?? todayMissions[0] ?? null;
-  }, [history, missionId, todayMissions]);
+  // The hub stays a hub even when today's missions exist, so learners can
+  // start or resume more than one subject mission on the same day.
+  const activeMission = useMemo(
+    () => missionId ? history.find((mission) => mission.id === missionId) ?? null : null,
+    [history, missionId],
+  );
   const activeMissionId = activeMission?.id ?? null;
   const questionIdsKey = activeMission?.questionIds.join("|") ?? "";
 

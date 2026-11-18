@@ -191,7 +191,7 @@ Deno.serve(async (request: Request) => {
       if (batch.exam_program_id !== "jamb" || batch.imported_by !== user.id || !batch.rights_confirmed) {
         return respond({ error: "This batch cannot be modified by the current administrator" }, 403);
       }
-      if (!["staged", "reviewing"].includes(batch.status)) {
+      if (!["staged", "reviewing", "approved"].includes(batch.status)) {
         return respond({ error: "Items can only be added to a staged or reviewing batch" }, 409);
       }
 
@@ -201,35 +201,63 @@ Deno.serve(async (request: Request) => {
         .eq("batch_id", batchId);
       if (countError) return respond({ error: countError.message }, 500);
 
-      if ((count ?? 0) + items.length > Number(batch.expected_items ?? 0)) {
-        return respond({ error: "Staged item count cannot exceed the source package item count." }, 409);
+      const itemOffset = Number.isInteger(body.item_offset) ? Number(body.item_offset) : (count ?? 0);
+      const expectedItems = Number(batch.expected_items ?? 0);
+      if (itemOffset < 0 || itemOffset + items.length > expectedItems) {
+        return respond({ error: "The requested item range must stay within the source package." }, 409);
       }
       const rows = items.map((item, index) => {
         const result = normalizeItem(item, batch);
         return {
           batch_id: batchId,
-          item_number: (count ?? 0) + index + 1,
+          item_number: itemOffset + index + 1,
           raw_payload: result.raw,
           normalized_payload: result.normalized,
           validation_errors: result.errors,
           status: "needs_review",
         };
       });
-      const { error: insertError } = await supabase.from("question_import_items").insert(rows);
+
+      // The database has a UNIQUE(batch_id, item_number) constraint.
+      // Ignoring conflicts makes a retry of a timed-out chunk safe and keeps
+      // already-reviewed rows intact instead of replacing their decisions.
+      const { error: insertError } = await supabase
+        .from("question_import_items")
+        .upsert(rows, {
+          onConflict: "batch_id,item_number",
+          ignoreDuplicates: true,
+        });
       if (insertError) return respond({ error: insertError.message }, 500);
 
-      const nextCount = (count ?? 0) + rows.length;
+      const [allItems, needsReview, approved, published] = await Promise.all([
+        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId),
+        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).eq("status", "needs_review"),
+        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).in("status", ["approved", "approved_ungraded", "published"]),
+        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).eq("status", "published"),
+      ]);
+      const recalcError = allItems.error ?? needsReview.error ?? approved.error ?? published.error;
+      if (recalcError) return respond({ error: recalcError.message }, 500);
+      const nextCount = allItems.count ?? 0;
+      const nextBatchStatus = (needsReview.count ?? 0) > 0 ? "reviewing" : "approved";
       const { error: updateError } = await supabase
         .from("question_import_batches")
         .update({
           total_items: nextCount,
-          needs_review_count: nextCount,
-          status: "reviewing",
+          needs_review_count: needsReview.count ?? 0,
+          approved_count: approved.count ?? 0,
+          published_count: published.count ?? 0,
+          status: nextBatchStatus,
           updated_at: new Date().toISOString(),
         })
         .eq("id", batchId);
       if (updateError) return respond({ error: updateError.message }, 500);
-      return respond({ batch_id: batchId, appended: rows.length, total_items: nextCount, expected_items: batch.expected_items });
+      return respond({
+        batch_id: batchId,
+        appended: Math.max(0, nextCount - (count ?? 0)),
+        total_items: nextCount,
+        expected_items: expectedItems,
+        next_offset: nextCount,
+      });
     }
 
     if (action === "list-batches") {

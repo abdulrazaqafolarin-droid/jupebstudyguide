@@ -1,41 +1,87 @@
 # Rutex JAMB — release state
 
-Checked 17 November 2026 against PR #78, the Ready Vercel Preview and live Supabase project `gzyczowqqywesqhqqpdi`.
+**Checked:** 18 November 2026  
+**Repository:** `abdulrazaqafolarin-droid/jupebstudyguide`  
+**Pull request:** [#78 — Add a separate JAMB study workspace](https://github.com/abdulrazaqafolarin-droid/jupebstudyguide/pull/78)  
+**Feature branch:** `feat/rutex-jamb-workspace`  
+**Latest branch head at this update:** `d025b9fad5a9471e37350c58cb34a62cbed92913`  
+**Supabase project:** `gzyczowqqywesqhqqpdi` (existing Rutex/JUPEB project)
+
+## Release boundary
+
+PR #78 remains open as a **Draft**. JAMB is a separate workspace in the existing Rutex application and account system. Production remains on `main`; the feature branch is for Preview acceptance only.
+
+The `VITE_ENABLE_JAMB=true` environment variable is scoped to the `feat/rutex-jamb-workspace` Preview branch in both connected Vercel projects (`rutexjupebmaster` and `jupebstudyguide`). No Production-scoped JAMB flag was added. The latest checked Production deployments for both projects still use `main` commit `fd61595f0a88dccd557e977a8a8f2fa56c968822`; no Production deployment was performed for this feature.
 
 ## Implemented and deployed
-- JAMB home, subject question browser, timed subject-practice CBT, JAMB-aware AI tutor, syllabus status and admin import/review/publish UI are implemented in the feature branch.
-- Programme scoping covers question reads, search/RAG, answer references, bookmarks and practice progress; existing JUPEB flows remain JUPEB-scoped.
-- Migration `20261117215633_create_jamb_workspace` is applied to the existing Rutex Supabase project after a successful rollback-only SQL preflight.
-- Five remote-only historical migration sources were restored verbatim, restoring local migration history through `20261112011529`.
-- Edge Functions are deployed and ACTIVE on the same project: `exam-attempts` v3 (JWT on), `exam-practice` v1 (JWT on), `question-import` v1 (JWT on), `ai-tutor` v100, `chat-proxy` v131, and `question-rag-index` v3.
-- CBT answer writes are serialized per question; manual submit flushes the latest answers before scoring. In-progress question payloads do not contain keys or explanations. Owner-only answer review is available only after submit/expiry, and returns only independently approved keys/explanations.
-- RLS and grants keep answer/import/attempt data server-owned. The new Edge Functions authenticate active sessions and enforce user/admin ownership.
-- Vercel Preview for branch `feat/rutex-jamb-workspace` is Ready: [Open JAMB Preview](https://jupebstudyguide-git-f-29dfec-abdulrazaqafolarin-droids-projects.vercel.app). Latest checked deployment `dpl_8mUM6EFd3FMh8uks5mvjbSJxKYaD` was built from commit `222797586db6dbb55c401afe375a60e62f1d3fed`.
-- `VITE_ENABLE_JAMB=true` is scoped to that branch's **Preview only**. No Production target was added, and no Production deployment was performed.
+
+- Dedicated JAMB home, past-question browser, timed subject-practice CBT, JAMB-aware AI tutor, syllabus status page and admin source import/review/publish UI.
+- Programme scoping for question reads/search/RAG, answer references, bookmarks and practice progress; existing JUPEB question retrieval remains scoped to JUPEB.
+- Additive migration `20261117215633_create_jamb_workspace` is applied to the existing Supabase project. The migration passed a rollback-only SQL preflight first.
+- Five remote-only historical migration sources were restored verbatim, reconciling local migration history through `20261112011529`.
+- Server-owned CBT attempt lifecycle, answer persistence, expiry and scoring. In-progress snapshots omit answer keys and explanations. Post-submit review is owner-authenticated and exposes only independently approved keys/explanations.
+- Source intake preserves original hashes, question/source references, options and figure placeholders. The importer does not synthesize answers, discard E options or publish automatically.
+
+### Live Edge Function deployment
+
+All six relevant functions are `ACTIVE` on the existing project. Their entrypoints and bundled helper files were compared against the feature-branch source and matched byte-for-byte. Later branch commits changed Android/build workflow files, not these function sources.
+
+| Function | Live version | Gateway `verify_jwt` |
+|---|---:|---|
+| `exam-attempts` | v4 | false |
+| `exam-practice` | v2 | false |
+| `question-import` | v2 | false |
+| `ai-tutor` | v101 | false |
+| `chat-proxy` | v132 | false |
+| `question-rag-index` | v4 | false |
+
+**Authentication detail:** gateway JWT verification is disabled for these functions, so security depends on their in-handler checks. The deployed handlers validate Bearer tokens with Supabase Auth; the exam endpoints also enforce active study access; question import additionally requires an administrator; the embedding worker checks administrator status; and the AI endpoints apply the shared AI-access guard. Do not remove these checks or assume the gateway setting authenticates requests by itself.
 
 ## Live database verification
-- Existing JUPEB question rows: 3,227; visible published JUPEB rows: 2,984 (unchanged after migration).
-- JAMB question rows: 0 (no source material was auto-published).
-- Programme rows: JUPEB + JAMB. Five JAMB subject records exist: Physics/Chemistry/Biology available; Use of English compulsory but unavailable; Mathematics unavailable.
-- One published practice configuration enables 10/20/40-question single-subject Rutex drills. The official-format full mock remains disabled.
-- Programme-aware vector/text retrieval RPCs and transactional question-batch publication RPC exist.
-- Private `question-source-documents` bucket exists alongside the existing `question-images` bucket.
-- Live retrieval isolation probe: the same Physics query returns 0 JAMB rows and 30 JUPEB matches. This is expected until JAMB questions are reviewed and published.
-- Embedding worker audit: the database trigger durably queues each published JAMB question. There is no `pg_cron` job for this worker, so the JAMB admin page now drains the shared `question-rag-index` queue after a publish (up to 50 per run) and offers a visible queue counter plus a manual `Index next 50` action. Failed provider jobs remain queued for retry. Current queue: 0; stored embeddings: 2,984 (existing JUPEB only); published JAMB: 0.
 
-## Committed source inventory
-The importer regression test now pins the exact candidate counts from the current committed source files. See `docs/JAMB_SOURCE_INTAKE_REPORT.md` for year/reference, option-pattern and figure-placeholder counts. These are candidates for admin review, not approved or published student questions.
+Read-only checks on 18 November 2026 confirmed:
 
-## Validation
-- Importer regression tests cover synthetic parser edge cases and all three real committed source packs; the real-source regression pins 896 Physics, 1,940 Chemistry and 1,833 Biology candidate blocks.
-- Programme-aware retrieval and answer-scoring tests pass: 12 Deno tests.
-- On the latest code commit `81db339ae6aa45ef8e9d1759532dbd2d3fa54f5d`, CI has passed the importer tests, Deno behaviour tests, strict Edge Function type-checks, TypeScript, unit tests, lint, web build and Capacitor sync. The Android debug APK compile was still running at the last check.
-- The prior complete validation workflow on `30da66dd9e3455c87ed1b551299ed378939839f0` passed through Android debug build. A separate native iOS/artifact workflow later returned `action_required`; it is not a JAMB web/Edge Function test failure.
+- JUPEB question rows: **3,227**; visible published JUPEB rows: **2,984**.
+- JAMB question rows: **0**; JAMB import batches: **0**.
+- JAMB subjects: Physics, Chemistry and Biology available; Use of English compulsory but unavailable; Mathematics unavailable.
+- The published `rutex-practice-v1` configuration permits 10/20/40-question subject drills. `official_format_verified=false` and `full_mock_enabled=false`.
+- No JAMB source material has been staged or published. Existing JUPEB rows were not relabelled.
 
-## Remaining content-release gates
-1. Sign in as an authorised Rutex admin at `/admin/jamb-questions`, run `python scripts/import_jamb_sources.py` from the repository root, and stage the generated JSON together with each unchanged original text file. The import flow verifies the SHA-256, records source-use permission, and keeps every candidate private until reviewed.
-2. Review source year, question wording, option order, duplicates and every figure/diagram. Publish an item as ungraded when no trustworthy answer key exists; only add a key/explanation after independent verification. The three supplied packs do not include verified answer keys or worked solutions, and no JAMB rows have been published yet.
-3. Verify and version the current official JAMB syllabus and Use of English content before offering a full official-format UTME mock. Current 10/20/40 sessions are explicitly Rutex study drills, not an official mock.
-4. Complete a signed-in mobile Preview walkthrough with a real admin/student account. A protected Preview cannot be fully exercised as an authenticated student/admin without that user's session.
+### Access-control checks
 
-The implementation and backend are deployed to the feature Preview. Student question-bank content remains gated on authenticated admin source-rights attestation and human content review rather than guessing answers or publishing unverified material. Production remains unchanged.
+The nine server-owned answer-key, import, syllabus, configuration and CBT tables have RLS enabled and grant table privileges only to `service_role`; they have no direct `anon` or `authenticated` grants and no student-facing policies. The exam-program registry has an authenticated, active-session read policy. Bookmarks and progress use authenticated owner policies with active-session checks, and their write checks require the referenced visible/published question to match the same exam programme.
+
+This is the deliberate server-mediated access model. Do not add direct student table grants to the server-owned tables as a shortcut.
+
+## Source-pack intake state
+
+The committed Physics, Chemistry and Biology source files parse to **4,669 candidates**:
+
+| Source | Candidate blocks |
+|---|---:|
+| Physics | 896 |
+| Chemistry | 1,940 |
+| Biology | 1,833 |
+| **Total** | **4,669** |
+
+These remain source candidates, not approved questions. The files do not contain a verified answer-key/solution set. The importer leaves answers and explanations blank; historical A–E options and diagram placeholders are preserved. All three packs remain unpublished and have not been staged in the live database.
+
+Before staging, an authorised administrator must attest to the right to store/use the source material. Every question must then be reviewed for source year, wording, option order, duplicates and original figure. Questions without a reliable key may be approved as ungraded; a scored key/explanation requires independent verification.
+
+## Validation and build state
+
+- The JAMB validation workflow on commit `e2587462e48aa8413776fef5a12391a8959e203b` passed importer regression tests against all three committed source packs, Deno programme-aware retrieval/scoring tests, JAMB Edge Function type checks, TypeScript, unit tests, lint, web build, Capacitor sync and Android debug compilation.
+- The repository-wide validation workflow on the same commit passed its substantive checks, including Supabase function typing/tests, application TypeScript, importer tooling, unit tests and lint.
+- The separate Rutex Master Next artifact-only job succeeded on commit `c90f8cdd178ee1dbd1c29850bcb3f59f848478d1`: Gradle built the APK; package/version/minimum SDK checks passed; the APK signing certificate matched the dedicated successor keystore; and the verified artifact was uploaded to GitHub Actions as artifact `14404831797`. The Supabase updater-publication step was skipped, so no release file or updater manifest was changed.
+- The APK mismatch was caused by a hard-coded original Android application ID. Capacitor and Gradle now accept the explicit successor identity from CI while retaining `com.jupeb.master` as the default for normal builds.
+- The successor APK workflow is now scoped to the successor PR and its stacked UI PR; unrelated JAMB PR changes no longer need to build that separate release artifact.
+- The iOS simulator workflow was restarted for the newest branch commit after its previous run was cancelled by a newer PR update. Its latest run must finish before the iOS check is considered passed.
+
+## Remaining release gates
+
+1. Complete a signed-in mobile Preview walkthrough with a real student and authorised administrator. A successful unauthenticated HTTP 200 from the SPA shell is not a substitute for testing authenticated student/admin journeys.
+2. Stage the three source packs only after source-rights attestation. Review and approve every item before publication; do not guess missing answer keys or explanations.
+3. Verify and version the current official JAMB syllabus and load reviewed Use of English content before enabling a full official-format UTME mock. Until then, the 10/20/40 sessions must remain clearly labelled Rutex practice drills.
+4. Keep PR #78 in Draft and Production disabled until the remaining acceptance gates and release review are complete.
+
+**No Production UI deployment, additional database migration, JAMB source publication or updater-release publication was performed during this continuation.**

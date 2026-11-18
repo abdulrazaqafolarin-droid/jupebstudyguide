@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -195,13 +195,12 @@ export default function JambPastQuestionsPage() {
       if (view === "questions" && year) next.set("year", String(year));
       else next.delete("year");
     }
-    setSearchParams(next, { replace: true });
+    if (next.toString() !== searchParams.toString()) setSearchParams(next, { replace: true });
   }, [view, subject, year, searchParams, setSearchParams]);
 
   const subjectInfo = JAMB_SUBJECT_INFO[subject];
   const pageNumber = Math.floor(offset / JAMB_INITIAL_QUESTION_PAGE_SIZE) + 1;
   const totalPages = Math.max(1, Math.ceil(count / JAMB_INITIAL_QUESTION_PAGE_SIZE));
-  const subjectSummary = summaries.find((row) => row.subject === subject);
   const totalPublished = summaries.reduce((sum, row) => sum + row.count, 0);
   const visibleQuestions = view === "bookmarks" ? bookmarkQuestions : questions;
   const visibleCount = view === "bookmarks" ? bookmarkQuestions.length : count;
@@ -391,16 +390,6 @@ export default function JambPastQuestionsPage() {
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-1">
-            {view === "questions" && (
-              <button
-                type="button"
-                onClick={() => { setSearch((value) => value ? "" : " "); setOffset(0); }}
-                className="rounded-xl p-2 transition-colors hover:bg-accent"
-                aria-label="Toggle question search"
-              >
-                <Search className="h-[18px] w-[18px] text-muted-foreground" />
-              </button>
-            )}
             <button
               type="button"
               onClick={() => setView("bookmarks")}

@@ -190,11 +190,11 @@ export function useStudyChat(
   }, [adoptChat]);
 
   /** Sidebar "+ New chat": a topic-less thread (generic tutor prompt). */
-  const newChat = useCallback(async (): Promise<string | null> => {
+  const newChat = useCallback(async (subject?: string): Promise<string | null> => {
     if (!user) return null;
     const { data, error } = await supabase
       .from('ai_chats')
-      .insert({ user_id: user.id, exam_program_id: examProgramId, title: 'New Chat' })
+      .insert({ user_id: user.id, exam_program_id: examProgramId, title: 'New Chat', subject: subject ?? null })
       .select(CHAT_SELECT_COLS)
       .single();
     if (error || !data) {

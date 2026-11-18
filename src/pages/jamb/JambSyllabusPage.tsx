@@ -121,8 +121,7 @@ export default function JambSyllabusPage() {
                 </span>
               </div>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                The five syllabus PDFs you committed are now organised into subject sections and trackable topics.
-                Your topic progress is saved separately from JUPEB.
+                The five syllabus PDFs you committed are organised into subject sections and trackable topics. Where a JAMB-hosted IBASS PDF was available, its source link is shown separately. Your topic progress is saved separately from JUPEB.
               </p>
               <div className="mt-4 flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Overall completed topics</span>
@@ -142,7 +141,7 @@ export default function JambSyllabusPage() {
         <motion.section variants={itemAnim} className="flex items-start gap-3 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
           <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
           <div>
-            <h2 className="text-sm font-semibold">Uploaded source copies are not yet certified as the current IBASS edition</h2>
+            <h2 className="text-sm font-semibold">Syllabus source and version review</h2>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{JAMB_SYLLABUS_REVIEW_NOTICE}</p>
             <a
               href="https://ibass.jamb.gov.ng/e-syllabus"
@@ -213,7 +212,7 @@ export default function JambSyllabusPage() {
                     >
                       <div className="space-y-4 border-t border-border/60 p-4">
                         <div>
-                          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">General objectives in the uploaded source</h3>
+                          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">General objectives</h3>
                           <ul className="mt-2 space-y-1.5">
                             {subject.generalObjectives.map((objective) => (
                               <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
@@ -223,6 +222,24 @@ export default function JambSyllabusPage() {
                             ))}
                           </ul>
                         </div>
+
+                        {subject.examinationStructure && (
+                          <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+                            <h3 className="text-xs font-semibold uppercase tracking-wide text-primary">Examination structure in JAMB IBASS</h3>
+                            <ul className="mt-2 space-y-1.5">
+                              {subject.examinationStructure.map((item) => (
+                                <li key={item} className="text-xs leading-relaxed text-muted-foreground">{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {subject.sourceComparisonNote && (
+                          <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3">
+                            <h3 className="text-xs font-semibold text-amber-700 dark:text-amber-300">Source comparison</h3>
+                            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{subject.sourceComparisonNote}</p>
+                          </div>
+                        )}
 
                         {subject.sections.map((section) => (
                           <div key={section.id} className="space-y-2">
@@ -271,6 +288,19 @@ export default function JambSyllabusPage() {
                                               ))}
                                             </ul>
                                           </div>
+                                          {topic.objectives && topic.objectives.length > 0 && (
+                                            <div>
+                                              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Candidates should be able to</p>
+                                              <ul className="mt-1.5 space-y-1">
+                                                {topic.objectives.map((objective) => (
+                                                  <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
+                                                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                                                    {objective}
+                                                  </li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
                                           <div className="flex flex-wrap gap-2">
                                             <Button
                                               size="sm"
@@ -308,15 +338,25 @@ export default function JambSyllabusPage() {
                           </div>
                         ))}
                         <div className="flex flex-wrap gap-2 border-t border-border/60 pt-3">
+                          {subject.officialSourceUrl && (
+                            <a
+                              href={subject.officialSourceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                            >
+                              Open JAMB-hosted IBASS PDF <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
                           <a
                             href={"https://github.com/abdulrazaqafolarin-droid/jupebstudyguide/blob/main/" + encodeURIComponent(subject.sourceFile)}
                             target="_blank"
                             rel="noreferrer"
                             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                           >
-                            Open original uploaded PDF <ExternalLink className="h-3 w-3" />
+                            Open uploaded source PDF <ExternalLink className="h-3 w-3" />
                           </a>
-                          <span className="text-[10px] text-muted-foreground">SHA-256 recorded · {subject.sourcePageCount} PDF pages</span>
+                          <span className="text-[10px] text-muted-foreground">Uploaded-source SHA-256 recorded · {subject.sourcePageCount} pages{subject.officialSourceCheckedAt ? " · IBASS checked " + subject.officialSourceCheckedAt : ""}</span>
                         </div>
                       </div>
                     </motion.div>

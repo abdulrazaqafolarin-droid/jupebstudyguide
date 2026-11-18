@@ -16,6 +16,7 @@ export interface JambSyllabusTopic {
   title: string;
   outline: string[];
   sourcePages: number[];
+  objectives?: string[];
 }
 
 export interface JambSyllabusSection {
@@ -35,6 +36,10 @@ export interface JambSyllabusSubject {
   sourceFile: string;
   sourceSha256: string;
   sourcePageCount: number;
+  officialSourceUrl?: string;
+  officialSourceCheckedAt?: string;
+  sourceComparisonNote?: string;
+  examinationStructure?: string[];
   reviewState: JambSyllabusReviewState;
   generalObjectives: string[];
   sections: JambSyllabusSection[];
@@ -60,6 +65,9 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceFile: "Physics-1.pdf",
     sourceSha256: "62f5ac84592735cd5829296cb52da5bc8b582ee0f2227999cca73b58dcabfee5",
     sourcePageCount: 20, reviewState: "needs_current_source_review",
+    officialSourceUrl: "https://ibass.jamb.gov.ng/assets/uploads/Physics.pdf",
+    officialSourceCheckedAt: "2026-11-18",
+    sourceComparisonNote: "JAMB-hosted IBASS Physics PDF is available. The uploaded 2025 copy is retained as supplied; the complete topic/objective mapping still needs line-by-line reconciliation against the IBASS PDF.",
     generalObjectives: [
       "Sustain interest in physics.",
       "Develop attitudes relevant to accuracy, precision and objectivity.",
@@ -156,6 +164,9 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceFile: "Biology-1.pdf",
     sourceSha256: "8afb9aa5c3bece851d6a7ec9b6ce85909aa94f1657d0d01b76d96a5d904467f5",
     sourcePageCount: 12, reviewState: "needs_current_source_review",
+    officialSourceUrl: "https://ibass.jamb.gov.ng/assets/uploads/Biology.pdf",
+    officialSourceCheckedAt: "2026-11-18",
+    sourceComparisonNote: "JAMB-hosted IBASS Biology PDF is available. The uploaded 2025 copy is retained as supplied; the complete topic/objective mapping still needs line-by-line reconciliation against the IBASS PDF.",
     generalObjectives: [
       "Demonstrate knowledge of diversity, interdependence and unity of life.",
       "Account for continuity of life through reorganization, inheritance and evolution.",
@@ -254,28 +265,81 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceFile: "Use of English.pdf",
     sourceSha256: "f2b6bc4f2c30fc19ecf57bc14778100ce0deca59445beff9f7e10f34cbf7da18",
     sourcePageCount: 5, reviewState: "needs_current_source_review",
+    officialSourceUrl: "https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf",
+    officialSourceCheckedAt: "2026-11-18",
+    sourceComparisonNote: "The uploaded 2025 PDF conflicts with the JAMB-hosted IBASS PDF: it says three passages instead of two, omits the named reading text The Lekki Headmaster by Kabir Alabi Garba, and differs on homonyms, punctuation/spelling and oral vowel coverage. This catalogue follows the JAMB-hosted IBASS PDF checked on 18 November 2026; the uploaded copy remains available as a separate source record.",
     generalObjectives: [
-      "Communicate effectively in written and spoken English.",
+      "Communicate effectively in both written and spoken English.",
       "Use English Language for learning at the tertiary level.",
+    ],
+    examinationStructure: [
+      "Section A — Comprehension/Summary: one comprehension passage (5 questions), one cloze passage (10 questions), and one reading text (10 questions).",
+      "Section B — Lexis and Structure: sentence interpretation (5), antonyms (5), synonyms (5), and sentence completion (10).",
+      "Section C — Oral Forms: 10 questions.",
+      "Total: 60 Use of English questions.",
     ],
     sections: [
       { id: "english-a", title: "A. Comprehension and Summary", topics: [
-        topic("eng-a-01-comprehension-summary", "A", "Comprehension and Summary", ["Description, narration, exposition and argumentation/persuasion", "Comprehension of passages and vocabulary in context", "Coherence, logical reasoning and inference", "Approved reading text", "Synthesis of ideas"], [1,2]),
+        {
+          ...topic("eng-a-01-comprehension-summary", "A", "Comprehension and Summary", [
+            "Description, narration, exposition and argumentation/persuasion.",
+            "Two passages of about 200 words each, one of which is a cloze test, reflecting various disciplines.",
+            "Comprehension of whole or parts of passages; words, phrases, clauses, sentences, figures of speech and idioms in context.",
+            "Coherence and logical reasoning, including deductions and inferences.",
+            "The prescribed reading text: The Lekki Headmaster by Kabir Alabi Garba.",
+            "Synthesis of ideas from passages.",
+          ], [1,2]),
+          objectives: [
+            "Identify main points and topic sentences in passages.",
+            "Determine implied meaning.",
+            "Identify grammatical functions of words, phrases and clauses, including figurative and idiomatic expressions.",
+            "Infer writers' intentions, mood, attitude to the subject matter and opinion.",
+          ],
+        },
       ]},
       { id: "english-b", title: "B. Lexis and Structure", topics: [
-        topic("eng-b-01-lexis-structure", "B", "Lexis and Structure", ["Synonyms and antonyms", "Clause and sentence patterns", "Word classes and functions", "Mood, tense, aspect, number, agreement and degree", "Question tags and mechanics", "Ordinary, figurative and idiomatic usage"], [2]),
+        {
+          ...topic("eng-b-01-lexis-structure", "B", "Lexis and Structure", [
+            "Synonyms, antonyms and homonyms.",
+            "Clause and sentence patterns.",
+            "Word classes and their functions.",
+            "Mood, tense, aspect, number, agreement/concord, degree and question tags.",
+            "Punctuation and spelling.",
+            "Ordinary, figurative and idiomatic usage; tested idioms are formal Standard British English.",
+          ], [2]),
+          objectives: [
+            "Identify words and expressions in ordinary, figurative and idiomatic contexts.",
+            "Determine similar and opposite meanings of words.",
+            "Differentiate between correct and incorrect punctuation and spelling.",
+            "Identify grammatical patterns in use.",
+            "Interpret information conveyed in sentences.",
+          ],
+        },
       ]},
       { id: "english-c", title: "C. Oral Forms", topics: [
-        topic("eng-c-01-oral-forms", "C", "Oral Forms", ["Vowels: monophthongs, diphthongs and triphthongs", "Consonants and clusters", "Rhymes and homophones", "Word stress", "Emphatic stress in connected speech"], [2]),
+        {
+          ...topic("eng-c-01-oral-forms", "C", "Oral Forms", [
+            "Vowels: monothongs and diphthongs.",
+            "Consonants, including clusters.",
+            "Rhymes, including homophones.",
+            "Word stress in monosyllabic and polysyllabic words.",
+            "Intonation and emphatic stress in connected speech.",
+          ], [2]),
+          objectives: [
+            "Make distinctions between vowel types.",
+            "Differentiate between consonant types.",
+            "Identify correct accentuation and pronunciation in individual words and connected speech.",
+          ],
+        },
       ]},
     ],
   },
 };
 
 export const JAMB_SYLLABUS_REVIEW_NOTICE =
-  "This catalogue is transcribed into topic outlines from the five source PDFs uploaded to the Rutex repository. Their metadata identifies them as 2025-created copies. The uploaded Physics and Use of English content differs from JAMB-hosted copies checked during this review; Chemistry and Mathematics still need current IBASS reconciliation. Topics are visible for planning, but this catalogue is not marked as the verified current or 2027 official syllabus.";
+  "This catalogue combines the five 2025-created source PDFs supplied by the owner with JAMB-hosted IBASS references. Use of English now follows the JAMB-hosted PDF checked on 18 November 2026 because the uploaded copy materially differs. Physics and Biology have official IBASS links but still need full line-by-line mapping; Chemistry and Mathematics remain supplied-source candidates pending IBASS reconciliation. This catalogue is not certified as the 2027 syllabus or a verified complete current syllabus.";
 
-export const JAMB_SYLLABUS_VERSION = "uploaded-source-candidate-2025";
+export const JAMB_SYLLABUS_VERSION = "mixed-sources-checked-2026-11-18";
 export const JAMB_SYLLABUS_VERIFIED = false;
 
 export function getJambSyllabusSubject(id: string): JambSyllabusSubject | undefined {

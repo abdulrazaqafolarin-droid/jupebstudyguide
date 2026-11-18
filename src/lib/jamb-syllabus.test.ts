@@ -30,6 +30,22 @@ describe("JAMB syllabus catalogue", () => {
     expect(JAMB_SYLLABUS.use_of_english.reviewState).toBe("needs_current_source_review");
   });
 
+  it("uses the JAMB-hosted Use of English syllabus where the supplied copy differs", () => {
+    const english = JAMB_SYLLABUS.use_of_english;
+    const comprehension = english.sections[0].topics[0];
+    const lexis = english.sections[1].topics[0];
+    const oral = english.sections[2].topics[0];
+
+    expect(english.officialSourceUrl).toBe("https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf");
+    expect(comprehension.outline).toContain("Two passages of about 200 words each, one of which is a cloze test, reflecting various disciplines.");
+    expect(comprehension.outline).toContain("The prescribed reading text: The Lekki Headmaster by Kabir Alabi Garba.");
+    expect(lexis.outline).toContain("Synonyms, antonyms and homonyms.");
+    expect(oral.outline).toContain("Vowels: monothongs and diphthongs.");
+    expect(english.examinationStructure?.join(" ")).toContain("Total: 60 Use of English questions.");
+    expect(comprehension.objectives).toHaveLength(4);
+    expect(english.sourceComparisonNote).toContain("three passages instead of two");
+  });
+
   it("records the exact source-file checksums from the extraction manifest", () => {
     const expected: Record<string, string> = {
       physics: "62f5ac84592735cd5829296cb52da5bc8b582ee0f2227999cca73b58dcabfee5",

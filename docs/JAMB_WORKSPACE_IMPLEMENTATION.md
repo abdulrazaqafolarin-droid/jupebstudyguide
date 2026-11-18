@@ -157,3 +157,8 @@ Migration `20261118210924_create_exam_user_syllabus_progress` is applied to the 
 The client hook starts cloud reconciliation immediately after local topic changes, coalesces overlapping sync requests, reads local progress after the remote read completes and retries if writes occur during an in-flight sync. Local state is kept when the network is unavailable and retries on reconnect, focus and document visibility. Timestamp ties use a deterministic progress-state priority. The live table is still protected by RLS and the app has not yet completed an authenticated device-to-device acceptance walkthrough.
 
 JAMB Tutor entry from a syllabus topic resolves the latest JAMB chat matching the exact subject and topic, or creates a topic-tagged chat if no match exists. Subject-specific tutor entry similarly avoids resuming an unrelated subject thread. The resolver is tested against JUPEB and unrelated JAMB chat rows.
+
+
+## Use of English source reconciliation
+
+The uploaded Use of English PDF was not used as the current syllabus authority because it differs materially from the JAMB-hosted IBASS PDF checked on 18 November 2026. The catalogue now follows the IBASS PDF for the three syllabus sections, learning objectives and 60-question section structure. It specifically records two passages (one cloze), *The Lekki Headmaster* by Kabir Alabi Garba, homonyms, punctuation/spelling, and the official oral-form outline. The uploaded 2025-created PDF remains linked and checksum-recorded for provenance. The catalogue stays globally unverified for the 2027 cycle until the applicable source set is reconciled.

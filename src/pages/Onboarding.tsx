@@ -7,6 +7,7 @@ import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { StepWelcome } from '@/components/onboarding/StepWelcome';
 import { StepTheme } from '@/components/onboarding/StepTheme';
 import { StepStudySetup } from '@/components/onboarding/StepStudySetup';
+import { StepJambStudySetup } from '@/components/onboarding/StepJambStudySetup';
 import { StepChatPrivacy } from '@/components/onboarding/StepChatPrivacy';
 import { StepNotifications } from '@/components/onboarding/StepNotifications';
 import { StepFinish } from '@/components/onboarding/StepFinish';
@@ -17,12 +18,14 @@ import { useUserStorage } from '@/hooks/useUserStorage';
 import { firstIncompleteStep, getOnboardingFlow, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
 import { normalizeSchoolName, parseSeatNumber } from '@/lib/profile-fields';
 import type { Subject } from '@/types/question';
+import { JAMB_SUBJECTS, type JambSubject } from '@/lib/jamb-config';
 import { Loader2 } from 'lucide-react';
 
 const STEP_CTA: Record<OnboardingStepId, string> = {
   welcome: "Let's go",
   theme: 'Continue',
   study: 'Continue',
+  'jamb-study': 'Continue',
   chat: 'Continue',
   notify: 'Turn on reminders',
   finish: 'Start my first mission',
@@ -60,6 +63,9 @@ export default function Onboarding() {
   const [electives, setElectives] = useState<Subject[]>([]);
   const [examTarget, setExamTarget] = useState('this-session');
   const [dailyGoal, setDailyGoal] = useState(30);
+  const [jambSubjects, setJambSubjects] = useState<JambSubject[]>([]);
+  const [jambExamTarget, setJambExamTarget] = useState('this-session');
+  const [jambDailyGoal, setJambDailyGoal] = useState(30);
   const [schoolName, setSchoolName] = useState('');
   const [seatNumber, setSeatNumber] = useState('');
   const [chatOnline, setChatOnline] = useState(true);
@@ -78,6 +84,9 @@ export default function Onboarding() {
     setElectives((data.subjects ?? []).filter((s): s is Subject => s === 'biology' || s === 'math'));
     setExamTarget(data.examTarget ?? 'this-session');
     setDailyGoal(data.dailyGoalMinutes ?? 30);
+    setJambSubjects((data.jambStudy?.subjects ?? []).filter((s): s is JambSubject => JAMB_SUBJECTS.includes(s as JambSubject)));
+    setJambExamTarget(data.jambStudy?.examTarget ?? 'this-session');
+    setJambDailyGoal(data.jambStudy?.dailyGoalMinutes ?? 30);
     setSchoolName(data.schoolName ?? profileSchoolName ?? '');
     setSeatNumber(data.examSeatNumber ?? profileSeatNumber ?? '');
     setChatOnline(data.chat?.online ?? true);
@@ -149,6 +158,28 @@ export default function Onboarding() {
             school_name: school,
             exam_seat_number: seat.status === 'valid' ? seat.value : null,
           },
+        );
+        break;
+      }
+      case 'jamb-study': {
+        const seat = parseSeatNumber(seatNumber);
+        if (seat.status === 'invalid') {
+          toast.error('Exam seat number should be the last 3 or 4 digits of your ID card.');
+          return;
+        }
+        const school = normalizeSchoolName(schoolName);
+        await persistAndAdvance(
+          'jamb-study',
+          {
+            jambStudy: {
+              subjects: jambSubjects,
+              examTarget: jambExamTarget,
+              dailyGoalMinutes: jambDailyGoal,
+            },
+            schoolName: school ?? undefined,
+            examSeatNumber: seat.status === 'valid' ? seat.value : undefined,
+          },
+          { school_name: school, exam_seat_number: seat.status === 'valid' ? seat.value : null },
         );
         break;
       }
@@ -270,6 +301,22 @@ export default function Onboarding() {
               onExamSeatNumber={setSeatNumber}
             />
           )}
+          {step === 'jamb-study' && (
+            <StepJambStudySetup
+              subjects={jambSubjects}
+              examTarget={jambExamTarget}
+              dailyGoalMinutes={jambDailyGoal}
+              schoolName={schoolName}
+              examSeatNumber={seatNumber}
+              onToggleSubject={(subject) => setJambSubjects((previous) =>
+                previous.includes(subject) ? previous.filter((item) => item !== subject) : [...previous, subject]
+              )}
+              onExamTarget={setJambExamTarget}
+              onDailyGoal={setJambDailyGoal}
+              onSchoolName={setSchoolName}
+              onExamSeatNumber={setSeatNumber}
+            />
+          )}
           {step === 'chat' && (
             <StepChatPrivacy
               online={chatOnline}
@@ -292,7 +339,7 @@ export default function Onboarding() {
             <StepFinish
               displayName={displayName}
               theme={effectiveTheme}
-              subjectCount={isJambWorkspace ? 0 : 2 + electives.length}
+              subjectCount={isJambWorkspace ? jambSubjects.length : 2 + electives.length}
               studyPlanEnabled={!isJambWorkspace}
               chatEnabled={chatOnline || chatReceipts || chatDiscover}
             />

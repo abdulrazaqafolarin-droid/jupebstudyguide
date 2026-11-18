@@ -36,8 +36,17 @@ describe('getOnboardingFlow', () => {
     expect(getOnboardingFlow(FULL_FLOW, 'jupeb')).toEqual(FULL_FLOW);
   });
 
-  it('removes the JUPEB syllabus plan step from JAMB onboarding', () => {
-    expect(getOnboardingFlow(FULL_FLOW, 'jamb')).toEqual(['welcome', 'theme', 'chat', 'notify', 'finish']);
+  it('replaces the JUPEB syllabus plan step with a JAMB-specific preference step', () => {
+    expect(getOnboardingFlow(FULL_FLOW, 'jamb')).toEqual(['welcome', 'theme', 'jamb-study', 'chat', 'notify', 'finish']);
+  });
+
+  it('adds JAMB study preferences to the trimmed flow for existing learners', () => {
+    expect(getOnboardingFlow(TRIMMED_FLOW, 'jamb')).toEqual(['welcome', 'theme', 'jamb-study', 'chat', 'finish']);
+  });
+
+  it('uses a programme-specific completion ID so JUPEB setup cannot skip JAMB setup', () => {
+    const jambFlow = getOnboardingFlow(FULL_FLOW, 'jamb');
+    expect(firstIncompleteStep(jambFlow, ['welcome', 'theme', 'study'])).toBe('jamb-study');
   });
 
   it('does not mutate the original flow', () => {
@@ -98,6 +107,7 @@ describe('normalizeOnboardingData', () => {
       completedSteps: ['welcome', 42, null, 'theme'],
       subjects: ['physics', {}],
       dailyGoalMinutes: '30',
+      jambStudy: { subjects: ['physics', 5, 'biology'], examTarget: 'early', dailyGoalMinutes: 45 },
       examTarget: 7,
       finalized: 'yes',
       chat: { online: true, receipts: 'nope' },
@@ -105,6 +115,7 @@ describe('normalizeOnboardingData', () => {
     expect(data.completedSteps).toEqual(['welcome', 'theme']);
     expect(data.subjects).toEqual(['physics']);
     expect(data.dailyGoalMinutes).toBeUndefined();
+    expect(data.jambStudy).toEqual({ subjects: ['physics', 'biology'], examTarget: 'early', dailyGoalMinutes: 45 });
     expect(data.examTarget).toBeUndefined();
     expect(data.finalized).toBeUndefined();
     expect(data.chat).toEqual({ online: true, receipts: undefined, discover: undefined });

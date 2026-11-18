@@ -36,7 +36,7 @@ export function StepFinish({ displayName, theme, subjectCount, studyPlanEnabled 
     theme === 'dark' ? '🌙 Night Owl' : '☀️ Day Light',
     studyPlanEnabled
       ? subjectCount > 0 ? `${subjectCount} subject${subjectCount > 1 ? 's' : ''} + study plan` : 'Study plan ready'
-      : 'JAMB practice tools ready',
+      : subjectCount > 0 ? `${subjectCount} JAMB focus subject${subjectCount > 1 ? 's' : ''}` : 'JAMB preferences ready',
     chatEnabled ? '💬 Chat on' : '💬 Chat set up',
   ];
 
@@ -60,7 +60,7 @@ export function StepFinish({ displayName, theme, subjectCount, studyPlanEnabled 
         >
           {studyPlanEnabled
             ? 'Your study space is ready. First mission starts today.'
-            : 'Your account preferences are ready. JAMB topic-led study plans will appear after syllabus verification.'}
+            : 'Your JAMB preferences are saved. Reviewed practice content will appear as it becomes available.'}
         </motion.p>
       </div>
 

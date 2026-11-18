@@ -141,7 +141,7 @@ describe('normalizeOnboardingData', () => {
     expect(data.completedSteps).toEqual(['welcome', 'theme']);
     expect(data.subjects).toEqual(['physics']);
     expect(data.dailyGoalMinutes).toBeUndefined();
-    expect(data.jambStudy).toEqual({ subjects: ['physics', 'biology'], examTarget: 'early', dailyGoalMinutes: 45 });
+    expect(data.jambStudy).toEqual({ subjects: ['physics', 'biology'], examTarget: 'early', dailyGoalMinutes: 30 });
     expect(data.examTarget).toBeUndefined();
     expect(data.finalized).toBeUndefined();
     expect(data.chat).toEqual({ online: true, receipts: undefined, discover: undefined });

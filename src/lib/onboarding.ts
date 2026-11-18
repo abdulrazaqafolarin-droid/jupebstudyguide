@@ -14,6 +14,7 @@
  */
 import { normalizeSchoolName, normalizeSeatNumber } from './profile-fields';
 import type { ExamProgramId } from './exam-program';
+import { normalizeJambStudyPreferences, type JambStudyPreferences } from './jamb-study-preferences';
 
 export type OnboardingStepId = 'welcome' | 'theme' | 'study' | 'jamb-study' | 'chat' | 'notify' | 'finish';
 
@@ -26,7 +27,7 @@ export interface OnboardingData {
   examTarget?: string;
   dailyGoalMinutes?: number;
   /** JAMB-only preferences; never overwrite JUPEB's syllabus selections. */
-  jambStudy?: { subjects?: string[]; examTarget?: string; dailyGoalMinutes?: number };
+  jambStudy?: JambStudyPreferences;
   schoolName?: string;
   examSeatNumber?: string;
   finalized?: boolean;
@@ -48,11 +49,7 @@ export function normalizeOnboardingData(raw: unknown): OnboardingData {
   if (typeof r.dailyGoalMinutes === 'number') data.dailyGoalMinutes = r.dailyGoalMinutes;
   if (r.jambStudy && typeof r.jambStudy === 'object' && !Array.isArray(r.jambStudy)) {
     const j = r.jambStudy as Record<string, unknown>;
-    data.jambStudy = {
-      subjects: Array.isArray(j.subjects) ? j.subjects.filter((s): s is string => typeof s === 'string') : undefined,
-      examTarget: typeof j.examTarget === 'string' ? j.examTarget : undefined,
-      dailyGoalMinutes: typeof j.dailyGoalMinutes === 'number' && Number.isFinite(j.dailyGoalMinutes) ? j.dailyGoalMinutes : undefined,
-    };
+    data.jambStudy = normalizeJambStudyPreferences(j);
   }
   if (typeof r.schoolName === 'string') data.schoolName = normalizeSchoolName(r.schoolName) ?? undefined;
   if (typeof r.examSeatNumber === 'string') data.examSeatNumber = normalizeSeatNumber(r.examSeatNumber) ?? undefined;

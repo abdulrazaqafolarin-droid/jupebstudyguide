@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Check, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO, type JambSubject } from "@/lib/jamb-config";
+import type { JambExamTarget, JambStudyPreferences } from "@/lib/jamb-study-preferences";
 import { cn } from "@/lib/utils";
 import { MAX_SCHOOL_NAME_LENGTH, parseSeatNumber } from "@/lib/profile-fields";
 
@@ -19,13 +20,13 @@ const DAILY_GOALS = [
 
 interface StepJambStudySetupProps {
   subjects: JambSubject[];
-  examTarget: string;
-  dailyGoalMinutes: number;
+  examTarget: JambExamTarget;
+  dailyGoalMinutes: JambStudyPreferences["dailyGoalMinutes"];
   schoolName: string;
   examSeatNumber: string;
   onToggleSubject: (subject: JambSubject) => void;
-  onExamTarget: (target: string) => void;
-  onDailyGoal: (minutes: number) => void;
+  onExamTarget: (target: JambExamTarget) => void;
+  onDailyGoal: (minutes: JambStudyPreferences["dailyGoalMinutes"]) => void;
   onSchoolName: (value: string) => void;
   onExamSeatNumber: (value: string) => void;
 }

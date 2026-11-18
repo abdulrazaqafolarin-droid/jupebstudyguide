@@ -30,6 +30,20 @@ describe("JAMB syllabus catalogue", () => {
     expect(JAMB_SYLLABUS.use_of_english.reviewState).toBe("needs_current_source_review");
   });
 
+  it("records the exact source-file checksums from the extraction manifest", () => {
+    const expected: Record<string, string> = {
+      physics: "62f5ac84592735cd5829296cb52da5bc8b582ee0f2227999cca73b58dcabfee5",
+      chemistry: "a3c15bfee3bece0f4106a32b0091e2a2c51eaec8baa62fafa44afcad72193738",
+      biology: "8afb9aa5c3bece851d6a7ec9b6ce85909aa94f1657d0d01b76d96a5d904467f5",
+      math: "aff7a7c2cc46036902dda38db1d1567d10982de709305cfbfc90dc437329754f",
+      use_of_english: "f2b6bc4f2c30fc19ecf57bc14778100ce0deca59445beff9f7e10f34cbf7da18",
+    };
+    for (const [subject, checksum] of Object.entries(expected)) {
+      expect(JAMB_SYLLABUS[subject as keyof typeof JAMB_SYLLABUS].sourceSha256).toBe(checksum);
+      expect(checksum).toMatch(/^[a-f0-9]{64}$/);
+    }
+  });
+
   it("uses stable unique topic identifiers across all subjects", () => {
     const ids = Object.values(JAMB_SYLLABUS).flatMap((subject) =>
       subject.sections.flatMap((section) => section.topics.map((item) => item.id)),

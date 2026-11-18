@@ -142,7 +142,7 @@ The JAMB syllabus UI now contains a five-subject catalogue (108 topic/section en
 
 **Version and completeness boundary:** the uploaded PDF metadata identifies 2025-created copies. The Physics and Use of English uploaded content differs from the JAMB-hosted PDFs checked during this work. The catalogue remains a candidate source outline and `JAMB_SYLLABUS_VERIFIED=false`; per-topic objective mapping and reconciliation against current IBASS source documents still need completion. Do not describe this as the verified 2027 syllabus and do not enable an official-format UTME mock from it.
 
-Topic completion uses a separate `jamb-syllabus-progress-v1` per-user local-storage key. The first implementation supports not-started, in-progress and completed states without reading or writing JUPEB progress. It is device-local for now; server/cloud progress reconciliation remains outstanding. Topic entry points now pass the selected subject and topic to the JAMB Tutor, where the uploaded outline is included as explicitly unverified study context.
+Topic completion uses a separate `jamb-syllabus-progress-v1` per-user local-storage key and syncs to `exam_user_syllabus_progress` for cross-device continuity. The table is constrained to JAMB progress and has owner/active-session RLS with anonymous access revoked. The hook merges local and remote state by latest update time, uploads locally newer or missing entries and retains offline changes for retry. It does not read or write JUPEB progress. Topic entry points pass the selected subject and topic to the JAMB Tutor, where the uploaded outline is included as explicitly unverified study context.
 
 
 ## JAMB syllabus progress cloud sync

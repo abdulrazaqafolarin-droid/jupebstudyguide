@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/jamb-http.ts";
 import type { Database, Json } from "../_shared/rutex-database.types.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
-import { resolveJambImportItemRange } from "../_shared/jamb-import-range.ts";
+import { JAMB_IMPORT_PROTOCOL_VERSION, resolveJambImportItemRange } from "../_shared/jamb-import-range.ts";
 
 type AdminSupabase = SupabaseClient<Database>;
 
@@ -119,6 +119,15 @@ Deno.serve(async (request: Request) => {
 
     if (body.exam_program_id !== undefined && body.exam_program_id !== "jamb") {
       return respond({ error: "This importer accepts JAMB content only" }, 400);
+    }
+
+    if (action === "capabilities") {
+      return respond({
+        protocol_version: JAMB_IMPORT_PROTOCOL_VERSION,
+        resumable_source_chunks: true,
+        stable_item_offsets: true,
+        duplicate_chunk_retries: true,
+      });
     }
 
     if (action === "stage") {

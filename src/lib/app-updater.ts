@@ -1,10 +1,58 @@
 import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 
-export const VERSION_URL =
-  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/version.json";
-export const APK_FILE_NAME = "jupeb-master.apk";
-export const RELEASE_APK_URL =
-  "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
+const STORAGE_ORIGIN = "https://gzyczowqqywesqhqqpdi.supabase.co";
+const STORAGE_ROOT_PATH = "/storage/v1/object/public/app-releases";
+const DEFAULT_RELEASE_BASE_URL = `${STORAGE_ORIGIN}${STORAGE_ROOT_PATH}`;
+const DEFAULT_APK_FILE_NAME = "jupeb-master.apk";
+
+function resolveReleaseBaseUrl(raw: string | undefined): string {
+  if (!raw?.trim()) return DEFAULT_RELEASE_BASE_URL;
+  try {
+    const candidate = new URL(raw.trim());
+    const allowedPath = candidate.pathname === STORAGE_ROOT_PATH
+      || candidate.pathname.startsWith(`${STORAGE_ROOT_PATH}/`);
+    if (
+      candidate.protocol !== "https:"
+      || candidate.origin !== STORAGE_ORIGIN
+      || !allowedPath
+      || candidate.search
+      || candidate.hash
+    ) {
+      return DEFAULT_RELEASE_BASE_URL;
+    }
+    return candidate.toString().replace(/\/+$/, "");
+  } catch {
+    return DEFAULT_RELEASE_BASE_URL;
+  }
+}
+
+/**
+ * The existing Rutex Master install keeps the legacy release folder. The
+ * successor app compiles with its own folder and versioned immutable APK names.
+ */
+export const RELEASE_BASE_URL = resolveReleaseBaseUrl(
+  import.meta.env.VITE_ANDROID_RELEASE_BASE_URL,
+);
+const configuredApkFileName = import.meta.env.VITE_ANDROID_RELEASE_APK_NAME?.trim();
+export const APK_FILE_NAME = configuredApkFileName
+  && /^[a-z0-9][a-z0-9-]*\.apk$/i.test(configuredApkFileName)
+  ? configuredApkFileName
+  : DEFAULT_APK_FILE_NAME;
+const EXPECTED_PACKAGE_NAME = import.meta.env.VITE_ANDROID_PACKAGE_NAME?.trim();
+
+export const VERSION_URL = `${RELEASE_BASE_URL}/version.json`;
+
+/** Returns the only permitted APK URL for the supplied manifest version. */
+export function getReleaseApkUrl(versionCode: number): string {
+  if (!Number.isSafeInteger(versionCode) || versionCode < 1) return "";
+  const fileName = APK_FILE_NAME === DEFAULT_APK_FILE_NAME
+    ? APK_FILE_NAME
+    : `${APK_FILE_NAME.replace(/\.apk$/i, "")}-${versionCode}.apk`;
+  return `${RELEASE_BASE_URL}/${fileName}`;
+}
+
+// Backward-compatible export for code paths that only need the legacy default.
+export const RELEASE_APK_URL = getReleaseApkUrl(1);
 
 export interface ReleaseInfo {
   versionCode: number;
@@ -13,7 +61,7 @@ export interface ReleaseInfo {
   builtAt: string;
   url: string;
   sha256: string;
-  /** True only for the one-time transition away from the legacy debug signing key. */
+  /** True only for an explicitly reviewed signing-key transition. */
   requiresReinstall?: boolean;
 }
 
@@ -56,7 +104,7 @@ export function isNewer(installedCode: number, latestCode: number): boolean {
   );
 }
 
-/** Strict-shape validation so a corrupt version.json can never brick the flow. */
+/** Strict-shape validation keeps corrupt metadata from reaching the installer. */
 export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
@@ -65,9 +113,10 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     !Number.isSafeInteger(r.versionCode) ||
     r.versionCode < 1 ||
     typeof r.url !== "string" ||
-    r.url !== RELEASE_APK_URL ||
+    r.url !== getReleaseApkUrl(r.versionCode) ||
     typeof r.sha256 !== "string" ||
-    !/^[a-f0-9]{64}$/i.test(r.sha256)
+    !/^[a-f0-9]{64}$/i.test(r.sha256) ||
+    (EXPECTED_PACKAGE_NAME && r.packageName !== EXPECTED_PACKAGE_NAME)
   ) {
     return null;
   }
@@ -114,8 +163,9 @@ export async function getInstalledVersion(): Promise<{
 
 /**
  * Streams a trusted APK directly into the app-private native cache. The
- * background native downloader enforces HTTP/size limits, removes partial
- * files, and calculates SHA-256 without passing APK bytes through the WebView.
+ * native downloader independently allowlists the same release folders, checks
+ * package identity and signing certificate, enforces size limits, and hashes
+ * the bytes without passing the APK through the WebView.
  */
 export async function downloadApk(
   url: string,
@@ -124,7 +174,7 @@ export async function downloadApk(
   onProgress: (fraction: number) => void,
 ): Promise<string> {
   if (!isAndroidApp()) throw new Error("APK downloads are only available in the Android app");
-  if (url !== RELEASE_APK_URL) throw new Error("Untrusted APK download URL");
+  if (url !== getReleaseApkUrl(versionCode)) throw new Error("Untrusted APK download URL");
   if (!Number.isSafeInteger(versionCode) || versionCode < 1) {
     throw new Error("Release version code is invalid");
   }

@@ -40,6 +40,8 @@ jobs:
       CAPACITOR_APP_NAME: Rutex Master Next
       VITE_ANDROID_RELEASE_BASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next
       VITE_ANDROID_RELEASE_APK_NAME: rutex-master-next.apk
+      VITE_ANDROID_PACKAGE_NAME: com.rutex.jupebmaster
+      VITE_ENABLE_JAMB: "true"
       VITE_SUPABASE_URL: https://gzyczowqqywesqhqqpdi.supabase.co
       VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX
       VITE_SUPABASE_PROJECT_ID: gzyczowqqywesqhqqpdi

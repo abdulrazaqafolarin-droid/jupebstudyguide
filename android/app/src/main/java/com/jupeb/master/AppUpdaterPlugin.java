@@ -39,8 +39,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @CapacitorPlugin(name = "AppUpdater")
 public class AppUpdaterPlugin extends Plugin {
 
-    private static final String RELEASE_APK_URL =
+    private static final String LEGACY_RELEASE_APK_URL =
         "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/jupeb-master.apk";
+    private static final String SUCCESSOR_RELEASE_APK_BASE_URL =
+        "https://gzyczowqqywesqhqqpdi.supabase.co/storage/v1/object/public/app-releases/rutex-master-next/";
     private static final long MAX_APK_BYTES = 200L * 1024L * 1024L;
     private final ExecutorService downloadExecutor = Executors.newSingleThreadExecutor();
     private final AtomicBoolean downloadInProgress = new AtomicBoolean(false);
@@ -55,7 +57,7 @@ public class AppUpdaterPlugin extends Plugin {
     public void downloadApk(PluginCall call) {
         String url = call.getString("url");
         Integer versionCode = call.getInt("versionCode");
-        if (!RELEASE_APK_URL.equals(url) || versionCode == null || versionCode < 1) {
+        if (versionCode == null || versionCode < 1 || !isTrustedReleaseUrl(url, versionCode)) {
             call.reject("Invalid APK release request");
             return;
         }
@@ -74,9 +76,10 @@ public class AppUpdaterPlugin extends Plugin {
                     throw new IllegalStateException("Could not create the private update directory");
                 }
 
-                File target = new File(updateDirectory, "jupeb-master-" + versionCode + ".apk");
+                File target = new File(updateDirectory, "rutex-master-" + versionCode + ".apk");
                 File[] staleFiles = updateDirectory.listFiles((directory, name) ->
-                    name.startsWith("jupeb-master-") && name.endsWith(".apk")
+                    (name.startsWith("rutex-master-") || name.startsWith("jupeb-master-"))
+                        && name.endsWith(".apk")
                 );
                 if (staleFiles == null) {
                     throw new IllegalStateException("Could not inspect the private update directory");
@@ -146,7 +149,7 @@ public class AppUpdaterPlugin extends Plugin {
                     .getPackageArchiveInfo(partial.getAbsolutePath(), signatureFlags);
                 if (archiveInfo == null
                         || !getContext().getPackageName().equals(archiveInfo.packageName)) {
-                    throw new IllegalStateException("Downloaded file is not a JUPEB Master APK");
+                    throw new IllegalStateException("Downloaded file does not match this Rutex Master app");
                 }
                 long archiveVersionCode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                     ? archiveInfo.getLongVersionCode()
@@ -187,6 +190,14 @@ public class AppUpdaterPlugin extends Plugin {
             downloadInProgress.set(false);
             call.reject("Could not start APK download", e);
         }
+    }
+
+    /** Only the immutable legacy release and versioned successor releases are downloadable. */
+    private boolean isTrustedReleaseUrl(String url, int versionCode) {
+        if (url == null) return false;
+        String successorUrl = SUCCESSOR_RELEASE_APK_BASE_URL
+            + "rutex-master-next-" + versionCode + ".apk";
+        return LEGACY_RELEASE_APK_URL.equals(url) || successorUrl.equals(url);
     }
 
     /**
@@ -395,7 +406,7 @@ public class AppUpdaterPlugin extends Plugin {
         }
         File parent = canonical.getParentFile();
         if (parent == null || !parent.equals(updateDirectory)
-                || !canonical.getName().matches("jupeb-master-[0-9]+\\.apk")) {
+                || !canonical.getName().matches("(jupeb-master|rutex-master)-[0-9]+\\.apk")) {
             throw new IllegalArgumentException("APK must be inside the private updater directory");
         }
         return canonical;

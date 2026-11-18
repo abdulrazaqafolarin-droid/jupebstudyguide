@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
   X, LogOut, BookOpen, Library, Award, CalendarDays,
-  Users, TrendingUp, Compass, Sparkles, GraduationCap
+  Users, TrendingUp, Compass, Sparkles, GraduationCap, Brain
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
@@ -110,7 +110,10 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
 
   const allLinks = [
     ...workspaceLinks,
-    ...(isJambWorkspace ? [{ path: "/jamb/daily-mission", label: "Daily Mission & History", icon: CalendarDays }] : []),
+    ...(isJambWorkspace ? [
+      { path: "/jamb/study", label: "JAMB Revision Cards", icon: Brain },
+      { path: "/jamb/daily-mission", label: "Daily Mission & History", icon: CalendarDays },
+    ] : []),
     ...(isAdmin
       ? [{
           path: isJambWorkspace ? "/admin/jamb-questions" : "/admin",

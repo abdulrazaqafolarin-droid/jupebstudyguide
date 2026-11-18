@@ -526,7 +526,7 @@ export default function JambHomePage() {
         <section className="mt-12">
           <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
           <motion.div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
@@ -549,6 +549,17 @@ export default function JambHomePage() {
                 </motion.button>
               );
             })}
+            <motion.button
+              onClick={() => navigate("/jamb/study")}
+              className="p-4 rounded-xl border border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"
+              variants={cardVariants}
+              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
+              whileTap={{ scale: 0.95, transition: fastSpring }}
+            >
+              <Brain className="w-7 h-7 mx-auto text-primary" />
+              <p className="font-medium mt-2">Revision Cards</p>
+              <p className="text-xs text-muted-foreground">Learn all and review due questions</p>
+            </motion.button>
             <motion.button
               onClick={() => navigate("/jamb/cbt/setup")}
               className="p-4 rounded-xl border border-accent/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-accent hover:bg-accent/5"

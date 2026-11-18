@@ -56,6 +56,7 @@ const StudyChatPage = lazy(() => import("./pages/StudyChatPage"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const JambHomePage = lazy(() => import("./pages/jamb/JambHomePage"));
 const JambPastQuestionsPage = lazy(() => import("./pages/jamb/JambPastQuestionsPage"));
+const JambStudyPage = lazy(() => import("./pages/jamb/JambStudyPage"));
 const JambCbtSetupPage = lazy(() => import("./pages/jamb/JambCbtSetupPage"));
 const JambCbtPage = lazy(() => import("./pages/jamb/JambCbtPage"));
 const JambAITutorPage = lazy(() => import("./pages/jamb/JambAITutorPage"));
@@ -233,6 +234,7 @@ function AnimatedRoutes() {
           <>
             <Route path="/jamb" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambHomePage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/past-questions" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambPastQuestionsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/study" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambStudyPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/practice/:subject" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambPastQuestionsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/cbt/setup" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambCbtSetupPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/cbt/:attemptId" element={<ProtectedRoute><ErrorBoundary><JambCbtPage /></ErrorBoundary></ProtectedRoute>} />

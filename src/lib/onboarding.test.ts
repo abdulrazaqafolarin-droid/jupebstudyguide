@@ -4,6 +4,7 @@ import {
   TRIMMED_FLOW,
   firstIncompleteStep,
   getFlow,
+  getOnboardingFlow,
   mergeOnboardingData,
   normalizeOnboardingData,
   privacyValueFromToggle,
@@ -27,6 +28,22 @@ describe('getFlow', () => {
     const flow = getFlow(true);
     flow.pop();
     expect(getFlow(true)).toHaveLength(FULL_FLOW.length);
+  });
+});
+
+describe('getOnboardingFlow', () => {
+  it('keeps all JUPEB onboarding steps', () => {
+    expect(getOnboardingFlow(FULL_FLOW, 'jupeb')).toEqual(FULL_FLOW);
+  });
+
+  it('removes the JUPEB syllabus plan step from JAMB onboarding', () => {
+    expect(getOnboardingFlow(FULL_FLOW, 'jamb')).toEqual(['welcome', 'theme', 'chat', 'notify', 'finish']);
+  });
+
+  it('does not mutate the original flow', () => {
+    const original = [...FULL_FLOW];
+    getOnboardingFlow(original, 'jamb');
+    expect(original).toEqual(FULL_FLOW);
   });
 });
 

@@ -7,6 +7,7 @@ interface StepFinishProps {
   displayName: string | null;
   theme: 'dark' | 'light';
   subjectCount: number;
+  studyPlanEnabled?: boolean;
   chatEnabled: boolean;
 }
 
@@ -16,7 +17,7 @@ interface StepFinishProps {
  * a quick visual summary of what was just set up before the student lands
  * on home with their first mission waiting.
  */
-export function StepFinish({ displayName, theme, subjectCount, chatEnabled }: StepFinishProps) {
+export function StepFinish({ displayName, theme, subjectCount, studyPlanEnabled = true, chatEnabled }: StepFinishProps) {
   const reduce = useReducedMotion();
   const fired = useRef(false);
 
@@ -33,7 +34,9 @@ export function StepFinish({ displayName, theme, subjectCount, chatEnabled }: St
 
   const chips = [
     theme === 'dark' ? '🌙 Night Owl' : '☀️ Day Light',
-    subjectCount > 0 ? `${subjectCount} subject${subjectCount > 1 ? 's' : ''} + study plan` : 'Study plan ready',
+    studyPlanEnabled
+      ? subjectCount > 0 ? `${subjectCount} subject${subjectCount > 1 ? 's' : ''} + study plan` : 'Study plan ready'
+      : 'JAMB practice tools ready',
     chatEnabled ? '💬 Chat on' : '💬 Chat set up',
   ];
 
@@ -55,7 +58,9 @@ export function StepFinish({ displayName, theme, subjectCount, chatEnabled }: St
           transition={{ delay: reduce ? 0 : 0.15, duration: 0.3 }}
           className="text-sm text-muted-foreground"
         >
-          Your study space is ready. First mission starts today.
+          {studyPlanEnabled
+            ? 'Your study space is ready. First mission starts today.'
+            : 'Your account preferences are ready. JAMB topic-led study plans will appear after syllabus verification.'}
         </motion.p>
       </div>
 

@@ -13,6 +13,7 @@
  * home-page "Finish setup" nudge appear.
  */
 import { normalizeSchoolName, normalizeSeatNumber } from './profile-fields';
+import type { ExamProgramId } from './exam-program';
 
 export type OnboardingStepId = 'welcome' | 'theme' | 'study' | 'chat' | 'notify' | 'finish';
 
@@ -59,6 +60,11 @@ export function normalizeOnboardingData(raw: unknown): OnboardingData {
 
 export function getFlow(isNewStudent: boolean): OnboardingStepId[] {
   return isNewStudent ? [...FULL_FLOW] : [...TRIMMED_FLOW];
+}
+
+/** The study-setup step seeds the JUPEB syllabus and subject plan, not JAMB. */
+export function getOnboardingFlow(flow: OnboardingStepId[], program: ExamProgramId): OnboardingStepId[] {
+  return program === 'jamb' ? flow.filter((step) => step !== 'study') : [...flow];
 }
 
 /** First unfinished step (or the last step when everything is done). */

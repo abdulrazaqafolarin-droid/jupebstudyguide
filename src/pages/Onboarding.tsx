@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTheme } from 'next-themes';
@@ -12,8 +12,9 @@ import { StepNotifications } from '@/components/onboarding/StepNotifications';
 import { StepFinish } from '@/components/onboarding/StepFinish';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { usePushNotificationsContext } from '@/contexts/PushNotificationsContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { useUserStorage } from '@/hooks/useUserStorage';
-import { firstIncompleteStep, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
+import { firstIncompleteStep, getOnboardingFlow, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
 import { normalizeSchoolName, parseSeatNumber } from '@/lib/profile-fields';
 import type { Subject } from '@/types/question';
 import { Loader2 } from 'lucide-react';
@@ -36,12 +37,14 @@ const STEP_CTA: Record<OnboardingStepId, string> = {
  */
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { programId, isJambWorkspace } = useExamProgram();
   const reduce = useReducedMotion();
   const { theme, setTheme } = useTheme();
   const { subscribe, permission, isSubscribed } = usePushNotificationsContext();
   const { loading, flow, data, displayName, isReplay, profileSchoolName, profileSeatNumber, saveStep, complete } = useOnboarding();
   const [, setStoredElectives] = useUserStorage<string[]>('onboarding-subjects', []);
   const [, setStoredDailyGoal] = useUserStorage<number>('onboarding-daily-goal', 30);
+  const workspaceFlow = useMemo(() => getOnboardingFlow(flow, programId), [flow, programId]);
 
   const [stepIdx, setStepIdx] = useState(0);
   const [dir, setDir] = useState(1);
@@ -68,10 +71,10 @@ export default function Onboarding() {
   // initial state ran while flow was still empty).
   const seededRef = useRef(false);
   useEffect(() => {
-    if (loading || flow.length === 0 || seededRef.current) return;
+    if (loading || workspaceFlow.length === 0 || seededRef.current) return;
     seededRef.current = true;
-    const target = isReplay ? flow[0] : firstIncompleteStep(flow, data.completedSteps ?? []);
-    setStepIdx(Math.max(0, flow.indexOf(target)));
+    const target = isReplay ? workspaceFlow[0] : firstIncompleteStep(workspaceFlow, data.completedSteps ?? []);
+    setStepIdx(Math.max(0, workspaceFlow.indexOf(target)));
     setElectives((data.subjects ?? []).filter((s): s is Subject => s === 'biology' || s === 'math'));
     setExamTarget(data.examTarget ?? 'this-session');
     setDailyGoal(data.dailyGoalMinutes ?? 30);
@@ -80,15 +83,18 @@ export default function Onboarding() {
     setChatOnline(data.chat?.online ?? true);
     setChatReceipts(data.chat?.receipts ?? true);
     setChatDiscover(data.chat?.discover ?? true);
-  }, [loading, flow, data, isReplay, profileSchoolName, profileSeatNumber]);
+  }, [loading, workspaceFlow, data, isReplay, profileSchoolName, profileSeatNumber]);
 
-  const step = flow[stepIdx];
-  const goHome = useCallback(() => navigate('/', { replace: true }), [navigate]);
+  const step = workspaceFlow[stepIdx];
+  const goHome = useCallback(
+    () => navigate(isJambWorkspace ? '/jamb' : '/', { replace: true }),
+    [navigate, isJambWorkspace],
+  );
 
   const advance = useCallback(() => {
     setDir(1);
-    setStepIdx((i) => Math.min(i + 1, flow.length - 1));
-  }, [flow.length]);
+    setStepIdx((i) => Math.min(i + 1, workspaceFlow.length - 1));
+  }, [workspaceFlow.length]);
 
   const handleBack = useCallback(() => {
     setDir(-1);
@@ -191,8 +197,8 @@ export default function Onboarding() {
 
   const handleBrowseClassmates = useCallback(async () => {
     await complete(isReplay);
-    navigate('/discover');
-  }, [complete, navigate, isReplay]);
+    navigate(isJambWorkspace ? '/jamb/discover' : '/discover');
+  }, [complete, navigate, isReplay, isJambWorkspace]);
 
   if (loading || !step) {
     return (
@@ -203,13 +209,16 @@ export default function Onboarding() {
   }
 
   const notificationsGranted = permission === 'granted' || isSubscribed;
-  const ctaLabel =
-    step === 'notify' && notificationsGranted ? 'Continue' : STEP_CTA[step];
+  const ctaLabel = step === 'finish' && isJambWorkspace
+    ? 'Open JAMB workspace'
+    : step === 'notify' && notificationsGranted
+      ? 'Continue'
+      : STEP_CTA[step];
 
   return (
     <OnboardingShell
       stepIndex={stepIdx}
-      stepCount={flow.length}
+      stepCount={workspaceFlow.length}
       ctaLabel={ctaLabel}
       ctaDisabled={saving || requesting}
       onCta={handleCta}
@@ -283,7 +292,8 @@ export default function Onboarding() {
             <StepFinish
               displayName={displayName}
               theme={effectiveTheme}
-              subjectCount={2 + electives.length}
+              subjectCount={isJambWorkspace ? 0 : 2 + electives.length}
+              studyPlanEnabled={!isJambWorkspace}
               chatEnabled={chatOnline || chatReceipts || chatDiscover}
             />
           )}

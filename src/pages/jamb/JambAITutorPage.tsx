@@ -103,14 +103,7 @@ export default function JambAITutorPage() {
     const text = input.trim();
     if ((!text && !attachment) || isStreaming) return;
 
-    // First message creates a dedicated JAMB chat row; newChat updates the
-    // hook's active-chat ref before resolving, so the message is persisted
-    // against the correct programme-scoped conversation.
-    if (!activeChatId) {
-      const id = await createChat();
-      if (!id) return;
-    }
-
+    if (!activeChatId) return;
     setInput("");
     if (editingIndex !== null) {
       const index = editingIndex;
@@ -122,11 +115,7 @@ export default function JambAITutorPage() {
   }, [input, isStreaming, activeChatId, createChat, editingIndex, sendEdited, sendMessage]);
 
   const handleStarter = useCallback(async (text: string) => {
-    if (isStreaming) return;
-    if (!activeChatId) {
-      const id = await createChat();
-      if (!id) return;
-    }
+    if (isStreaming || !activeChatId) return;
     void sendMessage(text);
   }, [isStreaming, activeChatId, createChat, sendMessage]);
 
@@ -248,22 +237,39 @@ export default function JambAITutorPage() {
               </div>
             )}
 
-            <ThreadView
-              messages={messages}
-              isStreaming={isStreaming}
-              streamError={streamError}
-              editingIndex={editingIndex}
-              activeTopic={activeTopic}
-              onEdit={handleEdit}
-              onRetry={() => void retry()}
-              onStarter={(prompt) => void handleStarter(prompt)}
-              starterPrompts={JAMB_TUTOR_STARTERS}
-              emptyTitle="JAMB AI Study Tutor"
-              emptyDescription="Ask about Physics, Chemistry or Biology. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."
-            />
-
-            {!listLoading && chats.length === 0 && !activeChatId && (
-              <div className="mx-auto -mt-2 max-w-xl px-4 pb-8 text-center">
+            {listLoading ? (
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <p className="text-xs text-muted-foreground">Loading your JAMB tutor history…</p>
+              </div>
+            ) : activeChatId ? (
+              <ThreadView
+                messages={messages}
+                isStreaming={isStreaming}
+                streamError={streamError}
+                editingIndex={editingIndex}
+                activeTopic={activeTopic}
+                onEdit={handleEdit}
+                onRetry={() => void retry()}
+                onStarter={(prompt) => void handleStarter(prompt)}
+                starterPrompts={JAMB_TUTOR_STARTERS}
+                emptyTitle="JAMB AI Study Tutor"
+                emptyDescription="Ask about Physics, Chemistry or Biology. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."
+              />
+            ) : chats.length > 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                <p className="text-xs text-muted-foreground">Opening your latest JAMB chat…</p>
+              </div>
+            ) : (
+              <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-4 p-8 text-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold">Start a JAMB study room</h2>
+                <p className="max-w-sm text-sm text-muted-foreground">
+                  Your JAMB tutor conversations are saved separately from JUPEB. Start a chat to get explanations, practice questions and feedback.
+                </p>
                 <Button onClick={() => { void createChat(); }} className="gap-2">
                   <Plus className="h-4 w-4" /> Start your first JAMB chat
                 </Button>
@@ -271,22 +277,24 @@ export default function JambAITutorPage() {
             )}
           </main>
 
-          <Composer
-            value={input}
-            onChange={setInput}
-            onSend={(attachment) => { void handleSend(attachment); }}
-            onStop={stop}
-            isStreaming={isStreaming}
-            placeholder={
-              editingIndex !== null
-                ? "Edit your message…"
-                : subject
-                  ? `Ask about ${JAMB_SUBJECT_INFO[subject].label}…`
-                  : "Ask your JAMB tutor…"
-            }
-            editing={editingIndex !== null}
-            onCancelEdit={handleCancelEdit}
-          />
+          {activeChatId && (
+            <Composer
+              value={input}
+              onChange={setInput}
+              onSend={(attachment) => { void handleSend(attachment); }}
+              onStop={stop}
+              isStreaming={isStreaming}
+              placeholder={
+                editingIndex !== null
+                  ? "Edit your message…"
+                  : subject
+                    ? `Ask about ${JAMB_SUBJECT_INFO[subject].label}…`
+                    : "Ask your JAMB tutor…"
+              }
+              editing={editingIndex !== null}
+              onCancelEdit={handleCancelEdit}
+            />
+          )}
         </div>
       </div>
     </div>

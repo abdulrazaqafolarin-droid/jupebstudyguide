@@ -23,11 +23,13 @@ export function useJambPracticeProgress() {
   useEffect(() => {
     if (loading || !user?.id || !isReady) return;
     let active = true;
-    void (async () => {
+
+    const sync = async () => {
+      const userId = user.id;
       const { data, error } = await supabase
         .from("exam_user_progress")
         .select("question_id,last_selected_option,last_answered_at")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("exam_program_id", "jamb");
       if (!active) return;
       if (error) {
@@ -37,6 +39,8 @@ export function useJambPracticeProgress() {
         return;
       }
 
+      // Read the latest local snapshot after the request resolves. A student
+      // may have answered more questions while the cloud query was in flight.
       const localSnapshot = savedAnswersRef.current;
       const remoteRows = (data ?? []).map((row) => ({
         questionId: row.question_id,
@@ -52,7 +56,7 @@ export function useJambPracticeProgress() {
           pendingUpserts.map(([questionId, answer]) => {
             const savedAt = new Date(answer.savedAt || Date.now()).toISOString();
             return {
-              user_id: user.id,
+              user_id: userId,
               exam_program_id: "jamb",
               question_id: questionId,
               last_selected_option: answer.selected,
@@ -65,8 +69,22 @@ export function useJambPracticeProgress() {
         );
         if (syncError) console.warn("[JAMB progress] Could not sync local answers:", syncError.message);
       }
-    })();
-    return () => { active = false; };
+    };
+
+    void sync();
+    const syncWhenAvailable = () => { void sync(); };
+    const syncWhenVisible = () => {
+      if (document.visibilityState === "visible") void sync();
+    };
+    window.addEventListener("online", syncWhenAvailable);
+    window.addEventListener("focus", syncWhenAvailable);
+    document.addEventListener("visibilitychange", syncWhenVisible);
+    return () => {
+      active = false;
+      window.removeEventListener("online", syncWhenAvailable);
+      window.removeEventListener("focus", syncWhenAvailable);
+      document.removeEventListener("visibilitychange", syncWhenVisible);
+    };
   }, [user?.id, loading, isReady, setSavedAnswers]);
 
   const saveAnswer = useCallback((questionId: string, selected: string) => {

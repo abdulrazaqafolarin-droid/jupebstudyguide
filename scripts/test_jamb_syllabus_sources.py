@@ -24,13 +24,19 @@ class JambSyllabusExtractionTests(unittest.TestCase):
             sample = ("JAMB syllabus content and learning objectives. " * 30)
             for filename in SUBJECT_FILES.values():
                 document = fitz.open()
-                page = document.new_page()
-                page.insert_textbox((60, 60, 540, 700), sample, fontsize=10)
+                for page_number in range(2):
+                    page = document.new_page()
+                    page.insert_textbox(
+                        (60, 60, 540, 700),
+                        f"{sample} Page {page_number + 1}.",
+                        fontsize=10,
+                    )
                 document.save(source_dir / filename)
                 document.close()
 
             manifest = extract_all(source_dir, output_dir)
             self.assertTrue(manifest["complete"])
+            self.assertTrue(all(item["preview_page_count"] == item["page_count"] for item in manifest["subjects"]))
             self.assertEqual(
                 {item["subject"] for item in manifest["subjects"]},
                 set(SUBJECT_FILES),
@@ -41,6 +47,9 @@ class JambSyllabusExtractionTests(unittest.TestCase):
                 self.assertTrue((output_dir / subject / f"{subject}.json").is_file())
                 self.assertTrue(
                     (output_dir / subject / "previews" / "page-001.png").is_file()
+                )
+                self.assertTrue(
+                    (output_dir / subject / "previews" / "page-002.png").is_file()
                 )
 
     def test_missing_source_is_reported_not_silently_ignored(self):

@@ -162,3 +162,8 @@ JAMB Tutor entry from a syllabus topic resolves the latest JAMB chat matching th
 ## Use of English source reconciliation
 
 The uploaded Use of English PDF was not used as the current syllabus authority because it differs materially from the JAMB-hosted IBASS PDF checked on 18 November 2026. The catalogue now follows the IBASS PDF for the three syllabus sections, learning objectives and 60-question section structure. It specifically records two passages (one cloze), *The Lekki Headmaster* by Kabir Alabi Garba, homonyms, punctuation/spelling, and the official oral-form outline. The uploaded 2025-created PDF remains linked and checksum-recorded for provenance. The catalogue stays globally unverified for the 2027 cycle until the applicable source set is reconciled.
+
+
+### Full-page visual QA for source PDFs
+
+The CI review pack will include page images for every PDF page (all 59 pages across the five uploaded copies), not only opening pages. The extraction manifest records the preview page count and scale. Unit coverage uses a two-page test fixture per subject and asserts both preview images exist. This improves review completeness; it does not change the provisional/current-IBASS verification status of the uploaded source copies.

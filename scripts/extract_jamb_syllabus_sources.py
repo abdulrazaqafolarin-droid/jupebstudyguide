@@ -128,11 +128,11 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
         })
         text_parts.append(f"\n\n===== PDF PAGE {index + 1} =====\n\n{page_text}\n")
 
-        # Keep page previews for visual QA. Render the first four pages; later
-        # topic sections are still available in the page-preserving text output.
-        if index < min(4, document.page_count):
-            pix = page.get_pixmap(matrix=fitz.Matrix(1.25, 1.25), alpha=False)
-            pix.save(preview_dir / f"page-{index + 1:03d}.png")
+        # Render every page for visual QA. Syllabus tables often continue
+        # across pages, so limiting previews to the opening pages would hide
+        # later topic sections and could conceal extraction/layout problems.
+        pix = page.get_pixmap(matrix=fitz.Matrix(1.0, 1.0), alpha=False)
+        pix.save(preview_dir / f"page-{index + 1:03d}.png")
 
     full_text = "".join(text_parts).strip() + "\n"
     if len(full_text.strip()) < 500:
@@ -152,6 +152,8 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
         "sha256": hashlib.sha256(raw).hexdigest(),
         "file_size_bytes": len(raw),
         "page_count": document.page_count,
+        "preview_page_count": document.page_count,
+        "preview_scale": 1.0,
         "pages_with_text": page_text_count,
         "text_character_count": len(full_text),
         "detected_table_count": table_count,
@@ -168,8 +170,9 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
         key: payload[key]
         for key in (
             "subject", "source_file", "source_commit", "sha256",
-            "file_size_bytes", "page_count", "pages_with_text",
-            "text_character_count", "detected_table_count", "metadata", "table_of_contents",
+            "file_size_bytes", "page_count", "preview_page_count", "preview_scale",
+            "pages_with_text", "text_character_count", "detected_table_count",
+            "metadata", "table_of_contents",
         )
     }
 

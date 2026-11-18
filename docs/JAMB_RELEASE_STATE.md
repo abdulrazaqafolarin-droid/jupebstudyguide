@@ -178,3 +178,8 @@ The JAMB tutor now selects its latest conversation by the requested programme, s
 On 18 November 2026, the JAMB-hosted [Use of English IBASS PDF](https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf) was opened and compared with the uploaded `Use of English.pdf` candidate source. The uploaded copy says three passages, omits the named reading text, omits homonyms, and describes oral vowels as including triphthongs. The JAMB-hosted PDF specifies two passages (one cloze), names *The Lekki Headmaster* by Kabir Alabi Garba, includes homonyms and punctuation/spelling, and lists monothongs and diphthongs. Its examination structure totals 60 questions with the section breakdown now represented in the catalogue.
 
 The JAMB catalogue now follows the JAMB-hosted IBASS PDF for Use of English and retains the uploaded PDF hash/link as the originally supplied candidate file. This does not certify the 2027-specific syllabus: the retrieved IBASS asset is not itself labelled with a 2027 version. Physics and Biology are linked to JAMB-hosted PDFs but their complete topic/objective mappings remain in review. Chemistry and Mathematics remain based on uploaded candidate copies pending retrieval and reconciliation against current IBASS sources.
+
+
+### Full-page source review previews
+
+The syllabus PDF extractor now renders a page preview for every page rather than only the first four pages, and records preview_page_count plus the preview scale in the manifest. The extractor unit test uses multi-page fixtures and asserts that all pages receive preview images. This supports full visual review of syllabus tables and later sections before a source revision is accepted.

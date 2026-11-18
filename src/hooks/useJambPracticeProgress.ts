@@ -93,17 +93,29 @@ export function useJambPracticeProgress() {
     const savedAt = Date.now();
     setSavedAnswers((previous) => ({ ...previous, [questionId]: { selected, savedAt } }));
     if (!user?.id) return;
-    void supabase.from("exam_user_progress").upsert({
-      user_id: user.id,
-      exam_program_id: "jamb",
-      question_id: questionId,
-      last_selected_option: selected,
-      last_answered_at: new Date(savedAt).toISOString(),
-      last_viewed_at: new Date(savedAt).toISOString(),
-      viewed_count: 1,
-    }, { onConflict: "user_id,exam_program_id,question_id" }).then(({ error }) => {
-      if (error) console.warn("[JAMB progress] Cloud write failed; local progress retained:", error.message);
-    });
+    void (async () => {
+      const { data: existing, error: readError } = await supabase
+        .from("exam_user_progress")
+        .select("viewed_count")
+        .eq("user_id", user.id)
+        .eq("exam_program_id", "jamb")
+        .eq("question_id", questionId)
+        .maybeSingle();
+      if (readError) {
+        console.warn("[JAMB progress] Cloud read failed; local answer retained for reconnect:", readError.message);
+        return;
+      }
+      const { error } = await supabase.from("exam_user_progress").upsert({
+        user_id: user.id,
+        exam_program_id: "jamb",
+        question_id: questionId,
+        last_selected_option: selected,
+        last_answered_at: new Date(savedAt).toISOString(),
+        last_viewed_at: new Date(savedAt).toISOString(),
+        viewed_count: existing?.viewed_count ?? 1,
+      }, { onConflict: "user_id,exam_program_id,question_id" });
+      if (error) console.warn("[JAMB progress] Cloud write failed; local answer retained:", error.message);
+    })();
   }, [isReady, setSavedAnswers, user?.id]);
 
   return { savedAnswers, saveAnswer, isReady };

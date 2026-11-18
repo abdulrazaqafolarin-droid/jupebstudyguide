@@ -42,6 +42,7 @@ export function useJambBookmarks() {
       const localSnapshot = bookmarksRef.current;
       const deletedSnapshot = deletedBookmarkIdsRef.current;
       const remoteIds = (data ?? []).map((row) => row.question_id);
+      const remoteIdSet = new Set(remoteIds);
       const reconciliation = reconcileJambBookmarks(localSnapshot, remoteIds, deletedSnapshot);
       const merged = reconciliation.merged;
       const hasChanged = merged.length !== localSnapshot.length ||
@@ -62,6 +63,14 @@ export function useJambBookmarks() {
           const deleted = new Set(reconciliation.remoteToDelete);
           setDeletedBookmarkIds((previous) => previous.filter((id) => !deleted.has(id)));
         }
+      }
+
+      // A successful remote read confirms that tombstones already absent from
+      // the server no longer need to be retained locally.
+      const alreadyAbsent = deletedSnapshot.filter((id) => !remoteIdSet.has(id));
+      if (alreadyAbsent.length > 0) {
+        const absent = new Set(alreadyAbsent);
+        setDeletedBookmarkIds((previous) => previous.filter((id) => !absent.has(id)));
       }
 
       if (reconciliation.localToUpsert.length > 0) {

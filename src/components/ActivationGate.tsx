@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useActivation } from "@/hooks/useActivation";
+import { canAccessStudyContent } from "@/lib/activation-status";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,9 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
   const [showActivationEntry, setShowActivationEntry] = useState(false);
   const [activationCode, setActivationCode] = useState("");
   const trialExpiresAt = status.trial_expires_at ? Date.parse(status.trial_expires_at) : Number.NaN;
+  const subscriptionExpiresAt = status.subscription_expires_at
+    ? Date.parse(status.subscription_expires_at)
+    : Number.NaN;
 
   useEffect(() => {
     if (!Number.isFinite(trialExpiresAt)) return;
@@ -33,6 +37,19 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
   }, [trialExpiresAt]);
 
   const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
+  const subscriptionActive =
+    Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > clockNow;
+  const hasStudyAccess = canAccessStudyContent(status, clockNow);
+
+  // Re-render when a subscription expires, even when the free-trial countdown
+  // is not running, so the UI gate stays in step with the database policy.
+  useEffect(() => {
+    if (!Number.isFinite(subscriptionExpiresAt)) return;
+    const remaining = subscriptionExpiresAt - Date.now();
+    if (remaining <= 0) return;
+    const timeoutId = window.setTimeout(() => setClockNow(Date.now()), remaining + 25);
+    return () => window.clearTimeout(timeoutId);
+  }, [subscriptionExpiresAt]);
 
   const handleTrialActivation = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,7 +76,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.check_error && !status.is_activated && !status.is_admin && !trialActive) {
+  if (status.check_error && !hasStudyAccess) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-border/50 shadow-xl">
@@ -89,11 +106,11 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  if (status.is_activated || status.is_admin || trialActive) {
+  if (hasStudyAccess) {
     return (
       <div className="activation-gate-shell min-h-[100dvh] w-full bg-background">
         <AnimatePresence initial={false}>
-          {trialActive && !status.is_activated && !status.is_admin && (
+          {trialActive && !status.is_admin && (
             <motion.div
               key="trial-status-banner"
               initial={{ height: 0, opacity: 0 }}

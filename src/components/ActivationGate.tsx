@@ -37,8 +37,6 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
   }, [trialExpiresAt]);
 
   const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
-  const subscriptionActive =
-    Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > clockNow;
   const hasStudyAccess = canAccessStudyContent(status, clockNow);
 
   // Re-render when a subscription expires, even when the free-trial countdown

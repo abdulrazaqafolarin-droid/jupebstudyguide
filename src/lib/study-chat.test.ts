@@ -4,6 +4,7 @@ import {
   CONTEXT_MESSAGE_CAP,
   findSyllabusTopic,
   groupChatsByDate,
+  CHAT_SELECT_COLS,
   resolveEditBoundary,
   type StudyChatMeta,
   topicChatTitle,
@@ -16,6 +17,7 @@ import type { AIMessage } from '@/hooks/useAITutorChats';
 function chat(updatedAt: Date, overrides: Partial<StudyChatMeta> = {}): StudyChatMeta {
   return {
     id: `chat-${updatedAt.getTime()}-${Math.random().toString(36).slice(2, 7)}`,
+    exam_program_id: 'jupeb',
     title: 'Chat',
     topic_id: null,
     subtopic: null,
@@ -31,6 +33,17 @@ function daysAgo(days: number): Date {
   d.setDate(d.getDate() - days);
   return d;
 }
+
+describe('programme-scoped study chat metadata', () => {
+  it('selects the programme field required to isolate JAMB and JUPEB histories', () => {
+    expect(CHAT_SELECT_COLS.split(',')).toContain('exam_program_id');
+  });
+
+  it('keeps legacy fixture rows inside the JUPEB workspace by default', () => {
+    expect(chat(new Date()).exam_program_id).toBe('jupeb');
+    expect(chat(new Date(), { exam_program_id: 'jamb' }).exam_program_id).toBe('jamb');
+  });
+});
 
 describe('trimMessagesForContext', () => {
   it('keeps a short thread untouched', () => {

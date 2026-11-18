@@ -284,6 +284,11 @@ export default function JambPastQuestionsPage() {
     const requestSequence = (answerCheckSequenceRef.current[questionId] ?? 0) + 1;
     answerCheckSequenceRef.current[questionId] = requestSequence;
     setSelected((previous) => ({ ...previous, [questionId]: answer }));
+    setFeedbacks((previous) => {
+      const next = { ...previous };
+      delete next[questionId];
+      return next;
+    });
     savePracticeAnswer(questionId, answer);
     setChecking((previous) => ({ ...previous, [questionId]: true }));
     try {

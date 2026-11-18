@@ -16,6 +16,7 @@ import { usePushNotificationsContext } from '@/contexts/PushNotificationsContext
 import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { useUserStorage } from '@/hooks/useUserStorage';
 import { useJambStudyPreferences } from '@/hooks/useJambStudyPreferences';
+import type { JambExamTarget } from '@/lib/jamb-study-preferences';
 import { firstIncompleteStep, getOnboardingFlow, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
 import { normalizeSchoolName, parseSeatNumber } from '@/lib/profile-fields';
 import type { Subject } from '@/types/question';
@@ -66,8 +67,8 @@ export default function Onboarding() {
   const [examTarget, setExamTarget] = useState('this-session');
   const [dailyGoal, setDailyGoal] = useState(30);
   const [jambSubjects, setJambSubjects] = useState<JambSubject[]>([]);
-  const [jambExamTarget, setJambExamTarget] = useState('this-session');
-  const [jambDailyGoal, setJambDailyGoal] = useState(30);
+  const [jambExamTarget, setJambExamTarget] = useState<JambExamTarget>('this-session');
+  const [jambDailyGoal, setJambDailyGoal] = useState<15 | 30 | 60>(30);
   const [schoolName, setSchoolName] = useState('');
   const [seatNumber, setSeatNumber] = useState('');
   const [chatOnline, setChatOnline] = useState(true);
@@ -170,7 +171,7 @@ export default function Onboarding() {
           return;
         }
         const school = normalizeSchoolName(schoolName);
-        setStoredJambPreferences({ subjects: jambSubjects, examTarget: jambExamTarget as 'this-session' | 'next-session' | 'early', dailyGoalMinutes: jambDailyGoal });
+        setStoredJambPreferences({ subjects: jambSubjects, examTarget: jambExamTarget, dailyGoalMinutes: jambDailyGoal });
         await persistAndAdvance(
           'jamb-study',
           {

@@ -47,7 +47,10 @@ export function useJambBookmarks() {
       const merged = reconciliation.merged;
       const hasChanged = merged.length !== localSnapshot.length ||
         merged.some((id, index) => id !== localSnapshot[index]);
-      if (hasChanged) setBookmarks(merged);
+      if (hasChanged) {
+        bookmarksRef.current = merged;
+        setBookmarks(merged);
+      }
 
       if (reconciliation.remoteToDelete.length > 0) {
         const { error: deleteError } = await supabase
@@ -61,16 +64,38 @@ export function useJambBookmarks() {
           console.warn("[JAMB bookmarks] Could not sync offline removals; retry retained:", deleteError.message);
         } else {
           const deleted = new Set(reconciliation.remoteToDelete);
-          setDeletedBookmarkIds((previous) => previous.filter((id) => !deleted.has(id)));
+          const readdedWhileDeleting = reconciliation.remoteToDelete
+            .filter((id) => bookmarksRef.current.includes(id) && !deletedBookmarkIdsRef.current.includes(id));
+          deletedBookmarkIdsRef.current = deletedBookmarkIdsRef.current.filter((id) => !deleted.has(id));
+          setDeletedBookmarkIds(deletedBookmarkIdsRef.current);
+
+          // A user may re-add an item while the cloud delete is in flight.
+          // Restore that newer local intent after the delete completes.
+          if (readdedWhileDeleting.length > 0) {
+            const { error: restoreError } = await supabase
+              .from("exam_user_bookmarks")
+              .upsert(
+                readdedWhileDeleting.map((questionId) => ({
+                  user_id: userId,
+                  exam_program_id: "jamb",
+                  question_id: questionId,
+                })),
+                { onConflict: "user_id,exam_program_id,question_id", ignoreDuplicates: true },
+              );
+            if (restoreError) console.warn("[JAMB bookmarks] Could not restore a bookmark re-added during sync:", restoreError.message);
+          }
         }
       }
 
       // A successful remote read confirms that tombstones already absent from
       // the server no longer need to be retained locally.
-      const alreadyAbsent = deletedSnapshot.filter((id) => !remoteIdSet.has(id));
+      const alreadyAbsent = deletedSnapshot.filter((id) =>
+        !remoteIdSet.has(id) && !bookmarksRef.current.includes(id)
+      );
       if (alreadyAbsent.length > 0) {
         const absent = new Set(alreadyAbsent);
-        setDeletedBookmarkIds((previous) => previous.filter((id) => !absent.has(id)));
+        deletedBookmarkIdsRef.current = deletedBookmarkIdsRef.current.filter((id) => !absent.has(id));
+        setDeletedBookmarkIds(deletedBookmarkIdsRef.current);
       }
 
       if (reconciliation.localToUpsert.length > 0) {
@@ -106,14 +131,25 @@ export function useJambBookmarks() {
 
   const toggle = useCallback((questionId: string) => {
     if (!isReady || !isDeletedReady || !questionId) return;
-    const exists = bookmarksRef.current.includes(questionId);
+    const currentBookmarks = bookmarksRef.current;
+    const exists = currentBookmarks.includes(questionId);
+    const nextBookmarks = exists
+      ? currentBookmarks.filter((id) => id !== questionId)
+      : [...currentBookmarks, questionId];
+    bookmarksRef.current = nextBookmarks;
+    setBookmarks(nextBookmarks);
+
     if (exists) {
-      setBookmarks((previous) => previous.filter((id) => id !== questionId));
-      setDeletedBookmarkIds((previous) => previous.includes(questionId) ? previous : [...previous, questionId]);
+      const nextDeleted = deletedBookmarkIdsRef.current.includes(questionId)
+        ? deletedBookmarkIdsRef.current
+        : [...deletedBookmarkIdsRef.current, questionId];
+      deletedBookmarkIdsRef.current = nextDeleted;
+      setDeletedBookmarkIds(nextDeleted);
     } else {
-      setBookmarks((previous) => previous.includes(questionId) ? previous : [...previous, questionId]);
       // Re-adding a question cancels a pending offline removal.
-      setDeletedBookmarkIds((previous) => previous.filter((id) => id !== questionId));
+      const nextDeleted = deletedBookmarkIdsRef.current.filter((id) => id !== questionId);
+      deletedBookmarkIdsRef.current = nextDeleted;
+      setDeletedBookmarkIds(nextDeleted);
     }
 
     if (!user?.id) return;

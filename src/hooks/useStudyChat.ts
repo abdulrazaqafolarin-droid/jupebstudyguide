@@ -14,6 +14,7 @@ import type { Subject } from '@/types/question';
 import type { ExamProgramId } from '@/lib/exam-program';
 import {
   CHAT_SELECT_COLS,
+  canUseSyllabusTopicContext,
   type StudyChatMeta,
   findSyllabusTopic,
   resolveEditBoundary,
@@ -110,8 +111,8 @@ export function useStudyChat(
       setActiveTopic(null);
       return;
     }
-    if (row.topic_id) {
-      const found = findSyllabusTopic(row.topic_id);
+    if (canUseSyllabusTopicContext(examProgramId, row.topic_id)) {
+      const found = findSyllabusTopic(row.topic_id!);
       setActiveTopic(found ? { topic: found.topic, subject: found.subject, subtopic: row.subtopic } : null);
     } else {
       setActiveTopic(null);
@@ -124,7 +125,7 @@ export function useStudyChat(
     subject: Subject,
     subtopic?: string | null,
   ): Promise<string | null> => {
-    if (!user) return null;
+    if (!user || examProgramId !== 'jupeb') return null;
     const { data, error } = await supabase
       .from('ai_chats')
       .insert({
@@ -157,7 +158,7 @@ export function useStudyChat(
     subject: Subject,
     subtopic?: string | null,
   ): Promise<string | null> => {
-    if (!user) return null;
+    if (!user || examProgramId !== 'jupeb') return null;
     const { data } = await supabase
       .from('ai_chats')
       .select(CHAT_SELECT_COLS)
@@ -326,7 +327,7 @@ export function useStudyChat(
     if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
 
     const topic = activeTopicRef.current;
-    const systemPrompt = topic
+    const systemPrompt = topic && examProgramId === 'jupeb'
       ? buildTopicSystemPrompt(topic.topic, topic.subject, topic.subtopic)
       : examProgramId === 'jamb'
         ? (customSystemPrompt ?? TUTOR_SYSTEM_PROMPT) + extraSystemContext

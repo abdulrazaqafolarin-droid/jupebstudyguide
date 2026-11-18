@@ -140,19 +140,35 @@ jobs:
           APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
           BADGING="$("$AAPT" dump badging "$APK_PATH")"
           PACKAGE="$(echo "$BADGING" | awk -F"'" '/^package:/{print $2; exit}')"
-          APK_CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p" | head -n1)"
-          APK_NAME="$(echo "$BADGING" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p" | head -n1)"
+          APK_CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\\([0-9]*\\)'.*/\\1/p" | head -n1)"
+          APK_NAME="$(echo "$BADGING" | sed -n "s/.*versionName='\\([^']*\\)'.*/\\1/p" | head -n1)"
           MIN_SDK="$(echo "$BADGING" | awk -F"'" '/^sdkVersion:/{print $2; exit}')"
-          test "$PACKAGE" = "$ANDROID_APPLICATION_ID"
-          test "$APK_CODE" = "$APK_VERSION_CODE"
-          test "$APK_NAME" = "$APK_VERSION_NAME"
-          test "$MIN_SDK" = "24"
+          check_value() {
+            local label="$1" actual="$2" expected="$3"
+            if [[ "$actual" != "$expected" ]]; then
+              echo "::error::$label mismatch (actual='$actual', expected='$expected')."
+              exit 1
+            fi
+          }
+          check_value "Android package" "$PACKAGE" "$ANDROID_APPLICATION_ID"
+          check_value "Android versionCode" "$APK_CODE" "$APK_VERSION_CODE"
+          check_value "Android versionName" "$APK_NAME" "$APK_VERSION_NAME"
+          check_value "Android minSdk" "$MIN_SDK" "24"
           keytool -exportcert -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" -file "$RUNNER_TEMP/next-cert.der" >/dev/null
           EXPECTED_CERT="$(sha256sum "$RUNNER_TEMP/next-cert.der" | awk '{print $1}')"
           REPORT="$("$APKSIGNER" verify --print-certs "$APK_PATH" 2>&1)"
           ACTUAL_CERT="$(echo "$REPORT" | awk -F': ' '/Signer #1 certificate SHA-256 digest:/{print $2; exit}' | tr -d '[:space:]:' | tr '[:upper:]' '[:lower:]')"
-          test -n "$ACTUAL_CERT"
-          test "$ACTUAL_CERT" = "$EXPECTED_CERT"
+          if [[ -z "$ACTUAL_CERT" ]]; then
+            echo "::error::Could not read the APK signer certificate SHA-256 digest."
+            printf '%s\\n' "$REPORT" | sed -E 's/(SHA-256 digest:).*/\\1 [digest omitted]/'
+            exit 1
+          fi
+          if [[ "$ACTUAL_CERT" != "$EXPECTED_CERT" ]]; then
+            echo "::error::APK signer certificate does not match the dedicated successor keystore."
+            echo "Expected signer SHA-256: $EXPECTED_CERT"
+            echo "Actual signer SHA-256:   $ACTUAL_CERT"
+            exit 1
+          fi
           "$APKSIGNER" verify --verbose --min-sdk-version 24 --max-sdk-version 36 "$APK_PATH"
           echo "$ACTUAL_CERT" > dist-successor/signing-certificate-sha256.txt
           echo "signer_sha256=$ACTUAL_CERT" >> "$GITHUB_OUTPUT"

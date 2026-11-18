@@ -139,13 +139,13 @@ export default function DiscoverPage() {
     setStartingChat(null);
     if (error || !data) return;
     const dm = data as unknown as { id: string };
-    navigate(`/chat?conversation=${dm.id}`);
+    navigate(`${isJambWorkspace ? "/jamb/chat" : "/chat"}?conversation=${dm.id}`);
   };
 
   const openProfile = (targetUserId: string) => {
     // Keep the dedicated editable page for the signed-in user's own profile.
     if (targetUserId === user?.id) {
-      navigate('/profile');
+      navigate(isJambWorkspace ? "/jamb/profile" : "/profile");
       return;
     }
     setProfileTarget(targetUserId);

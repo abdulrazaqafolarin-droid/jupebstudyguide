@@ -26,6 +26,7 @@ export default function BottomNav() {
     if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
     if (item.path === "/leaderboard") return { ...item, path: "/jamb/leaderboard" };
     if (item.path === "/profile") return { ...item, path: "/jamb/profile" };
+    if (item.path === "/chat") return { ...item, path: "/jamb/chat" };
     return item;
   }) : navItems, [isJamb]);
 
@@ -39,7 +40,7 @@ export default function BottomNav() {
               path === "/"
                 ? location.pathname === "/"
                 : location.pathname.startsWith(path);
-            const isChat = path === "/chat";
+            const isChat = path === "/chat" || path === "/jamb/chat";
             const showBadge = isChat && totalUnread > 0;
             return (
               <Link

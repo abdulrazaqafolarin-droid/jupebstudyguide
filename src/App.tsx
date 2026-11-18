@@ -99,12 +99,13 @@ function ProtectedChatLayout({ children }: { children: React.ReactNode }) {
 
 function AppNotificationBar() {
   const navigate = useNavigate();
+  const { isJambWorkspace } = useExamProgram();
   return (
     <InAppNotificationBar
       onOpenConversation={(convId) => {
-        navigate(`/chat?conversation=${convId}`);
+        navigate(`${isJambWorkspace ? "/jamb/chat" : "/chat"}?conversation=${convId}`);
       }}
-      onOpenFriendsTab={() => navigate('/friends')}
+      onOpenFriendsTab={() => navigate(isJambWorkspace ? "/jamb/friends" : "/friends")}
     />
   );
 }
@@ -241,6 +242,8 @@ function AnimatedRoutes() {
             <Route path="/jamb/leaderboard" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambLeaderboardPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/discover" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><DiscoverPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/profile" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><Profile /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/friends" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><FriendsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/chat" element={<ProtectedRoute><ErrorBoundary><ProtectedChatLayout><Chat /></ProtectedChatLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/daily-mission" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/daily-mission/:missionId" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/ai" element={<ProtectedRoute><ErrorBoundary><ProtectedChatLayout><JambAITutorPage /></ProtectedChatLayout></ErrorBoundary></ProtectedRoute>} />
@@ -378,6 +381,7 @@ function ProgramAwareFloatingTutor() {
     // its programme-aware tutor route rather than mixing those conversations.
     if (
       location.pathname === "/jamb/ai" ||
+      location.pathname === "/jamb/chat" ||
       location.pathname.startsWith("/jamb/cbt/")
     ) return null;
 

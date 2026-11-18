@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { toast } from 'sonner';
 
 let faviconOriginalHref: string | null = null;
@@ -59,6 +60,7 @@ function updateFaviconBadge(count: number) {
 type Tab = 'chats' | 'friends';
 
 const Chat = () => {
+  const { isJambWorkspace } = useExamProgram();
   const { user } = useAuth();
   const chat = useChat();
   const friends = useFriends();
@@ -173,7 +175,7 @@ const Chat = () => {
           <div className="relative p-3 border-b border-border/40">
             <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div className="flex items-center gap-2">
-              <Link to="/">
+              <Link to={isJambWorkspace ? "/jamb" : "/"}>
                 <Button variant="ghost" size="icon" className="shrink-0 rounded-xl hover:bg-accent/50">
                   <ArrowLeft className="w-4 h-4" />
                 </Button>

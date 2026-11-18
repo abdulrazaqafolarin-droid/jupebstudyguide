@@ -91,7 +91,7 @@ The workflow deliberately does not copy JUPEB lesson text, topic calendars, mast
 
 JAMB achievements now add completed-mission thresholds to answer, streak and bookmark milestones. JAMB stats include a separate server-scored CBT attempt summary, weekly score trend and subject breakdown. The `history` action added to `supabase/functions/exam-attempts/index.ts` returns only terminal JAMB attempts owned by the authenticated user and omits question snapshots and answer keys. This Edge Function change is branch-only and is **not deployed**; until it is released, the stats page keeps its JAMB activity analytics and displays a clear CBT-history-unavailable state.
 
-Discover uses a JAMB-only route alias so the shared people directory does not request or display JUPEB weekly scores. The JAMB profile alias keeps profile/account editing shared while hiding JUPEB achievement badges and the JUPEB activation-code purchase prompt.
+Chat, Friends, Discover and Profile use JAMB route aliases to preserve programme context when navigating shared social/account features. Public-profile dialogs hide JUPEB achievement badges on those routes; JAMB Discover does not request or display JUPEB weekly scores; the JAMB Profile hides JUPEB badges and the JUPEB activation-code purchase prompt.
 
 ## Local-first answer and bookmark reconciliation
 

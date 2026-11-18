@@ -89,7 +89,7 @@ Current implementation head: `fb7078ce235ba0bcb9960db7c8dbacaed2da6683`.
 - Added daily-mission achievement milestones and JAMB CBT result analytics, including average/best score, seven-day score trend, subject breakdown and recent owned attempts.
 - Added an owner-only JAMB CBT `history` action to `exam-attempts`. It returns only the signed-in user's submitted/expired JAMB attempt summaries, never answer keys or question snapshots. **The Edge Function change is branch-only and is not deployed.**
 - Added `20261118145700_create_jamb_daily_missions.sql`, which creates a JAMB-only mission-history table with owner and active-session RLS. **The migration is branch-only and is not applied to the live project.** The UI uses account-scoped local storage until the migration is released.
-- JAMB Discover now has a route alias that preserves JAMB context and avoids calling the JUPEB weekly leaderboard. JAMB Profile likewise preserves its programme context, displays a JAMB achievements link and hides JUPEB achievement badges and JUPEB activation-code prompts.
+- JAMB Chat, Friends, Discover and Profile now have route aliases that preserve JAMB context across shared social/account screens. Public-profile dialogs hide JUPEB badges on those routes; Discover does not call the JUPEB weekly leaderboard; Profile displays a JAMB achievements link and hides JUPEB activation-code prompts.
 - The JAMB syllabus topic catalogue, syllabus-led 30-day mission lessons, full official UTME mock and ranked leaderboard remain gated by their stated content/scoring prerequisites.
 
 ## Validation on the parity-completion head

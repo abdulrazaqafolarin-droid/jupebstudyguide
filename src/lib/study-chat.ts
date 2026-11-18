@@ -23,6 +23,15 @@ export const CONTEXT_MESSAGE_CAP = 30;
 export const CHAT_SELECT_COLS =
   'id,exam_program_id,title,topic_id,subtopic,subject,created_at,updated_at';
 
+/** JAMB has no verified syllabus catalogue yet, so topic context is JUPEB-only. */
+export function canUseSyllabusTopicContext(
+  examProgramId: ExamProgramId,
+  topicId: string | null | undefined,
+): boolean {
+  return examProgramId === "jupeb" && Boolean(topicId);
+}
+
+
 /** Newest-N window of a thread for the model (order preserved). */
 export function trimMessagesForContext<T>(messages: T[], cap = CONTEXT_MESSAGE_CAP): T[] {
   if (messages.length <= cap) return messages;

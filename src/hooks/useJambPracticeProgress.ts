@@ -18,6 +18,7 @@ export function useJambPracticeProgress() {
     {},
   );
   const savedAnswersRef = useRef(savedAnswers);
+  const answerChangeVersionRef = useRef(0);
   const answerWriteQueuesRef = useRef(new Map<string, Promise<void>>());
   useEffect(() => { savedAnswersRef.current = savedAnswers; }, [savedAnswers]);
 
@@ -33,6 +34,7 @@ export function useJambPracticeProgress() {
         return;
       }
       syncInFlight = true;
+      const versionAtStart = answerChangeVersionRef.current;
       try {
       const userId = user.id;
       const { data, error } = await supabase
@@ -81,7 +83,7 @@ export function useJambPracticeProgress() {
       }
       } finally {
         syncInFlight = false;
-        if (syncRequested && active) {
+        if ((syncRequested || answerChangeVersionRef.current !== versionAtStart) && active) {
           syncRequested = false;
           void sync();
         }
@@ -107,6 +109,7 @@ export function useJambPracticeProgress() {
   const saveAnswer = useCallback((questionId: string, selected: string) => {
     if (!isReady || !questionId || !/^[A-E]$/.test(selected)) return;
     const savedAt = Date.now();
+    answerChangeVersionRef.current += 1;
     setSavedAnswers((previous) => ({ ...previous, [questionId]: { selected, savedAt } }));
     if (!user?.id) return;
     savedAnswersRef.current = {

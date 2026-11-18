@@ -14,8 +14,6 @@ export function useJambBookmarks() {
   );
   const bookmarksRef = useRef(bookmarks);
   const deletedBookmarkIdsRef = useRef(deletedBookmarkIds);
-  const syncInFlightRef = useRef(false);
-  const syncRequestedRef = useRef(false);
 
   useEffect(() => { bookmarksRef.current = bookmarks; }, [bookmarks]);
   useEffect(() => { deletedBookmarkIdsRef.current = deletedBookmarkIds; }, [deletedBookmarkIds]);
@@ -23,13 +21,15 @@ export function useJambBookmarks() {
   useEffect(() => {
     if (loading || !user?.id || !isReady || !isDeletedReady) return;
     let active = true;
+    let syncInFlight = false;
+    let syncRequested = false;
 
     const sync = async () => {
-      if (syncInFlightRef.current) {
-        syncRequestedRef.current = true;
+      if (syncInFlight) {
+        syncRequested = true;
         return;
       }
-      syncInFlightRef.current = true;
+      syncInFlight = true;
       try {
       const userId = user.id;
       const { data, error } = await supabase
@@ -120,9 +120,9 @@ export function useJambBookmarks() {
         if (syncError) console.warn("[JAMB bookmarks] Could not sync local bookmarks:", syncError.message);
       }
       } finally {
-        syncInFlightRef.current = false;
-        if (syncRequestedRef.current && active) {
-          syncRequestedRef.current = false;
+        syncInFlight = false;
+        if (syncRequested && active) {
+          syncRequested = false;
           void sync();
         }
       }

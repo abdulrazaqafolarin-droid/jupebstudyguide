@@ -96,7 +96,12 @@ function installAuthListener() {
         event === "USER_UPDATED")
     ) {
       globalThis.setTimeout(() => {
-        if (!fetchStarted && (!_ready || currentData.length === 0)) {
+        // A same-user re-login or token refresh must also recover a previous
+        // empty RLS response. Do not depend on the user ID changing.
+        if (currentData.length === 0) {
+          fetchStarted = false;
+          _ready = false;
+          _lastError = null;
           initDataLayer("immediate");
         }
       }, 0);

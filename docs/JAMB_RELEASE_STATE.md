@@ -24,16 +24,20 @@ The `VITE_ENABLE_JAMB=true` environment variable is scoped to the `feat/rutex-ja
 
 ### Live Edge Function deployment
 
-All six relevant functions are `ACTIVE` on the existing project. Their live versions were verified against the previously deployed JAMB backend source. Since that deployment, the feature branch has received an additional idempotent/resumable upload change in `question-import`; that latest change is **not yet deployed**. The live importer therefore remains at v2 until the authenticated Preview acceptance gate and backend release review are complete.
+All six relevant functions are `ACTIVE` on the existing project. The Preview backend prerequisites are now deployed and verified:
 
 | Function | Live version | Gateway `verify_jwt` |
 |---|---:|---|
-| `exam-attempts` | v4 | false |
+| `exam-attempts` | **v5** | false |
 | `exam-practice` | v2 | false |
-| `question-import` | v2 | false |
+| `question-import` | **v3** | false |
 | `ai-tutor` | v101 | false |
 | `chat-proxy` | v132 | false |
 | `question-rag-index` | v4 | false |
+
+- `exam-attempts` v5 adds the owner-filtered JAMB history action. It returns terminal attempt summaries for the authenticated owner only; it does not return question snapshots or answer keys.
+- `question-import` v3 enables protocol v2 resumable source chunks, stable item offsets and conflict-safe duplicate retries.
+- Both functions retain `verify_jwt=false` because their handlers independently validate the Bearer token with Supabase Auth and check the active device session. Import also checks administrator status. Do not remove those checks or treat the gateway setting as authentication.
 
 **Authentication detail:** gateway JWT verification is disabled for these functions, so security depends on their in-handler checks. The deployed handlers validate Bearer tokens with Supabase Auth; the exam endpoints also enforce active study access; question import additionally requires an administrator; the embedding worker checks administrator status; and the AI endpoints apply the shared AI-access guard. Do not remove these checks or assume the gateway setting authenticates requests by itself.
 
@@ -87,8 +91,8 @@ Current implementation head: `fb7078ce235ba0bcb9960db7c8dbacaed2da6683`.
 
 - Added JAMB-only daily missions and expandable mission history. Question sets are frozen per mission, can be resumed, and are checked through the JAMB-only practice endpoint. Correct options/explanations are shown only when returned by the approved JAMB answer-key service.
 - Added daily-mission achievement milestones and JAMB CBT result analytics, including average/best score, seven-day score trend, subject breakdown and recent owned attempts.
-- Added an owner-only JAMB CBT `history` action to `exam-attempts`. It returns only the signed-in user's submitted/expired JAMB attempt summaries, never answer keys or question snapshots. **The Edge Function change is branch-only and is not deployed.**
-- Added `20261118145700_create_jamb_daily_missions.sql`, which creates a JAMB-only mission-history table with owner and active-session RLS. **The migration is branch-only and is not applied to the live project.** The UI uses account-scoped local storage until the migration is released.
+- Added an owner-only JAMB CBT `history` action to `exam-attempts`. It returns only the signed-in user's submitted/expired JAMB attempt summaries, never answer keys or question snapshots. The handler is deployed as `exam-attempts` v5.
+- Added `20261118182508_create_jamb_daily_missions.sql` and `20261118182636_tighten_jamb_daily_missions_grants.sql`. Both are applied to the shared project. The table has RLS enabled, one owner-and-active-session policy, no `anon` or `PUBLIC` table grants, and only SELECT/INSERT/UPDATE/DELETE for `authenticated`. It contains zero rows at rollout; no question content is stored there. Mission history now has its cloud table rather than relying on local-only fallback.
 - JAMB Chat, Friends, Discover and Profile now have route aliases that preserve JAMB context across shared social/account screens. Public-profile dialogs hide JUPEB badges on those routes; Discover does not call the JUPEB weekly leaderboard; Profile displays a JAMB achievements link and hides JUPEB activation-code prompts.
 - The JAMB syllabus topic catalogue, syllabus-led 30-day mission lessons, full official UTME mock and ranked leaderboard remain gated by their stated content/scoring prerequisites.
 
@@ -108,7 +112,7 @@ Both Vercel Preview checks on that head failed with the connected account's dail
 - Persistent AI tutor history is now programme-scoped in the live database. Migration `20261118123742_scope_ai_chat_history_by_exam_program` is recorded with that exact hosted version; all 321 legacy chat rows remain JUPEB.
 - JAMB local-first progress uses timestamp reconciliation, retries on reconnect/focus/visible, serializes sync operations per account and queues rapid same-question writes. New unit tests cover reconciliation edge cases.
 - JAMB bookmarks retain per-user deletion tombstones until remote removal is confirmed; re-adding during an in-flight removal is restored to the cloud rather than lost.
-- Admin source imports now resume by original source hash and stable item offsets. The feature-branch handler uses the unique batch/item key to ignore duplicate chunk retries and recalculates review counters. This source change has not yet been deployed to the live `question-import` function.
+- Admin source imports now resume by original source hash and stable item offsets. The deployed `question-import` v3 handler uses the unique batch/item key to ignore duplicate chunk retries and recalculates review counters. Source rights and human review are still mandatory; no batches have been staged.
 
 ## Post-migration advisor review
 
@@ -122,3 +126,15 @@ The Supabase advisor scan after the chat-history migration reported existing pro
 4. Keep PR #78 in Draft and Production UI disabled until the remaining acceptance gates and release review are complete.
 
 **No Production UI deployment, JAMB source publication or updater-release publication was performed during this continuation.** The two additive database migrations and six Edge Function deployments described above remain live on the existing connected Supabase project.
+
+
+## Preview backend readiness — 18 November 2026
+
+- JAMB daily mission schema is live on `gzyczowqqywesqhqqpdi`. Supabase migration history records `20261118182508/create_jamb_daily_missions` and `20261118182636/tighten_jamb_daily_missions_grants`. Post-migration verification confirms RLS enabled, exactly one authenticated owner/session policy, no anonymous table privileges, authenticated CRUD limited to SELECT/INSERT/UPDATE/DELETE, and zero existing mission rows.
+- `exam-attempts` is deployed at v5 and `question-import` at v3. Both continue to authenticate in-handler and check the active session; importing additionally requires an administrator.
+- The latest branch head `89a08d1cf17498df4778a4a70f6b2c220588f9e0` is still Draft. The previous privacy-test commit passed PR validation and repository validation, including unit tests, Deno checks, lint, web build and Android debug compilation. The new migration-history commit has fresh CI running.
+- Vercel Preview checks for the migration-history commit are rate-limited on both connected projects. This is a deployment quota issue, not an application test failure. No Production-scoped JAMB feature flag or Production UI deployment was made.
+- The official JAMB IBASS eligibility checker currently shows English Language selected by default for UTME combinations. Official IBASS Physics, Biology and Use of English syllabus PDFs are discoverable, but they have not yet been imported, versioned or approved in Rutex. The Chemistry syllabus source and 2027 format still need a verified intake. JAMB's 2027 Test Manual page lists a manual updated 23 September 2026, but its linked manual download returned 404 when checked on 18 November 2026. The official full-mock configuration therefore remains disabled.
+- There are still zero JAMB question rows and zero import batches. No Physics/Chemistry/Biology source pack has been staged, rights-attested, reviewed or published.
+
+Official references checked: [JAMB IBASS eligibility checker](https://eligibility.jamb.gov.ng/), [Physics syllabus](https://ibass.jamb.gov.ng/assets/uploads/Physics.pdf), [Biology syllabus](https://ibass.jamb.gov.ng/assets/uploads/Biology.pdf), [Use of English syllabus](https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf), and [2027 JAMB Test Manual listing](https://www.jamb.gov.ng/News/PDFs/2027/2027_JAMB_Test_Manual).

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserStorage } from "@/hooks/useUserStorage";
+import { reconcileJambProgress } from "@/lib/jamb-local-sync";
 
 export interface JambSavedAnswer {
   selected: string;
@@ -37,34 +38,32 @@ export function useJambPracticeProgress() {
       }
 
       const localSnapshot = savedAnswersRef.current;
-      const merged: SavedAnswers = { ...localSnapshot };
-      for (const row of data ?? []) {
-        if (!row.last_selected_option) continue;
-        const remote = {
-          selected: row.last_selected_option,
-          savedAt: row.last_answered_at ? new Date(row.last_answered_at).getTime() : 0,
-        };
-        const local = merged[row.question_id];
-        if (!local || remote.savedAt > local.savedAt) merged[row.question_id] = remote;
-      }
+      const remoteRows = (data ?? []).map((row) => ({
+        questionId: row.question_id,
+        selected: row.last_selected_option,
+        savedAt: row.last_answered_at ? new Date(row.last_answered_at).getTime() : 0,
+      }));
+      const { merged, pendingUpserts } = reconcileJambProgress(localSnapshot, remoteRows);
       if (JSON.stringify(merged) !== JSON.stringify(localSnapshot)) setSavedAnswers(merged);
 
-      const remoteIds = new Set((data ?? []).map((row) => row.question_id));
-      const missing = Object.entries(merged).filter(([questionId]) => !remoteIds.has(questionId));
-      if (missing.length > 0) {
+      if (pendingUpserts.length > 0) {
+        const now = new Date().toISOString();
         const { error: syncError } = await supabase.from("exam_user_progress").upsert(
-          missing.map(([questionId, answer]) => ({
-            user_id: user.id,
-            exam_program_id: "jamb",
-            question_id: questionId,
-            last_selected_option: answer.selected,
-            last_answered_at: new Date(answer.savedAt || Date.now()).toISOString(),
-            last_viewed_at: new Date(answer.savedAt || Date.now()).toISOString(),
-            viewed_count: 1,
-          })),
+          pendingUpserts.map(([questionId, answer]) => {
+            const savedAt = new Date(answer.savedAt || Date.now()).toISOString();
+            return {
+              user_id: user.id,
+              exam_program_id: "jamb",
+              question_id: questionId,
+              last_selected_option: answer.selected,
+              last_answered_at: savedAt,
+              last_viewed_at: now,
+              viewed_count: 1,
+            };
+          }),
           { onConflict: "user_id,exam_program_id,question_id" },
         );
-        if (syncError) console.warn("[JAMB progress] Could not sync local progress:", syncError.message);
+        if (syncError) console.warn("[JAMB progress] Could not sync local answers:", syncError.message);
       }
     })();
     return () => { active = false; };

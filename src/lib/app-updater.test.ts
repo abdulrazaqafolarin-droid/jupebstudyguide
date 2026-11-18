@@ -1,15 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Capacitor } from "@capacitor/core";
-import {
-  APK_FILE_NAME,
-  downloadApk,
-  getReleaseApkUrl,
-  installDownloadedApk,
-  isNewer,
-  parseReleaseInfo,
-  RELEASE_BASE_URL,
-  RELEASE_APK_URL,
-} from "./app-updater";
+import { downloadApk, getReleaseApkUrl, installDownloadedApk, isNewer, parseReleaseInfo, RELEASE_APK_URL } from "./app-updater";
 
 describe("isAndroidApp", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -53,6 +44,25 @@ describe("Android-only updater operations", () => {
   });
 });
 
+describe("getReleaseApkUrl", () => {
+  it("keeps the legacy app on its fixed APK URL", () => {
+    expect(getReleaseApkUrl(41, "https://example.supabase.co/app-releases", "jupeb-master.apk"))
+      .toBe("https://example.supabase.co/app-releases/jupeb-master.apk");
+  });
+
+  it("uses an immutable APK URL for each successor version", () => {
+    expect(getReleaseApkUrl(200321, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .toBe("https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-200321.apk");
+    expect(getReleaseApkUrl(200320, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .not.toBe(getReleaseApkUrl(200321, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"));
+  });
+
+  it("rejects invalid version codes", () => {
+    expect(getReleaseApkUrl(0, "https://example.supabase.co/app-releases/rutex-master-next", "rutex-master-next.apk"))
+      .toBe("");
+  });
+});
+
 describe("isNewer", () => {
   it("detects a higher published code", () => {
     expect(isNewer(2, 3)).toBe(true);
@@ -70,28 +80,8 @@ describe("isNewer", () => {
   });
 });
 
-describe("release URL selection", () => {
-  it("keeps APK downloads inside the configured public release folder", () => {
-    const url = getReleaseApkUrl(41);
-    expect(url.startsWith(`${RELEASE_BASE_URL}/`)).toBe(true);
-    expect(url).not.toContain("..");
-    expect(url).toContain(APK_FILE_NAME === "jupeb-master.apk"
-      ? "jupeb-master.apk"
-      : `${APK_FILE_NAME.replace(/\.apk$/i, "")}-41.apk`);
-  });
-
-  it("binds versioned successor APK names to the manifest version code", () => {
-    if (APK_FILE_NAME !== "jupeb-master.apk") {
-      expect(getReleaseApkUrl(41)).toBe(
-        `${RELEASE_BASE_URL}/${APK_FILE_NAME.replace(/\.apk$/i, "")}-41.apk`,
-      );
-      expect(getReleaseApkUrl(42)).not.toBe(getReleaseApkUrl(41));
-    }
-  });
-});
-
 describe("parseReleaseInfo", () => {
-  it("accepts a well-formed payload for the configured release channel", () => {
+  it("accepts a well-formed payload", () => {
     expect(
       parseReleaseInfo({
         versionCode: 41,
@@ -131,26 +121,13 @@ describe("parseReleaseInfo", () => {
     })?.requiresReinstall).toBe(false);
   });
 
-  it("rejects corrupt payloads and APK URLs for a different version", () => {
+  it("rejects corrupt payloads", () => {
     expect(parseReleaseInfo(null)).toBeNull();
     expect(parseReleaseInfo({})).toBeNull();
     expect(parseReleaseInfo({ versionCode: "41", url: "https://x" })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 41, url: "http://insecure/x.apk" })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 41, url: "https://example.com/jupeb-master.apk" })).toBeNull();
-    expect(parseReleaseInfo({
-      versionCode: 41,
-      url: getReleaseApkUrl(40),
-      sha256: "a".repeat(64),
-    })).toBeNull();
-    expect(parseReleaseInfo({
-      versionCode: 0,
-      url: getReleaseApkUrl(0),
-      sha256: "a".repeat(64),
-    })).toBeNull();
-    expect(parseReleaseInfo({
-      versionCode: 41,
-      url: getReleaseApkUrl(41),
-      sha256: "not-a-checksum",
-    })).toBeNull();
+    expect(parseReleaseInfo({ versionCode: 0, url: RELEASE_APK_URL, sha256: "a".repeat(64) })).toBeNull();
+    expect(parseReleaseInfo({ versionCode: 41, url: getReleaseApkUrl(41), sha256: "not-a-checksum" })).toBeNull();
   });
 });

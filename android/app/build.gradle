@@ -9,14 +9,17 @@ def isolatedPreviewBuild = System.getenv("APK_PREVIEW_PACKAGE") == "true"
 // The successor release workflow builds a separate install identity. Keep the
 // app's namespace stable for Java/Kotlin sources, but allow an explicit
 // applicationId override so the resulting APK is genuinely side-by-side.
-def resolvedApplicationId = System.getenv("ANDROID_APPLICATION_ID") ?:
-        System.getenv("CAPACITOR_APP_ID") ?: "com.jupeb.master"
+def resolvedApplicationId = (System.getenv("ANDROID_APPLICATION_ID") ?:
+        System.getenv("CAPACITOR_APP_ID") ?: "com.jupeb.master").trim()
+def resolvedAuthScheme = (System.getenv("ANDROID_AUTH_SCHEME") ?:
+        System.getenv("CAPACITOR_APP_ID") ?: "com.jupeb.master").trim()
 
 android {
     namespace = "com.jupeb.master"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId resolvedApplicationId
+        manifestPlaceholders = [appAuthScheme: resolvedAuthScheme]
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         // Every CI build stamps a unique, monotonically increasing versionCode

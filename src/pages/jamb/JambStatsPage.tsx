@@ -80,8 +80,8 @@ export default function JambStatsPage() {
       })
       .catch(() => {
         if (!active) return;
-        // This action is branch-only until the reviewed exam-attempts release.
-        // Do not query service-role tables directly or substitute JUPEB scores.
+        // History is served by the authenticated, owner-filtered JAMB endpoint.
+        // Never query service-role tables directly or substitute JUPEB scores.
         setCbtHistory([]);
         setCbtHistoryOwnerId(ownerId);
         setCbtHistorySupported(false);
@@ -241,7 +241,7 @@ export default function JambStatsPage() {
             <p className="text-sm text-muted-foreground">Loading your completed JAMB attempts…</p>
           ) : cbtHistorySupportedForUser === false ? (
             <p className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-relaxed text-muted-foreground">
-              Personal CBT history is not available from the connected backend yet. It will appear after the updated JAMB attempt-history endpoint is released. Your result after each completed CBT remains available on its results screen.
+              We could not load your JAMB CBT history from the connected backend. Check your connection or study-session access and reopen this page. Your result after each completed CBT remains available on its results screen.
             </p>
           ) : cbtHistoryForUser.length === 0 ? (
             <p className="rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground">No completed JAMB timed attempts yet. Submit a practice CBT to build your personal score history.</p>

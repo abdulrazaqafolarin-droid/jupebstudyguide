@@ -205,7 +205,7 @@ export function useActivation() {
       setValidating(false);
       return { success: false, error: msg };
     }
-  }, [user, status.is_admin]);
+  }, [user, status.is_admin, status.subscription_expires_at]);
 
   const refreshStatus = useCallback(() => checkStatus(true), [checkStatus]);
 

@@ -22,8 +22,14 @@ CREATE POLICY jamb_daily_missions_owner_all
   ON public.jamb_daily_missions
   FOR ALL
   TO authenticated
-  USING ((SELECT auth.uid()) = user_id)
-  WITH CHECK ((SELECT auth.uid()) = user_id);
+  USING (
+    (SELECT auth.uid()) = user_id
+    AND (SELECT public.current_auth_session_is_active())
+  )
+  WITH CHECK (
+    (SELECT auth.uid()) = user_id
+    AND (SELECT public.current_auth_session_is_active())
+  );
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.jamb_daily_missions TO authenticated;
 

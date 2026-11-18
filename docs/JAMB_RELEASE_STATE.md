@@ -81,6 +81,28 @@ On code commit `7a55bd2818281529fc8470fefc65da201fd0c647`:
 Since the application-code build previously validated above, the feature branch has added JAMB offline-sync reconciliation tests, ordered answer writes, bookmark deletion tombstones, stable/idempotent source-import chunks and resume-from-existing-batch behavior. These changes are committed but still require final CI on the latest source head. As of source head `bc5c9290b2e1ed0419d5710db40043157db7d603`, PR validation, repository validation and iOS validation are running; the current Android debug build is not yet complete. The two Vercel Preview checks remain blocked by the connected account's daily build-rate limit, so no fresh Preview was produced for these latest commits. No signed-in student/admin walkthrough has been completed.
 
 
+## Feature-branch parity completion — 18 November 2026
+
+Current implementation head: `fb7078ce235ba0bcb9960db7c8dbacaed2da6683`.
+
+- Added JAMB-only daily missions and expandable mission history. Question sets are frozen per mission, can be resumed, and are checked through the JAMB-only practice endpoint. Correct options/explanations are shown only when returned by the approved JAMB answer-key service.
+- Added daily-mission achievement milestones and JAMB CBT result analytics, including average/best score, seven-day score trend, subject breakdown and recent owned attempts.
+- Added an owner-only JAMB CBT `history` action to `exam-attempts`. It returns only the signed-in user's submitted/expired JAMB attempt summaries, never answer keys or question snapshots. **The Edge Function change is branch-only and is not deployed.**
+- Added `20261118145700_create_jamb_daily_missions.sql`, which creates a JAMB-only mission-history table with owner and active-session RLS. **The migration is branch-only and is not applied to the live project.** The UI uses account-scoped local storage until the migration is released.
+- JAMB Discover now has a route alias that preserves JAMB context and avoids calling the JUPEB weekly leaderboard. JAMB Profile likewise preserves its programme context, displays a JAMB achievements link and hides JUPEB achievement badges and JUPEB activation-code prompts.
+- The JAMB syllabus topic catalogue, syllabus-led 30-day mission lessons, full official UTME mock and ranked leaderboard remain gated by their stated content/scoring prerequisites.
+
+## Validation on the parity-completion head
+
+All four GitHub Actions workflows completed successfully on `fb7078ce235ba0bcb9960db7c8dbacaed2da6683`:
+
+- Pull request validation: run `44334358930` — **success** (TypeScript, unit tests, lint, web build, Capacitor sync and Android debug APK).
+- Repository validation: run `44334358896` — **success**.
+- Native iOS build: run `44334359043` — **success**, including simulator app build, identity verification, install, launch and screenshot.
+- Artifact-only successor Android build: run `44334359022` — **success**. Artifact `rutex-master-next-327` (ID `14441171686`) was uploaded; the updater publication step was skipped.
+
+Both Vercel Preview checks on that head failed with the connected account's daily `build-rate-limit`, not an application build error. No fresh Preview or signed-in student/admin walkthrough is available. The PR remains Draft and no Production deployment, live migration, Edge Function release, question publication or updater release was performed.
+
 ## Latest feature-branch hardening — 18 November 2026
 
 - Persistent AI tutor history is now programme-scoped in the live database. Migration `20261118123742_scope_ai_chat_history_by_exam_program` is recorded with that exact hosted version; all 321 legacy chat rows remain JUPEB.

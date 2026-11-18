@@ -2,13 +2,17 @@
 
 ## Scope currently implemented
 
-- A dedicated `/jamb` route family with its own home, question bank, practice CBT, AI tutor and syllabus status page.
+- A dedicated `/jamb` route family with its own home, question bank, practice CBT, AI tutor, syllabus status, daily mission/history, study stats, achievements and separate leaderboard destination.
 - An explicit `exam_program_id` boundary (`jupeb` or `jamb`) in question storage, question RAG, answer references and learner progress.
 - The existing JUPEB question loader now requests JUPEB-only rows when the new column is present. It retries the legacy query only when the migration is not yet present; it does not select JAMB rows.
 - JAMB past-question browsing supports historical A–E source questions. The timed CBT practice selector deliberately uses only four-option A–D questions.
 - CBT attempts, question snapshots, submitted answers, timer expiry and scoring are server-authoritative. In-progress snapshots do not contain answer keys.
 - Answer keys live in a separate protected table and are returned only by the post-selection practice check or server-side scoring.
 - Per-user JAMB bookmarks and practice progress have separate cloud rows and local-first storage keys.
+- The JAMB dashboard mirrors JUPEB dashboard composition with JAMB-only practice totals, bookmarks, available years, subject cards, quick actions and guarded score/leaderboard panels.
+- JAMB daily missions use stable, reviewed-and-published question sets, answer checks through `exam-practice`, resumable per-account history and a separate `jamb_daily_missions` table. Mission review stores only the server-approved result, correct option and explanation; ungraded items never reduce the score denominator.
+- JAMB achievements include daily-mission completion milestones. JAMB stats distinguish saved-answer activity from server-scored timed CBT results; they never infer correctness from an answer selection.
+- JAMB Discover and Profile route aliases preserve the programme context. Discover does not call the JUPEB weekly leaderboard in JAMB; Profile hides JUPEB badges and JUPEB-specific activation-code prompts.
 - A private-source staging/import path keeps raw text, hashes, source references, figure descriptions and validation flags. It does not invent solutions or auto-publish.
 - A JAMB-aware tutor prompt and AI retrieval path use only JAMB-tagged question-bank records. JUPEB textbook retrieval and the global JUPEB floating tutor are disabled inside JAMB pages.
 
@@ -78,6 +82,16 @@ The security advisor lists nine new server-owned JAMB tables as RLS-enabled with
 ## Persistent tutor-history separation — 18 November 2026
 
 The shared `ai_chats` table now has an `exam_program_id` discriminator through `20261118123742_scope_ai_chat_history_by_exam_program.sql`. Existing rows receive the JUPEB default, the foreign key points to the active exam-program registry, and `(user_id, exam_program_id, updated_at DESC)` supports scoped history lists. The migration was applied to the shared Rutex Supabase project and checked: all 321 existing tutor chats remain tagged `jupeb`; there are zero JAMB chat rows and zero unexpected programme IDs. Existing owner RLS policies were not weakened. The JAMB tutor stores, lists, renames, updates and deletes chats under `jamb`; JUPEB history remains isolated.
+
+## JAMB daily mission, achievements and CBT analytics — feature branch
+
+The practice-only daily mission flow is implemented at `/jamb/daily-mission` with per-mission routes under `/jamb/daily-mission/:missionId`. It selects up to ten currently published JAMB questions from the chosen subject, stores the fixed question IDs for resume, and calls the JAMB-scoped answer-check endpoint for each response. The history list can be expanded beyond the recent twenty records and can be opened read-only.
+
+The workflow deliberately does not copy JUPEB lesson text, topic calendars, mastery data or 70% lesson-completion criteria. JAMB syllabus lessons remain disabled until the correct official syllabus and topic mappings are versioned and verified. The separate migration `20261118145700_create_jamb_daily_missions.sql` creates an owner- and active-session-protected table; it is committed in the branch but **has not been applied to the live Supabase project**. Until that migration is released, mission records remain in per-account local storage and the UI identifies that cloud history is not available.
+
+JAMB achievements now add completed-mission thresholds to answer, streak and bookmark milestones. JAMB stats include a separate server-scored CBT attempt summary, weekly score trend and subject breakdown. The `history` action added to `supabase/functions/exam-attempts/index.ts` returns only terminal JAMB attempts owned by the authenticated user and omits question snapshots and answer keys. This Edge Function change is branch-only and is **not deployed**; until it is released, the stats page keeps its JAMB activity analytics and displays a clear CBT-history-unavailable state.
+
+Discover uses a JAMB-only route alias so the shared people directory does not request or display JUPEB weekly scores. The JAMB profile alias keeps profile/account editing shared while hiding JUPEB achievement badges and the JUPEB activation-code purchase prompt.
 
 ## Local-first answer and bookmark reconciliation
 

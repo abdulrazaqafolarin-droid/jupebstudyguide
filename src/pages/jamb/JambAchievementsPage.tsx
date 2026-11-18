@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Award, Bookmark, BookOpen, Flame, LockKeyhole, Star, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
+import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
 import {
   getJambAchievementProgress,
   getJambActivityStats,
@@ -12,15 +13,17 @@ import {
 export default function JambAchievementsPage() {
   const { savedAnswers, isReady: answersReady } = useJambPracticeProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
+  const { history: missionHistory, ready: missionsReady } = useJambDailyMissions();
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
   const activity = useMemo(() => getJambActivityStats(savedAnswers), [savedAnswers]);
-  const metrics: JambAchievementMetrics = { ...activity, bookmarkCount: bookmarks.length };
+  const completedMissionCount = missionHistory.filter((mission) => mission.status === "completed").length;
+  const metrics: JambAchievementMetrics = { ...activity, bookmarkCount: bookmarks.length, completedMissionCount };
   const achievements = getJambAchievementProgress(metrics);
   const unlockedCount = achievements.filter((item) => item.unlocked).length;
   const visible = achievements.filter((item) =>
     filter === "all" || (filter === "unlocked" ? item.unlocked : !item.unlocked),
   );
-  const ready = answersReady && bookmarksReady;
+  const ready = answersReady && bookmarksReady && missionsReady;
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,7 +49,7 @@ export default function JambAchievementsPage() {
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary"><Trophy className="h-5 w-5" /></div>
               <div>
                 <h2 className="font-semibold">Your JAMB progress milestones</h2>
-                <p className="text-xs text-muted-foreground">Practice, consistency and saved questions</p>
+                <p className="text-xs text-muted-foreground">Practice, consistency, saved questions and daily missions</p>
               </div>
             </div>
             <p className="text-right text-lg font-bold tabular-nums">{ready ? unlockedCount : "—"}<span className="text-sm font-normal text-muted-foreground">/{achievements.length}</span></p>
@@ -54,7 +57,7 @@ export default function JambAchievementsPage() {
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
             <div className="h-full rounded-full bg-primary transition-all" style={{ width: (ready ? (unlockedCount / achievements.length) * 100 : 0) + "%" }} />
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">{ready ? activity.answerCount + " questions practised · " + activity.longestStreak + "-day best streak · " + bookmarks.length + " bookmarks" : "Loading JAMB activity…"}</p>
+          <p className="mt-3 text-xs text-muted-foreground">{ready ? activity.answerCount + " questions practised · " + activity.longestStreak + "-day best streak · " + bookmarks.length + " bookmarks · " + completedMissionCount + " missions completed" : "Loading JAMB activity…"}</p>
         </section>
 
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter achievements">

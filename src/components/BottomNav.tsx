@@ -25,6 +25,7 @@ export default function BottomNav() {
     if (item.path === "/") return { ...item, path: "/jamb" };
     if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
     if (item.path === "/leaderboard") return { ...item, path: "/jamb/leaderboard" };
+    if (item.path === "/profile") return { ...item, path: "/jamb/profile" };
     return item;
   }) : navItems, [isJamb]);
 

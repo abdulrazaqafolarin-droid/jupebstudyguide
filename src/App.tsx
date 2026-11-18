@@ -239,6 +239,8 @@ function AnimatedRoutes() {
             <Route path="/jamb/achievements" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambAchievementsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/stats" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambStatsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/leaderboard" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambLeaderboardPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/discover" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><DiscoverPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/profile" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><Profile /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/daily-mission" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/daily-mission/:missionId" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/ai" element={<ProtectedRoute><ErrorBoundary><ProtectedChatLayout><JambAITutorPage /></ProtectedChatLayout></ErrorBoundary></ProtectedRoute>} />

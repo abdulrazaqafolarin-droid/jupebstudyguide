@@ -283,6 +283,33 @@ Deno.serve(async (request: Request) => {
       return reply({ attempt_id: attempt.id, exam_year: config.exam_year, config_version: config.config_version, question_count: questionCount, idempotent_replay: false });
     }
 
+    if (action === "history") {
+      const { data, error } = await supabase
+        .from("exam_attempts")
+        .select("id,subject_code,attempt_kind,status,exam_year,duration_minutes,started_at,submitted_at,score_summary")
+        .eq("user_id", user.id)
+        .eq("exam_program_id", "jamb")
+        .in("status", ["submitted", "expired"])
+        .order("submitted_at", { ascending: false })
+        .limit(100);
+      if (error) throw new Error(error.message);
+
+      const history = (data ?? []).map((item) => ({
+        id: item.id,
+        subject: item.subject_code,
+        attempt_kind: item.attempt_kind,
+        status: item.status,
+        exam_year: item.exam_year,
+        duration_minutes: item.duration_minutes,
+        started_at: item.started_at,
+        submitted_at: item.submitted_at,
+        result: item.score_summary && typeof item.score_summary === "object"
+          ? item.score_summary as Record<string, unknown>
+          : null,
+      }));
+      return reply({ history });
+    }
+
     const attemptId = String(body.attempt_id ?? "");
     if (!attemptId) return reply({ error: "attempt_id is required." }, 400);
     const attempt = await readOwnedAttempt(supabase, attemptId, user.id);

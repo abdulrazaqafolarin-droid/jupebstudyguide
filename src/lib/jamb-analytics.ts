@@ -14,6 +14,7 @@ export interface JambActivityStats {
 
 export interface JambAchievementMetrics extends JambActivityStats {
   bookmarkCount: number;
+  completedMissionCount: number;
 }
 
 export const JAMB_ANSWER_MILESTONES = [
@@ -24,7 +25,7 @@ export const JAMB_ANSWER_MILESTONES = [
   { id: "five-hundred", label: "JAMB champion", target: 500, description: "Save 500 practice answers" },
 ] as const;
 
-export type JambAchievementMetric = "answers" | "longestStreak" | "bookmarks";
+export type JambAchievementMetric = "answers" | "longestStreak" | "bookmarks" | "missions";
 
 export interface JambAchievementDefinition {
   id: string;
@@ -45,6 +46,9 @@ export const JAMB_ACHIEVEMENTS: readonly JambAchievementDefinition[] = [
   { id: "seven-day-streak", label: "A full week", description: "Study on seven consecutive days", target: 7, metric: "longestStreak", category: "Consistency" },
   { id: "ten-bookmarks", label: "Save for later", description: "Bookmark 10 JAMB questions", target: 10, metric: "bookmarks", category: "Organisation" },
   { id: "twenty-five-bookmarks", label: "Personal question library", description: "Bookmark 25 JAMB questions", target: 25, metric: "bookmarks", category: "Organisation" },
+  { id: "first-daily-mission", label: "Mission started", description: "Complete your first JAMB daily mission", target: 1, metric: "missions", category: "Consistency" },
+  { id: "five-daily-missions", label: "Five focused sessions", description: "Complete five JAMB daily missions", target: 5, metric: "missions", category: "Consistency" },
+  { id: "twenty-daily-missions", label: "Practice regular", description: "Complete twenty JAMB daily missions", target: 20, metric: "missions", category: "Consistency" },
 ];
 
 function localDateKey(date: Date): string {
@@ -136,7 +140,9 @@ export function getJambAchievementProgress(metrics: JambAchievementMetrics) {
       ? metrics.answerCount
       : achievement.metric === "longestStreak"
         ? metrics.longestStreak
-        : metrics.bookmarkCount;
+        : achievement.metric === "bookmarks"
+        ? metrics.bookmarkCount
+        : metrics.completedMissionCount;
     return {
       ...achievement,
       current: Math.min(value, achievement.target),

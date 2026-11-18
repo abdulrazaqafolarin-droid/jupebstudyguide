@@ -64,6 +64,7 @@ describe("JAMB activity analytics", () => {
       hasStudiedToday: true,
       lastActivityAt: localDay(3),
       bookmarkCount: 10,
+      completedMissionCount: 5,
     });
 
     expect(achievements.find((item) => item.id === "first")?.unlocked).toBe(true);
@@ -72,5 +73,8 @@ describe("JAMB activity analytics", () => {
     expect(achievements.find((item) => item.id === "three-day-streak")?.unlocked).toBe(true);
     expect(achievements.find((item) => item.id === "seven-day-streak")?.unlocked).toBe(false);
     expect(achievements.find((item) => item.id === "ten-bookmarks")?.unlocked).toBe(true);
+    expect(achievements.find((item) => item.id === "first-daily-mission")?.unlocked).toBe(true);
+    expect(achievements.find((item) => item.id === "five-daily-missions")?.unlocked).toBe(true);
+    expect(achievements.find((item) => item.id === "twenty-daily-missions")?.unlocked).toBe(false);
   });
 });

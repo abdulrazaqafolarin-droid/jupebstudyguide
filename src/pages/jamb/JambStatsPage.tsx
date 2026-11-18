@@ -165,7 +165,7 @@ export default function JambStatsPage() {
         <section className="rounded-2xl border border-border bg-amber-500/5 p-5">
           <h2 className="mb-2 font-semibold">How JAMB results are reported</h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            This page reports saved practice activity, not guessed accuracy. A question is not marked correct or incorrect here unless its answer key has been independently reviewed and approved. JAMB activity is kept separate from JUPEB question totals, revision progress and score history.
+            Saved-answer activity and server-scored JAMB CBT results are reported separately. A practice question is not marked correct or incorrect here unless its answer key has been independently reviewed and approved. JAMB activity and CBT scores come from JAMB-only records; JUPEB question totals, revision progress and score history are never substituted.
           </p>
         </section>
 

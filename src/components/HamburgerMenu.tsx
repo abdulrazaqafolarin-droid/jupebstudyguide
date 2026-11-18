@@ -99,6 +99,8 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
           if (item.path === "/achievements") return { ...item, path: "/jamb/achievements", label: "JAMB Achievements" };
           if (item.path === "/stats") return { ...item, path: "/jamb/stats", label: "JAMB Study Stats" };
           if (item.path === "/leaderboard") return { ...item, path: "/jamb/leaderboard", label: "JAMB Leaderboard" };
+          if (item.path === "/discover") return { ...item, path: "/jamb/discover" };
+          if (item.path === "/profile") return { ...item, path: "/jamb/profile" };
           return item;
         })
     : navLinks;

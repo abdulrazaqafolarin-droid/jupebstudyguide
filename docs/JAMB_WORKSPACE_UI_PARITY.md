@@ -48,18 +48,18 @@ The JAMB syllabus is not marked verified, and a complete official UTME mock rema
 | Syllabus | `/jamb/syllabus` | UI parity only. Official topic catalogue and topic tracking remain unavailable until the JAMB syllabus is verified and published. |
 | Study Chat / AI tutor | `/jamb/ai` | Shared conversation UI with JAMB prompt, JAMB history partition and no JUPEB syllabus/RAG inheritance. |
 | Timed practice | `/jamb/cbt/setup` and `/jamb/cbt/:attemptId` | JAMB server-authoritative practice flow. This is not represented as the full official UTME mock. |
-| Study stats | `/jamb/stats` | Dedicated JAMB-only analytics: saved-answer activity, JAMB question coverage, subject distribution, bookmarks, days studied, streaks and recent activity. |
+| Study stats | `/jamb/stats` | Dedicated JAMB-only analytics: saved-answer activity, JAMB question coverage, subject distribution, bookmarks, days studied, streaks, recent activity and server-scored CBT history/trends. The score-history endpoint returns only the signed-in user’s submitted JAMB attempts. |
 | Achievements | `/jamb/achievements` | Dedicated JAMB-only milestones for practice, consistency and bookmarks. These are Rutex milestones, not official JAMB awards. |
 | Chat, friends, discover | Shared platform routes | Intentionally shared social/community features, not exam-content pages. The JAMB discover view does not claim the JUPEB ranking as JAMB performance. |
 | Leaderboard | `/jamb/leaderboard` | JAMB has its own route and navigation entry. The ranking is deliberately empty until a server-verified JAMB-only scoring feed exists; JUPEB points are never presented as JAMB ranks. |
-| Profile, profile settings, security, notifications, app download | Shared platform routes/components | Intentionally shared account and app services. |
+| Profile, profile settings, security, notifications, app download | Shared platform routes/components | Intentionally shared account and app services. The JAMB profile alias hides JUPEB achievement badges and JUPEB-only activation-code prompts. |
 | Admin question operations | `/admin/jamb-questions` | JAMB-specific review/import path; platform admin and activation-code pages remain shared administration. |
 
 ### Remaining non-parity items and their blockers
 
 - **Syllabus-led daily lessons and topic calendar:** still blocked on obtaining and verifying the applicable official JAMB syllabus and mapping reviewed questions to it. The JAMB practice-only daily mission is implemented, but it does not invent topic lessons or pretend to be the JUPEB 30-day syllabus journey.
 - **Official syllabus and topic tracking:** blocked on obtaining, versioning and verifying the applicable JAMB syllabus. No JUPEB topics are substituted.
-- **Accuracy, mastery, score-derived awards and ranked leaderboard:** must remain unavailable or explicitly ungraded until approved JAMB answer keys, scored attempt records and a programme-scoped ranking feed are available. Saved option selections are not evidence of correctness.
+- **Practice accuracy, mastery and ranked leaderboard:** question-level accuracy is available only when approved JAMB answer keys exist; full mastery metrics and ranking remain gated until sufficient reviewed coverage and a comparable, programme-scoped ranking feed are available. Personal CBT scores are sourced from the signed-in user’s server-scored JAMB attempts. Saved option selections are not evidence of correctness.
 - **Full official UTME mock:** remains disabled pending compulsory Use of English content, verified current exam configuration and sufficient approved question coverage.
 
 JAMB daily mission records use a separate `jamb_daily_missions` table with owner-only RLS. The migration is included in this branch; until it is applied, the feature falls back to per-account local storage and displays a local-sync fallback. The following pages remain intentionally shared because they are account or platform services rather than exam-specific learning data: chat, friends, leaderboard, discover, profile, profile settings, security settings, notifications and app download. Shared visibility does not grant these routes access to JUPEB-only question or progress data.

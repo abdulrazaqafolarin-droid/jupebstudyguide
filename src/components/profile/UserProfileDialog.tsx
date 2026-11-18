@@ -4,6 +4,7 @@ import { X, MessageCircle, UserPlus, UserCheck, UserX, Ban, Loader2, ShieldAlert
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { useMutualFriends } from '@/hooks/useMutualFriends';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -34,6 +35,7 @@ interface UserProfileDialogProps {
 
 export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserProfileDialogProps) {
   const { user } = useAuth();
+  const { isJambWorkspace } = useExamProgram();
   const { mutualFriends, getMutualFriends } = useMutualFriends();
   const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [relationship, setRelationship] = useState<RelationshipStatus>('stranger');
@@ -436,7 +438,7 @@ export function UserProfileDialog({ userId, open, onClose, onStartChat }: UserPr
                   {renderActions()}
 
                   {/* Achievements */}
-                  {unlockedAchievementList.length > 0 && (
+                  {!isJambWorkspace && unlockedAchievementList.length > 0 && (
                     <div className="border-t border-border/40 pt-3">
                       <div className="flex items-center gap-1.5 mb-2">
                         <Trophy className="w-3.5 h-3.5 text-primary" />

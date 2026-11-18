@@ -60,21 +60,26 @@ describe("JAMB syllabus catalogue", () => {
     }
   });
 
-  it("maps the uploaded learning objectives to every Biology, Chemistry and Mathematics topic", () => {
+  it("maps source learning objectives to all 108 syllabus topics", () => {
     const expected = {
-      biology: 24,
+      physics: 40,
       chemistry: 18,
+      biology: 24,
       math: 23,
+      use_of_english: 3,
     } as const;
+    let total = 0;
+    let objectiveStatements = 0;
     for (const [subjectId, expectedCount] of Object.entries(expected)) {
       const subject = JAMB_SYLLABUS[subjectId as keyof typeof JAMB_SYLLABUS];
       const topics = subject.sections.flatMap((section) => section.topics);
       expect(topics).toHaveLength(expectedCount);
       expect(topics.every((item) => (item.objectives?.length ?? 0) > 0)).toBe(true);
+      total += topics.length;
+      objectiveStatements += topics.reduce((sum, item) => sum + (item.objectives?.length ?? 0), 0);
     }
-    const englishTopics = JAMB_SYLLABUS.use_of_english.sections.flatMap((section) => section.topics);
-    expect(englishTopics).toHaveLength(3);
-    expect(englishTopics.every((item) => (item.objectives?.length ?? 0) > 0)).toBe(true);
+    expect(total).toBe(108);
+    expect(objectiveStatements).toBeGreaterThanOrEqual(497);
   });
 
   it("uses stable unique topic identifiers across all subjects", () => {

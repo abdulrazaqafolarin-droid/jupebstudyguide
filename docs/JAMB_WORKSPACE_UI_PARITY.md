@@ -95,3 +95,6 @@ The AI Tutor is separate from social Chat. Its saved history is filtered by exam
 
 
 Use of English now follows the JAMB-hosted IBASS PDF checked on 18 November 2026, not the uploaded 2025-created copy, because the two differ on passage count, prescribed reading text, lexis/structure topics and oral vowel coverage. The page records the IBASS section structure and 60-question breakdown, and still links the uploaded PDF separately for provenance. This does not certify the specific 2027 syllabus version.
+
+
+**Syllabus topic-objective coverage:** the JAMB catalogue now contains objective lists on all 108 topics across the five subject entries. The topic counts are Physics 40, Chemistry 18, Biology 24, Mathematics 23 and Use of English 3. These are source-linked objective transcriptions, not a declaration that every 2025 uploaded copy matches the latest IBASS edition or the 2027 cycle.

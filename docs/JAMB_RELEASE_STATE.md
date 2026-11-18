@@ -183,3 +183,10 @@ The JAMB catalogue now follows the JAMB-hosted IBASS PDF for Use of English and 
 ### Full-page source review previews
 
 The syllabus PDF extractor now renders a page preview for every page rather than only the first four pages, and records preview_page_count plus the preview scale in the manifest. The extractor unit test uses multi-page fixtures and asserts that all pages receive preview images. This supports full visual review of syllabus tables and later sections before a source revision is accepted.
+
+
+## Complete topic learning-objective transcription — 18 November 2026
+
+All **108 catalogue topics** now include a per-topic "Candidates should be able to" objective list: Physics 40 topics, Chemistry 18, Biology 24, Mathematics 23 and Use of English 3. This pass maps at least **497 objective statements** from the submitted 2025 source PDFs and the JAMB-hosted IBASS Use of English PDF. Topic source-page references are retained. A regression test checks all five subject counts and fails if any topic lacks objectives.
+
+The distinction between content completeness and current-version approval remains important: Physics, Chemistry, Biology and Mathematics objectives are transcribed from the owner's uploaded 2025 copies. Use of English follows the JAMB-hosted IBASS PDF checked on 18 November 2026 because its supplied copy differs. Physics and Biology official IBASS links are present but the complete topic-to-objective wording still needs line-by-line reconciliation against those live sources; Chemistry and Mathematics current IBASS sources still need retrieval and comparison. The five-subject catalogue remains unverified for the applicable 2027 examination cycle, and the full UTME mock remains disabled.

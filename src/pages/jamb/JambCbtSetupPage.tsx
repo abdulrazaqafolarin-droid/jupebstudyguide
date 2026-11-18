@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
+import { ArrowLeft, Check, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
@@ -50,7 +50,7 @@ export default function JambCbtSetupPage() {
           to="/jamb"
           className="mb-6 inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
         >
-          <span aria-hidden="true">←</span>
+          <ArrowLeft className="h-4 w-4" />
           Back to JAMB workspace
         </Link>
 
@@ -71,7 +71,7 @@ export default function JambCbtSetupPage() {
 
             <section className="mt-6">
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Subject</h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3">
                 {JAMB_SUBJECTS.map((item) => {
                   const selected = subject === item;
                   const info = JAMB_SUBJECT_INFO[item];
@@ -86,20 +86,22 @@ export default function JambCbtSetupPage() {
                       }}
                       aria-pressed={selected}
                       className={cn(
-                        "relative flex min-h-28 items-center gap-3 rounded-xl border-2 p-4 text-left transition-all",
+                        "relative flex items-center gap-3 rounded-xl border-2 p-4 text-left transition-all",
                         selected
                           ? "border-primary bg-primary/10 shadow-sm"
                           : "border-border bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50",
                         starting && "cursor-not-allowed opacity-60",
                       )}
                     >
-                      <span className="text-3xl" aria-hidden="true">{info.icon}</span>
+                      <span className="text-2xl" aria-hidden="true">{info.icon}</span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold">{info.label}</span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">{info.description}</span>
+                        <span className="block truncate font-medium">{info.label}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground line-clamp-2">{info.description}</span>
                       </span>
                       {selected && (
-                        <span className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-primary ring-4 ring-primary/10" />
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                          <Check className="h-3.5 w-3.5" />
+                        </span>
                       )}
                     </button>
                   );
@@ -110,7 +112,7 @@ export default function JambCbtSetupPage() {
 
             <section className="mt-6">
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Practice length</h2>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="flex flex-wrap gap-2">
                 {JAMB_CBT_PRACTICE_PRESETS.map((item, index) => {
                   const selected = presetIndex === index;
                   return (
@@ -124,18 +126,15 @@ export default function JambCbtSetupPage() {
                       }}
                       aria-pressed={selected}
                       className={cn(
-                        "rounded-xl border-2 p-4 text-left transition-all",
+                        "min-w-[112px] rounded-xl border-2 px-5 py-2.5 text-left transition-all",
                         selected
                           ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary/20 hover:border-primary/50",
+                          : "border-border text-foreground hover:border-primary/50",
                         starting && "cursor-not-allowed opacity-60",
                       )}
                     >
-                      <span className="block text-2xl font-bold tabular-nums">{item.questionCount}</span>
-                      <span className="mt-1 block text-sm font-semibold">{item.label.split(" · ")[0]}</span>
-                      <span className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Clock3 className="h-3.5 w-3.5" /> {item.durationMinutes} minutes
-                      </span>
+                      <span className="block text-lg font-bold tabular-nums">{item.questionCount}</span>
+                      <span className="mt-0.5 block text-xs font-medium">{item.durationMinutes} min</span>
                     </button>
                   );
                 })}

@@ -86,7 +86,6 @@ export default function JambCbtSetupPage() {
           {starting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing session…</> : <><ShieldCheck className="mr-2 h-4 w-4" />Start timed practice</>}
         </Button>
       </div>
-      </div>
       </main>
     </div>
   );

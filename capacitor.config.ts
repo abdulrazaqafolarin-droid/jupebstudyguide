@@ -27,6 +27,11 @@ const config: CapacitorConfig = {
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
     },
+    // Capacitor 8 handles edge-to-edge system bars. Keep the native inset
+    // values available to CSS, including the fallback for older Android WebViews.
+    SystemBars: {
+      insetsHandling: 'css',
+    },
     StatusBar: {
       // Keep the WebView below the status bar on Android 14 and earlier.
       // Android 15+ is handled by MainActivity's native window-inset listener.

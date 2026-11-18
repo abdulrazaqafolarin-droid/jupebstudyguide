@@ -522,11 +522,24 @@
   }
 }
 
-/* iPhone home-indicator spacing for fixed navigation bars. The viewport
- * already declares viewport-fit=cover; this class consumes the safe-area inset
- * instead of letting the native home indicator cover the last navigation row. */
+/* Keep app content inside the device system-bar safe areas. Capacitor 8's
+ * SystemBars plugin injects --safe-area-inset-* fallbacks for older Android
+ * WebViews; newer WebViews and iOS use the browser env() values. */
+html {
+  --app-safe-area-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  padding-top: var(--app-safe-area-top);
+  padding-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  padding-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+}
+
+/* Fixed navigation and overlays need their own inset because fixed positioning
+ * is measured from the viewport, not from the padded document flow. */
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+}
+
+.safe-area-top-4 {
+  top: calc(var(--app-safe-area-top, 0px) + 1rem);
 }
 
 /* ---------------------------------------------------------------------------

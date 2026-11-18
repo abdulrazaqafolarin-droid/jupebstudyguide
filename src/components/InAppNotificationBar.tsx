@@ -220,7 +220,7 @@ export function InAppNotificationBar({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -80, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] w-[90vw] max-w-sm"
+          className="fixed safe-area-top-4 left-1/2 -translate-x-1/2 z-[9999] w-[90vw] max-w-sm"
         >
           <div className="bg-popover/95 backdrop-blur-xl border border-border/60 rounded-2xl shadow-2xl shadow-black/20 overflow-hidden">
             <div className="flex items-center gap-3 p-3">

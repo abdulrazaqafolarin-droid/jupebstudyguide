@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import sys
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -84,6 +85,7 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
     pages: list[dict[str, Any]] = []
     text_parts: list[str] = []
     page_text_count = 0
+    table_count = 0
     for index, page in enumerate(document):
         # Blocks sorted by page position retain a more useful reading order than
         # a single raw string for the multi-column syllabus tables.
@@ -96,10 +98,33 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
         page_text = normalize_page_text(block_text or page.get_text("text", sort=True))
         if page_text:
             page_text_count += 1
+        # Preserve source table cells as structured data where PyMuPDF can
+        # detect their grid. These cells are raw extracted text, not yet a
+        # semantically approved topic mapping.
+        extracted_tables: list[dict[str, Any]] = []
+        try:
+            for table_index, table in enumerate(page.find_tables().tables, start=1):
+                rows = table.extract()
+                normalized_rows = [
+                    [normalize_page_text(cell or "") for cell in row]
+                    for row in rows
+                ]
+                if any(any(cell for cell in row) for row in normalized_rows):
+                    extracted_tables.append({
+                        "table": table_index,
+                        "bbox": [round(float(value), 2) for value in table.bbox],
+                        "rows": normalized_rows,
+                    })
+        except Exception:
+            # Text and page previews remain the authoritative fallback if a
+            # PDF page has a non-standard table or an unsupported border style.
+            extracted_tables = []
+        table_count += len(extracted_tables)
         pages.append({
             "page": index + 1,
             "text": page_text,
             "character_count": len(page_text),
+            "tables": extracted_tables,
         })
         text_parts.append(f"\n\n===== PDF PAGE {index + 1} =====\n\n{page_text}\n")
 
@@ -117,6 +142,9 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
         )
 
     (subject_dir / f"{subject}.txt").write_text(full_text, encoding="utf-8")
+    source_copy_dir = output_dir / "source-pdfs"
+    source_copy_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(pdf_path, source_copy_dir / pdf_path.name)
     payload = {
         "subject": subject,
         "source_file": pdf_path.name,
@@ -126,6 +154,7 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
         "page_count": document.page_count,
         "pages_with_text": page_text_count,
         "text_character_count": len(full_text),
+        "detected_table_count": table_count,
         "metadata": _safe_metadata(document.metadata),
         "table_of_contents": document.get_toc(),
         "pages": pages,
@@ -140,7 +169,7 @@ def extract_one_pdf(pdf_path: Path, subject: str, output_dir: Path) -> dict[str,
         for key in (
             "subject", "source_file", "source_commit", "sha256",
             "file_size_bytes", "page_count", "pages_with_text",
-            "text_character_count", "metadata", "table_of_contents",
+            "text_character_count", "detected_table_count", "metadata", "table_of_contents",
         )
     }
 

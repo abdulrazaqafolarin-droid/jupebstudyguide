@@ -107,6 +107,7 @@ export default function JambPastQuestionsPage() {
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [showQuestionGrid, setShowQuestionGrid] = useState(false);
   const pendingQuestionIndexRef = useRef(0);
+  const answerCheckSequenceRef = useRef<Record<string, number>>({});
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [loadingYears, setLoadingYears] = useState(false);
@@ -280,6 +281,8 @@ export default function JambPastQuestionsPage() {
   };
 
   const saveAnswer = async (questionId: string, answer: string) => {
+    const requestSequence = (answerCheckSequenceRef.current[questionId] ?? 0) + 1;
+    answerCheckSequenceRef.current[questionId] = requestSequence;
     setSelected((previous) => ({ ...previous, [questionId]: answer }));
     savePracticeAnswer(questionId, answer);
     setChecking((previous) => ({ ...previous, [questionId]: true }));
@@ -293,6 +296,7 @@ export default function JambPastQuestionsPage() {
         },
       });
       if (invokeError) throw invokeError;
+      if (answerCheckSequenceRef.current[questionId] !== requestSequence) return;
       setFeedbacks((previous) => ({
         ...previous,
         [questionId]: {
@@ -304,6 +308,7 @@ export default function JambPastQuestionsPage() {
         },
       }));
     } catch (reason) {
+      if (answerCheckSequenceRef.current[questionId] !== requestSequence) return;
       setFeedbacks((previous) => ({
         ...previous,
         [questionId]: {
@@ -312,7 +317,9 @@ export default function JambPastQuestionsPage() {
         },
       }));
     } finally {
-      setChecking((previous) => ({ ...previous, [questionId]: false }));
+      if (answerCheckSequenceRef.current[questionId] === requestSequence) {
+        setChecking((previous) => ({ ...previous, [questionId]: false }));
+      }
     }
   };
 
@@ -554,7 +561,7 @@ export default function JambPastQuestionsPage() {
                 <span className="text-xs text-muted-foreground">3 science subjects</span>
               </div>
               <motion.div
-                className="grid grid-cols-2 gap-4"
+                className="grid grid-cols-2 gap-4 md:grid-cols-4"
                 variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
                 initial="hidden"
                 animate="show"
@@ -854,7 +861,7 @@ export default function JambPastQuestionsPage() {
                         <motion.div
                           className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
                           initial={false}
-                          animate={{ width: questions.length > 0 ? ((activeQuestionIndex + 1) / questions.length) * 100 + "%" : "0%" }}
+                          animate={{ width: count > 0 ? ((offset + activeQuestionIndex + 1) / count) * 100 + "%" : "0%" }}
                           transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                         />
                       </div>

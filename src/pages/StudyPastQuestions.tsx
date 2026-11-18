@@ -19,7 +19,7 @@ import {
 import type { Subject } from "@/types/question";
 import type { StudyCategory, StudyQuestion } from "@/types/study-questions";
 import { STUDY_SUBJECT_INFO, STUDY_YEARS } from "@/types/study-questions";
-import { getStudyQuestionsBySubject, initDataLayer, isDataReady, refreshData } from "@/data/study-questions";
+import { getDataError, getStudyQuestionsBySubject, initDataLayer, isDataReady, refreshData } from "@/data/study-questions";
 import { useStudyQuestions } from "@/hooks/study-questions/useStudyQuestions";
 import { useQuestionTimer } from "@/hooks/study-questions/useQuestionTimer";
 import { useBookmarks } from "@/hooks/study-questions/useBookmarks";
@@ -109,6 +109,7 @@ export default function StudyPastQuestions() {
   const [searchSubjectFilter, setSearchSubjectFilter] = useState<Subject[]>(SUBJECTS);
 
   const isAdmin = activationStatus.is_admin;
+  const dataError = getDataError();
 
   // As soon as an administrator opens the question bank, resume any queued
   // initial backfill or previously deferred Gemini indexing jobs.
@@ -396,6 +397,20 @@ export default function StudyPastQuestions() {
 
   return (
     <div className="min-h-screen bg-background">
+      {!isDataReady() && (
+        <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 pt-3 text-xs text-muted-foreground" role="status" aria-live="polite">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          Loading JUPEB questions…
+        </div>
+      )}
+      {dataError && (
+        <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pt-3 sm:flex-row sm:items-center sm:justify-between" role="alert">
+          <p className="text-sm text-destructive">{dataError}</p>
+          <Button type="button" size="sm" variant="outline" onClick={() => { void refreshData(); }}>
+            Retry loading questions
+          </Button>
+        </div>
+      )}
       {view === "subjects" && (
         <>
    <header className="sticky top-0 z-10 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl border-b border-border/50">

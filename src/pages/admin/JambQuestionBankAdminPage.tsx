@@ -214,6 +214,10 @@ export default function JambQuestionBankAdminPage() {
           setSelectedBatchId(existingBatch.id);
           throw new Error("This exact source package has already been published. Its existing batch is now selected for review.");
         }
+        if (!["staged", "reviewing", "approved"].includes(existingBatch.status)) {
+          setSelectedBatchId(existingBatch.id);
+          throw new Error("This source batch is not resumable in its current status. Open the existing batch to inspect it.");
+        }
         activeBatchId = existingBatch.id;
         nextOffset = Math.min(existingBatch.total_items, parsed.items.length);
       } else {

@@ -143,7 +143,8 @@ async function fetchAll() {
         .from("study_questions")
         .select(columns)
         .eq("exam_program_id", "jupeb")
-        .eq("review_status", "published")
+        // Student visibility is enforced by RLS. Admins keep access to
+        // non-published rows so they can review and repair the JUPEB bank.
         .eq("hidden", false)
         .order("id", { ascending: true })
         .range(from, from + PAGE_SIZE - 1)

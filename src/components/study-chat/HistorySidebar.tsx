@@ -14,6 +14,7 @@ interface HistorySidebarProps {
   onDelete: (chatId: string) => void;
   onClose?: () => void;
   heading?: string;
+  emptyMessage?: string;
 }
 
 /**
@@ -31,6 +32,7 @@ export function HistorySidebar({
   onDelete,
   onClose,
   heading = 'Study Chat',
+  emptyMessage = 'No chats yet — open a topic from the syllabus to start one.',
 }: HistorySidebarProps) {
   const [search, setSearch] = useState('');
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -110,7 +112,7 @@ export function HistorySidebar({
           <p className="px-1.5 py-2 text-xs text-muted-foreground">
             {search
               ? 'No chats match your search.'
-              : 'No chats yet — open a topic from the syllabus to start one.'}
+              : emptyMessage}
           </p>
         )}
         {groups.map((group) => (

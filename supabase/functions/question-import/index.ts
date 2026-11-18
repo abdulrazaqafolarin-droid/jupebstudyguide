@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/jamb-http.ts";
 import type { Database, Json } from "../_shared/rutex-database.types.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
+import { resolveJambImportItemRange } from "../_shared/jamb-import-range.ts";
 
 type AdminSupabase = SupabaseClient<Database>;
 
@@ -201,16 +202,18 @@ Deno.serve(async (request: Request) => {
         .eq("batch_id", batchId);
       if (countError) return respond({ error: countError.message }, 500);
 
-      const itemOffset = Number.isInteger(body.item_offset) ? Number(body.item_offset) : (count ?? 0);
       const expectedItems = Number(batch.expected_items ?? 0);
-      if (itemOffset < 0 || itemOffset + items.length > expectedItems) {
-        return respond({ error: "The requested item range must stay within the source package." }, 409);
+      let itemRange;
+      try {
+        itemRange = resolveJambImportItemRange(body.item_offset, count ?? 0, items.length, expectedItems);
+      } catch (error) {
+        return respond({ error: error instanceof Error ? error.message : "Invalid item range" }, 409);
       }
       const rows = items.map((item, index) => {
         const result = normalizeItem(item, batch);
         return {
           batch_id: batchId,
-          item_number: itemOffset + index + 1,
+          item_number: itemRange.firstItemNumber + index,
           raw_payload: result.raw,
           normalized_payload: result.normalized,
           validation_errors: result.errors,
@@ -257,6 +260,7 @@ Deno.serve(async (request: Request) => {
         total_items: nextCount,
         expected_items: expectedItems,
         next_offset: nextCount,
+        item_range: { first: itemRange.firstItemNumber, last: itemRange.lastItemNumber },
       });
     }
 

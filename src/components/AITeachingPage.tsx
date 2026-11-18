@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Textarea } from './ui/textarea';
 import MathRenderer from './MathRenderer';
 import { useAttachment } from '@/hooks/useAttachment';
+import { useAuth } from '@/contexts/AuthContext';
 import { DailyTask, SyllabusTopic } from '@/types/syllabus';
 import { SUBJECT_INFO } from '@/types/question';
 import { 
@@ -48,6 +49,7 @@ const messageVariants = {
 const springMessage = { type: "spring" as const, stiffness: 400, damping: 28, mass: 0.5 };
 
 export const AITeachingPage = ({ task, topic, onBack, onComplete }: AITeachingPageProps) => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -125,7 +127,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
 
     let ragContext = "";
     try {
-      ragContext = await searchRelevantChunks(userMessage);
+      if (user?.id) ragContext = await searchRelevantChunks(userMessage, 'jupeb', user.id);
     } catch (e) { console.warn('RAG search failed:', e); }
 
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
@@ -154,7 +156,7 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
         setIsLoading(false);
       },
     }, ragContext, undefined, ac.signal);
-  }, [topic, task, attachment, clearAttachment]);
+  }, [topic, task, attachment, clearAttachment, user?.id]);
 
   const startTeaching = () => {
     const initialPrompt = `I want to learn about "${topic.name}" step by step. This is Day ${task.day} of my JUPEB syllabus study plan.

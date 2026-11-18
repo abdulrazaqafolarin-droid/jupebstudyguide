@@ -79,7 +79,7 @@ export function getFlow(isNewStudent: boolean): OnboardingStepId[] {
  */
 export function getOnboardingFlow(flow: OnboardingStepId[], program: ExamProgramId): OnboardingStepId[] {
   if (program !== 'jamb') return [...flow];
-  const shared = flow.filter((step) => step !== 'study' && step !== 'jamb-study');
+  const shared: OnboardingStepId[] = flow.filter((step) => step !== 'study' && step !== 'jamb-study');
   const themeIndex = shared.indexOf('theme');
   shared.splice(themeIndex >= 0 ? themeIndex + 1 : 1, 0, 'jamb-study');
   return shared;

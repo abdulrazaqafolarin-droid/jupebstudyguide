@@ -911,42 +911,6 @@ export default function JambPastQuestionsPage() {
                     </Button>
                   </div>
 
-                  <div className="rounded-2xl border border-border bg-card p-5 chalk-texture">
-                    <div className="mb-3 flex items-center justify-between">
-                      <h2 className="text-sm font-semibold">Question navigator</h2>
-                      <span className="text-xs text-muted-foreground">Tap to revisit</span>
-                    </div>
-                    <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
-                      {questions.map((item, index) => {
-                        const isAnswered = Boolean(selected[item.id] ?? savedAnswers[item.id]?.selected);
-                        return (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => goToQuestion(index)}
-                            aria-label={"Go to question " + (offset + index + 1)}
-                            aria-current={activeQuestionIndex === index ? "step" : undefined}
-                            className={[
-                              "aspect-square rounded-lg border-2 text-xs font-semibold transition-colors",
-                              activeQuestionIndex === index
-                                ? "border-primary bg-primary text-primary-foreground"
-                                : isAnswered
-                                  ? "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-300"
-                                  : "border-border bg-secondary/40 text-muted-foreground hover:border-primary/50",
-                            ].join(" ")}
-                          >
-                            {offset + index + 1}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Current</span>
-                      <span className="inline-flex items-center gap-1"><Check className="h-3 w-3 text-green-600" /> Answered</span>
-                      <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm border border-border bg-secondary/40" /> Unanswered</span>
-                    </div>
-                  </div>
-
                   <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                     <span>{answeredOnPage} of {questions.length} loaded questions answered</span>
                     <span>Page {pageNumber}/{totalPages}</span>

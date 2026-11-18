@@ -2,10 +2,12 @@ import { SYLLABUSES, type SyllabusTopic } from '@/types/syllabus';
 import type { Subject } from '@/types/question';
 import type { AIMessage } from '@/hooks/useAITutorChats';
 import { todayDateString } from '@/lib/daily-mission';
+import type { ExamProgramId } from '@/lib/exam-program';
 
 /** Row shape of `ai_chats` as consumed by the Study Chat UI. */
 export interface StudyChatMeta {
   id: string;
+  exam_program_id: ExamProgramId;
   title: string;
   topic_id: string | null;
   subtopic: string | null;
@@ -19,7 +21,7 @@ export interface StudyChatMeta {
 export const CONTEXT_MESSAGE_CAP = 30;
 
 export const CHAT_SELECT_COLS =
-  'id,title,topic_id,subtopic,subject,created_at,updated_at';
+  'id,exam_program_id,title,topic_id,subtopic,subject,created_at,updated_at';
 
 /** Newest-N window of a thread for the model (order preserved). */
 export function trimMessagesForContext<T>(messages: T[], cap = CONTEXT_MESSAGE_CAP): T[] {

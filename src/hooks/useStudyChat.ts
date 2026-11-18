@@ -28,10 +28,10 @@ export interface ActiveStudyTopic {
 }
 
 /**
- * Study Chat state: topic-scoped AI threads over the same `ai_chats` /
- * `ai_chat_messages` tables the floating tutor uses (merged history), with
- * streaming, stop, edit-rewind, find-or-create per syllabus topic, and an
- * inline retry card when a stream dies before its first token.
+ * Study Chat state: persistent AI threads stored in `ai_chats` /
+ * `ai_chat_messages`, isolated by exam programme while retaining the same
+ * streaming, stop, edit-rewind, topic-thread and retry behavior for each
+ * workspace.
  */
 export function useStudyChat(
   examProgramId: ExamProgramId = 'jupeb',
@@ -493,7 +493,7 @@ export function useStudyChat(
     isStreamingRef.current = false;
   }, []);
 
-  // Load the merged history once auth settles.
+  // Load the active programme's history once auth settles.
   useEffect(() => {
     if (authLoading) return;
     if (!user) {

@@ -49,6 +49,55 @@ describe("ActivationGate active-trial banner", () => {
     });
   });
 
+  it("keeps an unexpired subscription open even when the legacy activation flag is set", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate>
+        <div>Protected study content</div>
+      </ActivationGate>,
+    );
+
+    expect(screen.getByText("Protected study content")).toBeInTheDocument();
+  });
+
+  it("does not treat an expired activation flag as a permanent subscription", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() - 60_000).toISOString(),
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate>
+        <div>Protected study content</div>
+      </ActivationGate>,
+    );
+
+    expect(screen.queryByText("Protected study content")).not.toBeInTheDocument();
+    expect(screen.getByText("Activate Your Account")).toBeInTheDocument();
+  });
+
   it("always displays Activate Now while a one-day trial is active", () => {
     render(
       <ActivationGate>

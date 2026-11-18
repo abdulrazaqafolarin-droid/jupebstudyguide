@@ -142,11 +142,8 @@ async function fetchAll() {
       const { data, error } = await supabase
         .from("study_questions")
         .select(columns)
-        // These two columns exist in the production schema but the checked-in
-        // generated Database type predates their migrations. filter() keeps
-        // the server-side constraints without widening or weakening RLS.
-        .filter("exam_program_id", "eq", "jupeb")
-        .filter("review_status", "eq", "published")
+        .eq("exam_program_id", "jupeb")
+        .eq("review_status", "published")
         .eq("hidden", false)
         .order("id", { ascending: true })
         .range(from, from + PAGE_SIZE - 1)

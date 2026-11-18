@@ -118,7 +118,7 @@ export function useStudyChat(
       setActiveTopic(null);
     }
     await loadMessages(row.id);
-  }, [loadMessages]);
+  }, [loadMessages, examProgramId]);
 
   const createTopicChat = useCallback(async (
     topic: SyllabusTopic,

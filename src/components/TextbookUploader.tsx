@@ -67,7 +67,7 @@ export const TextbookUploader = ({ programId = "jupeb" }: TextbookUploaderProps)
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Add PDF textbooks to your private, on-device {programmeLabel} knowledge library. Relevant passages can be used by this programme's AI tutor only; another account or the other exam workspace cannot read this index.
+          Build a separate {programmeLabel} library in this browser. Extracted PDF text is sent to the configured embedding service to create vectors; the text chunks and vectors are then stored in IndexedDB under this account and programme. Search also needs the embedding service. This browser-local data is not encrypted, so clear it before sharing this device.
         </p>
         <div className="flex items-center justify-between rounded-lg border border-border bg-secondary/30 px-3 py-2 text-xs">
           <span className="text-muted-foreground">Indexed textbooks on this device</span>

@@ -202,7 +202,8 @@ describe("ActivationGate active-trial banner", () => {
       status: {
         is_activated: true,
         is_admin: false,
-        trial_expires_at: trialExpiry,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         checking: false,
       },
       validateCode: mocks.validateCode,

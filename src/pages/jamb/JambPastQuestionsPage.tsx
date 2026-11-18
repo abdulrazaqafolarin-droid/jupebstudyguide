@@ -226,12 +226,8 @@ export default function JambPastQuestionsPage() {
   const totalPages = Math.max(1, Math.ceil(count / JAMB_INITIAL_QUESTION_PAGE_SIZE));
   const totalPublished = summaries.reduce((sum, row) => sum + row.count, 0);
   const visibleQuestions = view === "bookmarks" ? bookmarkQuestions : questions;
-  const visibleCount = view === "bookmarks" ? bookmarkQuestions.length : count;
   const empty = !loading && visibleQuestions.length === 0;
   const activeQuestion = questions[activeQuestionIndex];
-  const activeAnswer = activeQuestion
-    ? selected[activeQuestion.id] ?? savedAnswers[activeQuestion.id]?.selected ?? ""
-    : "";
   const answeredOnPage = questions.filter((question) =>
     Boolean(selected[question.id] ?? savedAnswers[question.id]?.selected),
   ).length;
@@ -780,6 +776,70 @@ export default function JambPastQuestionsPage() {
                 </div>
               ) : activeQuestion ? (
                 <>
+                  <AnimatePresence>
+                    {showQuestionGrid && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+                        onClick={() => setShowQuestionGrid(false)}
+                      >
+                        <motion.div
+                          initial={{ scale: 0.94, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.94, opacity: 0 }}
+                          transition={PAGE_TRANSITION}
+                          role="dialog"
+                          aria-modal="true"
+                          aria-label="Jump to question"
+                          onClick={(event) => event.stopPropagation()}
+                          className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl"
+                        >
+                          <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-sm font-semibold">Jump to Question</h3>
+                            <button
+                              type="button"
+                              onClick={() => setShowQuestionGrid(false)}
+                              aria-label="Close question navigator"
+                              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-5 gap-2">
+                            {questions.map((item, index) => {
+                              const isAnswered = Boolean(selected[item.id] ?? savedAnswers[item.id]?.selected);
+                              return (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => goToQuestion(index)}
+                                  aria-label={"Jump to question " + (offset + index + 1)}
+                                  aria-current={activeQuestionIndex === index ? "step" : undefined}
+                                  className={[
+                                    "flex aspect-square items-center justify-center rounded-lg border text-xs font-semibold transition-all",
+                                    activeQuestionIndex === index
+                                      ? "border-primary bg-primary text-primary-foreground ring-2 ring-primary/20"
+                                      : isAnswered
+                                        ? "border-green-500/40 bg-green-500/10 text-green-700 dark:text-green-300"
+                                        : "border-border bg-secondary/40 text-muted-foreground hover:border-primary/50",
+                                  ].join(" ")}
+                                >
+                                  {offset + index + 1}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                            <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Current</span>
+                            <span className="inline-flex items-center gap-1"><Check className="h-3 w-3 text-green-600" /> Answered</span>
+                            <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm border border-border bg-secondary/40" /> Unanswered</span>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   <div className="flex items-center gap-2 sm:gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-center justify-between gap-2">

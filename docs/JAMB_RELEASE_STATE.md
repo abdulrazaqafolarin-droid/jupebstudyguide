@@ -24,7 +24,7 @@ The `VITE_ENABLE_JAMB=true` environment variable is scoped to the `feat/rutex-ja
 
 ### Live Edge Function deployment
 
-All six relevant functions are `ACTIVE` on the existing project. Their entrypoints and bundled helper files were compared against the feature-branch source and matched byte-for-byte.
+All six relevant functions are `ACTIVE` on the existing project. Their live versions were verified against the previously deployed JAMB backend source. Since that deployment, the feature branch has received an additional idempotent/resumable upload change in `question-import`; that latest change is **not yet deployed**. The live importer therefore remains at v2 until the authenticated Preview acceptance gate and backend release review are complete.
 
 | Function | Live version | Gateway `verify_jwt` |
 |---|---:|---|
@@ -78,7 +78,15 @@ On code commit `7a55bd2818281529fc8470fefc65da201fd0c647`:
 - **Native iOS build** passed end-to-end (workflow run `44302994786`), including simulator app build, bundle-identity verification, install, launch and screenshot.
 - The separate **Rutex Master Next artifact-only** workflow passed (run `44302995092`). No updater release was published; its publication step was skipped.
 
-The migration filename reconciliation and documentation changes that follow this validated code head are being rechecked by CI. The connected Preview routes had returned HTTP 200 at SPA-shell level, but a signed-in student/admin mobile walkthrough has not yet been completed.
+Since the application-code build previously validated above, the feature branch has added JAMB offline-sync reconciliation tests, ordered answer writes, bookmark deletion tombstones, stable/idempotent source-import chunks and resume-from-existing-batch behavior. These changes are committed but still require final CI on the latest source head. As of source head `bc5c9290b2e1ed0419d5710db40043157db7d603`, PR validation, repository validation and iOS validation are running; the current Android debug build is not yet complete. The two Vercel Preview checks remain blocked by the connected account's daily build-rate limit, so no fresh Preview was produced for these latest commits. No signed-in student/admin walkthrough has been completed.
+
+
+## Latest feature-branch hardening — 18 November 2026
+
+- Persistent AI tutor history is now programme-scoped in the live database. Migration `20261118123742_scope_ai_chat_history_by_exam_program` is recorded with that exact hosted version; all 321 legacy chat rows remain JUPEB.
+- JAMB local-first progress uses timestamp reconciliation, retries on reconnect/focus/visible, serializes sync operations per account and queues rapid same-question writes. New unit tests cover reconciliation edge cases.
+- JAMB bookmarks retain per-user deletion tombstones until remote removal is confirmed; re-adding during an in-flight removal is restored to the cloud rather than lost.
+- Admin source imports now resume by original source hash and stable item offsets. The feature-branch handler uses the unique batch/item key to ignore duplicate chunk retries and recalculates review counters. This source change has not yet been deployed to the live `question-import` function.
 
 ## Post-migration advisor review
 

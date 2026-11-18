@@ -10,7 +10,6 @@ import { Composer } from "@/components/study-chat/Composer";
 import { getJambPublishedQuestionById } from "@/lib/jamb-question-service";
 import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
 import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
-import type { AIMessage } from "@/hooks/useAITutorChats";
 import { toast } from "sonner";
 
 function isJambSubject(value: string | null): value is (typeof JAMB_SUBJECTS)[number] {
@@ -87,12 +86,6 @@ export default function JambAITutorPage() {
     openedInitialChatRef.current = true;
     void switchChat(chats[0].id);
   }, [listLoading, activeChatId, chats, switchChat]);
-
-  useEffect(() => () => {
-    // The shared hook also aborts on unmount. This local cleanup only resets
-    // the staged editor so no pending text leaks across route remounts.
-    setEditingIndex(null);
-  }, []);
 
   const createChat = useCallback(async () => {
     const id = await newChat(subject);
@@ -255,7 +248,7 @@ export default function JambAITutorPage() {
             )}
 
             <ThreadView
-              messages={messages as AIMessage[]}
+              messages={messages}
               isStreaming={isStreaming}
               streamError={streamError}
               editingIndex={editingIndex}

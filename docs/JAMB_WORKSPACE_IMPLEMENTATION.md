@@ -143,3 +143,10 @@ The JAMB syllabus UI now contains a five-subject catalogue (108 topic/section en
 **Version and completeness boundary:** the uploaded PDF metadata identifies 2025-created copies. The Physics and Use of English uploaded content differs from the JAMB-hosted PDFs checked during this work. The catalogue remains a candidate source outline and `JAMB_SYLLABUS_VERIFIED=false`; per-topic objective mapping and reconciliation against current IBASS source documents still need completion. Do not describe this as the verified 2027 syllabus and do not enable an official-format UTME mock from it.
 
 Topic completion uses a separate `jamb-syllabus-progress-v1` per-user local-storage key. The first implementation supports not-started, in-progress and completed states without reading or writing JUPEB progress. It is device-local for now; server/cloud progress reconciliation remains outstanding. Topic entry points now pass the selected subject and topic to the JAMB Tutor, where the uploaded outline is included as explicitly unverified study context.
+
+
+## JAMB syllabus progress cloud sync
+
+Migration `20261118210924_create_exam_user_syllabus_progress` is applied to the existing Rutex Supabase project and committed at the same exact timestamp under `supabase/migrations/`. It stores JAMB-only learner topic state, with a composite key on user, programme and topic, a constrained state enum, owner + active-session RLS, and explicit grants. Anonymous and PUBLIC table privileges are revoked. The live ACL/RLS verification succeeded and the table is empty.
+
+`useJambSyllabusProgress` now syncs the per-account local namespace `jamb-syllabus-progress-v1` with `exam_user_syllabus_progress`. It merges records by `updatedAt`, uploads local-newer/missing entries, keeps local state available offline, and retries when the connection returns or the app is focused/visible. JUPEB syllabus progress remains untouched. Automated unit coverage includes local/remote timestamp conflict resolution.

@@ -133,7 +133,7 @@ export default function JambSyllabusPage() {
               </div>
               <p className="mt-2 text-[11px] text-muted-foreground">
                 {isReady ? "Progress is ready on this account." : "Loading your saved syllabus progress…"}
-                {" "}Progress currently saves on this device; cross-device cloud sync is not yet connected.
+                {" "}Progress is saved per account and syncs to the cloud when online. If offline, changes remain on this device and retry on reconnect.
               </p>
             </div>
           </div>

@@ -1,5 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useUserStorage } from "@/hooks/useUserStorage";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   getJambTopicState,
   setJambTopicState,
@@ -8,16 +10,128 @@ import {
   type JambSyllabusTopicState,
 } from "@/lib/jamb-syllabus-progress";
 
-/** Per-account JAMB syllabus progress. It never reads or writes JUPEB syllabus keys. */
+const isTopicState = (value: string): value is JambSyllabusTopicState =>
+  value === "not_started" || value === "in_progress" || value === "completed";
+
+/**
+ * Per-account JAMB syllabus progress, stored locally first and reconciled
+ * with the owner/session-protected cloud table across devices.
+ * This never reads or writes JUPEB syllabus progress.
+ */
 export function useJambSyllabusProgress() {
+  const { user, loading: authLoading } = useAuth();
   const [progress, setProgress, { isReady, reset }] = useUserStorage<JambSyllabusProgressMap>(
     "jamb-syllabus-progress-v1",
     {},
   );
+  const progressRef = useRef(progress);
+  const changeVersionRef = useRef(0);
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  useEffect(() => {
+    if (authLoading || !user?.id || !isReady) return;
+    let active = true;
+    let syncInFlight = false;
+    let syncRequested = false;
+
+    const sync = async () => {
+      if (syncInFlight) {
+        syncRequested = true;
+        return;
+      }
+      syncInFlight = true;
+      const versionAtStart = changeVersionRef.current;
+      try {
+        const userId = user.id;
+        const { data, error } = await supabase
+          .from("exam_user_syllabus_progress")
+          .select("topic_id,state,updated_at")
+          .eq("user_id", userId)
+          .eq("exam_program_id", "jamb");
+        if (!active) return;
+        if (error) {
+          console.warn("[JAMB syllabus progress] Cloud sync unavailable; local progress is retained:", error.message);
+          return;
+        }
+
+        const localSnapshot = progressRef.current;
+        const remote: JambSyllabusProgressMap = {};
+        for (const row of data ?? []) {
+          if (!isTopicState(row.state)) continue;
+          remote[row.topic_id] = {
+            state: row.state,
+            updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : 0,
+          };
+        }
+
+        const merged: JambSyllabusProgressMap = { ...remote };
+        const pendingUpserts: Array<[string, JambSyllabusProgressMap[string]]> = [];
+        for (const [topicId, localEntry] of Object.entries(localSnapshot)) {
+          const remoteEntry = remote[topicId];
+          if (!remoteEntry || localEntry.updatedAt > remoteEntry.updatedAt) {
+            merged[topicId] = localEntry;
+            pendingUpserts.push([topicId, localEntry]);
+          }
+        }
+
+        if (JSON.stringify(merged) !== JSON.stringify(localSnapshot)) {
+          progressRef.current = merged;
+          setProgress(merged);
+        }
+        if (pendingUpserts.length > 0) {
+          const { error: writeError } = await supabase
+            .from("exam_user_syllabus_progress")
+            .upsert(
+              pendingUpserts.map(([topicId, entry]) => ({
+                user_id: userId,
+                exam_program_id: "jamb",
+                topic_id: topicId,
+                state: entry.state,
+                updated_at: new Date(entry.updatedAt).toISOString(),
+              })),
+              { onConflict: "user_id,exam_program_id,topic_id" },
+            );
+          if (writeError) {
+            console.warn("[JAMB syllabus progress] Could not upload local changes; they will retry:", writeError.message);
+          }
+        }
+      } finally {
+        syncInFlight = false;
+        if ((syncRequested || changeVersionRef.current !== versionAtStart) && active) {
+          syncRequested = false;
+          void sync();
+        }
+      }
+    };
+
+    void sync();
+    const syncOnline = () => { void sync(); };
+    const syncVisible = () => {
+      if (document.visibilityState === "visible") void sync();
+    };
+    window.addEventListener("online", syncOnline);
+    window.addEventListener("focus", syncOnline);
+    document.addEventListener("visibilitychange", syncVisible);
+    return () => {
+      active = false;
+      window.removeEventListener("online", syncOnline);
+      window.removeEventListener("focus", syncOnline);
+      document.removeEventListener("visibilitychange", syncVisible);
+    };
+  }, [user?.id, authLoading, isReady, setProgress]);
 
   const setTopicState = useCallback((topicId: string, state: JambSyllabusTopicState) => {
     if (!isReady) return;
-    setProgress((previous) => setJambTopicState(previous, topicId, state));
+    changeVersionRef.current += 1;
+    setProgress((previous) => {
+      const next = setJambTopicState(previous, topicId, state);
+      progressRef.current = next;
+      return next;
+    });
+    // Local storage is always available first; cloud reconciliation retries
+    // on the next focus/reconnect/visibility event.
   }, [isReady, setProgress]);
 
   const getTopicState = useCallback((topicId: string) => (

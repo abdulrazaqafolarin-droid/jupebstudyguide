@@ -1089,6 +1089,41 @@ export type Database = {
           },
         ]
       }
+      exam_user_syllabus_progress: {
+        Row: {
+          created_at: string
+          exam_program_id: string
+          state: string
+          topic_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exam_program_id?: string
+          state?: string
+          topic_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exam_program_id?: string
+          state?: string
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_user_syllabus_progress_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string

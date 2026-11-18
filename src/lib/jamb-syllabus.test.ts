@@ -10,6 +10,7 @@ import {
   getJambTopicState,
   setJambTopicState,
   summarizeJambSyllabusProgress,
+  reconcileJambSyllabusProgress,
 } from "@/lib/jamb-syllabus-progress";
 
 describe("JAMB syllabus catalogue", () => {
@@ -62,4 +63,29 @@ describe("JAMB topic progress", () => {
     const original = { a: { state: "completed" as const, updatedAt: 1 } };
     expect(setJambTopicState(original, "  ", "in_progress", 2)).toBe(original);
   });
+
+  it("keeps the newest local state and queues only local rows that need upload", () => {
+    const local = {
+      newer: { state: "completed" as const, updatedAt: 20 },
+      missing: { state: "in_progress" as const, updatedAt: 15 },
+      older: { state: "not_started" as const, updatedAt: 5 },
+    };
+    const remote = {
+      newer: { state: "in_progress" as const, updatedAt: 10 },
+      missingRemote: { state: "completed" as const, updatedAt: 12 },
+      older: { state: "completed" as const, updatedAt: 8 },
+    };
+    const result = reconcileJambSyllabusProgress(local, remote);
+    expect(result.merged).toEqual({
+      newer: { state: "completed", updatedAt: 20 },
+      missing: { state: "in_progress", updatedAt: 15 },
+      missingRemote: { state: "completed", updatedAt: 12 },
+      older: { state: "completed", updatedAt: 8 },
+    });
+    expect(result.pendingUpserts).toEqual([
+      ["newer", { state: "completed", updatedAt: 20 }],
+      ["missing", { state: "in_progress", updatedAt: 15 }],
+    ]);
+  });
+
 });

@@ -63,3 +63,20 @@ export function getJambSubjectTopicIds(
   const subject = subjects[subjectId];
   return subject?.sections.flatMap((section) => section.topics.map((topic) => topic.id)) ?? [];
 }
+
+/** Merge local and cloud state by last-updated timestamp; newer local rows queue for upload. */
+export function reconcileJambSyllabusProgress(
+  local: JambSyllabusProgressMap,
+  remote: JambSyllabusProgressMap,
+): { merged: JambSyllabusProgressMap; pendingUpserts: Array<[string, JambSyllabusTopicProgress]> } {
+  const merged: JambSyllabusProgressMap = { ...remote };
+  const pendingUpserts: Array<[string, JambSyllabusTopicProgress]> = [];
+  for (const [topicId, localEntry] of Object.entries(local)) {
+    const remoteEntry = remote[topicId];
+    if (!remoteEntry || localEntry.updatedAt > remoteEntry.updatedAt) {
+      merged[topicId] = localEntry;
+      pendingUpserts.push([topicId, localEntry]);
+    }
+  }
+  return { merged, pendingUpserts };
+}

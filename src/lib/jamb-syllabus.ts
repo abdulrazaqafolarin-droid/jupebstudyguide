@@ -117,7 +117,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     description: "Chemical principles, reactions, calculations, compounds and industry",
     compulsory: false, questionBankAvailable: false, questionSourcePackAvailable: true,
     sourceFile: "Chemistry-1.pdf",
-    sourceSha256: "a3c15bfee3bece851d6a7ec9b6ce85909aa94f1657d0d01b76d96a5d904467f5",
+    sourceSha256: "a3c15bfee3bece0f4106a32b0091e2a2c51eaec8baa62fafa44afcad72193738",
     sourcePageCount: 16, reviewState: "needs_current_source_review",
     generalObjectives: [
       "Understand the basic principles and concepts in chemistry.",

@@ -157,3 +157,10 @@ The PDF metadata identifies the uploaded copies as 2025-created files. They are 
 The JAMB syllabus page now has a structured five-subject outline catalogue with **108 topic/section entries**, including compulsory Use of English and Mathematics. It deliberately keeps `JAMB_SYLLABUS_VERIFIED=false`. The detailed topic outline is a structured first pass from the uploaded copies; topic-level objectives have not yet been independently mapped/reviewed line-by-line. The full official UTME mock remains disabled. Mathematics and Use of English remain unavailable in the JAMB question bank.
 
 Topic progress now has a JAMB-only, per-account local storage namespace and the UI exposes not-started, in-progress and completed states. This first slice is device-local; cloud/cross-device topic-progress sync is not yet implemented. The existing shared JUPEB syllabus progress key and JUPEB syllabus page are unchanged.
+
+
+## JAMB syllabus progress cloud sync — 18 November 2026
+
+The live shared Supabase project `gzyczowqqywesqhqqpdi` has migration `20261118210924/create_exam_user_syllabus_progress` applied. The table stores one state per (user, JAMB programme, topic), allows only `not_started`, `in_progress` or `completed`, and is protected by RLS requiring both account ownership and an active auth session. Post-deploy SQL verification confirms RLS enabled, exactly one policy, authenticated SELECT/INSERT/UPDATE/DELETE privileges, no anonymous SELECT/INSERT privileges, and zero rows at rollout. The matching migration source is committed in `supabase/migrations/20261118210924_create_exam_user_syllabus_progress.sql`.
+
+The JAMB topic tracker is now local-first with timestamp reconciliation to the cloud table. On login/refresh, local and remote progress are merged using the latest update time; local-only/newer entries are upserted. Online, focus and visibility events retry reconciliation. JUPEB continues using its existing syllabus progress key/table path. The app generated Supabase database types include the new progress table. No student rows were created by the deployment verification.

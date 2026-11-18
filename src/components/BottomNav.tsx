@@ -19,13 +19,14 @@ export default function BottomNav() {
   const { totalUnread, staleUnread } = useChatUnreadCount();
   const jambEnabled = import.meta.env.VITE_ENABLE_JAMB === "true";
   const isJamb = jambEnabled && (location.pathname === "/jamb" || location.pathname.startsWith("/jamb/"));
-  const visibleNavItems = useMemo(() => isJamb ? [
-    { path: "/jamb", label: "Home", icon: Home },
-    { path: "/jamb/past-questions", label: "Questions", icon: BookOpen },
-    { path: "/jamb/ai", label: "AI Tutor", icon: MessageSquare },
-    { path: "/jamb/cbt/setup", label: "CBT", icon: Clock3 },
-    { path: "/profile", label: "Profile", icon: User },
-  ] : navItems, [isJamb]);
+  // Keep the same five-slot navigation on both workspaces. Only the
+  // destination changes, so the app feels like one coherent product.
+  const visibleNavItems = useMemo(() => isJamb ? navItems.map((item) => {
+    if (item.path === "/") return { ...item, path: "/jamb" };
+    if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
+    if (item.path === "/chat") return { ...item, path: "/jamb/ai" };
+    return item;
+  }) : navItems, [isJamb]);
 
   return (
     <>

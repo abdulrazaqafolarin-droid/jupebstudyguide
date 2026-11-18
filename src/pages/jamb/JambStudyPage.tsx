@@ -61,6 +61,7 @@ export default function JambStudyPage() {
   const [checking, setChecking] = useState(false);
   const [pageError, setPageError] = useState<string | null>(null);
   const requestSequence = useRef(0);
+  const answerCheckSequence = useRef(0);
   const initialLoadStarted = useRef(false);
 
   const { bookmarks, toggle: toggleBookmark, isReady: bookmarksReady } = useJambBookmarks();
@@ -86,6 +87,8 @@ export default function JambStudyPage() {
     setLoadingQuestions(true);
     setPageError(null);
     if (!append) {
+      answerCheckSequence.current += 1;
+      setChecking(false);
       setQuestions([]);
       setTotalCount(0);
       setReviewQueueIds([]);
@@ -104,7 +107,7 @@ export default function JambStudyPage() {
       setTotalCount(result.count);
       return result.questions;
     } catch (reason) {
-      if (requestSequence.current !== sequence) return;
+      if (requestSequence.current !== sequence) return [];
       setPageError(reason instanceof JambSchemaUnavailableError
         ? "The JAMB question database is not available yet."
         : reason instanceof Error ? reason.message : "Could not load JAMB revision cards.");
@@ -165,19 +168,23 @@ export default function JambStudyPage() {
 
   const checkAnswer = async () => {
     if (!question || !selectedOption || checking || feedback) return;
+    const sequence = ++answerCheckSequence.current;
+    const questionId = question.id;
+    const option = selectedOption;
     setChecking(true);
     setPageError(null);
-    saveAnswer(question.id, selectedOption);
+    saveAnswer(questionId, option);
     try {
       const { data, error } = await supabase.functions.invoke("exam-practice", {
         body: {
           action: "check-answer",
           exam_program_id: "jamb",
-          question_id: question.id,
-          selected_option: selectedOption,
+          question_id: questionId,
+          selected_option: option,
         },
       });
       if (error) throw error;
+      if (answerCheckSequence.current !== sequence) return;
       setFeedback({
         gradable: data?.gradable === true,
         isCorrect: data?.gradable === true ? data.is_correct === true : undefined,
@@ -186,11 +193,13 @@ export default function JambStudyPage() {
         message: typeof data?.message === "string" ? data.message : undefined,
       });
     } catch (reason) {
-      setPageError(reason instanceof Error
-        ? reason.message
-        : "Answer checking is unavailable. Your choice is saved; reconnect and try again.");
+      if (answerCheckSequence.current === sequence) {
+        setPageError(reason instanceof Error
+          ? reason.message
+          : "Answer checking is unavailable. Your choice is saved; reconnect and try again.");
+      }
     } finally {
-      setChecking(false);
+      if (answerCheckSequence.current === sequence) setChecking(false);
     }
   };
 

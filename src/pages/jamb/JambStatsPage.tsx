@@ -4,6 +4,7 @@ import { ArrowLeft, Award, BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, 
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getJambActivityStats, getJambRecentDailyActivity } from "@/lib/jamb-analytics";
 import { getJambCbtAnalytics, mapJambCbtHistoryPayload, type JambCbtAttemptSummary } from "@/lib/jamb-cbt-analytics";
@@ -17,6 +18,7 @@ import {
 import StreakDisplay from "@/components/StreakDisplay";
 
 export default function JambStatsPage() {
+  const { user } = useAuth();
   const { savedAnswers, isReady: answersReady } = useJambPracticeProgress();
   const { progress: reviewProgress, getStats: getRevisionStats, isReady: reviewReady } = useJambReviewProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
@@ -26,6 +28,7 @@ export default function JambStatsPage() {
   const [loadingBank, setLoadingBank] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cbtHistory, setCbtHistory] = useState<JambCbtAttemptSummary[]>([]);
+  const [cbtHistoryOwnerId, setCbtHistoryOwnerId] = useState<string | null>(null);
   const [cbtHistorySupported, setCbtHistorySupported] = useState<boolean | null>(null);
   const [loadingCbtHistory, setLoadingCbtHistory] = useState(true);
 
@@ -52,8 +55,18 @@ export default function JambStatsPage() {
   }, [answersReady, questionIds]);
 
   useEffect(() => {
-    if (!answersReady) return;
+    if (!answersReady || !user?.id) {
+      setCbtHistory([]);
+      setCbtHistoryOwnerId(null);
+      setCbtHistorySupported(null);
+      setLoadingCbtHistory(false);
+      return;
+    }
+    const ownerId = user.id;
     let active = true;
+    setCbtHistory([]);
+    setCbtHistoryOwnerId(null);
+    setCbtHistorySupported(null);
     setLoadingCbtHistory(true);
     supabase.functions.invoke("exam-attempts", {
       body: { action: "history", exam_program_id: "jamb" },
@@ -62,21 +75,27 @@ export default function JambStatsPage() {
         if (invokeError) throw invokeError;
         if (!active) return;
         setCbtHistory(mapJambCbtHistoryPayload(data?.history));
+        setCbtHistoryOwnerId(ownerId);
         setCbtHistorySupported(true);
       })
       .catch(() => {
         if (!active) return;
         // This action is branch-only until the reviewed exam-attempts release.
         // Do not query service-role tables directly or substitute JUPEB scores.
+        setCbtHistory([]);
+        setCbtHistoryOwnerId(ownerId);
         setCbtHistorySupported(false);
       })
       .finally(() => { if (active) setLoadingCbtHistory(false); });
     return () => { active = false; };
-  }, [answersReady]);
+  }, [answersReady, user?.id]);
 
   const activity = useMemo(() => getJambActivityStats(savedAnswers), [savedAnswers]);
   const revisionStats = getRevisionStats(Object.keys(reviewProgress));
-  const cbtAnalytics = useMemo(() => getJambCbtAnalytics(cbtHistory), [cbtHistory]);
+  const cbtHistoryForUser = cbtHistoryOwnerId === (user?.id ?? null) ? cbtHistory : [];
+  const cbtHistorySupportedForUser = cbtHistoryOwnerId === (user?.id ?? null) ? cbtHistorySupported : null;
+  const cbtHistoryLoadingForUser = loadingCbtHistory || Boolean(user?.id && cbtHistoryOwnerId !== user.id);
+  const cbtAnalytics = useMemo(() => getJambCbtAnalytics(cbtHistoryForUser), [cbtHistoryForUser]);
   const dailyActivity = useMemo(() => getJambRecentDailyActivity(savedAnswers), [savedAnswers]);
   const publishedQuestionCount = subjectSummaries.reduce((total, row) => total + row.count, 0);
   const subjectRows = JAMB_SUBJECTS.map((subject) => {
@@ -218,13 +237,13 @@ export default function JambStatsPage() {
             <Trophy className="h-5 w-5 text-primary" />
             <h2 className="font-semibold">Timed CBT results · JAMB only</h2>
           </div>
-          {loadingCbtHistory ? (
+          {cbtHistoryLoadingForUser ? (
             <p className="text-sm text-muted-foreground">Loading your completed JAMB attempts…</p>
-          ) : cbtHistorySupported === false ? (
+          ) : cbtHistorySupportedForUser === false ? (
             <p className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-relaxed text-muted-foreground">
               Personal CBT history is not available from the connected backend yet. It will appear after the updated JAMB attempt-history endpoint is released. Your result after each completed CBT remains available on its results screen.
             </p>
-          ) : cbtHistory.length === 0 ? (
+          ) : cbtHistoryForUser.length === 0 ? (
             <p className="rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground">No completed JAMB timed attempts yet. Submit a practice CBT to build your personal score history.</p>
           ) : (
             <>
@@ -257,7 +276,7 @@ export default function JambStatsPage() {
               </div>
               <div className="mt-5 space-y-2">
                 <h3 className="text-sm font-semibold">Latest attempts</h3>
-                {cbtHistory.slice(0, 10).map((attempt) => {
+                {cbtHistoryForUser.slice(0, 10).map((attempt) => {
                   const subject = JAMB_SUBJECTS.includes(attempt.subject as (typeof JAMB_SUBJECTS)[number])
                     ? JAMB_SUBJECT_INFO[attempt.subject as (typeof JAMB_SUBJECTS)[number]].label
                     : attempt.subject;

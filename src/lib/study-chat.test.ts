@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildStarterPrompts,
+  canUseSyllabusTopicContext,
   CONTEXT_MESSAGE_CAP,
   findSyllabusTopic,
   groupChatsByDate,
@@ -42,6 +43,17 @@ describe('programme-scoped study chat metadata', () => {
   it('keeps legacy fixture rows inside the JUPEB workspace by default', () => {
     expect(chat(new Date()).exam_program_id).toBe('jupeb');
     expect(chat(new Date(), { exam_program_id: 'jamb' }).exam_program_id).toBe('jamb');
+  });
+});
+
+describe('programme-safe syllabus topic context', () => {
+  it('allows the verified JUPEB topic catalogue for JUPEB threads', () => {
+    expect(canUseSyllabusTopicContext('jupeb', 'phy-units')).toBe(true);
+  });
+
+  it('never resolves JUPEB topics inside JAMB tutor history', () => {
+    expect(canUseSyllabusTopicContext('jamb', 'phy-units')).toBe(false);
+    expect(canUseSyllabusTopicContext('jamb', null)).toBe(false);
   });
 });
 

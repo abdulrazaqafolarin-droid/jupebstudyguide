@@ -24,7 +24,6 @@ export default function BottomNav() {
   const visibleNavItems = useMemo(() => isJamb ? navItems.map((item) => {
     if (item.path === "/") return { ...item, path: "/jamb" };
     if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
-    if (item.path === "/chat") return { ...item, path: "/jamb/ai" };
     return item;
   }) : navItems, [isJamb]);
 

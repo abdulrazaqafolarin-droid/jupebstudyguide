@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, GraduationCap, Info, Loader2, ShieldCheck } from "lucide-react";
+import { Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
 import type { Subject } from "@/types/question";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function JambCbtSetupPage() {
   const navigate = useNavigate();
@@ -43,50 +44,135 @@ export default function JambCbtSetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
-          <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"><ArrowLeft className="h-5 w-5" /></Link>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10"><GraduationCap className="h-5 w-5 text-primary" /></div>
-          <div><p className="text-[11px] text-muted-foreground">JAMB workspace</p><h1 className="text-sm font-semibold">Timed CBT practice</h1></div>
+    <main className="min-h-screen bg-background px-4 py-8 pb-28">
+      <div className="mx-auto max-w-2xl">
+        <Link
+          to="/jamb"
+          className="mb-6 inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+        >
+          <span aria-hidden="true">←</span>
+          Back to JAMB workspace
+        </Link>
+
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 chalk-texture md:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
+
+          <div className="relative">
+            <div className="mb-2 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
+                <Target className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Set up your CBT practice</h1>
+                <p className="text-sm text-muted-foreground">Choose a JAMB subject and a focused practice length.</p>
+              </div>
+            </div>
+
+            <section className="mt-6">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Subject</h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {JAMB_SUBJECTS.map((item) => {
+                  const selected = subject === item;
+                  const info = JAMB_SUBJECT_INFO[item];
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      disabled={starting}
+                      onClick={() => {
+                        idempotencyKeyRef.current = null;
+                        setSubject(item);
+                      }}
+                      aria-pressed={selected}
+                      className={cn(
+                        "relative flex min-h-28 items-center gap-3 rounded-xl border-2 p-4 text-left transition-all",
+                        selected
+                          ? "border-primary bg-primary/10 shadow-sm"
+                          : "border-border bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50",
+                        starting && "cursor-not-allowed opacity-60",
+                      )}
+                    >
+                      <span className="text-3xl" aria-hidden="true">{info.icon}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold">{info.label}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">{info.description}</span>
+                      </span>
+                      {selected && (
+                        <span className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-primary ring-4 ring-primary/10" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">JAMB question selection is isolated from the JUPEB question bank.</p>
+            </section>
+
+            <section className="mt-6">
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Practice length</h2>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {JAMB_CBT_PRACTICE_PRESETS.map((item, index) => {
+                  const selected = presetIndex === index;
+                  return (
+                    <button
+                      key={item.questionCount}
+                      type="button"
+                      disabled={starting}
+                      onClick={() => {
+                        idempotencyKeyRef.current = null;
+                        setPresetIndex(index);
+                      }}
+                      aria-pressed={selected}
+                      className={cn(
+                        "rounded-xl border-2 p-4 text-left transition-all",
+                        selected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-secondary/20 hover:border-primary/50",
+                        starting && "cursor-not-allowed opacity-60",
+                      )}
+                    >
+                      <span className="block text-2xl font-bold tabular-nums">{item.questionCount}</span>
+                      <span className="mt-1 block text-sm font-semibold">{item.label.split(" · ")[0]}</span>
+                      <span className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock3 className="h-3.5 w-3.5" /> {item.durationMinutes} minutes
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-4 flex items-center gap-2 rounded-xl border border-border/60 bg-secondary/30 p-3 text-xs leading-relaxed text-muted-foreground">
+                <Clock3 className="h-4 w-4 shrink-0 text-primary" />
+                The {preset.questionCount}-question session runs for {preset.durationMinutes} minutes. The timer starts on the server when the attempt is created and will not restart if you refresh.
+              </div>
+            </section>
+
+            <section className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+              <div className="flex items-start gap-2">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <div>
+                  <p className="text-sm font-semibold">Practice session, not a full UTME mock</p>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    This is a single-subject timed practice session, not a complete official UTME mock. Use of English is compulsory in UTME and is not part of the initial supplied question set. The current official manual and syllabus must be verified before full-mock settings are enabled.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <Button
+              onClick={startPractice}
+              disabled={starting}
+              size="lg"
+              className="mt-6 w-full bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90"
+            >
+              {starting ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing session…</>
+              ) : (
+                <><ShieldCheck className="mr-2 h-4 w-4" />Start timed practice</>
+              )}
+            </Button>
+          </div>
         </div>
-      </header>
-      <main className="mx-auto max-w-4xl px-4 py-6 pb-28">
-      <div className="mx-auto max-w-xl space-y-5">
-        <section className="rounded-2xl border border-border bg-card p-5 chalk-texture">
-          <h2 className="font-semibold">Choose a subject</h2>
-          <p className="mt-1 text-xs text-muted-foreground">These sessions use the approved JAMB question bank, not JUPEB questions.</p>
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            {JAMB_SUBJECTS.map((item) => (
-              <button key={item} disabled={starting} onClick={() => { idempotencyKeyRef.current = null; setSubject(item); }} aria-pressed={subject === item}
-                className={`rounded-xl border px-2 py-4 text-sm font-semibold ${subject === item ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-accent"}`}>
-                <span className="block text-xl">{JAMB_SUBJECT_INFO[item].icon}</span>{JAMB_SUBJECT_INFO[item].label}
-              </button>
-            ))}
-          </div>
-        </section>
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <h2 className="font-semibold">Practice length</h2>
-          <div className="mt-3 space-y-2">
-            {JAMB_CBT_PRACTICE_PRESETS.map((item, index) => (
-              <button key={item.questionCount} disabled={starting} onClick={() => { idempotencyKeyRef.current = null; setPresetIndex(index); }} aria-pressed={presetIndex === index}
-                className={`flex w-full items-center justify-between rounded-xl border p-3 text-left text-sm ${presetIndex === index ? "border-primary bg-primary/10" : "border-border hover:bg-accent"}`}>
-                <span className="font-medium">{item.label}</span><span className="text-xs text-muted-foreground">{item.durationMinutes} min</span>
-              </button>
-            ))}
-          </div>
-          <div className="mt-4 flex items-center gap-2 rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground"><Clock3 className="h-4 w-4 shrink-0" />The timer begins when the server creates your attempt. Refreshing the page will not restart it.</div>
-        </section>
-        <section className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5">
-          <div className="flex items-start gap-2"><Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" /><p className="text-xs leading-relaxed text-muted-foreground">
-            This is a single-subject timed practice session, not a complete official UTME mock. Use of English is compulsory in UTME and is not part of the initial supplied question set. The current official manual and syllabus must be verified before full-mock settings are enabled.
-          </p></div>
-        </section>
-        <Button onClick={startPractice} disabled={starting} className="w-full py-6 text-base">
-          {starting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing session…</> : <><ShieldCheck className="mr-2 h-4 w-4" />Start timed practice</>}
-        </Button>
       </div>
-      </main>
-    </div>
+    </main>
   );
 }

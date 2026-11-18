@@ -1,4 +1,10 @@
-import { resolveJambImportItemRange } from "./jamb-import-range.ts";
+import { JAMB_IMPORT_PROTOCOL_VERSION, resolveJambImportItemRange } from "./jamb-import-range.ts";
+
+Deno.test("JAMB importer advertises the resumable chunk protocol version", () => {
+  if (JAMB_IMPORT_PROTOCOL_VERSION !== 2) {
+    throw new Error("The resumable JAMB importer protocol version must match the client capability gate.");
+  }
+});
 
 Deno.test("JAMB import chunk uses its explicit source-package offset", () => {
   const range = resolveJambImportItemRange(50, 50, 50, 896);

@@ -4,7 +4,7 @@
 **Repository:** `abdulrazaqafolarin-droid/jupebstudyguide`  
 **Pull request:** [#78 — Add a separate JAMB study workspace](https://github.com/abdulrazaqafolarin-droid/jupebstudyguide/pull/78)  
 **Feature branch:** `feat/rutex-jamb-workspace`  
-**Latest branch head at this update:** `d025b9fad5a9471e37350c58cb34a62cbed92913`  
+**Branch head at this update:** `7db5e67174898c2ccde36db82a1b9fd77f8e6192`  
 **Supabase project:** `gzyczowqqywesqhqqpdi` (existing Rutex/JUPEB project)
 
 ## Release boundary
@@ -75,7 +75,7 @@ Before staging, an authorised administrator must attest to the right to store/us
 - The separate Rutex Master Next artifact-only job succeeded on commit `c90f8cdd178ee1dbd1c29850bcb3f59f848478d1`: Gradle built the APK; package/version/minimum SDK checks passed; the APK signing certificate matched the dedicated successor keystore; and the verified artifact was uploaded to GitHub Actions as artifact `14404831797`. The Supabase updater-publication step was skipped, so no release file or updater manifest was changed.
 - The APK mismatch was caused by a hard-coded original Android application ID. Capacitor and Gradle now accept the explicit successor identity from CI while retaining `com.jupeb.master` as the default for normal builds.
 - The successor APK workflow is now scoped to the successor PR and its stacked UI PR; unrelated JAMB PR changes no longer need to build that separate release artifact.
-- The iOS simulator workflow was restarted for the newest branch commit after its previous run was cancelled by a newer PR update. Its latest run must finish before the iOS check is considered passed.
+- The iOS simulator workflow passed on commit `cc5a3cd3f5b4766956c6242e762f7e49dc1b4286`: Capacitor iOS sync, Xcode simulator build, bundle identity, simulator installation, app launch and screenshot all passed. The workflow uploaded the simulator app and generated Xcode project, then committed four generated iOS icon/splash assets as `7db5e67174898c2ccde36db82a1b9fd77f8e6192`. That bot commit changes no JAMB logic, application code or backend.
 
 ## Remaining release gates
 

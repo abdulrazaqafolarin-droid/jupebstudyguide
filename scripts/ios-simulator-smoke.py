@@ -65,7 +65,9 @@ def main() -> int:
 
     if device.get("state") != "Booted":
         run(["xcrun", "simctl", "boot", udid], timeout_seconds=45)
-    run(["xcrun", "simctl", "bootstatus", udid, "-b"], timeout_seconds=180)
+    # First boot on a fresh hosted macOS runner may run several minutes of
+    # LaunchServices/locationd data migration before the device is usable.
+    run(["xcrun", "simctl", "bootstatus", udid, "-b"], timeout_seconds=480)
     run(["xcrun", "simctl", "install", udid, str(APP_PATH)], timeout_seconds=120)
     run(["xcrun", "simctl", "launch", udid, BUNDLE_ID], timeout_seconds=60)
 

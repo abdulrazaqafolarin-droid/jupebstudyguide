@@ -138,3 +138,22 @@ The Supabase advisor scan after the chat-history migration reported existing pro
 - There are still zero JAMB question rows and zero import batches. No Physics/Chemistry/Biology source pack has been staged, rights-attested, reviewed or published.
 
 Official references checked: [JAMB IBASS eligibility checker](https://eligibility.jamb.gov.ng/), [Physics syllabus](https://ibass.jamb.gov.ng/assets/uploads/Physics.pdf), [Biology syllabus](https://ibass.jamb.gov.ng/assets/uploads/Biology.pdf), [Use of English syllabus](https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf), and [2027 JAMB Test Manual listing](https://www.jamb.gov.ng/News/PDFs/2027/2027_JAMB_Test_Manual).
+
+
+## Uploaded JAMB syllabus intake — 18 November 2026
+
+The owner committed five additional PDF source copies to `main` in commit `e1d9b81b82be717567f47972c39a6ce702bf6b92`: Biology, Chemistry, Mathematics, Physics and Use of English. The feature branch adds a repeatable PDF extraction workflow and the source-preserving review pack is available as GitHub Actions artifact `jamb-syllabus-source-extraction` (artifact ID `14467187615`, run `44388332808`). Extraction succeeded for all five documents; all pages contain extractable text, page previews were rendered and table cells were retained where detectable.
+
+| Subject | PDF pages | Extracted text characters |
+| --- | ---: | ---: |
+| Physics | 20 | 40,104 |
+| Chemistry | 16 | 32,179 |
+| Biology | 12 | 27,042 |
+| Mathematics | 6 | 10,770 |
+| Use of English | 5 | 6,155 |
+
+The PDF metadata identifies the uploaded copies as 2025-created files. They are therefore treated as candidate source copies, not silently declared the verified current IBASS edition. A direct comparison found material differences between the uploaded Physics and Use of English content and the JAMB-hosted PDFs checked during this review; Chemistry and Mathematics still need their current IBASS copies reconciled. The official syllabus source links are the JAMB IBASS e-syllabus at https://ibass.jamb.gov.ng/e-syllabus and the subject PDFs exposed by that portal.
+
+The JAMB syllabus page now has a structured five-subject outline catalogue with **108 topic/section entries**, including compulsory Use of English and Mathematics. It deliberately keeps `JAMB_SYLLABUS_VERIFIED=false`. The detailed topic outline is a structured first pass from the uploaded copies; topic-level objectives have not yet been independently mapped/reviewed line-by-line. The full official UTME mock remains disabled. Mathematics and Use of English remain unavailable in the JAMB question bank.
+
+Topic progress now has a JAMB-only, per-account local storage namespace and the UI exposes not-started, in-progress and completed states. This first slice is device-local; cloud/cross-device topic-progress sync is not yet implemented. The existing shared JUPEB syllabus progress key and JUPEB syllabus page are unchanged.

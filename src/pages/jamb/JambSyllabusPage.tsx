@@ -3,135 +3,203 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, BookOpen, BookOpenCheck, ChevronDown, ExternalLink,
-  GraduationCap, Search, ShieldAlert, Sparkles,
+  GraduationCap, Search, ShieldAlert, Sparkles, CircleCheck, CircleDashed,
+  PlayCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_SYLLABUS_VERIFIED } from "@/lib/jamb-config";
+import {
+  JAMB_SYLLABUS,
+  JAMB_SYLLABUS_REVIEW_NOTICE,
+  JAMB_SYLLABUS_SUBJECTS,
+  getJambSyllabusTopicCount,
+  type JambSyllabusSubjectId,
+} from "@/lib/jamb-syllabus";
+import { useJambSyllabusProgress } from "@/hooks/useJambSyllabusProgress";
+import type { JambSyllabusTopicState } from "@/lib/jamb-syllabus-progress";
+
+const SUBJECT_ENTRIES = JAMB_SYLLABUS_SUBJECTS.map((id) => JAMB_SYLLABUS[id]);
+const STATUS_LABEL: Record<JambSyllabusTopicState, string> = {
+  not_started: "Not started",
+  in_progress: "In progress",
+  completed: "Completed",
+};
 
 const stagger = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.04 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.035 } },
 };
 const itemAnim = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0 },
 };
 
 export default function JambSyllabusPage() {
-  const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
+  const [expandedSubject, setExpandedSubject] = useState<JambSyllabusSubjectId | null>("use_of_english");
+  const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
+  const { setTopicState, getTopicState, getSummary, isReady } = useJambSyllabusProgress();
+
+  const allTopicIds = SUBJECT_ENTRIES.flatMap((subject) =>
+    subject.sections.flatMap((section) => section.topics.map((topic) => topic.id)),
+  );
+  const overall = getSummary(allTopicIds);
 
   const filteredSubjects = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return JAMB_SUBJECTS;
-    return JAMB_SUBJECTS.filter((subject) => {
-      const info = JAMB_SUBJECT_INFO[subject];
-      return info.label.toLowerCase().includes(query) || info.description.toLowerCase().includes(query);
-    });
+    if (!query) return SUBJECT_ENTRIES;
+    return SUBJECT_ENTRIES.filter((subject) => (
+      subject.label.toLowerCase().includes(query)
+      || subject.description.toLowerCase().includes(query)
+      || subject.generalObjectives.some((objective) => objective.toLowerCase().includes(query))
+      || subject.sections.some((section) => (
+        section.title.toLowerCase().includes(query)
+        || section.topics.some((topic) => (
+          topic.title.toLowerCase().includes(query)
+          || topic.outline.some((line) => line.toLowerCase().includes(query))
+        ))
+      ))
+    ));
   }, [search]);
+
+  const toggleTopic = (id: string) => {
+    setExpandedTopics((previous) => {
+      const next = new Set(previous);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const cycleTopicState = (id: string) => {
+    const current = getTopicState(id);
+    const next: JambSyllabusTopicState =
+      current === "not_started" ? "in_progress"
+        : current === "in_progress" ? "completed" : "not_started";
+    setTopicState(id, next);
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/50"
+        className="sticky top-0 z-20 border-b border-border/50 bg-background/90 backdrop-blur-xl"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3 relative">
-          <Link
-            to="/jamb"
-            aria-label="Back to JAMB home"
-            className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
+        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
+          <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary">
+            <ArrowLeft className="h-5 w-5" />
           </Link>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="font-semibold heading text-sm">JAMB Syllabus</h1>
-              <p className="text-[11px] text-muted-foreground">
-                {JAMB_SUBJECTS.length} supported content subjects · {JAMB_SYLLABUS_VERIFIED ? "verified source" : "verification pending"}
-              </p>
-            </div>
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+            <GraduationCap className="h-5 w-5 text-primary" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-sm font-semibold">JAMB Syllabus</h1>
+            <p className="text-[11px] text-muted-foreground">
+              {JAMB_SYLLABUS_SUBJECTS.length} subjects · {getJambSyllabusTopicCount()} topics in the uploaded source pack
+            </p>
           </div>
         </div>
       </motion.header>
 
       <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="max-w-4xl mx-auto px-4 py-6 space-y-6"
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+        className="mx-auto max-w-4xl space-y-6 px-4 py-6"
       >
-        <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 chalk-texture">
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
-          <div className="relative flex items-start gap-3">
-            <div className="w-10 h-10 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center">
-              <BookOpenCheck className="w-5 h-5 text-primary" />
+        <motion.section variants={itemAnim} className="rounded-2xl border border-border bg-card p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+              <BookOpenCheck className="h-5 w-5 text-primary" />
             </div>
-            <div>
-              <h2 className="font-semibold">Your JAMB subject guide</h2>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-semibold">Your subject coverage</h2>
+                <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
+                  Source review pending
+                </span>
+              </div>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                This page follows the same subject-and-topic browsing layout as the JUPEB syllabus.
-                JAMB topic lists will only appear after the current official syllabus has been verified and versioned. This browser currently lists only the three subjects with supplied Rutex question packs; other exam subjects, including Mathematics and compulsory Use of English, remain unavailable in the question bank.
+                The five syllabus PDFs you committed are now organised into subject sections and trackable topics.
+                Your topic progress is saved separately from JUPEB.
               </p>
-              {!JAMB_SYLLABUS_VERIFIED && (
-                <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/25 bg-amber-500/5 p-3">
-                  <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    No topic, subtopic or study-hour data is being fabricated or copied from JUPEB.
-                    The official source remains available below while the JAMB syllabus is reviewed.
-                  </p>
-                </div>
-              )}
+              <div className="mt-4 flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Overall completed topics</span>
+                <span className="font-semibold tabular-nums">{overall.completed}/{overall.total} · {overall.percentage}%</span>
+              </div>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
+                <div className="h-full rounded-full bg-primary transition-all" style={{ width: overall.percentage + "%" }} />
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                {isReady ? "Progress is ready on this account." : "Loading your saved syllabus progress…"}
+                {" "}Progress currently saves on this device; cross-device cloud sync is not yet connected.
+              </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-muted-foreground" />
+        <motion.section variants={itemAnim} className="flex items-start gap-3 rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
+          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div>
+            <h2 className="text-sm font-semibold">Uploaded source copies are not yet certified as the current IBASS edition</h2>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{JAMB_SYLLABUS_REVIEW_NOTICE}</p>
+            <a
+              href="https://ibass.jamb.gov.ng/e-syllabus"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+            >
+              Check JAMB IBASS syllabus <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        </motion.section>
+
+        <motion.div variants={itemAnim} className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search subjects or syllabus coverage..."
-            className="pl-9 bg-secondary/30 border-border/50"
+            placeholder="Search subjects, topics or subtopics…"
+            className="border-border/50 bg-secondary/30 pl-9"
           />
-        </div>
+        </motion.div>
 
-        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-4">
+        <motion.div variants={stagger} className="space-y-4">
           {filteredSubjects.map((subject) => {
-            const info = JAMB_SUBJECT_INFO[subject];
-            const expanded = expandedSubject === subject;
+            const expanded = expandedSubject === subject.id;
+            const topicIds = subject.sections.flatMap((section) => section.topics.map((topic) => topic.id));
+            const summary = getSummary(topicIds);
             return (
-              <motion.div key={subject} variants={itemAnim} className="relative">
+              <motion.section key={subject.id} variants={itemAnim} className="overflow-hidden rounded-2xl border border-border bg-card">
                 <button
                   type="button"
-                  onClick={() => setExpandedSubject(expanded ? null : subject)}
+                  onClick={() => setExpandedSubject(expanded ? null : subject.id)}
                   aria-expanded={expanded}
-                  className={[
-                    "w-full text-left p-4 rounded-xl border transition-all hover:shadow-sm",
-                    expanded
-                      ? "bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30 shadow-sm"
-                      : "bg-card border-border/50 hover:border-border",
-                  ].join(" ")}
+                  className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-secondary/30"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-2xl">{info.icon}</span>
-                      <div className="min-w-0">
-                        <h2 className="font-semibold">{info.label}</h2>
-                        <p className="text-xs text-muted-foreground">{info.description}</p>
-                        <p className="mt-1 text-[11px] text-amber-600">Official topic list awaiting verification</p>
-                      </div>
-                    </div>
-                    <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                    </motion.div>
-                  </div>
+                  <span className="text-2xl">{subject.icon}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold">{subject.label}</span>
+                      {subject.compulsory && (
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Compulsory</span>
+                      )}
+                      {!subject.questionBankAvailable && (
+                        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">{subject.questionSourcePackAvailable ? "Candidate question source awaits review" : "Question bank pending"}</span>
+                      )}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{topicIds.length} topics · {subject.description}</span>
+                    <span className="mt-2 flex items-center gap-2">
+                      <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+                        <span className="block h-full rounded-full bg-primary" style={{ width: summary.percentage + "%" }} />
+                      </span>
+                      <span className="text-[10px] tabular-nums text-muted-foreground">{summary.completed}/{summary.total} complete</span>
+                    </span>
+                  </span>
+                  <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                  </motion.span>
                 </button>
 
                 <AnimatePresence>
@@ -140,44 +208,128 @@ export default function JambSyllabusPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+                      transition={{ duration: 0.22 }}
                       className="overflow-hidden"
                     >
-                      <div className="mt-2 rounded-xl border border-border/60 bg-card/60 p-4 space-y-3">
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          JAMB {info.label} topics and subtopics have not yet been imported into Rutex.
-                          Open the official IBASS source for the current syllabus; Rutex will add searchable
-                          topic tracking after the document has been checked and recorded.
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          <Button asChild size="sm" variant="outline">
-                            <a href="https://ibass.jamb.gov.ng/" target="_blank" rel="noreferrer">
-                              <ExternalLink className="mr-2 h-3.5 w-3.5" /> Official IBASS
-                            </a>
-                          </Button>
-                          <Button asChild size="sm">
-                            <Link to={`/jamb/past-questions?subject=${subject}`}>
-                              <BookOpen className="mr-2 h-3.5 w-3.5" /> Practice questions
-                            </Link>
-                          </Button>
-                          <Button asChild size="sm" variant="ghost">
-                            <Link to={`/jamb/ai?subject=${subject}`}>
-                              <Sparkles className="mr-2 h-3.5 w-3.5" /> Ask AI tutor
-                            </Link>
-                          </Button>
+                      <div className="space-y-4 border-t border-border/60 p-4">
+                        <div>
+                          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">General objectives in the uploaded source</h3>
+                          <ul className="mt-2 space-y-1.5">
+                            {subject.generalObjectives.map((objective) => (
+                              <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
+                                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                                {objective}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {subject.sections.map((section) => (
+                          <div key={section.id} className="space-y-2">
+                            <h3 className="border-b border-border/60 pb-2 text-sm font-semibold">{section.title}</h3>
+                            {section.topics.map((topic) => {
+                              const topicState = getTopicState(topic.id);
+                              const topicExpanded = expandedTopics.has(topic.id);
+                              return (
+                                <article key={topic.id} className="rounded-xl border border-border/60 bg-background/50">
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleTopic(topic.id)}
+                                    aria-expanded={topicExpanded}
+                                    className="flex w-full items-center gap-3 p-3 text-left"
+                                  >
+                                    {topicState === "completed" ? (
+                                      <CircleCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+                                    ) : topicState === "in_progress" ? (
+                                      <PlayCircle className="h-4 w-4 shrink-0 text-primary" />
+                                    ) : (
+                                      <CircleDashed className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                    )}
+                                    <span className="min-w-0 flex-1">
+                                      <span className="block text-sm font-medium">{topic.number}. {topic.title}</span>
+                                      <span className="mt-0.5 block text-[10px] text-muted-foreground">{STATUS_LABEL[topicState]} · source PDF page{topic.sourcePages.length === 1 ? "" : "s"} {topic.sourcePages.join(", ")}</span>
+                                    </span>
+                                    <ChevronDown className={"h-4 w-4 shrink-0 text-muted-foreground transition-transform " + (topicExpanded ? "rotate-180" : "")} />
+                                  </button>
+                                  <AnimatePresence>
+                                    {topicExpanded && (
+                                      <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden"
+                                      >
+                                        <div className="space-y-3 border-t border-border/60 px-3 pb-3 pt-3">
+                                          <div>
+                                            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Topics / contents / notes</p>
+                                            <ul className="mt-1.5 space-y-1">
+                                              {topic.outline.map((line) => (
+                                                <li key={line} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
+                                                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary/70" />
+                                                  {line}
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          </div>
+                                          <div className="flex flex-wrap gap-2">
+                                            <Button
+                                              size="sm"
+                                              variant={topicState === "completed" ? "outline" : "default"}
+                                              onClick={() => cycleTopicState(topic.id)}
+                                              disabled={!isReady}
+                                            >
+                                              {topicState === "not_started" ? "Start topic" : topicState === "in_progress" ? "Mark complete" : "Reopen topic"}
+                                            </Button>
+                                            <Button asChild size="sm" variant="outline">
+                                              <Link to={"/jamb/ai?subject=" + subject.id + "&topic=" + topic.id}>
+                                                <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Study with JAMB Tutor
+                                              </Link>
+                                            </Button>
+                                            {subject.questionBankAvailable ? (
+                                              <Button asChild size="sm" variant="ghost">
+                                                <Link to={"/jamb/past-questions?subject=" + subject.id}>
+                                                  <BookOpen className="mr-1.5 h-3.5 w-3.5" /> Practice questions
+                                                </Link>
+                                              </Button>
+                                            ) : (
+                                              <span className="self-center text-[10px] text-muted-foreground">Practice bank not yet available for this subject.</span>
+                                            )}
+                                          </div>
+                                          <p className="text-[10px] text-muted-foreground">
+                                            This is a topic outline transcribed from the uploaded source copy, not yet a verified current syllabus entry.
+                                          </p>
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </article>
+                              );
+                            })}
+                          </div>
+                        ))}
+                        <div className="flex flex-wrap gap-2 border-t border-border/60 pt-3">
+                          <a
+                            href={"https://github.com/abdulrazaqafolarin-droid/jupebstudyguide/blob/main/" + encodeURIComponent(subject.sourceFile)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                          >
+                            Open original uploaded PDF <ExternalLink className="h-3 w-3" />
+                          </a>
+                          <span className="text-[10px] text-muted-foreground">SHA-256 recorded · {subject.sourcePageCount} PDF pages</span>
                         </div>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </motion.section>
             );
           })}
 
           {filteredSubjects.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
-              <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">No subjects match "{search}"</p>
+            <div className="rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
+              <BookOpen className="mx-auto mb-2 h-8 w-8 opacity-30" />
+              <p className="text-sm">No syllabus topics match “{search}”.</p>
             </div>
           )}
         </motion.div>

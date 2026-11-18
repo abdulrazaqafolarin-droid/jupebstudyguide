@@ -11,6 +11,7 @@ import { ThreadView } from "@/components/study-chat/ThreadView";
 import { Composer } from "@/components/study-chat/Composer";
 import { getJambPublishedQuestionById } from "@/lib/jamb-question-service";
 import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
+import { getJambSyllabusSubject, getJambSyllabusTopic, JAMB_SYLLABUS_REVIEW_NOTICE } from "@/lib/jamb-syllabus";
 import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
 import { toast } from "sonner";
 
@@ -23,7 +24,14 @@ export default function JambAITutorPage() {
   const isMobile = useIsMobile();
   const requestedSubject = searchParams.get("subject")?.toLowerCase() ?? null;
   const subject = isJambSubject(requestedSubject) ? requestedSubject : undefined;
+  const syllabusSubject = requestedSubject ? getJambSyllabusSubject(requestedSubject) : undefined;
+  const requestedTopicId = searchParams.get("topic");
+  const syllabusTopic = requestedSubject && requestedTopicId
+    ? getJambSyllabusTopic(requestedSubject as import("@/lib/jamb-syllabus").JambSyllabusSubjectId, requestedTopicId)
+    : undefined;
   const questionId = searchParams.get("questionId");
+  const tutorSubjectLabel = syllabusSubject?.label ?? (subject ? JAMB_SUBJECT_INFO[subject].label : undefined);
+  const tutorSubjectValue = subject ?? (syllabusSubject ? syllabusSubject.id : undefined);
 
   const [questionContext, setQuestionContext] = useState("");
   const [questionContextTitle, setQuestionContextTitle] = useState("");
@@ -33,12 +41,16 @@ export default function JambAITutorPage() {
   const [showTextbooks, setShowTextbooks] = useState(false);
   const openedInitialChatRef = useRef(false);
 
-  const extraSystemContext = useMemo(
-    () => questionContext
-      ? `\n\nThe student opened this JAMB tutor from a published question. Use it as the current context only when relevant. Do not infer an official answer key from it.\n${questionContext}`
-      : "",
-    [questionContext],
-  );
+  const extraSystemContext = useMemo(() => {
+    const parts: string[] = [];
+    if (questionContext) {
+      parts.push(`The student opened this JAMB tutor from a published question. Use it as current context only when relevant. Do not infer an official answer key from it.\n${questionContext}`);
+    }
+    if (syllabusTopic && syllabusSubject) {
+      parts.push(`The student selected the syllabus topic "${syllabusTopic.title}" in ${syllabusSubject.label}. Use these uploaded-source outline points as a study scope: ${syllabusTopic.outline.join("; ")}. Source pages: ${syllabusTopic.sourcePages.join(", ")}. IMPORTANT: ${JAMB_SYLLABUS_REVIEW_NOTICE} Explain the material helpfully, but do not claim this source copy is the verified current official syllabus.`);
+    }
+    return parts.length ? "\n\n" + parts.join("\n\n") : "";
+  }, [questionContext, syllabusTopic, syllabusSubject]);
 
   const {
     chats,
@@ -91,14 +103,14 @@ export default function JambAITutorPage() {
   }, [listLoading, activeChatId, chats, switchChat]);
 
   const createChat = useCallback(async () => {
-    const id = await newChat(subject);
+    const id = await newChat(tutorSubjectValue);
     if (id) {
       setInput("");
       setEditingIndex(null);
       setDrawerOpen(false);
     }
     return id;
-  }, [newChat, subject]);
+  }, [newChat, tutorSubjectValue]);
 
   const handleSend = useCallback(async (
     attachment: { base64: string; mimeType: string; name: string } | null,
@@ -201,9 +213,9 @@ export default function JambAITutorPage() {
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-sm font-semibold">
-                {subject ? `${JAMB_SUBJECT_INFO[subject].label} Tutor` : "JAMB AI Study Tutor"}
+                {tutorSubjectLabel ? `${tutorSubjectLabel} Tutor` : "JAMB AI Study Tutor"}
               </h1>
-              <p className="truncate text-[10px] text-muted-foreground">JAMB · UTME study room · Saved conversation</p>
+              <p className="truncate text-[10px] text-muted-foreground">{syllabusTopic ? syllabusTopic.title + " · " : ""}JAMB · Saved conversation</p>
             </div>
             <Button
               variant="outline"
@@ -268,7 +280,7 @@ export default function JambAITutorPage() {
                 onStarter={(prompt) => void handleStarter(prompt)}
                 starterPrompts={JAMB_TUTOR_STARTERS}
                 emptyTitle="JAMB AI Study Tutor"
-                emptyDescription="Ask about Physics, Chemistry or Biology. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."
+                emptyDescription={syllabusTopic ? `Study ${syllabusTopic.title} with the JAMB tutor. This outline comes from an uploaded source copy pending current IBASS verification.` : "Ask about Physics, Chemistry, Biology, Mathematics or Use of English. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."}
               />
             ) : chats.length > 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">

@@ -132,3 +132,14 @@ The admin UI only resumes a matching source hash and candidate count; it does no
 - Applied migrations: `20261118182508_create_jamb_daily_missions` and `20261118182636_tighten_jamb_daily_missions_grants`. The mission table has RLS, one owner-and-active-session policy, no `anon`/`PUBLIC` table grants, and authenticated SELECT/INSERT/UPDATE/DELETE only. Verified live row count is zero.
 - Deployed Edge Functions: `exam-attempts` v5 (owner-filtered CBT history) and `question-import` v3 (resumable/idempotent source chunk protocol v2). Both retain in-handler Bearer-token validation and active-session checks; import additionally validates administrator role.
 - No JAMB question data has been staged or published. The full mock and syllabus-led lesson plans remain disabled until official subject coverage, verified syllabus versioning and the JAMB 2027 exam-format source can be validated.
+
+
+## Uploaded five-subject syllabus intake
+
+The owner uploaded Biology, Chemistry, Mathematics, Physics and Use of English PDFs in repository commit `e1d9b81b82be717567f47972c39a6ce702bf6b92`. The feature-branch extraction workflow reads those exact immutable source bytes, records SHA-256, page count and PDF metadata, preserves page text and detected table cells, copies the originals into the review pack and renders page previews. The successful review artifact is GitHub Actions run `44388332808`, artifact `14467187615`.
+
+The JAMB syllabus UI now contains a five-subject catalogue (108 topic/section entries) with section headings, topic outlines, source page references and the general objectives shown in the submitted files. It also distinguishes subject-syllabus availability from question-bank availability: English is marked compulsory in the submitted source and Mathematics/English can be browsed, but neither has JAMB practice questions in the current bank.
+
+**Version and completeness boundary:** the uploaded PDF metadata identifies 2025-created copies. The Physics and Use of English uploaded content differs from the JAMB-hosted PDFs checked during this work. The catalogue remains a candidate source outline and `JAMB_SYLLABUS_VERIFIED=false`; per-topic objective mapping and reconciliation against current IBASS source documents still need completion. Do not describe this as the verified 2027 syllabus and do not enable an official-format UTME mock from it.
+
+Topic completion uses a separate `jamb-syllabus-progress-v1` per-user local-storage key. The first implementation supports not-started, in-progress and completed states without reading or writing JUPEB progress. It is device-local for now; server/cloud progress reconciliation remains outstanding. Topic entry points now pass the selected subject and topic to the JAMB Tutor, where the uploaded outline is included as explicitly unverified study context.

@@ -39,3 +39,32 @@ export function getExamProgramStorageKey(
 ): string {
   return `u:${userId}:${program}:${key}`;
 }
+
+
+/** A JAMB workspace is identified by its route prefix, including shared-page aliases. */
+export function isJambWorkspacePath(pathname: string): boolean {
+  return pathname === "/jamb" || pathname.startsWith("/jamb/");
+}
+
+const JAMB_ROUTE_ALIASES: Record<string, string> = {
+  "/": "/jamb",
+  "/past-questions": "/jamb/past-questions",
+  "/chat": "/jamb/chat",
+  "/profile": "/jamb/profile",
+  "/settings/profile": "/jamb/settings/profile",
+  "/settings/security": "/jamb/settings/security",
+  "/onboarding": "/jamb/onboarding",
+  "/friends": "/jamb/friends",
+  "/leaderboard": "/jamb/leaderboard",
+  "/achievements": "/jamb/achievements",
+  "/stats": "/jamb/stats",
+  "/syllabus": "/jamb/syllabus",
+  "/study-chat": "/jamb/ai",
+  "/discover": "/jamb/discover",
+};
+
+/** Translate shared navigation destinations without changing programme context. */
+export function getWorkspacePath(pathname: string, program: ExamProgramId): string {
+  if (program !== "jamb") return pathname;
+  return JAMB_ROUTE_ALIASES[pathname] ?? pathname;
+}

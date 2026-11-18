@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { getWorkspacePath } from '@/lib/exam-program';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,7 +26,7 @@ import { cn } from '@/lib/utils';
 export default function ProfilePage() {
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
   const { signOut, user, deleteAccount } = useAuth();
-  const { isJambWorkspace } = useExamProgram();
+  const { isJambWorkspace, programId } = useExamProgram();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -111,7 +112,7 @@ export default function ProfilePage() {
           </button>
           <h1 className="font-semibold text-foreground">Profile</h1>
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')} className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" onClick={() => navigate(getWorkspacePath('/settings/profile', programId))} className="text-muted-foreground hover:text-foreground">
               <Settings className="w-4 h-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={async () => { await signOut(); }} className="text-muted-foreground hover:text-foreground">

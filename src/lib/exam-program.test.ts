@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EXAM_PROGRAMS, getExamProgramRoute, getExamProgramStorageKey, isExamProgramId } from "./exam-program";
+import { EXAM_PROGRAMS, getExamProgramRoute, getExamProgramStorageKey, getWorkspacePath, isExamProgramId, isJambWorkspacePath } from "./exam-program";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_FULL_MOCK_ENABLED, JAMB_SUBJECTS, JAMB_SYLLABUS_VERIFIED } from "./jamb-config";
 import { JAMB_TUTOR_PROMPT } from "./jamb-prompts";
 
@@ -16,6 +16,16 @@ describe("separate JAMB workspace configuration", () => {
     expect(getExamProgramRoute("jupeb")).toBe("/");
     expect(getExamProgramStorageKey("user-1", "jamb", "bookmarks")).not.toBe(getExamProgramStorageKey("user-1", "jupeb", "bookmarks"));
     expect(EXAM_PROGRAMS.jamb.name).toBe("JAMB");
+  });
+
+  it("keeps shared account routes inside the active JAMB workspace", () => {
+    expect(getWorkspacePath("/settings/profile", "jamb")).toBe("/jamb/settings/profile");
+    expect(getWorkspacePath("/settings/security", "jamb")).toBe("/jamb/settings/security");
+    expect(getWorkspacePath("/onboarding", "jamb")).toBe("/jamb/onboarding");
+    expect(getWorkspacePath("/settings/profile", "jupeb")).toBe("/settings/profile");
+    expect(isJambWorkspacePath("/jamb/settings/profile")).toBe(true);
+    expect(isJambWorkspacePath("/jamb/settings/security")).toBe(true);
+    expect(isJambWorkspacePath("/settings/profile")).toBe(false);
   });
 
   it("limits the initial pack to the three supplied science subjects", () => {

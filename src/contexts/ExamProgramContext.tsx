@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
-import { EXAM_PROGRAMS, type ExamProgramId } from "@/lib/exam-program";
+import { EXAM_PROGRAMS, isJambWorkspacePath, type ExamProgramId } from "@/lib/exam-program";
 
 interface ExamProgramContextValue {
   programId: ExamProgramId;
@@ -16,9 +16,7 @@ const ExamProgramContext = createContext<ExamProgramContextValue>({
 
 export function ExamProgramProvider({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
-  const programId: ExamProgramId = pathname === "/jamb" || pathname.startsWith("/jamb/")
-    ? "jamb"
-    : "jupeb";
+  const programId: ExamProgramId = isJambWorkspacePath(pathname) ? "jamb" : "jupeb";
 
   const value = useMemo<ExamProgramContextValue>(() => ({
     programId,

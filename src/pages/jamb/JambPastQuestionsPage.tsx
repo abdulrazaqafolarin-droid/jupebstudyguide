@@ -333,7 +333,7 @@ export default function JambPastQuestionsPage() {
               </div>
             ) : (
               <span className="text-muted-foreground">
-                Your choice ({current}) is saved. This question remains ungraded until its answer key has been independently verified. {feedback?.message ?? ""}
+                Your choice ({current}) is saved. Select an option to request a check against the reviewed JAMB answer key. {feedback?.message ?? ""}
               </span>
             )}
           </div>

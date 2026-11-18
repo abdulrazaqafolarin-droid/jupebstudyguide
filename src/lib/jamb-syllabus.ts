@@ -136,24 +136,78 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sections: [{
       id: "chemistry-core", title: "Chemistry syllabus",
       topics: [
-        topic("chem-01-separation", "1", "Separation of Mixtures and Purification of Chemical Substances", ["Elements, compounds and mixtures", "Chemical and physical changes", "Pure and impure substances", "Boiling, density, freezing and melting points", "Evaporation, distillation, sublimation, crystallisation, filtration and chromatography"], [1]),
-        topic("chem-02-combination", "2", "Chemical Combination", ["Laws of chemical combination", "Chemical symbols, formulae and equations", "Relative atomic mass", "Mole concept and stoichiometry"], [1,2]),
-        topic("chem-03-kinetic-theory", "3", "Kinetic Theory of Matter and Gas Laws", ["States of matter and change of state", "Kinetic theory", "Boyle's, Charles', Avogadro's and related gas laws", "Ideal gas equation and real gases"], [2]),
-        topic("chem-04-atomic-structure", "4", "Atomic Structure and Bonding", ["Atoms, molecules and ions", "Atomic models and electronic structure", "Isotopy and orbitals", "Periodic table and periodicity", "Ionic, covalent, metallic and hydrogen bonding"], [2,3]),
-        topic("chem-05-nuclear", "5", "Nuclear Chemistry", ["Radioactivity and radioactive decay", "Properties and uses of radioactive emissions", "Half-life and nuclear reactions"], [3,4]),
-        topic("chem-06-solubility", "6", "Solubility", ["Solutions and solubility", "Factors affecting solubility", "Solubility curves and calculations", "Crystallisation"], [4]),
-        topic("chem-07-pollution", "7", "Environmental Pollution", ["Air, water and land pollution", "Sources and effects of pollutants", "Pollution control"], [4,5]),
-        topic("chem-08-acids-bases-salts", "8", "Acids, Bases and Salts", ["Properties and definitions", "pH and indicators", "Neutralisation", "Preparation and uses of salts"], [5,6]),
-        topic("chem-09-redox", "9", "Oxidation and Reduction (Redox)", ["Oxidation and reduction concepts", "Oxidation numbers", "Redox equations and applications"], [6,7]),
-        topic("chem-10-electrolysis", "10", "Electrolysis", ["Electrolytes and non-electrolytes", "Electrolysis of melts and solutions", "Electrodes and discharge of ions", "Faraday's laws and applications"], [7]),
-        topic("chem-11-energy-changes", "11", "Energy Changes", ["Exothermic and endothermic reactions", "Enthalpy and energy profiles", "Bond energy and calorimetry"], [7,8]),
-        topic("chem-12-reaction-rates", "12", "Rates of Chemical Reaction", ["Rate measurement", "Collision theory", "Effects of concentration, temperature, pressure, surface area and catalysts"], [8]),
-        topic("chem-13-equilibria", "13", "Chemical Equilibria", ["Reversible reactions", "Dynamic equilibrium", "Le Chatelier's principle", "Equilibrium constants and applications"], [8,9]),
-        topic("chem-14-nonmetals", "14", "Non-metals and Their Compounds", ["Hydrogen and water", "Halogens", "Oxygen and sulphur", "Nitrogen and its compounds", "Carbon and its compounds"], [9,10,11]),
-        topic("chem-15-metals", "15", "Metals and Their Compounds", ["Occurrence and extraction", "Properties and reactions", "Compounds and uses of selected metals", "Alloys and corrosion"], [11,12]),
-        topic("chem-16-organic", "16", "Organic Compounds", ["Hydrocarbons and homologous series", "Functional groups", "Nomenclature and isomerism", "Reactions and uses of organic compounds"], [13,14]),
-        topic("chem-17-industry", "17", "Chemistry and Industry", ["Chemical industries and raw materials", "Industrial processes", "Products, economic importance and environmental impact"], [15]),
-        topic("chem-18-astronomical", "18", "Astronomical Chemistry", ["Elements and compounds in space", "Chemical processes in stars and celestial bodies"], [15,16]),
+        {
+          ...topic("chem-01-separation", "1", "Separation of Mixtures and Purification of Chemical Substances", ["Elements, compounds and mixtures", "Chemical and physical changes", "Pure and impure substances", "Boiling, density, freezing and melting points", "Evaporation, distillation, sublimation, crystallisation, filtration and chromatography"], [1]),
+          objectives: ["Distinguish elements, compounds and mixtures, and chemical from physical changes.","Distinguish pure and impure substances and use boiling or melting points as purity criteria.","Identify mixture components and the principles behind separation techniques.","Apply evaporation, crystallisation, distillation, sublimation, chromatography, filtration, decantation and related separation methods."],
+        },
+        {
+          ...topic("chem-02-combination", "2", "Chemical Combination", ["Laws of chemical combination", "Chemical symbols, formulae and equations", "Relative atomic mass", "Mole concept and stoichiometry"], [1,2]),
+          objectives: ["Deduce the laws of chemical combination from statements and experimental data.","Perform calculations involving chemical formulae, equations, relative atomic mass and the mole concept.","Determine the stoichiometry of chemical reactions."],
+        },
+        {
+          ...topic("chem-03-kinetic-theory", "3", "Kinetic Theory of Matter and Gas Laws", ["States of matter and change of state", "Kinetic theory", "Boyle's, Charles', Avogadro's and related gas laws", "Ideal gas equation and real gases"], [2]),
+          objectives: ["Use kinetic theory to distinguish solids, liquids and gases and explain changes of state.","Explain molecular motion and interpret Brownian movement.","Deduce Boyle's, Charles', Avogadro's, Gay-Lussac's, Graham's and Dalton's gas laws.","Interpret gas-law graphs and perform related calculations using the ideal gas equation.","Explain deviations of real gases from ideal behaviour and relate vapour density to relative molecular mass."],
+        },
+        {
+          ...topic("chem-04-atomic-structure", "4", "Atomic Structure and Bonding", ["Atoms, molecules and ions", "Atomic models and electronic structure", "Isotopy and orbitals", "Periodic table and periodicity", "Ionic, covalent, metallic and hydrogen bonding"], [2,3]),
+          objectives: ["Distinguish atoms, molecules and ions and describe contributions to atomic theory.","Determine protons, neutrons and electrons from atomic and mass numbers.","Apply electron-arrangement rules and explain isotopes and simple isotope calculations.","Identify s and p orbital shapes and electron capacities.","Relate atomic number to periodic-table position and explain periodic trends.","Differentiate ionic, covalent, coordinate, metallic and hydrogen bonding and relate bonding to compound properties.","Predict the shapes of simple linear, bent, tetrahedral and pyramidal molecules."],
+        },
+        {
+          ...topic("chem-05-nuclear", "5", "Nuclear Chemistry", ["Radioactivity and radioactive decay", "Properties and uses of radioactive emissions", "Half-life and nuclear reactions"], [3,4]),
+          objectives: ["Distinguish ordinary chemical reactions from nuclear reactions.","Differentiate natural and artificial radioactivity.","Compare the properties of radioactive emissions.","Calculate simple radioactive half-lives and balance nuclear equations.","Identify practical applications of radioactivity."],
+        },
+        {
+          ...topic("chem-06-solubility", "6", "Solubility", ["Solutions and solubility", "Factors affecting solubility", "Solubility curves and calculations", "Crystallisation"], [4]),
+          objectives: ["Distinguish unsaturated, saturated and supersaturated solutions.","Interpret solubility curves and calculate solubility at a given temperature.","Relate solubility to temperature and to the nature and use of solvents.","Differentiate true solutions, suspensions and colloids using their properties and examples."],
+        },
+        {
+          ...topic("chem-07-pollution", "7", "Environmental Pollution", ["Air, water and land pollution", "Sources and effects of pollutants", "Pollution control"], [4,5]),
+          objectives: ["Explain the composition of air and why air is a mixture.","Identify natural and variable constituents of air and the uses of noble gases.","Identify air, water and soil pollutants, their sources and effects.","Classify pollutants as biodegradable or non-biodegradable.","Describe measures for controlling environmental pollution."],
+        },
+        {
+          ...topic("chem-08-acids-bases-salts", "8", "Acids, Bases and Salts", ["Properties and definitions", "pH and indicators", "Neutralisation", "Preparation and uses of salts"], [5,6]),
+          objectives: ["Differentiate acids, bases and salts and identify their properties and uses.","Determine the basicity of acids and use indicators to distinguish acidity and alkalinity.","Describe salt preparation by neutralisation, precipitation and reactions with metals.","Classify normal, acidic, basic and double salts.","Relate dissociation and conductance to acid/base strength.","Calculate pH and pOH and explain their everyday significance and buffer solutions.","Interpret titration curves, perform mole calculations and predict salt hydrolysis."],
+        },
+        {
+          ...topic("chem-09-redox", "9", "Oxidation and Reduction (Redox)", ["Oxidation and reduction concepts", "Oxidation numbers", "Redox equations and applications"], [6,7]),
+          objectives: ["Express oxidation and reduction in terms of oxygen, hydrogen, electron transfer and oxidation number.","Classify reactions as oxidation or reduction and balance redox equations.","Determine oxidation numbers and electron transfer in redox reactions.","Identify oxidising and reducing agents and name inorganic compounds using oxidation numbers."],
+        },
+        {
+          ...topic("chem-10-electrolysis", "10", "Electrolysis", ["Electrolytes and non-electrolytes", "Electrolysis of melts and solutions", "Electrodes and discharge of ions", "Faraday's laws and applications"], [7]),
+          objectives: ["Distinguish electrolytes from non-electrolytes and explain electrolysis.","Predict electrode reactions and products for common molten and aqueous electrolytes.","Use Faraday's laws to calculate quantities in electrolysis.","Explain factors affecting ion discharge and select suitable electrodes.","Describe metal purification, electrochemical cells, electrode potentials and applications of electrolysis.","Explain corrosion as an electrochemical process and methods of corrosion prevention."],
+        },
+        {
+          ...topic("chem-11-energy-changes", "11", "Energy Changes", ["Exothermic and endothermic reactions", "Enthalpy and energy profiles", "Bond energy and calorimetry"], [7,8]),
+          objectives: ["Identify endothermic and exothermic changes and determine enthalpy changes.","Interpret energy and heat-change diagrams.","Explain entropy as a measure of disorder and relate it to spontaneous processes.","Use the relationship between Gibbs free energy, enthalpy and entropy to solve simple problems."],
+        },
+        {
+          ...topic("chem-12-reaction-rates", "12", "Rates of Chemical Reaction", ["Rate measurement", "Collision theory", "Effects of concentration, temperature, pressure, surface area and catalysts"], [8]),
+          objectives: ["Identify how temperature, concentration, pressure, surface area and catalysts affect reaction rates.","Interpret rate curves and solve simple rate problems.","Explain collision theory, activation energy and the qualitative Arrhenius relationship.","Determine activation energy from reaction-rate curves and explain the effect of light on selected reactions."],
+        },
+        {
+          ...topic("chem-13-equilibria", "13", "Chemical Equilibria", ["Reversible reactions", "Dynamic equilibrium", "Le Chatelier's principle", "Equilibrium constants and applications"], [8,9]),
+          objectives: ["Identify factors affecting the position of chemical equilibrium and predict their effects.","Apply Le Chatelier's principle to industrial processes.","Explain the effect of conditions on the equilibrium constant."],
+        },
+        {
+          ...topic("chem-14-nonmetals", "14", "Non-metals and Their Compounds", ["Hydrogen and water", "Halogens", "Oxygen and sulphur", "Nitrogen and its compounds", "Carbon and its compounds"], [9,10,11]),
+          objectives: ["Describe laboratory and industrial preparation, properties, tests and uses of hydrogen and its compounds.","Explain the preparation, properties and uses of chlorine and hydrogen chloride and test for chloride ions.","Identify allotropes and compounds of oxygen and sulphur and explain their properties and uses.","Describe nitrogen and its compounds and relate selected compounds to industrial and everyday applications.","Explain carbon and its compounds, including their properties and uses."],
+        },
+        {
+          ...topic("chem-15-metals", "15", "Metals and Their Compounds", ["Occurrence and extraction", "Properties and reactions", "Compounds and uses of selected metals", "Alloys and corrosion"], [11,12]),
+          objectives: ["Describe occurrence, extraction, properties, tests and uses of selected metals and their compounds.","Relate the method of extraction of metals to their chemical and physical properties.","Compare reactivities of alkali, alkaline-earth and selected other metals.","Explain the preparation, properties and uses of important sodium, calcium, aluminium, tin, iron and copper compounds.","Identify characteristic properties of first-row transition metals, including oxidation states, complex formation, colour and catalysis.","Describe iron and copper extraction, tests, uses and common alloys."],
+        },
+        {
+          ...topic("chem-16-organic", "16", "Organic Compounds", ["Hydrocarbons and homologous series", "Functional groups", "Nomenclature and isomerism", "Reactions and uses of organic compounds"], [13,14]),
+          objectives: ["Derive names, structures, empirical formulae and molecular formulae of organic compounds.","Relate carbon tetravalency and catenation to the structures of organic compounds.","Classify organic compounds by homologous series and functional groups.","Identify structural and geometric isomerism and derive simple isomers.","Distinguish alkanes, alkenes, alkynes and aromatic hydrocarbons by structure, reactions and tests.","Explain petroleum composition, fractional distillation, cracking, reforming, octane rating and hydrocarbon uses.","Describe alkanol classes and ethanol production by fermentation and from petroleum by-products.","Differentiate alkanals, alkanones, alkanoic acids and alkanoates and describe characteristic reactions.","Explain saponification and the production of soaps, detergents and margarine.","Compare amines, carbohydrates, proteins and polymers and identify relevant tests, hydrolysis reactions and uses.","Differentiate addition from condensation polymerisation and thermoplastics from thermosetting plastics."],
+        },
+        {
+          ...topic("chem-17-industry", "17", "Chemistry and Industry", ["Chemical industries and raw materials", "Industrial processes", "Products, economic importance and environmental impact"], [15]),
+          objectives: ["Classify chemical industries according to their products.","Identify industrial raw materials and distinguish fine from heavy chemicals.","Explain the relevance of chemical industries and relate industrial processes to biotechnology."],
+        },
+        {
+          ...topic("chem-18-astronomical", "18", "Astronomical Chemistry", ["Elements and compounds in space", "Chemical processes in stars and celestial bodies"], [15,16]),
+          objectives: ["State the composition of the solar system and list the planets.","Identify the main segments of the Earth: atmosphere, lithosphere and hydrosphere.","Identify Earth's natural satellite and the smallest and farthest planet from the Sun."],
+        },
       ],
     }],
   },
@@ -174,38 +228,110 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     ],
     sections: [
       { id: "biology-a", title: "A. Variety of Organisms", topics: [
-        topic("bio-a-01-living-organisms", "1", "Living Organisms", ["Characteristics of living things", "Cell structure and functions", "Levels of organisation: cell, tissue, organ, system and organism"], [1]),
-        topic("bio-a-02-evolution-organisms", "2", "Evolution Among Organisms", ["Monera, Protista and Fungi", "Plant groups: Thallophyta, Bryophyta, Pteridophyta and Spermatophyta", "Invertebrates and vertebrates", "Structural complexity and life histories"], [1,2]),
-        topic("bio-a-03-adaptations", "3", "Structural, Functional and Behavioural Adaptations", ["Adaptive colouration", "Behavioural adaptations in social animals", "Structural adaptations", "Feeding, protection, mating, temperature regulation and water conservation"], [2]),
+        {
+          ...topic("bio-a-01-living-organisms", "1", "Living Organisms", ["Characteristics of living things", "Cell structure and functions", "Levels of organisation: cell, tissue, organ, system and organism"], [1]),
+          objectives: ["Differentiate living things from non-living things.","Identify the structures of plant and animal cells and explain the functions of their components.","Compare and contrast plant and animal cells.","Trace the organisation of living things through cell, tissue, organ, system and organism."],
+        },
+        {
+          ...topic("bio-a-02-evolution-organisms", "2", "Evolution Among Organisms", ["Monera, Protista and Fungi", "Plant groups: Thallophyta, Bryophyta, Pteridophyta and Spermatophyta", "Invertebrates and vertebrates", "Structural complexity and life histories"], [1,2]),
+          objectives: ["Analyse the external features and characteristics of the listed Monera, Protista, fungi, plants and animals.","Use examples to demonstrate increasing structural complexity.","Trace the life histories of representative organisms.","Explain the transition from aquatic to terrestrial life using life-history evidence.","Trace the evolution and major groups of plants and animals, including vertebrates and invertebrates.","Determine the economic and environmental importance of selected insects and other organisms.","Classify plants according to annual, biennial and perennial life cycles."],
+        },
+        {
+          ...topic("bio-a-03-adaptations", "3", "Structural, Functional and Behavioural Adaptations", ["Adaptive colouration", "Behavioural adaptations in social animals", "Structural adaptations", "Feeding, protection, mating, temperature regulation and water conservation"], [2]),
+          objectives: ["Explain how structural, functional and behavioural features adapt organisms to their environments.","Describe adaptive colouration, including countershading and warning colouration.","Differentiate castes in social insects and explain their roles.","Explain basking, territorial behaviour, hibernation and aestivation.","Relate feeding structures, protection, defence, mating displays, temperature regulation and water conservation to adaptation."],
+        },
       ]},
       { id: "biology-b", title: "B. Form and Functions", topics: [
-        topic("bio-b-01-plant-structure", "1", "Internal Structure of a Flowering Plant", ["Root, stem and leaf structure", "Supporting tissues", "Internal structure of a mammal"], [3]),
-        topic("bio-b-02-nutrition", "2", "Nutrition", ["Autotrophic and heterotrophic nutrition", "Photosynthesis and chemosynthesis", "Mineral requirements", "Animal nutrition, food classes and food tests", "Teeth and alimentary canal"], [3,4]),
-        topic("bio-b-03-transport", "3", "Transport", ["Need and materials for transportation", "Mammalian circulatory system", "Plant vascular system", "Transport media and mechanisms"], [4]),
-        topic("bio-b-04-respiration", "4", "Respiration", ["Respiratory organs and surfaces", "Gaseous exchange in plants and animals", "Aerobic and anaerobic respiration"], [4,5]),
-        topic("bio-b-05-excretion", "5", "Excretion", ["Excretory organs and products", "Excretion in plants and animals", "Osmoregulation"], [5]),
-        topic("bio-b-06-support-movement", "6", "Support and Movement", ["Support in plants", "Skeleton and support in animals", "Movement and locomotion"], [5]),
-        topic("bio-b-07-reproduction", "7", "Reproduction", ["Asexual and sexual reproduction", "Reproduction in flowering plants", "Pollination and fertilisation", "Reproduction in mammals"], [5,6]),
-        topic("bio-b-08-growth", "8", "Growth", ["Meaning and stages of growth", "Seed germination and conditions necessary for germination"], [6]),
-        topic("bio-b-09-coordination", "9", "Co-ordination and Control", ["Nervous coordination and impulse transmission", "Reflex action", "Sense organs", "Hormonal control", "Homeostasis"], [6]),
+        {
+          ...topic("bio-b-01-plant-structure", "1", "Internal Structure of a Flowering Plant", ["Root, stem and leaf structure", "Supporting tissues", "Internal structure of a mammal"], [3]),
+          objectives: ["Identify transverse sections of roots, stems and leaves.","Relate the internal structures of plant organs to their functions.","Identify supporting tissues and describe their distribution in roots, stems and leaves.","Examine the arrangement, appearance and position of mammalian internal, digestive, reproductive and excretory organs."],
+        },
+        {
+          ...topic("bio-b-02-nutrition", "2", "Nutrition", ["Autotrophic and heterotrophic nutrition", "Photosynthesis and chemosynthesis", "Mineral requirements", "Animal nutrition, food classes and food tests", "Teeth and alimentary canal"], [3,4]),
+          objectives: ["Compare autotrophic and heterotrophic nutrition and give plant examples.","Compare photosynthesis with chemosynthesis and distinguish major heterotrophic feeding modes.","Explain light and dark reactions and the roles of light, carbon dioxide and chlorophyll in photosynthesis.","Describe a starch test as evidence of photosynthesis.","Identify plant macro- and micro-elements and recognise nitrogen, phosphorus and potassium deficiency symptoms.","Identify food classes, their sources, nutritional values, functions and deficiency diseases, and explain balanced diets.","Interpret food-test experiments for starch, reducing sugars, proteins, oils and fats.","Describe mammalian teeth, compare tooth types and dental formulae, and relate structure to function.","Relate the alimentary canal and accessory organs to their functions.","Explain digestive enzymes, their action on carbohydrates, proteins and fats, and the resulting end products."],
+        },
+        {
+          ...topic("bio-b-03-transport", "3", "Transport", ["Need and materials for transportation", "Mammalian circulatory system", "Plant vascular system", "Transport media and mechanisms"], [4]),
+          objectives: ["Explain why increasing organism size and complexity require transport systems.","Identify materials transported and the sources and forms in which they are carried.","Describe the general mammalian circulatory system and compare the functions of major arteries and veins.","Identify plant vascular tissues and explain the roles of xylem and phloem.","Identify transport media such as cytoplasm, cell sap, body fluid, blood and lymph.","State the composition and functions of blood and lymph.","Explain diffusion, osmosis, plasmolysis and turgidity as transport mechanisms.","Compare open circulation in animals with transpiration pull, root pressure and active transport in plants."],
+        },
+        {
+          ...topic("bio-b-04-respiration", "4", "Respiration", ["Respiratory organs and surfaces", "Gaseous exchange in plants and animals", "Aerobic and anaerobic respiration"], [4,5]),
+          objectives: ["Explain the significance of respiration and the role of oxygen in energy release.","Outline glycolysis and the Krebs cycle with reference to ATP production.","Interpret experiments on gaseous exchange, respiratory products and heat production.","Describe body surfaces, gills, tracheae, lungs, stomata and lenticels as respiratory surfaces.","Explain stomatal opening and closing and compare respiratory mechanisms in plants and animals.","Explain the effect of inadequate oxygen supply on muscles.","Demonstrate fermentation using yeast and sugar solution and state the economic importance of yeast."],
+        },
+        {
+          ...topic("bio-b-05-excretion", "5", "Excretion", ["Excretory organs and products", "Excretion in plants and animals", "Osmoregulation"], [5]),
+          objectives: ["Define excretion and explain its significance.","Relate the structures of contractile vacuoles, flame cells, nephridia, Malpighian tubules, kidneys, stomata and lenticels to excretion.","Explain excretory and osmoregulatory functions of the kidneys.","Identify the excretory products and functions of the lungs and skin.","Explain the economic importance of plant excretory products such as oxygen, carbon dioxide, tannins, resins, gums and alkaloids."],
+        },
+        {
+          ...topic("bio-b-06-support-movement", "6", "Support and Movement", ["Support in plants", "Skeleton and support in animals", "Movement and locomotion"], [5]),
+          objectives: ["Explain the need for support and movement in organisms.","Identify plant supporting tissues and describe their distribution in roots, stems and leaves.","Relate plant tropic, tactic, nastic and sleep movements to responses to light, water, gravity and touch.","Identify regions of growth in roots and shoots and explain the role of auxins in tropism.","Relate chitin, cartilage and bone to support in animals.","Relate the mammalian skeleton to support, locomotion and respiration.","Differentiate types of joints with appropriate examples.","Explain the protective, supportive, locomotive and respiratory functions of the skeleton."],
+        },
+        {
+          ...topic("bio-b-07-reproduction", "7", "Reproduction", ["Asexual and sexual reproduction", "Reproduction in flowering plants", "Pollination and fertilisation", "Reproduction in mammals"], [5,6]),
+          objectives: ["Differentiate asexual and sexual reproduction.","Describe fission, budding and natural vegetative propagation.","Apply grafting, budding and layering in crop production.","Relate floral parts to their functions, pollination and fertilisation.","State advantages of cross-pollination and relate placentation to fruit types.","Identify male and female mammalian reproductive organs and relate their structures to their functions.","Explain gamete fusion and fertilisation.","Relate maternal health, nutrition and drug use to embryonic development and birth.","Explain modern reproductive technologies, including in-vitro fertilisation and birth control."],
+        },
+        {
+          ...topic("bio-b-08-growth", "8", "Growth", ["Meaning and stages of growth", "Seed germination and conditions necessary for germination"], [6]),
+          objectives: ["Explain growth and the conditions necessary for seed germination.","Differentiate epigeal and hypogeal germination."],
+        },
+        {
+          ...topic("bio-b-09-coordination", "9", "Co-ordination and Control", ["Nervous coordination and impulse transmission", "Reflex action", "Sense organs", "Hormonal control", "Homeostasis"], [6]),
+          objectives: ["Explain how the central and peripheral nervous systems coordinate body functions.","Describe nerve impulse transmission and illustrate reflex actions such as blinking and the knee jerk.","Differentiate reflex, voluntary and conditioned actions.","Relate the skin, nose, tongue, eye and ear to their sensory functions and defects.","Locate the principal endocrine glands and relate their hormones to their functions.","Explain the effects of auxins, gibberellins, cytokinins and ethylene on plant growth and development.","Relate hormones to homeostasis, including temperature, salt and water regulation."],
+        },
       ]},
       { id: "biology-c", title: "C. Ecology", topics: [
-        topic("bio-c-01-distribution", "1", "Factors Affecting the Distribution of Organisms", ["Abiotic factors", "Biotic factors"], [6,7]),
-        topic("bio-c-02-symbiosis", "2", "Symbiotic Interactions of Plants and Animals", ["Energy flow, food chains and food webs", "Trophic levels", "Carbon, water and nitrogen cycles"], [7]),
-        topic("bio-c-03-habitats", "3", "Natural Habitats", ["Aquatic habitats", "Terrestrial and arboreal habitats"], [7]),
-        topic("bio-c-04-biomes", "4", "Local Nigerian Biomes", ["Tropical rainforest", "Guinea and Sudan savanna", "Desert", "Montane forests and highland grasslands"], [7]),
-        topic("bio-c-05-populations", "5", "The Ecology of Populations", ["Population density and overcrowding", "Competition and succession", "Biotic and abiotic factors affecting population size"], [7,8]),
-        topic("bio-c-06-soil", "6", "Soil", ["Soil types and structure", "Porosity, capillarity and humus", "Soil components and organisms", "Soil fertility, loss, renewal and maintenance"], [8]),
-        topic("bio-c-07-humans-environment", "7", "Humans and the Environment", ["Common and endemic diseases", "Drug abuse and prevention", "Pollution, sanitation and sewage", "Conservation, game reserves and national parks"], [8,9]),
+        {
+          ...topic("bio-c-01-distribution", "1", "Factors Affecting the Distribution of Organisms", ["Abiotic factors", "Biotic factors"], [6,7]),
+          objectives: ["Relate temperature, rainfall, humidity, wind, altitude, salinity, turbidity, pH and soil conditions to organism distribution.","Use appropriate equipment, including a Secchi disc, thermometer and rain gauge, to measure abiotic factors.","Explain how plant, animal and human activities affect organism distribution."],
+        },
+        {
+          ...topic("bio-c-02-symbiosis", "2", "Symbiotic Interactions of Plants and Animals", ["Energy flow, food chains and food webs", "Trophic levels", "Carbon, water and nitrogen cycles"], [7]),
+          objectives: ["Give examples of symbiosis, parasitism, saprophytism, commensalism, mutualism, amensalism, competition, predation and cooperation.","Explain food chains, food webs, trophic levels and energy flow in habitats.","Describe the carbon, water and nitrogen cycles and their significance.","Relate the carbon cycle to atmospheric oxygen and carbon dioxide balance and global warming.","Explain how the water cycle affects other nutrient cycles.","Explain the roles of bacteria and leguminous plants in nitrogen cycling."],
+        },
+        {
+          ...topic("bio-c-03-habitats", "3", "Natural Habitats", ["Aquatic habitats", "Terrestrial and arboreal habitats"], [7]),
+          objectives: ["Associate plants and animals with aquatic, terrestrial and arboreal habitats.","Relate adaptive features of organisms to the habitats in which they live."],
+        },
+        {
+          ...topic("bio-c-04-biomes", "4", "Local Nigerian Biomes", ["Tropical rainforest", "Guinea and Sudan savanna", "Desert", "Montane forests and highland grasslands"], [7]),
+          objectives: ["Locate the major Nigerian biomes, including tropical rainforest, Guinea and Sudan savanna, desert and montane highlands.","Use the characteristics of local biomes to distinguish regions of Nigeria."],
+        },
+        {
+          ...topic("bio-c-05-populations", "5", "The Ecology of Populations", ["Population density and overcrowding", "Competition and succession", "Biotic and abiotic factors affecting population size"], [7,8]),
+          objectives: ["Explain causes of rapid human population change and the consequences of overcrowding.","Calculate population density as organisms per unit area.","Relate food, disease and space pressures to intra- and inter-specific competition.","Explain niche differentiation as a way of reducing competition.","Relate competition to ecological succession.","Explain biotic and abiotic factors that affect population size.","Describe primary and secondary succession and the progression to a stable climax community."],
+        },
+        {
+          ...topic("bio-c-06-soil", "6", "Soil", ["Soil types and structure", "Porosity, capillarity and humus", "Soil components and organisms", "Soil fertility, loss, renewal and maintenance"], [8]),
+          objectives: ["Identify the physical properties of sandy, loamy and clayey soils.","Determine soil particle size, porosity, water retention, air, water, humus and capillarity experimentally.","Relate soil types, characteristics and components to healthy plant growth.","Explain soil fertility loss through nutrient depletion, compaction, leaching, erosion and repeated cropping.","Apply contour ridging, terracing, mulching, mixed cropping, strip cropping, fertilisers, crop rotation and shifting cultivation to soil conservation."],
+        },
+        {
+          ...topic("bio-c-07-humans-environment", "7", "Humans and the Environment", ["Common and endemic diseases", "Drug abuse and prevention", "Pollution, sanitation and sewage", "Conservation, game reserves and national parks"], [8,9]),
+          objectives: ["Identify ecological conditions that favour common endemic and epidemic diseases.","Relate disease agents and vectors to disease spread and control.","Define drug abuse and addiction, identify commonly abused drugs and state their health effects.","Use knowledge of causative organisms, transmission and symptoms to explain disease prevention and control.","Explain inoculation and vaccination.","Classify pollution and relate air, water and soil pollutants to human health and environmental degradation.","Describe methods of pollution control, sanitation, sewage disposal, personal hygiene and community health.","Explain the roles of WHO, UNICEF, the Red Cross and national health/environment agencies.","Apply conservation methods to renewable and non-renewable resources and explain their benefits.","Identify conservation organisations, game reserves and national parks in Nigeria and explain their importance."],
+        },
       ]},
       { id: "biology-d", title: "D. Heredity and Variations", topics: [
-        topic("bio-d-01-variation", "1", "Variation in Population", ["Morphological variation", "Physiological variation", "Applications in crime detection, blood transfusion and paternity"], [9]),
-        topic("bio-d-02-heredity", "2", "Heredity", ["Heritable and non-heritable characters", "Chromosomes and transmission of hereditary characters", "Genetic probability and sex determination", "Applications in agriculture and medicine", "Sex-linked characters"], [10]),
-        topic("bio-d-03-biotechnology", "3", "Biotechnology", ["Applications in agriculture", "Applications in medicine and pharmaceuticals", "Applications in the food industry"], [10]),
+        {
+          ...topic("bio-d-01-variation", "1", "Variation in Population", ["Morphological variation", "Physiological variation", "Applications in crime detection, blood transfusion and paternity"], [9]),
+          objectives: ["Differentiate continuous and discontinuous variation.","Relate variation to environmental conditions, habitat and genetic constitution.","Measure and plot frequency distributions for human heights and weights.","Observe and record colour patterns in plants and animals.","Apply fingerprint classification to identity detection.","Identify physiological variations such as tongue rolling, PTC tasting and blood groups.","Apply blood-group knowledge to transfusion and paternity determination and discontinuous variation to crime detection."],
+        },
+        {
+          ...topic("bio-d-02-heredity", "2", "Heredity", ["Heritable and non-heritable characters", "Chromosomes and transmission of hereditary characters", "Genetic probability and sex determination", "Applications in agriculture and medicine", "Sex-linked characters"], [10]),
+          objectives: ["Differentiate heritable and non-heritable characters and illustrate the structure of DNA.","Explain gene segregation during meiosis and random recombination at fertilisation.","Analyse cross-breeding data and apply heredity to crop and livestock improvement.","State advantages and disadvantages of in-breeding and out-breeding.","Discuss genetically modified organisms, gene therapy and biosafety at an elementary level.","Apply heredity to counselling related to blood groups, sickle-cell anaemia and Rhesus factors.","Explain recombinant DNA applications in producing insulin, interferon and enzymes.","Identify sex-linked characters such as haemophilia and colour blindness."],
+        },
+        {
+          ...topic("bio-d-03-biotechnology", "3", "Biotechnology", ["Applications in agriculture", "Applications in medicine and pharmaceuticals", "Applications in the food industry"], [10]),
+          objectives: ["Define biotechnology.","List applications of biotechnology in agriculture, medicine, pharmaceuticals and the food industry."],
+        },
       ]},
       { id: "biology-e", title: "E. Evolution", topics: [
-        topic("bio-e-01-theories", "1", "Theories of Evolution", ["Lamarck's theory", "Darwin's theory", "Organic theory"], [11]),
-        topic("bio-e-02-evidence", "2", "Evidence of Evolution", ["Evidence used to explain evolutionary change"], [11]),
+        {
+          ...topic("bio-e-01-theories", "1", "Theories of Evolution", ["Lamarck's theory", "Darwin's theory", "Organic theory"], [11]),
+          objectives: ["Explain organic evolution as cumulative adaptive change producing the diversity of organisms.","Describe the contributions of Lamarck and Darwin to evolutionary theory.","State evidence supporting organic evolution."],
+        },
+        {
+          ...topic("bio-e-02-evidence", "2", "Evidence of Evolution", ["Evidence used to explain evolutionary change"], [11]),
+          objectives: ["Identify fossil, comparative anatomical, physiological and embryological evidence for evolution.","Trace evolutionary trends in plants and animals.","Describe evidence from modern evolutionary theory, including genetic studies and mutation."],
+        },
       ]},
     ],
   },
@@ -224,37 +350,106 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     ],
     sections: [
       { id: "math-i", title: "I. Number and Numeration", topics: [
-        topic("math-i-01-number-bases", "1", "Number Bases and Modular Arithmetic", ["Operations in bases 2 to 10", "Conversion between bases, including fractions", "Modular arithmetic"], [2]),
-        topic("math-i-02-fractions-percentages", "2", "Fractions, Decimals, Approximations and Percentages", ["Fractions and decimals", "Significant figures and decimal places", "Percentage errors", "Simple interest, profit and loss", "Ratio, proportion, rate, shares and VAT"], [2]),
-        topic("math-i-03-indices-log-surds", "3", "Indices, Logarithms and Surds", ["Laws and equations of indices", "Standard form", "Laws of logarithms and change of base", "Relationship between indices and logarithms", "Surds"], [2]),
-        topic("math-i-04-sets", "4", "Sets", ["Types and algebra of sets", "Venn diagrams and applications"], [2]),
+        {
+          ...topic("math-i-01-number-bases", "1", "Number Bases and Modular Arithmetic", ["Operations in bases 2 to 10", "Conversion between bases, including fractions", "Modular arithmetic"], [2]),
+          objectives: ["Perform addition, subtraction, multiplication and division in number bases 2 to 10.","Convert numbers between bases, including fractional parts.","Perform calculations in modular arithmetic."],
+        },
+        {
+          ...topic("math-i-02-fractions-percentages", "2", "Fractions, Decimals, Approximations and Percentages", ["Fractions and decimals", "Significant figures and decimal places", "Percentage errors", "Simple interest, profit and loss", "Ratio, proportion, rate, shares and VAT"], [2]),
+          objectives: ["Perform the four basic operations on fractions and decimals.","Round values to specified significant figures and decimal places.","Calculate percentage errors, simple interest and profit or loss.","Solve ratio, proportion, rate, share and VAT problems."],
+        },
+        {
+          ...topic("math-i-03-indices-log-surds", "3", "Indices, Logarithms and Surds", ["Laws and equations of indices", "Standard form", "Laws of logarithms and change of base", "Relationship between indices and logarithms", "Surds"], [2]),
+          objectives: ["Apply the laws of indices and solve equations involving indices.","Use standard form and laws of logarithms, including change of base.","Solve logarithmic problems and explain the relationship between indices and logarithms.","Simplify, rationalise and perform basic operations on surds."],
+        },
+        {
+          ...topic("math-i-04-sets", "4", "Sets", ["Types and algebra of sets", "Venn diagrams and applications"], [2]),
+          objectives: ["Identify empty, universal, complement, subset, finite, infinite and disjoint sets.","Solve problems involving set cardinality and set notation.","Use Venn diagrams to solve problems involving up to three sets."],
+        },
       ]},
       { id: "math-ii", title: "II. Algebra", topics: [
-        topic("math-ii-01-polynomials", "1", "Polynomials", ["Change of subject of formula", "Polynomial operations", "Factorisation and roots up to degree three", "Factor and remainder theorems", "Simultaneous equations and polynomial graphs"], [2,3]),
-        topic("math-ii-02-variation", "2", "Variation", ["Direct, inverse, joint and partial variation", "Percentage increase and decrease"], [3]),
-        topic("math-ii-03-inequalities", "3", "Inequalities", ["Analytical and graphical linear inequalities", "Quadratic inequalities"], [3]),
-        topic("math-ii-04-progression", "4", "Progression", ["Nth term", "Arithmetic progression", "Geometric progression and sums"], [3]),
-        topic("math-ii-05-binary-operations", "5", "Binary Operations", ["Closure, commutativity, associativity and distributivity", "Identity and inverse elements"], [3]),
-        topic("math-ii-06-matrices", "6", "Matrices and Determinants", ["Matrix operations up to 3 x 3", "Determinants up to 3 x 3", "Inverse of 2 x 2 matrices"], [3]),
+        {
+          ...topic("math-ii-01-polynomials", "1", "Polynomials", ["Change of subject of formula", "Polynomial operations", "Factorisation and roots up to degree three", "Factor and remainder theorems", "Simultaneous equations and polynomial graphs"], [2,3]),
+          objectives: ["Change the subject of a formula.","Add, subtract, multiply and divide polynomials of degree not exceeding three.","Apply factor and remainder theorems and factorise polynomial expressions.","Find roots of polynomials up to degree three.","Solve simultaneous equations consisting of one linear and one quadratic equation.","Interpret polynomial graphs, including maximum and minimum values."],
+        },
+        {
+          ...topic("math-ii-02-variation", "2", "Variation", ["Direct, inverse, joint and partial variation", "Percentage increase and decrease"], [3]),
+          objectives: ["Solve problems involving direct, inverse, joint and partial variation.","Calculate percentage increase and decrease in variation problems."],
+        },
+        {
+          ...topic("math-ii-03-inequalities", "3", "Inequalities", ["Analytical and graphical linear inequalities", "Quadratic inequalities"], [3]),
+          objectives: ["Solve linear and quadratic inequalities analytically and graphically.","Interpret graphs of inequalities."],
+        },
+        {
+          ...topic("math-ii-04-progression", "4", "Progression", ["Nth term", "Arithmetic progression", "Geometric progression and sums"], [3]),
+          objectives: ["Determine the nth term of an arithmetic or geometric progression.","Calculate sums of arithmetic and geometric progressions.","Calculate the sum to infinity of a convergent geometric progression."],
+        },
+        {
+          ...topic("math-ii-05-binary-operations", "5", "Binary Operations", ["Closure, commutativity, associativity and distributivity", "Identity and inverse elements"], [3]),
+          objectives: ["Solve problems involving closure, commutativity, associativity and distributivity.","Solve problems involving identity and inverse elements."],
+        },
+        {
+          ...topic("math-ii-06-matrices", "6", "Matrices and Determinants", ["Matrix operations up to 3 x 3", "Determinants up to 3 x 3", "Inverse of 2 x 2 matrices"], [3]),
+          objectives: ["Perform addition, subtraction, multiplication and division-related operations on matrices up to order 3 × 3.","Calculate determinants of matrices up to order 3 × 3.","Find inverses of 2 × 2 matrices."],
+        },
       ]},
       { id: "math-iii", title: "III. Geometry and Trigonometry", topics: [
-        topic("math-iii-01-euclidean", "1", "Euclidean Geometry", ["Angles and lines", "Polygons", "Circle theorems and cyclic quadrilaterals", "Construction"], [3]),
-        topic("math-iii-02-mensuration", "2", "Mensuration", ["Lengths, perimeters and plane areas", "Arcs, chords, sectors and segments", "Surface areas and volumes", "Longitudes and latitudes"], [4]),
-        topic("math-iii-03-loci", "3", "Loci", ["Two-dimensional loci based on lines and curves"], [4]),
-        topic("math-iii-04-coordinate-geometry", "4", "Coordinate Geometry", ["Midpoint and gradient", "Distance between points", "Parallel and perpendicular lines", "Equations of straight lines"], [4]),
-        topic("math-iii-05-trigonometry", "5", "Trigonometry", ["Trigonometric ratios", "Elevation, depression and bearings", "Areas and solutions of triangles", "Sine and cosine graphs and formulae"], [4]),
+        {
+          ...topic("math-iii-01-euclidean", "1", "Euclidean Geometry", ["Angles and lines", "Polygons", "Circle theorems and cyclic quadrilaterals", "Construction"], [3]),
+          objectives: ["Identify types of lines, angles and polygons and solve related problems.","Apply circle theorems, including cyclic quadrilaterals and intersecting chords.","Identify construction procedures for standard angles."],
+        },
+        {
+          ...topic("math-iii-02-mensuration", "2", "Mensuration", ["Lengths, perimeters and plane areas", "Arcs, chords, sectors and segments", "Surface areas and volumes", "Longitudes and latitudes"], [4]),
+          objectives: ["Calculate perimeters and areas of triangles, quadrilaterals, circles and composite plane figures.","Find arc and chord lengths and the perimeters and areas of sectors and segments.","Calculate surface areas and volumes of common solids and composite figures.","Determine distances on the Earth's surface using longitudes and latitudes."],
+        },
+        {
+          ...topic("math-iii-03-loci", "3", "Loci", ["Two-dimensional loci based on lines and curves"], [4]),
+          objectives: ["Identify and interpret two-dimensional loci based on lines and curves, including parallel lines, perpendicular bisectors, angle bisectors and circles."],
+        },
+        {
+          ...topic("math-iii-04-coordinate-geometry", "4", "Coordinate Geometry", ["Midpoint and gradient", "Distance between points", "Parallel and perpendicular lines", "Equations of straight lines"], [4]),
+          objectives: ["Determine the midpoint and gradient of a line segment and the distance between two points.","Identify conditions for parallel and perpendicular lines.","Find equations of straight lines in two-point, point-slope, slope-intercept and general forms."],
+        },
+        {
+          ...topic("math-iii-05-trigonometry", "5", "Trigonometry", ["Trigonometric ratios", "Elevation, depression and bearings", "Areas and solutions of triangles", "Sine and cosine graphs and formulae"], [4]),
+          objectives: ["Calculate sine, cosine and tangent for angles from −360° to 360°.","Apply standard angles to solve trigonometric problems.","Solve problems involving elevation, depression and bearings.","Use trigonometric formulae to calculate triangle areas and solve triangles.","Interpret sine and cosine graphs and apply sine and cosine formulae."],
+        },
       ]},
       { id: "math-iv", title: "IV. Calculus", topics: [
-        topic("math-iv-01-differentiation", "1", "Differentiation", ["Limits of functions", "Differentiation of explicit algebraic functions", "Simple trigonometric functions"], [4]),
-        topic("math-iv-02-applications", "2", "Application of Differentiation", ["Rates of change", "Maxima and minima"], [4,5]),
-        topic("math-iv-03-integration", "3", "Integration", ["Integration of explicit algebraic functions", "Simple trigonometric functions", "Area under a curve"], [5]),
+        {
+          ...topic("math-iv-01-differentiation", "1", "Differentiation", ["Limits of functions", "Differentiation of explicit algebraic functions", "Simple trigonometric functions"], [4]),
+          objectives: ["Find limits of functions.","Differentiate explicit algebraic functions and simple sine, cosine and tangent functions."],
+        },
+        {
+          ...topic("math-iv-02-applications", "2", "Application of Differentiation", ["Rates of change", "Maxima and minima"], [4,5]),
+          objectives: ["Solve rate-of-change problems using differentiation.","Determine maxima and minima of functions."],
+        },
+        {
+          ...topic("math-iv-03-integration", "3", "Integration", ["Integration of explicit algebraic functions", "Simple trigonometric functions", "Area under a curve"], [5]),
+          objectives: ["Integrate explicit algebraic and simple trigonometric functions.","Calculate areas under curves in simple cases."],
+        },
       ]},
       { id: "math-v", title: "V. Statistics", topics: [
-        topic("math-v-01-data", "1", "Representation of Data", ["Frequency distribution", "Histograms, bar charts and pie charts"], [5]),
-        topic("math-v-02-location", "2", "Measures of Location", ["Mean, mode and median", "Cumulative frequency"], [5]),
-        topic("math-v-03-dispersion", "3", "Measures of Dispersion", ["Range, mean deviation, variance and standard deviation"], [5]),
-        topic("math-v-04-permutation", "4", "Permutation and Combination", ["Linear and circular arrangements", "Arrangements involving repeated objects"], [5]),
-        topic("math-v-05-probability", "5", "Probability", ["Experimental probability", "Addition and multiplication of probabilities", "Mutually exclusive and independent events"], [5]),
+        {
+          ...topic("math-v-01-data", "1", "Representation of Data", ["Frequency distribution", "Histograms, bar charts and pie charts"], [5]),
+          objectives: ["Identify and interpret frequency distribution tables.","Interpret histograms, bar charts and pie charts."],
+        },
+        {
+          ...topic("math-v-02-location", "2", "Measures of Location", ["Mean, mode and median", "Cumulative frequency"], [5]),
+          objectives: ["Calculate mean, mode and median for grouped and ungrouped data in simple cases.","Use ogives to estimate medians, quartiles and percentiles."],
+        },
+        {
+          ...topic("math-v-03-dispersion", "3", "Measures of Dispersion", ["Range, mean deviation, variance and standard deviation"], [5]),
+          objectives: ["Calculate range, mean deviation, variance and standard deviation for grouped and ungrouped data."],
+        },
+        {
+          ...topic("math-v-04-permutation", "4", "Permutation and Combination", ["Linear and circular arrangements", "Arrangements involving repeated objects"], [5]),
+          objectives: ["Solve simple problems involving linear and circular arrangements and arrangements with repeated objects."],
+        },
+        {
+          ...topic("math-v-05-probability", "5", "Probability", ["Experimental probability", "Addition and multiplication of probabilities", "Mutually exclusive and independent events"], [5]),
+          objectives: ["Solve simple experimental probability problems.","Apply addition and multiplication rules of probability to mutually exclusive and independent events."],
+        },
       ]},
     ],
   },

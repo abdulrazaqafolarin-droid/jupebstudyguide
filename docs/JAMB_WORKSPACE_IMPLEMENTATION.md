@@ -167,3 +167,10 @@ The uploaded Use of English PDF was not used as the current syllabus authority b
 ### Full-page visual QA for source PDFs
 
 The CI review pack will include page images for every PDF page (all 59 pages across the five uploaded copies), not only opening pages. The extraction manifest records the preview page count and scale. Unit coverage uses a two-page test fixture per subject and asserts both preview images exist. This improves review completeness; it does not change the provisional/current-IBASS verification status of the uploaded source copies.
+
+
+## Syllabus learning-objective mapping — 18 November 2026
+
+The topic catalogue now carries the uploaded source's "Candidates should be able to" objectives on all 24 Biology topics, all 18 Chemistry topics and all 23 Mathematics topics (65 topics, 285 mapped objective statements). The three Use of English topics also have objectives aligned to the JAMB-hosted IBASS PDF. Each topic preserves its source-page references. A regression test ensures all 65 Biology/Chemistry/Mathematics topics and all three English topics contain mapped objectives.
+
+The Physics source contains a much larger, 40-topic set of detailed objectives. Its topic outlines are in the catalogue, but the per-topic objective mapping is still outstanding. This mapping pass uses the owner-supplied July 2025 PDFs; it is a structured transcription, not a current-IBASS or 2027-version certification. Physics and Biology official IBASS PDFs are linked for the later full reconciliation pass; Chemistry and Mathematics still need current IBASS source retrieval/reconciliation.

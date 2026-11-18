@@ -193,7 +193,7 @@ Deno.serve(async (request: Request) => {
         return respond({ error: "This batch cannot be modified by the current administrator" }, 403);
       }
       if (!["staged", "reviewing", "approved"].includes(batch.status)) {
-        return respond({ error: "Items can only be added to a staged or reviewing batch" }, 409);
+        return respond({ error: "Items can only be added to an unpublished staged, reviewing or approved batch" }, 409);
       }
 
       const { count, error: countError } = await supabase
@@ -203,7 +203,7 @@ Deno.serve(async (request: Request) => {
       if (countError) return respond({ error: countError.message }, 500);
 
       const expectedItems = Number(batch.expected_items ?? 0);
-      let itemRange;
+      let itemRange: ReturnType<typeof resolveJambImportItemRange>;
       try {
         itemRange = resolveJambImportItemRange(body.item_offset, count ?? 0, items.length, expectedItems);
       } catch (error) {

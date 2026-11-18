@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { resolveActivationFailure, type ActivationStatusSnapshot } from "./activation-status";
+import {
+  canAccessStudyContent,
+  resolveActivationFailure,
+  type ActivationStatusSnapshot,
+} from "./activation-status";
 
 const cached = (overrides: Partial<ActivationStatusSnapshot> = {}): ActivationStatusSnapshot => ({
   is_activated: true,
@@ -32,6 +36,7 @@ describe("resolveActivationFailure", () => {
       is_activated: false,
       is_admin: false,
       trial_expires_at: null,
+      subscription_expires_at: null,
       checking: false,
       check_error: true,
     });
@@ -42,8 +47,56 @@ describe("resolveActivationFailure", () => {
       is_activated: false,
       is_admin: true,
       trial_expires_at: null,
+      subscription_expires_at: null,
       checking: false,
       check_error: false,
     });
+  });
+});
+
+
+describe("canAccessStudyContent", () => {
+  const now = Date.parse("2026-11-18T20:00:00.000Z");
+
+  it("does not treat the legacy is_activated flag as permanent entitlement", () => {
+    expect(canAccessStudyContent({
+      is_admin: false,
+      trial_expires_at: null,
+      subscription_expires_at: "2026-11-17T20:00:00.000Z",
+    }, now)).toBe(false);
+  });
+
+  it("allows an unexpired subscription", () => {
+    expect(canAccessStudyContent({
+      is_admin: false,
+      trial_expires_at: null,
+      subscription_expires_at: "2026-12-18T20:00:00.000Z",
+    }, now)).toBe(true);
+  });
+
+  it("allows an active trial and a configured administrator", () => {
+    expect(canAccessStudyContent({
+      is_admin: false,
+      trial_expires_at: "2026-11-19T20:00:00.000Z",
+      subscription_expires_at: null,
+    }, now)).toBe(true);
+    expect(canAccessStudyContent({
+      is_admin: true,
+      trial_expires_at: null,
+      subscription_expires_at: null,
+    }, now)).toBe(true);
+  });
+
+  it("denies missing, invalid, and expired entitlements", () => {
+    expect(canAccessStudyContent({
+      is_admin: false,
+      trial_expires_at: null,
+      subscription_expires_at: null,
+    }, now)).toBe(false);
+    expect(canAccessStudyContent({
+      is_admin: false,
+      trial_expires_at: "not-a-date",
+      subscription_expires_at: null,
+    }, now)).toBe(false);
   });
 });

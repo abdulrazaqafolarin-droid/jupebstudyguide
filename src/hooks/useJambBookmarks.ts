@@ -14,6 +14,7 @@ export function useJambBookmarks() {
   );
   const bookmarksRef = useRef(bookmarks);
   const deletedBookmarkIdsRef = useRef(deletedBookmarkIds);
+  const bookmarkWriteQueuesRef = useRef(new Map<string, Promise<void>>());
 
   useEffect(() => { bookmarksRef.current = bookmarks; }, [bookmarks]);
   useEffect(() => { deletedBookmarkIdsRef.current = deletedBookmarkIds; }, [deletedBookmarkIds]);
@@ -168,14 +169,17 @@ export function useJambBookmarks() {
     }
 
     if (!user?.id) return;
-    const request = exists
-      ? supabase.from("exam_user_bookmarks").delete()
-          .eq("user_id", user.id).eq("exam_program_id", "jamb").eq("question_id", questionId)
-      : supabase.from("exam_user_bookmarks").upsert(
-          { user_id: user.id, exam_program_id: "jamb", question_id: questionId },
-          { onConflict: "user_id,exam_program_id,question_id" },
-        );
-    void request.then(({ error }) => {
+    const writeKey = user.id + ":" + questionId;
+    const previousWrite = bookmarkWriteQueuesRef.current.get(writeKey) ?? Promise.resolve();
+    const nextWrite = previousWrite.catch(() => undefined).then(async () => {
+      const request = exists
+        ? supabase.from("exam_user_bookmarks").delete()
+            .eq("user_id", user.id).eq("exam_program_id", "jamb").eq("question_id", questionId)
+        : supabase.from("exam_user_bookmarks").upsert(
+            { user_id: user.id, exam_program_id: "jamb", question_id: questionId },
+            { onConflict: "user_id,exam_program_id,question_id" },
+          );
+      const { error } = await request;
       if (error) {
         console.warn("[JAMB bookmarks] Cloud write failed; local change retained:", error.message);
         return;
@@ -184,7 +188,12 @@ export function useJambBookmarks() {
         deletedBookmarkIdsRef.current = deletedBookmarkIdsRef.current.filter((id) => id !== questionId);
         setDeletedBookmarkIds(deletedBookmarkIdsRef.current);
       }
+    }).finally(() => {
+      if (bookmarkWriteQueuesRef.current.get(writeKey) === nextWrite) {
+        bookmarkWriteQueuesRef.current.delete(writeKey);
+      }
     });
+    bookmarkWriteQueuesRef.current.set(writeKey, nextWrite);
   }, [isReady, isDeletedReady, setBookmarks, setDeletedBookmarkIds, user?.id]);
 
   const isBookmarked = useCallback(

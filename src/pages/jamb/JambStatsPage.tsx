@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Award, BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Flame } from "lucide-react";
+import { ArrowLeft, Award, BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Flame, Brain, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
+import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
+import { supabase } from "@/integrations/supabase/client";
 import { getJambActivityStats, getJambRecentDailyActivity } from "@/lib/jamb-analytics";
+import { getJambCbtAnalytics, mapJambCbtHistoryPayload, type JambCbtAttemptSummary } from "@/lib/jamb-cbt-analytics";
 import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
 import {
   getJambQuestionMetadataByIds,
@@ -15,12 +18,16 @@ import StreakDisplay from "@/components/StreakDisplay";
 
 export default function JambStatsPage() {
   const { savedAnswers, isReady: answersReady } = useJambPracticeProgress();
+  const { progress: reviewProgress, getStats: getRevisionStats, isReady: reviewReady } = useJambReviewProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
   const questionIds = useMemo(() => Object.keys(savedAnswers), [savedAnswers]);
   const [subjectSummaries, setSubjectSummaries] = useState<JambSubjectSummary[]>([]);
   const [answeredQuestions, setAnsweredQuestions] = useState<JambQuestionMetadata[]>([]);
   const [loadingBank, setLoadingBank] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cbtHistory, setCbtHistory] = useState<JambCbtAttemptSummary[]>([]);
+  const [cbtHistorySupported, setCbtHistorySupported] = useState<boolean | null>(null);
+  const [loadingCbtHistory, setLoadingCbtHistory] = useState(true);
 
   useEffect(() => {
     if (!answersReady) return;
@@ -44,7 +51,32 @@ export default function JambStatsPage() {
     return () => { active = false; };
   }, [answersReady, questionIds]);
 
+  useEffect(() => {
+    if (!answersReady) return;
+    let active = true;
+    setLoadingCbtHistory(true);
+    supabase.functions.invoke("exam-attempts", {
+      body: { action: "history", exam_program_id: "jamb" },
+    })
+      .then(({ data, error: invokeError }) => {
+        if (invokeError) throw invokeError;
+        if (!active) return;
+        setCbtHistory(mapJambCbtHistoryPayload(data?.history));
+        setCbtHistorySupported(true);
+      })
+      .catch(() => {
+        if (!active) return;
+        // This action is branch-only until the reviewed exam-attempts release.
+        // Do not query service-role tables directly or substitute JUPEB scores.
+        setCbtHistorySupported(false);
+      })
+      .finally(() => { if (active) setLoadingCbtHistory(false); });
+    return () => { active = false; };
+  }, [answersReady]);
+
   const activity = useMemo(() => getJambActivityStats(savedAnswers), [savedAnswers]);
+  const revisionStats = getRevisionStats(Object.keys(reviewProgress));
+  const cbtAnalytics = useMemo(() => getJambCbtAnalytics(cbtHistory), [cbtHistory]);
   const dailyActivity = useMemo(() => getJambRecentDailyActivity(savedAnswers), [savedAnswers]);
   const publishedQuestionCount = subjectSummaries.reduce((total, row) => total + row.count, 0);
   const subjectRows = JAMB_SUBJECTS.map((subject) => {
@@ -117,6 +149,25 @@ export default function JambStatsPage() {
 
         <section className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-4 flex items-center gap-2">
+            <Brain className="h-5 w-5 text-primary" />
+            <h2 className="font-semibold">JAMB revision progress</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl bg-primary/5 p-4">
+              <p className="text-2xl font-bold tabular-nums">{reviewReady ? revisionStats.mastered : "—"}</p>
+              <p className="mt-1 text-xs text-muted-foreground">Cards mastered</p>
+            </div>
+            <div className="rounded-xl bg-secondary/60 p-4">
+              <p className="text-2xl font-bold tabular-nums">{reviewReady ? revisionStats.due : "—"}</p>
+              <p className="mt-1 text-xs text-muted-foreground">Scheduled cards due</p>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">Mastery is based on your JAMB revision-card ratings after the JAMB answer service confirms an approved answer key. These review records stay separate from JUPEB.</p>
+          <Link to="/jamb/study" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Open Revision Cards <Brain className="h-3.5 w-3.5" /></Link>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <div className="mb-4 flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
             <h2 className="font-semibold">Questions practised by subject</h2>
           </div>
@@ -160,6 +211,71 @@ export default function JambStatsPage() {
             ))}
           </div>
           <p className="mt-3 text-[11px] text-muted-foreground">Activity counts reflect each question's latest saved practice answer.</p>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-5">
+          <div className="mb-4 flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-primary" />
+            <h2 className="font-semibold">Timed CBT results · JAMB only</h2>
+          </div>
+          {loadingCbtHistory ? (
+            <p className="text-sm text-muted-foreground">Loading your completed JAMB attempts…</p>
+          ) : cbtHistorySupported === false ? (
+            <p className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-relaxed text-muted-foreground">
+              Personal CBT history is not available from the connected backend yet. It will appear after the updated JAMB attempt-history endpoint is released. Your result after each completed CBT remains available on its results screen.
+            </p>
+          ) : cbtHistory.length === 0 ? (
+            <p className="rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground">No completed JAMB timed attempts yet. Submit a practice CBT to build your personal score history.</p>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  { label: "Attempts", value: cbtAnalytics.attemptCount.toLocaleString() },
+                  { label: "Scored average", value: cbtAnalytics.averageScore === null ? "—" : cbtAnalytics.averageScore + "%" },
+                  { label: "Best score", value: cbtAnalytics.bestScore === null ? "—" : cbtAnalytics.bestScore + "%" },
+                  { label: "Ungraded attempts", value: cbtAnalytics.ungradedAttemptCount.toLocaleString() },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-xl bg-secondary/50 p-3">
+                    <p className="text-xl font-bold tabular-nums">{item.value}</p>
+                    <p className="mt-1 text-[10px] text-muted-foreground">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5">
+                <h3 className="mb-3 text-sm font-semibold">Recent CBT activity · 7 days</h3>
+                <div className="grid h-32 grid-cols-7 items-end gap-2">
+                  {cbtAnalytics.weekly.map((day) => (
+                    <div key={day.date} className="flex h-full min-w-0 flex-col items-center justify-end gap-1">
+                      <span className="text-[10px] tabular-nums text-muted-foreground">{day.averageScore === null ? (day.attemptCount || "") : day.averageScore + "%"}</span>
+                      <div className="flex h-20 w-full items-end overflow-hidden rounded-md bg-secondary">
+                        <div className="w-full rounded-md bg-primary" style={{ height: day.attemptCount ? Math.max(8, day.attemptCount / Math.max(1, ...cbtAnalytics.weekly.map((row) => row.attemptCount)) * 100) + "%" : "0%" }} />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">{day.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-5 space-y-2">
+                <h3 className="text-sm font-semibold">Latest attempts</h3>
+                {cbtHistory.slice(0, 10).map((attempt) => {
+                  const subject = JAMB_SUBJECTS.includes(attempt.subject as (typeof JAMB_SUBJECTS)[number])
+                    ? JAMB_SUBJECT_INFO[attempt.subject as (typeof JAMB_SUBJECTS)[number]].label
+                    : attempt.subject;
+                  const when = attempt.submittedAt ?? attempt.startedAt;
+                  return (
+                    <div key={attempt.id} className="flex items-center justify-between gap-3 rounded-xl border border-border p-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">{subject} · {attempt.examYear}</p>
+                        <p className="text-[10px] text-muted-foreground">{when ? new Date(when).toLocaleString() : "Date unavailable"} · {attempt.durationMinutes} min · {attempt.status}</p>
+                        <p className="text-[10px] text-muted-foreground">{attempt.correct} correct · {attempt.wrong} wrong · {attempt.ungraded} ungraded</p>
+                      </div>
+                      <p className="shrink-0 text-lg font-bold tabular-nums">{attempt.score === null ? "—" : attempt.score + "%"}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </section>
 
         <section className="rounded-2xl border border-border bg-amber-500/5 p-5">

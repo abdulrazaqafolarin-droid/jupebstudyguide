@@ -8,6 +8,7 @@ const RELEASE_BASE_URL = (
 export const APK_FILE_NAME = import.meta.env.VITE_ANDROID_RELEASE_APK_NAME || "jupeb-master.apk";
 export const VERSION_URL = `${RELEASE_BASE_URL}/version.json`;
 export const RELEASE_APK_URL = `${RELEASE_BASE_URL}/${APK_FILE_NAME}`;
+const EXPECTED_PACKAGE_NAME = (import.meta.env.VITE_ANDROID_PACKAGE_NAME || "").trim() || undefined;
 
 /**
  * Successor APKs are published under immutable versioned object names. The
@@ -35,6 +36,8 @@ export interface ReleaseInfo {
   sha256: string;
   /** True only for the one-time transition away from the legacy debug signing key. */
   requiresReinstall?: boolean;
+  /** Android application ID this manifest was published for, when supplied. */
+  packageName?: string;
 }
 
 interface DownloadProgress {
@@ -77,7 +80,10 @@ export function isNewer(installedCode: number, latestCode: number): boolean {
 }
 
 /** Strict-shape validation so a corrupt version.json can never brick the flow. */
-export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
+export function parseReleaseInfo(
+  raw: unknown,
+  expectedPackageName = EXPECTED_PACKAGE_NAME,
+): ReleaseInfo | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   if (
@@ -86,6 +92,7 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     r.versionCode < 1 ||
     typeof r.url !== "string" ||
     r.url !== getReleaseApkUrl(r.versionCode) ||
+    (expectedPackageName !== undefined && r.packageName !== expectedPackageName) ||
     typeof r.sha256 !== "string" ||
     !/^[a-f0-9]{64}$/i.test(r.sha256)
   ) {
@@ -99,6 +106,7 @@ export function parseReleaseInfo(raw: unknown): ReleaseInfo | null {
     url: r.url,
     sha256: r.sha256.toLowerCase(),
     requiresReinstall: r.requiresReinstall === true,
+    ...(typeof r.packageName === "string" ? { packageName: r.packageName } : {}),
   };
 }
 

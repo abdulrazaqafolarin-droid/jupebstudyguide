@@ -26,6 +26,7 @@ export function useJambSyllabusProgress() {
   );
   const progressRef = useRef(progress);
   const changeVersionRef = useRef(0);
+  const syncNowRef = useRef<() => void>(() => undefined);
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
@@ -106,6 +107,7 @@ export function useJambSyllabusProgress() {
       }
     };
 
+    syncNowRef.current = () => { void sync(); };
     void sync();
     const syncOnline = () => { void sync(); };
     const syncVisible = () => {
@@ -116,6 +118,7 @@ export function useJambSyllabusProgress() {
     document.addEventListener("visibilitychange", syncVisible);
     return () => {
       active = false;
+      syncNowRef.current = () => undefined;
       window.removeEventListener("online", syncOnline);
       window.removeEventListener("focus", syncOnline);
       document.removeEventListener("visibilitychange", syncVisible);
@@ -125,13 +128,10 @@ export function useJambSyllabusProgress() {
   const setTopicState = useCallback((topicId: string, state: JambSyllabusTopicState) => {
     if (!isReady) return;
     changeVersionRef.current += 1;
-    setProgress((previous) => {
-      const next = setJambTopicState(previous, topicId, state);
-      progressRef.current = next;
-      return next;
-    });
-    // Local storage is always available first; cloud reconciliation retries
-    // on the next focus/reconnect/visibility event.
+    const next = setJambTopicState(progressRef.current, topicId, state);
+    progressRef.current = next;
+    setProgress(next);
+    syncNowRef.current();
   }, [isReady, setProgress]);
 
   const getTopicState = useCallback((topicId: string) => (

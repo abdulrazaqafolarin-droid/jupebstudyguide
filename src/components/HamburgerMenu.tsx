@@ -87,19 +87,34 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     fetchProfile();
   }, [fetchProfile]);
 
-  const jambLinks = [
-    { path: "/jamb", label: "JAMB Home", icon: GraduationCap },
-    { path: "/jamb/past-questions", label: "JAMB Past Questions", icon: BookOpen },
-    { path: "/jamb/cbt/setup", label: "Timed CBT Practice", icon: Clock3 },
-    { path: "/jamb/syllabus", label: "JAMB Syllabus", icon: Library },
-    { path: "/jamb/ai", label: "JAMB AI Tutor", icon: Sparkles },
-    { path: "/profile", label: "Profile", icon: User },
-    { path: "/settings/profile", label: "Settings", icon: Lock },
-  ];
+  // The menu has the same structure in JUPEB and JAMB. Workspace-specific
+  // study destinations are remapped, while shared account/social destinations
+  // remain shared. JAMB question review remains a separate admin destination.
+  const workspaceLinks = isJambWorkspace
+    ? navLinks
+        .filter((item) => item.path !== "/study-chat")
+        .map((item) => {
+          if (item.path === "/") return { ...item, path: "/jamb" };
+          if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
+          if (item.path === "/chat") return { ...item, path: "/jamb/ai", label: "AI Tutor" };
+          if (item.path === "/syllabus") return { ...item, path: "/jamb/syllabus" };
+          return item;
+        })
+    : navLinks;
 
-  const allLinks = isJambWorkspace
-    ? (isAdmin ? [...jambLinks, { path: "/admin/jamb-questions", label: "JAMB Question Review", icon: Shield }] : jambLinks)
-    : (isAdmin ? [...navLinks, { path: "/admin", label: "Admin", icon: Shield }, ...(jambEnabled ? [{ path: "/jamb", label: "JAMB Workspace", icon: GraduationCap }] : [])] : [...navLinks, ...(jambEnabled ? [{ path: "/jamb", label: "JAMB Workspace", icon: GraduationCap }] : [])]);
+  const allLinks = [
+    ...workspaceLinks,
+    ...(isAdmin
+      ? [{
+          path: isJambWorkspace ? "/admin/jamb-questions" : "/admin",
+          label: isJambWorkspace ? "JAMB Question Review" : "Admin",
+          icon: Shield,
+        }]
+      : []),
+    ...(jambEnabled && !isJambWorkspace
+      ? [{ path: "/jamb", label: "JAMB Workspace", icon: GraduationCap }]
+      : []),
+  ];
 
   const close = () => setOpen(false);
 

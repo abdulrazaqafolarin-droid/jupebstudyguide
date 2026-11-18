@@ -314,10 +314,14 @@ export default function JambPastQuestionsPage() {
               type="button"
               onClick={() => void saveAnswer(question.id, option.label)}
               aria-pressed={current === option.label}
-              className={`flex items-start gap-3 rounded-xl border p-3 text-left text-sm transition-colors ${current === option.label ? "border-primary bg-primary/10" : "border-border hover:bg-accent/50"}`}
+              className={`flex w-full items-start gap-3 rounded-xl border-2 p-4 text-left text-sm transition-all duration-300 ${current === option.label ? "border-primary bg-primary/10" : "border-border bg-secondary/30 hover:border-primary hover:bg-primary/5"}`}
             >
-              <span className="font-bold text-primary">{option.label}.</span>
-              <QuestionMath content={option.text} inline />
+              <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-mono font-semibold ${current === option.label ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"}`}>
+                {option.label}
+              </span>
+              <span className="min-w-0 flex-1 pt-1 font-mono text-sm leading-relaxed">
+                <QuestionMath content={option.text} inline />
+              </span>
             </button>
           ))}
         </div>

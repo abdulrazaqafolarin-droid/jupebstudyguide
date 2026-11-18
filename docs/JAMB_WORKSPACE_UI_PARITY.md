@@ -17,14 +17,18 @@ Shared presentation components should be reused where they do not carry programm
 
 ## Conversation isolation
 
-Migration `20261118000001_scope_ai_chat_history_by_exam_program.sql` adds `ai_chats.exam_program_id` with a default of `jupeb`. Existing rows therefore remain JUPEB rows. A programme-scoped index supports each user's history. The shared `useStudyChat` hook filters chat lists, creates, renames, deletes and title updates by the selected programme. The JAMB page calls it with the JAMB prompt and programme ID. JAMB deliberately skips the local JUPEB textbook RAG collection.
+Migration `20261118123742_scope_ai_chat_history_by_exam_program.sql` adds `ai_chats.exam_program_id` with a default of `jupeb`, a foreign key to the exam-program registry and a programme-scoped history index. It was applied to the connected shared Rutex Supabase project `gzyczowqqywesqhqqpdi` on 18 November 2026.
 
-The migration is committed to the feature branch but must be applied to the intended Supabase environment before the new persistent JAMB history can be used there. It has not been applied to production as part of this UI parity work.
+Post-migration verification found 321 existing chat rows, all still tagged `jupeb`, zero JAMB chat rows and zero unexpected programme values. Existing RLS policies were not weakened or replaced; chat ownership remains governed by the existing policies. The shared `useStudyChat` hook filters chat lists, creates, renames, deletes and title updates by the selected programme. The JAMB page calls it with the JAMB prompt and programme ID. JAMB deliberately skips the local JUPEB textbook RAG collection.
 
 ## Verification
 
-The PR validation workflow covers TypeScript, unit tests, lint, the JAMB import fixtures, programme-aware question retrieval and CBT scoring, Edge Function types, the web build and Android compilation. See the PR checks for the final status of the current head.
+The current code head `7a55bd2818281529fc8470fefc65da201fd0c647` passed pull-request validation, repository validation, Android debug compilation and the iOS simulator build/smoke test. The migration rename and documentation update are follow-up commits and require their own final branch-head CI rerun.
 
-## Explicitly not enabled by visual parity
+A signed-in student/admin mobile walkthrough is still outstanding. A successful unauthenticated HTTP 200 from the Preview SPA shell is not a substitute for that acceptance test.
+
+## Content and release boundaries
+
+The JAMB subject bank still contains zero published question rows and zero import batches. The committed Physics, Chemistry and Biology packs parse to candidate source material, not independently approved questions. Before staging, an authorised administrator must attest to source-use rights; candidates then require human checks for year, wording, option order, duplicates and figures. Missing answer keys must not be invented.
 
 The JAMB syllabus is not marked verified, and a complete official UTME mock remains disabled until the compulsory Use of English content, official exam configuration and source review are complete. Matching the JUPEB UI does not make unverified JAMB content official or gradable.

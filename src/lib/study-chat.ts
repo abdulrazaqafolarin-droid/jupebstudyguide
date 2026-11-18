@@ -32,6 +32,36 @@ export function canUseSyllabusTopicContext(
 }
 
 
+/**
+ * Find the newest conversation matching a syllabus topic within one
+ * programme and subject. Chat lists are expected newest-first.
+ */
+export function findLatestTopicChat(
+  chats: StudyChatMeta[],
+  examProgramId: ExamProgramId,
+  subject: string,
+  topicId: string,
+): StudyChatMeta | null {
+  return chats.find((chat) =>
+    chat.exam_program_id === examProgramId
+    && chat.subject === subject
+    && chat.topic_id === topicId
+  ) ?? null;
+}
+
+/** Find the newest untethered conversation for one programme/subject. */
+export function findLatestSubjectChat(
+  chats: StudyChatMeta[],
+  examProgramId: ExamProgramId,
+  subject: string,
+): StudyChatMeta | null {
+  return chats.find((chat) =>
+    chat.exam_program_id === examProgramId
+    && chat.subject === subject
+    && !chat.topic_id
+  ) ?? null;
+}
+
 /** Newest-N window of a thread for the model (order preserved). */
 export function trimMessagesForContext<T>(messages: T[], cap = CONTEXT_MESSAGE_CAP): T[] {
   if (messages.length <= cap) return messages;

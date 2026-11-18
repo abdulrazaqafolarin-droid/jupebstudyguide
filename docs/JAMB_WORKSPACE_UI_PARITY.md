@@ -85,3 +85,10 @@ The JAMB Tutor now accepts syllabus topic links and receives the selected outlin
 **Progress parity update:** JAMB syllabus topic progress now mirrors the persistence expectation of the existing JUPEB syllabus experience more closely. It remains programme-separated and uses a dedicated JAMB table with account ownership/session RLS. Local-first changes sync across devices when online; JUPEB progress storage and rendering were not modified.
 
 **Chat topic persistence update:** JAMB syllabus entry points create a JAMB tutor thread with its selected topic ID and subject saved in the chat row. When reopening the thread from JAMB tutor history, the tutor reconstructs that topic context from the saved metadata. The same shared chat components (history sidebar, thread view, composer, retry/edit/stop controls and attachments) continue to be reused; the existing social Chat and Profile routes remain shared page implementations under their JAMB aliases.
+
+
+### Shared social Chat and Profile parity
+
+The social Chat page is intentionally common across programmes, while its title, back destination, Profile/Settings navigation and notification actions are derived from the active ExamProgramContext. Bottom navigation keeps the same five slots and maps Chat/Profile to /jamb/chat and /jamb/profile inside JAMB. The Profile page uses the common account identity/avatar/school/settings components; in JAMB it suppresses JUPEB achievements and presents a JAMB-specific achievements destination. Route-path regression tests cover both programme variants.
+
+The AI Tutor is separate from social Chat. Its saved history is filtered by exam_program_id='jamb'; syllabus-topic launches resolve the latest matching JAMB subject/topic thread and preserve that context when resumed.

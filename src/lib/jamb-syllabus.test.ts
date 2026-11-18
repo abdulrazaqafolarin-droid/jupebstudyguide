@@ -73,6 +73,12 @@ describe("JAMB topic progress", () => {
     });
   });
 
+  it("makes repeated local updates strictly increasing even within one millisecond", () => {
+    const first = setJambTopicState({}, "a", "in_progress", 100);
+    const second = setJambTopicState(first, "a", "completed", 100);
+    expect(second.a.updatedAt).toBe(101);
+  });
+
   it("does not create a progress record for a blank topic ID", () => {
     const original = { a: { state: "completed" as const, updatedAt: 1 } };
     expect(setJambTopicState(original, "  ", "in_progress", 2)).toBe(original);
@@ -100,6 +106,15 @@ describe("JAMB topic progress", () => {
       ["newer", { state: "completed", updatedAt: 20 }],
       ["missing", { state: "in_progress", updatedAt: 15 }],
     ]);
+  });
+
+  it("resolves equal-timestamp conflicts deterministically without favouring one device", () => {
+    const result = reconcileJambSyllabusProgress(
+      { topic: { state: "not_started", updatedAt: 30 } },
+      { topic: { state: "completed", updatedAt: 30 } },
+    );
+    expect(result.merged.topic.state).toBe("completed");
+    expect(result.pendingUpserts).toHaveLength(0);
   });
 
 });

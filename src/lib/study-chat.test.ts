@@ -4,6 +4,8 @@ import {
   canUseSyllabusTopicContext,
   CONTEXT_MESSAGE_CAP,
   findSyllabusTopic,
+  findLatestTopicChat,
+  findLatestSubjectChat,
   groupChatsByDate,
   CHAT_SELECT_COLS,
   resolveEditBoundary,
@@ -217,5 +219,35 @@ describe('buildTopicSystemPrompt', () => {
   it('omits the focus line without a subtopic', () => {
     const prompt = buildTopicSystemPrompt(topic, 'physics');
     expect(prompt).not.toContain('Current focus:');
+  });
+});
+
+describe("find JAMB tutor threads by syllabus context", () => {
+  it("finds only the newest matching programme, subject and topic", () => {
+    const older = chat(daysAgo(2), {
+      exam_program_id: "jamb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    const latest = chat(new Date(), {
+      exam_program_id: "jamb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    const unrelated = chat(new Date(), {
+      exam_program_id: "jamb", subject: "biology", topic_id: "bio-a-01-living-organisms",
+    });
+    const jupeb = chat(new Date(), {
+      exam_program_id: "jupeb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    expect(findLatestTopicChat([latest, unrelated, jupeb, older], "jamb", "physics", "phy-01-measurements")?.id).toBe(latest.id);
+    expect(findLatestTopicChat([unrelated, jupeb], "jamb", "physics", "phy-01-measurements")).toBeNull();
+  });
+
+  it("finds the newest subject chat without a stored topic", () => {
+    const topicThread = chat(new Date(), {
+      exam_program_id: "jamb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    const subjectThread = chat(daysAgo(1), {
+      exam_program_id: "jamb", subject: "physics", topic_id: null,
+    });
+    expect(findLatestSubjectChat([topicThread, subjectThread], "jamb", "physics")?.id).toBe(subjectThread.id);
+    expect(findLatestSubjectChat([topicThread], "jamb", "physics")).toBeNull();
   });
 });

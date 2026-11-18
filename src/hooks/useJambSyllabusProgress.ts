@@ -6,6 +6,7 @@ import {
   getJambTopicState,
   setJambTopicState,
   summarizeJambSyllabusProgress,
+  reconcileJambSyllabusProgress,
   type JambSyllabusProgressMap,
   type JambSyllabusTopicState,
 } from "@/lib/jamb-syllabus-progress";
@@ -20,19 +21,23 @@ const isTopicState = (value: string): value is JambSyllabusTopicState =>
  */
 export function useJambSyllabusProgress() {
   const { user, loading: authLoading } = useAuth();
-  const [progress, setProgress, { isReady, reset }] = useUserStorage<JambSyllabusProgressMap>(
+  const [progress, setProgress, { isReady }] = useUserStorage<JambSyllabusProgressMap>(
     "jamb-syllabus-progress-v1",
     {},
   );
   const progressRef = useRef(progress);
   const changeVersionRef = useRef(0);
   const syncNowRef = useRef<() => void>(() => undefined);
+
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
   useEffect(() => {
-    if (authLoading || !user?.id || !isReady) return;
+    if (authLoading || !user?.id || !isReady) {
+      syncNowRef.current = () => undefined;
+      return;
+    }
     let active = true;
     let syncInFlight = false;
     let syncRequested = false;
@@ -57,30 +62,25 @@ export function useJambSyllabusProgress() {
           return;
         }
 
-        const localSnapshot = progressRef.current;
         const remote: JambSyllabusProgressMap = {};
         for (const row of data ?? []) {
           if (!isTopicState(row.state)) continue;
+          const updatedAt = row.updated_at ? new Date(row.updated_at).getTime() : 0;
           remote[row.topic_id] = {
             state: row.state,
-            updatedAt: row.updated_at ? new Date(row.updated_at).getTime() : 0,
+            updatedAt: Number.isFinite(updatedAt) ? updatedAt : 0,
           };
         }
 
-        const merged: JambSyllabusProgressMap = { ...remote };
-        const pendingUpserts: Array<[string, JambSyllabusProgressMap[string]]> = [];
-        for (const [topicId, localEntry] of Object.entries(localSnapshot)) {
-          const remoteEntry = remote[topicId];
-          if (!remoteEntry || localEntry.updatedAt > remoteEntry.updatedAt) {
-            merged[topicId] = localEntry;
-            pendingUpserts.push([topicId, localEntry]);
-          }
-        }
-
+        // Read local state after the request resolves so a topic changed while
+        // the network read was in flight is not overwritten by an older reply.
+        const localSnapshot = progressRef.current;
+        const { merged, pendingUpserts } = reconcileJambSyllabusProgress(localSnapshot, remote);
         if (JSON.stringify(merged) !== JSON.stringify(localSnapshot)) {
           progressRef.current = merged;
           setProgress(merged);
         }
+
         if (pendingUpserts.length > 0) {
           const { error: writeError } = await supabase
             .from("exam_user_syllabus_progress")
@@ -126,8 +126,10 @@ export function useJambSyllabusProgress() {
   }, [user?.id, authLoading, isReady, setProgress]);
 
   const setTopicState = useCallback((topicId: string, state: JambSyllabusTopicState) => {
-    if (!isReady) return;
+    if (!isReady || !topicId.trim()) return;
     changeVersionRef.current += 1;
+    // Update the ref synchronously: the immediate sync then reads this change
+    // instead of waiting for React's next render/effect cycle.
     const next = setJambTopicState(progressRef.current, topicId, state);
     progressRef.current = next;
     setProgress(next);
@@ -142,5 +144,5 @@ export function useJambSyllabusProgress() {
     summarizeJambSyllabusProgress(topicIds, progress)
   ), [progress]);
 
-  return { progress, setTopicState, getTopicState, getSummary, isReady, reset };
+  return { progress, setTopicState, getTopicState, getSummary, isReady };
 }

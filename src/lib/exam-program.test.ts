@@ -28,6 +28,15 @@ describe("separate JAMB workspace configuration", () => {
     expect(isJambWorkspacePath("/settings/profile")).toBe(false);
   });
 
+  it("keeps the shared Chat and Profile tabs inside the selected workspace", () => {
+    expect(getWorkspacePath("/chat", "jamb")).toBe("/jamb/chat");
+    expect(getWorkspacePath("/profile", "jamb")).toBe("/jamb/profile");
+    expect(getWorkspacePath("/chat", "jupeb")).toBe("/chat");
+    expect(getWorkspacePath("/profile", "jupeb")).toBe("/profile");
+    expect(isJambWorkspacePath("/jamb/chat")).toBe(true);
+    expect(isJambWorkspacePath("/jamb/profile")).toBe(true);
+  });
+
   it("does not mark JAMB Home active on nested workspace routes", () => {
     expect(isNavigationPathActive("/jamb", "/jamb")).toBe(true);
     expect(isNavigationPathActive("/jamb/past-questions", "/jamb")).toBe(false);

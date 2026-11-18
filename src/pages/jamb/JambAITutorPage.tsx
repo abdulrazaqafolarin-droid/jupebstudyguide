@@ -12,7 +12,7 @@ import { Composer } from "@/components/study-chat/Composer";
 import { getJambPublishedQuestionById } from "@/lib/jamb-question-service";
 import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
 import { getJambSyllabusSubject, getJambSyllabusTopic, JAMB_SYLLABUS_REVIEW_NOTICE } from "@/lib/jamb-syllabus";
-import type { StudyChatMeta } from "@/lib/study-chat";
+import { findLatestSubjectChat, findLatestTopicChat, type StudyChatMeta } from "@/lib/study-chat";
 import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
 import { toast } from "sonner";
 
@@ -40,7 +40,7 @@ export default function JambAITutorPage() {
   const [input, setInput] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [showTextbooks, setShowTextbooks] = useState(false);
-  const openedInitialChatRef = useRef(false);
+  const openedTargetChatKeyRef = useRef<string | null>(null);
 
   const extraSystemContext = useCallback((chat: StudyChatMeta | null) => {
     const parts: string[] = [];
@@ -99,14 +99,6 @@ export default function JambAITutorPage() {
     return () => { active = false; };
   }, [questionId]);
 
-  // Resume the newest JAMB-only thread when entering the tutor without a
-  // selected conversation. JUPEB rows are filtered in the shared hook.
-  useEffect(() => {
-    if (openedInitialChatRef.current || listLoading || activeChatId || chats.length === 0) return;
-    openedInitialChatRef.current = true;
-    void switchChat(chats[0].id);
-  }, [listLoading, activeChatId, chats, switchChat]);
-
   const createChat = useCallback(async () => {
     const id = await newChat(tutorSubjectValue, syllabusTopic?.id);
     if (id) {
@@ -116,6 +108,50 @@ export default function JambAITutorPage() {
     }
     return id;
   }, [newChat, tutorSubjectValue, syllabusTopic?.id]);
+
+  const requestedChatKey = syllabusTopic && tutorSubjectValue
+    ? `${tutorSubjectValue}:topic:${syllabusTopic.id}`
+    : tutorSubjectValue
+      ? `${tutorSubjectValue}:general`
+      : "latest";
+
+  // Enter the thread matching the requested subject/topic. A topic link must
+  // never silently open an unrelated, most-recent conversation.
+  useEffect(() => {
+    if (listLoading || openedTargetChatKeyRef.current === requestedChatKey) return;
+    openedTargetChatKeyRef.current = requestedChatKey;
+
+    if (syllabusTopic && tutorSubjectValue) {
+      const existing = findLatestTopicChat(chats, "jamb", tutorSubjectValue, syllabusTopic.id);
+      if (existing) {
+        void switchChat(existing.id);
+      } else {
+        void createChat().then((id) => {
+          if (!id) openedTargetChatKeyRef.current = null;
+        });
+      }
+      return;
+    }
+
+    if (tutorSubjectValue) {
+      const existing = findLatestSubjectChat(chats, "jamb", tutorSubjectValue);
+      if (existing) {
+        void switchChat(existing.id);
+      } else {
+        void createChat().then((id) => {
+          if (!id) openedTargetChatKeyRef.current = null;
+        });
+      }
+      return;
+    }
+
+    if (!activeChatId && chats.length > 0) {
+      void switchChat(chats[0].id);
+    }
+  }, [
+    listLoading, requestedChatKey, syllabusTopic, tutorSubjectValue,
+    chats, activeChatId, switchChat, createChat,
+  ]);
 
   const handleSend = useCallback(async (
     attachment: { base64: string; mimeType: string; name: string } | null,
@@ -230,7 +266,7 @@ export default function JambAITutorPage() {
               <h1 className="truncate text-sm font-semibold">
                 {visibleTutorSubject?.label ? `${visibleTutorSubject.label} Tutor` : tutorSubjectLabel ? `${tutorSubjectLabel} Tutor` : "JAMB AI Study Tutor"}
               </h1>
-              <p className="truncate text-[10px] text-muted-foreground">{syllabusTopic ? syllabusTopic.title + " · " : ""}JAMB · Saved conversation</p>
+              <p className="truncate text-[10px] text-muted-foreground">{visibleTutorTopic ? visibleTutorTopic.title + " · " : ""}JAMB · Saved conversation</p>
             </div>
             <Button
               variant="outline"
@@ -328,8 +364,8 @@ export default function JambAITutorPage() {
               placeholder={
                 editingIndex !== null
                   ? "Edit your message…"
-                  : subject
-                    ? `Ask about ${JAMB_SUBJECT_INFO[subject].label}…`
+                  : visibleTutorSubject?.label
+                    ? `Ask about ${visibleTutorSubject.label}…`
                     : "Ask your JAMB tutor…"
               }
               editing={editingIndex !== null}

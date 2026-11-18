@@ -24,7 +24,11 @@ export function setJambTopicState(
   updatedAt = Date.now(),
 ): JambSyllabusProgressMap {
   if (!topicId.trim()) return progress;
-  return { ...progress, [topicId]: { state, updatedAt } };
+  const previousTimestamp = progress[topicId]?.updatedAt ?? 0;
+  return {
+    ...progress,
+    [topicId]: { state, updatedAt: Math.max(updatedAt, previousTimestamp + 1) },
+  };
 }
 
 export function getJambTopicState(
@@ -73,7 +77,18 @@ export function reconcileJambSyllabusProgress(
   const pendingUpserts: Array<[string, JambSyllabusTopicProgress]> = [];
   for (const [topicId, localEntry] of Object.entries(local)) {
     const remoteEntry = remote[topicId];
-    if (!remoteEntry || localEntry.updatedAt > remoteEntry.updatedAt) {
+    const stateRank: Record<JambSyllabusTopicState, number> = {
+      not_started: 0,
+      in_progress: 1,
+      completed: 2,
+    };
+    const localWins = !remoteEntry
+      || localEntry.updatedAt > remoteEntry.updatedAt
+      || (
+        localEntry.updatedAt === remoteEntry.updatedAt
+        && stateRank[localEntry.state] > stateRank[remoteEntry.state]
+      );
+    if (localWins) {
       merged[topicId] = localEntry;
       pendingUpserts.push([topicId, localEntry]);
     }

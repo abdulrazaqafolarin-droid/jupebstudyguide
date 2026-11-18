@@ -20,3 +20,12 @@ verify_jwt = false
 # Return OAuth and email authentication flows to the installed Android app.
 [auth]
 additional_redirect_urls = ["com.jupeb.master://auth"]
+
+[functions.exam-attempts]
+verify_jwt = false
+
+[functions.exam-practice]
+verify_jwt = false
+
+[functions.question-import]
+verify_jwt = false

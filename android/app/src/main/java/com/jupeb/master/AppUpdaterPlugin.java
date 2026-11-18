@@ -160,7 +160,7 @@ public class AppUpdaterPlugin extends Plugin {
                     .getPackageArchiveInfo(partial.getAbsolutePath(), signatureFlags);
                 if (archiveInfo == null
                         || !getContext().getPackageName().equals(archiveInfo.packageName)) {
-                    throw new IllegalStateException("Downloaded file is not a JUPEB Master APK");
+                    throw new IllegalStateException("Downloaded file does not belong to the installed Rutex Master app");
                 }
                 long archiveVersionCode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                     ? archiveInfo.getLongVersionCode()

@@ -4,7 +4,7 @@
 **Repository:** `abdulrazaqafolarin-droid/jupebstudyguide`  
 **Pull request:** [#78 — Add a separate JAMB study workspace](https://github.com/abdulrazaqafolarin-droid/jupebstudyguide/pull/78)  
 **Feature branch:** `feat/rutex-jamb-workspace`  
-**Branch head at this update:** `7db5e67174898c2ccde36db82a1b9fd77f8e6192`  
+**Branch head at this update:** `1975d064c6d50dd222629aa9cabfc3c82855ec3a`  
 **Supabase project:** `gzyczowqqywesqhqqpdi` (existing Rutex/JUPEB project)
 
 ## Release boundary
@@ -70,12 +70,12 @@ Before staging, an authorised administrator must attest to the right to store/us
 
 ## Validation and build state
 
-- The JAMB validation workflow on commit `e2587462e48aa8413776fef5a12391a8959e203b` passed importer regression tests against all three committed source packs, Deno programme-aware retrieval/scoring tests, JAMB Edge Function type checks, TypeScript, unit tests, lint, web build, Capacitor sync and Android debug compilation.
-- The repository-wide validation workflow on the same commit passed its substantive checks, including Supabase function typing/tests, application TypeScript, importer tooling, unit tests and lint.
+- The JAMB PR validation workflow on commit `50d95f27d6edef0230b3e71976a1264b5d1411df` passed importer regression tests against all three committed source packs, Deno programme-aware retrieval/scoring tests, JAMB Edge Function type checks, TypeScript, unit tests, lint, web build, Capacitor sync and Android debug compilation (workflow run `44256531973`).
+- The repository-wide validation workflow on the same commit passed its full check set, including Supabase function typing/tests, application TypeScript, importer tooling, unit tests, lint, production build, Android debug build/package identity, production health and updater endpoint checks (workflow run `44256532012`).
 - The separate Rutex Master Next artifact-only job succeeded on commit `c90f8cdd178ee1dbd1c29850bcb3f59f848478d1`: Gradle built the APK; package/version/minimum SDK checks passed; the APK signing certificate matched the dedicated successor keystore; and the verified artifact was uploaded to GitHub Actions as artifact `14404831797`. The Supabase updater-publication step was skipped, so no release file or updater manifest was changed.
 - The APK mismatch was caused by a hard-coded original Android application ID. Capacitor and Gradle now accept the explicit successor identity from CI while retaining `com.jupeb.master` as the default for normal builds.
 - The successor APK workflow is now scoped to the successor PR and its stacked UI PR; unrelated JAMB PR changes no longer need to build that separate release artifact.
-- The iOS simulator workflow passed on commit `cc5a3cd3f5b4766956c6242e762f7e49dc1b4286`: Capacitor iOS sync, Xcode simulator build, bundle identity, simulator installation, app launch and screenshot all passed. The workflow uploaded the simulator app and generated Xcode project, then committed four generated iOS icon/splash assets as `7db5e67174898c2ccde36db82a1b9fd77f8e6192`. That bot commit changes no JAMB logic, application code or backend.
+- The iOS simulator workflow passed on commit `50d95f27d6edef0230b3e71976a1264b5d1411df` (workflow run `44256531970`): Capacitor iOS sync, Xcode simulator build, bundle identity, simulator installation, app launch and screenshot all passed. The workflow uploaded the simulator app and generated Xcode project, then committed four generated iOS icon/splash assets as `1975d064c6d50dd222629aa9cabfc3c82855ec3a`. Comparing that bot commit with its parent confirmed those four image assets are its only changes; no JAMB logic, application code, SQL or Edge Function source changed. GitHub marks checks on the bot-authored asset commit as `action_required`; the full validation workflows passed on its parent commit. A normal-authored documentation commit is being used to trigger fresh checks against the final branch state.
 
 ## Remaining release gates
 

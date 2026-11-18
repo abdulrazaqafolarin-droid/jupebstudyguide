@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
-  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronRight, Clock3,
-  GraduationCap, Library, ShieldAlert, Sparkles, Target, Trophy,
+  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronDown, ChevronRight, ChevronUp, Clock3,
+  GraduationCap, Library, ShieldAlert, Sparkles, Star, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
@@ -172,8 +172,11 @@ const JAMB_MILESTONES = [
 ];
 
 function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; ready: boolean }) {
+  const [showLocked, setShowLocked] = useState(false);
   const unlocked = JAMB_MILESTONES.filter((milestone) => answeredCount >= milestone.target);
+  const locked = JAMB_MILESTONES.filter((milestone) => answeredCount < milestone.target);
   const progress = Math.min(100, Math.round((unlocked.length / JAMB_MILESTONES.length) * 100));
+
   return (
     <div className="bg-card rounded-xl border border-border p-5 space-y-4 transition-all duration-300 hover:border-primary/30 hover:shadow-md">
       <div className="flex items-center justify-between gap-3">
@@ -191,36 +194,73 @@ function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; 
           <span className="text-sm text-muted-foreground">/{JAMB_MILESTONES.length}</span>
         </div>
       </div>
+
       <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary">
-        <div className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-700" style={{ width: ready ? `${progress}%` : "0%" }} />
+        <div className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-700 ease-out" style={{ width: ready ? `${progress}%` : "0%" }} />
       </div>
+
       {ready && unlocked.length > 0 ? (
         <div className="space-y-2">
-          {unlocked.slice(0, 4).map((milestone) => (
-            <div key={milestone.id} className="flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-2">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">★</span>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold">{milestone.label}</p>
-                <p className="text-[10px] text-muted-foreground">{milestone.description}</p>
+          {unlocked.slice(0, 5).map((milestone, index) => (
+            <div key={milestone.id} className="animate-in-up" style={{ animationDelay: `${index * 0.05}s` }}>
+              <div className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 px-3 py-2.5">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Star className="h-3.5 w-3.5 fill-current" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold">{milestone.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{milestone.description}</p>
+                </div>
+                <span className="text-[10px] font-semibold text-primary">Unlocked</span>
               </div>
-              <span className="text-[10px] font-semibold text-primary">Unlocked</span>
             </div>
           ))}
-          {unlocked.length > 4 && <p className="text-center text-xs text-muted-foreground">+{unlocked.length - 4} more unlocked</p>}
+          {unlocked.length > 5 && !showLocked && (
+            <p className="pt-1 text-center text-xs text-muted-foreground">+{unlocked.length - 5} more unlocked</p>
+          )}
         </div>
       ) : (
-        <div className="py-3 text-center">
+        <div className="py-5 text-center">
           <Trophy className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
-          <p className="text-sm text-muted-foreground">Save a JAMB practice answer to unlock your first milestone.</p>
+          <p className="text-sm text-muted-foreground">Start practising to unlock your first JAMB milestone.</p>
         </div>
       )}
+
+      {locked.length > 0 && ready && (
+        <button
+          type="button"
+          onClick={() => setShowLocked((value) => !value)}
+          className="flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {showLocked ? <><ChevronUp className="h-3 w-3" /> Hide locked</> : <><ChevronDown className="h-3 w-3" /> Show {locked.length} locked</>}
+        </button>
+      )}
+
+      {showLocked && ready && locked.length > 0 && (
+        <div className="space-y-2 border-t border-border pt-3">
+          {locked.map((milestone, index) => (
+            <div key={milestone.id} className="animate-in-up" style={{ animationDelay: `${index * 0.03}s` }}>
+              <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/20 px-3 py-2.5">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground">
+                  <Trophy className="h-3.5 w-3.5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium">{milestone.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{milestone.description}</p>
+                </div>
+                <span className="text-[10px] text-muted-foreground">{milestone.target} answers</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <p className="border-t border-border pt-3 text-center text-[10px] text-muted-foreground">
         These milestones use JAMB activity only and do not affect JUPEB achievements.
       </p>
     </div>
   );
 }
-
 export default function JambHomePage() {
   const navigate = useNavigate();
   const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);

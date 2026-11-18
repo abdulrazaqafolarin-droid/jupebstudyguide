@@ -49,7 +49,8 @@ The JAMB syllabus is not marked verified, and a complete official UTME mock rema
 | Timed practice | `/jamb/cbt/setup` and `/jamb/cbt/:attemptId` | JAMB server-authoritative practice flow. This is not represented as the full official UTME mock. |
 | Study stats | `/jamb/stats` | Dedicated JAMB-only analytics: saved-answer activity, JAMB question coverage, subject distribution, bookmarks, days studied, streaks and recent activity. |
 | Achievements | `/jamb/achievements` | Dedicated JAMB-only milestones for practice, consistency and bookmarks. These are Rutex milestones, not official JAMB awards. |
-| Chat, friends, leaderboard, discover | Shared platform routes | Intentionally shared social/community features, not exam-content pages. |
+| Chat, friends, discover | Shared platform routes | Intentionally shared social/community features, not exam-content pages. The JAMB discover view does not claim the JUPEB ranking as JAMB performance. |
+| Leaderboard | `/jamb/leaderboard` | JAMB has its own route and navigation entry. The ranking is deliberately empty until a server-verified JAMB-only scoring feed exists; JUPEB points are never presented as JAMB ranks. |
 | Profile, profile settings, security, notifications, app download | Shared platform routes/components | Intentionally shared account and app services. |
 | Admin question operations | `/admin/jamb-questions` | JAMB-specific review/import path; platform admin and activation-code pages remain shared administration. |
 
@@ -57,7 +58,7 @@ The JAMB syllabus is not marked verified, and a complete official UTME mock rema
 
 - **Guided daily mission and mission history:** not fully implemented as a JAMB workflow. JUPEB's equivalent depends on a verified topic calendar and topic-linked questions. The JAMB dashboard's current timed-practice shortcut is deliberately not described as a mission. A true version must be driven by reviewed JAMB questions and a verified JAMB topic plan.
 - **Official syllabus and topic tracking:** blocked on obtaining, versioning and verifying the applicable JAMB syllabus. No JUPEB topics are substituted.
-- **Accuracy, mastery and score-derived awards:** must remain unavailable or explicitly ungraded until approved JAMB answer keys and scored attempt records are available. Saved option selections are not evidence of correctness.
+- **Accuracy, mastery, score-derived awards and ranked leaderboard:** must remain unavailable or explicitly ungraded until approved JAMB answer keys, scored attempt records and a programme-scoped ranking feed are available. Saved option selections are not evidence of correctness.
 - **Full official UTME mock:** remains disabled pending compulsory Use of English content, verified current exam configuration and sufficient approved question coverage.
 
 The following pages remain intentionally shared because they are account or platform services rather than exam-specific learning data: chat, friends, leaderboard, discover, profile, profile settings, security settings, notifications and app download. Shared visibility does not grant these routes access to JUPEB-only question or progress data.

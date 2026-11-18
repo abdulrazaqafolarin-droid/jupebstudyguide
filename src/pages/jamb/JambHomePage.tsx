@@ -8,7 +8,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import StreakDisplay from "@/components/StreakDisplay";
-import { LeaderboardPanel } from "@/components/LeaderboardPanel";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import {
@@ -460,9 +459,16 @@ export default function JambHomePage() {
           <JambMilestonesPanel answeredCount={totalAnswered} ready={progressReady} />
         </section>
 
-        {/* Shared community leaderboard — this is a platform-wide feature, not exam progress. */}
-        <section className="mb-12 animate-in-up stagger-3">
-          <LeaderboardPanel />
+        {/* JAMB rankings are kept separate from the JUPEB/platform score feed. */}
+        <section className="mb-12 animate-in-up stagger-3 rounded-2xl border border-border bg-card p-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10"><Trophy className="h-5 w-5 text-primary" /></div>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-semibold">JAMB Leaderboard</h2>
+              <p className="text-xs text-muted-foreground">A separate JAMB ranking will appear when verified JAMB attempt scores are available.</p>
+            </div>
+            <Link to="/jamb/leaderboard" className="shrink-0 text-xs font-semibold text-primary hover:underline">View</Link>
+          </div>
         </section>
 
         {/* The two large action panels mirror the JUPEB dashboard's activity row. */}

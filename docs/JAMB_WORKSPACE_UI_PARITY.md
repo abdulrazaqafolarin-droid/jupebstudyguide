@@ -9,7 +9,7 @@ Shared presentation components should be reused where they do not carry programm
 ## UI parity delivered
 
 - **Workspace navigation:** the same five-slot bottom navigation, drawer structure, account controls and workspace switcher. Direct messages and community destinations remain shared. Study Chat opens the programme-aware tutor.
-- **Dashboard:** the same animated hero, primary actions, progress ring, subject-card styling, quick actions and study tips. JAMB counts, streaks and milestones are computed from JAMB progress only.
+- **Dashboard:** the same animated hero, primary actions, Daily Mission card position, progress ring, subject-card styling, quick actions and study tips. JAMB counts, streaks and milestones are computed from JAMB progress only. The Daily Mission card links to a real timed JAMB drill; its topic-led 30-day lessons remain gated until official syllabus topics are verified.
 - **Past questions:** the same staged learning flow: subject selection, available year selection, question practice, saved answer feedback and a bookmark history. JAMB content is loaded only from the JAMB question projection.
 - **Syllabus:** the same searchable subject accordion and sticky header. The UI does not fabricate topics. Topic tracking remains unavailable until official JAMB syllabus material is verified and published.
 - **AI tutor:** reuses JUPEB's conversation sidebar, grouped persistent history, message thread, editing/rewind, retry, attachments and composer. It uses the JAMB tutor system prompt and sends `examProgramId: "jamb"` to the chat proxy.

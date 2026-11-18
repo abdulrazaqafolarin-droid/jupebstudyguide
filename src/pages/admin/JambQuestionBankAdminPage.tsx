@@ -188,6 +188,24 @@ export default function JambQuestionBankAdminPage() {
       if (sourceHash.toLowerCase() !== parsed.source_sha256.toLowerCase()) {
         throw new Error("The original source file does not match the SHA-256 recorded in the generated JSON. Re-run the importer from that exact source file.");
       }
+
+      // Do not upload or stage anything until the deployed Edge Function
+      // confirms support for stable offsets and idempotent chunk retries.
+      let capabilities: Record<string, unknown>;
+      try {
+        capabilities = await invokeImport({ action: "capabilities" }) as Record<string, unknown>;
+      } catch {
+        throw new Error("The JAMB source importer update is not deployed yet. No source file was uploaded. Retry after the admin importer service has been updated.");
+      }
+      if (
+        capabilities.protocol_version !== 2 ||
+        capabilities.resumable_source_chunks !== true ||
+        capabilities.stable_item_offsets !== true ||
+        capabilities.duplicate_chunk_retries !== true
+      ) {
+        throw new Error("The deployed JAMB importer does not support safe resumable uploads yet. No source file was uploaded.");
+      }
+
       const safeName = sourceFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       const storagePath = "jamb/" + user.id + "/" + sourceHash + "/" + safeName;
       const { error: uploadError } = await supabase.storage

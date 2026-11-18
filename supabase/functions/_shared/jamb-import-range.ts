@@ -1,3 +1,5 @@
+export const JAMB_IMPORT_PROTOCOL_VERSION = 2;
+
 export interface JambImportItemRange {
   /** Zero-based offset within the original source package. */
   offset: number;

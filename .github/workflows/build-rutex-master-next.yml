@@ -1,8 +1,8 @@
 name: Build Rutex Master Next (artifact only)
 on:
   pull_request:
-    # Build the signed successor artifact for its stacked UI feature PR as well
-    # as the original successor PR. Publishing remains manual and opt-in only.
+    # Build the signed successor artifact for the successor app and the JAMB
+    # workspace that ships inside it. Publishing remains manual and opt-in only.
     branches:
       - main
       - release/rutex-master-next-side-by-side-2026-11-10
@@ -26,12 +26,13 @@ concurrency:
 jobs:
   build:
     name: Build and verify side-by-side successor APK
-    # This release workflow belongs to the successor PR and its stacked UI PR.
-    # Keep unrelated PRs (including the JAMB workspace) out of the APK pipeline.
+    # Only the successor release, its stacked UI feature, and the JAMB workspace
+    # produce this package. Other PRs remain outside the signed APK pipeline.
     if: >-
       github.event_name != 'pull_request' ||
       github.event.pull_request.head.ref == 'release/rutex-master-next-side-by-side-2026-11-10' ||
-      github.event.pull_request.head.ref == 'feat/independent-question-scroll-multi-inline-crop-2026-11-11'
+      github.event.pull_request.head.ref == 'feat/independent-question-scroll-multi-inline-crop-2026-11-11' ||
+      github.event.pull_request.head.ref == 'feat/rutex-jamb-workspace'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:

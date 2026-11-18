@@ -14,6 +14,8 @@ export function useJambBookmarks() {
   );
   const bookmarksRef = useRef(bookmarks);
   const deletedBookmarkIdsRef = useRef(deletedBookmarkIds);
+  const syncInFlightRef = useRef(false);
+  const syncRequestedRef = useRef(false);
 
   useEffect(() => { bookmarksRef.current = bookmarks; }, [bookmarks]);
   useEffect(() => { deletedBookmarkIdsRef.current = deletedBookmarkIds; }, [deletedBookmarkIds]);
@@ -23,6 +25,12 @@ export function useJambBookmarks() {
     let active = true;
 
     const sync = async () => {
+      if (syncInFlightRef.current) {
+        syncRequestedRef.current = true;
+        return;
+      }
+      syncInFlightRef.current = true;
+      try {
       const userId = user.id;
       const { data, error } = await supabase
         .from("exam_user_bookmarks")
@@ -110,6 +118,13 @@ export function useJambBookmarks() {
             { onConflict: "user_id,exam_program_id,question_id", ignoreDuplicates: true },
           );
         if (syncError) console.warn("[JAMB bookmarks] Could not sync local bookmarks:", syncError.message);
+      }
+      } finally {
+        syncInFlightRef.current = false;
+        if (syncRequestedRef.current && active) {
+          syncRequestedRef.current = false;
+          void sync();
+        }
       }
     };
 

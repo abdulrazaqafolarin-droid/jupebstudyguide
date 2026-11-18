@@ -111,8 +111,8 @@ export function useStudyChat(
       setActiveTopic(null);
       return;
     }
-    if (canUseSyllabusTopicContext(examProgramId, row.topic_id)) {
-      const found = findSyllabusTopic(row.topic_id!);
+    if (row.topic_id && canUseSyllabusTopicContext(examProgramId, row.topic_id)) {
+      const found = findSyllabusTopic(row.topic_id);
       setActiveTopic(found ? { topic: found.topic, subject: found.subject, subtopic: row.subtopic } : null);
     } else {
       setActiveTopic(null);

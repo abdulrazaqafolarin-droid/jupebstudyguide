@@ -18,6 +18,9 @@ export function useJambPracticeProgress() {
     {},
   );
   const savedAnswersRef = useRef(savedAnswers);
+  const syncInFlightRef = useRef(false);
+  const syncRequestedRef = useRef(false);
+  const answerWriteQueuesRef = useRef(new Map<string, Promise<void>>());
   useEffect(() => { savedAnswersRef.current = savedAnswers; }, [savedAnswers]);
 
   useEffect(() => {
@@ -25,6 +28,12 @@ export function useJambPracticeProgress() {
     let active = true;
 
     const sync = async () => {
+      if (syncInFlightRef.current) {
+        syncRequestedRef.current = true;
+        return;
+      }
+      syncInFlightRef.current = true;
+      try {
       const userId = user.id;
       const { data, error } = await supabase
         .from("exam_user_progress")
@@ -70,6 +79,13 @@ export function useJambPracticeProgress() {
         );
         if (syncError) console.warn("[JAMB progress] Could not sync local answers:", syncError.message);
       }
+      } finally {
+        syncInFlightRef.current = false;
+        if (syncRequestedRef.current && active) {
+          syncRequestedRef.current = false;
+          void sync();
+        }
+      }
     };
 
     void sync();
@@ -93,10 +109,15 @@ export function useJambPracticeProgress() {
     const savedAt = Date.now();
     setSavedAnswers((previous) => ({ ...previous, [questionId]: { selected, savedAt } }));
     if (!user?.id) return;
-    void (async () => {
+    savedAnswersRef.current = {
+      ...savedAnswersRef.current,
+      [questionId]: { selected, savedAt },
+    };
+    const previousWrite = answerWriteQueuesRef.current.get(questionId) ?? Promise.resolve();
+    const nextWrite = previousWrite.catch(() => undefined).then(async () => {
       const { data: existing, error: readError } = await supabase
         .from("exam_user_progress")
-        .select("viewed_count")
+        .select("viewed_count,last_answered_at")
         .eq("user_id", user.id)
         .eq("exam_program_id", "jamb")
         .eq("question_id", questionId)
@@ -105,6 +126,8 @@ export function useJambPracticeProgress() {
         console.warn("[JAMB progress] Cloud read failed; local answer retained for reconnect:", readError.message);
         return;
       }
+      const existingTime = existing?.last_answered_at ? new Date(existing.last_answered_at).getTime() : 0;
+      if (existingTime > savedAt) return; // A newer answer has already reached the server.
       const { error } = await supabase.from("exam_user_progress").upsert({
         user_id: user.id,
         exam_program_id: "jamb",
@@ -115,7 +138,12 @@ export function useJambPracticeProgress() {
         viewed_count: existing?.viewed_count ?? 1,
       }, { onConflict: "user_id,exam_program_id,question_id" });
       if (error) console.warn("[JAMB progress] Cloud write failed; local answer retained:", error.message);
-    })();
+    }).finally(() => {
+      if (answerWriteQueuesRef.current.get(questionId) === nextWrite) {
+        answerWriteQueuesRef.current.delete(questionId);
+      }
+    });
+    answerWriteQueuesRef.current.set(questionId, nextWrite);
   }, [isReady, setSavedAnswers, user?.id]);
 
   return { savedAnswers, saveAnswer, isReady };

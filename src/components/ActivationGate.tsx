@@ -11,13 +11,16 @@ import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
 import { toast } from "sonner";
 import { formatTrialCountdown } from "@/lib/trial-countdown";
+import type { ExamProgramId } from "@/lib/exam-program";
 
 interface ActivationGateProps {
   children: React.ReactNode;
+  programId?: ExamProgramId;
 }
 
-export const ActivationGate = ({ children }: ActivationGateProps) => {
-  const { status, validateCode, validating, error, refreshStatus } = useActivation();
+export const ActivationGate = ({ children, programId = "jupeb" }: ActivationGateProps) => {
+  const programLabel = programId === "jamb" ? "JAMB / UTME" : "JUPEB";
+  const { status, validateCode, validating, error, refreshStatus } = useActivation(programId);
   const { user, signOut } = useAuth();
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [showActivationEntry, setShowActivationEntry] = useState(false);
@@ -65,9 +68,9 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
       setActivationCode("");
       setShowActivationEntry(false);
       await refreshStatus();
-      toast.success(`Account activated with the ${result.plan_type || "basic"} plan.`);
+      toast.success(`${programLabel} activated with the ${result.plan_type || "subscription"} plan.`);
     }
-  }, [activationCode, validating, validateCode, refreshStatus]);
+  }, [activationCode, validating, validateCode, refreshStatus, programLabel]);
 
   if (status.checking) {
     return (
@@ -196,16 +199,17 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     );
   }
 
-  return <ActivationScreen email={user?.email || ""} onSignOut={signOut} />;
+  return <ActivationScreen email={user?.email || ""} onSignOut={signOut} programId={programId} />;
 };
 
 const ADMIN_WHATSAPP = ["2348124504552", "2347043353166"];
 
-const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => {
+const ActivationScreen = ({ email, onSignOut, programId }: { email: string; onSignOut: () => void; programId: ExamProgramId }) => {
+  const programLabel = programId === "jamb" ? "JAMB / UTME" : "JUPEB";
   const [code, setCode] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [planType, setPlanType] = useState("");
-  const { validateCode, validating, error } = useActivation();
+  const { validateCode, validating, error } = useActivation(programId);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -265,11 +269,11 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
         <CardHeader className="text-center pb-4">
           <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mx-auto mb-4">
             <GraduationCap className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">JUPEB Master</span>
+            <span className="text-sm font-medium text-primary">{programLabel} preparation</span>
           </div>
-          <CardTitle className="text-2xl font-bold">Activate Your Account</CardTitle>
+          <CardTitle className="text-2xl font-bold">Activate Your {programLabel} Access</CardTitle>
           <CardDescription>
-            Enter your activation code to access the app
+            Enter an activation code issued specifically for {programLabel}. Codes for the other programme will not work here.
           </CardDescription>
         </CardHeader>
 
@@ -359,7 +363,7 @@ const ActivationScreen = ({ email, onSignOut }: { email: string; onSignOut: () =
                   {ADMIN_EMAIL}
                 </a>
                 <a
-                  href={`https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code`}
+                  href={`https://wa.me/2348124504552?text=Hi%20I%20want%20to%20purchase%20a%20${encodeURIComponent(programLabel)}%20activation%20code`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-xs text-primary hover:underline bg-secondary/30 rounded-lg px-3 py-2"

@@ -48,6 +48,8 @@ import rutexLogo from '@/assets/rutex-logo.jpg';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 import { shouldShowSetupNudge } from '@/lib/onboarding';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { fetchOnboardingStatus, getCachedOnboardingStatus } from '@/lib/onboardingStatus';
 import { cn } from '@/lib/utils';
 
 type ConfettiOptions = import("canvas-confetti").Options;
@@ -89,7 +91,24 @@ const Index = () => {
   const { missions: dailyMissions, todayMission, todayDate: missionLocalDate, ready: dailyMissionsReady, startMission, updateMission } = useDailyMissions();
   const { customQuestions, refetch: refetchCustomQuestions } = useCustomQuestions();
   const { signOut, user } = useAuth();
+  const { programId } = useExamProgram();
   const { profile, loading: profileLoading, syncAchievements } = useProfile();
+  const [programmeOnboarding, setProgrammeOnboarding] = useState<{ completedAt: string | null; finalized: boolean } | null>(null);
+
+  useEffect(() => {
+    if (!user) { setProgrammeOnboarding(null); return; }
+    let cancelled = false;
+    const cached = getCachedOnboardingStatus(user.id, programId);
+    if (cached?.loaded) setProgrammeOnboarding({ completedAt: cached.completedAt, finalized: cached.finalized });
+    fetchOnboardingStatus(user.id, programId)
+      .then((status) => {
+        if (!cancelled) setProgrammeOnboarding({ completedAt: status.completedAt, finalized: status.finalized });
+      })
+      .catch((error) => {
+        if (!cancelled) console.error('[onboarding] home reminder check failed:', error);
+      });
+    return () => { cancelled = true; };
+  }, [user?.id, programId]);
   const { push: pushNotification } = useNotificationsContext();
   const { 
     currentStreak, 
@@ -173,10 +192,10 @@ const Index = () => {
   const [sessionHours, setSessionHours] = useUserStorage<number[]>('session-hours', []);
 
   // Onboarding: electives chosen in the welcome flow pre-seed the syllabus setup
-  const [onboardingElectives] = useUserStorage<Subject[]>('onboarding-subjects', []);
-  // Dismissible "finish setup" nudge for students who skipped the welcome flow
-  const [nudgeDismissed, setNudgeDismissed] = useUserStorage<boolean>('onboarding-nudge-dismissed', false);
-  const showSetupNudge = !nudgeDismissed && shouldShowSetupNudge(profile);
+  const [onboardingElectives] = useUserStorage<Subject[]>(`onboarding-subjects:${programId}`, []);
+  // Each exam programme owns its own reminder dismissal and completion state.
+  const [nudgeDismissed, setNudgeDismissed] = useUserStorage<boolean>(`onboarding-nudge-dismissed:${programId}`, false);
+  const showSetupNudge = !nudgeDismissed && Boolean(programmeOnboarding?.completedAt) && !programmeOnboarding?.finalized;
   const studiedAfterMidnight = useMemo(() =>
     sessionHours.some(h => h >= 0 && h < 5),
     [sessionHours],
@@ -380,7 +399,7 @@ const Index = () => {
     studiedAfterMidnight,
     studiedBefore6am,
     consecutiveCorrect,
-    onboardingCompleted: !!profile?.onboarding_completed_at,
+    onboardingCompleted: Boolean(programmeOnboarding?.completedAt),
   }, handleNewAchievement, profile?.achievements ?? []);
 
   // Sync unlocked achievements to profiles table

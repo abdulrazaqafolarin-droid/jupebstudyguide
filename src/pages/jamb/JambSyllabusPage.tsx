@@ -264,7 +264,7 @@ export default function JambSyllabusPage() {
                                     )}
                                     <span className="min-w-0 flex-1">
                                       <span className="block text-sm font-medium">{topic.number}. {topic.title}</span>
-                                      <span className="mt-0.5 block text-[10px] text-muted-foreground">{STATUS_LABEL[topicState]} · source PDF page{topic.sourcePages.length === 1 ? "" : "s"} {topic.sourcePages.join(", ")}</span>
+                                      <span className="mt-0.5 block text-[10px] text-muted-foreground">{STATUS_LABEL[topicState]} · {subject.sourcePageLabel ?? "Source pages"} {topic.sourcePages.join(", ")}</span>
                                     </span>
                                     <ChevronDown className={"h-4 w-4 shrink-0 text-muted-foreground transition-transform " + (topicExpanded ? "rotate-180" : "")} />
                                   </button>
@@ -356,7 +356,7 @@ export default function JambSyllabusPage() {
                           >
                             Open uploaded source PDF <ExternalLink className="h-3 w-3" />
                           </a>
-                          <span className="text-[10px] text-muted-foreground">Uploaded-source SHA-256 recorded · {subject.sourcePageCount} pages{subject.officialSourceCheckedAt ? " · IBASS checked " + subject.officialSourceCheckedAt : ""}</span>
+                          <span className="text-[10px] text-muted-foreground">Uploaded-source uploaded PDF SHA-256 recorded · {subject.sourcePageCount} pages{subject.officialSourceCheckedAt ? " · IBASS checked " + subject.officialSourceCheckedAt : ""}</span>
                         </div>
                       </div>
                     </motion.div>

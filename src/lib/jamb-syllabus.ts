@@ -36,6 +36,7 @@ export interface JambSyllabusSubject {
   sourceFile: string;
   sourceSha256: string;
   sourcePageCount: number;
+  sourcePageLabel?: string;
   officialSourceUrl?: string;
   officialSourceCheckedAt?: string;
   sourceComparisonNote?: string;
@@ -66,179 +67,173 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceSha256: "62f5ac84592735cd5829296cb52da5bc8b582ee0f2227999cca73b58dcabfee5",
     sourcePageCount: 20, reviewState: "needs_current_source_review",
     officialSourceUrl: "https://ibass.jamb.gov.ng/assets/uploads/Physics.pdf",
-    officialSourceCheckedAt: "2026-11-18",
-    sourceComparisonNote: "JAMB-hosted IBASS Physics PDF is available. The uploaded 2025 copy is retained as supplied; the complete topic/objective mapping still needs line-by-line reconciliation against the IBASS PDF.",
+    officialSourceCheckedAt: "2026-11-19",
+    sourcePageLabel: "JAMB IBASS printed pages",
+    sourceComparisonNote: "The current JAMB-hosted IBASS Physics PDF lists 39 topics. The uploaded July 2025 copy has different topic ordering and includes a separate Fibre Optics and Lasers topic; the current IBASS PDF instead includes optical fibre within Refraction and does not list a separate fibre/laser topic. This catalogue follows the JAMB-hosted 39-topic IBASS structure. The uploaded PDF remains linked separately as provenance for the source pack, and no questions from it are published.",
     generalObjectives: [
       "Sustain interest in physics.",
-      "Develop attitudes relevant to accuracy, precision and objectivity.",
+      "Develop attitudes that encourage accuracy, precision and objectivity.",
       "Interpret physical phenomena, laws, definitions, concepts and theories.",
       "Solve physics problems correctly using relevant theories and concepts.",
     ],
-    sections: [{
-      id: "physics-core", title: "Physics syllabus",
-      topics: [
+    sections: [{ id: "physics-core", title: "Physics syllabus (current IBASS structure)", topics: [
         {
-          ...topic("phy-01-measurements", "1", "Measurements and Units", ["Fundamental and derived units", "Measuring instruments", "Fundamental physical quantities", "Dimensions", "Experimental accuracy, errors and significant figures"], [1,2]),
-          objectives: ["Identify SI and common units of length, area, volume, mass and time.","Use metre rules, vernier callipers, micrometers, measuring cylinders, stopwatches and balances.","Determine lengths, surface areas and volumes of regular and irregular bodies.","Relate fundamental quantities to their units and deduce units of derived quantities.","Determine dimensions, test dimensional homogeneity and use dimensions to check equations.","Assess instrument accuracy, estimate errors and express measurements in standard form."],
+          ...topic("phy-01-measurements", "1", "Measurements and Units", ["Length, area and volume; metre rule, vernier callipers, micrometer screw gauge and measuring cylinder","Mass, beam balances and time-measuring devices","Fundamental and derived quantities, dimensions and dimensional homogeneity","Accuracy, errors, significant figures and standard form","Position, distance, displacement, coordinates and frame of reference"], [172,173]),
+          objectives: ["Identify units of length, area and volume and use measuring instruments to determine regular and irregular bodies.","Identify mass and time units and use beam balances and time-measuring devices.","Relate fundamental quantities to units and deduce derived units and dimensions; test equation homogeneity.","Assess instrument accuracy, estimate errors and express measurements in standard form.","Use measuring tools, compasses, protractors and Cartesian coordinates; plot graphs and draw inferences."],
         },
         {
-          ...topic("phy-02-scalars-vectors", "2", "Scalars and Vectors", ["Scalar and vector quantities", "Relative velocity", "Resolution of vectors", "Graphical methods", "Measurement, position, distance and displacement", "Coordinates and frame of reference"], [2]),
-          objectives: ["Distinguish scalar from vector quantities and give examples.","Determine resultants of two or more vectors, relative velocity and perpendicular components.","Use graphical methods, strings and measuring instruments to solve vector and displacement problems.","Distinguish distance from displacement and use compass bearings, protractors and Cartesian coordinates to locate positions.","Identify the accuracy and appropriate use of instruments for measuring position and displacement."],
+          ...topic("phy-02-scalars-vectors", "2", "Scalars and Vectors", ["Definitions and examples of scalar and vector quantities","Relative velocity","Resolution of vectors into perpendicular directions, including graphical methods"], [173]),
+          objectives: ["Distinguish scalars from vectors and give examples.","Determine resultants and relative velocity; resolve vectors into perpendicular components.","Use graphical methods to solve vector problems."],
         },
         {
-          ...topic("phy-04-motion", "3", "Motion", ["Newton's laws", "Types and causes of motion", "Linear motion and motion graphs", "Projectiles", "Circular motion", "Simple harmonic motion"], [3,4]),
-          objectives: ["Identify translational, oscillatory, rotational, spin and random motion.","Explain inertia, mass, force, impulse and momentum and solve collinear-motion problems.","Interpret Newton's laws, force-time graphs and conservation of linear momentum.","Distinguish contact forces from field forces and identify push and pull as forms of force.","Differentiate speed, velocity and acceleration and apply uniformly accelerated motion equations.","Solve problems involving motion under gravity and interpret distance-time and velocity-time graphs.","Calculate instantaneous velocity, acceleration, projectile range, maximum height and time of flight.","Establish angular velocity, angular acceleration and centripetal force and solve circular-motion problems.","Relate period and frequency, analyse energy changes in simple harmonic motion and identify forced vibrations and resonance."],
+          ...topic("phy-03-motion", "3", "Motion", ["Translational, oscillatory, rotational, spin and random motion; relative motion and causes","Contact and field forces","Linear motion, projectiles, Newton's laws, impulse and momentum","Circular motion and simple harmonic motion"], [174,175]),
+          objectives: ["Identify types of motion and solve collinear-motion problems.","Identify force as a cause of motion; distinguish contact and field forces; differentiate speed, velocity and acceleration.","Deduce uniformly accelerated-motion equations; solve gravity and projectile problems; interpret motion graphs.","Solve impulse and momentum problems; interpret Newton's laws, force-time graphs and conservation of momentum.","Solve circular-motion problems; relate period and frequency; analyse simple harmonic motion, forced vibration and resonance."],
         },
         {
-          ...topic("phy-05-gravitational-field", "4", "Gravitational Field", ["Universal gravitation", "Gravitational potential and fields", "Acceleration due to gravity", "Mass and weight", "Escape velocity and orbits"], [4]),
-          objectives: ["Apply Newton's law of universal gravitation to calculate forces between bodies.","Explain gravitational potential and distinguish conservative from non-conservative fields.","Explain variations in gravitational acceleration over the Earth's surface.","Differentiate mass from weight and solve related problems.","Calculate escape velocity and explain orbital motion and weightlessness."],
+          ...topic("phy-04-gravitational-field", "4", "Gravitational Field", ["Universal gravitation, gravitational potential and conservative and non-conservative fields","Acceleration due to gravity and its variation over the Earth's surface","Mass, weight, escape velocity, parking orbits and weightlessness"], [175]),
+          objectives: ["Apply Newton's law of universal gravitation and identify gravitational force between bodies.","Give examples of conservative and non-conservative fields and deduce gravitational potential.","Explain variation in g, distinguish mass from weight and determine escape velocity."],
         },
         {
-          ...topic("phy-06-equilibrium", "5", "Equilibrium of Forces", ["Equilibrium of particles", "Triangles and polygon of forces", "Lami's theorem", "Principle of moments and torque", "Centre of gravity and stability"], [5]),
-          objectives: ["Apply equilibrium conditions for coplanar forces to solve problems.","Use triangle and polygon laws of forces and Lami's theorem.","Calculate moments and couples and describe their applications.","Apply equilibrium conditions to rigid bodies under parallel and non-parallel forces.","Resolve forces into perpendicular components and determine resultants and equilibrants.","Differentiate stable, unstable and neutral equilibrium."],
+          ...topic("phy-05-equilibrium", "5", "Equilibrium of Forces", ["Equilibrium of coplanar forces, triangle and polygon laws and Lami's theorem","Moments, couples, rigid-body equilibrium, resultants and equilibrants","Centre of gravity and stable, unstable and neutral equilibrium"], [175]),
+          objectives: ["Apply conditions for equilibrium of coplanar forces and use triangle/polygon laws and Lami's theorem.","Determine moments and couples and describe applications.","Apply rigid-body equilibrium, resolve forces and determine resultants and equilibrants.","Differentiate stable, unstable and neutral equilibrium."],
         },
         {
-          ...topic("phy-07-friction", "6", "Friction", ["Static and dynamic friction", "Coefficient of limiting friction", "Advantages and reduction of friction", "Viscosity and terminal velocity", "Stoke's law"], [5]),
-          objectives: ["Differentiate static and dynamic friction and determine limiting friction coefficients.","Compare the advantages and disadvantages of friction and suggest ways to reduce it.","Analyse factors affecting viscosity and terminal velocity.","Apply Stoke's law to solve simple problems."],
+          ...topic("phy-06-work-energy-power", "6", "Work, Energy and Power", ["Work, energy, power, forms and conservation of energy","Energy transformation and area under force-distance curve","Energy sources, development, diversification, environmental impact and energy crises","Dams, nuclear energy and solar energy"], [175,176]),
+          objectives: ["Differentiate work, energy and power and compare energy forms.","Apply conservation and transformation of energy; interpret force-distance graphs and solve numerical problems.","Identify energy sources and distinguish renewable from non-renewable energy.","Explain energy's role in development, environmental impact, safe use and energy conversion.","Identify energy-production devices, dams, nuclear and solar energy."],
         },
         {
-          ...topic("phy-08-work-energy-power", "7", "Work, Energy and Power", ["Forms and conservation of energy", "Energy conversion", "Energy and society", "Dams, nuclear and solar energy"], [5,6]),
-          objectives: ["Differentiate work, energy and power and solve numerical problems.","Compare forms of energy and apply conservation and transformation of energy.","Interpret the area under a force-distance graph.","Identify renewable and non-renewable energy sources and discuss energy use, development and environmental effects.","Explain energy diversification, energy conversion, dams, nuclear energy, solar collectors, photovoltaic cells and solar panels.","Relate solar energy to the photoelectric effect, work function and Planck's constant."],
+          ...topic("phy-07-friction", "7", "Friction", ["Static and dynamic friction; coefficient of limiting friction","Advantages, disadvantages and reduction of friction","Viscosity, terminal velocity and Stoke's law"], [176]),
+          objectives: ["Differentiate static and dynamic friction and determine limiting-friction coefficient.","Compare advantages and disadvantages and suggest ways to reduce friction.","Analyse factors affecting viscosity and terminal velocity and apply Stoke's law."],
         },
         {
-          ...topic("phy-09-simple-machines", "8", "Simple Machines", ["Types of simple machines", "Mechanical advantage", "Velocity ratio", "Efficiency"], [6]),
-          objectives: ["Identify types of simple machines and explain their operation.","Calculate mechanical advantage, velocity ratio and efficiency.","Solve numerical problems involving simple machines."],
+          ...topic("phy-08-simple-machines", "8", "Simple Machines", ["Definition and types of simple machines","Mechanical advantage, velocity ratio and efficiency"], [176]),
+          objectives: ["Identify types of simple machines.","Solve problems involving simple machines, mechanical advantage, velocity ratio and efficiency."],
         },
         {
-          ...topic("phy-10-elasticity", "9", "Elasticity: Hooke's Law and Young's Modulus", ["Elastic limit, yield point and breaking point", "Spring balance", "Work done in springs and elastic strings"], [7]),
-          objectives: ["Interpret force-extension curves and explain elastic limit, yield point and breaking point.","Apply Hooke's law and Young's modulus to material behaviour.","Use a spring balance to measure force.","Calculate work done in springs and elastic strings."],
+          ...topic("phy-09-elasticity", "9", "Elasticity", ["Elastic limit, yield point, breaking point, Hooke's law and Young's modulus","Spring balance and work done per unit volume in springs and elastic strings"], [177]),
+          objectives: ["Interpret force-extension curves, Hooke's law and Young's modulus.","Use a spring balance to measure force and determine work done in springs and elastic strings."],
         },
         {
-          ...topic("phy-11-pressure", "10", "Pressure", ["Atmospheric pressure and its measurement", "Barometers and manometers", "Pressure in liquids", "Pascal's principle"], [7]),
-          objectives: ["Recognise the SI unit of pressure and identify pressure-measuring instruments.","Explain atmospheric pressure and the use of mercury and aneroid barometers and manometers.","Relate pressure variation to height and use a barometer as an altimeter.","Determine the relationship between pressure, depth and liquid density.","Apply Pascal's principle to solve problems involving pressure transmission in liquids."],
+          ...topic("phy-10-pressure", "10", "Pressure", ["Atmospheric pressure, SI unit and measurement; barometers and manometers","Variation of pressure with height and barometer as altimeter","Pressure in liquids, depth, density and Pascal's principle"], [177]),
+          objectives: ["Recognise pressure units and identify pressure-measuring instruments.","Relate pressure to height and use a barometer as an altimeter.","Determine pressure-depth-density relationships and apply pressure transmission in liquids."],
         },
         {
-          ...topic("phy-12-liquids-rest", "11", "Liquids at Rest", ["Density and relative density", "Upthrust", "Archimedes' principle", "Law of floatation and applications"], [7]),
-          objectives: ["Distinguish density from relative density and determine both for substances.","Calculate upthrust on a body immersed in a liquid.","Apply Archimedes' principle and the law of floatation to problems and applications such as ships and hydrometers."],
+          ...topic("phy-11-liquids-rest", "11", "Liquids at Rest", ["Density and relative density of solids and liquids","Upthrust, Archimedes' principle and law of floatation","Applications such as ships and hydrometers"], [177]),
+          objectives: ["Distinguish density from relative density.","Determine upthrust on an immersed body.","Apply Archimedes' principle and the law of floatation."],
         },
         {
-          ...topic("phy-13-temperature", "12", "Temperature and Its Measurement", ["Thermometric properties", "Calibration of thermometers", "Celsius and Kelvin scales", "Types of thermometers"], [7,8]),
-          objectives: ["Identify thermometric properties used in different thermometers.","Calibrate thermometers and compare thermometer types.","Differentiate Celsius, Fahrenheit and Kelvin scales and convert between them."],
+          ...topic("phy-12-temperature", "12", "Temperature and Its Measurement", ["Temperature and thermometric properties","Calibration and types of thermometers","Celsius and Kelvin scales and conversion"], [178]),
+          objectives: ["Identify thermometric properties and calibrate thermometers.","Compare thermometer types and convert between Celsius and Kelvin scales."],
         },
         {
-          ...topic("phy-14-quantity-heat", "13", "Quantity of Heat", ["Heat capacity", "Specific heat capacity", "Methods of determining heat capacity", "Newton's law of cooling"], [8]),
-          objectives: ["Differentiate heat capacity from specific heat capacity.","Determine heat capacity and specific heat capacity using simple experimental methods.","Solve numerical problems involving heat capacity and specific heat capacity."],
+          ...topic("phy-13-thermal-expansion", "13", "Thermal Expansion", ["Linear, area and volume expansivities of solids","Applications and relationships between coefficients of expansivity","Real and apparent volume expansivity of liquids and anomalous expansion of water"], [178]),
+          objectives: ["Determine linear and volume expansivities and assess applications.","Determine relationships between expansivities.","Determine volume, apparent and real expansivities of liquids and analyse anomalous expansion of water."],
         },
         {
-          ...topic("phy-15-change-state", "14", "Change of State", ["Latent heat", "Specific latent heat of fusion and vaporisation", "Melting, evaporation and boiling", "Effects of pressure and dissolved substances"], [8]),
-          objectives: ["Differentiate latent heat from specific latent heats of fusion and vaporisation.","Differentiate melting, evaporation and boiling.","Examine the effects of pressure and dissolved substances on melting and boiling points.","Solve numerical problems involving latent heat and change of state."],
+          ...topic("phy-14-gas-laws", "14", "Gas Laws", ["Boyle's, Charles' and pressure laws","Absolute zero and general gas equation","Ideal gas equation and Van der Waals equation"], [178]),
+          objectives: ["Interpret gas laws and use them to solve numerical problems.","Interpret the Van der Waals equation for one mole of a real gas."],
         },
         {
-          ...topic("phy-16-thermal-expansion", "15", "Thermal Expansion", ["Expansion of solids", "Linear, area and volume expansivity", "Expansion of liquids", "Anomalous expansion of water"], [8,9]),
-          objectives: ["Determine linear, area and volume expansivities of solids.","Explain effects and applications of expansion in structures and engineering.","Relate different coefficients of expansivity.","Determine volume, apparent and real expansivities of liquids.","Explain anomalous expansion of water."],
+          ...topic("phy-15-quantity-heat", "15", "Quantity of Heat", ["Heat as energy; heat capacity and specific heat capacity of solids and liquids","Determination by mixtures and electrical methods; Newton's law of cooling"], [179]),
+          objectives: ["Differentiate heat capacity from specific heat capacity.","Determine both by simple methods and solve numerical problems."],
         },
         {
-          ...topic("phy-17-gas-laws", "16", "Gas Laws", ["Boyle's law", "Charles' law", "Pressure law", "General and ideal gas equations", "Real gases"], [9]),
-          objectives: ["Interpret Boyle's, Charles' and pressure laws and apply them to numerical problems.","Use the general gas equation and ideal gas equation.","Explain absolute zero and the relationship between pressure, volume and temperature.","Interpret the Van der Waals equation for a real gas."],
+          ...topic("phy-16-change-state", "16", "Change of State", ["Latent heat and specific latent heats of fusion and vaporisation","Melting, evaporation and boiling","Effects of pressure and dissolved substances on melting and boiling points"], [180]),
+          objectives: ["Differentiate latent heat from specific latent heats of fusion and vaporisation.","Differentiate melting, evaporation and boiling.","Examine pressure and solute effects and solve numerical problems."],
         },
         {
-          ...topic("phy-18-vapours", "17", "Vapours", ["Saturated and unsaturated vapours", "Saturated vapour pressure and boiling", "Dew point, humidity and relative humidity", "Hygrometry"], [9]),
-          objectives: ["Distinguish saturated from unsaturated vapours.","Relate saturated vapour pressure to boiling point.","Determine saturated vapour pressure using a barometer-tube method.","Differentiate dew point, humidity and relative humidity.","Estimate atmospheric humidity using wet- and dry-bulb hygrometers.","Solve simple numerical problems involving vapours and humidity."],
+          ...topic("phy-17-vapours", "17", "Vapours", ["Saturated and unsaturated vapours and vapour pressure and boiling","Barometer-tube method; dew, mist, fog and rain","Dew point, humidity, relative humidity and hygrometry"], [180]),
+          objectives: ["Distinguish saturated from unsaturated vapours and relate vapour pressure to boiling.","Determine saturated vapour pressure by the barometer-tube method.","Differentiate dew point, humidity and relative humidity; estimate humidity with wet- and dry-bulb hygrometers.","Solve numerical problems."],
         },
         {
-          ...topic("phy-19-structure-matter", "18", "Structure of Matter and Kinetic Theory", ["Molecular nature of matter", "Atoms and molecules", "Brownian motion and diffusion", "Kinetic theory and gas pressure"], [9,10]),
-          objectives: ["Differentiate atoms from molecules.","Use molecular theory to explain Brownian motion, diffusion, surface tension, capillarity, adhesion, cohesion and angle of contact.","State the assumptions of kinetic theory.","Use kinetic theory to explain gas pressure, gas laws and changes of state including melting, boiling, vaporisation and evaporation."],
+          ...topic("phy-18-structure-matter", "18", "Structure of Matter and Kinetic Theory", ["Atoms and molecules; Brownian motion, diffusion, surface tension, capillarity, adhesion and cohesion","Assumptions of kinetic theory and explanation of gas pressure and gas laws","Melting, boiling, vaporisation, temperature change and evaporation"], [180,181]),
+          objectives: ["Differentiate atoms from molecules.","Use molecular theory to explain Brownian motion, diffusion, surface tension, capillarity, adhesion, cohesion and angle of contact.","Examine kinetic-theory assumptions and use the theory to interpret gas pressure, gas laws and changes of state."],
         },
         {
-          ...topic("phy-20-heat-transfer", "19", "Heat Transfer", ["Conduction, convection and radiation", "Thermal conductivity and heat flux", "Absorption and radiation", "Vacuum flask", "Land and sea breeze"], [10]),
-          objectives: ["Differentiate conduction, convection and radiation.","Solve problems involving temperature gradient, thermal conductivity and heat flux.","Explain how surface properties affect absorption and emission of radiant energy.","Compare the thermal conductivities of common materials.","Explain the components and operation of a vacuum flask.","Explain land and sea breezes and the principles of jet and combustion engines.","Compare the advantages and disadvantages of electric and combustion engines."],
+          ...topic("phy-19-heat-transfer", "19", "Heat Transfer", ["Conduction, convection and radiation","Temperature gradient, thermal conductivity, heat flux and surface properties","Thermos flask, land and sea breeze and engines"], [181]),
+          objectives: ["Differentiate heat-transfer modes and solve temperature-gradient, thermal-conductivity and heat-flux problems.","Assess surface effects on radiation and absorption and compare material conductivities.","Explain thermos-flask components, land and sea breezes, and engine operating principles."],
         },
         {
-          ...topic("phy-21-waves", "20", "Waves", ["Production and propagation", "Wave types and classification", "Frequency, wavelength and velocity", "Reflection, refraction and diffraction", "Superposition, interference and beats"], [10,11]),
-          objectives: ["Interpret wave motion and identify vibrating systems as sources of waves and waves as energy transfer.","Distinguish particle motion from wave motion and relate frequency, wavelength and wave velocity.","Determine phase difference, wave number and wave vector and use the progressive-wave equation.","Differentiate mechanical and electromagnetic waves, longitudinal and transverse waves, and stationary and progressive waves.","Identify waves produced by springs, ropes, stretched strings and ripple tanks.","Differentiate reflection, refraction, diffraction and plane polarisation.","Apply superposition and solve problems involving interference, beats and beat frequency.","Explain the Doppler effect and its applications."],
+          ...topic("phy-20-waves", "20", "Waves", ["Wave motion, vibrating sources and energy transfer","Frequency, wavelength, velocity, phase difference, wave number, wave vector and progressive-wave equation","Mechanical/electromagnetic; longitudinal/transverse; stationary/progressive waves","Springs, ropes, strings and ripple tanks; reflection, refraction, diffraction, polarisation, superposition, beats and Doppler effect"], [181,182]),
+          objectives: ["Interpret wave motion and identify sources and energy transfer.","Relate frequency, wavelength and velocity; determine phase difference, wave number and wave vector; use the progressive-wave equation.","Differentiate wave classes and identify examples from springs, ropes, strings and ripple tanks.","Differentiate reflection, refraction, diffraction and polarisation; analyse superposition, beats and Doppler effect."],
         },
         {
-          ...topic("phy-22-sound-propagation", "21", "Propagation of Sound Waves", ["Need for a material medium", "Speed of sound in solids, liquids and air", "Reflection, echoes and reverberation"], [11]),
-          objectives: ["Explain why a material medium is needed for sound propagation.","Compare the speed of sound in solids, liquids and air and relate it to temperature and pressure.","Solve problems involving echoes, reverberation and speed of sound.","Explain advantages and disadvantages of echoes and reverberation."],
+          ...topic("phy-21-sound-propagation", "21", "Propagation of Sound Waves", ["Need for a material medium","Speed in solids, liquids and air and effects of temperature and pressure","Reflection, echoes, reverberation, applications and disadvantages"], [182]),
+          objectives: ["Explain the need for a medium and compare sound speeds in solids, liquids and air.","Relate temperature and pressure to sound speed in air.","Solve problems involving echoes, reverberation and speed of sound."],
         },
         {
-          ...topic("phy-23-sound-characteristics", "22", "Characteristics of Sound Waves", ["Noise and musical notes", "Quality, pitch, intensity and loudness", "Harmonics and overtones"], [12]),
-          objectives: ["Differentiate noise from musical notes.","Analyse quality, pitch, intensity and loudness and relate them to musical instruments.","Identify harmonics and overtones from vibrating strings and air columns.","Give acoustic examples of resonance.","Calculate frequencies of notes produced by open and closed pipes."],
+          ...topic("phy-22-sound-characteristics", "22", "Characteristics of Sound Waves", ["Noise and musical notes; quality, pitch, intensity and loudness","Overtones from strings and air columns; acoustic resonance","Frequencies of notes in open and closed pipes"], [182]),
+          objectives: ["Differentiate noise from musical notes and analyse sound characteristics.","Evaluate applications in musical instruments and identify overtones and acoustic resonance.","Determine frequencies of notes from open and closed pipes."],
         },
         {
-          ...topic("phy-24-light-energy", "23", "Light Energy", ["Sources and nature of light", "Propagation of light", "Applications of light"], [12]),
-          objectives: ["Compare natural and artificial sources of light and distinguish luminous from non-luminous objects.","Relate the speed, frequency and wavelength of light.","Explain the formation of shadows and eclipses.","Solve problems using the principle of a pinhole camera."],
+          ...topic("phy-23-light-energy", "23", "Light Energy", ["Natural and artificial sources; luminous and non-luminous objects","Speed, frequency and wavelength; shadows and eclipses","Pinhole camera"], [182]),
+          objectives: ["Compare light sources and differentiate luminous from non-luminous objects.","Relate light speed, frequency and wavelength and interpret shadows and eclipses.","Solve problems using a pinhole camera."],
         },
         {
-          ...topic("phy-25-reflection", "24", "Reflection of Light at Plane and Curved Surfaces", ["Laws of reflection", "Plane and curved mirrors", "Image formation and applications"], [12,13]),
-          objectives: ["Apply the laws of reflection.","Illustrate image formation by plane, concave and convex mirrors.","Apply the mirror formula and calculate linear magnification.","Explain applications of reflection in periscopes, kaleidoscopes and sextants."],
+          ...topic("phy-24-reflection", "24", "Reflection of Light at Plane and Curved Surfaces", ["Laws and applications of reflection","Images in plane, concave and convex mirrors and ray diagrams","Mirror formula, linear magnification, periscopes, kaleidoscopes and sextants"], [182,183]),
+          objectives: ["Interpret laws of reflection and illustrate mirror-image formation.","Apply the mirror formula and determine linear magnification.","Explain applications in periscopes, kaleidoscopes and sextants."],
         },
         {
-          ...topic("phy-26-refraction", "25", "Refraction of Light", ["Laws of refraction", "Refractive index", "Critical angle and total internal reflection", "Refraction through prisms and lenses"], [13]),
-          objectives: ["Apply the laws of refraction and determine refractive index using Snell's law.","Determine refractive index using real and apparent depth.","Explain critical angle, total internal reflection, mirages and optical fibres.","Use ray diagrams and lens formulae to solve optical problems and calculate magnification.","Calculate prism refractive index using minimum deviation and trace rays through prisms."],
+          ...topic("phy-25-refraction", "25", "Refraction of Light Through Plane and Curved Surfaces", ["Refraction, velocity of light in media and laws of refraction","Refractive index, Snell's law, apparent depth, lateral displacement and total internal reflection","Prisms, lenses, optical fibres, binoculars, mirages and lens formulae"], [183]),
+          objectives: ["Determine refractive indices using Snell's law and real/apparent depth.","Determine total-internal-reflection conditions and explain uses of optical fibres, prisms and binoculars.","Apply total internal reflection to mirages and use lens formulae and ray diagrams to solve problems.","Determine magnification and prism refractive index using minimum deviation."],
         },
         {
-          ...topic("phy-27-optical-instruments", "26", "Optical Instruments", ["Simple microscope", "Compound microscope", "Telescope", "Camera and related instruments"], [13]),
-          objectives: ["Apply operating principles of microscopes, telescopes, projectors, cameras and the human eye.","Distinguish the human eye from a camera.","Calculate the power of a lens and angular magnification of optical instruments.","Determine near and far points and identify and correct sight defects."],
+          ...topic("phy-26-optical-instruments", "26", "Optical Instruments", ["Microscopes, telescopes, projectors, cameras and the human eye","Lens power and angular magnification","Near and far points, sight defects and correction"], [184]),
+          objectives: ["Apply operating principles of optical instruments to solve problems.","Distinguish the human eye from a camera.","Calculate lens power and angular magnification and identify sight defects and corrections."],
         },
         {
-          ...topic("phy-28-dispersion", "27", "Dispersion of Light and Colours", ["Dispersion through a prism", "Spectrum and colour", "Applications of dispersion"], [14]),
-          objectives: ["Identify primary colours and obtain secondary colours by mixing.","Explain rainbow formation and why objects appear coloured.","Analyse colour filters and additive and subtractive colour mixing.","Relate electromagnetic radiation to wavelength, sources, detection and uses.","Define monochromatic light."],
+          ...topic("phy-27-dispersion", "27", "Dispersion of Light and Colours", ["Dispersion of white light and pure spectrum","Primary/secondary colours, additive/subtractive mixing, filters and rainbow","Electromagnetic spectrum: sources, detection and uses"], [184]),
+          objectives: ["Identify primary colours and obtain secondary colours by mixing.","Explain rainbow formation, object colours and colour filters.","Relate electromagnetic radiation to wavelength, sources, detection and uses."],
         },
         {
-          ...topic("phy-29-electrostatics", "28", "Electrostatics", ["Electric charges", "Coulomb's law", "Electric fields and potential", "Applications"], [14]),
-          objectives: ["Identify positive and negative charges and charge bodies by friction, contact and induction.","Explain the operation and uses of an electroscope.","Apply Coulomb's inverse-square law to solve problems.","Deduce expressions for electric field intensity, potential and potential difference.","Identify electric-field patterns around isolated and interacting charges.","Explain charge distribution on conductors and the use of lightning conductors."],
+          ...topic("phy-28-electrostatics", "28", "Electrostatics", ["Positive and negative charges; charging by friction, contact and induction","Electroscope and Coulomb's inverse-square law","Electric field intensity, potential, discharge and lightning"], [185]),
+          objectives: ["Identify charges and examine uses of an electroscope.","Apply Coulomb's law and deduce electric-field and potential expressions.","Identify field patterns and analyse charge distribution on conductors and lightning conductors."],
         },
         {
-          ...topic("phy-30-capacitors", "29", "Capacitors", ["Capacitance", "Dielectrics", "Series and parallel combinations", "Energy stored"], [14]),
-          objectives: ["Identify types and uses of capacitors.","Analyse parallel-plate capacitors and determine capacitance.","Explain how plate area, separation and dielectric medium affect capacitance.","Solve problems involving capacitor combinations in series and parallel.","Determine energy stored in a capacitor."],
+          ...topic("phy-29-capacitors", "29", "Capacitors", ["Types and functions; parallel-plate capacitors and capacitance","Relationship between capacitance, plate area, separation and dielectric medium","Series and parallel arrangements and stored energy"], [185]),
+          objectives: ["Determine uses and capacitance of capacitors.","Analyse factors affecting capacitance and parallel-plate capacitors.","Solve problems on capacitor arrangements and stored energy."],
         },
         {
-          ...topic("phy-31-electric-cells", "30", "Electric Cells", ["Cells and electromotive force", "Internal resistance", "Series and parallel cell combinations"], [15]),
-          objectives: ["Identify defects of a simple voltaic cell and methods of correcting them.","Compare types of cells, including solar cells, Daniell, Leclanche and accumulators.","Compare lead-acid and nickel-iron accumulators.","Solve problems involving cells arranged in series and parallel."],
+          ...topic("phy-30-electric-cells", "30", "Electric Cells", ["Simple voltaic cell and defects","Daniell, Leclanche, lead-acid, nickel-iron, lithium-iron and mercury-cadmium cells","Maintenance, arrangements and efficiency"], [185]),
+          objectives: ["Identify defects of a simple voltaic cell and their correction.","Compare cell types, including solar cells, and compare lead-acid and nickel-iron accumulators.","Solve series and parallel cell problems."],
         },
         {
-          ...topic("phy-32-current-electricity", "31", "Current Electricity", ["Electric current and potential difference", "Ohm's law", "Resistance and resistivity", "Electric circuits"], [15]),
-          objectives: ["Differentiate electromotive force, potential difference, current and internal resistance.","Apply Ohm's law to solve problems.","Use a metre bridge to determine resistance.","Calculate effective resistance in series and parallel circuits.","Determine resistivity and conductivity.","Measure emf, current and internal resistance using a potentiometer and explain its advantages.","Apply Kirchhoff's laws to electrical networks."],
+          ...topic("phy-31-current-electricity", "31", "Current Electricity", ["EMF, potential difference, current, internal resistance and lost volts","Ohm's law, resistance measurement, metre bridge and series/parallel networks","Potentiometer and electrical networks"], [186]),
+          objectives: ["Differentiate EMF, potential difference, current and internal resistance.","Apply Ohm's law, metre bridge and series/parallel resistance rules.","Determine resistivity and conductivity; measure EMF, current and internal resistance with a potentiometer.","Apply Kirchhoff's law to electrical networks."],
         },
         {
-          ...topic("phy-33-electrical-energy-power", "32", "Electrical Energy and Power", ["Electrical energy", "Power", "Electrical energy consumption and applications"], [15]),
-          objectives: ["Apply equations for electrical energy and power to solve problems.","Explain transmission of electrical power from generating stations to consumers.","Identify heating effects of current and their uses.","Explain advantages of parallel house wiring over series arrangements.","Explain electrical wiring and the use and rating of fuses."],
+          ...topic("phy-32-electrical-energy-power", "32", "Electrical Energy and Power", ["Electrical energy, power and commercial units","Power transmission","Heating effect of current, house wiring and fuses"], [186]),
+          objectives: ["Apply electrical energy and power expressions and analyse power transmission.","Identify heating effects and uses; explain advantages of parallel house wiring.","Determine fuse ratings."],
         },
         {
-          ...topic("phy-34-magnets", "33", "Magnets and Magnetic Fields", ["Magnetic poles and fields", "Magnetic materials", "Earth's magnetic field"], [16]),
-          objectives: ["Give examples of natural and artificial magnets and compare soft iron with steel.","Describe methods of making and demagnetising magnets and ways to preserve magnetism.","Determine magnetic flux patterns for isolated magnets, interacting poles, conductors, circular coils and solenoids.","Identify magnetic elements of the Earth, including magnetic meridian, dip and declination.","Explain variation of the Earth's magnetic field and applications in navigation and mineral exploration."],
+          ...topic("phy-33-magnets", "33", "Magnets and Magnetic Fields", ["Natural and artificial magnets; soft iron and steel","Making, demagnetising and preserving magnets","Magnetic fields of magnets, current conductors, circular wires and solenoids","Earth's magnetic field, magnetic meridian, dip, declination, flux and flux density"], [186,187]),
+          objectives: ["Give examples of magnets and compare soft iron with steel.","Identify methods of making, demagnetising and preserving magnets.","Determine flux patterns for magnets, conductors, circular wires and solenoids.","Identify Earth's magnetic elements and analyse field variation and applications in navigation and mineral exploration."],
         },
         {
-          ...topic("phy-35-force-current-conductor", "34", "Force on a Current-Carrying Conductor in a Magnetic Field", ["Force on a conductor", "Direction of force", "Applications in electric motors"], [16,17]),
-          objectives: ["Use Fleming's left-hand rule to determine force direction on a current-carrying conductor.","Explain attractive and repulsive forces between parallel current-carrying conductors.","Relate force on a moving charge to magnetic field strength, velocity and entry angle.","Explain the operation of a DC motor and the principles and applications of electromagnets.","Compare moving-iron and moving-coil instruments.","Convert galvanometers into ammeters and voltmeters and identify factors affecting sensitivity."],
+          ...topic("phy-34-force-current-conductor", "34", "Force on a Current-Carrying Conductor in a Magnetic Field", ["Force between parallel current-carrying conductors and on a moving charge","DC motor, electromagnets and carbon microphone","Moving-coil and moving-iron instruments; galvanometer conversion and sensitivity"], [187]),
+          objectives: ["Use Fleming's left-hand rule and diagrams to determine force direction and interactions.","Relate force to magnetic-field strength, charge velocity and entry angle.","Interpret the DC motor and electromagnets and compare measuring instruments.","Convert galvanometers to ammeters or voltmeters and identify sensitivity factors."],
         },
         {
-          ...topic("phy-36-electromagnetic-induction", "35", "Electromagnetic Induction", ["Faraday's law", "Lenz's law", "Induced e.m.f. and current", "Applications"], [17]),
-          objectives: ["Interpret Faraday's and Lenz's laws and identify factors affecting induced emf.","Explain AC and DC generators, transformers and induction coils.","Explain inductance, its unit and applications.","Calculate total inductance in series and parallel and energy stored in an inductor.","Explain eddy-current effects, applications and methods of reducing losses."],
+          ...topic("phy-35-electromagnetic-induction", "35", "Electromagnetic Induction", ["Faraday's laws, factors affecting induced EMF and Lenz's law","AC/DC generators, transformers and induction coil","Inductance, stored energy, applications and eddy currents"], [187,188]),
+          objectives: ["Interpret Faraday's and Lenz's laws and identify factors affecting induced EMF.","Interpret generator and transformer arrangements and identify transformer types and operation.","Explain induction coils and inductance; calculate series/parallel inductance and stored energy.","Describe eddy-current applications and methods of reducing losses."],
         },
         {
-          ...topic("phy-37-ac-circuits", "36", "Simple A.C. Circuits", ["Alternating current and voltage", "A.C. circuit behaviour", "Transformers and applications"], [17]),
-          objectives: ["Differentiate AC current and voltage and distinguish peak from RMS values.","Determine phase differences between current and voltage.","Interpret vector diagrams and RLC circuits.","Calculate effective voltage, reactance and impedance.","Identify resonance conditions and calculate resonant frequency.","Determine instantaneous and average power and power factor in AC circuits."],
+          ...topic("phy-36-ac-circuits", "36", "Simple A.C. Circuits", ["AC current and voltage; peak and RMS values","Resistive, capacitive, inductive and series R-L-C circuits","Vector diagrams, phase angle, power factor, impedance, resonance and resonant frequency"], [188]),
+          objectives: ["Differentiate peak and RMS values and determine current-voltage phase difference.","Interpret series R-L-C circuits and vector diagrams.","Calculate effective voltage, reactance and impedance.","Determine resonance conditions, resonant frequency, instantaneous and average power and power factor."],
         },
         {
-          ...topic("phy-38-electricity-gases", "37", "Conduction of Electricity Through Gases", ["Ionisation", "Discharge through gases", "Applications and observations"], [18]),
-          objectives: ["Distinguish electrolytes from non-electrolytes and explain electrolysis.","Apply Faraday's laws of electrolysis to solve problems.","Analyse discharge through gases and identify applications of electrical conduction through gases."],
+          ...topic("phy-37-conduction-liquids-gases", "37", "Conduction of Electricity Through Liquids and Gases", ["Electrolytes, non-electrolytes and electrolysis","Faraday's laws and applications including electroplating and ammeter calibration","Discharge through gases and its applications"], [189]),
+          objectives: ["Distinguish electrolytes from non-electrolytes and analyse electrolysis.","Apply Faraday's laws to solve problems.","Analyse gas discharge and determine applications of electrical conduction through gases."],
         },
         {
-          ...topic("phy-38-modern-physics", "38", "Elementary Modern Physics", ["Atomic models and structure", "Energy levels and spectra", "Photoelectric effect", "X-rays", "Radioactivity, half-life and nuclear energy", "Wave-particle duality"], [18,19]),
-          objectives: ["Identify atomic models and their limitations and describe elementary atomic structure.","Differentiate energy levels and atomic spectra.","Compare thermionic emission and photoelectric emission and apply Einstein's equation to problems.","Explain x-ray production, properties and applications.","Analyse radioactivity, isotopes, nuclear stability and alpha, beta and gamma radiation.","Relate half-life to decay constant and solve simple radioactive-decay problems.","Explain fusion, fission, binding energy, mass defect and Einstein's energy equation.","Analyse wave-particle duality, electron diffraction and the uncertainty principle."],
+          ...topic("phy-38-modern-physics", "38", "Elementary Modern Physics", ["Atomic models and structure; energy levels and spectra","Thermionic and photoelectric emission, Einstein's equation, stopping potential and X-rays","Radioactivity, isotopes, half-life, decay constant, alpha/beta/gamma rays","Fusion, fission, binding energy, mass defect, wave-particle duality, electron diffraction and uncertainty principle"], [189,190]),
+          objectives: ["Identify atomic models and limitations, describe atomic structure and differentiate energy levels and spectra.","Compare thermionic and photoelectric emission; apply Einstein's equation and calculate stopping potential.","Explain X-ray production, properties and applications.","Analyse radioactivity and nuclear stability; identify isotopes and compare alpha, beta and gamma rays.","Relate half-life to decay constant and determine binding energy, mass defect and Einstein's equation.","Analyse wave-particle duality and solve problems involving uncertainty and duality."],
         },
         {
-          ...topic("phy-39-electronics", "39", "Introductory Electronics", ["Conductors, semiconductors and insulators", "Intrinsic and extrinsic semiconductors", "Diodes and transistors"], [19]),
-          objectives: ["Differentiate conductors, semiconductors and insulators, including elementary band-gap ideas.","Distinguish intrinsic from extrinsic semiconductors and n-type from p-type materials.","Differentiate electron and hole carriers.","Explain diode rectification and transistor amplification."],
-        },
-        {
-          ...topic("phy-40-fibre-lasers", "40", "Introduction to Fibre Optics and Lasers", ["Fibre optics and light transmission", "Laser types", "Applications and safety"], [19,20]),
-          objectives: ["Explain the concept of fibre optics and the principle of light transmission through an optical fibre.","Apply fibre-optic principles in local area networks, medicine and communications.","Explain lasers and identify solid-state, gas, liquid and semiconductor laser types.","Describe scientific, communication, medical, military and holographic applications of lasers.","Identify hazards associated with laser use."],
-        },
-      ],
-    }],
+          ...topic("phy-39-electronics", "39", "Introductory Electronics", ["Metals, semiconductors and insulators; elementary band-gap knowledge","Intrinsic and extrinsic semiconductors; n-type and p-type materials","Diodes, rectification and transistor amplification"], [190]),
+          objectives: ["Differentiate conductors, semiconductors and insulators.","Distinguish intrinsic from extrinsic semiconductors and electron from hole carriers.","Distinguish n-type from p-type semiconductors; relate diodes to rectification and transistors to amplification."],
+        }
+    ]}],
   },
   chemistry: {
     id: "chemistry", label: "Chemistry", icon: "🧪",
@@ -580,6 +575,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceFile: "Use of English.pdf",
     sourceSha256: "f2b6bc4f2c30fc19ecf57bc14778100ce0deca59445beff9f7e10f34cbf7da18",
     sourcePageCount: 5, reviewState: "needs_current_source_review",
+    sourcePageLabel: "JAMB IBASS printed pages",
     officialSourceUrl: "https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf",
     officialSourceCheckedAt: "2026-11-18",
     sourceComparisonNote: "The uploaded 2025 PDF differs from the JAMB-hosted IBASS PDF: it adds a separate five-question summary passage, allocates five rather than ten questions to the reading text, omits the named reading text The Lekki Headmaster by Kabir Alabi Garba, omits homonyms, and differs on punctuation/spelling and oral-form coverage. IBASS specifies one comprehension passage (5 questions), one cloze passage (10), and one reading text (10), for the same 25-question Section A total. This catalogue follows the JAMB-hosted IBASS PDF checked on 18 November 2026; the uploaded copy remains linked as a separate source record.",
@@ -603,7 +599,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
             "Coherence and logical reasoning, including deductions and inferences.",
             "The prescribed reading text: The Lekki Headmaster by Kabir Alabi Garba.",
             "Synthesis of ideas from passages.",
-          ], [1,2]),
+          ], [198]),
           objectives: [
             "Identify main points and topic sentences in passages.",
             "Determine implied meaning.",
@@ -621,7 +617,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
             "Mood, tense, aspect, number, agreement/concord, degree and question tags.",
             "Punctuation and spelling.",
             "Ordinary, figurative and idiomatic usage; tested idioms are formal Standard British English.",
-          ], [2]),
+          ], [199]),
           objectives: [
             "Identify words and expressions in ordinary, figurative and idiomatic contexts.",
             "Determine similar and opposite meanings of words.",
@@ -639,7 +635,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
             "Rhymes, including homophones.",
             "Word stress in monosyllabic and polysyllabic words.",
             "Intonation and emphatic stress in connected speech.",
-          ], [2]),
+          ], [199]),
           objectives: [
             "Make distinctions between vowel types.",
             "Differentiate between consonant types.",
@@ -652,9 +648,9 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
 };
 
 export const JAMB_SYLLABUS_REVIEW_NOTICE =
-  "This catalogue combines the five 2025-created source PDFs supplied by the owner with JAMB-hosted IBASS references. Use of English now follows the JAMB-hosted PDF checked on 18 November 2026 because the uploaded copy materially differs. Physics and Biology have official IBASS links but still need full line-by-line mapping; Chemistry and Mathematics remain supplied-source candidates pending IBASS reconciliation. This catalogue is not certified as the 2027 syllabus or a verified complete current syllabus.";
+  "This catalogue combines the five 2025-created source PDFs supplied by the owner with JAMB-hosted IBASS references. Physics now follows the current 39-topic JAMB-hosted IBASS structure checked on 19 November 2026, and Use of English follows the JAMB-hosted PDF checked on 18 November 2026; both uploaded copies materially differ. Biology has an official IBASS link but still needs complete line-by-line reconciliation. Chemistry and Mathematics remain supplied-source candidates pending current IBASS reconciliation. This catalogue is not certified as the 2027 syllabus or a verified complete current syllabus.";
 
-export const JAMB_SYLLABUS_VERSION = "mixed-sources-checked-2026-11-18";
+export const JAMB_SYLLABUS_VERSION = "mixed-sources-checked-2026-11-19";
 export const JAMB_SYLLABUS_VERIFIED = false;
 
 export function getJambSyllabusSubject(id: string): JambSyllabusSubject | undefined {

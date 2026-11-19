@@ -30,6 +30,19 @@ describe("JAMB syllabus catalogue", () => {
     expect(JAMB_SYLLABUS.use_of_english.reviewState).toBe("needs_current_source_review");
   });
 
+  it("uses the current 39-topic JAMB IBASS Physics structure", () => {
+    const physics = JAMB_SYLLABUS.physics;
+    const topics = physics.sections.flatMap((section) => section.topics);
+    expect(topics).toHaveLength(39);
+    expect(physics.officialSourceUrl).toBe("https://ibass.jamb.gov.ng/assets/uploads/Physics.pdf");
+    expect(topics[5].title).toBe("Work, Energy and Power");
+    expect(topics[6].title).toBe("Friction");
+    expect(topics[36].title).toBe("Conduction of Electricity Through Liquids and Gases");
+    expect(topics[38].title).toBe("Introductory Electronics");
+    expect(topics.some((item) => item.title === "Introduction to Fibre Optics and Lasers")).toBe(false);
+    expect(topics[24].outline.join(" ")).toContain("optical fibres");
+  });
+
   it("uses the JAMB-hosted Use of English syllabus where the supplied copy differs", () => {
     const english = JAMB_SYLLABUS.use_of_english;
     const comprehension = english.sections[0].topics[0];
@@ -60,9 +73,9 @@ describe("JAMB syllabus catalogue", () => {
     }
   });
 
-  it("maps source learning objectives to all 108 syllabus topics", () => {
+  it("maps source learning objectives to all 107 syllabus topics", () => {
     const expected = {
-      physics: 40,
+      physics: 39,
       chemistry: 18,
       biology: 24,
       math: 23,
@@ -78,8 +91,8 @@ describe("JAMB syllabus catalogue", () => {
       total += topics.length;
       objectiveStatements += topics.reduce((sum, item) => sum + (item.objectives?.length ?? 0), 0);
     }
-    expect(total).toBe(108);
-    expect(objectiveStatements).toBeGreaterThanOrEqual(497);
+    expect(total).toBe(107);
+    expect(objectiveStatements).toBeGreaterThanOrEqual(430);
   });
 
   it("uses stable unique topic identifiers across all subjects", () => {
@@ -90,7 +103,7 @@ describe("JAMB syllabus catalogue", () => {
     expect(getJambSyllabusTopic("physics", "phy-01-measurements")?.title).toBe("Measurements and Units");
     expect(getJambSyllabusTopic("not-a-subject", "phy-01-measurements")).toBeUndefined();
     expect(getJambSyllabusTopic("physics", "unknown-topic")).toBeUndefined();
-    expect(getJambSyllabusTopicCount()).toBe(108);
+    expect(getJambSyllabusTopicCount()).toBe(107);
   });
 });
 

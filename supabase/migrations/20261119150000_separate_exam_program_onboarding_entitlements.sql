@@ -198,7 +198,7 @@ BEGIN
   IF v_user_id IS NULL THEN
     RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
   END IF;
-  IF p_exam_program_id NOT IN ('jupeb', 'jamb') THEN
+  IF p_exam_program_id IS NULL OR p_exam_program_id NOT IN ('jupeb', 'jamb') THEN
     RAISE EXCEPTION 'Choose JUPEB or JAMB' USING ERRCODE = '22023';
   END IF;
   IF NOT public.current_auth_session_is_active() THEN

@@ -17,8 +17,9 @@ import {
 describe("JAMB syllabus catalogue", () => {
   it("contains all five uploaded subject documents, including compulsory English", () => {
     expect(JAMB_SYLLABUS_SUBJECTS).toEqual([
-      "use_of_english", "mathematics", "physics", "chemistry", "biology",
+      "use_of_english", "math", "physics", "chemistry", "biology",
     ]);
+    expect(JAMB_SYLLABUS_SUBJECTS.every((id) => Boolean(JAMB_SYLLABUS[id]))).toBe(true);
     expect(JAMB_SYLLABUS.use_of_english.compulsory).toBe(true);
     expect(JAMB_SYLLABUS.math.questionBankAvailable).toBe(false);
     expect(JAMB_SYLLABUS.use_of_english.questionBankAvailable).toBe(false);

@@ -55,7 +55,7 @@ const topic = (
 ): JambSyllabusTopic => ({ id, number, title, outline, sourcePages });
 
 export const JAMB_SYLLABUS_SUBJECTS: JambSyllabusSubjectId[] = [
-  "use_of_english", "mathematics", "physics", "chemistry", "biology",
+  "use_of_english", "math", "physics", "chemistry", "biology",
 ];
 
 export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> = {

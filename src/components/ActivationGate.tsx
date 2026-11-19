@@ -293,7 +293,7 @@ const ActivationScreen = ({ email, onSignOut, programId }: { email: string; onSi
             <GraduationCap className="w-5 h-5 text-primary" />
             <span className="text-sm font-medium text-primary">{programLabel} preparation</span>
           </div>
-          <CardTitle className="text-2xl font-bold">Activate Your Account</CardTitle>
+          <CardTitle className="text-2xl font-bold">Activate Your {programLabel} Access</CardTitle>
           <CardDescription>
             Enter an activation code issued specifically for {programLabel}. Codes for the other programme will not work here.
           </CardDescription>

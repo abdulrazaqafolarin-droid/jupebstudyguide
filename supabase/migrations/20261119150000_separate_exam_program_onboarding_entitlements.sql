@@ -6,7 +6,7 @@ BEGIN;
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS selected_exam_program text;
 
-DO $
+DO $$
 BEGIN
   IF NOT EXISTS (
     SELECT 1
@@ -22,7 +22,7 @@ BEGIN
       );
   END IF;
 END;
-$;
+$$;
 
 ALTER TABLE public.activation_codes
   ADD COLUMN IF NOT EXISTS exam_program_id text NOT NULL DEFAULT 'jupeb';
@@ -192,7 +192,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY INVOKER
 SET search_path = ''
-AS $
+AS $$
 BEGIN
   IF COALESCE(auth.jwt() ->> 'role', '') = 'service_role' THEN
     RETURN NEW;
@@ -295,7 +295,7 @@ RETURNS TABLE(code text, plan_type text, expires_at timestamptz, duration_days i
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
-AS $
+AS $$
 DECLARE
   v_actor uuid;
   v_code text;
@@ -370,7 +370,7 @@ RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
-AS $
+AS $$
 DECLARE
   v_record public.activation_codes%ROWTYPE;
   v_profile public.profiles%ROWTYPE;

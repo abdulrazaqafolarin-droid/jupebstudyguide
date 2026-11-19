@@ -78,8 +78,8 @@ export function fetchOnboardingStatus(userId: string, programId: ExamProgramId):
         displayName: profile?.display_name ?? null,
         themePreference: profile?.theme_preference === 'light' || profile?.theme_preference === 'dark'
           ? profile.theme_preference : null,
-        schoolName: profile?.school_name ?? null,
-        examSeatNumber: profile?.exam_seat_number ?? null,
+        schoolName: programId === 'jupeb' ? profile?.school_name ?? null : null,
+        examSeatNumber: programId === 'jupeb' ? profile?.exam_seat_number ?? null : null,
         selectedExamProgram: selected === 'jamb' || selected === 'jupeb' ? selected : null,
         data,
       };

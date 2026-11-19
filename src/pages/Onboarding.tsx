@@ -185,7 +185,9 @@ export default function Onboarding() {
             schoolName: school ?? undefined,
             examSeatNumber: seat.status === 'valid' ? seat.value : undefined,
           },
-          { school_name: school, exam_seat_number: seat.status === 'valid' ? seat.value : null },
+          programId === 'jupeb'
+            ? { school_name: school, exam_seat_number: seat.status === 'valid' ? seat.value : null }
+            : {},
         );
         break;
       }

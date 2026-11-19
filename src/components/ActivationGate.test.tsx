@@ -95,7 +95,34 @@ describe("ActivationGate active-trial banner", () => {
     );
 
     expect(screen.queryByText("Protected study content")).not.toBeInTheDocument();
-    expect(screen.getByText("Activate Your Account")).toBeInTheDocument();
+    expect(screen.getByText("Activate Your JUPEB Access")).toBeInTheDocument();
+  });
+
+  it("uses JAMB-specific entitlement and activation messaging", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: false,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: null,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate programId="jamb">
+        <div>JAMB protected content</div>
+      </ActivationGate>,
+    );
+
+    expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+    expect(screen.getByText("Activate Your JAMB / UTME Access")).toBeInTheDocument();
+    expect(screen.queryByText("Activate Your JUPEB Access")).not.toBeInTheDocument();
+    expect(screen.getByText(/issued specifically for JAMB \/ UTME/)).toBeInTheDocument();
   });
 
   it("always displays Activate Now while a one-day trial is active", () => {

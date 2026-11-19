@@ -43,7 +43,7 @@ describe("JAMB syllabus catalogue", () => {
     expect(oral.outline).toContain("Vowels: monothongs and diphthongs.");
     expect(english.examinationStructure?.join(" ")).toContain("Total: 60 Use of English questions.");
     expect(comprehension.objectives).toHaveLength(4);
-    expect(english.sourceComparisonNote).toContain("three passages instead of two");
+    expect(english.sourceComparisonNote).toContain("separate five-question summary passage");
   });
 
   it("records the exact source-file checksums from the extraction manifest", () => {

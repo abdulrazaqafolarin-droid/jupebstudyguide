@@ -582,7 +582,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourcePageCount: 5, reviewState: "needs_current_source_review",
     officialSourceUrl: "https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf",
     officialSourceCheckedAt: "2026-11-18",
-    sourceComparisonNote: "The uploaded 2025 PDF conflicts with the JAMB-hosted IBASS PDF: it says three passages instead of two, omits the named reading text The Lekki Headmaster by Kabir Alabi Garba, and differs on homonyms, punctuation/spelling and oral vowel coverage. This catalogue follows the JAMB-hosted IBASS PDF checked on 18 November 2026; the uploaded copy remains available as a separate source record.",
+    sourceComparisonNote: "The uploaded 2025 PDF differs from the JAMB-hosted IBASS PDF: it adds a separate five-question summary passage, allocates five rather than ten questions to the reading text, omits the named reading text The Lekki Headmaster by Kabir Alabi Garba, omits homonyms, and differs on punctuation/spelling and oral-form coverage. IBASS specifies one comprehension passage (5 questions), one cloze passage (10), and one reading text (10), for the same 25-question Section A total. This catalogue follows the JAMB-hosted IBASS PDF checked on 18 November 2026; the uploaded copy remains linked as a separate source record.",
     generalObjectives: [
       "Communicate effectively in both written and spoken English.",
       "Use English Language for learning at the tertiary level.",

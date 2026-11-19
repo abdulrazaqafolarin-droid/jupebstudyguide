@@ -177,8 +177,8 @@ export type Database = {
       }
       ai_chats: {
         Row: {
-          exam_program_id: string
           created_at: string
+          exam_program_id: string
           id: string
           subject: string | null
           subtopic: string | null
@@ -188,8 +188,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          exam_program_id?: string
           created_at?: string
+          exam_program_id?: string
           id?: string
           subject?: string | null
           subtopic?: string | null
@@ -199,8 +199,8 @@ export type Database = {
           user_id: string
         }
         Update: {
-          exam_program_id?: string
           created_at?: string
+          exam_program_id?: string
           id?: string
           subject?: string | null
           subtopic?: string | null
@@ -209,7 +209,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ai_chats_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_rate_limits: {
         Row: {
@@ -527,33 +535,6 @@ export type Database = {
           updated_at?: string
           user_id?: string
           year?: number | null
-        }
-        Relationships: []
-      }
-      jamb_daily_missions: {
-        Row: {
-          created_at: string
-          local_date: string
-          mission: Json
-          subject: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          local_date: string
-          mission: Json
-          subject: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          local_date?: string
-          mission?: Json
-          subject?: string
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -1148,6 +1129,33 @@ export type Database = {
           sender_id?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      jamb_daily_missions: {
+        Row: {
+          created_at: string
+          local_date: string
+          mission: Json
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          local_date: string
+          mission: Json
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          local_date?: string
+          mission?: Json
+          subject?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

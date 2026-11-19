@@ -7,10 +7,14 @@ import { getPersistedDeletedIds } from "@/lib/admin-questions-service";
 const ALL_YEARS = STUDY_YEARS;
 
 let currentData: StudyQuestion[] = [];
+let currentDataUserId: string | null = null;
 const listeners: Set<() => void> = new Set();
 let fetchStarted = false;
 let _ready = false;
+let _lastError: string | null = null;
 let fetchInFlight: Promise<void> | null = null;
+let fetchGeneration = 0;
+let authListenerInstalled = false;
 
 function rowToQuestion(row: Record<string, unknown>): StudyQuestion {
   const sq: StudyQuestion = {
@@ -57,13 +61,72 @@ function notifyListeners() {
   listeners.forEach(fn => fn());
 }
 
+function setDataOwner(userId: string | null) {
+  if (currentDataUserId === userId) return;
+
+  // Never let a previous account's in-memory question snapshot survive a
+  // sign-out or account switch. In-flight requests from the old account are
+  // ignored by the generation check in fetchAll().
+  fetchGeneration += 1;
+  currentData = [];
+  currentDataUserId = userId;
+  fetchInFlight = null;
+  fetchStarted = false;
+  _ready = false;
+  _lastError = null;
+  notifyListeners();
+}
+
+function installAuthListener() {
+  if (authListenerInstalled) return;
+  authListenerInstalled = true;
+
+  // The screen is mounted behind ProtectedRoute, but session restoration and
+  // token refresh can still race the idle database fetch. Retry an empty or
+  // interrupted first load whenever Supabase confirms a usable session.
+  supabase.auth.onAuthStateChange((event, session) => {
+    const nextUserId = session?.user.id ?? null;
+    setDataOwner(nextUserId);
+
+    if (
+      session &&
+      (event === "INITIAL_SESSION" ||
+        event === "SIGNED_IN" ||
+        event === "TOKEN_REFRESHED" ||
+        event === "USER_UPDATED")
+    ) {
+      globalThis.setTimeout(() => {
+        // A same-user re-login or token refresh must also recover a previous
+        // empty RLS response. Do not depend on the user ID changing.
+        if (currentData.length === 0) {
+          fetchStarted = false;
+          _ready = false;
+          _lastError = null;
+          initDataLayer("immediate");
+        }
+      }, 0);
+    }
+  });
+}
+
 async function fetchAll() {
-  let supportsExamProgramFilter = true;
   // Concurrent route mounts share one live Supabase request. No question bank
   // is bundled in the APK or persisted as an offline/downloadable file.
   if (fetchInFlight) return fetchInFlight;
 
+  let requestGeneration = fetchGeneration;
   const task = (async () => {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+
+    const userId = sessionData.session?.user.id;
+    if (!userId) {
+      setDataOwner(null);
+      throw new Error("Your sign-in session is unavailable. Sign in again, then retry loading JUPEB questions.");
+    }
+
+    setDataOwner(userId);
+    requestGeneration = fetchGeneration;
     const locallyDeleted = getPersistedDeletedIds();
     const PAGE_SIZE = 1000;
     const columns = [
@@ -76,27 +139,17 @@ async function fetchAll() {
     let from = 0;
 
     while (true) {
-      const buildPageQuery = () => {
-        let query = supabase
-          .from("study_questions")
-          .select(columns);
-        // The programme column is added by the JAMB workspace migration.
-        // Until that migration is reconciled and applied, retain legacy JUPEB
-        // reads rather than breaking the existing app during a staged rollout.
-        if (supportsExamProgramFilter) query = query.eq("exam_program_id", "jupeb");
-        return query
-          .eq("hidden", false)
-          .order("id", { ascending: true })
-          .range(from, from + PAGE_SIZE - 1)
-          .abortSignal(AbortSignal.timeout(15_000));
-      };
+      const { data, error } = await supabase
+        .from("study_questions")
+        .select(columns)
+        .eq("exam_program_id", "jupeb")
+        // Student visibility is enforced by RLS. Admins keep access to
+        // non-published rows so they can review and repair the JUPEB bank.
+        .eq("hidden", false)
+        .order("id", { ascending: true })
+        .range(from, from + PAGE_SIZE - 1)
+        .abortSignal(AbortSignal.timeout(15_000));
 
-      let { data, error } = await buildPageQuery();
-      if (error && supportsExamProgramFilter &&
-          (error.code === "42703" || error.code === "PGRST204" || /exam_program_id.*(column|schema cache)/i.test(error.message))) {
-        supportsExamProgramFilter = false;
-        ({ data, error } = await buildPageQuery());
-      }
       if (error) throw error;
       if (!data || data.length === 0) break;
 
@@ -106,11 +159,25 @@ async function fetchAll() {
       from += PAGE_SIZE;
     }
 
-    // Replace the in-memory snapshot only after every Supabase page succeeds.
-    currentData = allData
+    // A session can change while multiple 1000-row pages are loading. Never
+    // commit that old session's result to the new user's in-memory snapshot.
+    if (requestGeneration !== fetchGeneration || currentDataUserId !== userId) return;
+
+    const nextData = allData
       .filter(row => !locallyDeleted.has(row.id as string))
       .map(rowToQuestion);
+
+    // Do not silently cache an RLS-filtered empty response as a healthy bank.
+    // Keep a last-good same-user snapshot, and show a retry state when there
+    // is no data to display.
+    if (nextData.length > 0) {
+      currentData = nextData;
+      _lastError = null;
+    } else if (currentData.length === 0) {
+      _lastError = "No JUPEB questions were returned for this session. Check your account access or sign in again, then retry.";
+    }
     _ready = true;
+    if (currentData.length === 0) fetchStarted = false;
     notifyListeners();
   })();
 
@@ -118,20 +185,24 @@ async function fetchAll() {
   try {
     await task;
   } catch (error) {
+    if (requestGeneration !== fetchGeneration) return;
     console.error("Failed to load study questions from Supabase:", error);
-    // Keep the last good snapshot if a refresh fails. A first-load failure
-    // can be retried when the device comes back online.
-    if (!_ready) {
-      fetchStarted = false;
-      notifyListeners();
-    }
+    _lastError = error instanceof Error
+      ? error.message
+      : "Could not load JUPEB questions. Check your connection and retry.";
+    // Keep the last good snapshot for this same user; otherwise let the page
+    // render an actionable error instead of appearing to have an empty bank.
+    _ready = true;
+    fetchStarted = false;
+    notifyListeners();
   } finally {
     if (fetchInFlight === task) fetchInFlight = null;
   }
 }
 
 export function initDataLayer(priority: "idle" | "immediate" = "idle") {
-  if (fetchStarted || _ready) return;
+  installAuthListener();
+  if (fetchStarted || (_ready && currentData.length > 0)) return;
   fetchStarted = true;
 
   const start = () => {
@@ -161,7 +232,9 @@ export function initDataLayer(priority: "idle" | "immediate" = "idle") {
   }
 
   const retryWhenOnline = () => {
-    if (!_ready && !fetchStarted) initDataLayer("immediate");
+    if ((!_ready || _lastError || currentData.length === 0) && !fetchStarted) {
+      initDataLayer("immediate");
+    }
   };
   window.addEventListener("online", retryWhenOnline, { once: true });
 }
@@ -170,12 +243,20 @@ export function isDataReady(): boolean {
   return _ready;
 }
 
+export function getDataError(): string | null {
+  return _lastError;
+}
+
 export function subscribe(fn: () => void): () => void {
   listeners.add(fn);
   return () => { listeners.delete(fn); };
 }
 
 export function refreshData(): Promise<void> {
+  installAuthListener();
+  _lastError = null;
+  fetchStarted = true;
+  notifyListeners();
   return fetchAll();
 }
 

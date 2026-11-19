@@ -48,8 +48,8 @@ export default function Onboarding() {
   const { theme, setTheme } = useTheme();
   const { subscribe, permission, isSubscribed } = usePushNotificationsContext();
   const { loading, flow, data, displayName, isReplay, profileSchoolName, profileSeatNumber, saveStep, complete } = useOnboarding();
-  const [, setStoredElectives] = useUserStorage<string[]>('onboarding-subjects', []);
-  const [, setStoredDailyGoal] = useUserStorage<number>('onboarding-daily-goal', 30);
+  const [, setStoredElectives] = useUserStorage<string[]>(`onboarding-subjects:${programId}`, []);
+  const [, setStoredDailyGoal] = useUserStorage<number>(`onboarding-daily-goal:${programId}`, 30);
   const { preferences: storedJambPreferences, setPreferences: setStoredJambPreferences, isReady: jambPreferencesReady } = useJambStudyPreferences();
   const workspaceFlow = useMemo(() => getOnboardingFlow(flow, programId), [flow, programId]);
 
@@ -281,7 +281,7 @@ export default function Onboarding() {
           animate={{ opacity: 1, transform: 'translateX(0px)' }}
           transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
         >
-          {step === 'welcome' && <StepWelcome displayName={displayName} />}
+          {step === 'welcome' && <StepWelcome displayName={displayName} programLabel={isJambWorkspace ? "JAMB / UTME" : "JUPEB"} />}
           {step === 'theme' && (
             <StepTheme
               selected={effectiveTheme}

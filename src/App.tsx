@@ -34,6 +34,7 @@ const WindowAppearance = registerPlugin<WindowAppearancePlugin>("WindowAppearanc
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
+const ExamProgramSelectionPage = lazy(() => import("./pages/ExamProgramSelectionPage"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Profile = lazy(() => import("./pages/Profile"));
 const SettingsProfile = lazy(() => import("./pages/SettingsProfile"));
@@ -135,6 +136,7 @@ function AnimatedRoutes() {
         <Suspense fallback={<PageLoader />}>
         <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
+        <Route path="/onboarding/program" element={<ErrorBoundary><ExamProgramSelectionPage /></ErrorBoundary>} />
         <Route path="/download" element={<ErrorBoundary><DownloadApp /></ErrorBoundary>} />
         <Route 
           path="/" 

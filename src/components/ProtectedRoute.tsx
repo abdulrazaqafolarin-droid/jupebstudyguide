@@ -85,15 +85,18 @@ function RequireProgrammeSelection({ children }: { children: React.ReactNode }) 
     let cancelled = false;
     setSelected(undefined);
     setLoadError(false);
-    supabase.from('profiles').select('selected_exam_program').eq('user_id', user.id).maybeSingle()
-      .then(({ data, error }) => {
+    void (async () => {
+      try {
+        const { data, error } = await supabase.from('profiles')
+          .select('selected_exam_program').eq('user_id', user.id).maybeSingle();
         if (cancelled) return;
         if (error) { setLoadError(true); return; }
         const value = data?.selected_exam_program;
         setSelected(value === 'jamb' || value === 'jupeb' ? value : null);
-      })
-      .catch(() => { if (!cancelled) setLoadError(true); });
-    return () => { cancelled = true; };
+      } catch {
+        if (!cancelled) setLoadError(true);
+      }
+    })();
   }, [user?.id, retry]);
 
   if (loadError) {

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useActivation } from "@/hooks/useActivation";
 import { canAccessStudyContent } from "@/lib/activation-status";
@@ -11,6 +12,8 @@ import { ADMIN_EMAIL } from "@/lib/adminEmail";
 import rutexLogo from "@/assets/rutex-logo.jpg";
 import { toast } from "sonner";
 import { formatTrialCountdown } from "@/lib/trial-countdown";
+import { supabase } from "@/integrations/supabase/client";
+import { getExamProgramRoute } from "@/lib/exam-program";
 import type { ExamProgramId } from "@/lib/exam-program";
 
 interface ActivationGateProps {
@@ -206,6 +209,10 @@ const ADMIN_WHATSAPP = ["2348124504552", "2347043353166"];
 
 const ActivationScreen = ({ email, onSignOut, programId }: { email: string; onSignOut: () => void; programId: ExamProgramId }) => {
   const programLabel = programId === "jamb" ? "JAMB / UTME" : "JUPEB";
+  const otherProgramId: ExamProgramId = programId === "jamb" ? "jupeb" : "jamb";
+  const otherProgramLabel = otherProgramId === "jamb" ? "JAMB / UTME" : "JUPEB";
+  const navigate = useNavigate();
+  const [switching, setSwitching] = useState(false);
   const [code, setCode] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [planType, setPlanType] = useState("");
@@ -225,6 +232,21 @@ const ActivationScreen = ({ email, onSignOut, programId }: { email: string; onSi
       }, 2000);
     }
   }, [code, validateCode]);
+
+  const handleSwitchProgramme = useCallback(async () => {
+    if (switching) return;
+    setSwitching(true);
+    const { data, error: switchError } = await supabase.rpc("select_exam_program", {
+      p_exam_program_id: otherProgramId,
+    });
+    const result = data as { success?: boolean } | null;
+    if (switchError || !result?.success) {
+      toast.error(switchError?.message || "Could not switch programmes. Please try again.");
+      setSwitching(false);
+      return;
+    }
+    navigate(getExamProgramRoute(otherProgramId), { replace: true });
+  }, [switching, otherProgramId, navigate]);
 
   const handlePaste = useCallback(async () => {
     try {
@@ -372,7 +394,7 @@ const ActivationScreen = ({ email, onSignOut, programId }: { email: string; onSi
                   08124504552 (WhatsApp)
                 </a>
                 <a
-                  href={`https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20JUPEB%20Master%20activation%20code`}
+                  href={`https://wa.me/2347043353166?text=Hi%20I%20want%20to%20purchase%20a%20${encodeURIComponent(programLabel)}%20activation%20code`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-xs text-primary hover:underline bg-secondary/30 rounded-lg px-3 py-2"
@@ -382,6 +404,17 @@ const ActivationScreen = ({ email, onSignOut, programId }: { email: string; onSi
                 </a>
               </div>
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => void handleSwitchProgramme()}
+              disabled={switching}
+              className="w-full"
+            >
+              {switching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Switch to {otherProgramLabel}
+            </Button>
             <Button
               variant="ghost"
               size="sm"

@@ -140,6 +140,17 @@ describe("ActivationGate active-trial banner", () => {
     }
   });
 
+  it("keeps the activation gate and code check scoped to JAMB", () => {
+    render(
+      <ActivationGate programId="jamb">
+        <div>JAMB study content</div>
+      </ActivationGate>,
+    );
+
+    expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+    expect(screen.getByText("JAMB study content")).toBeInTheDocument();
+  });
+
   it("opens the inline activation form without interrupting the trial session", () => {
     render(
       <ActivationGate>

@@ -333,9 +333,10 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceFile: "Biology-1.pdf",
     sourceSha256: "8afb9aa5c3bece851d6a7ec9b6ce85909aa94f1657d0d01b76d96a5d904467f5",
     sourcePageCount: 12, reviewState: "needs_current_source_review",
+    sourcePageLabel: "JAMB IBASS printed pages",
     officialSourceUrl: "https://ibass.jamb.gov.ng/assets/uploads/Biology.pdf",
-    officialSourceCheckedAt: "2026-11-18",
-    sourceComparisonNote: "JAMB-hosted IBASS Biology PDF is available. The uploaded 2025 copy is retained as supplied; the complete topic/objective mapping still needs line-by-line reconciliation against the IBASS PDF.",
+    officialSourceCheckedAt: "2026-11-19",
+    sourceComparisonNote: "The catalogue follows the JAMB-hosted IBASS Biology structure: Variety of Organisms (3 topics), Form and Functions (9), Ecology (7), Heredity and Variations (2) and Evolution (2). The uploaded 2025 copy presents Biotechnology as a separate topic; current IBASS includes biotechnology applications (GMO, gene therapy, recombinant DNA products) within Heredity, so that extra entry has been merged there. Printed page references follow the IBASS PDF (pp. 27–38). The uploaded PDF remains linked for provenance; current-cycle/version sign-off is still pending.",
     generalObjectives: [
       "Demonstrate knowledge of diversity, interdependence and unity of life.",
       "Account for continuity of life through reorganization, inheritance and evolution.",
@@ -344,107 +345,103 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sections: [
       { id: "biology-a", title: "A. Variety of Organisms", topics: [
         {
-          ...topic("bio-a-01-living-organisms", "1", "Living Organisms", ["Characteristics of living things", "Cell structure and functions", "Levels of organisation: cell, tissue, organ, system and organism"], [1]),
+          ...topic("bio-a-01-living-organisms", "1", "Living Organisms", ["Characteristics of living things", "Cell structure and functions", "Levels of organisation: cell, tissue, organ, system and organism"], [27]),
           objectives: ["Differentiate living things from non-living things.","Identify the structures of plant and animal cells and explain the functions of their components.","Compare and contrast plant and animal cells.","Trace the organisation of living things through cell, tissue, organ, system and organism."],
         },
         {
-          ...topic("bio-a-02-evolution-organisms", "2", "Evolution Among Organisms", ["Monera, Protista and Fungi", "Plant groups: Thallophyta, Bryophyta, Pteridophyta and Spermatophyta", "Invertebrates and vertebrates", "Structural complexity and life histories"], [1,2]),
+          ...topic("bio-a-02-evolution-organisms", "2", "Evolution Among Organisms", ["Monera, Protista and Fungi", "Plant groups: Thallophyta, Bryophyta, Pteridophyta and Spermatophyta", "Invertebrates and vertebrates", "Structural complexity and life histories"], [27,28]),
           objectives: ["Analyse the external features and characteristics of the listed Monera, Protista, fungi, plants and animals.","Use examples to demonstrate increasing structural complexity.","Trace the life histories of representative organisms.","Explain the transition from aquatic to terrestrial life using life-history evidence.","Trace the evolution and major groups of plants and animals, including vertebrates and invertebrates.","Determine the economic and environmental importance of selected insects and other organisms.","Classify plants according to annual, biennial and perennial life cycles."],
         },
         {
-          ...topic("bio-a-03-adaptations", "3", "Structural, Functional and Behavioural Adaptations", ["Adaptive colouration", "Behavioural adaptations in social animals", "Structural adaptations", "Feeding, protection, mating, temperature regulation and water conservation"], [2]),
+          ...topic("bio-a-03-adaptations", "3", "Structural, Functional and Behavioural Adaptations", ["Adaptive colouration", "Behavioural adaptations in social animals", "Structural adaptations", "Feeding, protection, mating, temperature regulation and water conservation"], [28]),
           objectives: ["Explain how structural, functional and behavioural features adapt organisms to their environments.","Describe adaptive colouration, including countershading and warning colouration.","Differentiate castes in social insects and explain their roles.","Explain basking, territorial behaviour, hibernation and aestivation.","Relate feeding structures, protection, defence, mating displays, temperature regulation and water conservation to adaptation."],
         },
       ]},
       { id: "biology-b", title: "B. Form and Functions", topics: [
         {
-          ...topic("bio-b-01-plant-structure", "1", "Internal Structure of a Flowering Plant", ["Root, stem and leaf structure", "Supporting tissues", "Internal structure of a mammal"], [3]),
+          ...topic("bio-b-01-plant-structure", "1", "Internal Structure of a Flowering Plant", ["Root, stem and leaf structure", "Supporting tissues", "Internal structure of a mammal"], [29]),
           objectives: ["Identify transverse sections of roots, stems and leaves.","Relate the internal structures of plant organs to their functions.","Identify supporting tissues and describe their distribution in roots, stems and leaves.","Examine the arrangement, appearance and position of mammalian internal, digestive, reproductive and excretory organs."],
         },
         {
-          ...topic("bio-b-02-nutrition", "2", "Nutrition", ["Autotrophic and heterotrophic nutrition", "Photosynthesis and chemosynthesis", "Mineral requirements", "Animal nutrition, food classes and food tests", "Teeth and alimentary canal"], [3,4]),
+          ...topic("bio-b-02-nutrition", "2", "Nutrition", ["Autotrophic and heterotrophic nutrition", "Photosynthesis and chemosynthesis", "Mineral requirements", "Animal nutrition, food classes and food tests", "Teeth and alimentary canal"], [29,30]),
           objectives: ["Compare autotrophic and heterotrophic nutrition and give plant examples.","Compare photosynthesis with chemosynthesis and distinguish major heterotrophic feeding modes.","Explain light and dark reactions and the roles of light, carbon dioxide and chlorophyll in photosynthesis.","Describe a starch test as evidence of photosynthesis.","Identify plant macro- and micro-elements and recognise nitrogen, phosphorus and potassium deficiency symptoms.","Identify food classes, their sources, nutritional values, functions and deficiency diseases, and explain balanced diets.","Interpret food-test experiments for starch, reducing sugars, proteins, oils and fats.","Describe mammalian teeth, compare tooth types and dental formulae, and relate structure to function.","Relate the alimentary canal and accessory organs to their functions.","Explain digestive enzymes, their action on carbohydrates, proteins and fats, and the resulting end products."],
         },
         {
-          ...topic("bio-b-03-transport", "3", "Transport", ["Need and materials for transportation", "Mammalian circulatory system", "Plant vascular system", "Transport media and mechanisms"], [4]),
+          ...topic("bio-b-03-transport", "3", "Transport", ["Need and materials for transportation", "Mammalian circulatory system", "Plant vascular system", "Transport media and mechanisms"], [30]),
           objectives: ["Explain why increasing organism size and complexity require transport systems.","Identify materials transported and the sources and forms in which they are carried.","Describe the general mammalian circulatory system and compare the functions of major arteries and veins.","Identify plant vascular tissues and explain the roles of xylem and phloem.","Identify transport media such as cytoplasm, cell sap, body fluid, blood and lymph.","State the composition and functions of blood and lymph.","Explain diffusion, osmosis, plasmolysis and turgidity as transport mechanisms.","Compare open circulation in animals with transpiration pull, root pressure and active transport in plants."],
         },
         {
-          ...topic("bio-b-04-respiration", "4", "Respiration", ["Respiratory organs and surfaces", "Gaseous exchange in plants and animals", "Aerobic and anaerobic respiration"], [4,5]),
+          ...topic("bio-b-04-respiration", "4", "Respiration", ["Respiratory organs and surfaces", "Gaseous exchange in plants and animals", "Aerobic and anaerobic respiration"], [30,31]),
           objectives: ["Explain the significance of respiration and the role of oxygen in energy release.","Outline glycolysis and the Krebs cycle with reference to ATP production.","Interpret experiments on gaseous exchange, respiratory products and heat production.","Describe body surfaces, gills, tracheae, lungs, stomata and lenticels as respiratory surfaces.","Explain stomatal opening and closing and compare respiratory mechanisms in plants and animals.","Explain the effect of inadequate oxygen supply on muscles.","Demonstrate fermentation using yeast and sugar solution and state the economic importance of yeast."],
         },
         {
-          ...topic("bio-b-05-excretion", "5", "Excretion", ["Excretory organs and products", "Excretion in plants and animals", "Osmoregulation"], [5]),
+          ...topic("bio-b-05-excretion", "5", "Excretion", ["Excretory organs and products", "Excretion in plants and animals", "Osmoregulation"], [31]),
           objectives: ["Define excretion and explain its significance.","Relate the structures of contractile vacuoles, flame cells, nephridia, Malpighian tubules, kidneys, stomata and lenticels to excretion.","Explain excretory and osmoregulatory functions of the kidneys.","Identify the excretory products and functions of the lungs and skin.","Explain the economic importance of plant excretory products such as oxygen, carbon dioxide, tannins, resins, gums and alkaloids."],
         },
         {
-          ...topic("bio-b-06-support-movement", "6", "Support and Movement", ["Support in plants", "Skeleton and support in animals", "Movement and locomotion"], [5]),
+          ...topic("bio-b-06-support-movement", "6", "Support and Movement", ["Support in plants", "Skeleton and support in animals", "Movement and locomotion"], [31,32]),
           objectives: ["Explain the need for support and movement in organisms.","Identify plant supporting tissues and describe their distribution in roots, stems and leaves.","Relate plant tropic, tactic, nastic and sleep movements to responses to light, water, gravity and touch.","Identify regions of growth in roots and shoots and explain the role of auxins in tropism.","Relate chitin, cartilage and bone to support in animals.","Relate the mammalian skeleton to support, locomotion and respiration.","Differentiate types of joints with appropriate examples.","Explain the protective, supportive, locomotive and respiratory functions of the skeleton."],
         },
         {
-          ...topic("bio-b-07-reproduction", "7", "Reproduction", ["Asexual and sexual reproduction", "Reproduction in flowering plants", "Pollination and fertilisation", "Reproduction in mammals"], [5,6]),
+          ...topic("bio-b-07-reproduction", "7", "Reproduction", ["Asexual and sexual reproduction", "Reproduction in flowering plants", "Pollination and fertilisation", "Reproduction in mammals"], [32]),
           objectives: ["Differentiate asexual and sexual reproduction.","Describe fission, budding and natural vegetative propagation.","Apply grafting, budding and layering in crop production.","Relate floral parts to their functions, pollination and fertilisation.","State advantages of cross-pollination and relate placentation to fruit types.","Identify male and female mammalian reproductive organs and relate their structures to their functions.","Explain gamete fusion and fertilisation.","Relate maternal health, nutrition and drug use to embryonic development and birth.","Explain modern reproductive technologies, including in-vitro fertilisation and birth control."],
         },
         {
-          ...topic("bio-b-08-growth", "8", "Growth", ["Meaning and stages of growth", "Seed germination and conditions necessary for germination"], [6]),
+          ...topic("bio-b-08-growth", "8", "Growth", ["Meaning and stages of growth", "Seed germination and conditions necessary for germination"], [32]),
           objectives: ["Explain growth and the conditions necessary for seed germination.","Differentiate epigeal and hypogeal germination."],
         },
         {
-          ...topic("bio-b-09-coordination", "9", "Co-ordination and Control", ["Nervous coordination and impulse transmission", "Reflex action", "Sense organs", "Hormonal control", "Homeostasis"], [6]),
+          ...topic("bio-b-09-coordination", "9", "Co-ordination and Control", ["Nervous coordination and impulse transmission", "Reflex action", "Sense organs", "Hormonal control", "Homeostasis"], [32,33]),
           objectives: ["Explain how the central and peripheral nervous systems coordinate body functions.","Describe nerve impulse transmission and illustrate reflex actions such as blinking and the knee jerk.","Differentiate reflex, voluntary and conditioned actions.","Relate the skin, nose, tongue, eye and ear to their sensory functions and defects.","Locate the principal endocrine glands and relate their hormones to their functions.","Explain the effects of auxins, gibberellins, cytokinins and ethylene on plant growth and development.","Relate hormones to homeostasis, including temperature, salt and water regulation."],
         },
       ]},
       { id: "biology-c", title: "C. Ecology", topics: [
         {
-          ...topic("bio-c-01-distribution", "1", "Factors Affecting the Distribution of Organisms", ["Abiotic factors", "Biotic factors"], [6,7]),
+          ...topic("bio-c-01-distribution", "1", "Factors Affecting the Distribution of Organisms", ["Abiotic factors", "Biotic factors"], [33]),
           objectives: ["Relate temperature, rainfall, humidity, wind, altitude, salinity, turbidity, pH and soil conditions to organism distribution.","Use appropriate equipment, including a Secchi disc, thermometer and rain gauge, to measure abiotic factors.","Explain how plant, animal and human activities affect organism distribution."],
         },
         {
-          ...topic("bio-c-02-symbiosis", "2", "Symbiotic Interactions of Plants and Animals", ["Energy flow, food chains and food webs", "Trophic levels", "Carbon, water and nitrogen cycles"], [7]),
+          ...topic("bio-c-02-symbiosis", "2", "Symbiotic Interactions of Plants and Animals", ["Energy flow, food chains and food webs", "Trophic levels", "Carbon, water and nitrogen cycles"], [33]),
           objectives: ["Give examples of symbiosis, parasitism, saprophytism, commensalism, mutualism, amensalism, competition, predation and cooperation.","Explain food chains, food webs, trophic levels and energy flow in habitats.","Describe the carbon, water and nitrogen cycles and their significance.","Relate the carbon cycle to atmospheric oxygen and carbon dioxide balance and global warming.","Explain how the water cycle affects other nutrient cycles.","Explain the roles of bacteria and leguminous plants in nitrogen cycling."],
         },
         {
-          ...topic("bio-c-03-habitats", "3", "Natural Habitats", ["Aquatic habitats", "Terrestrial and arboreal habitats"], [7]),
+          ...topic("bio-c-03-habitats", "3", "Natural Habitats", ["Aquatic habitats", "Terrestrial and arboreal habitats"], [33]),
           objectives: ["Associate plants and animals with aquatic, terrestrial and arboreal habitats.","Relate adaptive features of organisms to the habitats in which they live."],
         },
         {
-          ...topic("bio-c-04-biomes", "4", "Local Nigerian Biomes", ["Tropical rainforest", "Guinea and Sudan savanna", "Desert", "Montane forests and highland grasslands"], [7]),
+          ...topic("bio-c-04-biomes", "4", "Local Nigerian Biomes", ["Tropical rainforest", "Guinea and Sudan savanna", "Desert", "Montane forests and highland grasslands"], [34]),
           objectives: ["Locate the major Nigerian biomes, including tropical rainforest, Guinea and Sudan savanna, desert and montane highlands.","Use the characteristics of local biomes to distinguish regions of Nigeria."],
         },
         {
-          ...topic("bio-c-05-populations", "5", "The Ecology of Populations", ["Population density and overcrowding", "Competition and succession", "Biotic and abiotic factors affecting population size"], [7,8]),
+          ...topic("bio-c-05-populations", "5", "The Ecology of Populations", ["Population density and overcrowding", "Competition and succession", "Biotic and abiotic factors affecting population size"], [34]),
           objectives: ["Explain causes of rapid human population change and the consequences of overcrowding.","Calculate population density as organisms per unit area.","Relate food, disease and space pressures to intra- and inter-specific competition.","Explain niche differentiation as a way of reducing competition.","Relate competition to ecological succession.","Explain biotic and abiotic factors that affect population size.","Describe primary and secondary succession and the progression to a stable climax community."],
         },
         {
-          ...topic("bio-c-06-soil", "6", "Soil", ["Soil types and structure", "Porosity, capillarity and humus", "Soil components and organisms", "Soil fertility, loss, renewal and maintenance"], [8]),
+          ...topic("bio-c-06-soil", "6", "Soil", ["Soil types and structure", "Porosity, capillarity and humus", "Soil components and organisms", "Soil fertility, loss, renewal and maintenance"], [34,35]),
           objectives: ["Identify the physical properties of sandy, loamy and clayey soils.","Determine soil particle size, porosity, water retention, air, water, humus and capillarity experimentally.","Relate soil types, characteristics and components to healthy plant growth.","Explain soil fertility loss through nutrient depletion, compaction, leaching, erosion and repeated cropping.","Apply contour ridging, terracing, mulching, mixed cropping, strip cropping, fertilisers, crop rotation and shifting cultivation to soil conservation."],
         },
         {
-          ...topic("bio-c-07-humans-environment", "7", "Humans and the Environment", ["Common and endemic diseases", "Drug abuse and prevention", "Pollution, sanitation and sewage", "Conservation, game reserves and national parks"], [8,9]),
+          ...topic("bio-c-07-humans-environment", "7", "Humans and the Environment", ["Common and endemic diseases", "Drug abuse and prevention", "Pollution, sanitation and sewage", "Conservation, game reserves and national parks"], [35,36]),
           objectives: ["Identify ecological conditions that favour common endemic and epidemic diseases.","Relate disease agents and vectors to disease spread and control.","Define drug abuse and addiction, identify commonly abused drugs and state their health effects.","Use knowledge of causative organisms, transmission and symptoms to explain disease prevention and control.","Explain inoculation and vaccination.","Classify pollution and relate air, water and soil pollutants to human health and environmental degradation.","Describe methods of pollution control, sanitation, sewage disposal, personal hygiene and community health.","Explain the roles of WHO, UNICEF, the Red Cross and national health/environment agencies.","Apply conservation methods to renewable and non-renewable resources and explain their benefits.","Identify conservation organisations, game reserves and national parks in Nigeria and explain their importance."],
         },
       ]},
       { id: "biology-d", title: "D. Heredity and Variations", topics: [
         {
-          ...topic("bio-d-01-variation", "1", "Variation in Population", ["Morphological variation", "Physiological variation", "Applications in crime detection, blood transfusion and paternity"], [9]),
+          ...topic("bio-d-01-variation", "1", "Variation in Population", ["Morphological variation", "Physiological variation", "Applications in crime detection, blood transfusion and paternity"], [36]),
           objectives: ["Differentiate continuous and discontinuous variation.","Relate variation to environmental conditions, habitat and genetic constitution.","Measure and plot frequency distributions for human heights and weights.","Observe and record colour patterns in plants and animals.","Apply fingerprint classification to identity detection.","Identify physiological variations such as tongue rolling, PTC tasting and blood groups.","Apply blood-group knowledge to transfusion and paternity determination and discontinuous variation to crime detection."],
         },
         {
-          ...topic("bio-d-02-heredity", "2", "Heredity", ["Heritable and non-heritable characters", "Chromosomes and transmission of hereditary characters", "Genetic probability and sex determination", "Applications in agriculture and medicine", "Sex-linked characters"], [10]),
-          objectives: ["Differentiate heritable and non-heritable characters and illustrate the structure of DNA.","Explain gene segregation during meiosis and random recombination at fertilisation.","Analyse cross-breeding data and apply heredity to crop and livestock improvement.","State advantages and disadvantages of in-breeding and out-breeding.","Discuss genetically modified organisms, gene therapy and biosafety at an elementary level.","Apply heredity to counselling related to blood groups, sickle-cell anaemia and Rhesus factors.","Explain recombinant DNA applications in producing insulin, interferon and enzymes.","Identify sex-linked characters such as haemophilia and colour blindness."],
-        },
-        {
-          ...topic("bio-d-03-biotechnology", "3", "Biotechnology", ["Applications in agriculture", "Applications in medicine and pharmaceuticals", "Applications in the food industry"], [10]),
-          objectives: ["Define biotechnology.","List applications of biotechnology in agriculture, medicine, pharmaceuticals and the food industry."],
+          ...topic("bio-d-02-heredity", "2", "Heredity", ["Heritable and non-heritable characters", "Chromosomes and transmission of hereditary characters", "Genetic probability and sex determination", "Applications in agriculture and medicine", "Sex-linked characters", "Biotechnology applications: genetically modified organisms, gene therapy, biosafety and recombinant DNA products"], [36,37]),
+          objectives: ["Differentiate heritable and non-heritable characters and illustrate the structure of DNA.","Explain gene segregation during meiosis and random recombination at fertilisation.","Analyse cross-breeding data and apply heredity to crop and livestock improvement.","State advantages and disadvantages of in-breeding and out-breeding.","Discuss genetically modified organisms, gene therapy and biosafety at an elementary level.","Apply heredity to counselling related to blood groups, sickle-cell anaemia and Rhesus factors.","Explain recombinant DNA applications in producing insulin, interferon and enzymes.","Identify sex-linked characters such as haemophilia and colour blindness.","Explain biotechnology and list its applications in agriculture, medicine, pharmaceuticals and the food industry."],
         },
       ]},
       { id: "biology-e", title: "E. Evolution", topics: [
         {
-          ...topic("bio-e-01-theories", "1", "Theories of Evolution", ["Lamarck's theory", "Darwin's theory", "Organic theory"], [11]),
+          ...topic("bio-e-01-theories", "1", "Theories of Evolution", ["Lamarck's theory", "Darwin's theory", "Organic theory"], [38]),
           objectives: ["Explain organic evolution as cumulative adaptive change producing the diversity of organisms.","Describe the contributions of Lamarck and Darwin to evolutionary theory.","State evidence supporting organic evolution."],
         },
         {
-          ...topic("bio-e-02-evidence", "2", "Evidence of Evolution", ["Evidence used to explain evolutionary change"], [11]),
+          ...topic("bio-e-02-evidence", "2", "Evidence of Evolution", ["Evidence used to explain evolutionary change"], [38]),
           objectives: ["Identify fossil, comparative anatomical, physiological and embryological evidence for evolution.","Trace evolutionary trends in plants and animals.","Describe evidence from modern evolutionary theory, including genetic studies and mutation."],
         },
       ]},
@@ -466,7 +463,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sections: [
       { id: "math-i", title: "I. Number and Numeration", topics: [
         {
-          ...topic("math-i-01-number-bases", "1", "Number Bases and Modular Arithmetic", ["Operations in bases 2 to 10", "Conversion between bases, including fractions", "Modular arithmetic"], [2]),
+          ...topic("math-i-01-number-bases", "1", "Number Bases and Modular Arithmetic", ["Operations in bases 2 to 10", "Conversion between bases, including fractions", "Modular arithmetic"], [38]),
           objectives: ["Perform addition, subtraction, multiplication and division in number bases 2 to 10.","Convert numbers between bases, including fractional parts.","Perform calculations in modular arithmetic."],
         },
         {

@@ -138,7 +138,7 @@ The admin UI only resumes a matching source hash and candidate count; it does no
 
 The owner uploaded Biology, Chemistry, Mathematics, Physics and Use of English PDFs in repository commit `e1d9b81b82be717567f47972c39a6ce702bf6b92`. The feature-branch extraction workflow reads those exact immutable source bytes, records SHA-256, page count and PDF metadata, preserves page text and detected table cells, copies the originals into the review pack and renders page previews. The successful review artifact is GitHub Actions run `44388332808`, artifact `14467187615`.
 
-The JAMB syllabus UI now contains a five-subject catalogue (107 topic entries) with section headings, topic outlines, source page references and the general objectives shown in the submitted files. It also distinguishes subject-syllabus availability from question-bank availability: English is marked compulsory in the submitted source and Mathematics/English can be browsed, but neither has JAMB practice questions in the current bank.
+The JAMB syllabus UI now contains a five-subject catalogue (106 topic entries) with section headings, topic outlines, source page references and the general objectives shown in the submitted files. It also distinguishes subject-syllabus availability from question-bank availability: English is marked compulsory in the submitted source and Mathematics/English can be browsed, but neither has JAMB practice questions in the current bank.
 
 **Version and completeness boundary:** the uploaded PDF metadata identifies 2025-created copies. The Physics and Use of English uploaded content differs from the JAMB-hosted PDFs checked during this work. The catalogue remains a candidate source outline and `JAMB_SYLLABUS_VERIFIED=false`; per-topic objective mapping and reconciliation against current IBASS source documents still need completion. Do not describe this as the verified 2027 syllabus and do not enable an official-format UTME mock from it.
 
@@ -178,9 +178,12 @@ The Physics source contains a much larger, 40-topic set of detailed objectives. 
 
 ## Complete topic learning-objective transcription — 18 November 2026
 
-All **107 catalogue topics** now include a per-topic "Candidates should be able to" objective list: Physics 39 topics, Chemistry 18, Biology 24, Mathematics 23 and Use of English 3. This pass maps at least **431 objective statements** from the submitted 2025 source PDFs and the JAMB-hosted IBASS Use of English PDF. Topic source-page references are retained. A regression test checks all five subject counts and fails if any topic lacks objectives.
+All **106 catalogue topics** now include a per-topic "Candidates should be able to" objective list: Physics 39 topics, Chemistry 18, Biology 23, Mathematics 23 and Use of English 3. This pass maps at least **431 objective statements** from the submitted 2025 source PDFs and the JAMB-hosted IBASS Use of English PDF. Topic source-page references are retained. A regression test checks all five subject counts and fails if any topic lacks objectives.
 
 The distinction between content completeness and current-version approval remains important: Physics, Chemistry, Biology and Mathematics objectives are transcribed from the owner's uploaded 2025 copies. Use of English follows the JAMB-hosted IBASS PDF checked on 18 November 2026 because its supplied copy differs. Physics and Biology official IBASS links are present but the complete topic-to-objective wording still needs line-by-line reconciliation against those live sources; Chemistry and Mathematics current IBASS sources still need retrieval and comparison. The five-subject catalogue remains unverified for the applicable 2027 examination cycle, and the full UTME mock remains disabled.
 
 
 The Physics entries follow the JAMB-hosted 39-topic IBASS structure checked on 19 November 2026, while preserving the uploaded 2025 Physics PDF's hash and link as source-pack provenance. Use of English follows the JAMB-hosted IBASS PDF checked on 18 November 2026; the supplied copy is retained separately. Both subjects remain marked for source-version review because this does not certify the 2027 syllabus edition.
+
+
+Biology now follows the five-section JAMB-hosted IBASS structure (3 / 9 / 7 / 2 / 2 = 23 topics). The uploaded copy's separate Biotechnology entry has been removed as a distinct topic and its application/objective content is included under Heredity. Topic page references now use the IBASS printed pages 27–38.

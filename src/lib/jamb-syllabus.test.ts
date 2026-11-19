@@ -30,6 +30,25 @@ describe("JAMB syllabus catalogue", () => {
     expect(JAMB_SYLLABUS.use_of_english.reviewState).toBe("needs_current_source_review");
   });
 
+  it("follows the current five-section JAMB IBASS Biology structure", () => {
+    const biology = JAMB_SYLLABUS.biology;
+    expect(biology.sections.map((section) => section.topics.length)).toEqual([3, 9, 7, 2, 2]);
+    expect(biology.sections.map((section) => section.title)).toEqual([
+      "A. Variety of Organisms",
+      "B. Form and Functions",
+      "C. Ecology",
+      "D. Heredity and Variations",
+      "E. Evolution",
+    ]);
+    const topics = biology.sections.flatMap((section) => section.topics);
+    expect(topics).toHaveLength(23);
+    expect(topics.some((item) => item.id === "bio-d-03-biotechnology")).toBe(false);
+    const heredity = topics.find((item) => item.id === "bio-d-02-heredity");
+    expect(heredity?.outline.join(" ")).toContain("Biotechnology applications");
+    expect(heredity?.objectives?.join(" ")).toContain("recombinant DNA");
+    expect(biology.officialSourceUrl).toBe("https://ibass.jamb.gov.ng/assets/uploads/Biology.pdf");
+  });
+
   it("uses the current 39-topic JAMB IBASS Physics structure", () => {
     const physics = JAMB_SYLLABUS.physics;
     const topics = physics.sections.flatMap((section) => section.topics);
@@ -73,11 +92,11 @@ describe("JAMB syllabus catalogue", () => {
     }
   });
 
-  it("maps source learning objectives to all 107 syllabus topics", () => {
+  it("maps source learning objectives to all 106 syllabus topics", () => {
     const expected = {
       physics: 39,
       chemistry: 18,
-      biology: 24,
+      biology: 23,
       math: 23,
       use_of_english: 3,
     } as const;
@@ -91,7 +110,7 @@ describe("JAMB syllabus catalogue", () => {
       total += topics.length;
       objectiveStatements += topics.reduce((sum, item) => sum + (item.objectives?.length ?? 0), 0);
     }
-    expect(total).toBe(107);
+    expect(total).toBe(106);
     expect(objectiveStatements).toBeGreaterThanOrEqual(430);
   });
 
@@ -103,7 +122,7 @@ describe("JAMB syllabus catalogue", () => {
     expect(getJambSyllabusTopic("physics", "phy-01-measurements")?.title).toBe("Measurements and Units");
     expect(getJambSyllabusTopic("not-a-subject", "phy-01-measurements")).toBeUndefined();
     expect(getJambSyllabusTopic("physics", "unknown-topic")).toBeUndefined();
-    expect(getJambSyllabusTopicCount()).toBe(107);
+    expect(getJambSyllabusTopicCount()).toBe(106);
   });
 });
 

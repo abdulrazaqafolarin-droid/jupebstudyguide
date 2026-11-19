@@ -104,3 +104,6 @@ The JAMB syllabus page count is now **106 topics**: Physics 39, Chemistry 18, Bi
 
 
 Biology source correction: the official JAMB IBASS syllabus has 23 topics grouped 3 / 9 / 7 / 2 / 2. Biotechnology is integrated under Heredity, not listed as a separate topic. The five-subject catalogue now has 106 topics overall: Physics 39, Chemistry 18, Biology 23, Mathematics 23 and Use of English 3.
+
+
+Current count: **426 source-mapped objective statements** across 106 topics. Each topic is covered by the syllabus regression test.

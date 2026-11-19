@@ -111,7 +111,7 @@ describe("JAMB syllabus catalogue", () => {
       objectiveStatements += topics.reduce((sum, item) => sum + (item.objectives?.length ?? 0), 0);
     }
     expect(total).toBe(106);
-    expect(objectiveStatements).toBeGreaterThanOrEqual(430);
+    expect(objectiveStatements).toBe(426);
   });
 
   it("uses stable unique topic identifiers across all subjects", () => {

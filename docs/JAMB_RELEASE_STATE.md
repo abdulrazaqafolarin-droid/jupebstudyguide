@@ -202,3 +202,6 @@ The JAMB-hosted Use of English IBASS PDF is represented separately from the uplo
 ## Official-source correction — Biology section and topic structure
 
 The current JAMB-hosted [Biology IBASS PDF](https://ibass.jamb.gov.ng/assets/uploads/Biology.pdf), checked on 19 November 2026, contains five sections with topic counts **3 / 9 / 7 / 2 / 2**: Variety of Organisms, Form and Functions, Ecology, Heredity and Variations, and Evolution. This yields **23 Biology topics**. The uploaded 2025 copy presents Biotechnology as a separate topic; the current IBASS syllabus places biotechnology applications (including GMO, gene therapy, biosafety and recombinant DNA) within Heredity. The catalogue now merges that material into the Heredity topic and uses printed-page references 27–38. The supplied PDF remains checksum-recorded for provenance; this does not certify a 2027 edition.
+
+
+The current structured catalogue contains exactly **426 learning-objective statements** across the 106 topic entries. The regression test asserts the exact statement count and checks that every topic has at least one objective.

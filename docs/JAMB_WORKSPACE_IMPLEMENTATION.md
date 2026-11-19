@@ -187,3 +187,6 @@ The Physics entries follow the JAMB-hosted 39-topic IBASS structure checked on 1
 
 
 Biology now follows the five-section JAMB-hosted IBASS structure (3 / 9 / 7 / 2 / 2 = 23 topics). The uploaded copy's separate Biotechnology entry has been removed as a distinct topic and its application/objective content is included under Heredity. Topic page references now use the IBASS printed pages 27–38.
+
+
+The current objective count after aligning Physics and Biology to IBASS topic structures is **426 statements across 106 topics**. Tests enforce the exact count and the presence of objectives on every topic.

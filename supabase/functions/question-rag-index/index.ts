@@ -24,6 +24,8 @@ interface RetryQueueClient {
 
 interface QuestionRow {
   id: string;
+  exam_program_id: "jupeb" | "jamb";
+  review_status: string;
   subject: string;
   year: number;
   category: string;
@@ -157,9 +159,10 @@ Deno.serve(async (req) => {
     const ids = jobs.map((job) => job.question_id);
     const { data: questionRows, error: questionError } = await admin
       .from("study_questions")
-      .select("id, subject, year, category, question, options, correct_answer, explanation, difficulty, course, image_url, updated_at, hidden")
+      .select("id, exam_program_id, review_status, subject, year, category, question, options, correct_answer, explanation, difficulty, course, image_url, updated_at, hidden")
       .in("id", ids)
-      .eq("hidden", false);
+      .eq("hidden", false)
+      .eq("review_status", "published");
 
     if (questionError || !questionRows) {
       for (const job of jobs) await retryJob(admin, job, questionError?.message || "question-read-failed", job.attempts);
@@ -188,6 +191,7 @@ Deno.serve(async (req) => {
       }
 
       const canonicalText = formatQuestionForEmbedding({
+        exam_program_id: question.exam_program_id,
         subject: question.subject,
         year: question.year,
         category: question.category,

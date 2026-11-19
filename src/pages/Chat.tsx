@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { getWorkspacePath } from '@/lib/exam-program';
 import { toast } from 'sonner';
 
 let faviconOriginalHref: string | null = null;
@@ -59,6 +61,7 @@ function updateFaviconBadge(count: number) {
 type Tab = 'chats' | 'friends';
 
 const Chat = () => {
+  const { isJambWorkspace, programId } = useExamProgram();
   const { user } = useAuth();
   const chat = useChat();
   const friends = useFriends();
@@ -120,10 +123,11 @@ const Chat = () => {
   // Update document title and favicon with total unread count
   const totalUnread = chat.totalUnreadCount;
   useEffect(() => {
-    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] JUPEB Study Guide` : 'JUPEB Study Guide';
+    const programmeTitle = isJambWorkspace ? 'JAMB Study Guide' : 'JUPEB Study Guide';
+    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] ${programmeTitle}` : programmeTitle;
     document.title = title;
     updateFaviconBadge(totalUnread);
-  }, [totalUnread]);
+  }, [totalUnread, isJambWorkspace]);
 
   useEffect(() => {
     if (addFriendQuery.trim().length < 2) { setAddFriendResults([]); return; }
@@ -173,7 +177,7 @@ const Chat = () => {
           <div className="relative p-3 border-b border-border/40">
             <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div className="flex items-center gap-2">
-              <Link to="/">
+              <Link to={isJambWorkspace ? "/jamb" : "/"}>
                 <Button variant="ghost" size="icon" className="shrink-0 rounded-xl hover:bg-accent/50">
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
@@ -183,7 +187,7 @@ const Chat = () => {
                 <p className="text-[10px] text-muted-foreground/60 -mt-0.5">Chat with friends</p>
               </div>
               <div className="ml-auto flex gap-1">
-                <Link to="/settings/profile">
+                <Link to={getWorkspacePath("/settings/profile", programId)}>
                   <Button variant="ghost" size="icon" className="shrink-0 rounded-xl hover:bg-accent/50">
                     <Settings className="w-4 h-4" />
                   </Button>

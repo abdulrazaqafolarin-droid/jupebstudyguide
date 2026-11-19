@@ -6,8 +6,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { Bot } from "lucide-react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
@@ -23,6 +24,7 @@ import AppUpdatePrompt from "./components/AppUpdatePrompt";
 import { ProfilePhotoViewerProvider } from "@/components/ProfilePhotoViewer";
 import { InAppNotificationBar } from "@/components/InAppNotificationBar";
 import { PresenceProvider } from "@/contexts/PresenceContext";
+import { ExamProgramProvider, useExamProgram } from "@/contexts/ExamProgramContext";
 
 type WindowAppearancePlugin = {
   setSystemBarSurface(options: { color: string }): Promise<void>;
@@ -32,6 +34,7 @@ const WindowAppearance = registerPlugin<WindowAppearancePlugin>("WindowAppearanc
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
+const ExamProgramSelectionPage = lazy(() => import("./pages/ExamProgramSelectionPage"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Profile = lazy(() => import("./pages/Profile"));
 const SettingsProfile = lazy(() => import("./pages/SettingsProfile"));
@@ -52,6 +55,20 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const SyllabusPage = lazy(() => import("./pages/SyllabusPage"));
 const StudyChatPage = lazy(() => import("./pages/StudyChatPage"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const JambHomePage = lazy(() => import("./pages/jamb/JambHomePage"));
+const JambPastQuestionsPage = lazy(() => import("./pages/jamb/JambPastQuestionsPage"));
+const JambStudyPage = lazy(() => import("./pages/jamb/JambStudyPage"));
+const JambCbtSetupPage = lazy(() => import("./pages/jamb/JambCbtSetupPage"));
+const JambCbtPage = lazy(() => import("./pages/jamb/JambCbtPage"));
+const JambAITutorPage = lazy(() => import("./pages/jamb/JambAITutorPage"));
+const JambSyllabusPage = lazy(() => import("./pages/jamb/JambSyllabusPage"));
+const JambAchievementsPage = lazy(() => import("./pages/jamb/JambAchievementsPage"));
+const JambStatsPage = lazy(() => import("./pages/jamb/JambStatsPage"));
+const JambLeaderboardPage = lazy(() => import("./pages/jamb/JambLeaderboardPage"));
+const JambDailyMissionPage = lazy(() => import("./pages/jamb/JambDailyMissionPage"));
+const JambAdminQuestionPage = lazy(() => import("./pages/admin/JambQuestionBankAdminPage"));
+
+const JAMB_ENABLED = import.meta.env.VITE_ENABLE_JAMB === "true";
 
 
 const queryClient = new QueryClient();
@@ -84,12 +101,13 @@ function ProtectedChatLayout({ children }: { children: React.ReactNode }) {
 
 function AppNotificationBar() {
   const navigate = useNavigate();
+  const { isJambWorkspace } = useExamProgram();
   return (
     <InAppNotificationBar
       onOpenConversation={(convId) => {
-        navigate(`/chat?conversation=${convId}`);
+        navigate(`${isJambWorkspace ? "/jamb/chat" : "/chat"}?conversation=${convId}`);
       }}
-      onOpenFriendsTab={() => navigate('/friends')}
+      onOpenFriendsTab={() => navigate(isJambWorkspace ? "/jamb/friends" : "/friends")}
     />
   );
 }
@@ -118,6 +136,7 @@ function AnimatedRoutes() {
         <Suspense fallback={<PageLoader />}>
         <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
+        <Route path="/onboarding/program" element={<ErrorBoundary><ExamProgramSelectionPage /></ErrorBoundary>} />
         <Route path="/download" element={<ErrorBoundary><DownloadApp /></ErrorBoundary>} />
         <Route 
           path="/" 
@@ -213,6 +232,31 @@ function AnimatedRoutes() {
             </ProtectedRoute>
           } 
         />
+        {JAMB_ENABLED && (
+          <>
+            <Route path="/jamb" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambHomePage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/past-questions" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambPastQuestionsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/study" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambStudyPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/practice/:subject" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambPastQuestionsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/cbt/setup" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambCbtSetupPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/cbt/:attemptId" element={<ProtectedRoute><ErrorBoundary><JambCbtPage /></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/syllabus" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambSyllabusPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/achievements" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambAchievementsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/stats" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambStatsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/leaderboard" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambLeaderboardPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/discover" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><DiscoverPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/profile" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><Profile /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/settings/profile" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><SettingsProfile /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/settings/security" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><SecuritySettings /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/onboarding" element={<ProtectedRoute><ErrorBoundary><Onboarding /></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/friends" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><FriendsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/chat" element={<ProtectedRoute><ErrorBoundary><ProtectedChatLayout><Chat /></ProtectedChatLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/daily-mission" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/daily-mission/:missionId" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambDailyMissionPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/ai" element={<ProtectedRoute><ErrorBoundary><ProtectedChatLayout><JambAITutorPage /></ProtectedChatLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/admin/jamb-questions" element={<AdminRoute><ErrorBoundary><ProtectedLayout><JambAdminQuestionPage /></ProtectedLayout></ErrorBoundary></AdminRoute>} />
+          </>
+        )}
         <Route 
           path="/leaderboard" 
           element={
@@ -335,6 +379,41 @@ function PageTransition({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ProgramAwareFloatingTutor() {
+  const { isJambWorkspace } = useExamProgram();
+  const location = useLocation();
+
+  if (isJambWorkspace) {
+    // The JUPEB floating tutor has its own chat-history model. Keep JAMB on
+    // its programme-aware tutor route rather than mixing those conversations.
+    if (
+      location.pathname === "/jamb/ai" ||
+      location.pathname === "/jamb/chat" ||
+      location.pathname.startsWith("/jamb/cbt/")
+    ) return null;
+
+    return (
+      <Link
+        to="/jamb/ai"
+        aria-label="Open JAMB AI tutor"
+        title="Open JAMB AI tutor"
+        className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 active:scale-95"
+      >
+        <Bot className="h-5 w-5" />
+        <span>JAMB Tutor</span>
+      </Link>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={null}>
+        <FloatingAITutor />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
 function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -396,12 +475,10 @@ const App = () => {
                 <NotificationsProvider>
                   <NativeNotificationBridge />
                   <NativeAuthDeepLinkBridge />
-                  <AnimatedRoutes />
-                  <ErrorBoundary>
-                  <Suspense fallback={null}>
-                    <FloatingAITutor />
-                  </Suspense>
-                  </ErrorBoundary>
+                  <ExamProgramProvider>
+                    <AnimatedRoutes />
+                    <ProgramAwareFloatingTutor />
+                  </ExamProgramProvider>
                 </NotificationsProvider>
               </PresenceProvider>
             </BrowserRouter>

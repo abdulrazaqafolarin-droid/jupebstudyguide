@@ -24,7 +24,7 @@ export default function QuestionRefChips({ refs }: { refs: QuestionRef[] }) {
             title={r.question_id}
             className="inline-flex items-center rounded-full bg-white/[0.07] border border-white/10 px-1.5 py-px text-[10px] text-foreground/80"
           >
-            {r.year} {cap(r.subject)} • {r.category}
+            {r.exam_program_id === "jamb" ? "JAMB · " : "JUPEB · "}{r.year} {cap(r.subject)} • {r.category}
           </span>
         ))}
       </div>

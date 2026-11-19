@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Search, MessageCircle, User, Users, Trophy, Clock, ArrowLeft, Loader2, Compass } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { UserAvatar } from '@/components/UserAvatar';
 import { UserProfileDialog } from '@/components/profile/UserProfileDialog';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,7 @@ interface DiscoverUser {
 export default function DiscoverPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isJambWorkspace } = useExamProgram();
   const [users, setUsers] = useState<DiscoverUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,57 +35,88 @@ export default function DiscoverPage() {
 
   useEffect(() => {
     if (!user) return;
+    let active = true;
     setLoading(true);
 
-    Promise.all([
-      supabase.from('profiles').select('user_id, display_name, avatar_url, last_seen_at').neq('user_id', user.id).order('display_name').range(0, 49),
-      supabase.rpc('get_weekly_leaderboard', { p_week_start: new Date().toISOString().slice(0, 10) }),
-    ]).then(([profilesRes, leaderboardRes]) => {
+    const loadPeople = async () => {
+      const profilesRes = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url, last_seen_at')
+        .neq('user_id', user.id)
+        .order('display_name')
+        .range(0, 49);
+      if (profilesRes.error) throw new Error(profilesRes.error.message);
       const profileData = profilesRes.data ?? [];
-      const leaderboardData = (leaderboardRes.data ?? []) as { user_id: string; week_score: number }[];
-      const scoreMap = new Map(leaderboardData.map(l => [l.user_id, l.week_score]));
 
-      const enriched: DiscoverUser[] = profileData.map(p => ({
-        user_id: p.user_id,
-        display_name: p.display_name,
-        avatar_url: p.avatar_url,
-        email: null,
-        last_seen_at: p.last_seen_at,
-        total_score: scoreMap.get(p.user_id) ?? 0,
-        is_online: false, // will be refined after privacy check
-      }));
-
-      enriched.sort((a, b) => b.total_score - a.total_score);
-      setUsers(enriched);
-
-      // Privacy-respecting online status check
-      if (user) {
-        const onlineIds: string[] = [];
-        profileData.forEach(p => {
-          if (p.last_seen_at && Date.now() - new Date(p.last_seen_at).getTime() < 5 * 60 * 1000) {
-            onlineIds.push(p.user_id);
-          }
+      // Discover is a shared people directory. Only the JUPEB workspace
+      // requests weekly JUPEB score data; JAMB sees an alphabetical directory
+      // and must never inherit JUPEB leaderboard points.
+      let scoreMap = new Map<string, number>();
+      if (!isJambWorkspace) {
+        const leaderboardRes = await supabase.rpc('get_weekly_leaderboard', {
+          p_week_start: new Date().toISOString().slice(0, 10),
         });
-        if (onlineIds.length > 0) {
-          supabase.rpc('can_view_online_status_many', {
-            p_user_ids: onlineIds.slice(0, 50),
-          }).then(({ data }) => {
-            const visibleOnlineIds = new Set(
-              ((data ?? []) as { user_id: string; allowed: boolean }[])
-                .filter(r => r.allowed)
-                .map(r => r.user_id)
-            );
-            setUsers(prev => prev.map(u => ({
-              ...u,
-              is_online: visibleOnlineIds.has(u.user_id),
-            })));
-          });
+        if (!leaderboardRes.error) {
+          const rows = (leaderboardRes.data ?? []) as { user_id: string; week_score: number }[];
+          scoreMap = new Map(rows.map((item) => [item.user_id, item.week_score]));
         }
       }
 
-      setLoading(false);
-    });
-  }, [user]);
+      const enriched: DiscoverUser[] = profileData.map((profile) => ({
+        user_id: profile.user_id,
+        display_name: profile.display_name,
+        avatar_url: profile.avatar_url,
+        email: null,
+        last_seen_at: profile.last_seen_at,
+        total_score: scoreMap.get(profile.user_id) ?? 0,
+        is_online: false,
+      }));
+
+      if (isJambWorkspace) {
+        enriched.sort((a, b) =>
+          (a.display_name ?? "").localeCompare(b.display_name ?? ""),
+        );
+      } else {
+        enriched.sort((a, b) => b.total_score - a.total_score);
+      }
+      if (!active) return;
+      setUsers(enriched);
+
+      // Privacy-respecting online status check.
+      const onlineIds = profileData
+        .filter((profile) =>
+          profile.last_seen_at &&
+          Date.now() - new Date(profile.last_seen_at).getTime() < 5 * 60 * 1000,
+        )
+        .map((profile) => profile.user_id);
+
+      if (onlineIds.length > 0) {
+        const { data } = await supabase.rpc('can_view_online_status_many', {
+          p_user_ids: onlineIds.slice(0, 50),
+        });
+        if (!active) return;
+        const visibleOnlineIds = new Set(
+          ((data ?? []) as { user_id: string; allowed: boolean }[])
+            .filter((row) => row.allowed)
+            .map((row) => row.user_id),
+        );
+        setUsers((previous) => previous.map((item) => ({
+          ...item,
+          is_online: visibleOnlineIds.has(item.user_id),
+        })));
+      }
+    };
+
+    void loadPeople()
+      .catch((reason: unknown) => {
+        if (active) console.error("Discover people load failed:", reason);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => { active = false; };
+  }, [user, isJambWorkspace]);
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return users;
@@ -95,7 +128,9 @@ export default function DiscoverPage() {
   }, [users, searchQuery]);
 
   const onlineUsers = useMemo(() => filtered.filter(u => u.is_online), [filtered]);
-  const topUsers = useMemo(() => [...filtered].sort((a, b) => b.total_score - a.total_score).slice(0, 20), [filtered]);
+  const topUsers = useMemo(() => isJambWorkspace
+    ? []
+    : [...filtered].sort((a, b) => b.total_score - a.total_score).slice(0, 20), [filtered, isJambWorkspace]);
 
   const handleChat = async (otherUserId: string) => {
     if (!user) return;
@@ -104,13 +139,13 @@ export default function DiscoverPage() {
     setStartingChat(null);
     if (error || !data) return;
     const dm = data as unknown as { id: string };
-    navigate(`/chat?conversation=${dm.id}`);
+    navigate(`${isJambWorkspace ? "/jamb/chat" : "/chat"}?conversation=${dm.id}`);
   };
 
   const openProfile = (targetUserId: string) => {
     // Keep the dedicated editable page for the signed-in user's own profile.
     if (targetUserId === user?.id) {
-      navigate('/profile');
+      navigate(isJambWorkspace ? "/jamb/profile" : "/profile");
       return;
     }
     setProfileTarget(targetUserId);
@@ -134,7 +169,7 @@ export default function DiscoverPage() {
               <Compass className="w-4 h-4 text-primary" />
               Discover
             </h1>
-            <p className="text-[10px] text-muted-foreground">Find study partners</p>
+            <p className="text-[10px] text-muted-foreground">{isJambWorkspace ? "Find study partners" : "Find learners and see weekly scorers"}</p>
           </div>
         </div>
       </header>
@@ -185,7 +220,7 @@ export default function DiscoverPage() {
             )}
 
             {/* Top Users */}
-            {!searchQuery && (
+            {!isJambWorkspace && !searchQuery && (
               <section className="space-y-3">
                 <h2 className="text-sm font-semibold flex items-center gap-2">
                   <Trophy className="w-4 h-4 text-amber-500" />
@@ -257,7 +292,7 @@ export default function DiscoverPage() {
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {(searchQuery ? filtered : filtered.slice(5)).map((u) => (
+                  {(searchQuery || isJambWorkspace ? filtered : filtered.slice(5)).map((u) => (
                     <motion.div
                       key={u.user_id}
                       initial={{ opacity: 0 }}
@@ -278,10 +313,12 @@ export default function DiscoverPage() {
                           {u.display_name || 'User'}
                         </button>
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Trophy className="w-3 h-3" />
-                            {u.total_score.toLocaleString()} pts
-                          </span>
+                          {!isJambWorkspace && (
+                            <span className="flex items-center gap-1">
+                              <Trophy className="w-3 h-3" />
+                              {u.total_score.toLocaleString()} pts
+                            </span>
+                          )}
                           {u.last_seen_at && !u.is_online && (
                             <>
                               <span className="text-muted-foreground/40">&middot;</span>

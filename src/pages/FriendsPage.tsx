@@ -7,6 +7,7 @@ import { useFriends } from "@/hooks/useFriends";
 import { useChat, Profile } from "@/hooks/useChat";
 import { usePresenceContext } from "@/contexts/PresenceContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
+import { useExamProgram } from "@/contexts/ExamProgramContext";
 import { UserProfileDialog } from "@/components/profile/UserProfileDialog";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { toast } from "sonner";
 export default function FriendsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isJambWorkspace } = useExamProgram();
   const friends = useFriends();
   const chat = useChat();
   const { isOnline } = usePresenceContext();
@@ -51,7 +53,9 @@ export default function FriendsPage() {
   const handleStartConversation = async (userId: string) => {
     try {
       const convId = await chat.startConversation(userId);
-      navigate(convId ? `/chat?conversation=${convId}` : "/chat");
+      navigate(isJambWorkspace
+        ? (convId ? `/jamb/chat?conversation=${convId}` : "/jamb/chat")
+        : (convId ? `/chat?conversation=${convId}` : "/chat"));
     } catch (err) {
       toast.error(String(err));
     }

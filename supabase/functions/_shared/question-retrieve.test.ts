@@ -108,6 +108,27 @@ Deno.test("subject, year and category filters are detected from natural question
   assert(filters.category === "theory", "Question category should be detected.");
 });
 
+Deno.test("JAMB question retrieval context stays programme-tagged and adds a distinct embedding prefix", () => {
+  const q = question("jamb-chem-2020-001", 0.92, {
+    exam_program_id: "jamb",
+    subject: "chemistry",
+    year: 2020,
+    category: "objective",
+    question: "Which process separates a mixture by boiling point?",
+  });
+  const context = buildQuestionRAGContext([q]);
+  assert(context.references[0].exam_program_id === "jamb", "Question references must preserve the JAMB programme.");
+  assert(context.promptBlock.includes("JAMB/UTME QUESTION BANK"), "JAMB references must use the JAMB/UTME bank label.");
+  const embedding = formatQuestionForEmbedding({
+    exam_program_id: "jamb",
+    subject: q.subject,
+    year: q.year,
+    category: q.category,
+    question: q.question,
+    options: q.options,
+  });
+  assert(embedding.startsWith("JAMB UTME past question"), "JAMB embeddings must carry a distinct programme prefix.");
+});
 Deno.test("canonical embedding text stays compatible with the previous live vector index", () => {
   const legacy = [
     "physics (2021 objective)",

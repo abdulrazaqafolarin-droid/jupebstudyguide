@@ -49,12 +49,15 @@ Deno.serve(async (req) => {
     );
   }
 
-  const blocked = await guardAiAccess(supabase, user);
-  if (blocked) return blocked;
-
   try {
     const encoder = new TextEncoder();
-    const { action, systemPrompt, messages, text, texts, subject, retrievalQuery } = await req.json();
+    const { action, systemPrompt, messages, text, texts, subject, retrievalQuery, examProgramId } = await req.json();
+    if (examProgramId !== undefined && examProgramId !== "jupeb" && examProgramId !== "jamb") {
+      return new Response(JSON.stringify({ error: "Unsupported examination programme" }), { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
+    }
+    const programme = examProgramId === "jamb" ? "jamb" : "jupeb";
+    const blocked = await guardAiAccess(supabase, user, programme);
+    if (blocked) return blocked;
 
     // Single embedding (client use). Vault keys first, env fallback.
     if (action === "embed") {
@@ -116,7 +119,8 @@ Deno.serve(async (req) => {
       throw new Error("messages array is required");
     }
 
-    let systemMsg = systemPrompt || "You are a helpful assistant for JUPEB exam preparation.";
+    let systemMsg = systemPrompt || (programme === "jamb" ? "You are a helpful JAMB/UTME subject tutor." : "You are a helpful assistant for JUPEB exam preparation.");
+    if (programme === "jamb") systemMsg += "\n\nJAMB/UTME workspace active. Use only JAMB-tagged question references. No verified official JAMB syllabus is loaded; do not invent syllabus claims, past-question years, answer keys or official exam rules. When no JAMB source is retrieved, clearly state that you are using general subject knowledge. Never cite or use JUPEB question-bank content.";
     let referencesEvent = "";
     let questionRefsEvent = "";
 
@@ -129,13 +133,14 @@ Deno.serve(async (req) => {
       // Hard deadline: retrieval must never stall the chat. If embedding or
       // vector search misbehaves we drop RAG and still stream an answer.
       const ragPromise: Promise<RagOutcome> = Promise.all([
-        retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
+        programme === "jamb" ? Promise.resolve([]) : retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
           subject: subject || undefined,
           maxChunks: 3,
           embedKeys,
         }),
         retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
           subject: subject || undefined,
+          examProgramId: programme,
           maxQuestions: getRequestedQuestionCount(questionSearchQuery),
           embedKey: embedKeys,
         }),

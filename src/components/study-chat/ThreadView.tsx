@@ -18,6 +18,9 @@ interface ThreadViewProps {
   onEdit: (index: number, text: string) => void;
   onRetry: () => void;
   onStarter: (text: string) => void;
+  starterPrompts?: string[];
+  emptyTitle?: string;
+  emptyDescription?: string;
 }
 
 const GENERIC_STARTERS = [
@@ -75,6 +78,9 @@ export function ThreadView({
   onEdit,
   onRetry,
   onStarter,
+  starterPrompts,
+  emptyTitle,
+  emptyDescription,
 }: ThreadViewProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -83,11 +89,11 @@ export function ThreadView({
     bottomRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
   }, [messages.length, isStreaming, streamError]);
 
-  const starters = activeTopic
+  const starters = starterPrompts ?? (activeTopic
     ? buildStarterPrompts(activeTopic.topic.name, activeTopic.subtopic)
-    : GENERIC_STARTERS;
+    : GENERIC_STARTERS);
   const lastMessage = messages[messages.length - 1];
-  const showTyping = isStreaming && (!lastMessage || lastMessage.role === 'user');
+  const showTyping = isStreaming && (!lastMessage || lastMessage.role === 'user' || !lastMessage.content);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6">
@@ -97,12 +103,12 @@ export function ThreadView({
             <Bot className="h-6 w-6 text-primary" />
           </div>
           <h2 className="text-lg font-semibold">
-            {activeTopic ? `${activeTopic.topic.name} study room` : 'AI Study Tutor'}
+            {activeTopic ? `${activeTopic.topic.name} study room` : (emptyTitle ?? 'AI Study Tutor')}
           </h2>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
             {activeTopic
               ? `Ask anything about ${activeTopic.subtopic ?? activeTopic.topic.name} — I'll teach it step by step and check your understanding.`
-              : 'Ask me anything about your studies and I will explain it step by step.'}
+              : (emptyDescription ?? 'Ask me anything about your studies and I will explain it step by step.')}
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {starters.map((prompt) => (

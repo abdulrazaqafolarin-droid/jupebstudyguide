@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           created_by: string
           duration_days: number | null
+          exam_program_id: string
           expires_at: string | null
           id: string
           is_used: boolean
@@ -32,6 +33,7 @@ export type Database = {
           created_at?: string
           created_by: string
           duration_days?: number | null
+          exam_program_id?: string
           expires_at?: string | null
           id?: string
           is_used?: boolean
@@ -44,12 +46,79 @@ export type Database = {
           created_at?: string
           created_by?: string
           duration_days?: number | null
+          exam_program_id?: string
           expires_at?: string | null
           id?: string
           is_used?: boolean
           plan_type?: string
           used_at?: string | null
           used_by?: string | null
+        }
+        Relationships: []
+      }
+      exam_program_entitlements: {
+        Row: {
+          activation_code_id: string | null
+          created_at: string
+          exam_program_id: string
+          subscription_duration_days: number | null
+          subscription_expires_at: string | null
+          subscription_started_at: string | null
+          trial_expires_at: string | null
+          trial_started_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activation_code_id?: string | null
+          created_at?: string
+          exam_program_id: string
+          subscription_duration_days?: number | null
+          subscription_expires_at?: string | null
+          subscription_started_at?: string | null
+          trial_expires_at?: string | null
+          trial_started_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activation_code_id?: string | null
+          created_at?: string
+          exam_program_id?: string
+          subscription_duration_days?: number | null
+          subscription_expires_at?: string | null
+          subscription_started_at?: string | null
+          trial_expires_at?: string | null
+          trial_started_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      exam_program_onboarding: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          data: Json
+          exam_program_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          exam_program_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          exam_program_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1070,6 +1139,41 @@ export type Database = {
           },
         ]
       }
+      exam_user_syllabus_progress: {
+        Row: {
+          created_at: string
+          exam_program_id: string
+          state: string
+          topic_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exam_program_id?: string
+          state?: string
+          topic_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exam_program_id?: string
+          state?: string
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_user_syllabus_progress_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string
@@ -1435,6 +1539,7 @@ export type Database = {
           privacy_read_receipts: string
           public_key: string | null
           school_name: string | null
+          selected_exam_program: string | null
           subscription_duration_days: number | null
           subscription_expires_at: string | null
           subscription_started_at: string | null
@@ -1468,6 +1573,7 @@ export type Database = {
           privacy_read_receipts?: string
           public_key?: string | null
           school_name?: string | null
+          selected_exam_program?: string | null
           subscription_duration_days?: number | null
           subscription_expires_at?: string | null
           subscription_started_at?: string | null
@@ -1501,6 +1607,7 @@ export type Database = {
           privacy_read_receipts?: string
           public_key?: string | null
           school_name?: string | null
+          selected_exam_program?: string | null
           subscription_duration_days?: number | null
           subscription_expires_at?: string | null
           subscription_started_at?: string | null
@@ -2202,7 +2309,7 @@ export type Database = {
         Returns: undefined
       }
       consume_activation_code: {
-        Args: { p_code: string; p_user_id: string }
+        Args: { p_code: string; p_user_id: string; p_exam_program_id?: string }
         Returns: Json
       }
       consume_notification_action: {
@@ -2215,32 +2322,11 @@ export type Database = {
       delete_expired_messages: { Args: never; Returns: number }
       delete_my_account: { Args: never; Returns: undefined }
       find_or_create_dm: { Args: { other_user_id: string }; Returns: Json }
-      generate_activation_codes:
-        | {
-            Args: {
-              p_count?: number
-              p_created_by?: string
-              p_plan_type?: string
-            }
-            Returns: {
-              code: string
-              expires_at: string
-              plan_type: string
-            }[]
-          }
-        | {
-            Args: {
-              p_count?: number
-              p_created_by: string
-              p_duration_days?: number
-            }
-            Returns: {
-              code: string
-              duration_days: number
-              expires_at: string
-              plan_type: string
-            }[]
-          }
+      generate_activation_codes: {
+        Args: { p_count?: number; p_created_by: string; p_duration_days?: number; p_exam_program_id?: string }
+        Returns: { code: string; duration_days: number; expires_at: string; plan_type: string }[]
+      }
+      select_exam_program: { Args: { p_exam_program_id: string }; Returns: Json }
       get_admin_dashboard_stats: {
         Args: { p_admin_email?: string }
         Returns: Json

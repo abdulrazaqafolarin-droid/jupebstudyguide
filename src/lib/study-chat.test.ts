@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildStarterPrompts,
+  canUseSyllabusTopicContext,
   CONTEXT_MESSAGE_CAP,
   findSyllabusTopic,
+  findLatestTopicChat,
+  findLatestSubjectChat,
   groupChatsByDate,
+  CHAT_SELECT_COLS,
   resolveEditBoundary,
   type StudyChatMeta,
   topicChatTitle,
@@ -16,6 +20,7 @@ import type { AIMessage } from '@/hooks/useAITutorChats';
 function chat(updatedAt: Date, overrides: Partial<StudyChatMeta> = {}): StudyChatMeta {
   return {
     id: `chat-${updatedAt.getTime()}-${Math.random().toString(36).slice(2, 7)}`,
+    exam_program_id: 'jupeb',
     title: 'Chat',
     topic_id: null,
     subtopic: null,
@@ -31,6 +36,28 @@ function daysAgo(days: number): Date {
   d.setDate(d.getDate() - days);
   return d;
 }
+
+describe('programme-scoped study chat metadata', () => {
+  it('selects the programme field required to isolate JAMB and JUPEB histories', () => {
+    expect(CHAT_SELECT_COLS.split(',')).toContain('exam_program_id');
+  });
+
+  it('keeps legacy fixture rows inside the JUPEB workspace by default', () => {
+    expect(chat(new Date()).exam_program_id).toBe('jupeb');
+    expect(chat(new Date(), { exam_program_id: 'jamb' }).exam_program_id).toBe('jamb');
+  });
+});
+
+describe('programme-safe syllabus topic context', () => {
+  it('allows the verified JUPEB topic catalogue for JUPEB threads', () => {
+    expect(canUseSyllabusTopicContext('jupeb', 'phy-units')).toBe(true);
+  });
+
+  it('never resolves JUPEB topics inside JAMB tutor history', () => {
+    expect(canUseSyllabusTopicContext('jamb', 'phy-units')).toBe(false);
+    expect(canUseSyllabusTopicContext('jamb', null)).toBe(false);
+  });
+});
 
 describe('trimMessagesForContext', () => {
   it('keeps a short thread untouched', () => {
@@ -192,5 +219,35 @@ describe('buildTopicSystemPrompt', () => {
   it('omits the focus line without a subtopic', () => {
     const prompt = buildTopicSystemPrompt(topic, 'physics');
     expect(prompt).not.toContain('Current focus:');
+  });
+});
+
+describe("find JAMB tutor threads by syllabus context", () => {
+  it("finds only the newest matching programme, subject and topic", () => {
+    const older = chat(daysAgo(2), {
+      exam_program_id: "jamb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    const latest = chat(new Date(), {
+      exam_program_id: "jamb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    const unrelated = chat(new Date(), {
+      exam_program_id: "jamb", subject: "biology", topic_id: "bio-a-01-living-organisms",
+    });
+    const jupeb = chat(new Date(), {
+      exam_program_id: "jupeb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    expect(findLatestTopicChat([latest, unrelated, jupeb, older], "jamb", "physics", "phy-01-measurements")?.id).toBe(latest.id);
+    expect(findLatestTopicChat([unrelated, jupeb], "jamb", "physics", "phy-01-measurements")).toBeNull();
+  });
+
+  it("finds the newest subject chat without a stored topic", () => {
+    const topicThread = chat(new Date(), {
+      exam_program_id: "jamb", subject: "physics", topic_id: "phy-01-measurements",
+    });
+    const subjectThread = chat(daysAgo(1), {
+      exam_program_id: "jamb", subject: "physics", topic_id: null,
+    });
+    expect(findLatestSubjectChat([topicThread, subjectThread], "jamb", "physics")?.id).toBe(subjectThread.id);
+    expect(findLatestSubjectChat([topicThread], "jamb", "physics")).toBeNull();
   });
 });

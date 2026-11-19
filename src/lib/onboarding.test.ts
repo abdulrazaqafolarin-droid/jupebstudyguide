@@ -4,6 +4,7 @@ import {
   TRIMMED_FLOW,
   firstIncompleteStep,
   getFlow,
+  getOnboardingFlow,
   mergeOnboardingData,
   normalizeOnboardingData,
   privacyValueFromToggle,
@@ -27,6 +28,31 @@ describe('getFlow', () => {
     const flow = getFlow(true);
     flow.pop();
     expect(getFlow(true)).toHaveLength(FULL_FLOW.length);
+  });
+});
+
+describe('getOnboardingFlow', () => {
+  it('keeps all JUPEB onboarding steps', () => {
+    expect(getOnboardingFlow(FULL_FLOW, 'jupeb')).toEqual(FULL_FLOW);
+  });
+
+  it('replaces the JUPEB syllabus plan step with a JAMB-specific preference step', () => {
+    expect(getOnboardingFlow(FULL_FLOW, 'jamb')).toEqual(['welcome', 'theme', 'jamb-study', 'chat', 'notify', 'finish']);
+  });
+
+  it('adds JAMB study preferences to the trimmed flow for existing learners', () => {
+    expect(getOnboardingFlow(TRIMMED_FLOW, 'jamb')).toEqual(['welcome', 'theme', 'jamb-study', 'chat', 'finish']);
+  });
+
+  it('uses a programme-specific completion ID so JUPEB setup cannot skip JAMB setup', () => {
+    const jambFlow = getOnboardingFlow(FULL_FLOW, 'jamb');
+    expect(firstIncompleteStep(jambFlow, ['welcome', 'theme', 'study'])).toBe('jamb-study');
+  });
+
+  it('does not mutate the original flow', () => {
+    const original = [...FULL_FLOW];
+    getOnboardingFlow(original, 'jamb');
+    expect(original).toEqual(FULL_FLOW);
   });
 });
 
@@ -69,6 +95,32 @@ describe('mergeOnboardingData', () => {
   });
 });
 
+describe('JAMB onboarding preference isolation', () => {
+  it('saves JAMB preferences without overwriting JUPEB subject-plan fields', () => {
+    const previous = {
+      subjects: ['physics', 'chemistry', 'biology'],
+      examTarget: 'next-session',
+      dailyGoalMinutes: 60,
+    };
+    const next = mergeOnboardingData(previous, 'jamb-study', {
+      jambStudy: {
+        subjects: ['physics', 'biology'],
+        examTarget: 'early',
+        dailyGoalMinutes: 15,
+      },
+    });
+    expect(next.subjects).toEqual(previous.subjects);
+    expect(next.examTarget).toBe('next-session');
+    expect(next.dailyGoalMinutes).toBe(60);
+    expect(next.jambStudy).toEqual({
+      subjects: ['physics', 'biology'],
+      examTarget: 'early',
+      dailyGoalMinutes: 15,
+    });
+    expect(next.completedSteps).toContain('jamb-study');
+  });
+});
+
 describe('normalizeOnboardingData', () => {
   it('survives null, arrays, strings and garbage', () => {
     expect(normalizeOnboardingData(null)).toEqual({});
@@ -81,6 +133,7 @@ describe('normalizeOnboardingData', () => {
       completedSteps: ['welcome', 42, null, 'theme'],
       subjects: ['physics', {}],
       dailyGoalMinutes: '30',
+      jambStudy: { subjects: ['physics', 5, 'biology'], examTarget: 'early', dailyGoalMinutes: 45 },
       examTarget: 7,
       finalized: 'yes',
       chat: { online: true, receipts: 'nope' },
@@ -88,6 +141,7 @@ describe('normalizeOnboardingData', () => {
     expect(data.completedSteps).toEqual(['welcome', 'theme']);
     expect(data.subjects).toEqual(['physics']);
     expect(data.dailyGoalMinutes).toBeUndefined();
+    expect(data.jambStudy).toEqual({ subjects: ['physics', 'biology'], examTarget: 'early', dailyGoalMinutes: 30 });
     expect(data.examTarget).toBeUndefined();
     expect(data.finalized).toBeUndefined();
     expect(data.chat).toEqual({ online: true, receipts: undefined, discover: undefined });

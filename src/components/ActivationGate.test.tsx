@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   validateCode: vi.fn(),
   refreshStatus: vi.fn(),
   toastSuccess: vi.fn(),
+  navigate: vi.fn(),
+  supabaseRpc: vi.fn(),
 }));
 
 vi.mock("@/hooks/useActivation", () => ({
@@ -15,6 +17,15 @@ vi.mock("@/hooks/useActivation", () => ({
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: mocks.useAuth,
+}));
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: { rpc: mocks.supabaseRpc },
+}));
+
+vi.mock("react-router-dom", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router-dom")>()),
+  useNavigate: () => mocks.navigate,
 }));
 
 vi.mock("sonner", () => ({
@@ -31,6 +42,7 @@ describe("ActivationGate active-trial banner", () => {
     vi.clearAllMocks();
     mocks.validateCode.mockResolvedValue({ success: true, plan_type: "premium" });
     mocks.refreshStatus.mockResolvedValue(undefined);
+    mocks.supabaseRpc.mockResolvedValue({ data: { success: true }, error: null });
     mocks.useAuth.mockReturnValue({
       user: { id: "trial-user", email: "student@example.com" },
       signOut: vi.fn(),
@@ -95,7 +107,34 @@ describe("ActivationGate active-trial banner", () => {
     );
 
     expect(screen.queryByText("Protected study content")).not.toBeInTheDocument();
-    expect(screen.getByText("Activate Your Account")).toBeInTheDocument();
+    expect(screen.getByText("Activate Your JUPEB Access")).toBeInTheDocument();
+  });
+
+  it("uses JAMB-specific entitlement and activation messaging", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: false,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: null,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate programId="jamb">
+        <div>JAMB protected content</div>
+      </ActivationGate>,
+    );
+
+    expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+    expect(screen.getByText("Activate Your JAMB / UTME Access")).toBeInTheDocument();
+    expect(screen.queryByText("Activate Your JUPEB Access")).not.toBeInTheDocument();
+    expect(screen.getByText(/issued specifically for JAMB \/ UTME/)).toBeInTheDocument();
   });
 
   it("always displays Activate Now while a one-day trial is active", () => {
@@ -140,6 +179,39 @@ describe("ActivationGate active-trial banner", () => {
     }
   });
 
+  it("keeps the activation gate and code check scoped to JAMB", () => {
+    render(
+      <ActivationGate programId="jamb">
+        <div>JAMB study content</div>
+      </ActivationGate>,
+    );
+
+    expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+    expect(screen.getByText("JAMB study content")).toBeInTheDocument();
+  });
+
+  it("switches to JAMB from the JUPEB activation screen without granting access", async () => {
+    mocks.useActivation.mockReturnValue({
+      status: { is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, checking: false },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate programId="jupeb">
+        <div>JUPEB study content</div>
+      </ActivationGate>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to JAMB / UTME" }));
+    await waitFor(() => {
+      expect(mocks.supabaseRpc).toHaveBeenCalledWith("select_exam_program", { p_exam_program_id: "jamb" });
+      expect(mocks.navigate).toHaveBeenCalledWith("/jamb", { replace: true });
+    });
+  });
+
   it("opens the inline activation form without interrupting the trial session", () => {
     render(
       <ActivationGate>
@@ -171,7 +243,7 @@ describe("ActivationGate active-trial banner", () => {
       expect(mocks.validateCode).toHaveBeenCalledWith("ABCD-1234-EFGH");
       expect(mocks.refreshStatus).toHaveBeenCalledOnce();
       expect(mocks.toastSuccess).toHaveBeenCalledWith(
-        "Account activated with the premium plan.",
+        "JUPEB activated with the premium plan.",
       );
     });
   });

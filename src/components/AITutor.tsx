@@ -3,6 +3,7 @@ import { Question } from '@/types/question';
 import { Textarea } from './ui/textarea';
 import MathRenderer from './MathRenderer';
 import { useAttachment } from '@/hooks/useAttachment';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Bot, Send, Sparkles, X, Lightbulb, HelpCircle,
   BookOpen, Loader2, Plus, Image, FileText, Copy, Pencil, ChevronDown, Square
@@ -55,6 +56,7 @@ const messageVariants = {
 const springMessage = { type: "spring" as const, stiffness: 400, damping: 28, mass: 0.5 };
 
 export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -140,7 +142,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
 
     let ragContext = "";
     try {
-      ragContext = await searchRelevantChunks(userMessage);
+      if (user?.id) ragContext = await searchRelevantChunks(userMessage, 'jupeb', user.id);
     } catch (e) { console.warn("RAG unavailable, continuing without it:", e); }
 
     if (ac.signal.aborted) return;
@@ -183,7 +185,7 @@ export const AITutor = ({ question, isOpen, onClose }: AITutorProps) => {
       question.options?.map((option) => option.text).join(" ") || "",
       userMessage,
     ].filter(Boolean).join("\n"));
-  }, [question, attachment, clearAttachment, messages, editingIndex]);
+  }, [question, attachment, clearAttachment, messages, editingIndex, user?.id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

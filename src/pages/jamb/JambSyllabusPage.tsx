@@ -264,7 +264,7 @@ export default function JambSyllabusPage() {
                                     )}
                                     <span className="min-w-0 flex-1">
                                       <span className="block text-sm font-medium">{topic.number}. {topic.title}</span>
-                                      <span className="mt-0.5 block text-[10px] text-muted-foreground">{STATUS_LABEL[topicState]} · {subject.sourcePageLabel ?? "Source pages"} {topic.sourcePages.join(", ")}</span>
+                                      <span className="mt-0.5 block text-[10px] text-muted-foreground">{STATUS_LABEL[topicState]} · {subject.sourcePageLabel ?? "Uploaded PDF pages"} {topic.sourcePages.join(", ")}</span>
                                     </span>
                                     <ChevronDown className={"h-4 w-4 shrink-0 text-muted-foreground transition-transform " + (topicExpanded ? "rotate-180" : "")} />
                                   </button>

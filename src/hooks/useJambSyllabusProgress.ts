@@ -75,12 +75,13 @@ export function useJambSyllabusProgress() {
         // Read local state after the request resolves so a topic changed while
         // the network read was in flight is not overwritten by an older reply.
         const localSnapshot = progressRef.current;
-        const { merged, pendingUpserts } = reconcileJambSyllabusProgress(localSnapshot, remote);
+        const { merged, pendingUpserts, pendingDeletes } = reconcileJambSyllabusProgress(localSnapshot, remote);
         if (JSON.stringify(merged) !== JSON.stringify(localSnapshot)) {
           progressRef.current = merged;
           setProgress(merged);
         }
 
+        let cloudWriteSucceeded = pendingUpserts.length === 0;
         if (pendingUpserts.length > 0) {
           const { error: writeError } = await supabase
             .from("exam_user_syllabus_progress")
@@ -94,8 +95,23 @@ export function useJambSyllabusProgress() {
               })),
               { onConflict: "user_id,exam_program_id,topic_id" },
             );
+          cloudWriteSucceeded = !writeError;
           if (writeError) {
             console.warn("[JAMB syllabus progress] Could not upload local changes; they will retry:", writeError.message);
+          }
+        }
+
+        // A legacy row is removed only after its canonical replacement has
+        // been written successfully. Failed writes remain available to retry.
+        if (cloudWriteSucceeded && pendingDeletes.length > 0) {
+          const { error: deleteError } = await supabase
+            .from("exam_user_syllabus_progress")
+            .delete()
+            .eq("user_id", userId)
+            .eq("exam_program_id", "jamb")
+            .in("topic_id", pendingDeletes);
+          if (deleteError) {
+            console.warn("[JAMB syllabus progress] Could not remove migrated legacy topic rows; they will retry:", deleteError.message);
           }
         }
       } finally {

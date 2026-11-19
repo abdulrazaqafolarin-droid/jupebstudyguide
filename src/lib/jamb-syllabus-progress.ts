@@ -68,20 +68,65 @@ export function getJambSubjectTopicIds(
   return subject?.sections.flatMap((section) => section.topics.map((topic) => topic.id)) ?? [];
 }
 
-/** Merge local and cloud state by last-updated timestamp; newer local rows queue for upload. */
+/**
+ * Topic IDs removed by official syllabus restructuring are mapped to the
+ * surviving topic so existing progress is never silently orphaned.
+ */
+export const JAMB_LEGACY_TOPIC_ID_MAP: Record<string, string> = {
+  "bio-d-03-biotechnology": "bio-d-02-heredity",
+};
+
+export function migrateJambLegacyTopicProgress(
+  progress: JambSyllabusProgressMap,
+): { progress: JambSyllabusProgressMap; migratedIds: string[] } {
+  const next = { ...progress };
+  const migratedIds: string[] = [];
+  const stateRank: Record<JambSyllabusTopicState, number> = {
+    not_started: 0,
+    in_progress: 1,
+    completed: 2,
+  };
+
+  for (const [legacyId, currentId] of Object.entries(JAMB_LEGACY_TOPIC_ID_MAP)) {
+    const legacyEntry = next[legacyId];
+    if (!legacyEntry) continue;
+    const currentEntry = next[currentId];
+    const legacyWins = !currentEntry
+      || legacyEntry.updatedAt > currentEntry.updatedAt
+      || (
+        legacyEntry.updatedAt === currentEntry.updatedAt
+        && stateRank[legacyEntry.state] > stateRank[currentEntry.state]
+      );
+    if (legacyWins) next[currentId] = legacyEntry;
+    delete next[legacyId];
+    migratedIds.push(legacyId);
+  }
+  return { progress: next, migratedIds };
+}
+
+/** Merge local/cloud progress while normalizing retired topic IDs on both sides. */
 export function reconcileJambSyllabusProgress(
   local: JambSyllabusProgressMap,
   remote: JambSyllabusProgressMap,
-): { merged: JambSyllabusProgressMap; pendingUpserts: Array<[string, JambSyllabusTopicProgress]> } {
-  const merged: JambSyllabusProgressMap = { ...remote };
+): {
+  merged: JambSyllabusProgressMap;
+  pendingUpserts: Array<[string, JambSyllabusTopicProgress]>;
+  pendingDeletes: string[];
+} {
+  const localMigration = migrateJambLegacyTopicProgress(local);
+  const remoteMigration = migrateJambLegacyTopicProgress(remote);
+  const normalizedLocal = localMigration.progress;
+  const normalizedRemote = remoteMigration.progress;
+  const merged: JambSyllabusProgressMap = { ...normalizedRemote };
   const pendingUpserts: Array<[string, JambSyllabusTopicProgress]> = [];
-  for (const [topicId, localEntry] of Object.entries(local)) {
-    const remoteEntry = remote[topicId];
-    const stateRank: Record<JambSyllabusTopicState, number> = {
-      not_started: 0,
-      in_progress: 1,
-      completed: 2,
-    };
+  const stateRank: Record<JambSyllabusTopicState, number> = {
+    not_started: 0,
+    in_progress: 1,
+    completed: 2,
+  };
+
+  for (const [topicId, localEntry] of Object.entries(normalizedLocal)) {
+    const remoteEntry = normalizedRemote[topicId];
     const localWins = !remoteEntry
       || localEntry.updatedAt > remoteEntry.updatedAt
       || (
@@ -93,5 +138,20 @@ export function reconcileJambSyllabusProgress(
       pendingUpserts.push([topicId, localEntry]);
     }
   }
-  return { merged, pendingUpserts };
+
+  // If a retired topic existed in the cloud, write the surviving topic row
+  // before deleting the retired row, even where no local copy exists.
+  for (const legacyId of remoteMigration.migratedIds) {
+    const currentId = JAMB_LEGACY_TOPIC_ID_MAP[legacyId];
+    const currentEntry = merged[currentId];
+    if (currentEntry && !pendingUpserts.some(([id]) => id === currentId)) {
+      pendingUpserts.push([currentId, currentEntry]);
+    }
+  }
+
+  return {
+    merged,
+    pendingUpserts,
+    pendingDeletes: remoteMigration.migratedIds,
+  };
 }

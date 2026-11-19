@@ -11,6 +11,7 @@ import {
   setJambTopicState,
   summarizeJambSyllabusProgress,
   reconcileJambSyllabusProgress,
+  migrateJambLegacyTopicProgress,
 } from "@/lib/jamb-syllabus-progress";
 
 describe("JAMB syllabus catalogue", () => {
@@ -152,6 +153,31 @@ describe("JAMB topic progress", () => {
   it("does not create a progress record for a blank topic ID", () => {
     const original = { a: { state: "completed" as const, updatedAt: 1 } };
     expect(setJambTopicState(original, "  ", "in_progress", 2)).toBe(original);
+  });
+
+  it("migrates retired Biology Biotechnology progress into Heredity", () => {
+    const migrated = migrateJambLegacyTopicProgress({
+      "bio-d-03-biotechnology": { state: "completed", updatedAt: 20 },
+      "bio-d-02-heredity": { state: "in_progress", updatedAt: 10 },
+      "unrelated-topic": { state: "not_started", updatedAt: 5 },
+    });
+    expect(migrated.progress).toEqual({
+      "bio-d-02-heredity": { state: "completed", updatedAt: 20 },
+      "unrelated-topic": { state: "not_started", updatedAt: 5 },
+    });
+    expect(migrated.migratedIds).toEqual(["bio-d-03-biotechnology"]);
+  });
+
+  it("queues canonical cloud rows before deleting retired topic IDs", () => {
+    const result = reconcileJambSyllabusProgress(
+      {},
+      { "bio-d-03-biotechnology": { state: "completed", updatedAt: 20 } },
+    );
+    expect(result.merged["bio-d-02-heredity"]).toEqual({ state: "completed", updatedAt: 20 });
+    expect(result.pendingUpserts).toEqual([
+      ["bio-d-02-heredity", { state: "completed", updatedAt: 20 }],
+    ]);
+    expect(result.pendingDeletes).toEqual(["bio-d-03-biotechnology"]);
   });
 
   it("keeps the newest local state and queues only local rows that need upload", () => {

@@ -144,7 +144,7 @@ export interface ActivationCodeResult {
   used_by: string | null;
   used_at: string | null;
   created_at: string;
-  used_by_profile?: { user_id: string; display_name: string } | null;
+  used_by_profile?: { user_id: string; display_name: string | null } | null;
 }
 
 export function useAdminCodes() {

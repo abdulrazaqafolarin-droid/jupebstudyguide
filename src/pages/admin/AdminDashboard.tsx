@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import type { ExamProgramId } from "@/lib/exam-program";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area
@@ -81,7 +82,8 @@ export default function AdminDashboard() {
   const [statsLoading, setStatsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [count, setCount] = useState(5);
-  const [planType, setPlanType] = useState("basic");
+  const [durationDays, setDurationDays] = useState("7");
+  const [programId, setProgramId] = useState<ExamProgramId>("jupeb");
   const [generating, setGenerating] = useState(false);
   const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeResult[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
@@ -137,28 +139,21 @@ export default function AdminDashboard() {
 
   const handleGenerate = async () => {
     setGenerating(true);
-    const result = await generateCodes(count, planType);
+    const result = await generateCodes(count, Number(durationDays), programId);
     setGenerating(false);
 
     if (result.success && result.codes) {
       setGeneratedCodes(result.codes);
-      toast.success(`Generated ${result.codes.length} codes`);
+      toast.success(`Generated ${result.codes.length} ${programId === "jamb" ? "JAMB / UTME" : "JUPEB"} codes`);
       listCodes();
-      setStats(s => ({
-        ...s,
-        totalCodes: s.totalCodes + result.codes!.length,
-        planDistribution: [
-          ...s.planDistribution.filter(p => p.name !== planType),
-          { name: planType, value: (s.planDistribution.find(p => p.name === planType)?.value || 0) + result.codes!.length },
-        ],
-      }));
+      void loadStats(false);
     } else {
       toast.error(result.error || "Failed to generate codes");
     }
   };
 
   const copyAll = () => {
-    const text = generatedCodes.map((c) => `${c.code}\t${c.plan_type}`).join("\n");
+    const text = generatedCodes.map((c) => `${c.code}\\t${c.exam_program_id}\\t${c.duration_days} days`).join("\\n");
     navigator.clipboard.writeText(text);
     toast.success("Copied all codes");
   };
@@ -510,15 +505,23 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-sm text-muted-foreground">Plan Type</label>
-                      <Select value={planType} onValueChange={setPlanType}>
-                        <SelectTrigger className="w-36 bg-background/50">
-                          <SelectValue />
-                        </SelectTrigger>
+                      <label className="text-sm text-muted-foreground">Programme</label>
+                      <Select value={programId} onValueChange={(value) => setProgramId(value as ExamProgramId)}>
+                        <SelectTrigger className="w-40 bg-background/50"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="basic">Basic</SelectItem>
-                          <SelectItem value="premium">Premium</SelectItem>
-                          <SelectItem value="lifetime">Lifetime</SelectItem>
+                          <SelectItem value="jupeb">JUPEB</SelectItem>
+                          <SelectItem value="jamb">JAMB / UTME</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-sm text-muted-foreground">Subscription duration</label>
+                      <Select value={durationDays} onValueChange={setDurationDays}>
+                        <SelectTrigger className="w-36 bg-background/50"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="7">7 days</SelectItem>
+                          <SelectItem value="30">30 days</SelectItem>
+                          <SelectItem value="90">90 days</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -543,7 +546,7 @@ export default function AdminDashboard() {
                           <CheckCircle className="w-4 h-4 inline mr-1" />
                           {generatedCodes.length} codes generated
                           <span className="text-muted-foreground font-normal ml-2">
-                            (plan: {planType})
+                            ({programId} · {durationDays} days)
                           </span>
                         </p>
                         <div className="flex gap-1">

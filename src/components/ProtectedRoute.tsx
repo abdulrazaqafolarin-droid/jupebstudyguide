@@ -97,6 +97,7 @@ function RequireProgrammeSelection({ children }: { children: React.ReactNode }) 
         if (!cancelled) setLoadError(true);
       }
     })();
+    return () => { cancelled = true; };
   }, [user?.id, retry]);
 
   if (loadError) {

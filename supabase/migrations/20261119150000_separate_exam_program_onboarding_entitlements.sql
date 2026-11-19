@@ -6,6 +6,24 @@ BEGIN;
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS selected_exam_program text;
 
+DO $
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_catalog.pg_constraint
+    WHERE conrelid = 'public.profiles'::regclass
+      AND conname = 'profiles_selected_exam_program_check'
+  ) THEN
+    ALTER TABLE public.profiles
+      ADD CONSTRAINT profiles_selected_exam_program_check
+      CHECK (
+        selected_exam_program IS NULL
+        OR selected_exam_program IN ('jupeb', 'jamb')
+      );
+  END IF;
+END;
+$;
+
 ALTER TABLE public.activation_codes
   ADD COLUMN IF NOT EXISTS exam_program_id text NOT NULL DEFAULT 'jupeb';
 
@@ -57,8 +75,21 @@ INSERT INTO public.exam_program_entitlements (
   created_at, updated_at
 )
 SELECT
-  p.user_id, 'jupeb', p.trial_started_at, p.trial_expires_at,
-  p.subscription_started_at, p.subscription_expires_at, p.subscription_duration_days,
+  p.user_id,
+  'jupeb',
+  CASE
+    WHEN p.trial_expires_at IS NOT NULL
+      THEN COALESCE(p.trial_started_at, p.created_at, now())
+    ELSE p.trial_started_at
+  END,
+  p.trial_expires_at,
+  CASE
+    WHEN p.subscription_expires_at IS NOT NULL
+      THEN COALESCE(p.subscription_started_at, p.created_at, now())
+    ELSE p.subscription_started_at
+  END,
+  p.subscription_expires_at,
+  p.subscription_duration_days,
   COALESCE(p.created_at, now()), COALESCE(p.updated_at, now())
 FROM public.profiles p
 WHERE p.trial_started_at IS NOT NULL
@@ -160,8 +191,8 @@ CREATE OR REPLACE FUNCTION public.guard_selected_exam_program_change()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY INVOKER
-SET search_path = public
-AS $$
+SET search_path = ''
+AS $
 BEGIN
   IF COALESCE(auth.jwt() ->> 'role', '') = 'service_role' THEN
     RETURN NEW;
@@ -263,8 +294,8 @@ CREATE OR REPLACE FUNCTION public.generate_activation_codes(
 RETURNS TABLE(code text, plan_type text, expires_at timestamptz, duration_days integer)
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
-AS $$
+SET search_path = ''
+AS $
 DECLARE
   v_actor uuid;
   v_code text;
@@ -289,7 +320,7 @@ BEGIN
     RAISE EXCEPTION 'Only the established admin can generate activation codes';
   END IF;
 
-  IF p_exam_program_id NOT IN ('jupeb', 'jamb') THEN
+  IF p_exam_program_id IS NULL OR p_exam_program_id NOT IN ('jupeb', 'jamb') THEN
     RAISE EXCEPTION 'Choose JUPEB or JAMB for this activation code';
   END IF;
   IF p_duration_days NOT IN (7, 30, 90) THEN
@@ -338,8 +369,8 @@ CREATE OR REPLACE FUNCTION public.consume_activation_code(
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
-AS $$
+SET search_path = ''
+AS $
 DECLARE
   v_record public.activation_codes%ROWTYPE;
   v_profile public.profiles%ROWTYPE;
@@ -347,7 +378,7 @@ DECLARE
   v_start timestamptz;
   v_expiry timestamptz;
 BEGIN
-  IF (auth.jwt() ->> 'role') <> 'service_role' THEN
+  IF (auth.jwt() ->> 'role') IS DISTINCT FROM 'service_role' THEN
     IF NOT public.current_auth_session_is_active() THEN
       RETURN jsonb_build_object('success', false, 'error', 'This device session is no longer active. Please sign in again.');
     END IF;
@@ -357,7 +388,7 @@ BEGIN
   IF p_user_id IS NULL THEN
     RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
   END IF;
-  IF p_exam_program_id NOT IN ('jupeb', 'jamb') THEN
+  IF p_exam_program_id IS NULL OR p_exam_program_id NOT IN ('jupeb', 'jamb') THEN
     RETURN jsonb_build_object('success', false, 'error', 'Unsupported examination programme');
   END IF;
 
@@ -459,10 +490,10 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path TO 'public'
+SET search_path = ''
 AS $function$
 DECLARE
-  v_conv_id UUID;
+  v_conv_id uuid;
 BEGIN
   INSERT INTO public.profiles (user_id, display_name)
   VALUES (
@@ -472,21 +503,21 @@ BEGIN
   ON CONFLICT (user_id) DO NOTHING;
 
   IF lower(COALESCE(NEW.email, '')) <> 'studybot@jupebstudyguide.app' THEN
-    v_conv_id := gen_random_uuid();
+    v_conv_id := pg_catalog.gen_random_uuid();
     INSERT INTO public.conversations (id, created_at, updated_at)
-    VALUES (v_conv_id, now(), now());
+    VALUES (v_conv_id, pg_catalog.now(), pg_catalog.now());
 
     INSERT INTO public.conversation_participants (conversation_id, user_id, last_read_at)
     VALUES
-      (v_conv_id, '00000000-0000-0000-0000-000000000000', now()),
-      (v_conv_id, NEW.id, now());
+      (v_conv_id, '00000000-0000-0000-0000-000000000000', pg_catalog.now()),
+      (v_conv_id, NEW.id, pg_catalog.now());
 
     INSERT INTO public.messages (conversation_id, sender_id, content, created_at)
     VALUES (
       v_conv_id,
       '00000000-0000-0000-0000-000000000000',
       E'Welcome to Rutex Master. Choose JUPEB or JAMB/UTME to open your study workspace. Your one-day trial starts in the programme you select.',
-      now()
+      pg_catalog.now()
     );
   END IF;
 

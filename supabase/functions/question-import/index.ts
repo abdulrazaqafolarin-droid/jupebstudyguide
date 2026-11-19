@@ -109,7 +109,7 @@ Deno.serve(async (request: Request) => {
   const token = authorization.slice("Bearer ".length);
   const { data: { user }, error: userError } = await supabase.auth.getUser(token);
   if (userError || !user) return respond({ error: "Invalid authentication" }, 401);
-  const access = await hasActiveStudyAccess(supabaseUrl, serviceKey, token, user.id);
+  const access = await hasActiveStudyAccess(supabaseUrl, serviceKey, token, user.id, "jamb");
   if (!access.allowed) return respond({ error: access.reason ?? "Active study session required" }, 403);
   if (!(await requireAdmin(supabase, user.id))) return respond({ error: "Administrator permission required" }, 403);
 

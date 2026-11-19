@@ -66,7 +66,7 @@ async function authenticate(request: Request): Promise<AuthenticationResult> {
   const token = authorization.slice(7);
   const { data: { user }, error } = await supabase.auth.getUser(token);
   if (error || !user) return { error: reply({ error: "Invalid authentication" }, 401) };
-  const access = await hasActiveStudyAccess(url, key, authorization.slice(7), user.id);
+  const access = await hasActiveStudyAccess(url, key, authorization.slice(7), user.id, "jamb");
   if (!access.allowed) return { error: reply({ error: access.reason ?? "Study access denied." }, 403) };
   return { supabase, user };
 }

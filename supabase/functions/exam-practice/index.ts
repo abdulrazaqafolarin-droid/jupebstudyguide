@@ -21,7 +21,7 @@ Deno.serve(async (request: Request) => {
   const supabase = createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const { data: { user }, error: authError } = await supabase.auth.getUser(authorization.slice(7));
   if (authError || !user) return reply({ error: "Invalid authentication" }, 401);
-  const access = await hasActiveStudyAccess(url, key, authorization.slice(7), user.id);
+  const access = await hasActiveStudyAccess(url, key, authorization.slice(7), user.id, "jamb");
   if (!access.allowed) return reply({ error: access.reason ?? "Study access denied." }, 403);
 
   try {

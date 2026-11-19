@@ -6,7 +6,7 @@ interface ProgrammeEntitlement {
   subscription_expires_at: string | null;
 }
 
-/** Verify an active device session and an entitlement for the requested programme. */
+/** Verify an active device session and entitlement for the requested programme. */
 export async function hasActiveStudyAccess(
   supabaseUrl: string,
   serviceRoleKey: string,
@@ -28,11 +28,8 @@ export async function hasActiveStudyAccess(
   });
   const [profileResult, entitlementResult] = await Promise.all([
     service.from("profiles").select("is_admin").eq("user_id", userId).maybeSingle(),
-    service.from("exam_program_entitlements")
-      .select("trial_expires_at,subscription_expires_at")
-      .eq("user_id", userId)
-      .eq("exam_program_id", examProgramId)
-      .maybeSingle(),
+    service.from("exam_program_entitlements").select("trial_expires_at,subscription_expires_at")
+      .eq("user_id", userId).eq("exam_program_id", examProgramId).maybeSingle(),
   ]);
   if (profileResult.error || entitlementResult.error || !profileResult.data) {
     return { allowed: false, reason: "Your programme access could not be verified." };

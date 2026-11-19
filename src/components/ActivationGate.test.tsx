@@ -171,7 +171,7 @@ describe("ActivationGate active-trial banner", () => {
       expect(mocks.validateCode).toHaveBeenCalledWith("ABCD-1234-EFGH");
       expect(mocks.refreshStatus).toHaveBeenCalledOnce();
       expect(mocks.toastSuccess).toHaveBeenCalledWith(
-        "Account activated with the premium plan.",
+        "JUPEB activated with the premium plan.",
       );
     });
   });

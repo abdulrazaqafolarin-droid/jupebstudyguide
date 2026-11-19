@@ -176,7 +176,17 @@ export function useAdminCodes() {
         .select("id,code,plan_type,duration_days,exam_program_id,is_used,used_by,used_at,created_at")
         .order("created_at", { ascending: false }).limit(200);
       if (error) throw error;
-      const enriched = (data ?? []).map((code) => ({ ...code, used_by_profile: null as ActivationCodeResult["used_by_profile"] }));
+      const enriched: ActivationCodeResult[] = (data ?? []).map((code) => {
+        const programId: ExamProgramId | null = code.exam_program_id === "jamb"
+          ? "jamb"
+          : code.exam_program_id === "jupeb" ? "jupeb" : null;
+        if (!programId) throw new Error("An activation code has an unsupported programme.");
+        return {
+          ...code,
+          exam_program_id: programId,
+          used_by_profile: null as ActivationCodeResult["used_by_profile"],
+        };
+      });
       const userIds = enriched.flatMap((code) => code.used_by ? [code.used_by] : []);
       if (userIds.length) {
         const { data: profiles, error: profileError } = await supabase.from("profiles")

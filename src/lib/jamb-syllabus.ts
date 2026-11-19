@@ -242,6 +242,8 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceFile: "Chemistry-1.pdf",
     sourceSha256: "a3c15bfee3bece0f4106a32b0091e2a2c51eaec8baa62fafa44afcad72193738",
     sourcePageCount: 16, reviewState: "needs_current_source_review",
+    officialSourceUrl: "https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf",
+    sourceComparisonNote: "The current JAMB IBASS Chemistry asset is linked above. Current IBASS-derived transcriptions dated 24 October 2026 list the same 18 top-level topics in the same order as this uploaded 2025 copy, including Astronomical Chemistry. The direct JAMB PDF endpoint could not be retrieved in the 19 November 2026 review, so this is a heading/order cross-check only; complete subtopic and objective wording still requires direct page-by-page reconciliation. The uploaded PDF hash remains the provenance record.",
     generalObjectives: [
       "Understand the basic principles and concepts in chemistry.",
       "Interpret scientific data relating to chemistry.",
@@ -454,6 +456,8 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
     sourceFile: "Mathematics.pdf",
     sourceSha256: "aff7a7c2cc46036902dda38db1d1567d10982de709305cfbfc90dc437329754f",
     sourcePageCount: 6, reviewState: "needs_current_source_review",
+    officialSourceUrl: "https://ibass.jamb.gov.ng/static/media/Mathematics.c0621f4b8b674e75fd05.pdf",
+    sourceComparisonNote: "The current JAMB IBASS Mathematics asset is linked above. Current IBASS-derived transcriptions dated 24 October 2026 list five sections and 23 top-level topics in the same order as this uploaded 2025 copy. The direct JAMB PDF endpoint could not be retrieved in the 19 November 2026 review, so this is a section/topic-heading cross-check only; complete subtopic and objective wording still requires direct page-by-page reconciliation. The uploaded PDF hash remains the provenance record.",
     generalObjectives: [
       "Acquire computational and manipulative skills.",
       "Develop precise, logical and formal reasoning skills.",
@@ -645,7 +649,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
 };
 
 export const JAMB_SYLLABUS_REVIEW_NOTICE =
-  "This catalogue combines the five 2025-created source PDFs supplied by the owner with JAMB-hosted IBASS references. Physics now follows the current 39-topic JAMB-hosted IBASS structure checked on 19 November 2026, and Use of English follows the JAMB-hosted PDF checked on 18 November 2026; both uploaded copies materially differ. Biology has an official IBASS link but still needs complete line-by-line reconciliation. Chemistry and Mathematics remain supplied-source candidates pending current IBASS reconciliation. This catalogue is not certified as the 2027 syllabus or a verified complete current syllabus.";
+  "This catalogue combines the five 2025-created source PDFs supplied by the owner with JAMB-hosted IBASS references. Physics now follows the current 39-topic JAMB-hosted IBASS structure checked on 19 November 2026, and Use of English follows the JAMB-hosted PDF checked on 18 November 2026; both uploaded copies materially differ. Biology has an official IBASS link but still needs complete line-by-line reconciliation. Chemistry (18 topics) and Mathematics (23 topics) now match current IBASS-derived top-level listings in heading/order, with JAMB-hosted source links recorded; direct PDF retrieval and line-by-line objective reconciliation remain pending. This catalogue is not certified as the 2027 syllabus or a verified complete current syllabus.";
 
 export const JAMB_SYLLABUS_VERSION = "mixed-sources-checked-2026-11-19";
 export const JAMB_SYLLABUS_VERIFIED = false;

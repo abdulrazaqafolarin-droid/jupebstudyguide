@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getLegacyProgramStorageKey } from './useUserStorage';
+import { getLegacyProgramStorageKey } from '@/lib/user-storage-keys';
 
 describe('legacy programme-scoped storage migration', () => {
   it('maps the old JUPEB subject preference key to its new JUPEB namespace', () => {

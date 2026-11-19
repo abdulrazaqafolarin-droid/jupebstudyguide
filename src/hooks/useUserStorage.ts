@@ -1,15 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-
-/** One-time migration for local JUPEB preferences written before programme namespaces existed. */
-export function getLegacyProgramStorageKey(key: string): string | null {
-  const legacyKeys: Record<string, string> = {
-    'onboarding-subjects:jupeb': 'onboarding-subjects',
-    'onboarding-daily-goal:jupeb': 'onboarding-daily-goal',
-    'onboarding-nudge-dismissed:jupeb': 'onboarding-nudge-dismissed',
-  };
-  return legacyKeys[key] ?? null;
-}
+import { getLegacyProgramStorageKey } from '@/lib/user-storage-keys';
 
 /**
  * Per-user namespaced localStorage hook.

@@ -152,9 +152,9 @@ The owner committed five additional PDF source copies to `main` in commit `e1d9b
 | Mathematics | 6 | 10,770 |
 | Use of English | 5 | 6,155 |
 
-The PDF metadata identifies the uploaded copies as 2025-created files. They are therefore treated as candidate source copies, not silently declared the verified current IBASS edition. A direct comparison found material differences between the uploaded Physics and Use of English content and the JAMB-hosted PDFs checked during this review; Chemistry and Mathematics still need their current IBASS copies reconciled. The official syllabus source links are the JAMB IBASS e-syllabus at https://ibass.jamb.gov.ng/e-syllabus and the subject PDFs exposed by that portal.
+The PDF metadata identifies the uploaded copies as 2025-created files. The uploaded Physics and Use of English copies differ materially from the JAMB-hosted PDFs checked during this review. Chemistry and Mathematics have since received a top-level structure check against current IBASS-derived indexed transcriptions dated 24 October 2026: the Chemistry copy matches the listed 18 topic headings/order, and the Mathematics copy matches the five sections and 23 topic headings/order. The current JAMB-hosted assets are https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf and https://ibass.jamb.gov.ng/static/media/Mathematics.c0621f4b8b674e75fd05.pdf. The direct PDF endpoints could not be fetched during the 19 November review, so this is not a page-by-page objective verification.
 
-The JAMB syllabus page now has a structured five-subject outline catalogue with **106 topic entries**, including compulsory Use of English and Mathematics. It deliberately keeps `JAMB_SYLLABUS_VERIFIED=false`. The detailed topic outline is a structured first pass from the uploaded copies; topic-level objectives have not yet been independently mapped/reviewed line-by-line. The full official UTME mock remains disabled. Mathematics and Use of English remain unavailable in the JAMB question bank.
+The JAMB syllabus page now has a structured five-subject outline catalogue with **106 topic entries**, including compulsory Use of English and Mathematics. It deliberately keeps `JAMB_SYLLABUS_VERIFIED=false`. All 106 topics now have mapped objective lists. However, objective wording has not yet been reconciled line-by-line against directly retrieved current IBASS PDFs for every subject. The full official UTME mock remains disabled. Mathematics and Use of English remain unavailable in the JAMB question bank.
 
 Topic progress now uses a JAMB-only, per-account local namespace plus cloud reconciliation through `exam_user_syllabus_progress`. The live table has owner/active-session RLS, authenticated-only CRUD grants and no anonymous access. Local progress remains available offline and retries sync on reconnect/focus/visibility. The existing shared JUPEB syllabus progress key and JUPEB syllabus page are unchanged.
 
@@ -177,7 +177,7 @@ The JAMB tutor now selects its latest conversation by the requested programme, s
 
 On 18 November 2026, the JAMB-hosted [Use of English IBASS PDF](https://ibass.jamb.gov.ng/assets/uploads/Use-of-English.pdf) was opened and compared with the uploaded `Use of English.pdf` candidate source. The uploaded copy adds a separate five-question summary passage, allocates five rather than ten questions to its reading text, omits the named reading text and homonyms, and differs on punctuation/spelling and oral-form coverage. The JAMB-hosted PDF specifies two passages (one cloze), names *The Lekki Headmaster* by Kabir Alabi Garba, includes homonyms and punctuation/spelling, and lists monothongs and diphthongs. Its examination structure totals 60 questions with the section breakdown now represented in the catalogue.
 
-The JAMB catalogue now follows the JAMB-hosted IBASS PDF for Use of English and retains the uploaded PDF hash/link as the originally supplied candidate file. This does not certify the 2027-specific syllabus: the retrieved IBASS asset is not itself labelled with a 2027 version. Physics and Biology are linked to JAMB-hosted PDFs but their complete topic/objective mappings remain in review. Chemistry and Mathematics remain based on uploaded candidate copies pending retrieval and reconciliation against current IBASS sources.
+The JAMB catalogue follows the JAMB-hosted IBASS PDF for Use of English and retains the uploaded PDF hash/link as the originally supplied candidate file. Chemistry and Mathematics now link to their current JAMB IBASS assets; indexed current-syllabus transcriptions match the uploaded copies' top-level topic structure (18 Chemistry topics and 23 Mathematics topics). Direct retrieval of those two PDFs failed during this review, so detailed subtopic/objective reconciliation remains open. Physics and Biology follow current IBASS topic structures, but complete topic-to-objective wording is still under review. None of these checks certifies a 2027-specific syllabus: the IBASS assets do not print an applicable exam year.
 
 
 ### Full-page source review previews
@@ -187,9 +187,9 @@ The syllabus PDF extractor now renders a page preview for every page rather than
 
 ## Complete topic learning-objective transcription — 18 November 2026
 
-All **106 catalogue topics** now include a per-topic "Candidates should be able to" objective list: Physics 39 topics, Chemistry 18, Biology 23, Mathematics 23 and Use of English 3. This pass maps at least **431 objective statements** from the submitted 2025 source PDFs and the JAMB-hosted IBASS Use of English PDF. Topic source-page references are retained. A regression test checks all five subject counts and fails if any topic lacks objectives.
+All **106 catalogue topics** now include a per-topic "Candidates should be able to" objective list: Physics 39 topics, Chemistry 18, Biology 23, Mathematics 23 and Use of English 3. This pass maps exactly **426 objective statements** from the submitted 2025 source PDFs and the JAMB-hosted IBASS Use of English PDF; the earlier provisional 431 count is superseded after the Biology Biotechnology topic was merged into Heredity. Topic source-page references are retained. A regression test checks all five subject counts and fails if any topic lacks objectives.
 
-The distinction between content completeness and current-version approval remains important: Physics, Chemistry, Biology and Mathematics objectives are transcribed from the owner's uploaded 2025 copies. Use of English follows the JAMB-hosted IBASS PDF checked on 18 November 2026 because its supplied copy differs. Physics and Biology official IBASS links are present but the complete topic-to-objective wording still needs line-by-line reconciliation against those live sources; Chemistry and Mathematics current IBASS sources still need retrieval and comparison. The five-subject catalogue remains unverified for the applicable 2027 examination cycle, and the full UTME mock remains disabled.
+The distinction between catalogue completeness and current-source approval remains important. Use of English follows the JAMB-hosted IBASS PDF checked on 18 November 2026. Physics follows the 39-topic IBASS structure; Biology follows the current 23-topic, five-section structure. Chemistry and Mathematics match current IBASS-derived top-level listings (18 and 23 topics respectively), but the direct PDFs could not be retrieved during the 19 November review and complete subtopic/objective reconciliation remains pending. The catalogue remains unverified for the applicable 2027 examination cycle, and the full UTME mock remains disabled.
 
 
 ## Official-source correction — Physics and Use of English
@@ -205,3 +205,21 @@ The current JAMB-hosted [Biology IBASS PDF](https://ibass.jamb.gov.ng/assets/upl
 
 
 The current structured catalogue contains exactly **426 learning-objective statements** across the 106 topic entries. The regression test asserts the exact statement count and checks that every topic has at least one objective.
+
+ 
+## Chemistry and Mathematics top-level IBASS check — 19 November 2026
+
+The current IBASS Chemistry asset is [Chemistry.pdf](https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf). Current IBASS-derived indexed syllabus transcriptions last verified 24 October 2026 list the same 18 top-level headings in the same order as the uploaded `Chemistry-1.pdf`, including Environmental Pollution, Chemistry and Industry, and Astronomical Chemistry. The catalogue's "Chemical Equilibrium" label normalises the source PDF heading's typographical form, "Chemical Equilibra".
+
+The current IBASS Mathematics asset is [Mathematics.pdf](https://ibass.jamb.gov.ng/static/media/Mathematics.c0621f4b8b674e75fd05.pdf). Current IBASS-derived indexed transcriptions last verified 24 October 2026 list the same five sections and 23 topic headings in the same order as the uploaded `Mathematics.pdf`.
+
+Both uploaded PDFs were extracted and all page previews were produced in CI. The Chemistry and Mathematics previews were visually checked, including Chemistry's final topic page and the Mathematics section transitions. Direct requests to both JAMB-hosted PDF endpoints returned cache errors during this review, so these findings verify the top-level heading/section structure through independent indexed transcriptions, not every subtopic, objective or page of the live PDFs. The two subjects therefore remain `needs_current_source_review`; this does not promote `JAMB_SYLLABUS_VERIFIED` or certify the 2027 examination edition.
+
+## Current-head CI verification — 19 November 2026
+
+The current PR head is `ed3934fe7c2f4d7611259e834fe4ce2732ccb486`.
+
+- **Validate pull requests** run `44489083138` completed successfully. All steps passed, including all-five-PDF extraction and preview generation, source extraction tests, question-source importer tests, Deno shared-function tests, Edge Function TypeScript, TypeScript, unit tests, lint, web build, Capacitor sync and Android debug APK compilation.
+- **Rutex Master Next artifact-only** run `44489083112` completed successfully. The successor APK package/version/signing verification and artifact upload passed. The Supabase publication step was skipped, so no updater release was published.
+- Vercel checks reported success for both connected projects. A signed-in student/admin walkthrough and physical-device acceptance test remain outstanding. The Supabase Preview check was skipped because this Git branch is not associated with a Supabase Preview branch.
+- PR #78 remains Draft. No merge, Production UI deployment, JAMB question publication or updater-release publication was performed.

@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   validateCode: vi.fn(),
   refreshStatus: vi.fn(),
   toastSuccess: vi.fn(),
+  navigate: vi.fn(),
+  supabaseRpc: vi.fn(),
 }));
 
 vi.mock("@/hooks/useActivation", () => ({
@@ -15,6 +17,15 @@ vi.mock("@/hooks/useActivation", () => ({
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: mocks.useAuth,
+}));
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: { rpc: mocks.supabaseRpc },
+}));
+
+vi.mock("react-router-dom", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router-dom")>()),
+  useNavigate: () => mocks.navigate,
 }));
 
 vi.mock("sonner", () => ({
@@ -31,6 +42,7 @@ describe("ActivationGate active-trial banner", () => {
     vi.clearAllMocks();
     mocks.validateCode.mockResolvedValue({ success: true, plan_type: "premium" });
     mocks.refreshStatus.mockResolvedValue(undefined);
+    mocks.supabaseRpc.mockResolvedValue({ data: { success: true }, error: null });
     mocks.useAuth.mockReturnValue({
       user: { id: "trial-user", email: "student@example.com" },
       signOut: vi.fn(),
@@ -176,6 +188,28 @@ describe("ActivationGate active-trial banner", () => {
 
     expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
     expect(screen.getByText("JAMB study content")).toBeInTheDocument();
+  });
+
+  it("switches to JAMB from the JUPEB activation screen without granting access", async () => {
+    mocks.useActivation.mockReturnValue({
+      status: { is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, checking: false },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate programId="jupeb">
+        <div>JUPEB study content</div>
+      </ActivationGate>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to JAMB / UTME" }));
+    await waitFor(() => {
+      expect(mocks.supabaseRpc).toHaveBeenCalledWith("select_exam_program", { p_exam_program_id: "jamb" });
+      expect(mocks.navigate).toHaveBeenCalledWith("/jamb", { replace: true });
+    });
   });
 
   it("opens the inline activation form without interrupting the trial session", () => {

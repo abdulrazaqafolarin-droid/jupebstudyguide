@@ -19,6 +19,7 @@ export function useOnboarding() {
   const [isReplay, setIsReplay] = useState(false);
   const [profileSchoolName, setProfileSchoolName] = useState<string | null>(null);
   const [profileSeatNumber, setProfileSeatNumber] = useState<string | null>(null);
+  const [completedAt, setCompletedAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -34,6 +35,7 @@ export function useOnboarding() {
         setIsReplay(status.finalized === true);
         setProfileSchoolName(status.schoolName);
         setProfileSeatNumber(status.examSeatNumber);
+        setCompletedAt(status.completedAt);
         setLoading(false);
       })
       .catch((error) => {
@@ -55,6 +57,7 @@ export function useOnboarding() {
     const { error: onboardingError } = await supabase.from('exam_program_onboarding')
       .upsert({
         user_id: user.id, exam_program_id: programId,
+        completed_at: completedAt,
         data: next as never, updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,exam_program_id' });
 
@@ -64,21 +67,24 @@ export function useOnboarding() {
       profileError = result.error;
     }
     if (!onboardingError && !profileError) {
-      patchCachedOnboardingStatus(user.id, programId, { data: next, finalized: next.finalized === true });
+      patchCachedOnboardingStatus(user.id, programId, { data: next, finalized: next.finalized === true, completedAt });
     }
     return !onboardingError && !profileError;
-  }, [user?.id, programId, data]);
+  }, [user?.id, programId, data, completedAt]);
 
   const complete = useCallback(async (finalized: boolean, patch: Partial<OnboardingData> = {}) => {
     if (!user) return false;
     const next: OnboardingData = { ...data, ...patch, finalized };
     setData(next);
-    const completedAt = new Date().toISOString();
+    const nextCompletedAt = new Date().toISOString();
     const { error } = await supabase.from('exam_program_onboarding').upsert({
-      user_id: user.id, exam_program_id: programId, completed_at: completedAt,
-      data: next as never, updated_at: completedAt,
+      user_id: user.id, exam_program_id: programId, completed_at: nextCompletedAt,
+      data: next as never, updated_at: nextCompletedAt,
     }, { onConflict: 'user_id,exam_program_id' });
-    if (!error) patchCachedOnboardingStatus(user.id, programId, { completedAt, finalized, data: next });
+    if (!error) {
+      setCompletedAt(nextCompletedAt);
+      patchCachedOnboardingStatus(user.id, programId, { completedAt: nextCompletedAt, finalized, data: next });
+    }
     return !error;
   }, [user?.id, programId, data]);
 

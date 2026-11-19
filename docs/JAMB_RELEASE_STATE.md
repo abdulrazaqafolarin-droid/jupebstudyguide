@@ -209,15 +209,15 @@ The current structured catalogue contains exactly **426 learning-objective state
  
 ## Chemistry and Mathematics top-level IBASS check — 19 November 2026
 
-The current IBASS Chemistry asset is [Chemistry.pdf](https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf). Current IBASS-derived indexed syllabus transcriptions last verified 24 October 2026 list the same 18 top-level headings in the same order as the uploaded `Chemistry-1.pdf`, including Environmental Pollution, Chemistry and Industry, and Astronomical Chemistry. The catalogue's "Chemical Equilibrium" label normalises the source PDF heading's typographical form, "Chemical Equilibra".
+The current IBASS Chemistry asset is [Chemistry.pdf](https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf). Current IBASS-derived indexed syllabus transcriptions last verified 24 October 2026 list the same 18 top-level headings in the same order as the uploaded `Chemistry-1.pdf`, including Environmental Pollution, Chemistry and Industry, and Astronomical Chemistry. The catalogue's "Chemical Equilibria" label normalises the source PDF heading's typographical form, "Chemical Equilibra".
 
 The current IBASS Mathematics asset is [Mathematics.pdf](https://ibass.jamb.gov.ng/static/media/Mathematics.c0621f4b8b674e75fd05.pdf). Current IBASS-derived indexed transcriptions last verified 24 October 2026 list the same five sections and 23 topic headings in the same order as the uploaded `Mathematics.pdf`.
 
 Both uploaded PDFs were extracted and all page previews were produced in CI. The Chemistry and Mathematics previews were visually checked, including Chemistry's final topic page and the Mathematics section transitions. Direct requests to both JAMB-hosted PDF endpoints returned cache errors during this review, so these findings verify the top-level heading/section structure through independent indexed transcriptions, not every subtopic, objective or page of the live PDFs. The two subjects therefore remain `needs_current_source_review`; this does not promote `JAMB_SYLLABUS_VERIFIED` or certify the 2027 examination edition.
 
-## Current-head CI verification — 19 November 2026
+## Completed CI checkpoint before the Chemistry/Mathematics reference follow-up — 19 November 2026
 
-The current PR head is `ed3934fe7c2f4d7611259e834fe4ce2732ccb486`.
+At this checkpoint, PR head was `ed3934fe7c2f4d7611259e834fe4ce2732ccb486`. The later source-reference and documentation updates are committed on the same feature branch and triggered fresh validation on the newer head.
 
 - **Validate pull requests** run `44489083138` completed successfully. All steps passed, including all-five-PDF extraction and preview generation, source extraction tests, question-source importer tests, Deno shared-function tests, Edge Function TypeScript, TypeScript, unit tests, lint, web build, Capacitor sync and Android debug APK compilation.
 - **Rutex Master Next artifact-only** run `44489083112` completed successfully. The successor APK package/version/signing verification and artifact upload passed. The Supabase publication step was skipped, so no updater release was published.

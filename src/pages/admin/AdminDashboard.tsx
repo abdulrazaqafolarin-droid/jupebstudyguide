@@ -153,7 +153,7 @@ export default function AdminDashboard() {
   };
 
   const copyAll = () => {
-    const text = generatedCodes.map((c) => `${c.code}\\t${c.exam_program_id}\\t${c.duration_days} days`).join("\\n");
+    const text = generatedCodes.map((c) => `${c.code}\t${c.exam_program_id}\t${c.duration_days} days`).join("\n");
     navigator.clipboard.writeText(text);
     toast.success("Copied all codes");
   };

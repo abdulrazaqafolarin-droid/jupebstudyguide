@@ -32,6 +32,18 @@ describe("JAMB syllabus catalogue", () => {
     expect(JAMB_SYLLABUS.use_of_english.reviewState).toBe("needs_current_source_review");
   });
 
+  it("records current IBASS references for Chemistry and Mathematics without promoting syllabus verification", () => {
+    expect(JAMB_SYLLABUS.chemistry.officialSourceUrl).toBe(
+      "https://ibass.jamb.gov.ng/static/media/Chemistry.9efd0b98043d56922aaa.pdf",
+    );
+    expect(JAMB_SYLLABUS.math.officialSourceUrl).toBe(
+      "https://ibass.jamb.gov.ng/static/media/Mathematics.c0621f4b8b674e75fd05.pdf",
+    );
+    expect(JAMB_SYLLABUS.chemistry.reviewState).toBe("needs_current_source_review");
+    expect(JAMB_SYLLABUS.math.reviewState).toBe("needs_current_source_review");
+    expect(JAMB_SYLLABUS_VERIFIED).toBe(false);
+  });
+
   it("follows the current five-section JAMB IBASS Biology structure", () => {
     const biology = JAMB_SYLLABUS.biology;
     expect(biology.sections.map((section) => section.topics.length)).toEqual([3, 9, 7, 2, 2]);

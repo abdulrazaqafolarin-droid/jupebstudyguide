@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -35,6 +35,7 @@ const itemAnim = {
 };
 
 export default function JambSyllabusPage() {
+  const navigate = useNavigate();
   const [expandedSubject, setExpandedSubject] = useState<JambSyllabusSubjectId | null>("use_of_english");
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
@@ -83,7 +84,7 @@ export default function JambSyllabusPage() {
     <div className="min-h-screen bg-background">
       <WorkspacePageHeader
         title="JAMB Syllabus"
-        backTo="/jamb"
+        onBack={() => navigate(-1)}
         subtitle={`${overall.total} topics | ${overall.completed} completed`}
         backLabel="Back to JAMB workspace"
         icon={GraduationCap}
@@ -96,7 +97,7 @@ export default function JambSyllabusPage() {
         variants={stagger}
         initial="hidden"
         animate="show"
-        className="mx-auto max-w-4xl space-y-6 px-4 py-6"
+        className="max-w-4xl mx-auto px-4 py-6 space-y-6"
       >
         <motion.section variants={itemAnim} className="rounded-2xl border border-border bg-card p-5">
           <div className="flex items-start gap-3">

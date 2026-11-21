@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
@@ -358,24 +359,33 @@ export default function JambDailyMissionPage() {
                       </div>
                       <div className="mb-4 text-sm leading-relaxed"><QuestionMath content={question.question} /></div>
                       {question.imageUrls.map((url) => <QuestionImage key={url} imageUrl={url} alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"} />)}
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {question.options.map((option) => {
                           const selected = answer?.selectedOption === option.label;
+                          const isApproved = answer?.checked === true
+                            && answer.gradable
+                            && answer.correctOption === option.label;
+                          const isIncorrectSelection = answer?.checked === true
+                            && answer.gradable
+                            && selected
+                            && answer.isCorrect === false;
                           return (
-                            <button
+                            <QuestionOptionButton
                               key={option.label}
-                              type="button"
+                              label={option.label}
+                              state={
+                                isApproved ? "correct"
+                                  : isIncorrectSelection ? "incorrect"
+                                    : answer?.checked && answer.gradable ? "muted"
+                                      : selected ? "selected" : "default"
+                              }
+                              selected={selected}
                               disabled={!canChange || Boolean(checking[question.id])}
                               onClick={() => void checkAnswer(activeMission, question.id, option.label)}
-                              aria-pressed={selected}
-                              className={`flex w-full items-start gap-3 rounded-xl border px-3 py-3 text-left text-sm transition-colors disabled:cursor-default ${selected ? "border-primary/50 bg-primary/5" : "border-border hover:bg-accent/50"}`}
+                              contentClassName="break-words text-pretty"
                             >
-                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-secondary text-xs font-bold">{option.label}</span>
-                              <span className="pt-1"><QuestionMath inline content={option.text} /></span>
-                              {selected && answer?.checked && answer.gradable && (
-                                <CheckCircle2 className={`ml-auto mt-1 h-4 w-4 shrink-0 ${answer.isCorrect ? "text-emerald-600" : "text-destructive"}`} />
-                              )}
-                            </button>
+                              <QuestionMath inline content={option.text} />
+                            </QuestionOptionButton>
                           );
                         })}
                       </div>

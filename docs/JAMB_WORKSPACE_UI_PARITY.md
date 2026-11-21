@@ -135,3 +135,11 @@ These changes are committed on the open Draft PR branch. GitHub validation must 
 
 The JAMB leaderboard remains a data-contract blocker rather than a visual styling problem: the existing JUPEB weekly score RPC aggregates programme-agnostic score events, while JAMB's independently checked CBT results live in programme-scoped attempt summaries. The UI must not call the shared RPC and accidentally mix programmes. A JAMB-only ranking contract needs to be defined before the page can display real ranks.
 
+## Revision and syllabus consistency — 21 November 2026
+
+- **Revision Cards:** the JAMB subject chooser now reuses the shared selectable-subject tile used in JUPEB quiz setup and JAMB CBT setup, with the same two-column choice grid. The three progress metrics use the JUPEB study-view gradient cards and spacing.
+- **Revision card surface:** the JAMB question surface is constrained to the same reading width as the JUPEB flashcard and uses the same directional slide/fade transition when the active question changes. Reduced-motion preferences bypass the transition.
+- **Syllabus subject accordions:** JAMB now uses the compact rounded subject-card treatment and subtle hover/selected styling from JUPEB, while retaining its programme-specific objective lists, source provenance and topic tracking.
+
+The shared visual changes do not alter JAMB's content eligibility, answer-key approval, scoring or spaced-review rules.
+

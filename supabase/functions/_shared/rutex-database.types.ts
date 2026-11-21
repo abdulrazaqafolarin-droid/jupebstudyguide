@@ -483,6 +483,51 @@ export type Database = {
             },
           ]
         }
+        jamb_question_admin_audit: {
+          Row: {
+            actor_id: string | null
+            after_payload: Json | null
+            before_payload: Json | null
+            created_at: string
+            id: string
+            operation: string
+            payload_sha256: string | null
+            question_id: string | null
+            rights_confirmed: boolean
+            rights_note: string
+            source_document: string | null
+            source_reference: string | null
+          }
+          Insert: {
+            actor_id?: string | null
+            after_payload?: Json | null
+            before_payload?: Json | null
+            created_at?: string
+            id?: string
+            operation: string
+            payload_sha256?: string | null
+            question_id?: string | null
+            rights_confirmed: boolean
+            rights_note: string
+            source_document?: string | null
+            source_reference?: string | null
+          }
+          Update: {
+            actor_id?: string | null
+            after_payload?: Json | null
+            before_payload?: Json | null
+            created_at?: string
+            id?: string
+            operation?: string
+            payload_sha256?: string | null
+            question_id?: string | null
+            rights_confirmed?: boolean
+            rights_note?: string
+            source_document?: string | null
+            source_reference?: string | null
+          }
+          Relationships: []
+        }
         question_import_batches: {
           Row: {
             approved_at: string | null

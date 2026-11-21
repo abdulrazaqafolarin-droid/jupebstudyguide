@@ -23,6 +23,12 @@ function asText(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function serializeAuditPayload(value: unknown): Json {
+  const serialized = JSON.stringify(value);
+  if (!serialized) return null;
+  return JSON.parse(serialized) as Json;
+}
+
 function normalizeItem(item: JsonObject, batch: {
   subject_code: string;
   source_document: string;
@@ -426,9 +432,9 @@ Deno.serve(async (request: Request) => {
 
     if (action === "manage-question") {
       const operation = asText(body.operation);
-      const questionTable = supabase.from("study_questions") as any;
-      const answerKeyTable = supabase.from("study_question_answer_keys") as any;
-      const auditTable = supabase.from("jamb_question_admin_audit" as any) as any;
+      const questionTable = supabase.from("study_questions");
+      const answerKeyTable = supabase.from("study_question_answer_keys");
+      const auditTable = supabase.from("jamb_question_admin_audit");
 
       if (operation === "list") {
         const subject = asText(body.subject).toLowerCase();
@@ -711,6 +717,7 @@ Deno.serve(async (request: Request) => {
           source_ref: parsedReference.canonical,
           reviewed_by: user.id,
           reviewed_at: now,
+          created_at: beforeKey?.created_at ?? now,
           updated_at: now,
         };
         const { error: keySaveError } = await answerKeyTable.upsert(keyPayload, { onConflict: "question_id" });
@@ -732,8 +739,10 @@ Deno.serve(async (request: Request) => {
           rights_confirmed: true,
           rights_note: rightsNote,
           payload_sha256: payloadSha256,
-          before_payload: operation === "update" ? { question: beforeQuestion, answer_key: beforeKey } : null,
-          after_payload: { question: savedQuestion, answer_key: keyPayload },
+          before_payload: operation === "update"
+            ? serializeAuditPayload({ question: beforeQuestion, answer_key: beforeKey })
+            : null,
+          after_payload: serializeAuditPayload({ question: savedQuestion, answer_key: keyPayload }),
         };
         const { error: auditSaveError } = await auditTable.insert(auditPayload);
         if (auditSaveError) {
@@ -801,7 +810,7 @@ Deno.serve(async (request: Request) => {
           rights_confirmed: true,
           rights_note: rightsNote,
           payload_sha256: null,
-          before_payload: { question: row, answer_key: key },
+          before_payload: serializeAuditPayload({ question: row, answer_key: key }),
           after_payload: { hidden: true, review_status: "rejected", removed_from_active_bank: true },
         }).select("id").single();
         if (auditError) return respond({ error: "Question was not removed because its audit record failed: " + auditError.message }, 500);

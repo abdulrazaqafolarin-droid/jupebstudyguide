@@ -19,7 +19,7 @@ import {
   mapJambCbtHistoryPayload,
   type JambCbtAttemptSummary,
 } from "@/lib/jamb-cbt-analytics";
-import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
+import { JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS } from "@/lib/jamb-config";
 import {
   getJambPublishedQuestionMetadata,
   getJambSubjectSummaries,
@@ -28,7 +28,7 @@ import {
 } from "@/lib/jamb-question-service";
 
 interface SubjectPerformance {
-  subject: (typeof JAMB_SUBJECTS)[number];
+  subject: (typeof JAMB_QUESTION_BANK_SUBJECTS)[number];
   total: number;
   studied: number;
   mastered: number;
@@ -133,7 +133,7 @@ export default function JambStatsPage() {
     ? Math.min(100, Math.round((revisionStats.mastered / publishedQuestionCount) * 100))
     : 0;
 
-  const subjectRows: SubjectPerformance[] = useMemo(() => JAMB_SUBJECTS.map((subject) => {
+  const subjectRows: SubjectPerformance[] = useMemo(() => JAMB_QUESTION_BANK_SUBJECTS.map((subject) => {
     const questionIds = publishedMetadata
       .filter((question) => question.subject === subject)
       .map((question) => question.id);

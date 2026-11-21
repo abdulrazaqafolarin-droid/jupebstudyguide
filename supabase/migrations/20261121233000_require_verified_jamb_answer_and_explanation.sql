@@ -133,4 +133,54 @@ COMMENT ON FUNCTION public.enforce_jamb_question_approval_completeness() IS
 COMMENT ON FUNCTION public.enforce_jamb_answer_key_completeness() IS
   'Requires every JAMB answer-key record to contain an option that exists on its question and a meaningful explanation.';
 
+-- Use of English is a compulsory JAMB subject. It becomes a CBT-configured
+-- subject here, but session creation still requires enough published,
+-- well-formed questions; the subject catalogue remains is_available=false
+-- until its reviewed content has actually been published.
+UPDATE public.exam_configurations
+SET settings = jsonb_set(
+  settings,
+  '{allowed_subjects}',
+  CASE
+    WHEN coalesce(settings->'allowed_subjects', '[]'::jsonb) ? 'use_of_english'
+      THEN coalesce(settings->'allowed_subjects', '[]'::jsonb)
+    ELSE coalesce(settings->'allowed_subjects', '[]'::jsonb) || '["use_of_english"]'::jsonb
+  END,
+  true
+)
+WHERE exam_program_id = 'jamb'
+  AND coalesce(settings->'allowed_subjects', '[]'::jsonb) ? 'physics';
+
+-- Update the existing publisher without replacing unrelated grants or policies.
+DO $migration$
+DECLARE
+  v_definition TEXT;
+BEGIN
+  SELECT pg_get_functiondef('public.publish_jamb_question_batch(uuid,uuid)'::regprocedure)
+    INTO v_definition;
+
+  IF position('IF v_subject NOT IN (''physics'', ''chemistry'', ''biology'')' IN v_definition) = 0 THEN
+    RAISE EXCEPTION 'publish_jamb_question_batch subject allowlist was not in the expected form';
+  END IF;
+
+  v_definition := replace(
+    v_definition,
+    'IF v_subject NOT IN (''physics'', ''chemistry'', ''biology'')',
+    'IF v_subject NOT IN (''physics'', ''chemistry'', ''biology'', ''use_of_english'')'
+  );
+  v_definition := replace(
+    v_definition,
+    'status IN (''approved'', ''approved_ungraded'')',
+    'status = ''approved'''
+  );
+  v_definition := replace(
+    v_definition,
+    'Use approved_ungraded for an item without a reviewed answer key',
+    'A verified answer key and meaningful explanation are required for every published question'
+  );
+
+  EXECUTE v_definition;
+END;
+$migration$;
+
 COMMIT;

@@ -89,11 +89,18 @@ describe("isJambCbtQuestionCandidate", () => {
     })).toBe(true);
   });
 
-  it("rejects five-option historical questions", () => {
+  it("accepts five-option A-E historical questions, including Use of English", () => {
     expect(isJambCbtQuestionCandidate({
-      question: "Which quantity is measured in amperes?",
+      question: "Choose the word nearest in meaning to the underlined word.",
       options: [...options, { label: "E", text: "Fifth" }],
-    })).toBe(false);
+    })).toBe(true);
+  });
+
+  it("accepts the JSON string representation of five-option questions", () => {
+    expect(isJambCbtQuestionCandidate({
+      question: "Choose the word nearest in meaning to the underlined word.",
+      options: JSON.stringify([...options, { label: "E", text: "Fifth" }]),
+    })).toBe(true);
   });
 
   it("rejects malformed labels, blank options and short stems", () => {

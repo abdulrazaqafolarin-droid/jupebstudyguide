@@ -21,7 +21,7 @@ import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
 import {
-  JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
+  JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
 import { getJambMissionSummary, jambLocalDateKey } from "@/lib/jamb-daily-mission";
 import {
@@ -238,7 +238,7 @@ export default function JambHomePage() {
   }, [reviewProgressReady, reviewQuestionIds]);
 
   const subjectReviewStats = useMemo(
-    () => JAMB_SUBJECTS.map((subject) => {
+    () => JAMB_QUESTION_BANK_SUBJECTS.map((subject) => {
       const questionIds = reviewQuestionMetadata
         .filter((question) => question.subject === subject)
         .map((question) => question.id);
@@ -598,18 +598,35 @@ export default function JambHomePage() {
             whileInView="show"
             viewport={{ once: true, margin: "-50px" }}
           >
-            {JAMB_SUBJECTS.map((subject) => (
+            {JAMB_QUESTION_BANK_SUBJECTS.map((subject) => (
               <motion.div key={subject} variants={cardVariants}>
-                <SubjectCard
-                  subject={subject}
-                  infoOverride={{ name: JAMB_SUBJECT_INFO[subject].label, icon: JAMB_SUBJECT_INFO[subject].icon }}
-                  questionCount={summaries.find((row) => row.subject === subject)?.count ?? 0}
-                  questionCountReady={!loading}
-                  studiedCount={subjectReviewStats.find((row) => row.subject === subject)?.studiedCount ?? 0}
-                  learnedCount={subjectReviewStats.find((row) => row.subject === subject)?.learnedCount ?? 0}
-                  statsReady={reviewProgressReady && reviewMetadataReady && !reviewMetadataError}
-                  onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
-                />
+                {subject === "use_of_english" ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/jamb/past-questions?subject=use_of_english")}
+                    className="w-full rounded-xl border border-primary/30 bg-card p-4 text-left transition-all hover:-translate-y-1 hover:border-primary hover:bg-primary/5 hover:shadow-lg"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-2xl" aria-hidden="true">{JAMB_SUBJECT_INFO.use_of_english.icon}</span>
+                      <span className="rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary">Compulsory</span>
+                    </div>
+                    <p className="mt-3 text-sm font-semibold">{JAMB_SUBJECT_INFO.use_of_english.label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {summaries.find((row) => row.subject === "use_of_english")?.count ?? 0} published questions
+                    </p>
+                  </button>
+                ) : (
+                  <SubjectCard
+                    subject={subject}
+                    infoOverride={{ name: JAMB_SUBJECT_INFO[subject].label, icon: JAMB_SUBJECT_INFO[subject].icon }}
+                    questionCount={summaries.find((row) => row.subject === subject)?.count ?? 0}
+                    questionCountReady={!loading}
+                    studiedCount={subjectReviewStats.find((row) => row.subject === subject)?.studiedCount ?? 0}
+                    learnedCount={subjectReviewStats.find((row) => row.subject === subject)?.learnedCount ?? 0}
+                    statsReady={reviewProgressReady && reviewMetadataReady && !reviewMetadataError}
+                    onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
+                  />
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -625,13 +642,13 @@ export default function JambHomePage() {
             whileInView="show"
             viewport={{ once: true, margin: "-50px" }}
           >
-            {JAMB_SUBJECTS.map((subject) => {
+            {JAMB_QUESTION_BANK_SUBJECTS.map((subject) => {
               const info = JAMB_SUBJECT_INFO[subject];
               return (
                 <motion.button
                   key={subject}
                   onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
-                  className={`p-4 rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${subject === "physics" ? "border-physics/30 hover:border-physics hover:bg-physics/5" : subject === "chemistry" ? "border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5" : "border-biology/30 hover:border-biology hover:bg-biology/5"}`}
+                  className={`p-4 rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${subject === "physics" ? "border-physics/30 hover:border-physics hover:bg-physics/5" : subject === "chemistry" ? "border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5" : subject === "biology" ? "border-biology/30 hover:border-biology hover:bg-biology/5" : "border-primary/30 hover:border-primary hover:bg-primary/5"}`}
                   variants={cardVariants}
                   whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
                   whileTap={{ scale: 0.95, transition: fastSpring }}

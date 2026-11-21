@@ -7,10 +7,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_TARGET_EXAM_YEAR, type JambSubject } from "@/lib/jamb-config";
+import { JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, JAMB_TARGET_EXAM_YEAR, type JambSubject } from "@/lib/jamb-config";
 import { supportsResumableJambImport } from "@/lib/jamb-import-client";
 import { getQuestionEmbeddingQueueStatus, processPendingQuestionEmbeddings, type QuestionEmbeddingQueueStatus } from "@/lib/question-rag-indexer";
-import type { Subject } from "@/types/question";
 
 interface ImportPackage {
   schema_version: number;
@@ -191,7 +190,7 @@ export default function JambQuestionBankAdminPage() {
     let activeBatchId = "";
     try {
       const parsed = JSON.parse(await jsonFile.text()) as ImportPackage;
-      if (parsed.schema_version !== 1 || parsed.exam_program_id !== "jamb" || !JAMB_SUBJECTS.includes(parsed.subject as Exclude<Subject, "math">) || !Array.isArray(parsed.items)) {
+      if (parsed.schema_version !== 1 || parsed.exam_program_id !== "jamb" || !JAMB_QUESTION_BANK_SUBJECTS.includes(parsed.subject as JambSubject) || !Array.isArray(parsed.items)) {
         throw new Error("This is not a valid Rutex JAMB import package.");
       }
       const sourceHash = await sha256(sourceFile);
@@ -444,7 +443,7 @@ export default function JambQuestionBankAdminPage() {
                   onChange={(event) => setManagerSubject(event.target.value as JambSubject)}
                   className="w-full rounded-xl border border-border bg-background p-3 text-sm"
                 >
-                  {JAMB_SUBJECTS.map((item) => (
+                  {JAMB_QUESTION_BANK_SUBJECTS.map((item) => (
                     <option key={item} value={item}>{JAMB_SUBJECT_INFO[item].label}</option>
                   ))}
                 </select>
@@ -528,7 +527,7 @@ export default function JambQuestionBankAdminPage() {
 
         <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2"><CloudUpload className="h-5 w-5 text-primary" /><h2 className="font-semibold">Stage a source collection</h2></div>
-          <p className="text-xs leading-relaxed text-muted-foreground">Run <code>python scripts/import_jamb_sources.py</code> in the repository first. Select the generated subject JSON and the exact original Physics.txt, Chemistry.txt or Biology.txt file so the SHA-256 provenance can be verified.</p>
+          <p className="text-xs leading-relaxed text-muted-foreground">Run <code>python scripts/import_jamb_sources.py</code> in the repository first. Select the generated subject JSON and the exact original Physics.txt, Chemistry.txt, Biology.txt or JAMB_english_READABLE.txt file so the SHA-256 provenance can be verified.</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block space-y-1.5 text-sm"><span className="font-medium">Generated JAMB JSON</span><input type="file" accept=".json,application/json" onChange={(event) => setJsonFile(event.target.files?.[0] ?? null)} className="block w-full text-xs file:mr-2 file:rounded-lg file:border-0 file:bg-secondary file:px-3 file:py-2" /></label>
             <label className="block space-y-1.5 text-sm"><span className="font-medium">Original source document</span><input type="file" accept=".txt,.pdf,.docx,.csv" onChange={(event) => setSourceFile(event.target.files?.[0] ?? null)} className="block w-full text-xs file:mr-2 file:rounded-lg file:border-0 file:bg-secondary file:px-3 file:py-2" /></label>
@@ -551,7 +550,7 @@ export default function JambQuestionBankAdminPage() {
                 <button key={batch.id} onClick={() => { setSelectedBatchId(batch.id); setItemOffset(0); }}
                   className={"rounded-xl border p-3 text-left transition-colors " + (selectedBatchId === batch.id ? "border-primary bg-primary/5" : "border-border hover:bg-accent/50")}>
                   <div className="flex items-center justify-between gap-2"><strong className="truncate text-sm">{batch.source_document}</strong><span className="text-[10px] uppercase tracking-wide text-muted-foreground">{batch.status}</span></div>
-                  <p className="mt-1 text-xs text-muted-foreground">{JAMB_SUBJECT_INFO[batch.subject_code as Subject]?.label ?? batch.subject_code} · {batch.total_items}/{batch.expected_items} staged</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{JAMB_SUBJECT_INFO[batch.subject_code as JambSubject]?.label ?? batch.subject_code} · {batch.total_items}/{batch.expected_items} staged</p>
                   <p className="mt-1 text-xs text-muted-foreground">{batch.needs_review_count} waiting · {batch.published_count} published</p>
                 </button>
               ))}

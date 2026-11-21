@@ -1,9 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Subject, MCQOption } from "@/types/question";
+import type { MCQOption } from "@/types/question";
+import { JAMB_QUESTION_BANK_SUBJECTS, type JambSubject } from "@/lib/jamb-config";
 
 export interface JambQuestion {
   id: string;
-  subject: Exclude<Subject, "math">;
+  subject: JambSubject;
   year: number;
   category: "objective";
   question: string;
@@ -27,14 +28,14 @@ export interface JambQuestion {
 }
 
 export interface JambSubjectSummary {
-  subject: Exclude<Subject, "math">;
+  subject: JambSubject;
   count: number;
   years: number[];
 }
 
 type QuestionRow = {
   id: string;
-  subject: Subject;
+  subject: JambSubject;
   year: number;
   category: string;
   question: string | null;
@@ -96,7 +97,7 @@ function mapQuestion(row: QuestionRow): JambQuestion {
 
   return {
     id: row.id,
-    subject: row.subject as Exclude<Subject, "math">,
+    subject: row.subject as JambSubject,
     year: row.year,
     category: "objective",
     question: row.question ?? "",
@@ -126,7 +127,7 @@ export class JambSchemaUnavailableError extends Error {
 }
 
 export async function getJambSubjectSummaries(): Promise<JambSubjectSummary[]> {
-  const subjects: Array<Exclude<Subject, "math">> = ["physics", "chemistry", "biology"];
+  const subjects: readonly JambSubject[] = JAMB_QUESTION_BANK_SUBJECTS;
   const results = await Promise.all(subjects.map(async (subject) => {
     const { data, error, count } = await supabase
       .from("study_questions")
@@ -165,13 +166,13 @@ export function isJambCbtQuestionCandidate(candidate: { question: unknown; optio
     return /^[A-E]$/.test(label) && text.trim() ? [{ label, text }] : [];
   });
   return question.length >= 8 &&
-    options.length === 4 &&
-    options.map((option) => option.label).join(",") === "A,B,C,D";
+    ((options.length === 4 && options.map((option) => option.label).join(",") === "A,B,C,D") ||
+      (options.length === 5 && options.map((option) => option.label).join(",") === "A,B,C,D,E"));
 }
 
 /** Count the same first 500 published candidates the server can draw from. */
 export async function getJambCbtAvailableQuestionCount(
-  subject: Exclude<Subject, "math">,
+  subject: JambSubject,
 ): Promise<number> {
   const { data, error } = await supabase
     .from("study_questions")
@@ -190,7 +191,7 @@ export async function getJambCbtAvailableQuestionCount(
 
 export interface JambQuestionMetadata {
   id: string;
-  subject: Exclude<Subject, "math">;
+  subject: JambSubject;
   year: number;
 }
 
@@ -217,7 +218,7 @@ export async function getJambQuestionMetadataByIds(questionIds: string[]): Promi
     if (error) throw error;
     return (data ?? []).map((row) => ({
       id: row.id,
-      subject: row.subject as Exclude<Subject, "math">,
+      subject: row.subject as JambSubject,
       year: row.year,
     }));
   }));
@@ -232,7 +233,7 @@ export async function getJambQuestionMetadataByIds(questionIds: string[]): Promi
  * without loading question text or protected answers into the learner client.
  */
 export async function getJambPublishedQuestionMetadata(): Promise<JambQuestionMetadata[]> {
-  const subjects: Array<Exclude<Subject, "math">> = ["physics", "chemistry", "biology"];
+  const subjects: readonly JambSubject[] = JAMB_QUESTION_BANK_SUBJECTS;
   const pageSize = 1000;
   const perSubject = await Promise.all(subjects.map(async (subject) => {
     const rows: JambQuestionMetadata[] = [];
@@ -256,7 +257,7 @@ export async function getJambPublishedQuestionMetadata(): Promise<JambQuestionMe
 
       const page = (data ?? []).map((row) => ({
         id: row.id,
-        subject: row.subject as Exclude<Subject, "math">,
+        subject: row.subject as JambSubject,
         year: row.year,
       }));
       rows.push(...page);
@@ -271,7 +272,7 @@ export async function getJambPublishedQuestionMetadata(): Promise<JambQuestionMe
 }
 
 export async function getJambQuestionYears(
-  subject: Exclude<Subject, "math">,
+  subject: JambSubject,
 ): Promise<number[]> {
   const { data, error } = await supabase
     .from("study_questions")
@@ -290,7 +291,7 @@ export async function getJambQuestionYears(
 }
 
 export async function searchJambQuestions(args: {
-  subject: Exclude<Subject, "math">;
+  subject: JambSubject;
   year?: number | null;
   search?: string;
   offset?: number;

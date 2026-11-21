@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
-import type { Subject } from "@/types/question";
+import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, type JambSubject } from "@/lib/jamb-config";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
@@ -15,11 +14,11 @@ export default function JambCbtSetupPage() {
   const navigate = useNavigate();
   const { preferences, isReady: preferencesReady } = useJambStudyPreferences();
   const hasManuallySelectedSubject = useRef(false);
-  const [subject, setSubject] = useState<Exclude<Subject, "math">>("physics");
+  const [subject, setSubject] = useState<JambSubject>("physics");
   const [presetIndex, setPresetIndex] = useState(1);
   const [starting, setStarting] = useState(false);
   const [availability, setAvailability] = useState<{
-    subject: Exclude<Subject, "math">;
+    subject: JambSubject;
     count: number;
     loading: boolean;
     error: boolean;
@@ -35,7 +34,7 @@ export default function JambCbtSetupPage() {
   useEffect(() => {
     if (!preferencesReady || hasManuallySelectedSubject.current) return;
     const preferred = preferences.subjects[0];
-    if (preferred && JAMB_SUBJECTS.includes(preferred)) setSubject(preferred);
+    if (preferred && JAMB_QUESTION_BANK_SUBJECTS.includes(preferred)) setSubject(preferred);
   }, [preferencesReady, preferences.subjects]);
 
   useEffect(() => {
@@ -111,7 +110,7 @@ export default function JambCbtSetupPage() {
             <section className="mt-6">
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Subject</h2>
               <div className="grid grid-cols-2 gap-3">
-                {JAMB_SUBJECTS.map((item) => {
+                {JAMB_QUESTION_BANK_SUBJECTS.map((item) => {
                   const selected = subject === item;
                   const info = JAMB_SUBJECT_INFO[item];
                   return (
@@ -173,11 +172,11 @@ export default function JambCbtSetupPage() {
                   <span className="text-destructive">Could not check question availability. Refresh this page and try again.</span>
                 ) : availableQuestions < preset.questionCount ? (
                   <span className="text-muted-foreground">
-                    {availableQuestions} eligible A–D questions are published for {JAMB_SUBJECT_INFO[subject].label}. This preset needs {preset.questionCount}; practice will unlock after enough questions are reviewed and published.
+                    {availableQuestions} eligible A–D or A–E questions are published for {JAMB_SUBJECT_INFO[subject].label}. This preset needs {preset.questionCount}; practice will unlock after enough questions are reviewed and published.
                   </span>
                 ) : (
                   <span className="text-muted-foreground">
-                    {availableQuestions} eligible A–D questions are available for {JAMB_SUBJECT_INFO[subject].label}.
+                    {availableQuestions} eligible A–D or A–E questions are available for {JAMB_SUBJECT_INFO[subject].label}.
                   </span>
                 )}
               </div>

@@ -7,7 +7,7 @@ import { parseJambSourceReference } from "../_shared/jamb-source-reference.ts";
 
 type AdminSupabase = SupabaseClient<Database>;
 
-const SUBJECTS = new Set(["physics", "chemistry", "biology"]);
+const SUBJECTS = new Set(["physics", "chemistry", "biology", "use_of_english"]);
 const MAX_ITEMS_PER_REQUEST = 50;
 
 type JsonObject = { [key: string]: Json | undefined };
@@ -149,7 +149,7 @@ Deno.serve(async (request: Request) => {
       const expectedItems = Number(body.expected_items);
       const rightsConfirmed = body.rights_confirmed === true;
       if (!sourceDocument || !/^[a-f0-9]{64}$/.test(sourceSha) || !SUBJECTS.has(subject)) {
-        return respond({ error: "A source filename, SHA-256 hash and Physics/Chemistry/Biology subject are required" }, 400);
+        return respond({ error: "A source filename, SHA-256 hash and a supported JAMB subject are required" }, 400);
       }
       if (!Number.isInteger(expectedItems) || expectedItems < 1 || expectedItems > 10000) {
         return respond({ error: "expected_items must be a count between 1 and 10000" }, 400);

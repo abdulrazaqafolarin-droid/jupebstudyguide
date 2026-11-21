@@ -162,7 +162,7 @@ Deno.serve(async (request: Request) => {
     if (action === "create") {
       const subject = String(body.subject ?? "");
       const questionCount = Number(body.question_count);
-      if (!["physics", "chemistry", "biology"].includes(subject)) return reply({ error: "Choose Physics, Chemistry or Biology." }, 400);
+      if (!["physics", "chemistry", "biology", "use_of_english"].includes(subject)) return reply({ error: "Choose Physics, Chemistry, Biology or Use of English." }, 400);
       const { data: config, error: configError } = await supabase
         .from("exam_configurations")
         .select("exam_year,config_version,settings,full_mock_enabled")
@@ -219,7 +219,8 @@ Deno.serve(async (request: Request) => {
       const validCandidates = (candidates ?? []).filter((candidate) => {
         const options = optionsOf(candidate.options);
         return String(candidate.question ?? "").trim().length >= 8 &&
-          options.length === 4 && options.map((option) => option.label).join(",") === "A,B,C,D";
+          ((options.length === 4 && options.map((option) => option.label).join(",") === "A,B,C,D") ||
+            (options.length === 5 && options.map((option) => option.label).join(",") === "A,B,C,D,E"));
       });
       if (validCandidates.length < questionCount) {
         return reply({

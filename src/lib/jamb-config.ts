@@ -1,9 +1,16 @@
-import type { Subject } from "@/types/question";
+// Optional science subjects used by the onboarding preference picker.
+export const JAMB_SUBJECTS = ["physics", "chemistry", "biology"] as const;
 
-export const JAMB_SUBJECTS: Array<Exclude<Subject, "math">> = ["physics", "chemistry", "biology"];
-export type JambSubject = (typeof JAMB_SUBJECTS)[number];
+// All JAMB question-bank subjects, including the compulsory Use of English paper.
+export const JAMB_QUESTION_BANK_SUBJECTS = [
+  "physics",
+  "chemistry",
+  "biology",
+  "use_of_english",
+] as const;
+export type JambSubject = (typeof JAMB_QUESTION_BANK_SUBJECTS)[number];
 
-export const JAMB_SUBJECT_INFO: Record<Subject, {
+export const JAMB_SUBJECT_INFO: Record<JambSubject | "math", {
   label: string;
   icon: string;
   description: string;
@@ -23,6 +30,11 @@ export const JAMB_SUBJECT_INFO: Record<Subject, {
     icon: "🧬",
     description: "Cells, organisms, ecology and human biology",
   },
+  use_of_english: {
+    label: "Use of English",
+    icon: "📘",
+    description: "Comprehension, lexis and structure, oral forms and communication",
+  },
   math: {
     label: "Mathematics",
     icon: "📐",
@@ -35,7 +47,7 @@ export const JAMB_INITIAL_QUESTION_PAGE_SIZE = 20;
 export const JAMB_CBT_MAX_QUESTIONS = 40;
 
 export interface JambCbtPracticeConfig {
-  subject: Exclude<Subject, "math">;
+  subject: JambSubject;
   questionCount: 10 | 20 | 40;
   durationMinutes: 10 | 20 | 40 | 60;
 }

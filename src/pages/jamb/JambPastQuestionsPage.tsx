@@ -11,7 +11,7 @@ import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useActivation } from "@/hooks/useActivation";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  JAMB_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE,
+  JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE,
 } from "@/lib/jamb-config";
 import {
   getJambQuestionYears, getJambPublishedQuestionById, getJambSubjectSummaries,
@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
 
-type JambSubject = (typeof JAMB_SUBJECTS)[number];
+type JambSubject = (typeof JAMB_QUESTION_BANK_SUBJECTS)[number];
 type View = "subjects" | "years" | "questions" | "bookmarks";
 
 const PAGE_VARIANTS = {
@@ -37,7 +37,7 @@ const PAGE_VARIANTS = {
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
 
 function isJambSubject(value: string | null | undefined): value is JambSubject {
-  return Boolean(value && JAMB_SUBJECTS.includes(value as JambSubject));
+  return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as JambSubject));
 }
 
 export default function JambPastQuestionsPage() {
@@ -217,7 +217,7 @@ export default function JambPastQuestionsPage() {
     let active = true;
     const timer = window.setTimeout(() => {
       setGlobalSearchLoading(true);
-      Promise.all(JAMB_SUBJECTS.map((searchSubject) =>
+      Promise.all(JAMB_QUESTION_BANK_SUBJECTS.map((searchSubject) =>
         searchJambQuestions({ subject: searchSubject, search: globalSearchTerm.trim(), limit: 25 }),
       ))
         .then((results) => {
@@ -667,7 +667,7 @@ export default function JambPastQuestionsPage() {
                 <span className="text-xs text-muted-foreground">{totalPublished.toLocaleString()} questions total</span>
               </div>
               <SubjectCardGrid
-                items={JAMB_SUBJECTS.map((subject) => ({
+                items={JAMB_QUESTION_BANK_SUBJECTS.map((subject) => ({
                   subject,
                   label: JAMB_SUBJECT_INFO[subject].label,
                   icon: JAMB_SUBJECT_INFO[subject].icon,
@@ -701,7 +701,7 @@ export default function JambPastQuestionsPage() {
                   </div>
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-                  {JAMB_SUBJECTS.map((item) => {
+                  {JAMB_QUESTION_BANK_SUBJECTS.map((item) => {
                     const isActive = subject === item;
                     const subjectCount = summaries.find((row) => row.subject === item)?.count;
                     return (

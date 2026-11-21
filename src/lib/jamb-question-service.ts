@@ -217,6 +217,51 @@ export async function getJambQuestionMetadataByIds(questionIds: string[]): Promi
   return rows.flat();
 }
 
+/**
+ * Load the public metadata for the complete published JAMB bank.
+ * Answer keys and explanations are deliberately not selected here.
+ * Pagination keeps subject totals and spaced-repetition statistics accurate
+ * without loading question text or protected answers into the learner client.
+ */
+export async function getJambPublishedQuestionMetadata(): Promise<JambQuestionMetadata[]> {
+  const subjects: Array<Exclude<Subject, "math">> = ["physics", "chemistry", "biology"];
+  const pageSize = 1000;
+  const perSubject = await Promise.all(subjects.map(async (subject) => {
+    const rows: JambQuestionMetadata[] = [];
+    let offset = 0;
+
+    while (true) {
+      const { data, error } = await supabase
+        .from("study_questions")
+        .select("id,subject,year")
+        .eq("exam_program_id", "jamb")
+        .eq("review_status", "published")
+        .eq("hidden", false)
+        .eq("subject", subject)
+        .eq("category", "objective")
+        .order("year", { ascending: false })
+        .order("id", { ascending: true })
+        .range(offset, offset + pageSize - 1);
+
+      if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
+      if (error) throw error;
+
+      const page = (data ?? []).map((row) => ({
+        id: row.id,
+        subject: row.subject as Exclude<Subject, "math">,
+        year: row.year,
+      }));
+      rows.push(...page);
+
+      if (page.length < pageSize) break;
+      offset += pageSize;
+    }
+    return rows;
+  }));
+
+  return perSubject.flat();
+}
+
 export async function getJambQuestionYears(
   subject: Exclude<Subject, "math">,
 ): Promise<number[]> {

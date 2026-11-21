@@ -1,62 +1,87 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Brain, Trophy } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft, Award, BarChart3, BookOpen, Brain, CalendarDays,
+  Flame, Target, Trophy, TrendingUp, Zap,
+} from "lucide-react";
+import {
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Line, ResponsiveContainer,
+  Tooltip, XAxis, YAxis,
+} from "recharts";
+import { useAuth } from "@/contexts/AuthContext";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
-import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { getJambActivityStats, getJambRecentDailyActivity } from "@/lib/jamb-analytics";
-import { getJambCbtAnalytics, mapJambCbtHistoryPayload, type JambCbtAttemptSummary } from "@/lib/jamb-cbt-analytics";
+import { getJambActivityStats } from "@/lib/jamb-analytics";
+import {
+  getJambCbtAnalytics,
+  mapJambCbtHistoryPayload,
+  type JambCbtAttemptSummary,
+} from "@/lib/jamb-cbt-analytics";
 import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
 import {
-  getJambQuestionMetadataByIds,
+  getJambPublishedQuestionMetadata,
   getJambSubjectSummaries,
   type JambQuestionMetadata,
   type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
-import { StatsOverviewCards } from "@/components/StatsOverviewCards";
-import { StatsStreakPanel } from "@/components/StatsStreakPanel";
-import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+
+interface SubjectPerformance {
+  subject: (typeof JAMB_SUBJECTS)[number];
+  total: number;
+  studied: number;
+  mastered: number;
+  due: number;
+  label: string;
+}
+
+function formatScoreDate(value: string) {
+  const date = new Date(value + "T00:00:00");
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 export default function JambStatsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { savedAnswers, isReady: answersReady } = useJambPracticeProgress();
-  const { progress: reviewProgress, getStats: getRevisionStats, isReady: reviewReady } = useJambReviewProgress();
+  const {
+    progress: reviewProgress,
+    getStats: getRevisionStats,
+    isReady: reviewReady,
+  } = useJambReviewProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
-  const questionIds = useMemo(() => Object.keys(savedAnswers), [savedAnswers]);
+
   const [subjectSummaries, setSubjectSummaries] = useState<JambSubjectSummary[]>([]);
-  const [answeredQuestions, setAnsweredQuestions] = useState<JambQuestionMetadata[]>([]);
+  const [publishedMetadata, setPublishedMetadata] = useState<JambQuestionMetadata[]>([]);
   const [loadingBank, setLoadingBank] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [bankError, setBankError] = useState<string | null>(null);
   const [cbtHistory, setCbtHistory] = useState<JambCbtAttemptSummary[]>([]);
   const [cbtHistoryOwnerId, setCbtHistoryOwnerId] = useState<string | null>(null);
   const [cbtHistorySupported, setCbtHistorySupported] = useState<boolean | null>(null);
   const [loadingCbtHistory, setLoadingCbtHistory] = useState(true);
 
   useEffect(() => {
-    if (!answersReady) return;
     let active = true;
     setLoadingBank(true);
     Promise.all([
       getJambSubjectSummaries(),
-      getJambQuestionMetadataByIds(questionIds),
+      getJambPublishedQuestionMetadata(),
     ])
       .then(([summaries, metadata]) => {
         if (!active) return;
         setSubjectSummaries(summaries);
-        setAnsweredQuestions(metadata);
-        setError(null);
+        setPublishedMetadata(metadata);
+        setBankError(null);
       })
       .catch((reason: unknown) => {
         if (!active) return;
-        setError(reason instanceof Error ? reason.message : "JAMB analytics could not be loaded.");
+        setBankError(reason instanceof Error ? reason.message : "JAMB question statistics could not be loaded.");
       })
       .finally(() => { if (active) setLoadingBank(false); });
     return () => { active = false; };
-  }, [answersReady, questionIds]);
+  }, []);
 
   useEffect(() => {
     if (!answersReady || !user?.id) {
@@ -66,12 +91,14 @@ export default function JambStatsPage() {
       setLoadingCbtHistory(false);
       return;
     }
+
     const ownerId = user.id;
     let active = true;
     setCbtHistory([]);
     setCbtHistoryOwnerId(null);
     setCbtHistorySupported(null);
     setLoadingCbtHistory(true);
+
     supabase.functions.invoke("exam-attempts", {
       body: { action: "history", exam_program_id: "jamb" },
     })
@@ -84,235 +111,324 @@ export default function JambStatsPage() {
       })
       .catch(() => {
         if (!active) return;
-        // History is served by the authenticated, owner-filtered JAMB endpoint.
-        // Never query service-role tables directly or substitute JUPEB scores.
         setCbtHistory([]);
         setCbtHistoryOwnerId(ownerId);
         setCbtHistorySupported(false);
       })
       .finally(() => { if (active) setLoadingCbtHistory(false); });
+
     return () => { active = false; };
   }, [answersReady, user?.id]);
 
   const activity = useMemo(() => getJambActivityStats(savedAnswers), [savedAnswers]);
-  const revisionStats = getRevisionStats(Object.keys(reviewProgress));
+  const allQuestionIds = useMemo(
+    () => publishedMetadata.map((question) => question.id),
+    [publishedMetadata],
+  );
+  const publishedQuestionCount = subjectSummaries.reduce((total, row) => total + row.count, 0);
+  const revisionStats = getRevisionStats(allQuestionIds);
+  const studiedQuestionCount = allQuestionIds.filter((id) => Boolean(savedAnswers[id])).length;
+  const studiedPercentage = publishedQuestionCount > 0
+    ? Math.min(100, Math.round((studiedQuestionCount / publishedQuestionCount) * 100))
+    : 0;
+  const masteredPercentage = publishedQuestionCount > 0
+    ? Math.min(100, Math.round((revisionStats.mastered / publishedQuestionCount) * 100))
+    : 0;
+
+  const subjectRows: SubjectPerformance[] = useMemo(() => JAMB_SUBJECTS.map((subject) => {
+    const questionIds = publishedMetadata
+      .filter((question) => question.subject === subject)
+      .map((question) => question.id);
+    const revision = getRevisionStats(questionIds);
+    return {
+      subject,
+      total: subjectSummaries.find((row) => row.subject === subject)?.count ?? questionIds.length,
+      studied: questionIds.filter((id) => Boolean(savedAnswers[id])).length,
+      mastered: revision.mastered,
+      due: revision.due,
+      label: JAMB_SUBJECT_INFO[subject].label,
+    };
+  }), [publishedMetadata, subjectSummaries, savedAnswers, reviewProgress, getRevisionStats]);
+
   const cbtHistoryForUser = cbtHistoryOwnerId === (user?.id ?? null) ? cbtHistory : [];
   const cbtHistorySupportedForUser = cbtHistoryOwnerId === (user?.id ?? null) ? cbtHistorySupported : null;
   const cbtHistoryLoadingForUser = loadingCbtHistory || Boolean(user?.id && cbtHistoryOwnerId !== user.id);
   const cbtAnalytics = useMemo(() => getJambCbtAnalytics(cbtHistoryForUser), [cbtHistoryForUser]);
-  const dailyActivity = useMemo(() => getJambRecentDailyActivity(savedAnswers), [savedAnswers]);
-  const publishedQuestionCount = subjectSummaries.reduce((total, row) => total + row.count, 0);
-  const subjectRows = JAMB_SUBJECTS.map((subject) => {
-    const total = subjectSummaries.find((row) => row.subject === subject)?.count ?? 0;
-    const answered = answeredQuestions.filter((question) => question.subject === subject).length;
-    return {
-      subject,
-      total,
-      answered,
-      percent: total > 0 ? Math.min(100, Math.round((answered / total) * 100)) : 0,
-    };
-  });
-  const maxDailyCount = Math.max(1, ...dailyActivity.map((day) => day.count));
   const lastActivity = activity.lastActivityAt
     ? new Date(activity.lastActivityAt).toLocaleString()
     : "No JAMB practice recorded yet";
+  const safeSubjectSummary = subjectSummaries.length > 0
+    ? subjectSummaries
+    : JAMB_SUBJECTS.map((subject) => ({ subject, count: 0, years: [] }));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your learning analytics" compact />
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="sticky top-0 z-20 bg-card/80 backdrop-blur-xl border-b border-border/50"
+      >
+        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
+          <motion.button
+            type="button"
+            whileHover={{ x: -3 }}
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+            className="p-1 -ml-1 rounded-lg hover:bg-accent transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </motion.button>
+          <div>
+            <h1 className="font-semibold text-sm">Study Stats</h1>
+            <p className="text-[10px] text-muted-foreground">Your JAMB learning analytics</p>
+          </div>
+        </div>
+      </motion.header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        {error && (
+        {bankError && (
           <div role="alert" className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">
-            {error} Your local JAMB practice totals remain available where loaded.
+            {bankError} Your saved JAMB activity remains available where loaded.
           </div>
         )}
 
-        <StatsOverviewCards
-          items={[
-            { label: "Published questions", value: loadingBank ? "—" : publishedQuestionCount.toLocaleString(), icon: BookOpen, color: "text-blue-500" },
-            { label: "Questions practised", value: answersReady ? activity.answerCount.toLocaleString() : "—", icon: BarChart3, color: "text-emerald-500" },
-            { label: "Bookmarks", value: bookmarksReady ? bookmarks.length.toLocaleString() : "—", icon: Bookmark, color: "text-violet-500" },
-            { label: "Study days", value: answersReady ? activity.totalDaysStudied.toLocaleString() : "—", icon: CalendarDays, color: "text-amber-500" },
-          ]}
-        />
+        {/* Overview cards: same four-card arrangement and hierarchy as JUPEB. */}
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: "Total Questions", value: loadingBank ? "—" : publishedQuestionCount.toLocaleString(), icon: BookOpen, color: "text-blue-500" },
+            { label: "Studied", value: answersReady && !loadingBank ? studiedPercentage + "%" : "—", sub: answersReady && !loadingBank ? studiedQuestionCount + "/" + publishedQuestionCount : undefined, icon: Brain, color: "text-emerald-500" },
+            { label: "Mastered", value: reviewReady && !loadingBank ? masteredPercentage + "%" : "—", sub: reviewReady && !loadingBank ? revisionStats.mastered + "/" + publishedQuestionCount : undefined, icon: Target, color: "text-violet-500" },
+            { label: "Due Today", value: reviewReady && !loadingBank ? revisionStats.due.toLocaleString() : "—", icon: Zap, color: revisionStats.due > 0 ? "text-amber-500" : "text-muted-foreground" },
+          ].map((card, index) => (
+            <motion.div
+              key={card.label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.04 }}
+              className="bg-card rounded-2xl border p-4 space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">{card.label}</span>
+                <card.icon className={"w-4 h-4 " + card.color} />
+              </div>
+              <p className="text-2xl font-bold tabular-nums">{card.value}</p>
+              {card.sub && <p className="text-[10px] text-muted-foreground -mt-1">{card.sub}</p>}
+            </motion.div>
+          ))}
+        </div>
 
-        <StatsStreakPanel
-          currentStreak={activity.currentStreak}
-          longestStreak={activity.longestStreak}
-          totalDaysStudied={activity.totalDaysStudied}
-          questionsAnswered={activity.answerCount}
-          hasStudiedToday={activity.hasStudiedToday}
-          ready={answersReady}
-          footer={<p className="text-xs text-muted-foreground">Last JAMB activity: {answersReady ? lastActivity : "Loading…"}</p>}
-        />
+        {/* Streak */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="bg-card rounded-2xl border p-5 space-y-4"
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold flex items-center gap-2">
+              <Flame className="w-4 h-4 text-orange-500" /> Streak
+            </h2>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <TrendingUp className="w-3.5 h-3.5" /> {activity.totalDaysStudied} total days
+            </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-orange-500 tabular-nums">{activity.currentStreak}</p>
+              <p className="text-[10px] text-muted-foreground">Current streak</p>
+            </div>
+            <div className="w-px h-10 bg-border" />
+            <div className="text-center">
+              <p className="text-3xl font-bold tabular-nums">{activity.longestStreak}</p>
+              <p className="text-[10px] text-muted-foreground">Best streak</p>
+            </div>
+            <div className="w-px h-10 bg-border" />
+            <div className="text-center">
+              <p className="text-3xl font-bold tabular-nums">{answersReady ? activity.answerCount : "—"}</p>
+              <p className="text-[10px] text-muted-foreground">Questions answered</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-muted-foreground">Today:</span>
+            {activity.hasStudiedToday ? (
+              <span className="flex items-center gap-1 text-emerald-500 font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Studied
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-muted" /> Not studied yet
+              </span>
+            )}
+          </div>
+          <p className="text-[10px] text-muted-foreground">Last JAMB activity: {answersReady ? lastActivity : "Loading…"}</p>
+        </motion.div>
 
-        <motion.section
+        {/* JAMB CBT replaces the JUPEB XP score chart; no JUPEB score feed is reused. */}
+        <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-2xl border border-border bg-card p-5"
+          className="bg-card rounded-2xl border p-5 space-y-4"
         >
-          <div className="mb-4 flex items-center gap-2">
-            <Brain className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">JAMB revision progress</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-primary/5 p-4">
-              <p className="text-2xl font-bold tabular-nums">{reviewReady ? revisionStats.mastered : "—"}</p>
-              <p className="mt-1 text-xs text-muted-foreground">Cards mastered</p>
-            </div>
-            <div className="rounded-xl bg-secondary/60 p-4">
-              <p className="text-2xl font-bold tabular-nums">{reviewReady ? revisionStats.due : "—"}</p>
-              <p className="mt-1 text-xs text-muted-foreground">Scheduled cards due</p>
-            </div>
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground">A card is mastered only after an approved answer key is confirmed.</p>
-          <Link to="/jamb/study" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Open Revision Cards <Brain className="h-3.5 w-3.5" /></Link>
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="rounded-2xl border border-border bg-card p-5"
-        >
-          <div className="mb-4 flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">Questions practised by subject</h2>
-          </div>
-          <div className="space-y-5">
-            {subjectRows.map((row) => {
-              const info = JAMB_SUBJECT_INFO[row.subject];
-              return (
-                <div key={row.subject}>
-                  <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-                    <span className="flex items-center gap-2 font-medium"><span>{info.icon}</span>{info.label}</span>
-                    <span className="text-xs tabular-nums text-muted-foreground">{loadingBank ? "—" : row.answered + " / " + row.total}</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-secondary">
-                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: row.percent + "%" }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          {publishedQuestionCount === 0 && !loadingBank && (
-            <p className="mt-4 rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground">
-              No JAMB questions have been published yet. Subject progress will populate as reviewed questions are approved and published.
-            </p>
-          )}
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-2xl border border-border bg-card p-5"
-        >
-          <div className="mb-4 flex items-center gap-2">
-            <Clock3 className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">Recent practice · 7 days</h2>
-          </div>
-          <div className="grid h-36 grid-cols-7 items-end gap-2">
-            {dailyActivity.map((day) => (
-              <div key={day.date} className="flex h-full min-w-0 flex-col items-center justify-end gap-2">
-                <span className="text-[10px] tabular-nums text-muted-foreground">{day.count || ""}</span>
-                <div className="flex h-24 w-full items-end overflow-hidden rounded-md bg-secondary">
-                  <div className="w-full rounded-md bg-primary transition-all" style={{ height: day.count > 0 ? Math.max(8, (day.count / maxDailyCount) * 100) + "%" : "0%" }} />
-                </div>
-                <span className="text-[10px] text-muted-foreground">{day.label}</span>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-[11px] text-muted-foreground">Activity counts reflect each question's latest saved practice answer.</p>
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="rounded-2xl border border-border bg-card p-5"
-        >
-          <div className="mb-4 flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">Timed CBT results · JAMB only</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-sm font-semibold flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-amber-500" /> Timed CBT performance
+            </h2>
+            <span className="text-xl font-bold text-amber-500 tabular-nums">
+              {cbtHistoryLoadingForUser ? "—" : cbtAnalytics.averageScore === null ? "—" : cbtAnalytics.averageScore + "%"}
+            </span>
           </div>
           {cbtHistoryLoadingForUser ? (
-            <p className="text-sm text-muted-foreground">Loading your completed JAMB attempts…</p>
+            <p className="text-xs text-muted-foreground">Loading your completed JAMB attempts…</p>
           ) : cbtHistorySupportedForUser === false ? (
             <p className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-relaxed text-muted-foreground">
-              We could not load your JAMB CBT history from the connected backend. Check your connection or study-session access and reopen this page. Your result after each completed CBT remains available on its results screen.
+              We could not load your JAMB CBT history. Check your connection or study-session access and reopen this page. No JUPEB scores are substituted.
             </p>
           ) : cbtHistoryForUser.length === 0 ? (
-            <p className="rounded-lg bg-secondary/40 p-3 text-xs text-muted-foreground">No completed JAMB timed attempts yet. Submit a practice CBT to build your personal score history.</p>
+            <p className="text-xs text-muted-foreground text-center py-4">
+              Complete a JAMB timed practice session to start building your score history.
+            </p>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="grid grid-cols-3 gap-3">
                 {[
                   { label: "Attempts", value: cbtAnalytics.attemptCount.toLocaleString() },
-                  { label: "Scored average", value: cbtAnalytics.averageScore === null ? "—" : cbtAnalytics.averageScore + "%" },
                   { label: "Best score", value: cbtAnalytics.bestScore === null ? "—" : cbtAnalytics.bestScore + "%" },
-                  { label: "Ungraded attempts", value: cbtAnalytics.ungradedAttemptCount.toLocaleString() },
+                  { label: "Ungraded", value: cbtAnalytics.ungradedAttemptCount.toLocaleString() },
                 ].map((item) => (
                   <div key={item.label} className="rounded-xl bg-secondary/50 p-3">
-                    <p className="text-xl font-bold tabular-nums">{item.value}</p>
+                    <p className="text-lg font-bold tabular-nums">{item.value}</p>
                     <p className="mt-1 text-[10px] text-muted-foreground">{item.label}</p>
                   </div>
                 ))}
               </div>
-              <div className="mt-5">
-                <h3 className="mb-3 text-sm font-semibold">Recent CBT activity · 7 days</h3>
-                <div className="grid h-32 grid-cols-7 items-end gap-2">
-                  {cbtAnalytics.weekly.map((day) => (
-                    <div key={day.date} className="flex h-full min-w-0 flex-col items-center justify-end gap-1">
-                      <span className="text-[10px] tabular-nums text-muted-foreground">{day.averageScore === null ? (day.attemptCount || "") : day.averageScore + "%"}</span>
-                      <div className="flex h-20 w-full items-end overflow-hidden rounded-md bg-secondary">
-                        <div className="w-full rounded-md bg-primary" style={{ height: day.attemptCount ? Math.max(8, day.attemptCount / Math.max(1, ...cbtAnalytics.weekly.map((row) => row.attemptCount)) * 100) + "%" : "0%" }} />
-                      </div>
-                      <span className="text-[10px] text-muted-foreground">{day.label}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={cbtAnalytics.weekly}>
+                    <defs>
+                      <linearGradient id="jambCbtScoreGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tickFormatter={formatScoreDate} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                    <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip
+                      contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
+                      labelFormatter={formatScoreDate}
+                      formatter={(value: number | null) => [value === null ? "Ungraded" : value + "%", "Average score"]}
+                    />
+                    <Area type="monotone" dataKey="averageScore" stroke="hsl(var(--primary))" fill="url(#jambCbtScoreGradient)" strokeWidth={2} connectNulls />
+                    <Line type="monotone" dataKey="averageScore" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
-              <div className="mt-5 space-y-2">
+              <div className="space-y-2">
                 <h3 className="text-sm font-semibold">Latest attempts</h3>
-                {cbtHistoryForUser.slice(0, 10).map((attempt) => {
-                  const subject = JAMB_SUBJECTS.includes(attempt.subject as (typeof JAMB_SUBJECTS)[number])
-                    ? JAMB_SUBJECT_INFO[attempt.subject as (typeof JAMB_SUBJECTS)[number]].label
-                    : attempt.subject;
-                  const when = attempt.submittedAt ?? attempt.startedAt;
-                  return (
-                    <div key={attempt.id} className="flex items-center justify-between gap-3 rounded-xl border border-border p-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{subject} · {attempt.examYear}</p>
-                        <p className="text-[10px] text-muted-foreground">{when ? new Date(when).toLocaleString() : "Date unavailable"} · {attempt.durationMinutes} min · {attempt.status}</p>
-                        <p className="text-[10px] text-muted-foreground">{attempt.correct} correct · {attempt.wrong} wrong · {attempt.ungraded} ungraded</p>
-                      </div>
-                      <p className="shrink-0 text-lg font-bold tabular-nums">{attempt.score === null ? "—" : attempt.score + "%"}</p>
+                {cbtHistoryForUser.slice(0, 5).map((attempt) => (
+                  <div key={attempt.id} className="flex items-center justify-between gap-3 rounded-xl border p-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {JAMB_SUBJECT_INFO[JAMB_SUBJECTS.includes(attempt.subject as (typeof JAMB_SUBJECTS)[number])
+                          ? attempt.subject as (typeof JAMB_SUBJECTS)[number]
+                          : "physics"].label} · {attempt.examYear}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {(attempt.submittedAt ?? attempt.startedAt) ? new Date(attempt.submittedAt ?? attempt.startedAt).toLocaleString() : "Date unavailable"}
+                        {" · "}{attempt.durationMinutes} min
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">{attempt.correct} correct · {attempt.wrong} wrong · {attempt.ungraded} ungraded</p>
                     </div>
-                  );
-                })}
+                    <p className="shrink-0 text-lg font-bold tabular-nums">{attempt.score === null ? "—" : attempt.score + "%"}</p>
+                  </div>
+                ))}
               </div>
             </>
           )}
-        </motion.section>
+        </motion.div>
 
-        <motion.section
+        {/* Performance by subject */}
+        <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="rounded-2xl border border-border bg-amber-500/5 p-5"
+          transition={{ delay: 0.15 }}
+          className="bg-card rounded-2xl border p-5 space-y-4"
         >
-          <h2 className="mb-2 font-semibold">Score details</h2>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Only independently approved answer keys contribute to accuracy. Saved-answer activity and timed CBT results are reported separately.
-          </p>
-        </motion.section>
+          <h2 className="text-sm font-semibold flex items-center gap-2">
+            <Brain className="w-4 h-4 text-primary" /> Performance by Subject
+          </h2>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={subjectRows.map((row) => ({ label: row.label, studied: row.studied, mastered: row.mastered }))}
+                barGap={4}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }} />
+                <Bar dataKey="studied" name="Studied" radius={[4, 4, 0, 0]} fill="hsl(var(--primary))" maxBarSize={32} />
+                <Bar dataKey="mastered" name="Mastered" radius={[4, 4, 0, 0]} fill="hsl(var(--accent))" maxBarSize={32} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-primary" /> Studied</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-accent" /> Mastered</span>
+          </div>
+        </motion.div>
+
+        {/* Subject detail cards */}
+        <div className="grid grid-cols-2 gap-3">
+          {subjectRows.map((row, index) => {
+            const info = JAMB_SUBJECT_INFO[row.subject];
+            const percent = row.total > 0 ? Math.round((row.mastered / row.total) * 100) : 0;
+            return (
+              <motion.div
+                key={row.subject}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.17 + index * 0.03 }}
+                className="bg-card rounded-2xl border p-4 space-y-2"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{info.icon}</span>
+                  <span className="text-sm font-semibold">{info.label}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>{row.studied}/{row.total} studied</span>
+                  <span className="font-medium text-foreground">{percent}%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: percent + "%" }} />
+                </div>
+                <p className="text-[10px] text-muted-foreground">{row.mastered} mastered · {row.due} due</p>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="rounded-xl border border-border/50 bg-card p-4 flex items-start gap-3">
+          <Award className="w-4 h-4 mt-0.5 text-primary" />
+          <div>
+            <p className="text-xs font-semibold">About your JAMB stats</p>
+            <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+              Practice activity, spaced-repetition mastery and timed CBT scores are measured separately. Only server-approved answer keys can grade a question or contribute to a CBT score.
+            </p>
+            {publishedQuestionCount === 0 && !loadingBank && (
+              <p className="mt-1 text-[11px] text-muted-foreground">The JAMB bank has no published questions yet. Statistics will fill in as reviewed questions are approved and published.</p>
+            )}
+          </div>
+        </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link to="/jamb/past-questions" className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">Continue practice</Link>
-          <Link to="/jamb/cbt/setup" className="rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-accent">Timed CBT</Link>
+          <Link to="/jamb/past-questions" className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">
+            Continue practice
+          </Link>
+          <Link to="/jamb/cbt/setup" className="rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-accent">
+            Timed CBT
+          </Link>
         </div>
       </main>
     </div>

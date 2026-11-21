@@ -172,3 +172,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **JAMB Syllabus overview copy:** the introductory note now explains the available source packs, official IBASS links and JAMB-workspace progress without cross-referencing JUPEB or sounding like internal implementation notes.
 
+- **JAMB Leaderboard empty state:** the placeholder now uses the shared trophy-led, centered empty-state hierarchy and “Go Study Now” action. Its copy describes the verified-results requirement without promising a date or displaying synthetic ranks.
+

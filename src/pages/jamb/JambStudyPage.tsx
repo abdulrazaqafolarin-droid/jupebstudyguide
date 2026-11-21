@@ -7,9 +7,9 @@ import {
   Loader2, RefreshCw, Shuffle, Sparkles, Target, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionMath } from "@/components/QuestionMath";
-import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { StudyFlashcardSurface } from "@/components/StudyFlashcardSurface";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { getJambActivityStats } from "@/lib/jamb-analytics";
@@ -39,10 +39,10 @@ type AnswerFeedback = {
 
 const PAGE_SIZE = 30;
 const RATINGS: Array<{ value: JambReviewQuality; label: string; detail: string; className: string }> = [
-  { value: 1, label: "Again", detail: "I did not recall it", className: "border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/15" },
-  { value: 3, label: "Hard", detail: "Needed effort", className: "border-primary/25 bg-primary/5 text-primary hover:bg-primary/10" },
-  { value: 4, label: "Good", detail: "Recalled it", className: "border-accent/30 bg-accent/10 text-accent hover:bg-accent/15" },
-  { value: 5, label: "Easy", detail: "Knew it well", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/15" },
+  { value: 1, label: "Again", detail: "I did not recall it", className: "px-4 py-2.5 rounded-xl bg-destructive/15 hover:bg-destructive/25 text-destructive border border-destructive/20 hover:border-destructive/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
+  { value: 3, label: "Hard", detail: "Needed effort", className: "px-4 py-2.5 rounded-xl bg-primary/15 hover:bg-primary/25 text-primary border border-primary/20 hover:border-primary/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
+  { value: 4, label: "Good", detail: "Recalled it", className: "px-4 py-2.5 rounded-xl bg-accent/15 hover:bg-accent/25 text-accent border border-accent/20 hover:border-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
+  { value: 5, label: "Easy", detail: "Knew it well", className: "px-5 py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent/80 text-accent-foreground font-bold shadow-md shadow-accent/30 hover:shadow-lg hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
 ];
 
 function isJambSubject(value: string | null): value is JambSubject {
@@ -410,26 +410,61 @@ export default function JambStudyPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <QuestionMath content={question.question} className="text-base font-medium leading-relaxed" />
+                  <QuestionMath content={question.question} className="text-lg font-medium leading-relaxed" />
                   {question.imageUrls.map((imageUrl) => <QuestionImage key={imageUrl} imageUrl={imageUrl} />)}
                 </div>
 
-                <div className="space-y-2">
-                  {question.options.map((option) => {
+                <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[280px] pr-1 scrollbar-thin">
+                  {question.options.map((option, optionIndex) => {
                     const isSelected = selectedOption === option.label;
-                    const isCorrect = feedback?.gradable && feedback.correctOption === option.label;
-                    const isWrongSelection = feedback?.gradable && isSelected && !feedback.isCorrect;
+                    const hasApprovedResult = feedback?.gradable === true;
+                    const isCorrectOption = hasApprovedResult && feedback.correctOption === option.label;
+                    const isWrongSelection = hasApprovedResult && isSelected && feedback.isCorrect === false;
+                    const isUngradableResult = feedback !== null && feedback.gradable === false;
+                    const isPendingSelection = isSelected && feedback === null;
+
                     return (
-                      <QuestionOptionButton
+                      <button
                         key={option.label}
-                        label={option.label}
-                        state={isCorrect ? "correct" : isWrongSelection ? "incorrect" : isSelected ? "selected" : "default"}
-                        selected={isSelected}
+                        type="button"
+                        aria-pressed={isSelected}
+                        onClick={() => !feedback && !checking && setSelectedOption(option.label)}
                         disabled={Boolean(feedback) || checking}
-                        onClick={() => !feedback && setSelectedOption(option.label)}
+                        style={{ animationDelay: shouldReduceMotion ? "0ms" : `${optionIndex * 0.06}s` }}
+                        className={cn(
+                          "w-full p-3.5 rounded-xl text-left transition-all duration-300 flex items-start gap-3 border-2 active:scale-[0.99]",
+                          !feedback && !isSelected && "border-border/60 bg-background/60 hover:border-primary/60 hover:bg-primary/5 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 active:translate-y-0",
+                          isPendingSelection && "border-primary bg-primary/10 shadow-md shadow-primary/5",
+                          hasApprovedResult && isCorrectOption && "border-accent bg-accent/15 shadow-lg shadow-accent/20",
+                          hasApprovedResult && isWrongSelection && "border-destructive bg-destructive/15 shadow-lg shadow-destructive/10",
+                          hasApprovedResult && !isSelected && !isCorrectOption && "border-border/30 opacity-50 scale-[0.98]",
+                          isUngradableResult && isSelected && "border-primary bg-primary/10 shadow-md shadow-primary/5",
+                          isUngradableResult && !isSelected && "border-border/30 opacity-50 scale-[0.98]",
+                          !shouldReduceMotion && "animate-in-up",
+                          shouldReduceMotion && "motion-reduce:animate-none",
+                        )}
                       >
-                        <QuestionMath content={option.text} inline />
-                      </QuestionOptionButton>
+                        <span className={cn(
+                          "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-sm transition-all duration-200",
+                          !feedback && !isSelected && "bg-secondary/80 text-foreground",
+                          isPendingSelection && "bg-primary text-primary-foreground",
+                          hasApprovedResult && isCorrectOption && "bg-accent text-accent-foreground scale-110",
+                          hasApprovedResult && isWrongSelection && "bg-destructive text-destructive-foreground scale-110",
+                          hasApprovedResult && !isSelected && !isCorrectOption && "bg-secondary/50 text-muted-foreground",
+                          isUngradableResult && isSelected && "bg-primary text-primary-foreground",
+                          isUngradableResult && !isSelected && "bg-secondary/50 text-muted-foreground",
+                        )}>
+                          {isCorrectOption ? <Check className="h-4 w-4" />
+                            : isWrongSelection ? <X className="h-4 w-4" />
+                              : option.label}
+                        </span>
+                        <span className={cn(
+                          "text-sm leading-relaxed pt-1 flex-1 min-w-0 transition-opacity duration-200",
+                          (hasApprovedResult || isUngradableResult) && !isSelected && "opacity-60",
+                        )}>
+                          <QuestionMath content={option.text} inline />
+                        </span>
+                      </button>
                     );
                   })}
                 </div>
@@ -439,27 +474,57 @@ export default function JambStudyPage() {
                     {checking ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking with JAMB answer service…</> : "Check answer"}
                   </Button>
                 ) : feedback.gradable ? (
-                  <div className="space-y-3 rounded-xl border border-border bg-secondary/20 p-4">
-                    <div className="flex items-center gap-2">
-                      {feedback.isCorrect ? <Check className="h-5 w-5 text-emerald-600" /> : <X className="h-5 w-5 text-destructive" />}
-                      <p className="font-semibold">{feedback.isCorrect ? "Correct answer" : "Not quite — review the explanation"}</p>
+                  <div className={cn(
+                    "mt-6 p-5 rounded-2xl border-2 animate-scale-in",
+                    feedback.isCorrect
+                      ? "bg-gradient-to-br from-accent/10 to-accent/5 border-accent/40"
+                      : "bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/40",
+                  )}>
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        "w-12 h-12 rounded-xl flex items-center justify-center shrink-0",
+                        feedback.isCorrect ? "bg-accent/20" : "bg-destructive/20",
+                      )}>
+                        {feedback.isCorrect
+                          ? <Check className="h-6 w-6 text-accent" />
+                          : <X className="h-6 w-6 text-destructive" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className={cn(
+                          "font-bold text-lg mb-2",
+                          feedback.isCorrect ? "text-accent" : "text-destructive",
+                        )}>
+                          {feedback.isCorrect ? "Correct!" : "Not quite right"}
+                        </p>
+                        {feedback.explanation && (
+                          <div className="text-sm leading-relaxed text-foreground/90 mb-4 bg-background/50 rounded-xl p-3 border border-border/30">
+                            <QuestionMath content={feedback.explanation} />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {feedback.explanation && <QuestionMath content={feedback.explanation} className="text-sm leading-relaxed" />}
-                    <p className="text-sm font-medium">How well did you recall it?</p>
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    <p className="text-sm font-medium mb-3">How well did you know this?</p>
+                    <div className="flex gap-2 justify-center flex-wrap">
                       {RATINGS.map((rating) => (
-                        <button key={rating.value} type="button" onClick={() => rateCard(rating.value)} className={"rounded-xl border p-3 text-left transition-colors " + rating.className}>
-                          <span className="block text-sm font-semibold">{rating.label}</span>
-                          <span className="mt-1 block text-[10px] opacity-80">{rating.detail}</span>
+                        <button key={rating.value} type="button" onClick={() => rateCard(rating.value)} className={rating.className}>
+                          <span className="block text-sm font-medium">{rating.label}</span>
+                          <span className="mt-0.5 block text-[10px] opacity-80">{rating.detail}</span>
                         </button>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-                    <p className="text-sm font-semibold">This question is not gradable yet</p>
-                    <p className="text-xs text-muted-foreground">{feedback.message ?? "Its answer key has not passed independent review. Your selection is saved, but no answer will be revealed and the card will not be marked as mastered."}</p>
-                    <Button variant="outline" className="w-full" onClick={nextCard}>Skip this card without scheduling</Button>
+                  <div className="mt-6 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-amber-500/5 p-5 animate-scale-in">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600">
+                        <BookOpen className="h-6 w-6" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="mb-2 text-lg font-bold text-amber-700 dark:text-amber-400">This question is not gradable yet</p>
+                        <p className="text-sm leading-relaxed text-foreground/90">{feedback.message ?? "Its answer key has not passed independent review. Your selection is saved, but no answer will be revealed and the card will not be marked as mastered."}</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" className="mt-4 w-full" onClick={nextCard}>Skip this card without scheduling</Button>
                   </div>
                 )}
 

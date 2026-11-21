@@ -158,3 +158,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **Floating AI Tutor motion:** the JAMB floating Tutor now staggers the panel header and composer entrances using the same short fade/blur timing pattern as JUPEB. The JAMB version respects reduced-motion preferences.
 
+- **Dashboard nudge and study metric detail:** the JAMB dashboard now has the per-programme onboarding reminder, and the JAMB Revision Cards “Due Today” metric uses the same flame icon treatment as JUPEB while retaining JAMB's own due count.
+

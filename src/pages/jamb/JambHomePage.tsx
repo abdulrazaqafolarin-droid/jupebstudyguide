@@ -29,6 +29,7 @@ import {
   type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import { getJambReviewStats } from "@/lib/jamb-review";
+import { DashboardPanelShell } from "@/components/DashboardPanelShell";
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
 const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
@@ -332,27 +333,20 @@ export default function JambHomePage() {
           </section>
         )}
 
-        {/* Daily mission — the same card hierarchy as JUPEB, with JAMB-only attempts and scoring. */}
-        <section aria-label="Daily mission" className="mb-12 animate-in-up stagger-1">
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
-            <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-accent/5 p-6 md:p-8">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                <CalendarDays className="h-5 w-5 text-primary" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="text-xl font-bold">Daily Mission</h2>
-                <p className="text-sm text-muted-foreground">A focused practice set, answer checks, and a review of your progress.</p>
-              </div>
-              {missionHistoryReady && todayMissionProgress.length > 0 && (
-                <span className="hidden rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground sm:inline-flex">
-                  {todayMissionProgress.every(({ mission }) => mission.status === "completed")
-                    ? "Completed today"
-                    : `${todayMissionProgress.length} started today`}
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-4 p-6 md:p-8">
+        {/* Daily mission uses the shared JUPEB card shell with JAMB-only attempts and answer checks. */}
+        <DashboardPanelShell
+          icon={CalendarDays}
+          title="Daily Mission"
+          description="A focused practice set, answer checks, and a review of your progress."
+          trailing={missionHistoryReady && todayMissionProgress.length > 0 ? (
+            <span className="hidden rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground sm:inline-flex">
+              {todayMissionProgress.every(({ mission }) => mission.status === "completed")
+                ? "Completed today"
+                : `${todayMissionProgress.length} started today`}
+            </span>
+          ) : null}
+          ariaLabel="Daily mission"
+        >
               {!missionHistoryReady ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground" role="status">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -484,9 +478,7 @@ export default function JambHomePage() {
                   )}
                 </>
               )}
-            </div>
-          </div>
-        </section>
+        </DashboardPanelShell>
 
         {/* Programme-specific progress — never reads JUPEB mastery or streak data. */}
         <section className="mb-12 animate-in-up stagger-1">

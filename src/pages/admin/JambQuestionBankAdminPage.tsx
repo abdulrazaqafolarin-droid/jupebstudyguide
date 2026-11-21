@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { AlertTriangle, ArrowLeft, ArrowRight, Check, CloudUpload, FileCheck2, ImagePlus, Loader2, RefreshCw, ShieldCheck, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -399,7 +400,12 @@ export default function JambQuestionBankAdminPage() {
             <h1 className="text-2xl font-bold">Question bank review</h1>
             <p className="mt-1 text-sm text-muted-foreground">Stage, verify, correct and publish JAMB source questions.</p>
           </div>
-          <Button variant="outline" size="icon" onClick={() => void refreshBatches()} aria-label="Refresh batches"><RefreshCw className="h-4 w-4" /></Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link to="/jamb/past-questions?subject=physics">Manage published questions</Link>
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => void refreshBatches()} aria-label="Refresh batches"><RefreshCw className="h-4 w-4" /></Button>
+          </div>
         </header>
 
         <section className="rounded-2xl border border-border bg-card p-4">

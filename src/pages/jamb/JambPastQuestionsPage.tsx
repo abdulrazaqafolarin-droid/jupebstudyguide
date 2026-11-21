@@ -24,6 +24,7 @@ import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
 
 type JambSubject = (typeof JAMB_SUBJECTS)[number];
 type View = "subjects" | "years" | "questions" | "bookmarks";
@@ -78,6 +79,45 @@ export default function JambPastQuestionsPage() {
   const { savedAnswers, saveAnswer: savePracticeAnswer } = useJambPracticeProgress();
   const { status: activationStatus } = useActivation();
   const isAdmin = activationStatus.is_admin;
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+  const [selectedAdminQuestion, setSelectedAdminQuestion] = useState<JambQuestion | null>(null);
+
+  const openAdminPanel = () => {
+    setSelectedAdminQuestion(questions[activeQuestionIndex] ?? null);
+    setAdminPanelOpen(true);
+  };
+
+  const handleAdminQuestionUpdated = (updated: JambQuestion) => {
+    setQuestions((previous) => previous.map((question) =>
+      question.id === updated.id ? { ...question, ...updated } : question,
+    ).sort((a, b) => a.sortOrder - b.sortOrder));
+    setBookmarkQuestions((previous) => previous.map((question) =>
+      question.id === updated.id ? { ...question, ...updated } : question,
+    ));
+  };
+
+  const handleAdminQuestionDeleted = (id: string) => {
+    setQuestions((previous) => previous.filter((question) => question.id !== id));
+    setBookmarkQuestions((previous) => previous.filter((question) => question.id !== id));
+    setCount((previous) => Math.max(0, previous - 1));
+    setActiveQuestionIndex((previous) => Math.max(0, Math.min(previous, questions.length - 2)));
+    setSelectedAdminQuestion(null);
+  };
+
+  const handleAdminQuestionAdded = (added: JambQuestion) => {
+    setQuestions((previous) => [...previous, added].sort((a, b) => a.sortOrder - b.sortOrder));
+    setCount((previous) => previous + 1);
+    setActiveQuestionIndex(Math.max(0, questions.length));
+    setSelectedAdminQuestion(added);
+  };
+
+  const handleAdminQuestionsReordered = (reordered: JambQuestion[]) => {
+    const positions = new Map(reordered.map((question) => [question.id, question.sortOrder]));
+    setQuestions((previous) => previous.map((question) => {
+      const position = positions.get(question.id);
+      return position === undefined ? question : { ...question, sortOrder: position };
+    }).sort((a, b) => a.sortOrder - b.sortOrder));
+  };
 
   useEffect(() => {
     let active = true;
@@ -540,14 +580,15 @@ export default function JambPastQuestionsPage() {
               </button>
               <h1 className="flex-1 text-center text-sm font-bold truncate">{subjectInfo.label} · {year ?? "All Years"}</h1>
               {isAdmin ? (
-                <Link
-                  to="/admin/jamb-questions"
-                  className="flex-shrink-0 rounded-lg p-2 transition-all hover:bg-accent active:scale-95"
+                <button
+                  type="button"
+                  onClick={openAdminPanel}
+                  className={`flex-shrink-0 rounded-lg p-2 transition-all hover:bg-accent active:scale-95 ${adminPanelOpen ? "bg-primary/10 text-primary" : ""}`}
                   aria-label="Admin: Manage questions"
                   title="Admin: Manage questions"
                 >
                   <Shield className="h-[18px] w-[18px] text-muted-foreground" />
-                </Link>
+                </button>
               ) : <div className="flex-shrink-0 w-9" />}
             </>
           ) : (
@@ -963,6 +1004,22 @@ export default function JambPastQuestionsPage() {
         </AnimatePresence>
 
       </main>
+
+      {isAdmin && (
+        <JambAdminQuestionPanel
+          question={selectedAdminQuestion}
+          questions={questions}
+          subject={subject}
+          year={year ?? selectedAdminQuestion?.year ?? 2027}
+          category="objective"
+          onQuestionUpdated={handleAdminQuestionUpdated}
+          onQuestionDeleted={handleAdminQuestionDeleted}
+          onQuestionAdded={handleAdminQuestionAdded}
+          onQuestionsReordered={handleAdminQuestionsReordered}
+          isOpen={adminPanelOpen}
+          onClose={() => setAdminPanelOpen(false)}
+        />
+      )}
     </div>
   );
 }

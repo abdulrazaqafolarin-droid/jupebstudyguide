@@ -423,6 +423,395 @@ Deno.serve(async (request: Request) => {
       return respond({ result: data });
     }
 
+
+    if (action === "manage-question") {
+      const operation = asText(body.operation);
+      const questionTable = supabase.from("study_questions") as any;
+      const answerKeyTable = supabase.from("study_question_answer_keys") as any;
+      const auditTable = supabase.from("jamb_question_admin_audit" as any) as any;
+
+      if (operation === "get") {
+        const questionId = asText(body.question_id);
+        if (!questionId) return respond({ error: "question_id is required" }, 400);
+
+        const { data: row, error: rowError } = await questionTable
+          .select("*")
+          .eq("id", questionId)
+          .eq("exam_program_id", "jamb")
+          .maybeSingle();
+        if (rowError) return respond({ error: rowError.message }, 500);
+        if (!row) return respond({ error: "JAMB question not found" }, 404);
+
+        const { data: key, error: keyError } = await answerKeyTable
+          .select("correct_answer,explanation,review_status,source_ref,reviewed_by,reviewed_at")
+          .eq("question_id", questionId)
+          .maybeSingle();
+        if (keyError) return respond({ error: keyError.message }, 500);
+
+        const { data: audit, error: auditError } = await auditTable
+          .select("rights_note,source_document,source_reference")
+          .eq("question_id", questionId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (auditError) return respond({ error: auditError.message }, 500);
+
+        let imageUrls: string[] = [];
+        if (Array.isArray(row.image_urls)) {
+          imageUrls = row.image_urls.filter((url: unknown): url is string => typeof url === "string");
+        }
+        if (imageUrls.length === 0 && typeof row.image_url === "string" && row.image_url) {
+          imageUrls = [row.image_url];
+        }
+
+        return respond({
+          question: {
+            id: row.id,
+            subject: row.subject,
+            year: row.year,
+            category: "objective",
+            question: row.question ?? "",
+            options: row.options ?? [],
+            correctAnswer: key?.correct_answer ?? "",
+            explanation: key?.explanation ?? "",
+            answerKeyStatus: key?.review_status ?? "missing",
+            answerKeyVerified: key?.review_status === "approved",
+            difficulty: row.difficulty ?? "medium",
+            topic: row.course ?? "",
+            sortOrder: row.sort_order ?? 0,
+            imageUrl: row.image_url ?? imageUrls[0] ?? null,
+            imageUrls,
+            imagePosition: row.image_position ?? (imageUrls.length ? "image-only" : "text-only"),
+            sourceReference: row.source_ref ?? "",
+            sourceDocument: row.source_document ?? "",
+            sourcePage: row.source_page ?? null,
+            sourceQuestionNumber: row.source_question_number ?? "",
+            rightsNote: audit?.rights_note ?? "",
+          },
+        });
+      }
+
+      if (operation === "create" || operation === "update") {
+        const payload = body.question && typeof body.question === "object"
+          ? body.question as JsonObject
+          : null;
+        if (!payload) return respond({ error: "question payload is required" }, 400);
+
+        const questionId = operation === "update"
+          ? asText(payload.id)
+          : "jamb-" + crypto.randomUUID().replaceAll("-", "");
+        if (!questionId || (operation === "update" && !questionId.startsWith("jamb-"))) {
+          return respond({ error: "A valid JAMB question ID is required" }, 400);
+        }
+
+        const subject = asText(payload.subject).toLowerCase();
+        const year = Number(payload.year);
+        const questionText = asText(payload.question);
+        const options = Array.isArray(payload.options)
+          ? payload.options.map((raw) => {
+              const item = raw && typeof raw === "object" ? raw as JsonObject : {};
+              return { label: asText(item.label).toUpperCase(), text: asText(item.text) };
+            })
+          : [];
+        const labels = options.map((option) => option.label).sort();
+        const expectedLabels = labels.length === 4 ? ["A", "B", "C", "D"] :
+          labels.length === 5 ? ["A", "B", "C", "D", "E"] : [];
+        const correctAnswer = asText(payload.correct_answer).toUpperCase();
+        const explanation = asText(payload.explanation);
+        const sourceReference = asText(payload.source_reference);
+        const sourceDocument = asText(payload.source_document);
+        const rightsConfirmed = payload.rights_confirmed === true;
+        const rightsNote = asText(payload.rights_note);
+        const parsedReference = parseJambSourceReference(sourceReference);
+        const difficulty = ["easy", "medium", "hard"].includes(asText(payload.difficulty))
+          ? asText(payload.difficulty)
+          : "medium";
+        const topic = asText(payload.topic);
+        const imageUrls = Array.isArray(payload.image_urls)
+          ? payload.image_urls.filter((url): url is string => typeof url === "string" && url.length > 0)
+          : [];
+        const imageUrl = asText(payload.image_url) || imageUrls[0] || "";
+        const imagePosition = asText(payload.image_position) || (imageUrls.length ? "image-only" : "text-only");
+        const sourcePage = Number.isInteger(payload.source_page) && Number(payload.source_page) > 0
+          ? Number(payload.source_page)
+          : null;
+
+        if (!SUBJECTS.has(subject)) return respond({ error: "Choose a supported JAMB subject" }, 400);
+        if (!Number.isInteger(year) || year < 1970 || year > 2100) {
+          return respond({ error: "A valid source year is required" }, 400);
+        }
+        if (questionText.length < 8) return respond({ error: "Question text must contain at least 8 characters" }, 400);
+        if (!parsedReference || parsedReference.year !== year) {
+          return respond({ error: "Source reference must be a single verified citation in YYYY:Qnumber format matching the selected year" }, 400);
+        }
+        if (!sourceDocument) return respond({ error: "Source document name is required" }, 400);
+        if (!rightsConfirmed || rightsNote.length < 12) {
+          return respond({ error: "Confirm your right to use this source and enter a source-rights note" }, 400);
+        }
+        if (options.length !== expectedLabels.length || labels.some((label, index) => label !== expectedLabels[index]) ||
+            options.some((option) => !option.text || option.text.length > 2000)) {
+          return respond({ error: "Exactly four options A-D or five options A-E with non-empty text are required" }, 400);
+        }
+        if (!["A", "B", "C", "D", "E"].includes(correctAnswer) ||
+            !labels.includes(correctAnswer)) {
+          return respond({ error: "The correct answer must match one of the supplied option labels" }, 400);
+        }
+        if (explanation.length < 12) {
+          return respond({ error: "Enter a meaningful explanation for the verified correct answer" }, 400);
+        }
+        if (payload.answer_key_verified !== true) {
+          return respond({ error: "The administrator must attest that the answer key and explanation were independently verified" }, 400);
+        }
+        if (imageUrls.length > 8 || imageUrls.some((url) => {
+          try {
+            const parsed = new URL(url);
+            return parsed.origin !== new URL(supabaseUrl).origin ||
+              !parsed.pathname.startsWith("/storage/v1/object/public/");
+          } catch {
+            return true;
+          }
+        })) {
+          return respond({ error: "Question images must be public Storage assets from this project (maximum 8)" }, 400);
+        }
+
+        const { data: beforeQuestion, error: beforeError } = operation === "update"
+          ? await questionTable.select("*").eq("id", questionId).eq("exam_program_id", "jamb").maybeSingle()
+          : { data: null, error: null };
+        if (beforeError) return respond({ error: beforeError.message }, 500);
+        if (operation === "update" && !beforeQuestion) return respond({ error: "JAMB question not found" }, 404);
+
+        const { data: beforeKey, error: beforeKeyError } = operation === "update"
+          ? await answerKeyTable.select("*").eq("question_id", questionId).maybeSingle()
+          : { data: null, error: null };
+        if (beforeKeyError) return respond({ error: beforeKeyError.message }, 500);
+
+        const now = new Date().toISOString();
+        const canonicalPayload = {
+          subject, year, question: questionText, options, correct_answer: correctAnswer,
+          explanation, source_reference: parsedReference.canonical, source_document: sourceDocument,
+          difficulty, topic, image_urls: imageUrls, image_position: imagePosition,
+        };
+        const digest = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(JSON.stringify(canonicalPayload)),
+        );
+        const payloadSha256 = Array.from(new Uint8Array(digest))
+          .map((value) => value.toString(16).padStart(2, "0")).join("");
+
+        const rowPayload = {
+          exam_program_id: "jamb",
+          subject,
+          year,
+          category: "objective",
+          question: questionText,
+          options,
+          correct_answer: null,
+          explanation: null,
+          difficulty,
+          course: topic || null,
+          sort_order: Number.isInteger(payload.sort_order) ? Number(payload.sort_order) : 0,
+          image_url: imageUrl || null,
+          image_urls: imageUrls,
+          image_position: imagePosition,
+          hidden: false,
+          review_status: "published",
+          source_ref: parsedReference.canonical,
+          source_document: sourceDocument,
+          source_page: sourcePage,
+          source_question_number: parsedReference.questionNumber,
+          content_hash: payloadSha256,
+          reviewed_by: user.id,
+          reviewed_at: now,
+          updated_at: now,
+        };
+
+        let savedQuestion: Record<string, unknown> | null = null;
+        if (operation === "create") {
+          const { data, error } = await questionTable.insert({ id: questionId, ...rowPayload }).select("*").single();
+          if (error) return respond({ error: error.message }, 500);
+          savedQuestion = data as Record<string, unknown>;
+        } else {
+          const { data, error } = await questionTable.update(rowPayload)
+            .eq("id", questionId)
+            .eq("exam_program_id", "jamb")
+            .select("*")
+            .single();
+          if (error) return respond({ error: error.message }, 500);
+          savedQuestion = data as Record<string, unknown>;
+        }
+
+        const keyPayload = {
+          question_id: questionId,
+          correct_answer: correctAnswer,
+          explanation,
+          review_status: "approved",
+          source_ref: parsedReference.canonical,
+          reviewed_by: user.id,
+          reviewed_at: now,
+          updated_at: now,
+        };
+        const { error: keySaveError } = await answerKeyTable.upsert(keyPayload, { onConflict: "question_id" });
+        if (keySaveError) {
+          if (operation === "create") {
+            await questionTable.delete().eq("id", questionId).eq("exam_program_id", "jamb");
+          } else if (beforeQuestion) {
+            await questionTable.update(beforeQuestion).eq("id", questionId).eq("exam_program_id", "jamb");
+          }
+          return respond({ error: keySaveError.message }, 500);
+        }
+
+        const auditPayload = {
+          question_id: questionId,
+          actor_id: user.id,
+          operation,
+          source_reference: parsedReference.canonical,
+          source_document: sourceDocument,
+          rights_confirmed: true,
+          rights_note: rightsNote,
+          payload_sha256: payloadSha256,
+          before_payload: operation === "update" ? { question: beforeQuestion, answer_key: beforeKey } : null,
+          after_payload: { question: savedQuestion, answer_key: keyPayload },
+        };
+        const { error: auditSaveError } = await auditTable.insert(auditPayload);
+        if (auditSaveError) {
+          if (operation === "create") {
+            await questionTable.delete().eq("id", questionId).eq("exam_program_id", "jamb");
+          } else if (beforeQuestion) {
+            await questionTable.update(beforeQuestion).eq("id", questionId).eq("exam_program_id", "jamb");
+            if (beforeKey) await answerKeyTable.upsert(beforeKey, { onConflict: "question_id" });
+            else await answerKeyTable.delete().eq("question_id", questionId);
+          }
+          return respond({ error: "Question was not saved because its audit record could not be written: " + auditSaveError.message }, 500);
+        }
+
+        const result = {
+          id: questionId,
+          subject,
+          year,
+          category: "objective",
+          question: questionText,
+          options,
+          correctAnswer,
+          explanation,
+          answerKeyVerified: true,
+          difficulty,
+          topic: topic || undefined,
+          sortOrder: rowPayload.sort_order,
+          imageUrl: imageUrl || undefined,
+          imageUrls,
+          imagePosition,
+          sourceReference: parsedReference.canonical,
+          sourceDocument,
+          sourcePage: sourcePage ?? undefined,
+          sourceQuestionNumber: parsedReference.questionNumber,
+          rightsNote,
+        };
+        return respond({ question: result }, operation === "create" ? 201 : 200);
+      }
+
+      if (operation === "delete") {
+        const questionId = asText(body.question_id);
+        const rightsConfirmed = body.rights_confirmed === true;
+        const rightsNote = asText(body.rights_note);
+        if (!questionId || !rightsConfirmed || rightsNote.length < 12) {
+          return respond({ error: "question_id, source-rights confirmation and a short note are required to delete" }, 400);
+        }
+        const { data: row, error: rowError } = await questionTable
+          .select("*")
+          .eq("id", questionId)
+          .eq("exam_program_id", "jamb")
+          .maybeSingle();
+        if (rowError) return respond({ error: rowError.message }, 500);
+        if (!row) return respond({ error: "JAMB question not found" }, 404);
+        const { data: key, error: keyError } = await answerKeyTable.select("*")
+          .eq("question_id", questionId).maybeSingle();
+        if (keyError) return respond({ error: keyError.message }, 500);
+
+        const sourceReference = asText(row.source_ref);
+        const sourceDocument = asText(row.source_document);
+        const { data: audit, error: auditError } = await auditTable.insert({
+          question_id: questionId,
+          actor_id: user.id,
+          operation: "delete",
+          source_reference: sourceReference || null,
+          source_document: sourceDocument || null,
+          rights_confirmed: true,
+          rights_note: rightsNote,
+          payload_sha256: null,
+          before_payload: { question: row, answer_key: key },
+          after_payload: null,
+        }).select("id").single();
+        if (auditError) return respond({ error: "Question was not deleted because its audit record failed: " + auditError.message }, 500);
+
+        const { error: deleteError } = await questionTable.delete()
+          .eq("id", questionId)
+          .eq("exam_program_id", "jamb");
+        if (deleteError) {
+          await auditTable.delete().eq("id", audit.id);
+          return respond({ error: deleteError.message }, 500);
+        }
+        return respond({ deleted: true, question_id: questionId });
+      }
+
+      if (operation === "reorder") {
+        const subject = asText(body.subject).toLowerCase();
+        const year = Number(body.year);
+        const updates = Array.isArray(body.updates) ? body.updates as JsonObject[] : [];
+        const rightsNote = "Administrative ordering of existing JAMB questions; content and answer keys unchanged.";
+        if (!SUBJECTS.has(subject) || !Number.isInteger(year) || updates.length < 1 || updates.length > 500) {
+          return respond({ error: "subject, year and 1-500 question order updates are required" }, 400);
+        }
+        const ids = updates.map((entry) => asText(entry.id));
+        if (ids.some((id) => !id) || new Set(ids).size !== ids.length) {
+          return respond({ error: "Question order IDs must be present and unique" }, 400);
+        }
+        const { data: existing, error: existingError } = await questionTable
+          .select("id,sort_order")
+          .eq("exam_program_id", "jamb")
+          .eq("subject", subject)
+          .eq("year", year)
+          .in("id", ids);
+        if (existingError) return respond({ error: existingError.message }, 500);
+        if ((existing ?? []).length !== ids.length) return respond({ error: "One or more questions do not belong to this JAMB subject and year" }, 403);
+
+        const afterPayload = updates.map((entry) => ({ id: asText(entry.id), sort_order: Number(entry.sort_order) }));
+        if (afterPayload.some((entry) => !Number.isInteger(entry.sort_order) || entry.sort_order < 0)) {
+          return respond({ error: "Each sort_order must be a non-negative integer" }, 400);
+        }
+        const { data: audit, error: auditError } = await auditTable.insert({
+          question_id: null,
+          actor_id: user.id,
+          operation: "reorder",
+          source_reference: null,
+          source_document: null,
+          rights_confirmed: true,
+          rights_note: rightsNote,
+          payload_sha256: null,
+          before_payload: existing,
+          after_payload: afterPayload,
+        }).select("id").single();
+        if (auditError) return respond({ error: auditError.message }, 500);
+
+        for (const update of afterPayload) {
+          const { error } = await questionTable.update({ sort_order: update.sort_order, updated_at: new Date().toISOString() })
+            .eq("id", update.id)
+            .eq("exam_program_id", "jamb")
+            .eq("subject", subject)
+            .eq("year", year);
+          if (error) {
+            for (const previous of existing) {
+              await questionTable.update({ sort_order: previous.sort_order }).eq("id", previous.id).eq("exam_program_id", "jamb");
+            }
+            await auditTable.delete().eq("id", audit.id);
+            return respond({ error: "Question ordering could not be saved: " + error.message }, 500);
+          }
+        }
+        return respond({ reordered: afterPayload.length });
+      }
+
+      return respond({ error: "Unsupported question manager operation" }, 400);
+    }
+
     return respond({ error: "Unsupported question-import action" }, 400);
   } catch (error) {
     console.error("[question-import]", String(error).slice(0, 500));

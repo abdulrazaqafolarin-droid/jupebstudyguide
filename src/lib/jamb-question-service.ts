@@ -16,6 +16,14 @@ export interface JambQuestion {
   sourceReference?: string;
   sourcePage?: number;
   sourceQuestionNumber?: string;
+  /** Admin-only fields are returned only by the protected question manager endpoint. */
+  correctAnswer?: string;
+  explanation?: string;
+  answerKeyStatus?: string;
+  answerKeyVerified?: boolean;
+  difficulty?: "easy" | "medium" | "hard" | string;
+  sourceDocument?: string;
+  rightsNote?: string;
 }
 
 export interface JambSubjectSummary {

@@ -295,6 +295,7 @@ export default function JambDailyMissionPage() {
 
         {activeMission && (
           <section className="space-y-4">
+            <div className="mx-auto w-full max-w-3xl space-y-4">
             <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{JAMB_SUBJECT_INFO[activeMission.subject].label}</span>
@@ -421,6 +422,7 @@ export default function JambDailyMissionPage() {
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={() => navigate("/jamb/daily-mission")}>Mission hub & history</Button>
               <Button variant="outline" onClick={() => navigate("/jamb/past-questions")}>Browse past questions</Button>
+            </div>
             </div>
           </section>
         )}

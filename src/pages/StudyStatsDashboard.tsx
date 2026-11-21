@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Flame, BookOpen, Brain, Target, Award, Zap, TrendingUp } from 'lucide-react';
+import { Trophy, BookOpen, Brain, Target, Award, Zap } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, Area, AreaChart, CartesianGrid } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
 import { useStreak } from '@/hooks/useStreak';
+import { StatsStreakPanel } from '@/components/StatsStreakPanel';
 import { supabase } from '@/integrations/supabase/client';
 import { STUDY_SUBJECT_INFO } from '@/types/study-questions';
 import { getStudyQuestionsBySubject, subscribe } from '@/data/study-questions';
@@ -127,54 +128,13 @@ export default function StudyStatsDashboard() {
           ]}
         />
 
-        {/* Streak Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="bg-card rounded-2xl border p-5 space-y-4"
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold flex items-center gap-2">
-              <Flame className="w-4 h-4 text-orange-500" />
-              Streak
-            </h2>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <TrendingUp className="w-3.5 h-3.5" />
-              {streak.totalDaysStudied} total days
-            </div>
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-orange-500">{streak.currentStreak}</p>
-              <p className="text-[10px] text-muted-foreground">Current streak</p>
-            </div>
-            <div className="w-px h-10 bg-border" />
-            <div className="text-center">
-              <p className="text-3xl font-bold">{streak.longestStreak}</p>
-              <p className="text-[10px] text-muted-foreground">Best streak</p>
-            </div>
-            <div className="w-px h-10 bg-border" />
-            <div className="text-center">
-              <p className="text-3xl font-bold">{streak.totalQuestionsAnswered}</p>
-              <p className="text-[10px] text-muted-foreground">Questions answered</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground">Today:</span>
-            {streak.hasStudiedToday() ? (
-              <span className="flex items-center gap-1 text-emerald-500 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                Studied
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 text-muted-foreground">
-                <span className="w-2 h-2 rounded-full bg-muted" />
-                Not studied yet
-              </span>
-            )}
-          </div>
-        </motion.div>
+        <StatsStreakPanel
+          currentStreak={streak.currentStreak}
+          longestStreak={streak.longestStreak}
+          totalDaysStudied={streak.totalDaysStudied}
+          questionsAnswered={streak.totalQuestionsAnswered}
+          hasStudiedToday={streak.hasStudiedToday()}
+        />
 
         {/* Score Card */}
         <motion.div

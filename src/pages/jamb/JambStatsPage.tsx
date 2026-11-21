@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Flame, Brain, Trophy } from "lucide-react";
+import { BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Brain, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -15,8 +15,8 @@ import {
   type JambQuestionMetadata,
   type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
-import StreakDisplay from "@/components/StreakDisplay";
 import { StatsOverviewCards } from "@/components/StatsOverviewCards";
+import { StatsStreakPanel } from "@/components/StatsStreakPanel";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 
 export default function JambStatsPage() {
@@ -135,19 +135,15 @@ export default function JambStatsPage() {
           ]}
         />
 
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <div className="mb-4 flex items-center gap-2">
-            <Flame className="h-5 w-5 text-orange-500" />
-            <h2 className="font-semibold">JAMB consistency</h2>
-          </div>
-          <StreakDisplay
-            currentStreak={answersReady ? activity.currentStreak : 0}
-            longestStreak={answersReady ? activity.longestStreak : 0}
-            totalDaysStudied={answersReady ? activity.totalDaysStudied : 0}
-            hasStudiedToday={answersReady && activity.hasStudiedToday}
-          />
-          <p className="mt-4 text-xs text-muted-foreground">Last JAMB activity: {answersReady ? lastActivity : "Loading…"}</p>
-        </section>
+        <StatsStreakPanel
+          currentStreak={activity.currentStreak}
+          longestStreak={activity.longestStreak}
+          totalDaysStudied={activity.totalDaysStudied}
+          questionsAnswered={activity.answerCount}
+          hasStudiedToday={activity.hasStudiedToday}
+          ready={answersReady}
+          footer={<p className="text-xs text-muted-foreground">Last JAMB activity: {answersReady ? lastActivity : "Loading…"}</p>}
+        />
 
         <section className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-4 flex items-center gap-2">

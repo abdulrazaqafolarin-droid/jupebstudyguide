@@ -126,3 +126,12 @@ Visual parity does not mean sharing academic or scoring rules. JAMB remains a si
 
 These changes are committed on the open Draft PR branch. GitHub validation must pass on the final branch head, and signed-in browser/mobile acceptance is still required before declaring full parity. Production remains unchanged.
 
+## Follow-up parity pass — 21 November 2026
+
+- Secondary-page shells: Achievements, Syllabus and Leaderboard now use the same content width and spacing as their JUPEB counterparts. JAMB Syllabus uses the same history-aware Back behavior as JUPEB.
+- JAMB daily-mission answer choices now reuse the shared answer-option component used by the JUPEB quiz and JAMB CBT. The state map still distinguishes approved correct/incorrect answers from saved but ungraded answers.
+- JAMB revision cards now use the same short directional fade/slide transition as JUPEB question navigation. The transition respects the operating-system reduced-motion preference.
+- JAMB onboarding's school-tag helper copy now matches the JUPEB explanation.
+
+The JAMB leaderboard remains a data-contract blocker rather than a visual styling problem: the existing JUPEB weekly score RPC aggregates programme-agnostic score events, while JAMB's independently checked CBT results live in programme-scoped attempt summaries. The UI must not call the shared RPC and accidentally mix programmes. A JAMB-only ranking contract needs to be defined before the page can display real ranks.
+

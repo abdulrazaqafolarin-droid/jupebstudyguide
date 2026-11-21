@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Award, BarChart3, BookOpen, Brain,
-  Flame, Target, Trophy, TrendingUp, Zap,
+  Award, BarChart3, BookOpen, Brain,
+  Target, Trophy, Zap,
 } from "lucide-react";
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Line, ResponsiveContainer,
@@ -20,6 +20,9 @@ import {
   type JambCbtAttemptSummary,
 } from "@/lib/jamb-cbt-analytics";
 import { JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS } from "@/lib/jamb-config";
+import { StatsOverviewCards } from "@/components/StatsOverviewCards";
+import { StatsStreakPanel } from "@/components/StatsStreakPanel";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
   getJambPublishedQuestionMetadata,
   getJambSubjectSummaries,
@@ -192,27 +195,7 @@ export default function JambStatsPage() {
   }, [cbtHistoryForUser]);
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <motion.header
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-20 bg-card/80 backdrop-blur-xl border-b border-border/50"
-      >
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
-          <motion.button
-            type="button"
-            whileHover={{ x: -3 }}
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-            className="p-1 -ml-1 rounded-lg hover:bg-accent transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </motion.button>
-          <div>
-            <h1 className="font-semibold text-sm">Study Stats</h1>
-            <p className="text-[10px] text-muted-foreground">Your JAMB learning analytics</p>
-          </div>
-        </div>
-      </motion.header>
+      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your JAMB learning analytics" compact />
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {bankError && (
@@ -221,75 +204,23 @@ export default function JambStatsPage() {
           </div>
         )}
 
-        {/* Overview cards: same four-card arrangement and hierarchy as JUPEB. */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
+        <StatsOverviewCards
+          items={[
             { label: "Total Questions", value: loadingBank ? "—" : publishedQuestionCount.toLocaleString(), icon: BookOpen, color: "text-blue-500" },
             { label: "Studied", value: answersReady && !loadingBank ? studiedPercentage + "%" : "—", sub: answersReady && !loadingBank ? studiedQuestionCount + "/" + publishedQuestionCount : undefined, icon: Brain, color: "text-emerald-500" },
             { label: "Mastered", value: reviewReady && !loadingBank ? masteredPercentage + "%" : "—", sub: reviewReady && !loadingBank ? revisionStats.mastered + "/" + publishedQuestionCount : undefined, icon: Target, color: "text-violet-500" },
             { label: "Due Today", value: reviewReady && !loadingBank ? revisionStats.due.toLocaleString() : "—", icon: Zap, color: revisionStats.due > 0 ? "text-amber-500" : "text-muted-foreground" },
-          ].map((card, index) => (
-            <motion.div
-              key={card.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.04 }}
-              className="bg-card rounded-2xl border p-4 space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">{card.label}</span>
-                <card.icon className={"w-4 h-4 " + card.color} />
-              </div>
-              <p className="text-2xl font-bold tabular-nums">{card.value}</p>
-              {card.sub && <p className="text-[10px] text-muted-foreground -mt-1">{card.sub}</p>}
-            </motion.div>
-          ))}
-        </div>
+          ]}
+        />
 
-        {/* Streak */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="bg-card rounded-2xl border p-5 space-y-4"
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold flex items-center gap-2">
-              <Flame className="w-4 h-4 text-orange-500" /> Streak
-            </h2>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <TrendingUp className="w-3.5 h-3.5" /> {activity.totalDaysStudied} total days
-            </div>
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-orange-500 tabular-nums">{activity.currentStreak}</p>
-              <p className="text-[10px] text-muted-foreground">Current streak</p>
-            </div>
-            <div className="w-px h-10 bg-border" />
-            <div className="text-center">
-              <p className="text-3xl font-bold tabular-nums">{activity.longestStreak}</p>
-              <p className="text-[10px] text-muted-foreground">Best streak</p>
-            </div>
-            <div className="w-px h-10 bg-border" />
-            <div className="text-center">
-              <p className="text-3xl font-bold tabular-nums">{answersReady ? activity.answerCount : "—"}</p>
-              <p className="text-[10px] text-muted-foreground">Questions answered</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground">Today:</span>
-            {activity.hasStudiedToday ? (
-              <span className="flex items-center gap-1 text-emerald-500 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Studied
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 text-muted-foreground">
-                <span className="w-2 h-2 rounded-full bg-muted" /> Not studied yet
-              </span>
-            )}
-          </div>
-        </motion.div>
+        <StatsStreakPanel
+          currentStreak={activity.currentStreak}
+          longestStreak={activity.longestStreak}
+          totalDaysStudied={activity.totalDaysStudied}
+          questionsAnswered={activity.answerCount}
+          hasStudiedToday={activity.hasStudiedToday}
+          ready={answersReady}
+        />
 
         {/* Same score-card layout as JUPEB, using only this user's JAMB CBT results. */}
         <motion.div

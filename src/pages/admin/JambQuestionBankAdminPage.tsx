@@ -213,7 +213,7 @@ export default function JambQuestionBankAdminPage() {
         throw new Error("The JAMB source importer update is not deployed yet. No source file was uploaded. Retry after the admin importer service has been updated.");
       }
       if (!supportsResumableJambImport(capabilities, parsed.subject)) {
-        throw new Error("The deployed JAMB importer does not support safe resumable uploads yet. No source file was uploaded.");
+        throw new Error("The deployed JAMB importer does not support this subject and the verified-answer safeguards yet. No source file was uploaded. Deploy the latest question-import function and apply the JAMB answer-verification migration before retrying.");
       }
 
       const safeName = sourceFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");

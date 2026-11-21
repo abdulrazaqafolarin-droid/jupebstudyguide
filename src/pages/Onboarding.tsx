@@ -327,6 +327,7 @@ export default function Onboarding() {
           )}
           {step === 'chat' && (
             <StepChatPrivacy
+              programLabel={isJambWorkspace ? "JAMB" : "JUPEB"}
               online={chatOnline}
               receipts={chatReceipts}
               discover={chatDiscover}

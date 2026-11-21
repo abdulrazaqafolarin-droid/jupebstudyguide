@@ -258,3 +258,18 @@ Do not upload or stage an English batch until the Edge Function and migration ar
 - A Rutex administrator must still attest to the source-use permission/rights note before a source file is staged. No rights attestation, source upload, batch creation, answer-key publication or question publication was performed as part of this code-only continuation.
 
 No Production UI change or question content was published.
+
+
+### Live JAMB importer backend readiness — 22 November 2026
+
+The backend prerequisite has now been released to the existing Supabase project `gzyczowqqywesqhqqpdi`:
+
+- Migration `20261121233500/require_verified_jamb_answer_and_explanation` is recorded in live migration history. It creates database triggers that require ordered, non-empty A-D/A-E options, a matching correct option, a verified key, and a meaningful explanation. JAMB ungraded approval is blocked.
+- `question-import` is active at **v5** with the four-subject allowlist: Physics, Chemistry, Biology and Use of English. Its capability response reports resumable chunks, stable offsets, safe retry support, source-answer suggestion separation, and the verified-answer/explanation gate.
+- The Edge Function keeps `verify_jwt=false` only because the handler itself validates the Bearer token, active session and administrator status. Do not remove the in-handler checks.
+- The publisher allowlist now includes Use of English. The server-owned import, audit and answer-key tables remain RLS-enabled and service-role-only; no student-facing access was added.
+- Read-only live verification after deployment returned: JAMB published question rows **0**, answer-key rows **0**, import batches **0**, and import items **0**. The migration and Edge Function deployment did not stage or publish question content.
+
+The feature-branch admin import client now fails closed before uploading either file unless the live capability endpoint advertises support for the selected subject and both answer-verification safeguards. Therefore, the previous v4 function cannot accept an English upload.
+
+**Still outstanding:** source-use permission must be documented and attested by an authorised administrator for each submitted source pack, the generated JSON must be uploaded with its exact original source file, and every question must pass human review. No question has been marked verified or published. The JAMB student-facing Production UI remains disabled; PR #78 remains Draft.

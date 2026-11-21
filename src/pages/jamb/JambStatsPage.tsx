@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Brain, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
@@ -21,6 +21,7 @@ import { StatsStreakPanel } from "@/components/StatsStreakPanel";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 
 export default function JambStatsPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { savedAnswers, isReady: answersReady } = useJambPracticeProgress();
   const { progress: reviewProgress, getStats: getRevisionStats, isReady: reviewReady } = useJambReviewProgress();
@@ -117,10 +118,10 @@ export default function JambStatsPage() {
     : "No JAMB practice recorded yet";
 
   return (
-    <div className="min-h-screen bg-background">
-      <WorkspacePageHeader title="Study Stats" backTo="/jamb" backLabel="Back to JAMB workspace" subtitle="Your learning analytics" compact />
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your learning analytics" compact />
 
-      <main className="mx-auto max-w-2xl space-y-6 px-4 py-6 pb-10">
+      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {error && (
           <div role="alert" className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">
             {error} Your local JAMB practice totals remain available where loaded.

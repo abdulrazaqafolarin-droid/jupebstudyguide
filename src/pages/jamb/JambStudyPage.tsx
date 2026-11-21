@@ -4,7 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
   ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot, Brain, Flame,
-  Clock3, Loader2, RefreshCw, Shuffle, Sparkles, Target,
+  Loader2, RefreshCw, Shuffle, Sparkles, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuestionImage } from "@/components/QuestionImage";

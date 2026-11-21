@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Award, BarChart3, BookOpen, Brain, CalendarDays,
+  ArrowLeft, Award, BarChart3, BookOpen, Brain,
   Flame, Target, Trophy, TrendingUp, Zap,
 } from "lucide-react";
 import {
@@ -10,7 +10,6 @@ import {
   Tooltip, XAxis, YAxis,
 } from "recharts";
 import { useAuth } from "@/contexts/AuthContext";
-import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,7 +50,6 @@ export default function JambStatsPage() {
     getStats: getRevisionStats,
     isReady: reviewReady,
   } = useJambReviewProgress();
-  const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
 
   const [subjectSummaries, setSubjectSummaries] = useState<JambSubjectSummary[]>([]);
   const [publishedMetadata, setPublishedMetadata] = useState<JambQuestionMetadata[]>([]);
@@ -157,10 +155,6 @@ export default function JambStatsPage() {
   const lastActivity = activity.lastActivityAt
     ? new Date(activity.lastActivityAt).toLocaleString()
     : "No JAMB practice recorded yet";
-  const safeSubjectSummary = subjectSummaries.length > 0
-    ? subjectSummaries
-    : JAMB_SUBJECTS.map((subject) => ({ subject, count: 0, years: [] }));
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <motion.header

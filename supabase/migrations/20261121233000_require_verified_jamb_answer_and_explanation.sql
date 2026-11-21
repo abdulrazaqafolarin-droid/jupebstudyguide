@@ -48,6 +48,15 @@ BEGIN
       RAISE EXCEPTION 'Four or five JAMB options are required before approval';
     END IF;
 
+    IF EXISTS (
+      SELECT 1
+        FROM jsonb_array_elements(v_options) WITH ORDINALITY AS option_row(value, ordinal)
+       WHERE upper(btrim(coalesce(option_row.value->>'label', ''))) <> substr('ABCDE', option_row.ordinal::INTEGER, 1)
+          OR char_length(btrim(coalesce(option_row.value->>'text', ''))) = 0
+    ) THEN
+      RAISE EXCEPTION 'JAMB options must be ordered A-D or A-E with non-empty option text';
+    END IF;
+
     IF NOT EXISTS (
       SELECT 1
         FROM jsonb_array_elements(v_options) AS option_row(value)
@@ -104,6 +113,19 @@ BEGIN
 
   IF jsonb_typeof(v_options) IS DISTINCT FROM 'array' THEN
     RAISE EXCEPTION 'The JAMB question must contain an options array before its answer key is saved';
+  END IF;
+
+  IF jsonb_array_length(v_options) NOT IN (4, 5) THEN
+    RAISE EXCEPTION 'Four or five JAMB options are required before an answer key can be saved';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+      FROM jsonb_array_elements(v_options) WITH ORDINALITY AS option_row(value, ordinal)
+     WHERE upper(btrim(coalesce(option_row.value->>'label', ''))) <> substr('ABCDE', option_row.ordinal::INTEGER, 1)
+        OR char_length(btrim(coalesce(option_row.value->>'text', ''))) = 0
+  ) THEN
+    RAISE EXCEPTION 'JAMB options must be ordered A-D or A-E with non-empty option text';
   END IF;
 
   IF NOT EXISTS (

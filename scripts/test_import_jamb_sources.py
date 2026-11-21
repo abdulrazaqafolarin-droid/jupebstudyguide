@@ -3,7 +3,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.import_jamb_sources import build_all, parse_subject, split_question_blocks, parse_options_and_stem
+from scripts.import_jamb_sources import (
+    build_all,
+    parse_english_source,
+    parse_subject,
+    split_question_blocks,
+    parse_options_and_stem,
+    SOURCES,
+)
 
 
 class JambImportParserTests(unittest.TestCase):
@@ -25,16 +32,17 @@ class JambImportParserTests(unittest.TestCase):
         self.assertEqual([item[1] for item in blocks], [1, 2])
         self.assertEqual(len(blocks), 2)
 
-    def test_all_three_committed_sources_are_parseable_and_review_only(self):
-        packages, report = build_all()
-        self.assertEqual({package["subject"] for package in packages}, {"physics", "chemistry", "biology"})
+    def test_all_science_sources_are_parseable_and_review_only(self):
+        packages, report = build_all({subject: path for subject, path in SOURCES.items()})
+        science = {package["subject"]: package for package in packages}
+        self.assertEqual(set(science), {"physics", "chemistry", "biology"})
         self.assertEqual(report["exam_program_id"], "jamb")
         self.assertEqual(
-            {package["subject"]: package["candidate_count"] for package in packages},
+            {subject: package["candidate_count"] for subject, package in science.items()},
             {"physics": 896, "chemistry": 1940, "biology": 1833},
         )
-        self.assertEqual(sum(package["candidate_count"] for package in packages), 4669)
-        for package in packages:
+        self.assertEqual(sum(package["candidate_count"] for package in science.values()), 4669)
+        for package in science.values():
             self.assertEqual(len(package["source_sha256"]), 64)
             self.assertEqual(package["candidate_count"], len(package["items"]))
             self.assertGreater(package["candidate_count"], 0)
@@ -79,6 +87,88 @@ class JambImportParserTests(unittest.TestCase):
         self.assertIn("missing_source_year_reference", item["validation_errors"])
         self.assertIn("figure_description_requires_original_image_review", item["validation_errors"])
         self.assertEqual(report["publishable_without_human_review"], 0)
+
+    def test_english_parser_preserves_years_passages_answers_and_unverified_status(self):
+        fixture = """JAMB ENGLISH 1997 - OBJECTIVE
+Questions: 2/2 | Duration: 45 min
+==============================================================================
+--- PASSAGE ---
+Title: A short passage
+The passage text is preserved for learners.
+--- END PASSAGE ---
+
+1. According to the passage, what is true?
+   A. First choice
+   B. Second choice
+   C. Third choice
+   D. Fourth choice
+   ANSWER: B
+   EXPLANATION: The passage directly supports the second choice.
+   
+2. Which statement is correct?
+   A. Alpha
+   B. Beta
+   C. Gamma
+   D. Delta
+   ANSWER: D
+   EXPLANATION: The source explanation describes why Delta is correct.
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "JAMB_english_READABLE.txt"
+            path.write_text(fixture, encoding="utf-8")
+            package, report = parse_english_source(path)
+
+        self.assertEqual(package["subject"], "use_of_english")
+        self.assertEqual(package["candidate_count"], 2)
+        self.assertEqual(package["items"][0]["year"], 1997)
+        self.assertEqual(package["items"][0]["source_reference"], "1997:Q1")
+        self.assertEqual(package["items"][0]["options"][1]["label"], "B")
+        self.assertTrue(package["items"][0]["passage"].startswith("Title: A short passage"))
+        self.assertEqual(package["items"][0]["correct_answer"], "B")
+        self.assertIn("directly supports", package["items"][0]["explanation"])
+        self.assertFalse(package["items"][0]["answer_key_verified"])
+        self.assertEqual(package["items"][0]["review_status"], "needs_review")
+        self.assertEqual(report["publishable_without_human_review"], 0)
+
+    def test_english_parser_flags_missing_key_malformed_options_and_count_mismatch(self):
+        fixture = """JAMB ENGLISH 2017 - OBJECTIVE
+Questions: 2/2 | Source: fixture
+==============================================================================
+1. First item
+   A. Alpha
+   B. Beta
+   C. Gamma
+
+2. Second item
+   A. One
+   B. Two
+   C. Three
+   D. Four
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "english.txt"
+            path.write_text(fixture, encoding="utf-8")
+            package, report = parse_english_source(path)
+
+        self.assertEqual(package["candidate_count"], 2)
+        self.assertIn("options_must_be_contiguous_a_to_d_or_a_to_e", package["items"][0]["validation_errors"])
+        self.assertIn("answer_key_not_supplied_in_source", package["items"][0]["validation_errors"])
+        self.assertIn("meaningful_explanation_not_supplied_in_source", package["items"][1]["validation_errors"])
+        self.assertFalse(any(item["answer_key_verified"] for item in package["items"]))
+        self.assertEqual(report["publishable_without_human_review"], 0)
+
+    def test_committed_english_source_if_available_stays_review_only(self):
+        from scripts.import_jamb_sources import ENGLISH_SOURCE
+
+        if not ENGLISH_SOURCE.exists():
+            self.skipTest("The English source file is present on the base branch, not this isolated source checkout.")
+        package, report = parse_english_source(ENGLISH_SOURCE)
+        self.assertEqual(package["subject"], "use_of_english")
+        self.assertEqual(package["candidate_count"], len(package["items"]))
+        self.assertGreater(package["candidate_count"], 3000)
+        self.assertEqual(report["publishable_without_human_review"], 0)
+        self.assertTrue(all(not item["answer_key_verified"] for item in package["items"]))
+        self.assertTrue(all(item["review_status"] == "needs_review" for item in package["items"]))
 
 
 if __name__ == "__main__":

@@ -107,7 +107,7 @@ export default function JambPastQuestionsPage() {
   const handleAdminQuestionAdded = (added: JambQuestion) => {
     setQuestions((previous) => [...previous, added].sort((a, b) => a.sortOrder - b.sortOrder));
     setCount((previous) => previous + 1);
-    setActiveQuestionIndex(Math.max(0, questions.length));
+    setActiveQuestionIndex(Math.min(questions.length, JAMB_INITIAL_QUESTION_PAGE_SIZE - 1));
     setSelectedAdminQuestion(added);
   };
 

@@ -81,11 +81,13 @@ export function JambAdminQuestionPanel({
   const isCroppingRef = useRef(false);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+  const loadQuestionRequestRef = useRef(0);
 
   const isObjective = category === "objective";
 
   useEffect(() => {
     if (!isOpen) {
+      loadQuestionRequestRef.current += 1;
       pendingFilesRef.current = [];
       isCroppingRef.current = false;
       setCropImageUrl(null);
@@ -108,6 +110,7 @@ export function JambAdminQuestionPanel({
   }, [isOpen]);
 
   const loadQuestion = useCallback(async (q: JambQuestion) => {
+    const requestId = ++loadQuestionRequestRef.current;
     objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     objectUrlsRef.current = [];
     pendingFilesRef.current = [];
@@ -140,7 +143,7 @@ export function JambAdminQuestionPanel({
       if (invokeError) throw invokeError;
       if (data?.error) throw new Error(String(data.error));
       const detail = data?.question;
-      if (detail) {
+      if (detail && requestId === loadQuestionRequestRef.current) {
         setCorrectAnswer(String(detail.correctAnswer || ""));
         setExplanation(String(detail.explanation || ""));
         setSourceReference(String(detail.sourceReference || ""));

@@ -3,6 +3,7 @@ import { CORS_HEADERS } from "../_shared/jamb-http.ts";
 import type { Database, Json } from "../_shared/rutex-database.types.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 import { JAMB_IMPORT_PROTOCOL_VERSION, resolveJambImportItemRange } from "../_shared/jamb-import-range.ts";
+import { getJambReviewDecisionError } from "../_shared/jamb-review-validation.ts";
 import { parseJambSourceReference } from "../_shared/jamb-source-reference.ts";
 import { extractJambSourceAnswerSuggestions } from "../_shared/jamb-import-answer-suggestions.ts";
 
@@ -323,9 +324,11 @@ Deno.serve(async (request: Request) => {
       const payload = body.normalized_payload && typeof body.normalized_payload === "object"
         ? body.normalized_payload as JsonObject
         : null;
-      if (!itemId || !payload || !["approved", "rejected"].includes(decision)) {
+      if (!itemId || !payload || !["approved", "approved_ungraded", "rejected"].includes(decision)) {
         return respond({ error: "item_id, normalized_payload and a supported review decision are required" }, 400);
       }
+      const decisionError = getJambReviewDecisionError(decision, asText(payload.explanation));
+      if (decisionError) return respond({ error: decisionError }, 422);
       const { data: item, error: itemError } = await supabase
         .from("question_import_items")
         .select("id,batch_id,status")

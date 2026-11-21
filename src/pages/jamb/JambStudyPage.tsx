@@ -285,7 +285,7 @@ export default function JambStudyPage() {
         />
       )}
 
-      <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-24">
+      <main className="max-w-4xl mx-auto px-4 py-8 pb-24 space-y-6">
         {!selectedSubject ? (
           <>
             <section className="rounded-2xl border border-border bg-card p-5">
@@ -322,12 +322,29 @@ export default function JambStudyPage() {
           </>
         ) : (
           <>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs text-muted-foreground">JAMB objective revision</p>
-                <h2 className="text-xl font-bold">{subjectInfo?.icon} {subjectInfo?.label}</h2>
-              </div>
-              <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{questions.length} / {totalCount} loaded</span>
+            <p className="text-center text-xs text-muted-foreground">
+              {questions.length.toLocaleString()} of {totalCount.toLocaleString()} published questions loaded
+            </p>
+
+            <div className="mb-8 flex justify-center gap-2">
+              <Button
+                variant={mode === "learn" ? "default" : "outline"}
+                onClick={() => { setMode("learn"); setCurrentIndex(0); setSelectedOption(null); setFeedback(null); }}
+                className={mode === "learn" ? "gap-2 bg-primary text-primary-foreground shadow-md" : "gap-2"}
+              >
+                <BookOpen className="h-4 w-4" /> Learn All
+              </Button>
+              <Button
+                variant={mode === "review" ? "default" : "outline"}
+                onClick={startReview}
+                disabled={!reviewReady || dueCount === 0}
+                className={mode === "review" ? "gap-2 bg-primary text-primary-foreground shadow-md" : "gap-2"}
+              >
+                <Brain className="h-4 w-4" /> Review Due ({dueCount})
+              </Button>
+              <Button variant="outline" onClick={handleShuffle} size="icon" disabled={questions.length < 2} aria-label="Shuffle revision cards">
+                <Shuffle className="h-4 w-4" />
+              </Button>
             </div>
 
             <div className="grid grid-cols-3 gap-4 mb-8">
@@ -349,18 +366,6 @@ export default function JambStudyPage() {
                 <p className="text-3xl font-bold text-destructive tabular-nums">{reviewReady ? dueCount : "—"}</p>
                 <p className="mt-1 text-xs text-muted-foreground">Due Today</p>
               </div>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button variant={mode === "learn" ? "default" : "outline"} onClick={() => { setMode("learn"); setCurrentIndex(0); setSelectedOption(null); setFeedback(null); }} className="gap-2">
-                <BookOpen className="h-4 w-4" /> Learn All
-              </Button>
-              <Button variant={mode === "review" ? "default" : "outline"} onClick={startReview} disabled={!reviewReady || dueCount === 0} className="gap-2">
-                <Brain className="h-4 w-4" /> Review Due ({dueCount})
-              </Button>
-              <Button variant="outline" size="icon" onClick={handleShuffle} disabled={questions.length < 2} aria-label="Shuffle revision cards">
-                <Shuffle className="h-4 w-4" />
-              </Button>
             </div>
 
             {loadingQuestions && questions.length === 0 ? (

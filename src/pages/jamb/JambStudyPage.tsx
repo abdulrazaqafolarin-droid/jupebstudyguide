@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
-  ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot, Brain,
+  ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot, Brain, Flame,
   Clock3, Loader2, RefreshCw, Shuffle, Sparkles, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { StudyFlashcardSurface } from "@/components/StudyFlashcardSurface";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
+import { getJambActivityStats } from "@/lib/jamb-analytics";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -138,6 +139,7 @@ export default function JambStudyPage() {
   const questionIds = useMemo(() => questions.map((item) => item.id), [questions]);
   const stats = getStats(questionIds);
   const dueCount = dueQuestionIds(questionIds).length;
+  const activityStats = getJambActivityStats(savedAnswers);
   const subjectInfo = selectedSubject ? JAMB_SUBJECT_INFO[selectedSubject] : null;
   const currentBookmark = Boolean(question && bookmarks.includes(question.id));
 
@@ -234,22 +236,54 @@ export default function JambStudyPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <WorkspacePageHeader
-        title="Revision Cards"
-        backTo="/jamb"
-        backLabel="Back to JAMB workspace"
-        compact
-        wide
-        rightContent={selectedSubject ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => { setSelectedSubject(null); setQuestions([]); setMode("learn"); setCurrentIndex(0); }}
-          >
-            Change subject
-          </Button>
-        ) : undefined}
-      />
+      {selectedSubject && subjectInfo ? (
+        <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-lg">
+          <div className="mx-auto max-w-4xl px-4 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedSubject(null);
+                  setQuestions([]);
+                  setMode("learn");
+                  setCurrentIndex(0);
+                  setReviewQueueIds([]);
+                  setSelectedOption(null);
+                  setFeedback(null);
+                }}
+                className="flex shrink-0 items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ArrowLeft className="h-5 w-5" />
+                <span>Back</span>
+              </button>
+              <div className="flex min-w-0 items-center justify-center gap-2">
+                <span className={`rounded-full px-3 py-1.5 text-sm font-medium subject-${selectedSubject}`}>
+                  {subjectInfo.icon} {subjectInfo.label}
+                </span>
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                {activityStats.currentStreak > 0 && (
+                  <div className="flex items-center gap-1 rounded-full bg-primary/20 px-2.5 py-1 text-sm text-primary">
+                    <Flame className="h-3.5 w-3.5" />
+                    <span className="font-bold">{activityStats.currentStreak}</span>
+                  </div>
+                )}
+                <span className="text-sm font-medium text-muted-foreground">
+                  {queue.length > 0 ? Math.min(currentIndex + 1, queue.length) : 0} / {queue.length}
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+      ) : (
+        <WorkspacePageHeader
+          title="Revision Cards"
+          backTo="/jamb"
+          backLabel="Back to JAMB workspace"
+          compact
+          wide
+        />
+      )}
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-24">
         {!selectedSubject ? (

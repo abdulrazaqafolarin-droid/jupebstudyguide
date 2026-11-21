@@ -140,6 +140,7 @@ export default function JambHomePage() {
   const [reviewQuestionMetadata, setReviewQuestionMetadata] = useState<JambQuestionMetadata[]>([]);
   const [reviewMetadataReady, setReviewMetadataReady] = useState(false);
   const [reviewMetadataError, setReviewMetadataError] = useState(false);
+  const [showAllPreviousMissions, setShowAllPreviousMissions] = useState(false);
   const { history: dailyMissionHistory, ready: missionHistoryReady } = useJambDailyMissions();
   const achievementMetrics = useMemo<JambAchievementMetrics>(() => ({
     ...getJambAchievementActivity(savedAnswers),
@@ -155,6 +156,41 @@ export default function JambHomePage() {
       .map((mission) => ({ mission, summary: getJambMissionSummary(mission) })),
     [dailyMissionHistory, todayKey],
   );
+  const missionWeek = useMemo(() => {
+    const byDate = new Map<string, typeof dailyMissionHistory>();
+    for (const mission of dailyMissionHistory) {
+      const existing = byDate.get(mission.localDate) ?? [];
+      existing.push(mission);
+      byDate.set(mission.localDate, existing);
+    }
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, index) => {
+      const day = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (6 - index));
+      const date = jambLocalDateKey(day);
+      const missions = byDate.get(date) ?? [];
+      const summaries = missions.map(getJambMissionSummary);
+      const checked = summaries.reduce((total, summary) => total + summary.checkedQuestions, 0);
+      const questions = summaries.reduce((total, summary) => total + summary.totalQuestions, 0);
+      const gradable = summaries.reduce((total, summary) => total + summary.gradableQuestions, 0);
+      const correct = summaries.reduce((total, summary) => total + summary.correctAnswers, 0);
+      return {
+        date,
+        label: day.toLocaleDateString(undefined, { weekday: "short" }),
+        missionCount: missions.length,
+        checked,
+        questions,
+        accuracy: gradable > 0 ? Math.round((correct / gradable) * 100) : null,
+        state: missions.length === 0 ? "none" : missions.every((mission) => mission.status === "completed") ? "done" : "partial",
+      } as const;
+    });
+  }, [dailyMissionHistory]);
+  const previousMissions = useMemo(
+    () => dailyMissionHistory
+      .filter((mission) => mission.localDate !== todayKey)
+      .sort((a, b) => b.localDate.localeCompare(a.localDate) || b.updatedAt.localeCompare(a.updatedAt)),
+    [dailyMissionHistory, todayKey],
+  );
+  const visiblePreviousMissions = showAllPreviousMissions ? previousMissions : previousMissions.slice(0, 3);
 
   useEffect(() => {
     if (!reviewProgressReady) return;
@@ -370,6 +406,84 @@ export default function JambHomePage() {
                 <CalendarDays className="h-4 w-4" />
                 {todayMissionProgress.length > 0 ? "Open mission hub & history" : "Open today's mission"}
               </Button>
+
+              {missionHistoryReady && dailyMissionHistory.length > 0 && (
+                <>
+                  <div className="border-t border-border pt-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h3 className="text-sm font-semibold">This week</h3>
+                      {jambActivity.currentStreak > 0 && (
+                        <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                          <Flame className="h-4 w-4 text-destructive" /> {jambActivity.currentStreak} day streak
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-end justify-between gap-2" aria-label="JAMB mission results for the last seven days">
+                      {missionWeek.map(({ date, label, accuracy, state, missionCount, checked, questions }) => (
+                        <div
+                          key={date}
+                          className="flex flex-1 flex-col items-center gap-1"
+                          title={state === "none"
+                            ? `${date} · no mission`
+                            : `${date} · ${missionCount} mission(s) · ${checked}/${questions} checked${accuracy === null ? "" : ` · ${accuracy}% accuracy`}`}
+                        >
+                          <div className="flex h-14 w-full max-w-7 items-end rounded-md bg-muted/40 px-0.5">
+                            <div
+                              className={state === "done" ? "w-full rounded-sm bg-emerald-500" : state === "partial" ? "w-full rounded-sm bg-amber-500" : "w-full rounded-sm bg-border"}
+                              style={{ height: `${Math.max(8, accuracy ?? 0)}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-muted-foreground">{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {previousMissions.length > 0 && (
+                    <div className="border-t border-border pt-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <h3 className="text-sm font-semibold">Previous missions</h3>
+                        {previousMissions.length > 3 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs"
+                            onClick={() => setShowAllPreviousMissions((value) => !value)}
+                          >
+                            {showAllPreviousMissions ? "Show fewer" : `View all ${previousMissions.length}`}
+                          </Button>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        {visiblePreviousMissions.map((mission) => {
+                          const summary = getJambMissionSummary(mission);
+                          return (
+                            <button
+                              key={mission.id}
+                              type="button"
+                              onClick={() => navigate(`/jamb/daily-mission/${mission.id}`)}
+                              aria-label={`Review ${JAMB_SUBJECT_INFO[mission.subject].label} mission from ${mission.localDate}`}
+                              className="flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-muted/20 p-3 text-left transition-[transform,border-color] duration-150 hover:border-primary/40 active:scale-[0.99]"
+                            >
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium">{JAMB_SUBJECT_INFO[mission.subject].icon} {JAMB_SUBJECT_INFO[mission.subject].label}</p>
+                                <p className="text-xs text-muted-foreground">{mission.localDate}</p>
+                              </div>
+                              <span className={mission.status === "completed"
+                                ? "shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-medium text-primary"
+                                : "shrink-0 rounded-full border border-border px-2.5 py-1 text-[10px] font-medium text-muted-foreground"}>
+                                {mission.status === "completed"
+                                  ? `Completed · ${summary.accuracy === null ? "No score" : `${summary.accuracy}%`}`
+                                  : "Unfinished · saved"}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </section>

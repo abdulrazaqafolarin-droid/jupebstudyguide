@@ -17,6 +17,25 @@ The conservative parser splits numbered blocks, detects `(year:Qn)` references, 
 
 A single detected reference is not proof that the year/question metadata is correct. Each row still needs source-level review. “Other option pattern” includes malformed, incomplete or non-consecutive labels and must not be silently converted to A–D.
 
+## Use of English source intake
+
+The committed `JAMB_english_READABLE.txt` source is now included in the same review-only import builder. The current source audit records:
+
+| Measure | Count |
+|---|---:|
+| Year sections | 43 |
+| Question candidates | 3,914 |
+| Source-supplied answer suggestions | 750 |
+| Source-supplied explanation suggestions | 750 |
+| Independently verified answer keys | **0** |
+| Publishable without human review | **0** |
+
+The parser preserves the year/within-year question reference, A–D/A–E options and comprehension passage context. It keeps source answers and explanations as *unverified suggestions*; the server stores them in separate candidate fields and leaves the protected answer key empty until an administrator supplies or confirms the answer and explanation and attests to independent verification.
+
+The English parser audit now also reports duplicate, missing and out-of-range question numbers within each year, declared-versus-parsed count mismatches, malformed option sets, source answers that do not match a parsed option, and passage-dependent questions with missing passage context. A section-count match alone is not treated as proof that the source numbering is correct.
+
+The English source is therefore **3,914 review candidates, not 3,914 ready-to-publish questions**. Items with no answer/explanation pair, invalid options, unresolved passage context, duplicate content or inconsistent source numbering remain in review or must be rejected. Source-provided answers and explanations are not a substitute for independent verification.
+
 A follow-up syntax audit found **31 reference markers without a numeric question identifier**: Physics 1, Chemistry 26 and Biology 4. The importer no longer substitutes an item's position in the uploaded text file as its JAMB question number. Candidates with no reference, multiple references or an unknown question number remain unresolved until an authorised reviewer can verify one exact citation; the review form now requires a single YYYY:Qn reference whose year matches the verified source year. The raw source text and original citation remain preserved in the intake record.
 
 ## Quality and publication rules
@@ -28,7 +47,7 @@ A follow-up syntax audit found **31 reference markers without a numeric question
 - The 378 candidates with no source reference, 37 with multiple references and 31 detected citation markers without a numeric question identifier require source-level resolution before approval. A reviewer must enter one exact citation (for example 2018:Q33) and match its year to the verified source year; file-local item order is never accepted as a JAMB question number.
 - Candidate text similarity and content hashes are used to detect duplicates. Duplicates must be resolved before publication.
 - Source file SHA-256 is retained and rechecked by the server against the original uploaded file in the private `question-source-documents` bucket.
-- A Rutex admin must record the source-use permission/rights note and review each item. A question without a reliable answer key can be approved as ungraded; a scored key/explanation requires independent verification.
+- A Rutex admin must record the source-use permission/rights note and review each item. Every JAMB question must remain in review or be rejected until its correct option and meaningful explanation have been independently verified. The current JAMB approval path rejects ungraded approval.
 
 ## How to stage the source packs
 

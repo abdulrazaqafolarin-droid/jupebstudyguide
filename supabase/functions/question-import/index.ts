@@ -455,7 +455,7 @@ Deno.serve(async (request: Request) => {
           .limit(500);
         if (rowsError) return respond({ error: rowsError.message }, 500);
 
-        const questionIds = (rows ?? []).map((row: Record<string, unknown>) => String(row.id));
+        const questionIds = (rows ?? []).map((row) => row.id);
         if (questionIds.length === 0) return respond({ questions: [], total: 0, truncated: false });
 
         const [keysResult, auditsResult] = await Promise.all([
@@ -466,21 +466,22 @@ Deno.serve(async (request: Request) => {
         if (keysResult.error) return respond({ error: keysResult.error.message }, 500);
         if (auditsResult.error) return respond({ error: auditsResult.error.message }, 500);
 
-        const keyByQuestion = new Map<string, Record<string, unknown>>();
-        for (const key of keysResult.data ?? []) keyByQuestion.set(String(key.question_id), key as Record<string, unknown>);
-        const auditByQuestion = new Map<string, Record<string, unknown>>();
+        const keyByQuestion = new Map<string, (typeof keysResult.data)[number]>();
+        for (const key of keysResult.data ?? []) keyByQuestion.set(key.question_id, key);
+        const auditByQuestion = new Map<string, (typeof auditsResult.data)[number]>();
         for (const audit of auditsResult.data ?? []) {
-          const id = String(audit.question_id ?? "");
-          if (id && !auditByQuestion.has(id)) auditByQuestion.set(id, audit as Record<string, unknown>);
+          if (audit.question_id && !auditByQuestion.has(audit.question_id)) {
+            auditByQuestion.set(audit.question_id, audit);
+          }
         }
 
-        const questions = (rows ?? []).map((row: Record<string, unknown>) => {
-          const id = String(row.id);
+        const questions = (rows ?? []).map((row) => {
+          const id = row.id;
           const key = keyByQuestion.get(id);
           const audit = auditByQuestion.get(id);
           const imageUrls = Array.isArray(row.image_urls)
-            ? row.image_urls.filter((url: unknown): url is string => typeof url === "string")
-            : typeof row.image_url === "string" && row.image_url ? [row.image_url] : [];
+            ? row.image_urls.filter((url): url is string => typeof url === "string")
+            : row.image_url ? [row.image_url] : [];
           return {
             id, subject: row.subject, year: row.year, category: "objective",
             question: row.question ?? "", options: row.options ?? [],

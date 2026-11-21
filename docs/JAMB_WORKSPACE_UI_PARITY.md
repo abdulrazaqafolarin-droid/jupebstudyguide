@@ -174,3 +174,8 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **JAMB Leaderboard empty state:** the placeholder now uses the shared trophy-led, centered empty-state hierarchy and “Go Study Now” action. Its copy describes the verified-results requirement without promising a date or displaying synthetic ranks.
 
+## Answer-state and build follow-up — 21 November 2026
+
+- The shared quiz component now imports its class-name helper and preserves the selected state for questions without an approved answer key. Such responses are shown as recorded/neutral, not incorrectly styled as wrong; scored feedback still requires a gradable key.
+- JAMB Revision Cards now reads the persisted JAMB answer map from its existing progress hook and imports the answer-feedback icons used by the checked state. This restores the saved-answer activity summary wiring.
+- JAMB Past Questions no longer tells a returning learner that an answer key is missing merely because the saved choice has not yet been rechecked in the current page session. It prompts the learner to check against the currently approved answer key instead.

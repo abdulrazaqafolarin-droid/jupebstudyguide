@@ -177,7 +177,7 @@ export function StepJambStudySetup({
       </section>
       <div className="rounded-xl border border-border bg-secondary/20 p-3">
         <p className="text-xs leading-relaxed text-muted-foreground">
-          The JAMB syllabus and topic-led daily lessons are still being verified. Rutex will not substitute JUPEB topics or mark unreviewed questions as correct.
+          JAMB syllabus topics and daily lessons are still being verified. Unreviewed content will not be used to mark answers correct.
         </p>
       </div>
     </div>

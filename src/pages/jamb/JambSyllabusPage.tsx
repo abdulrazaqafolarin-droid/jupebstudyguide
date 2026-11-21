@@ -161,12 +161,12 @@ export default function JambSyllabusPage() {
             const topicIds = subject.sections.flatMap((section) => section.topics.map((topic) => topic.id));
             const summary = getSummary(topicIds);
             return (
-              <motion.section key={subject.id} variants={itemAnim} className="overflow-hidden rounded-2xl border border-border bg-card">
+              <motion.div key={subject.id} variants={itemAnim} className="relative">
                 <button
                   type="button"
                   onClick={() => setExpandedSubject(expanded ? null : subject.id)}
                   aria-expanded={expanded}
-                  className="flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-secondary/30"
+                  className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-all hover:shadow-sm ${expanded ? "border-primary/30 bg-primary/5 shadow-sm" : "border-border/50 bg-card hover:border-border"}`}
                 >
                   <span className="text-2xl">{subject.icon}</span>
                   <span className="min-w-0 flex-1">
@@ -353,7 +353,7 @@ export default function JambSyllabusPage() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.section>
+              </motion.div>
             );
           })}
 

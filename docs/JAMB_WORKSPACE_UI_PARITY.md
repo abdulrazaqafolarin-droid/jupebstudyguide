@@ -152,3 +152,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 - **Daily Mission:** the active JAMB mission header/progress/questions/actions are constrained to the same 3xl reading width as the JUPEB mission experience. The JAMB mission hub and history retain their wider layout.
 - **Navigation/account review:** the same BottomNav and HamburgerMenu components serve both programmes. JAMB menu links map to their JAMB routes, shared Chat/Profile/Settings/Friends/Discover pages derive programme context, and Discover avoids importing JUPEB score rankings into JAMB.
 
+- **Onboarding copy:** the shared Chat & Privacy step now receives the active programme label, avoiding JUPEB-specific “classmates” copy in the JAMB onboarding flow. The same mockup, privacy switches and persisted settings are reused.
+

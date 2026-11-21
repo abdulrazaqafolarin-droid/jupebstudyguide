@@ -321,7 +321,7 @@ export default function JambHomePage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 pt-8 pb-12">
+      <main className="max-w-4xl mx-auto px-4 pt-8">
         {error && (
           <section className="mb-6 animate-in-up">
             <div className="bg-amber-500/5 rounded-2xl border border-amber-500/20 p-4 flex items-start gap-3">

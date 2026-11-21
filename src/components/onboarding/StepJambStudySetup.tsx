@@ -88,9 +88,14 @@ export function StepJambStudySetup({
                   </span>
                 </span>
                 {selected && (
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <motion.span
+                    initial={{ opacity: 0, transform: "scale(0.6)" }}
+                    animate={{ opacity: 1, transform: "scale(1)" }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                  >
                     <Check className="h-3 w-3" strokeWidth={3} />
-                  </span>
+                  </motion.span>
                 )}
               </motion.button>
             );
@@ -118,7 +123,7 @@ export function StepJambStudySetup({
               onClick={() => onExamTarget(target.id)}
               aria-pressed={examTarget === target.id}
               className={cn(
-                "flex-1 rounded-xl border px-2 py-2.5 text-xs font-medium transition-colors",
+                "flex-1 rounded-xl border px-2 py-2.5 text-xs font-medium transition-colors duration-150",
                 examTarget === target.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30",
               )}
             >
@@ -137,7 +142,7 @@ export function StepJambStudySetup({
               onClick={() => onDailyGoal(goal.minutes)}
               aria-pressed={dailyGoalMinutes === goal.minutes}
               className={cn(
-                "flex-1 rounded-xl border px-2 py-2.5 text-xs font-medium transition-colors",
+                "flex-1 rounded-xl border px-2 py-2.5 text-xs font-medium transition-colors duration-150",
                 dailyGoalMinutes === goal.minutes ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30",
               )}
             >

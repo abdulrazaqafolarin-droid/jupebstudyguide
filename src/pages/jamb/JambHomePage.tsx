@@ -30,6 +30,7 @@ import {
 } from "@/lib/jamb-question-service";
 import { getJambReviewStats } from "@/lib/jamb-review";
 import { DashboardPanelShell } from "@/components/DashboardPanelShell";
+import rutexLogo from "@/assets/rutex-logo.jpg";
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
 const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
@@ -526,7 +527,7 @@ export default function JambHomePage() {
         </section>
 
         {/* Subject cards preserve the JUPEB card treatment with JAMB-only content. */}
-        <section className="animate-in-up stagger-3">
+        <section className="animate-in-up stagger-4">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Subjects</h2>
             <motion.span
@@ -633,7 +634,7 @@ export default function JambHomePage() {
 
       <footer className="border-t border-border py-8">
         <div className="flex flex-col items-center gap-3">
-          <GraduationCap className="w-9 h-9 text-primary" />
+          <img src={rutexLogo} alt="Rutex Logo" className="w-10 h-10 rounded-lg object-cover" />
           <p className="text-xs text-muted-foreground">Built by <span className="font-semibold text-foreground">Rutex</span></p>
           <p className="text-xs text-muted-foreground">JAMB UTME Preparation · {JAMB_TARGET_EXAM_YEAR}</p>
         </div>

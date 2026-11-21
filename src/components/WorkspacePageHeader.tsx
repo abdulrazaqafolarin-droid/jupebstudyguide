@@ -1,7 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 
 interface WorkspacePageHeaderProps {
   title: string;
@@ -25,27 +24,22 @@ export function WorkspacePageHeader({
   subtitle,
   compact = false,
 }: WorkspacePageHeaderProps) {
+  const backControlClassName = compact
+    ? "inline-flex h-8 w-8 shrink-0 -ml-1 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+    : "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground";
+
   const backControl = onBack ? (
-    <Button
+    <button
       type="button"
-      variant="ghost"
-      size="icon"
-      className={compact ? "h-8 w-8 shrink-0 -ml-1" : "shrink-0"}
+      className={backControlClassName}
       onClick={onBack}
       aria-label={backLabel}
     >
       <ArrowLeft className="h-5 w-5" />
-    </Button>
+    </button>
   ) : (
-    <Link to={backTo} aria-label={backLabel}>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className={compact ? "h-8 w-8 shrink-0 -ml-1" : "shrink-0"}
-      >
-        <ArrowLeft className="h-5 w-5" />
-      </Button>
+    <Link to={backTo} aria-label={backLabel} className={backControlClassName}>
+      <ArrowLeft className="h-5 w-5" />
     </Link>
   );
 

@@ -21,7 +21,6 @@ import {
 import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionMath } from "@/components/QuestionMath";
-import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { QuestionImage } from "@/components/QuestionImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -367,7 +366,7 @@ export default function JambPastQuestionsPage() {
           </button>
         </div>
 
-        <div className="mb-4 max-h-[42vh] overflow-y-auto overscroll-contain pr-1 text-sm font-medium leading-relaxed sm:text-base">
+        <div className="mb-4 max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1 text-base font-medium leading-relaxed">
           <QuestionMath content={question.question} />
         </div>
         {question.imageUrls.map((url) => (
@@ -376,19 +375,45 @@ export default function JambPastQuestionsPage() {
         <div className="space-y-2">
           {question.options.map((option) => {
             const isSelected = current === option.label;
-            const isApproved = feedback?.gradable === true && feedback.correctOption === option.label;
-            const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
+            const hasApprovedFeedback = feedback?.gradable === true;
+            const isApproved = hasApprovedFeedback && feedback.correctOption === option.label;
+            const isWrongSelection = hasApprovedFeedback && isSelected && feedback.isCorrect === false;
             return (
-              <QuestionOptionButton
+              <button
                 key={option.label}
-                label={option.label}
-                state={isApproved ? "correct" : isWrongSelection ? "incorrect" : isSelected ? "selected" : "default"}
-                selected={isSelected}
+                type="button"
+                aria-pressed={isSelected}
+                disabled={Boolean(checking[question.id])}
                 onClick={() => void saveAnswer(question.id, option.label)}
-                contentClassName="break-words text-pretty"
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm text-left transition-all active:scale-[0.97] disabled:cursor-wait disabled:opacity-80 ${
+                  isApproved
+                    ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20 text-green-700 dark:text-green-300 font-medium"
+                    : isWrongSelection
+                      ? "border-red-500/50 bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-300 font-medium"
+                      : isSelected
+                        ? "border-primary/50 bg-primary/5 text-primary font-medium"
+                        : "border-border bg-card hover:bg-accent/50"
+                }`}
               >
-                <QuestionMath content={option.text} inline />
-              </QuestionOptionButton>
+                <span
+                  className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
+                    isApproved
+                      ? "bg-green-600 text-white"
+                      : isWrongSelection
+                        ? "bg-red-600 text-white"
+                        : isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {option.label}
+                </span>
+                <span className="text-pretty break-words flex-1 min-w-0">
+                  <QuestionMath content={option.text} inline />
+                </span>
+                {isApproved && <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>}
+                {isWrongSelection && <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>}
+              </button>
             );
           })}
         </div>

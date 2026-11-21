@@ -16,6 +16,7 @@ interface WorkspacePageHeaderProps {
   animated?: boolean;
   wide?: boolean;
   rightContent?: ReactNode;
+  footerContent?: ReactNode;
 }
 
 /** Shared sticky page header for JUPEB and JAMB secondary pages. */
@@ -31,6 +32,7 @@ export function WorkspacePageHeader({
   animated = false,
   wide = false,
   rightContent,
+  footerContent,
 }: WorkspacePageHeaderProps) {
   const backControlClassName = compact
     ? "inline-flex h-8 w-8 shrink-0 -ml-1 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
@@ -68,6 +70,7 @@ export function WorkspacePageHeader({
           </div>
           {rightContent}
         </div>
+        {footerContent}
       </>
     );
 

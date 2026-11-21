@@ -21,6 +21,7 @@ import {
 } from "@/lib/jamb-question-service";
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
+const bouncySpring: Transition = { type: "spring", stiffness: 400, damping: 10, mass: 0.7 };
 const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
 const containerVariants: Variants = {
   hidden: {},
@@ -60,8 +61,8 @@ function JambSubjectCard({
     <motion.button
       onClick={onClick}
       className="w-full text-left group"
-      whileHover={{ y: -10, scale: 1.02, transition: fastSpring }}
-      whileTap={{ scale: 0.96, transition: fastSpring }}
+      whileHover={{ y: -10, scale: 1.02, transition: bouncySpring }}
+      whileTap={{ scale: 0.96, transition: bouncySpring }}
     >
       <div className={`bg-card rounded-2xl border p-6 chalk-texture relative overflow-hidden transition-colors ${subjectCardTone}`}>
         <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${glowTone}`} />
@@ -316,7 +317,7 @@ export default function JambHomePage() {
               <Button
                 size="lg"
                 onClick={() => navigate("/jamb/past-questions")}
-                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 hover:scale-105 active:scale-95 transition-all duration-200 glow-gold shadow-lg shadow-primary/25"
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 hover:scale-105 active:scale-95 transition-all duration-200 glow-gold animate-pulse-glow shadow-lg shadow-primary/25"
               >
                 <CalendarDays className="w-5 h-5 mr-2" />
                 Explore JAMB Questions
@@ -448,22 +449,22 @@ export default function JambHomePage() {
                 </div>
               </ProgressRing>
               <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
-                <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 text-center border border-primary/10">
+                <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 text-center border border-primary/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30">
                   <BookOpen className="w-6 h-6 mx-auto mb-2 text-primary" />
                   <p className="text-2xl font-bold text-primary tabular-nums">{loading ? "—" : totalQuestions.toLocaleString()}</p>
                   <p className="text-xs text-muted-foreground">Published Questions</p>
                 </div>
-                <div className="bg-gradient-to-br from-physics/10 to-physics/5 rounded-xl p-4 text-center border border-physics/10">
+                <div className="bg-gradient-to-br from-physics/10 to-physics/5 rounded-xl p-4 text-center border border-physics/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-physics/30">
                   <Brain className="w-6 h-6 mx-auto mb-2 text-physics" />
                   <p className="text-2xl font-bold text-physics tabular-nums">{progressReady ? totalAnswered.toLocaleString() : "—"}</p>
                   <p className="text-xs text-muted-foreground">Answers Saved</p>
                 </div>
-                <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl p-4 text-center border border-accent/10">
+                <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl p-4 text-center border border-accent/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30">
                   <Bookmark className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <p className="text-2xl font-bold text-accent tabular-nums">{bookmarksReady ? totalBookmarked.toLocaleString() : "—"}</p>
                   <p className="text-xs text-muted-foreground">Bookmarks</p>
                 </div>
-                <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-xl p-4 text-center border border-destructive/10">
+                <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-xl p-4 text-center border border-destructive/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-destructive/30">
                   <Library className="w-6 h-6 mx-auto mb-2 text-destructive" />
                   <p className="text-2xl font-bold text-destructive tabular-nums">{availableYears.length}</p>
                   <p className="text-xs text-muted-foreground">Available Years</p>

@@ -234,8 +234,7 @@ export default function JambStudyPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-sm font-semibold">JAMB Revision Cards</h1>
-            <p className="text-[10px] text-muted-foreground">Learn all · Review due · JAMB-only progress</p>
+            <h1 className="truncate text-sm font-semibold">Revision Cards</h1>
           </div>
           {selectedSubject && (
             <Button size="sm" variant="ghost" onClick={() => { setSelectedSubject(null); setQuestions([]); setMode("learn"); setCurrentIndex(0); }}>
@@ -422,7 +421,7 @@ export default function JambStudyPage() {
                 </Button>
               </div>
             )}
-            <p className="text-center text-[11px] text-muted-foreground">Answer checking uses reviewed JAMB keys only. Spaced-repetition progress is stored locally for this signed-in account and remains separate from JUPEB.</p>
+            <p className="text-center text-[11px] text-muted-foreground">Only approved answer keys can mark a card as mastered.</p>
           </>
         )}
         {pageError && !selectedSubject && <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{pageError}</p>}

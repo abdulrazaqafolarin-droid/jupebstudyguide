@@ -33,12 +33,8 @@ export default function JambAchievementsPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-semibold">JAMB Achievements</h1>
-            <p className="text-[10px] text-muted-foreground">Milestones earned through JAMB activity only</p>
+            <h1 className="text-sm font-semibold">Achievements</h1>
           </div>
-          <Link to="/jamb/stats" className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
-            Study stats
-          </Link>
         </div>
       </header>
 
@@ -48,8 +44,7 @@ export default function JambAchievementsPage() {
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary"><Trophy className="h-5 w-5" /></div>
               <div>
-                <h2 className="font-semibold">Your JAMB progress milestones</h2>
-                <p className="text-xs text-muted-foreground">Practice, consistency, saved questions and daily missions</p>
+                <h2 className="font-semibold">Your progress</h2>
               </div>
             </div>
             <p className="text-right text-lg font-bold tabular-nums">{ready ? unlockedCount : "—"}<span className="text-sm font-normal text-muted-foreground">/{achievements.length}</span></p>
@@ -105,7 +100,7 @@ export default function JambAchievementsPage() {
         </section>
 
         <p className="text-center text-[11px] text-muted-foreground">
-          These are Rutex JAMB practice milestones, not official JAMB awards or exam grades.
+          Rutex practice milestones are not official JAMB awards or exam grades.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link to="/jamb/past-questions" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">

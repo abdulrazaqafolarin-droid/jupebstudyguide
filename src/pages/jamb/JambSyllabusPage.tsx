@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, BookOpen, BookOpenCheck, ChevronDown, ExternalLink,
-  GraduationCap, Search, ShieldAlert, Sparkles, CircleCheck, CircleDashed,
+  , Search, ShieldAlert, Sparkles, CircleCheck, CircleDashed,
   PlayCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,6 @@ import {
   JAMB_SYLLABUS,
   JAMB_SYLLABUS_REVIEW_NOTICE,
   JAMB_SYLLABUS_SUBJECTS,
-  getJambSyllabusTopicCount,
   type JambSyllabusSubjectId,
 } from "@/lib/jamb-syllabus";
 import { useJambSyllabusProgress } from "@/hooks/useJambSyllabusProgress";
@@ -90,14 +89,8 @@ export default function JambSyllabusPage() {
           <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
-            <GraduationCap className="h-5 w-5 text-primary" />
-          </div>
           <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-semibold">JAMB Syllabus</h1>
-            <p className="text-[11px] text-muted-foreground">
-              {JAMB_SYLLABUS_SUBJECTS.length} subjects · {getJambSyllabusTopicCount()} topics in the uploaded source pack
-            </p>
+            <h1 className="text-sm font-semibold">Syllabus</h1>
           </div>
         </div>
       </motion.header>

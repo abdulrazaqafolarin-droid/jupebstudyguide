@@ -198,15 +198,14 @@ export default function JambDailyMissionPage() {
   const visibleHistoryRows = showAllHistory ? historyRows : historyRows.slice(0, 20);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b border-border bg-card/90 backdrop-blur-lg">
         <div className="mx-auto flex h-14 max-w-4xl items-center gap-3 px-4">
           <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-semibold">JAMB Daily Mission</h1>
-            <p className="text-[10px] text-muted-foreground">Practice-only · JAMB activity and history</p>
+            <h1 className="text-sm font-semibold">Daily Mission</h1>
           </div>
           <CalendarDays className="h-5 w-5 text-primary" />
         </div>
@@ -221,7 +220,7 @@ export default function JambDailyMissionPage() {
             <div className="min-w-0 flex-1">
               <h2 className="text-lg font-bold">Build a daily practice habit</h2>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Choose a subject and complete a short set from the reviewed JAMB question bank. Your answers and mission history are separate from JUPEB.
+                Choose a subject and practise with up to 10 reviewed questions.
               </p>
             </div>
           </div>
@@ -230,13 +229,13 @@ export default function JambDailyMissionPage() {
             <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1"><Clock3 className="h-3.5 w-3.5" /> Up to 10 questions</span>
           </div>
           <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            Syllabus-led lessons are not enabled until the applicable official JAMB syllabus is verified. A question is included in accuracy only when the JAMB answer-check service confirms it is gradable.
+            Syllabus-led lessons remain disabled pending official source verification. Only approved answer keys count towards accuracy.
           </p>
         </section>
 
         {!remoteSupported && (
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
-            Cloud mission history is not enabled on the connected backend yet. This device still saves your JAMB missions under your signed-in account; cloud sync will activate after the included database migration is released.
+            Cloud sync is unavailable; your missions remain saved on this device.
           </div>
         )}
 
@@ -251,7 +250,6 @@ export default function JambDailyMissionPage() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="font-semibold">Choose today's subject</h2>
-                {studyPreferencesReady && <p className="mt-0.5 text-xs text-muted-foreground">Daily goal: {studyPreferences.dailyGoalMinutes} minutes · Preferred subjects appear first</p>}
               </div>
               <span className="text-xs text-muted-foreground">{today}</span>
             </div>
@@ -286,7 +284,7 @@ export default function JambDailyMissionPage() {
             </div>
             {!loadingBank && summaries.every((row) => row.count === 0) && (
               <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
-                The mission workflow is ready, but no JAMB questions have been approved and published yet. Source candidates are not used directly. Once reviewed questions are published, the subject missions will become available automatically.
+                No reviewed JAMB questions are published yet.
               </div>
             )}
           </section>

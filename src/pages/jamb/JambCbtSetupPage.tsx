@@ -87,7 +87,7 @@ export default function JambCbtSetupPage() {
           className="mb-6 inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to JAMB workspace
+          Back
         </Link>
 
         <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 chalk-texture md:p-8">
@@ -100,13 +100,12 @@ export default function JambCbtSetupPage() {
                 <Target className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">Set up your CBT practice</h1>
-                <p className="text-sm text-muted-foreground">Choose a JAMB subject and a focused practice length.</p>
+                <h1 className="text-xl font-bold">CBT Practice</h1>
               </div>
             </div>
 
             <section className="mt-6">
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Subject</h2>
+              <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Subject</h2>
               <div className="grid grid-cols-2 gap-3">
                 {JAMB_SUBJECTS.map((item) => {
                   const selected = subject === item;
@@ -144,11 +143,10 @@ export default function JambCbtSetupPage() {
                   );
                 })}
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">JAMB question selection is isolated from the JUPEB question bank.</p>
             </section>
 
             <section className="mt-6">
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Practice length</h2>
+              <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Practice length</h2>
               <div className="flex flex-wrap gap-2">
                 {JAMB_CBT_PRACTICE_PRESETS.map((item, index) => {
                   const selected = presetIndex === index;
@@ -203,7 +201,7 @@ export default function JambCbtSetupPage() {
                 <div>
                   <p className="text-sm font-semibold">Practice session, not a full UTME mock</p>
                   <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    This is a single-subject timed practice session, not a complete official UTME mock. Use of English is compulsory in UTME and is not part of the initial supplied question set. The current official manual and syllabus must be verified before full-mock settings are enabled.
+                    This is single-subject practice, not a complete UTME mock. Full-mock settings remain disabled pending official format verification.
                   </p>
                 </div>
               </div>

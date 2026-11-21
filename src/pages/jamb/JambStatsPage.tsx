@@ -114,15 +114,14 @@ export default function JambStatsPage() {
     : "No JAMB practice recorded yet";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b border-border bg-card/90 backdrop-blur-lg">
         <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
           <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-semibold">JAMB Study Stats</h1>
-            <p className="text-[10px] text-muted-foreground">Your JAMB practice activity only</p>
+            <h1 className="text-sm font-semibold">Study Stats</h1>
           </div>
           <Link to="/jamb/achievements" className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
             <Award className="h-4 w-4" /> Achievements
@@ -181,7 +180,7 @@ export default function JambStatsPage() {
               <p className="mt-1 text-xs text-muted-foreground">Scheduled cards due</p>
             </div>
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">Mastery is based on your JAMB revision-card ratings after the JAMB answer service confirms an approved answer key. These review records stay separate from JUPEB.</p>
+          <p className="mt-3 text-xs text-muted-foreground">A card is mastered only after an approved answer key is confirmed.</p>
           <Link to="/jamb/study" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Open Revision Cards <Brain className="h-3.5 w-3.5" /></Link>
         </section>
 
@@ -298,9 +297,9 @@ export default function JambStatsPage() {
         </section>
 
         <section className="rounded-2xl border border-border bg-amber-500/5 p-5">
-          <h2 className="mb-2 font-semibold">How JAMB results are reported</h2>
+          <h2 className="mb-2 font-semibold">Score details</h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Saved-answer activity and server-scored JAMB CBT results are reported separately. A practice question is not marked correct or incorrect here unless its answer key has been independently reviewed and approved. JAMB activity and CBT scores come from JAMB-only records; JUPEB question totals, revision progress and score history are never substituted.
+            Only independently approved answer keys contribute to accuracy. Saved-answer activity and timed CBT results are reported separately.
           </p>
         </section>
 

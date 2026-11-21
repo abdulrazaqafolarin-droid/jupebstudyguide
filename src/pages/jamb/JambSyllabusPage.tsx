@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, BookOpen, BarChart3, ChevronDown, CircleCheck, CircleDashed,
+  BookOpen, BarChart3, ChevronDown, CircleCheck, CircleDashed,
   ExternalLink, GraduationCap, PlayCircle, Search, ShieldAlert, Sparkles,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/jamb-syllabus";
 import { useJambSyllabusProgress } from "@/hooks/useJambSyllabusProgress";
 import type { JambSyllabusTopicState } from "@/lib/jamb-syllabus-progress";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 
 const SUBJECT_ENTRIES = JAMB_SYLLABUS_SUBJECTS.map((id) => JAMB_SYLLABUS[id]);
 
@@ -99,39 +100,26 @@ export default function JambSyllabusPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <motion.header
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-border/50"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3 relative">
-          <motion.button
-            type="button"
-            whileHover={{ x: -3 }}
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-            className="p-1.5 -ml-1 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </motion.button>
-          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <GraduationCap className="w-5 h-5 text-primary" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className="font-semibold heading text-sm">JAMB Syllabus</h1>
-            <p className="text-[11px] text-muted-foreground">
-              {overall.completed}/{overall.total} topics complete · {overall.percentage}%
-            </p>
-          </div>
+      <WorkspacePageHeader
+        title="JAMB Syllabus"
+        subtitle={`${overall.completed}/${overall.total} topics complete · ${overall.percentage}%`}
+        onBack={() => navigate(-1)}
+        backLabel="Go back"
+        icon={GraduationCap}
+        compact
+        animated
+        wide
+        rightContent={
           <div className="w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center text-xs font-bold text-primary tabular-nums">
             {overall.percentage}%
           </div>
-        </div>
-        <div className="h-1 bg-secondary/70">
-          <div className="h-full bg-primary transition-all duration-500" style={{ width: overall.percentage + "%" }} />
-        </div>
-      </motion.header>
+        }
+        footerContent={
+          <div className="h-1 bg-secondary/70">
+            <div className="h-full bg-primary transition-all duration-500" style={{ width: overall.percentage + "%" }} />
+          </div>
+        }
+      />
 
       <motion.main
         initial={{ opacity: 0 }}

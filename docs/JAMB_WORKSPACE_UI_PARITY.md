@@ -162,3 +162,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **Syllabus topic rows:** each JAMB topic now uses JUPEB's staggered left-to-right fade/slide entrance, rounded bordered card, expanded-state surface tint and matching row/detail padding. JAMB topic source-page references, objective statements, completion states and Tutor/practice actions remain programme-specific.
 
+- **CBT answer review:** review rows now reuse the shared answer-option component. Correct/incorrect styling is shown only when an approved answer key makes the item gradable; an ungraded saved choice stays in the neutral selected state rather than being mislabeled as wrong.
+

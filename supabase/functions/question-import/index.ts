@@ -443,7 +443,7 @@ Deno.serve(async (request: Request) => {
           return respond({ error: "A supported JAMB subject and year are required" }, 400);
         }
         const { data: rows, error: rowsError, count: rowsResultCountRaw } = await questionTable
-          .select("id,subject,year,category,question,options,difficulty,course,sort_order,image_url,image_urls,image_position,source_ref,source_document,source_page,source_question_number", { count: "exact" })
+          .select("id,subject,year,category,question,options,difficulty,course,sort_order,image_url,image_urls,image_position,source_ref,source_document,source_page,source_question_number,source_batch_id", { count: "exact" })
           .eq("exam_program_id", "jamb")
           .eq("subject", subject)
           .eq("year", year)
@@ -459,13 +459,20 @@ Deno.serve(async (request: Request) => {
         const questionIds = (rows ?? []).map((row) => row.id);
         if (questionIds.length === 0) return respond({ questions: [], total: 0, truncated: false });
 
-        const [keysResult, auditsResult] = await Promise.all([
+        const sourceBatchIds = [...new Set((rows ?? [])
+          .map((row) => row.source_batch_id)
+          .filter((id): id is string => typeof id === "string" && id.length > 0))];
+        const [keysResult, auditsResult, batchesResult] = await Promise.all([
           answerKeyTable.select("question_id,correct_answer,explanation,review_status").in("question_id", questionIds),
           auditTable.select("question_id,rights_note,source_document,source_reference,created_at")
             .in("question_id", questionIds).order("created_at", { ascending: false }).limit(2000),
+          sourceBatchIds.length
+            ? supabase.from("question_import_batches").select("id,rights_note,source_document").in("id", sourceBatchIds)
+            : Promise.resolve({ data: [], error: null }),
         ]);
         if (keysResult.error) return respond({ error: keysResult.error.message }, 500);
         if (auditsResult.error) return respond({ error: auditsResult.error.message }, 500);
+        if (batchesResult.error) return respond({ error: batchesResult.error.message }, 500);
 
         const keyByQuestion = new Map<string, (typeof keysResult.data)[number]>();
         for (const key of keysResult.data ?? []) keyByQuestion.set(key.question_id, key);
@@ -475,11 +482,14 @@ Deno.serve(async (request: Request) => {
             auditByQuestion.set(audit.question_id, audit);
           }
         }
+        const batchById = new Map<string, (typeof batchesResult.data)[number]>();
+        for (const batch of batchesResult.data ?? []) batchById.set(batch.id, batch);
 
         const questions = (rows ?? []).map((row) => {
           const id = row.id;
           const key = keyByQuestion.get(id);
           const audit = auditByQuestion.get(id);
+          const batch = row.source_batch_id ? batchById.get(row.source_batch_id) : undefined;
           const imageUrls = Array.isArray(row.image_urls)
             ? row.image_urls.filter((url): url is string => typeof url === "string")
             : row.image_url ? [row.image_url] : [];
@@ -493,9 +503,9 @@ Deno.serve(async (request: Request) => {
             sortOrder: row.sort_order ?? 0, imageUrl: row.image_url ?? imageUrls[0] ?? null,
             imageUrls, imagePosition: row.image_position ?? (imageUrls.length ? "image-only" : "text-only"),
             sourceReference: row.source_ref ?? "",
-            sourceDocument: row.source_document ?? audit?.source_document ?? "",
+            sourceDocument: row.source_document ?? audit?.source_document ?? batch?.source_document ?? "",
             sourcePage: row.source_page ?? null, sourceQuestionNumber: row.source_question_number ?? "",
-            rightsNote: audit?.rights_note ?? "",
+            rightsNote: audit?.rights_note ?? batch?.rights_note ?? "",
           };
         });
         return respond({ questions, total: rowsResultCount ?? questions.length, truncated: (rowsResultCount ?? questions.length) > questions.length });
@@ -526,6 +536,14 @@ Deno.serve(async (request: Request) => {
           .limit(1)
           .maybeSingle();
         if (auditError) return respond({ error: auditError.message }, 500);
+        const sourceBatchId = typeof row.source_batch_id === "string" ? row.source_batch_id : null;
+        const { data: sourceBatch, error: sourceBatchError } = sourceBatchId
+          ? await supabase.from("question_import_batches")
+              .select("rights_note,source_document")
+              .eq("id", sourceBatchId)
+              .maybeSingle()
+          : { data: null, error: null };
+        if (sourceBatchError) return respond({ error: sourceBatchError.message }, 500);
 
         let imageUrls: string[] = [];
         if (Array.isArray(row.image_urls)) {
@@ -554,10 +572,10 @@ Deno.serve(async (request: Request) => {
             imageUrls,
             imagePosition: row.image_position ?? (imageUrls.length ? "image-only" : "text-only"),
             sourceReference: row.source_ref ?? "",
-            sourceDocument: row.source_document ?? "",
+            sourceDocument: row.source_document ?? sourceBatch?.source_document ?? "",
             sourcePage: row.source_page ?? null,
             sourceQuestionNumber: row.source_question_number ?? "",
-            rightsNote: audit?.rights_note ?? "",
+            rightsNote: audit?.rights_note ?? sourceBatch?.rights_note ?? "",
           },
         });
       }

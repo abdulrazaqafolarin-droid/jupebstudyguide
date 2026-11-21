@@ -80,7 +80,7 @@ export default function JambAchievementsPage() {
               <p className="mt-0.5 text-xs text-muted-foreground">Achievements unlocked</p>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-1.5">
-              {categoryStats.filter((category) => category.unlocked > 0).map((category) => (
+              {categoryStats.filter((category) => ready && category.unlocked > 0).map((category) => (
                 <span
                   key={category.value}
                   className="inline-flex items-center gap-1 rounded-full border border-primary/15 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary"

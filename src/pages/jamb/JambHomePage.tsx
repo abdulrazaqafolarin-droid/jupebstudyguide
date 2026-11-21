@@ -145,6 +145,7 @@ export default function JambHomePage() {
   );
   const [reviewQuestionMetadata, setReviewQuestionMetadata] = useState<JambQuestionMetadata[]>([]);
   const [reviewMetadataReady, setReviewMetadataReady] = useState(false);
+  const [reviewMetadataError, setReviewMetadataError] = useState(false);
   const { history: dailyMissionHistory, ready: missionHistoryReady } = useJambDailyMissions();
   const todayKey = jambLocalDateKey();
   const todayMissionProgress = useMemo(
@@ -159,6 +160,7 @@ export default function JambHomePage() {
     if (!reviewProgressReady) return;
     let active = true;
     setReviewMetadataReady(false);
+    setReviewMetadataError(false);
     getJambQuestionMetadataByIds(reviewQuestionIds)
       .then((rows) => {
         if (active) setReviewQuestionMetadata(rows);
@@ -167,6 +169,7 @@ export default function JambHomePage() {
         if (!active) return;
         console.warn("JAMB subject-card progress could not be restored:", reason);
         setReviewQuestionMetadata([]);
+        setReviewMetadataError(true);
       })
       .finally(() => {
         if (active) setReviewMetadataReady(true);
@@ -472,7 +475,7 @@ export default function JambHomePage() {
                   questionCountReady={!loading}
                   studiedCount={subjectReviewStats.find((row) => row.subject === subject)?.studiedCount ?? 0}
                   learnedCount={subjectReviewStats.find((row) => row.subject === subject)?.learnedCount ?? 0}
-                  statsReady={reviewProgressReady && reviewMetadataReady}
+                  statsReady={reviewProgressReady && reviewMetadataReady && !reviewMetadataError}
                   onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
                 />
               </motion.div>

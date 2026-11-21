@@ -267,7 +267,7 @@ export default function JambStudyPage() {
             </section>
             <section className="space-y-3">
               <h2 className="font-semibold">Choose a subject</h2>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3">
                 {JAMB_SUBJECTS.map((subject) => {
                   const info = JAMB_SUBJECT_INFO[subject];
                   const summary = summaries.find((row) => row.subject === subject);

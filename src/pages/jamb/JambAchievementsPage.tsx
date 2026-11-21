@@ -85,7 +85,7 @@ export default function JambAchievementsPage() {
     <div className="min-h-screen bg-background">
       <WorkspacePageHeader title="Achievements" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} />
 
-      <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-10">
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         <section className="space-y-4 rounded-xl border border-border bg-card p-5">
           <div className="flex items-center justify-between gap-3">
             <div>

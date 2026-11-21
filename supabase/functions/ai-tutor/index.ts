@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Unsupported examination programme" }), { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
     }
     const programme = examProgramId === "jamb" ? "jamb" : "jupeb";
-    const blocked = await guardAiAccess(supabase, user, programme);
+    const blocked = await guardAiAccess(supabase, user, programme, token);
     if (blocked) return blocked;
     let systemContent = programme === "jamb" ? JAMB_TUTOR_SYSTEM_PROMPT : TUTOR_SYSTEM_PROMPT;
 

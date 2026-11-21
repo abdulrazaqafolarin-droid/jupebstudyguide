@@ -397,7 +397,7 @@ export function JambFloatingAITutor() {
             <StaggerContent delay={0.12} reduced={shouldReduceMotion} className="shrink-0">
               <div
                 className={[
-                  "flex shrink-0 items-center justify-between gap-2 border-b border-white/5 p-3",
+                "flex shrink-0 items-center justify-between gap-2 border-b border-white/5 p-3",
                 "bg-gradient-to-r from-primary/[0.08] via-accent/[0.06] to-transparent",
                 isMinimized ? "cursor-pointer" : "",
               ].join(" ")}

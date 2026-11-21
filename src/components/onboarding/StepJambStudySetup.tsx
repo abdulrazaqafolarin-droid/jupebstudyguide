@@ -161,7 +161,7 @@ export function StepJambStudySetup({
           aria-label="School name"
           className="bg-background/50"
         />
-        <p className="text-[10px] text-muted-foreground">Shown as a tag on your profile where school details are visible.</p>
+        <p className="text-[10px] text-muted-foreground">Shown as a tag on your profile everywhere it appears — leaderboard, chat, groups.</p>
         <Input
           value={examSeatNumber}
           onChange={(event) => onExamSeatNumber(event.target.value)}

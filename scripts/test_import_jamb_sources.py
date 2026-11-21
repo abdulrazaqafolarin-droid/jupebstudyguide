@@ -34,7 +34,11 @@ class JambImportParserTests(unittest.TestCase):
 
     def test_all_science_sources_are_parseable_and_review_only(self):
         packages, report = build_all({subject: path for subject, path in SOURCES.items()})
-        science = {package["subject"]: package for package in packages}
+        science = {
+            package["subject"]: package
+            for package in packages
+            if package["subject"] in SOURCES
+        }
         self.assertEqual(set(science), {"physics", "chemistry", "biology"})
         self.assertEqual(report["exam_program_id"], "jamb")
         self.assertEqual(

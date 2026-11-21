@@ -12,7 +12,7 @@ import { SubjectCard } from '@/components/SubjectCard';
 import { StudyView } from '@/components/StudyView';
 import { QuizMode, QuizResult } from '@/components/QuizMode';
 import { QuizSetup, QuizPlan } from '@/components/QuizSetup';
-import { ProgressRing } from '@/components/ProgressRing';
+import { DashboardProgressPanel } from '@/components/DashboardProgressPanel';
 import StreakDisplay from '@/components/StreakDisplay';
 import AchievementsPanel from '@/components/AchievementsPanel';
 import AchievementPopup from '@/components/AchievementPopup';
@@ -874,48 +874,19 @@ const Index = () => {
           onOpenMissionReview={handleOpenMissionReview}
         />
 
-        {/* Overall Progress */}
-        <section className="mb-12 animate-in-up stagger-1">
-          <div className="relative bg-card rounded-2xl border border-border p-6 md:p-8 chalk-texture overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-            <div className="relative flex flex-col md:flex-row items-center gap-8">
-              <ProgressRing 
-                progress={overallStats.learnedPercentage} 
-                size={140} 
-                strokeWidth={10}
-              >
-                <div className="text-center">
-                  <span className="text-3xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{Math.round(overallStats.learnedPercentage)}%</span>
-                  <p className="text-xs text-muted-foreground">Mastered</p>
-                </div>
-              </ProgressRing>
-
-              <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
-                <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 text-center border border-primary/10 hover:border-primary/30 transition-all duration-200 hover:-translate-y-0.5">
-                  <BookOpen className="w-6 h-6 mx-auto mb-2 text-primary" />
-                  <p className="text-2xl font-bold text-primary">{overallStats.total}</p>
-                  <p className="text-xs text-muted-foreground">Total Questions</p>
-                </div>
-                <div className="bg-gradient-to-br from-physics/10 to-physics/5 rounded-xl p-4 text-center border border-physics/10 hover:border-physics/30 transition-all duration-200 hover:-translate-y-0.5">
-                  <Brain className="w-6 h-6 mx-auto mb-2 text-physics" />
-                  <p className="text-2xl font-bold text-physics">{overallStats.studied}</p>
-                  <p className="text-xs text-muted-foreground">Studied</p>
-                </div>
-                <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl p-4 text-center border border-accent/10 hover:border-accent/30 transition-all duration-200 hover:-translate-y-0.5">
-                  <Target className="w-6 h-6 mx-auto mb-2 text-accent" />
-                  <p className="text-2xl font-bold text-accent">{overallStats.learned}</p>
-                  <p className="text-xs text-muted-foreground">Mastered</p>
-                </div>
-                <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-xl p-4 text-center border border-destructive/10 hover:border-destructive/30 transition-all duration-200 hover:-translate-y-0.5">
-                  <Flame className="w-6 h-6 mx-auto mb-2 text-destructive" />
-                  <p className="text-2xl font-bold text-destructive">{overallStats.dueToday}</p>
-                  <p className="text-xs text-muted-foreground">Due Today</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* JUPEB mastery values inside the shared programme progress panel. */}
+        <DashboardProgressPanel
+          progress={overallStats.learnedPercentage}
+          progressText={`${Math.round(overallStats.learnedPercentage)}%`}
+          progressLabel="Mastered"
+          metrics={[
+            { label: "Total Questions", value: overallStats.total, icon: BookOpen, palette: "primary" },
+            { label: "Studied", value: overallStats.studied, icon: Brain, palette: "physics" },
+            { label: "Mastered", value: overallStats.learned, icon: Target, palette: "accent" },
+            { label: "Due Today", value: overallStats.dueToday, icon: Flame, palette: "destructive" },
+          ]}
+          ariaLabel="JUPEB overall study progress"
+        />
         
         {/* Streak & Achievements Row */}
         <section className="mb-12 grid gap-4 md:grid-cols-2 animate-in-up stagger-2">

@@ -6,7 +6,7 @@ import {
   CheckCircle2, Flame, GraduationCap, Library, ShieldAlert, ShieldCheck, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProgressRing } from "@/components/ProgressRing";
+import { DashboardProgressPanel } from "@/components/DashboardProgressPanel";
 import StreakDisplay from "@/components/StreakDisplay";
 import { SubjectCard } from "@/components/SubjectCard";
 import AchievementsPanel from "@/components/AchievementsPanel";
@@ -480,43 +480,18 @@ export default function JambHomePage() {
               )}
         </DashboardPanelShell>
 
-        {/* Programme-specific progress — never reads JUPEB mastery or streak data. */}
-        <section className="mb-12 animate-in-up stagger-1">
-          <div className="relative bg-card rounded-2xl border border-border p-6 md:p-8 chalk-texture overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-            <div className="relative flex flex-col md:flex-row items-center gap-8">
-              <ProgressRing progress={practicePercent} size={140} strokeWidth={10}>
-                <div className="text-center">
-                  <span className="text-3xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">{practicePercent}%</span>
-                  <p className="text-xs text-muted-foreground">Practised</p>
-                </div>
-              </ProgressRing>
-              <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
-                <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 text-center border border-primary/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30">
-                  <BookOpen className="w-6 h-6 mx-auto mb-2 text-primary" />
-                  <p className="text-2xl font-bold text-primary tabular-nums">{loading ? "—" : totalQuestions.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Published Questions</p>
-                </div>
-                <div className="bg-gradient-to-br from-physics/10 to-physics/5 rounded-xl p-4 text-center border border-physics/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-physics/30">
-                  <Brain className="w-6 h-6 mx-auto mb-2 text-physics" />
-                  <p className="text-2xl font-bold text-physics tabular-nums">{progressReady ? totalAnswered.toLocaleString() : "—"}</p>
-                  <p className="text-xs text-muted-foreground">Answers Saved</p>
-                </div>
-                <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl p-4 text-center border border-accent/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30">
-                  <Bookmark className="w-6 h-6 mx-auto mb-2 text-accent" />
-                  <p className="text-2xl font-bold text-accent tabular-nums">{bookmarksReady ? totalBookmarked.toLocaleString() : "—"}</p>
-                  <p className="text-xs text-muted-foreground">Bookmarks</p>
-                </div>
-                <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-xl p-4 text-center border border-destructive/10 transition-all duration-200 hover:-translate-y-0.5 hover:border-destructive/30">
-                  <Library className="w-6 h-6 mx-auto mb-2 text-destructive" />
-                  <p className="text-2xl font-bold text-destructive tabular-nums">{availableYears.length}</p>
-                  <p className="text-xs text-muted-foreground">Available Years</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Programme-specific values inside the shared progress panel — never reads JUPEB data. */}
+        <DashboardProgressPanel
+          progress={practicePercent}
+          progressLabel="Practised"
+          metrics={[
+            { label: "Published Questions", value: loading ? "—" : totalQuestions.toLocaleString(), icon: BookOpen, palette: "primary" },
+            { label: "Answers Saved", value: progressReady ? totalAnswered.toLocaleString() : "—", icon: Brain, palette: "physics" },
+            { label: "Bookmarks", value: bookmarksReady ? totalBookmarked.toLocaleString() : "—", icon: Bookmark, palette: "accent" },
+            { label: "Available Years", value: availableYears.length, icon: Library, palette: "destructive" },
+          ]}
+          ariaLabel="JAMB overall practice progress"
+        />
 
         {/* JAMB-only streak and milestone panels mirror JUPEB's personal progress row. */}
         <section className="mb-12 grid gap-4 md:grid-cols-2 animate-in-up stagger-2">

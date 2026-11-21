@@ -839,17 +839,32 @@ export default function JambPastQuestionsPage() {
                     </motion.div>
                   </AnimatePresence>
 
-                  <div className="flex items-center justify-between gap-2">
-                    <Button variant="outline" onClick={goToPreviousQuestion} disabled={activeQuestionIndex === 0 && offset === 0}>
-                      <ChevronLeft className="mr-1 h-4 w-4" /> Previous
-                    </Button>
-                    <Button
-                      onClick={goToNextQuestion}
-                      disabled={activeQuestionIndex === questions.length - 1 && offset + JAMB_INITIAL_QUESTION_PAGE_SIZE >= count}
-                    >
-                      {activeQuestionIndex === questions.length - 1 && offset + JAMB_INITIAL_QUESTION_PAGE_SIZE < count ? "Next page" : "Next question"}
-                      <ChevronRight className="ml-1 h-4 w-4" />
-                    </Button>
+                  <div className="fixed bottom-[calc(3.75rem+env(safe-area-inset-bottom))] left-0 right-0 z-20 border-t border-border bg-background/95 backdrop-blur-lg">
+                    <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={goToPreviousQuestion}
+                        disabled={activeQuestionIndex === 0 && offset === 0}
+                        className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs tabular-nums text-muted-foreground">
+                          {answeredOnPage}/{questions.length}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={goToNextQuestion}
+                          disabled={activeQuestionIndex === questions.length - 1 && offset + JAMB_INITIAL_QUESTION_PAGE_SIZE >= count}
+                          className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          Next
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">

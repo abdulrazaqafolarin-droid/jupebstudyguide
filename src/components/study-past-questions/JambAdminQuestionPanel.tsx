@@ -577,7 +577,7 @@ export function JambAdminQuestionPanel({
                 {mode === "add" ? "Add New Question" : "Edit Question"}
               </h2>
               <div className="flex items-center gap-2">
-                {mode === "edit" && question && (
+                {mode === "edit" && editingQuestion && (
                   <button
                     onClick={() => setConfirmDelete(true)}
                     className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"

@@ -3,13 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
   ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronDown, ChevronRight, ChevronUp, Clock3,
-  GraduationCap, Library, ShieldAlert, Sparkles, Star, Target, Trophy,
+  GraduationCap, Library, ShieldAlert, Star, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import StreakDisplay from "@/components/StreakDisplay";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
-import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import {
   JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
@@ -73,51 +72,27 @@ function JambSubjectCard({
               <span className="text-3xl transition-transform duration-300 group-hover:scale-110 inline-block">{info.icon}</span>
               <div>
                 <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">{info.label}</h3>
-                <p className="text-sm text-muted-foreground">{loadingText(summary)}</p>
+                <p className="text-sm text-muted-foreground">{count.toLocaleString()} questions</p>
               </div>
             </motion.div>
             <motion.div whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 300 }}>
               <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-200" />
             </motion.div>
           </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Published question bank</span>
-              <span className="font-medium text-primary tabular-nums">{count.toLocaleString()}</span>
+          {years.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {years.slice(0, 6).map((year) => (
+                <span key={year} className="rounded-full bg-background/80 border border-border/50 px-2 py-0.5 text-[11px] font-medium tabular-nums">{year}</span>
+              ))}
+              {years.length > 6 && <span className="text-[11px] text-muted-foreground self-center">+{years.length - 6} more</span>}
             </div>
-            <div className="rounded-xl border border-border/50 bg-secondary/30 px-3 py-3 min-h-[76px]">
-              <p className="text-[11px] font-medium text-muted-foreground mb-2">Available examination years</p>
-              {years.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {years.slice(0, 6).map((year) => (
-                    <span key={year} className="rounded-full bg-background/80 border border-border/50 px-2 py-0.5 text-[11px] font-medium tabular-nums">{year}</span>
-                  ))}
-                  {years.length > 6 && <span className="text-[11px] text-muted-foreground self-center">+{years.length - 6} more</span>}
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground">{summary ? "Awaiting reviewed content" : "Loading question coverage…"}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex gap-4 mt-4 text-sm">
-            <div className="bg-secondary/40 rounded-lg px-2.5 py-1">
-              <span className="text-muted-foreground">Published </span>
-              <span className="font-medium text-foreground tabular-nums">{count.toLocaleString()}</span>
-            </div>
-            <div className="bg-accent/10 rounded-lg px-2.5 py-1">
-              <span className="text-muted-foreground">Years </span>
-              <span className="font-medium text-accent tabular-nums">{years.length}</span>
-            </div>
-          </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">{summary ? "No questions available yet" : "Loading…"}</p>
+          )}
         </div>
       </div>
     </motion.button>
   );
-}
-function loadingText(summary?: JambSubjectSummary) {
-  return summary ? `${summary.count.toLocaleString()} questions` : "Question bank";
 }
 
 function getJambActivityStats(savedAnswers: Record<string, { selected: string; savedAt: number }>) {
@@ -186,7 +161,6 @@ function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; 
           </div>
           <div>
             <span className="font-semibold">JAMB Achievements</span>
-            <p className="text-[10px] text-muted-foreground">Personal practice milestones</p>
           </div>
         </div>
         <div className="text-right">
@@ -255,11 +229,8 @@ function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; 
         </div>
       )}
 
-      <p className="border-t border-border pt-3 text-center text-[10px] text-muted-foreground">
-        These milestones use JAMB activity only and do not affect JUPEB achievements.
-      </p>
       <Link to="/jamb/achievements" className="flex items-center justify-center gap-1 text-xs font-semibold text-primary hover:underline">
-        View all JAMB achievements <ArrowRight className="h-3.5 w-3.5" />
+        View All Achievements <ArrowRight className="h-3.5 w-3.5" />
       </Link>
     </div>
   );
@@ -271,14 +242,6 @@ export default function JambHomePage() {
   const [error, setError] = useState<string | null>(null);
   const { savedAnswers, isReady: progressReady } = useJambPracticeProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
-  const { preferences: studyPreferences, isReady: studyPreferencesReady } = useJambStudyPreferences();
-  const focusSubjectsLabel = studyPreferences.subjects.length > 0
-    ? studyPreferences.subjects.map((subject) => JAMB_SUBJECT_INFO[subject].label).join(", ")
-    : "Not selected";
-  const examTargetLabel = studyPreferences.examTarget === "next-session"
-    ? "Next session"
-    : studyPreferences.examTarget === "early" ? "Preparing early" : "This session";
-
   useEffect(() => {
     let active = true;
     getJambSubjectSummaries()
@@ -286,7 +249,7 @@ export default function JambHomePage() {
       .catch((reason: unknown) => {
         if (!active) return;
         setError(reason instanceof JambSchemaUnavailableError
-          ? "The JAMB question-bank tables are not available yet. Your JAMB workspace remains separate from JUPEB."
+          ? "The JAMB question bank is unavailable."
           : reason instanceof Error ? reason.message : "Could not load JAMB question coverage.");
       })
       .finally(() => { if (active) setLoading(false); });
@@ -336,8 +299,7 @@ export default function JambHomePage() {
               <span className="text-gradient-gold block mt-2">Focused Practice</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-in-up stagger-4">
-              Study Physics, Chemistry and Biology with structured past-question practice,
-              timed CBT sessions and a JAMB-aware AI tutor. Your JAMB practice stays separate from JUPEB.
+              Study Physics, Chemistry and Biology with past-question practice, timed CBT and an AI tutor.
             </p>
             <div className="flex flex-wrap justify-center gap-4 animate-in-up stagger-5">
               <Button
@@ -393,40 +355,12 @@ export default function JambHomePage() {
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg font-bold">Daily Mission</h2>
-                <p className="text-sm text-muted-foreground">A focused JAMB question set, saved answers and mission history.</p>
               </div>
-              <span className="hidden rounded-full border border-amber-500/25 bg-amber-500/5 px-3 py-1 text-[10px] font-semibold text-amber-700 sm:inline-flex">
-                Practice-only
-              </span>
             </div>
             <div className="space-y-4 p-5 md:p-6">
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Complete up to 10 reviewed JAMB questions in a subject you choose. Your mission progress and history are kept separate from JUPEB. Syllabus-led lessons will be added only after the official JAMB syllabus and topic mapping are verified.
-              </p>
-              {studyPreferencesReady && (
-                <div className="grid grid-cols-1 gap-2 rounded-xl border border-border/70 bg-secondary/20 p-3 text-xs sm:grid-cols-3">
-                  <div>
-                    <p className="text-muted-foreground">Focus subjects</p>
-                    <p className="mt-0.5 font-semibold">{focusSubjectsLabel}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Exam target</p>
-                    <p className="mt-0.5 font-semibold">{examTargetLabel}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Daily goal</p>
-                    <p className="mt-0.5 font-semibold">{studyPreferences.dailyGoalMinutes} minutes</p>
-                  </div>
-                </div>
-              )}
-              <div className="flex flex-wrap gap-2">
-                <Button onClick={() => navigate("/jamb/daily-mission")} className="gap-2">
-                  <CalendarDays className="h-4 w-4" /> Open today's mission
-                </Button>
-                <Button variant="outline" onClick={() => navigate("/jamb/syllabus")}>
-                  Check syllabus status
-                </Button>
-              </div>
+              <Button onClick={() => navigate("/jamb/daily-mission")} className="gap-2">
+                <CalendarDays className="h-4 w-4" /> Open today's mission
+              </Button>
             </div>
           </div>
         </section>
@@ -486,30 +420,10 @@ export default function JambHomePage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10"><Trophy className="h-5 w-5 text-primary" /></div>
             <div className="min-w-0 flex-1">
               <h2 className="font-semibold">JAMB Leaderboard</h2>
-              <p className="text-xs text-muted-foreground">A separate JAMB ranking will appear when verified JAMB attempt scores are available.</p>
+              <p className="text-xs text-muted-foreground">No verified scores yet.</p>
             </div>
             <Link to="/jamb/leaderboard" className="shrink-0 text-xs font-semibold text-primary hover:underline">View</Link>
           </div>
-        </section>
-
-        {/* The two large action panels mirror the JUPEB dashboard's activity row. */}
-        <section className="mb-12 grid gap-4 md:grid-cols-2 animate-in-up stagger-2">
-          <Link to="/jamb/cbt/setup" className="group bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-md">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center"><Clock3 className="w-6 h-6 text-primary" /></div>
-              <div className="min-w-0 flex-1"><p className="font-semibold">Timed CBT practice</p><p className="text-xs text-muted-foreground mt-0.5">Build speed with focused subject drills</p></div>
-              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">Choose a subject, set a practice length and work against a server-controlled timer.</p>
-          </Link>
-          <Link to="/jamb/ai" className="group bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-md">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center"><Sparkles className="w-6 h-6 text-accent" /></div>
-              <div className="min-w-0 flex-1"><p className="font-semibold">JAMB AI study tutor</p><p className="text-xs text-muted-foreground mt-0.5">Understand difficult concepts step by step</p></div>
-              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">Ask subject questions or open the tutor directly from a past question for contextual help.</p>
-          </Link>
         </section>
 
         {/* Subject cards preserve the JUPEB card treatment with JAMB-only content. */}
@@ -550,7 +464,7 @@ export default function JambHomePage() {
         <section className="mt-12">
           <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
           <motion.div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
@@ -622,22 +536,6 @@ export default function JambHomePage() {
           </ul>
         </section>
 
-        <section className="mt-8 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-          <div className="flex items-start gap-3">
-            <ShieldAlert className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" />
-            <div>
-              <h3 className="text-sm font-semibold">About full UTME mock exams</h3>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                The current supplied pack covers Physics, Chemistry and Biology. Use of English is compulsory in UTME,
-                so these subject drills are not presented as a complete official-format mock. Syllabus and full-mock
-                settings stay disabled until their official source material is verified.
-              </p>
-              <Link to="/jamb/syllabus" className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-primary hover:underline">
-                Check syllabus status <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="border-t border-border py-8">

@@ -4,10 +4,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot,
   CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight,
-  GraduationCap, Grid3X3, Loader2, Search, ShieldAlert, X,
+  Grid3X3, Loader2, Search, Shield, ShieldAlert, X,
 } from "lucide-react";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
+import { useActivation } from "@/hooks/useActivation";
 import { supabase } from "@/integrations/supabase/client";
 import {
   JAMB_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE,
@@ -100,6 +101,10 @@ export default function JambPastQuestionsPage() {
   const [year, setYear] = useState<number | null>(requestedYear);
   const [expandedYear, setExpandedYear] = useState<number | null>(requestedYear);
   const [search, setSearch] = useState("");
+  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
+  const [globalSearchTerm, setGlobalSearchTerm] = useState("");
+  const [globalSearchResults, setGlobalSearchResults] = useState<JambQuestion[]>([]);
+  const [globalSearchLoading, setGlobalSearchLoading] = useState(false);
   const [questions, setQuestions] = useState<JambQuestion[]>([]);
   const [bookmarkQuestions, setBookmarkQuestions] = useState<JambQuestion[]>([]);
   const [count, setCount] = useState(0);
@@ -119,6 +124,8 @@ export default function JambPastQuestionsPage() {
   const [checking, setChecking] = useState<Record<string, boolean>>({});
   const { bookmarks, toggle: toggleJambBookmark, isReady: bookmarksReady } = useJambBookmarks();
   const { savedAnswers, saveAnswer: savePracticeAnswer } = useJambPracticeProgress();
+  const { status: activationStatus } = useActivation();
+  const isAdmin = activationStatus.is_admin;
 
   useEffect(() => {
     let active = true;
@@ -208,6 +215,30 @@ export default function JambPastQuestionsPage() {
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [view, bookmarks, bookmarksReady]);
+
+  useEffect(() => {
+    if (!showGlobalSearch || globalSearchTerm.trim().length < 2) {
+      setGlobalSearchResults([]);
+      setGlobalSearchLoading(false);
+      return;
+    }
+    let active = true;
+    const timer = window.setTimeout(() => {
+      setGlobalSearchLoading(true);
+      Promise.all(JAMB_SUBJECTS.map((searchSubject) =>
+        searchJambQuestions({ subject: searchSubject, search: globalSearchTerm.trim(), limit: 25 }),
+      ))
+        .then((results) => {
+          if (active) setGlobalSearchResults(results.flatMap((result) => result.questions));
+        })
+        .catch((reason: unknown) => {
+          if (active) setGlobalSearchResults([]);
+          if (active) setError(reason instanceof Error ? reason.message : "Unable to search JAMB questions.");
+        })
+        .finally(() => { if (active) setGlobalSearchLoading(false); });
+    }, 250);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [showGlobalSearch, globalSearchTerm]);
 
   useEffect(() => {
     const next = new URLSearchParams(searchParams);
@@ -499,17 +530,27 @@ export default function JambPastQuestionsPage() {
                   : view === "bookmarks" ? "Bookmarked Questions"
                     : subjectInfo.label + " · " + (year ?? "All Years")}
             </h1>
-            <p className="text-[10px] text-muted-foreground/70">
-              {view === "subjects" ? "JAMB UTME Exam Prep"
-                : view === "bookmarks" ? "Saved JAMB questions"
-                  : "JAMB workspace · Objective practice"}
-            </p>
+            <p className="text-[10px] text-muted-foreground/70">JAMB UTME Exam Prep</p>
           </div>
 
           <div className="flex flex-shrink-0 items-center gap-1">
             <button
               type="button"
-              onClick={() => setView("bookmarks")}
+              onClick={() => { setShowGlobalSearch((value) => !value); setGlobalSearchTerm(""); setGlobalSearchResults([]); }}
+              className="rounded-xl p-2 transition-colors hover:bg-accent active:scale-95"
+              aria-label="Search questions"
+              title="Search questions"
+            >
+              <Search className="h-[18px] w-[18px] text-muted-foreground" />
+            </button>
+            {isAdmin && (
+              <Link to="/admin/jamb-questions" className="rounded-xl p-2 transition-colors hover:bg-accent active:scale-95" aria-label="Admin: Manage questions" title="Admin: Manage questions">
+                <Shield className="h-[18px] w-[18px] text-muted-foreground" />
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => setView("bookmarks")
               className="relative rounded-xl p-2 transition-colors hover:bg-accent active:scale-95"
               aria-label="View bookmarked questions"
             >
@@ -525,6 +566,39 @@ export default function JambPastQuestionsPage() {
       </header>
 
       <main className="mx-auto max-w-2xl space-y-6 px-4 py-6 pb-28">
+        {showGlobalSearch && (
+          <motion.section initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="space-y-3">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input autoFocus value={globalSearchTerm} onChange={(event) => setGlobalSearchTerm(event.target.value)} placeholder="Search JAMB questions..." className="border-border/50 bg-secondary/30 pl-9 pr-10" />
+              <button type="button" onClick={() => { setShowGlobalSearch(false); setGlobalSearchTerm(""); setGlobalSearchResults([]); }} aria-label="Close search" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-accent">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {globalSearchTerm.trim().length >= 2 && (globalSearchLoading ? (
+              <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+            ) : globalSearchResults.length === 0 ? (
+              <p className="py-5 text-center text-sm text-muted-foreground">No questions found</p>
+            ) : (
+              <div className="space-y-2">
+                {globalSearchResults.map((question) => (
+                  <button key={question.id} type="button" onClick={() => {
+                    const inYear = globalSearchResults.filter((item) => item.subject === question.subject && item.year === question.year);
+                    pendingQuestionIndexRef.current = Math.max(0, inYear.findIndex((item) => item.id === question.id));
+                    setSubject(question.subject); setYear(question.year); setExpandedYear(question.year);
+                    setSearch(globalSearchTerm.trim()); setOffset(0); setSelected({}); setView("questions"); setShowGlobalSearch(false);
+                  }} className="w-full rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-accent/50">
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold text-primary">{JAMB_SUBJECT_INFO[question.subject].icon} {JAMB_SUBJECT_INFO[question.subject].label}</span>
+                      <span className="text-xs tabular-nums text-muted-foreground">{question.year}</span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{question.question}</p>
+                  </button>
+                ))}
+              </div>
+            ))}
+          </motion.section>
+        )}
         <AnimatePresence mode="wait">
           {view === "subjects" && (
             <motion.section
@@ -535,38 +609,22 @@ export default function JambPastQuestionsPage() {
               transition={PAGE_TRANSITION}
               className="space-y-6"
             >
-              <div className="rounded-2xl border border-border bg-card p-4 chalk-texture">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                    <GraduationCap className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="font-semibold">Choose a JAMB subject</h2>
-                    <p className="text-xs text-muted-foreground">Select a subject to browse its published examination years.</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold tabular-nums text-primary">{totalPublished.toLocaleString()}</p>
-                    <p className="text-[10px] text-muted-foreground">published</p>
-                  </div>
-                </div>
-              </div>
-
               {schemaUnavailable && (
                 <div className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
                   <ShieldAlert className="h-5 w-5 shrink-0 text-amber-600" />
                   <div>
                     <p className="font-semibold">JAMB database unavailable</p>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">The JAMB page does not fall back to JUPEB questions. The JAMB programme data source must be available before content can appear.</p>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">JAMB questions are temporarily unavailable.</p>
                   </div>
                 </div>
               )}
 
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold">Subjects</h2>
-                <span className="text-xs text-muted-foreground">3 science subjects</span>
+                <span className="text-xs text-muted-foreground">{totalPublished.toLocaleString()} questions total</span>
               </div>
               <motion.div
-                className="grid grid-cols-2 gap-4 md:grid-cols-4"
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
                 variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
                 initial="hidden"
                 animate="show"
@@ -581,21 +639,6 @@ export default function JambPastQuestionsPage() {
                 ))}
               </motion.div>
 
-              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-                <div className="flex items-start gap-3">
-                  <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
-                  <div>
-                    <h3 className="text-sm font-semibold">A note about complete UTME mocks</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                      The initial supplied pack covers Physics, Chemistry and Biology. Use of English is compulsory in UTME,
-                      so this question collection is not presented as a complete official-format mock.
-                    </p>
-                    <Link to="/jamb/syllabus" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
-                      Check syllabus status <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
             </motion.section>
           )}
 
@@ -640,22 +683,12 @@ export default function JambPastQuestionsPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-sm font-semibold">Practice type</h2>
-                    <p className="text-xs text-muted-foreground">Objective multiple-choice questions</p>
-                  </div>
-                  <span className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary">Objective</span>
-                </div>
-              </div>
-
               {schemaUnavailable && (
                 <div className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
                   <ShieldAlert className="h-5 w-5 shrink-0 text-amber-600" />
                   <div>
                     <p className="font-semibold">JAMB database unavailable</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Available years cannot be loaded until the JAMB question schema is reachable.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">JAMB questions are temporarily unavailable.</p>
                   </div>
                 </div>
               )}
@@ -672,7 +705,7 @@ export default function JambPastQuestionsPage() {
                 <div className="rounded-2xl border border-dashed border-border p-10 text-center">
                   <CalendarDays className="mx-auto mb-3 h-9 w-9 text-muted-foreground/50" />
                   <h3 className="font-semibold">No published {subjectInfo.label} years yet</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Years appear here after their JAMB questions have been reviewed and published.</p>
+                  
                   <Button variant="outline" className="mt-4" onClick={() => setView("subjects")}>Back to subjects</Button>
                 </div>
               ) : (
@@ -694,7 +727,7 @@ export default function JambPastQuestionsPage() {
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-sm font-semibold tabular-nums">{item}</span>
-                            <span className="text-xs text-muted-foreground">Available JAMB questions</span>
+                            
                           </div>
                           <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
                             <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -710,9 +743,6 @@ export default function JambPastQuestionsPage() {
                               className="overflow-hidden"
                             >
                               <div className="space-y-3 px-4 py-3">
-                                <p className="text-xs leading-relaxed text-muted-foreground">
-                                  Browse independently reviewed {subjectInfo.label} questions from {item}.
-                                </p>
                                 <Button size="sm" onClick={() => chooseYear(item)}>
                                   View Questions
                                 </Button>
@@ -743,7 +773,7 @@ export default function JambPastQuestionsPage() {
                     <span className="text-2xl">{subjectInfo.icon}</span>
                     <div className="min-w-0">
                       <h2 className="font-semibold">{subjectInfo.label}</h2>
-                      <p className="text-xs text-muted-foreground">{year ?? "All available years"} · Objective practice</p>
+                      <p className="text-xs text-muted-foreground">{year ?? "All available years"}</p>
                     </div>
                   </div>
                   <button type="button" onClick={() => setView("years")} className="text-xs font-semibold text-primary hover:underline">Change year</button>
@@ -772,7 +802,7 @@ export default function JambPastQuestionsPage() {
               {schemaUnavailable && (
                 <div className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
                   <ShieldAlert className="h-5 w-5 shrink-0 text-amber-600" />
-                  <div><p className="font-semibold">JAMB database unavailable</p><p className="mt-1 text-xs text-muted-foreground">This screen never substitutes JUPEB questions.</p></div>
+                  <div><p className="font-semibold">JAMB database unavailable</p><p className="mt-1 text-xs text-muted-foreground">JAMB questions are temporarily unavailable.</p></div>
                 </div>
               )}
               {error && !schemaUnavailable && <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p>}
@@ -783,7 +813,7 @@ export default function JambPastQuestionsPage() {
                 <div className="rounded-2xl border border-dashed border-border p-10 text-center">
                   <BookOpen className="mx-auto mb-3 h-9 w-9 text-muted-foreground/50" />
                   <h3 className="font-semibold">No published {subjectInfo.label} questions yet</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Imported questions appear here after review and publication.</p>
+                  
                   <Button variant="outline" className="mt-4" onClick={() => setView("years")}>Back to years</Button>
                 </div>
               ) : activeQuestion ? (
@@ -944,7 +974,7 @@ export default function JambPastQuestionsPage() {
                 <div className="rounded-2xl border border-dashed border-border p-10 text-center">
                   <Bookmark className="mx-auto mb-3 h-9 w-9 text-muted-foreground/50" />
                   <h3 className="font-semibold">No JAMB bookmarks yet</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Save questions with the bookmark icon and they will appear here.</p>
+                  
                   <Button className="mt-4" onClick={() => setView("subjects")}>Browse subjects</Button>
                 </div>
               ) : (
@@ -956,9 +986,6 @@ export default function JambPastQuestionsPage() {
           )}
         </AnimatePresence>
 
-        <p className="pt-2 text-center text-[11px] leading-relaxed text-muted-foreground">
-          JAMB question-bank answers and explanations are shown only after independent review. Your saved choices and bookmarks remain programme-specific.
-        </p>
       </main>
     </div>
   );

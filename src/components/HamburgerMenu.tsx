@@ -3,8 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
-  X, LogOut, BookOpen, Library, Award, CalendarDays,
-  Users, TrendingUp, Compass, Sparkles, GraduationCap, Brain
+  X, LogOut, BookOpen, Library, Award,
+  Users, TrendingUp, Compass, Sparkles, GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
@@ -96,10 +96,10 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
           if (item.path === "/") return { ...item, path: "/jamb" };
           if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
           if (item.path === "/syllabus") return { ...item, path: "/jamb/syllabus" };
-          if (item.path === "/study-chat") return { ...item, path: "/jamb/ai", label: "AI Tutor" };
-          if (item.path === "/achievements") return { ...item, path: "/jamb/achievements", label: "JAMB Achievements" };
-          if (item.path === "/stats") return { ...item, path: "/jamb/stats", label: "JAMB Study Stats" };
-          if (item.path === "/leaderboard") return { ...item, path: "/jamb/leaderboard", label: "JAMB Leaderboard" };
+          if (item.path === "/study-chat") return { ...item, path: "/jamb/ai" };
+          if (item.path === "/achievements") return { ...item, path: "/jamb/achievements" };
+          if (item.path === "/stats") return { ...item, path: "/jamb/stats" };
+          if (item.path === "/leaderboard") return { ...item, path: "/jamb/leaderboard" };
           if (item.path === "/discover") return { ...item, path: "/jamb/discover" };
           if (item.path === "/profile") return { ...item, path: "/jamb/profile" };
           if (item.path === "/friends") return { ...item, path: "/jamb/friends" };
@@ -110,14 +110,10 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
 
   const allLinks = [
     ...workspaceLinks,
-    ...(isJambWorkspace ? [
-      { path: "/jamb/study", label: "JAMB Revision Cards", icon: Brain },
-      { path: "/jamb/daily-mission", label: "Daily Mission & History", icon: CalendarDays },
-    ] : []),
     ...(isAdmin
       ? [{
           path: isJambWorkspace ? "/admin/jamb-questions" : "/admin",
-          label: isJambWorkspace ? "JAMB Question Review" : "Admin",
+          label: "Admin",
           icon: Shield,
         }]
       : []),

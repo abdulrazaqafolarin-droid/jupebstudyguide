@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowLeft, BookOpen, Bot, Menu, Plus, Sparkles, X } from "lucide-react";
+import { ArrowLeft, BookOpen, Menu, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TextbookUploader } from "@/components/TextbookUploader";
@@ -31,7 +31,6 @@ export default function JambAITutorPage() {
     ? getJambSyllabusTopic(requestedSubject, requestedTopicId)
     : undefined;
   const questionId = searchParams.get("questionId");
-  const tutorSubjectLabel = syllabusSubject?.label ?? (subject ? JAMB_SUBJECT_INFO[subject].label : undefined);
   const tutorSubjectValue = subject ?? (syllabusSubject ? syllabusSubject.id : undefined);
 
   const [questionContext, setQuestionContext] = useState("");
@@ -204,8 +203,6 @@ export default function JambAITutorPage() {
 
   const sidebar = (
     <HistorySidebar
-      heading="JAMB Tutor History"
-      emptyMessage="Start a new chat to save your JAMB study conversations."
       chats={chats}
       activeChatId={activeChatId}
       loading={listLoading}
@@ -259,22 +256,20 @@ export default function JambAITutorPage() {
                 <Menu className="h-4 w-4" />
               </button>
             )}
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15">
-              <Bot className="h-3.5 w-3.5 text-primary" />
-            </div>
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-sm font-semibold">
-                {visibleTutorSubject?.label ? `${visibleTutorSubject.label} Tutor` : tutorSubjectLabel ? `${tutorSubjectLabel} Tutor` : "JAMB AI Study Tutor"}
-              </h1>
-              <p className="truncate text-[10px] text-muted-foreground">{visibleTutorTopic ? visibleTutorTopic.title + " · " : ""}JAMB · Saved conversation</p>
+              <h1 className="truncate text-sm font-semibold">{activeChatMeta?.title ?? "Study Chat"}</h1>
+              <p className="truncate text-[10px] text-muted-foreground">
+                {visibleTutorSubject?.label ?? "AI study room"}
+                {visibleTutorTopic ? ` · ${visibleTutorTopic.title}` : ""}
+              </p>
             </div>
             <Button
               variant="outline"
               size="sm"
               className="h-7 shrink-0 gap-1 px-2 text-xs"
               onClick={() => setShowTextbooks(true)}
-              title="Open your JAMB textbook library"
-              aria-label="Open JAMB textbook library"
+              title="Open your textbook library"
+              aria-label="Open textbook library"
             >
               <BookOpen className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Textbooks</span>
@@ -284,7 +279,7 @@ export default function JambAITutorPage() {
               size="sm"
               className="h-7 shrink-0 gap-1 px-2 text-xs"
               onClick={() => { void createChat(); }}
-              title="New JAMB chat"
+              title="New chat"
             >
               <Plus className="h-3 w-3" />
               <span className="hidden sm:inline">New chat</span>
@@ -330,8 +325,6 @@ export default function JambAITutorPage() {
                 onRetry={() => void retry()}
                 onStarter={(prompt) => void handleStarter(prompt)}
                 starterPrompts={JAMB_TUTOR_STARTERS}
-                emptyTitle="JAMB AI Study Tutor"
-                emptyDescription={visibleTutorTopic ? `Study ${visibleTutorTopic.title} with the JAMB tutor. This outline comes from an uploaded source copy pending current IBASS verification.` : "Ask about Physics, Chemistry, Biology, Mathematics or Use of English. Your conversations are saved in a separate JAMB history, so your JUPEB tutor threads stay untouched."}
               />
             ) : chats.length > 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
@@ -343,13 +336,20 @@ export default function JambAITutorPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
                   <Sparkles className="h-6 w-6 text-primary" />
                 </div>
-                <h2 className="text-lg font-semibold">Start a JAMB study room</h2>
+                <h2 className="text-lg font-semibold">Start a study room</h2>
                 <p className="max-w-sm text-sm text-muted-foreground">
-                  Your JAMB tutor conversations are saved separately from JUPEB. Start a chat to get explanations, practice questions and feedback.
+                  Ask a question or choose a syllabus topic to get started.
                 </p>
-                <Button onClick={() => { void createChat(); }} className="gap-2">
-                  <Plus className="h-4 w-4" /> Start your first JAMB chat
-                </Button>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <Button variant="outline" asChild>
+                    <Link to="/jamb/syllabus">
+                      <BookOpen className="mr-1.5 h-4 w-4" /> Browse syllabus
+                    </Link>
+                  </Button>
+                  <Button onClick={() => { void createChat(); }} className="gap-2">
+                    <Plus className="h-4 w-4" /> Start a general chat
+                  </Button>
+                </div>
               </div>
             )}
           </main>

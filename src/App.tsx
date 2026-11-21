@@ -6,9 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bot } from "lucide-react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
@@ -43,6 +42,9 @@ const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const FloatingAITutor = lazy(() =>
   import("./components/FloatingAITutor").then((m) => ({ default: m.FloatingAITutor }))
+);
+const JambFloatingAITutor = lazy(() =>
+  import("./components/JambFloatingAITutor").then((m) => ({ default: m.JambFloatingAITutor }))
 );
 const AchievementsPage = lazy(() => import("./pages/AchievementsPage"));
 const StudyStatsDashboard = lazy(() => import("./pages/StudyStatsDashboard"));
@@ -393,15 +395,9 @@ function ProgramAwareFloatingTutor() {
     ) return null;
 
     return (
-      <Link
-        to="/jamb/ai"
-        aria-label="Open JAMB AI tutor"
-        title="Open JAMB AI tutor"
-        className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:scale-105 active:scale-95"
-      >
-        <Bot className="h-5 w-5" />
-        <span>JAMB Tutor</span>
-      </Link>
+      <Suspense fallback={null}>
+        <JambFloatingAITutor />
+      </Suspense>
     );
   }
 

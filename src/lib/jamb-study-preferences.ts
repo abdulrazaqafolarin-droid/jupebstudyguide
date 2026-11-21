@@ -1,9 +1,11 @@
-import { JAMB_SUBJECTS, type JambSubject } from "@/lib/jamb-config";
+import { JAMB_SUBJECTS } from "@/lib/jamb-config";
+
+export type JambScienceSubject = (typeof JAMB_SUBJECTS)[number];
 
 export type JambExamTarget = "this-session" | "next-session" | "early";
 
 export interface JambStudyPreferences {
-  subjects: JambSubject[];
+  subjects: JambScienceSubject[];
   examTarget: JambExamTarget;
   dailyGoalMinutes: 15 | 30 | 60;
 }
@@ -18,8 +20,8 @@ export function normalizeJambStudyPreferences(value: unknown): JambStudyPreferen
   if (!value || typeof value !== "object" || Array.isArray(value)) return DEFAULT_JAMB_STUDY_PREFERENCES;
   const raw = value as Record<string, unknown>;
   const subjects = Array.isArray(raw.subjects)
-    ? [...new Set(raw.subjects.filter((subject): subject is JambSubject =>
-        typeof subject === "string" && JAMB_SUBJECTS.includes(subject as JambSubject)
+    ? [...new Set(raw.subjects.filter((subject): subject is JambScienceSubject =>
+        typeof subject === "string" && JAMB_SUBJECTS.includes(subject as JambScienceSubject)
       ))]
     : [];
   const examTarget: JambExamTarget =
@@ -30,9 +32,9 @@ export function normalizeJambStudyPreferences(value: unknown): JambStudyPreferen
 }
 
 export function orderJambSubjectsByPreference(
-  availableSubjects: readonly JambSubject[],
+  availableSubjects: readonly JambScienceSubject[],
   preferences: JambStudyPreferences,
-): JambSubject[] {
+): JambScienceSubject[] {
   const available = [...new Set(availableSubjects)];
   const preferred = preferences.subjects.filter((subject) => available.includes(subject));
   return [...preferred, ...available.filter((subject) => !preferred.includes(subject))];

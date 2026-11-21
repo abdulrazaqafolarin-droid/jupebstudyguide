@@ -18,6 +18,16 @@ describe("JAMB study preferences", () => {
     });
   });
 
+  it("keeps compulsory Use of English out of optional science preferences", () => {
+    expect(normalizeJambStudyPreferences({
+      subjects: ["use_of_english", "physics", "biology"],
+    })).toEqual({
+      subjects: ["physics", "biology"],
+      examTarget: "this-session",
+      dailyGoalMinutes: 30,
+    });
+  });
+
   it("falls back safely for malformed preferences", () => {
     expect(normalizeJambStudyPreferences(null)).toEqual(DEFAULT_JAMB_STUDY_PREFERENCES);
     expect(normalizeJambStudyPreferences({ subjects: "physics", examTarget: "invalid", dailyGoalMinutes: 45 }))

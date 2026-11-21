@@ -83,25 +83,25 @@ jobs:
           mkdir -p artifacts/jamb-question-import/original-sources
           cp Physics.txt Chemistry.txt Biology.txt JAMB_english_READABLE.txt artifacts/jamb-question-import/original-sources/
           cat > artifacts/jamb-question-import/README.txt <<'EOF'
-JAMB SOURCE INTAKE BUNDLE
-
-Contents:
-- physics.json
-- chemistry.json
-- biology.json
-- use_of_english.json
-- import-audit.json
-- original-sources/: the exact four source documents used to generate the JSON
-
-Use each JSON only with its exact matching original source document in
-/admin/jamb-questions -> Source Import & Review. The admin uploader verifies
-the source SHA-256 before staging. Record the permission note and complete
-the rights confirmation in the admin page.
-
-All candidates are review-only. Do not publish automatically. English
-source-provided answers/explanations remain unverified suggestions, and
-all science answer keys/explanations require independent human review.
-EOF
+          JAMB SOURCE INTAKE BUNDLE
+          
+          Contents:
+          - physics.json
+          - chemistry.json
+          - biology.json
+          - use_of_english.json
+          - import-audit.json
+          - original-sources/: the exact four source documents used to generate the JSON
+          
+          Use each JSON only with its exact matching original source document in
+          /admin/jamb-questions -> Source Import & Review. The admin uploader verifies
+          the source SHA-256 before staging. Record the permission note and complete
+          the rights confirmation in the admin page.
+          
+          All candidates are review-only. Do not publish automatically. English
+          source-provided answers/explanations remain unverified suggestions, and
+          all science answer keys/explanations require independent human review.
+          EOF
 
       - name: Upload temporary JAMB source intake bundle
         uses: actions/upload-artifact@v4
@@ -109,7 +109,7 @@ EOF
           name: jamb-source-intake-bundle
           path: artifacts/jamb-question-import/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 3
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
-  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, Clock3,
+  ArrowRight, BookOpen, Brain, Bookmark, CalendarDays, Clock3,
   CheckCircle2, Flame, GraduationCap, Library, ShieldAlert, ShieldCheck, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -612,17 +612,6 @@ export default function JambHomePage() {
               <Clock3 className="w-7 h-7 mx-auto text-accent" />
               <p className="font-medium mt-2">Timed CBT</p>
               <p className="text-xs text-muted-foreground">10, 20 or 40-question drills</p>
-            </motion.button>
-            <motion.button
-              onClick={() => navigate("/jamb/ai")}
-              className="p-4 rounded-xl border border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"
-              variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-              whileTap={{ scale: 0.95, transition: fastSpring }}
-            >
-              <Bot className="w-7 h-7 mx-auto text-primary" />
-              <p className="font-medium mt-2">Ask AI Tutor</p>
-              <p className="text-xs text-muted-foreground">Get a clear explanation</p>
             </motion.button>
           </motion.div>
         </section>

@@ -338,7 +338,7 @@ export default function JambQuestionBankAdminPage() {
     }
   };
 
-  const reviewCurrent = async (decision: "approved" | "approved_ungraded" | "rejected") => {
+  const reviewCurrent = async (decision: "approved" | "rejected") => {
     if (!currentItem || !edit || !selectedBatchId) return;
     setSavingReview(true);
     try {
@@ -366,7 +366,7 @@ export default function JambQuestionBankAdminPage() {
         decision,
         normalized_payload: normalized,
       });
-      toast.success(decision === "rejected" ? "Question rejected." : decision === "approved" ? "Question approved with a verified answer key." : "Question approved as ungraded.");
+      toast.success(decision === "rejected" ? "Question rejected." : "Question approved with a verified answer and explanation.");
       await refreshBatches();
       if (itemOffset + 1 < itemCount) setItemOffset((value) => value + 1);
       else await loadItems(selectedBatchId, itemOffset);
@@ -617,14 +617,18 @@ export default function JambQuestionBankAdminPage() {
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block space-y-1.5 text-sm"><span className="font-medium">Verified correct option (optional)</span><select value={edit.correctAnswer} onChange={(event) => setEdit((previous) => previous ? { ...previous, correctAnswer: event.target.value } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm"><option value="">No verified answer key</option>{edit.options.map((option) => <option key={option.label} value={option.label}>{option.label}</option>)}</select></label>
-                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Explanation (optional)</span><textarea value={edit.explanation} onChange={(event) => setEdit((previous) => previous ? { ...previous, explanation: event.target.value } : previous)} rows={2} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
+                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Explanation (required)</span><textarea value={edit.explanation} onChange={(event) => setEdit((previous) => previous ? { ...previous, explanation: event.target.value } : previous)} rows={2} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
                 </div>
                 <div className="flex flex-wrap gap-2 border-t border-border pt-4">
-                  <Button onClick={() => void reviewCurrent("approved_ungraded")} disabled={savingReview || currentItem.status === "published"} variant="outline"><Check className="mr-2 h-4 w-4" />Approve ungraded</Button>
-                  <Button onClick={() => void reviewCurrent("approved")} disabled={savingReview || !edit.correctAnswer || currentItem.status === "published"}><ShieldCheck className="mr-2 h-4 w-4" />Approve with verified key</Button>
+                  <Button
+                    onClick={() => void reviewCurrent("approved")}
+                    disabled={savingReview || !edit.correctAnswer || edit.explanation.trim().length < 12 || currentItem.status === "published"}
+                  >
+                    <ShieldCheck className="mr-2 h-4 w-4" />Approve with verified answer and explanation
+                  </Button>
                   <Button onClick={() => void reviewCurrent("rejected")} disabled={savingReview || currentItem.status === "published"} variant="destructive">Reject item</Button>
                 </div>
-                <p className="text-[11px] text-muted-foreground">Publishing keeps answer keys in the protected server-only answer-key table. They are never sent in the in-progress CBT payload.</p>
+                <p className="text-[11px] text-muted-foreground">Every published JAMB question must have a verified correct answer and a meaningful explanation. Questions without both stay in review; approved keys remain in the protected answer-key table.</p>
               </>
             )}
           </section>

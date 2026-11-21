@@ -255,7 +255,7 @@ Deno.serve(async (request: Request) => {
       const [allItems, needsReview, approved, published] = await Promise.all([
         supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId),
         supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).eq("status", "needs_review"),
-        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).in("status", ["approved", "approved_ungraded", "published"]),
+        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).in("status", ["approved", "published"]),
         supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).eq("status", "published"),
       ]);
       const recalcError = allItems.error ?? needsReview.error ?? approved.error ?? published.error;
@@ -321,7 +321,7 @@ Deno.serve(async (request: Request) => {
       const payload = body.normalized_payload && typeof body.normalized_payload === "object"
         ? body.normalized_payload as JsonObject
         : null;
-      if (!itemId || !payload || !["approved", "approved_ungraded", "rejected"].includes(decision)) {
+      if (!itemId || !payload || !["approved", "rejected"].includes(decision)) {
         return respond({ error: "item_id, normalized_payload and a supported review decision are required" }, 400);
       }
       const { data: item, error: itemError } = await supabase
@@ -364,8 +364,8 @@ Deno.serve(async (request: Request) => {
         if (decision === "approved" && (!answerVerified || !labels.includes(answer))) {
           errors.push("approved_answer_key_must_be_verified_and_match_an_option");
         }
-        if (decision === "approved_ungraded" && (answerVerified || answer)) {
-          errors.push("ungraded_item_must_not_include_an_answer_key");
+        if (decision === "approved" && asText(payload.explanation).length < 12) {
+          errors.push("approved_question_requires_a_meaningful_explanation");
         }
         if (errors.length > 0) {
           return respond({ error: "This question still has validation issues", validation_errors: [...new Set(errors)] }, 422);
@@ -379,7 +379,7 @@ Deno.serve(async (request: Request) => {
         const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
         payload.content_hash = Array.from(new Uint8Array(digest)).map((value) => value.toString(16).padStart(2, "0")).join("");
         payload.correct_answer = answerVerified ? answer : null;
-        payload.explanation = answerVerified ? (asText(payload.explanation) || null) : null;
+        payload.explanation = answerVerified ? asText(payload.explanation) : null;
         payload.answer_key_verified = answerVerified;
         payload.image_urls = images;
         payload.image_url = typeof images[0] === "string" ? images[0] : null;
@@ -399,7 +399,7 @@ Deno.serve(async (request: Request) => {
       const batchId = item.batch_id;
       const [needsReview, approved, published] = await Promise.all([
         supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).eq("status", "needs_review"),
-        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).in("status", ["approved", "approved_ungraded", "published"]),
+        supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).in("status", ["approved", "published"]),
         supabase.from("question_import_items").select("id", { count: "exact", head: true }).eq("batch_id", batchId).eq("status", "published"),
       ]);
       const counterError = needsReview.error ?? approved.error ?? published.error;

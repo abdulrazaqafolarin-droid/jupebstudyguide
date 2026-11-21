@@ -122,6 +122,7 @@ export default function JambStatsPage() {
           </Link>
           <div className="min-w-0 flex-1">
             <h1 className="text-sm font-semibold">Study Stats</h1>
+            <p className="text-[10px] text-muted-foreground">Your JAMB learning analytics</p>
           </div>
         </div>
       </header>

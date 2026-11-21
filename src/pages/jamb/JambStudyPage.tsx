@@ -362,7 +362,7 @@ export default function JambStudyPage() {
               </div>
               <div className="relative overflow-hidden rounded-2xl border border-destructive/10 bg-gradient-to-br from-destructive/10 to-destructive/5 p-5 text-center">
                 <div className="absolute right-0 top-0 h-16 w-16 translate-x-1/2 -translate-y-1/2 rounded-full bg-destructive/10 blur-xl" />
-                <Clock3 className="mx-auto mb-2 h-5 w-5 text-destructive" />
+                <Flame className="mx-auto mb-2 h-5 w-5 text-destructive" />
                 <p className="text-3xl font-bold text-destructive tabular-nums">{reviewReady ? dueCount : "—"}</p>
                 <p className="mt-1 text-xs text-muted-foreground">Due Today</p>
               </div>

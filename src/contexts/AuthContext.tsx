@@ -123,7 +123,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             emailRedirectTo: Capacitor.isNativePlatform()
               ? NATIVE_AUTH_REDIRECT_URI
               : window.location.origin,
-            data: { display_name: email.split('@')[0] },
+            data: { display_name: email.split('@')[0], exam_program_flow: 'multi-programme-v1' },
           },
         }),
         "Sign up",

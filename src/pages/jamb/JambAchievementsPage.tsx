@@ -26,6 +26,20 @@ const CATEGORY_FILTERS: { value: AchievementCategory; label: string }[] = [
   { value: "Organisation", label: "Organisation" },
 ];
 
+type JambAchievementProgressItem = ReturnType<typeof getJambAchievementProgress>[number];
+
+function toJambAchievementBadge(item: JambAchievementProgressItem): Achievement {
+  return {
+    id: item.id,
+    name: item.label,
+    description: item.description,
+    icon: item.category === "Consistency" ? "🔥" : item.category === "Organisation" ? "🔖" : "📘",
+    rarity: "common",
+    condition: () => item.unlocked,
+    getProgress: () => ({ current: item.current, max: item.target }),
+  };
+}
+
 export default function JambAchievementsPage() {
   const { savedAnswers, isReady: answersReady } = useJambPracticeProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
@@ -142,55 +156,19 @@ export default function JambAchievementsPage() {
 
         <section className="grid gap-3 sm:grid-cols-2" aria-label="JAMB achievements">
           {filtered.map((achievement, index) => (
-            <motion.article
+            <div
               key={achievement.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: index * 0.025 }}
-              whileHover={{ y: -2, transition: { type: "spring", stiffness: 300, damping: 22 } }}
-              className={achievement.unlocked
-                ? "rounded-xl border border-primary/25 bg-card p-4 transition-colors"
-                : "rounded-xl border border-border bg-card/70 p-4 transition-colors hover:border-border"}
+              className="animate-in-up"
+              style={{ animationDelay: `${index * 0.03}s` }}
             >
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center">
-                  <AchievementBadge
-                    achievement={{
-                      id: achievement.id,
-                      name: achievement.label,
-                      description: achievement.description,
-                      icon: achievement.category === "Consistency" ? "🔥" : achievement.category === "Organisation" ? "🔖" : "📘",
-                      rarity: "common",
-                      condition: () => achievement.unlocked,
-                      getProgress: () => ({ current: achievement.current, max: achievement.target }),
-                    } satisfies Achievement}
-                    unlocked={ready && achievement.unlocked}
-                    size="sm"
-                    showDetails={false}
-                    stats={badgeStats}
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-semibold">{achievement.label}</h3>
-                    {achievement.unlocked
-                      ? <span className="text-[10px] font-semibold text-primary">Unlocked</span>
-                      : <span className="text-[10px] text-muted-foreground">{ready ? `${achievement.current}/${achievement.target}` : "—"}</span>}
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{achievement.description}</p>
-                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${ready ? achievement.percent : 0}%` }}
-                      transition={{ duration: 0.55, ease: "easeOut", delay: index * 0.025 }}
-                      className="h-full rounded-full bg-primary"
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.article>
+              <AchievementBadge
+                achievement={toJambAchievementBadge(achievement)}
+                unlocked={ready && achievement.unlocked}
+                size="md"
+                stats={badgeStats}
+              />
+            </div>
           ))}
-        </section>
 
         {filtered.length === 0 && (
           <div className="py-16 text-center">

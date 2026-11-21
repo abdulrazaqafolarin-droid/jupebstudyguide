@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { BarChart3, BookOpen, ShieldCheck, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 
 export default function JambLeaderboardPage() {
@@ -9,34 +9,15 @@ export default function JambLeaderboardPage() {
       <WorkspacePageHeader title="Leaderboard" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} iconClassName="text-accent" />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <motion.section
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="rounded-xl border border-border bg-card p-6 text-center sm:p-10"
-        >
-          <motion.div
-            animate={{ scale: [1, 1.04, 1] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary"
-          >
-            <ShieldCheck className="h-7 w-7" />
-          </motion.div>
-          <h2 className="text-xl font-bold">Rankings will appear soon</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            The JAMB leaderboard will open when verified practice and CBT results are available. No unverified scores are shown.
+        <div className="py-12 text-center">
+          <Trophy className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
+          <p className="text-muted-foreground">No verified rankings yet</p>
+          <p className="mx-auto mb-4 mt-1 max-w-xl text-xs text-muted-foreground/70">
+            JAMB rankings will appear when independently verified practice and CBT results can be compared safely. Unverified answers and scores will not be included.
           </p>
-        </motion.section>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Link to="/jamb/stats" className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-accent/50">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            <span><strong className="block text-sm">Study Stats</strong><span className="text-xs text-muted-foreground">Review your JAMB activity</span></span>
-          </Link>
-          <Link to="/jamb/past-questions" className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-accent/50">
-            <BookOpen className="h-5 w-5 text-primary" />
-            <span><strong className="block text-sm">Past Questions</strong><span className="text-xs text-muted-foreground">Build your JAMB progress</span></span>
-          </Link>
+          <Button asChild>
+            <Link to="/jamb/past-questions">Go Study Now</Link>
+          </Button>
         </div>
       </main>
     </div>

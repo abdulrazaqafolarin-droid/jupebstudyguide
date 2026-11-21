@@ -16,6 +16,7 @@ import {
   type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import StreakDisplay from "@/components/StreakDisplay";
+import { StatsOverviewCards } from "@/components/StatsOverviewCards";
 
 export default function JambStatsPage() {
   const { user } = useAuth();
@@ -133,20 +134,14 @@ export default function JambStatsPage() {
           </div>
         )}
 
-        <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {[
-            { label: "Published questions", value: loadingBank ? "—" : publishedQuestionCount.toLocaleString(), icon: BookOpen },
-            { label: "Questions practised", value: answersReady ? activity.answerCount.toLocaleString() : "—", icon: BarChart3 },
-            { label: "Bookmarks", value: bookmarksReady ? bookmarks.length.toLocaleString() : "—", icon: Bookmark },
-            { label: "Study days", value: answersReady ? activity.totalDaysStudied.toLocaleString() : "—", icon: CalendarDays },
-          ].map((item) => (
-            <div key={item.label} className="rounded-2xl border border-border bg-card p-4">
-              <item.icon className="mb-3 h-5 w-5 text-primary" />
-              <p className="text-2xl font-bold tabular-nums">{item.value}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">{item.label}</p>
-            </div>
-          ))}
-        </section>
+        <StatsOverviewCards
+          items={[
+            { label: "Published questions", value: loadingBank ? "—" : publishedQuestionCount.toLocaleString(), icon: BookOpen, color: "text-blue-500" },
+            { label: "Questions practised", value: answersReady ? activity.answerCount.toLocaleString() : "—", icon: BarChart3, color: "text-emerald-500" },
+            { label: "Bookmarks", value: bookmarksReady ? bookmarks.length.toLocaleString() : "—", icon: Bookmark, color: "text-violet-500" },
+            { label: "Study days", value: answersReady ? activity.totalDaysStudied.toLocaleString() : "—", icon: CalendarDays, color: "text-amber-500" },
+          ]}
+        />
 
         <section className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-4 flex items-center gap-2">

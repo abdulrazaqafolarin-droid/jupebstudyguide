@@ -13,6 +13,7 @@ import { STUDY_YEARS } from '@/types/study-questions';
 import type { Subject } from '@/types/question';
 import type { StudyCategory } from '@/types/study-questions';
 import { cn } from '@/lib/utils';
+import { StatsOverviewCards } from '@/components/StatsOverviewCards';
 
 const SUBJECTS: Subject[] = ['physics', 'chemistry', 'biology', 'math'];
 const CATEGORIES: StudyCategory[] = ['objective', 'theory', 'practical'];
@@ -126,28 +127,14 @@ export default function StudyStatsDashboard() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* Overview Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
+        <StatsOverviewCards
+          items={[
             { label: 'Total Questions', value: overallStats.total, icon: BookOpen, color: 'text-blue-500' },
             { label: 'Studied', value: `${Math.round(overallStats.studiedPercentage)}%`, sub: `${overallStats.studied}/${overallStats.total}`, icon: Brain, color: 'text-emerald-500' },
             { label: 'Mastered', value: `${Math.round(overallStats.learnedPercentage)}%`, sub: `${overallStats.learned}/${overallStats.total}`, icon: Target, color: 'text-violet-500' },
             { label: 'Due Today', value: overallStats.dueToday, icon: Zap, color: overallStats.dueToday > 0 ? 'text-amber-500' : 'text-muted-foreground' },
-          ].map((card) => (
-            <motion.div
-              key={card.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-card rounded-2xl border p-4 space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">{card.label}</span>
-                <card.icon className={cn('w-4 h-4', card.color)} />
-              </div>
-              <p className="text-2xl font-bold">{card.value}</p>
-              {card.sub && <p className="text-[10px] text-muted-foreground -mt-1">{card.sub}</p>}
-            </motion.div>
-          ))}
-        </div>
+          ]}
+        />
 
         {/* Streak Section */}
         <motion.div

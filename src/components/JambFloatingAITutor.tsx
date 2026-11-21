@@ -278,7 +278,7 @@ export function JambFloatingAITutor() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const width = Math.min(PANEL_WIDTH, Math.max(240, vw - PANEL_GUTTER * 2));
-    const height = Math.min(PANEL_HEIGHT, Math.max(240, vh - PANEL_GUTTER * 2));
+    const height = Math.min(PANEL_HEIGHT, Math.max(240, vh - 100));
     const fabCenterX = fabPosition.x + FAB_SIZE / 2;
     const fabCenterY = fabPosition.y + FAB_SIZE / 2;
     const nearLeft = fabCenterX < vw / 2;
@@ -385,13 +385,13 @@ export function JambFloatingAITutor() {
               width: panelOrigin.width,
               height: isMinimized ? "auto" : panelOrigin.height,
               transformOrigin: `${origin.x}% ${origin.y}%`,
-              zIndex: 70,
+              zIndex: 50,
             }}
             className={[
-              "flex max-w-[calc(100vw-2rem)] flex-col overflow-hidden",
+              "flex max-w-[calc(100vw-3rem)] flex-col overflow-hidden",
               "rounded-2xl border border-white/10 bg-card/90 backdrop-blur-xl",
               "shadow-2xl shadow-black/30",
-              isMinimized ? "h-auto" : "max-h-[calc(100dvh-2rem)]",
+              isMinimized ? "h-auto" : "h-[540px] max-h-[calc(100vh-6rem)]",
             ].join(" ")}
           >
             <div

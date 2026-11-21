@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
@@ -40,6 +41,7 @@ interface ReviewQuestion {
 
 export default function JambCbtPage() {
   const { attemptId } = useParams();
+  const shouldReduceMotion = useReducedMotion();
   const [payload, setPayload] = useState<AttemptPayload | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [marked, setMarked] = useState<Record<number, boolean>>({});
@@ -225,7 +227,12 @@ export default function JambCbtPage() {
   if (isSubmitted) return (
     <main className="min-h-screen bg-background px-4 py-8 pb-28">
       <div className="mx-auto max-w-2xl space-y-6">
-        <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 text-center chalk-texture md:p-8">
+        <motion.section
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: [0.23, 1, 0.32, 1] }}
+          className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 text-center chalk-texture md:p-8"
+        >
           <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
           <div className="relative">
@@ -275,7 +282,7 @@ export default function JambCbtPage() {
               <Link to="/jamb">Return to JAMB home</Link>
             </Button>
           </div>
-        </section>
+        </motion.section>
 
         <section className="space-y-4">
           <header className="px-1">
@@ -294,7 +301,13 @@ export default function JambCbtPage() {
             </div>
           )}
           {review.map((item) => (
-            <article key={item.sequence} className="rounded-2xl border border-border bg-card p-4 chalk-texture sm:p-5">
+            <motion.article
+              key={item.sequence}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.22, delay: shouldReduceMotion ? 0 : Math.min((item.sequence - 1) * 0.025, 0.2) }}
+              className="rounded-2xl border border-border bg-card p-4 chalk-texture sm:p-5"
+            >
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-sm font-semibold">Question {item.sequence}</h3>
                 <span className={item.gradable
@@ -349,7 +362,7 @@ export default function JambCbtPage() {
               )}
               {!item.gradable && <p className="mt-3 text-xs text-muted-foreground">No independently reviewed answer key is available for this question.</p>}
               {item.marked_for_review && <p className="mt-2 text-xs font-medium text-amber-700">You marked this question for review during the attempt.</p>}
-            </article>
+            </motion.article>
           ))}
         </section>
       </div>
@@ -376,42 +389,122 @@ export default function JambCbtPage() {
       </header>
       <main className="mx-auto max-w-2xl space-y-4 px-4 py-6 pb-28">
 
-        <section className="rounded-2xl border border-border bg-card p-6 chalk-texture md:p-8">
-          <div className="mb-3 flex items-center justify-between gap-3 text-xs"><span className="font-medium text-foreground">Question {current + 1} <span className="font-normal text-muted-foreground">of {payload.questions.length}</span></span><span className="text-right text-muted-foreground">{answeredCount} answered · {saving ? "Saving…" : "Saved"}</span></div>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${((current + 1) / payload.questions.length) * 100}%` }} /></div>
-          <div className="mt-6 text-lg font-medium leading-relaxed"><QuestionMath content={question.question_snapshot.question} /></div>
-          {question.question_snapshot.imageUrls?.map((imageUrl) => <QuestionImage key={imageUrl} imageUrl={imageUrl} alt="JAMB question illustration" />)}
-          <div className="mt-6 space-y-3">
-            {question.question_snapshot.options.map((option) => (
-              <QuestionOptionButton
-                key={option.label}
-                label={option.label}
-                state={selectedOption === option.label ? "selected" : "default"}
-                selected={selectedOption === option.label}
-                disabled={submitting}
-                onClick={() => void saveAnswer(question.sequence, option.label)}
-              >
-                <QuestionMath content={option.text} inline />
-              </QuestionOptionButton>
-            ))}
+        <div className="mb-6 animate-in-up">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <span className="text-sm font-medium text-foreground">Question {current + 1}</span>
+              <span className="ml-1.5 text-sm text-muted-foreground">of {payload.questions.length}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-secondary/50 px-2 py-1 text-xs tabular-nums text-muted-foreground">
+                {Math.round(((current + 1) / payload.questions.length) * 100)}%
+              </span>
+              <span role="status" aria-live="polite" className="text-right text-[11px] text-muted-foreground">
+                {answeredCount} answered · {saving ? "Saving…" : "Saved"}
+              </span>
+            </div>
           </div>
-          <button disabled={submitting} onClick={() => void saveAnswer(question.sequence, selectedOption || null, !flagged)} className={`mt-5 inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors ${flagged ? "border-amber-500/30 bg-amber-500/10 text-amber-700" : "border-border bg-secondary/50 text-muted-foreground hover:bg-secondary"}`}><Flag className="h-4 w-4" />{flagged ? "Marked for review" : "Mark for review"}</button>
-          <div className="mt-6 flex items-center justify-between gap-2">
-            <Button variant="outline" disabled={submitting || current === 0} onClick={() => setCurrent((value) => value - 1)}><ArrowLeft className="mr-1 h-4 w-4" /> Previous</Button>
-            {current < payload.questions.length - 1 ? <Button disabled={submitting} onClick={() => setCurrent((value) => value + 1)}>Next question <ArrowRight className="ml-1 h-4 w-4" /></Button> : <Button onClick={() => void submitAttempt(false)} disabled={submitting}><Send className="mr-1 h-4 w-4" />Submit practice</Button>}
+          <div className="h-2.5 overflow-hidden rounded-full bg-secondary">
+            <motion.div
+              initial={false}
+              animate={{ width: `${((current + 1) / payload.questions.length) * 100}%` }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.35, ease: [0.23, 1, 0.32, 1] }}
+              className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent"
+            />
           </div>
-        </section>
+        </div>
 
-        <section className="rounded-2xl border border-border bg-card p-5 chalk-texture">
-          <div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold">Question navigator</h2><span className="text-xs text-muted-foreground">Tap to revisit</span></div>
+        <AnimatePresence mode="wait">
+          <motion.section
+            key={question.sequence}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.23, 1, 0.32, 1] }}
+            className="rounded-2xl border border-border bg-card p-6 chalk-texture"
+          >
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {question.subject} · {question.question_snapshot.year ?? "JAMB practice"}
+              </span>
+              <span className="text-[11px] text-muted-foreground">{saving ? "Saving answer…" : "Changes saved"}</span>
+            </div>
+            <div className="text-lg font-medium leading-relaxed">
+              <QuestionMath content={question.question_snapshot.question} />
+            </div>
+            {question.question_snapshot.imageUrls?.map((imageUrl) => (
+              <QuestionImage key={imageUrl} imageUrl={imageUrl} alt="JAMB question illustration" />
+            ))}
+            <div className="mt-6 space-y-3">
+              {question.question_snapshot.options.map((option) => (
+                <QuestionOptionButton
+                  key={option.label}
+                  label={option.label}
+                  state={selectedOption === option.label ? "selected" : "default"}
+                  selected={selectedOption === option.label}
+                  disabled={submitting}
+                  onClick={() => void saveAnswer(question.sequence, option.label)}
+                >
+                  <QuestionMath content={option.text} inline />
+                </QuestionOptionButton>
+              ))}
+            </div>
+            <motion.button
+              type="button"
+              disabled={submitting}
+              onClick={() => void saveAnswer(question.sequence, selectedOption || null, !flagged)}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+              className={`mt-5 inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors ${flagged ? "border-amber-500/30 bg-amber-500/10 text-amber-700" : "border-border bg-secondary/50 text-muted-foreground hover:bg-secondary"}`}
+            >
+              <Flag className="h-4 w-4" />{flagged ? "Marked for review" : "Mark for review"}
+            </motion.button>
+            <div className="mt-6 flex items-center justify-between gap-2">
+              <Button variant="outline" disabled={submitting || current === 0} onClick={() => setCurrent((value) => value - 1)}>
+                <ArrowLeft className="mr-1 h-4 w-4" /> Previous
+              </Button>
+              {current < payload.questions.length - 1 ? (
+                <Button disabled={submitting} onClick={() => setCurrent((value) => value + 1)}>
+                  Next question <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button onClick={() => void submitAttempt(false)} disabled={submitting}>
+                  <Send className="mr-1 h-4 w-4" /> Submit practice
+                </Button>
+              )}
+            </div>
+          </motion.section>
+        </AnimatePresence>
+
+        <motion.section
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.22, delay: shouldReduceMotion ? 0 : 0.06 }}
+          className="rounded-2xl border border-border bg-card p-5 chalk-texture"
+        >
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold">Question navigator</h2>
+            <span className="text-xs text-muted-foreground">Tap to revisit</span>
+          </div>
           <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
             {payload.questions.map((item, index) => {
               const isAnswered = Boolean(answers[item.sequence]);
-              return <button key={item.sequence} disabled={submitting} onClick={() => setCurrent(index)} aria-label={`Go to question ${index + 1}`} aria-current={current === index ? "step" : undefined}
-                className={`aspect-square rounded-lg border-2 text-xs font-semibold transition-colors ${current === index ? "border-primary bg-primary text-primary-foreground" : marked[item.sequence] ? "border-amber-500 bg-amber-500/10 text-amber-700" : isAnswered ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-700" : "border-border bg-secondary/40 text-muted-foreground hover:border-primary/50"}`}>{index + 1}</button>;
+              return (
+                <motion.button
+                  key={item.sequence}
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => setCurrent(index)}
+                  aria-label={`Go to question ${index + 1}`}
+                  aria-current={current === index ? "step" : undefined}
+                  whileTap={shouldReduceMotion ? undefined : { scale: 0.94 }}
+                  className={`aspect-square rounded-lg border-2 text-xs font-semibold transition-colors ${current === index ? "border-primary bg-primary text-primary-foreground" : marked[item.sequence] ? "border-amber-500 bg-amber-500/10 text-amber-700" : isAnswered ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-700" : "border-border bg-secondary/40 text-muted-foreground hover:border-primary/50"}`}
+                >
+                  {index + 1}
+                </motion.button>
+              );
             })}
           </div>
-        </section>
+        </motion.section>
 
         <Button variant="destructive" className="w-full" onClick={() => void submitAttempt(false)} disabled={submitting || saving}>{submitting ? "Submitting…" : "Submit attempt"}</Button>
       </main>

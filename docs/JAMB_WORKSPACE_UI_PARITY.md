@@ -154,3 +154,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **Onboarding copy:** the shared Chat & Privacy step now receives the active programme label, avoiding JUPEB-specific “classmates” copy in the JAMB onboarding flow. The same mockup, privacy switches and persisted settings are reused.
 
+- **Dashboard onboarding reminder:** JAMB now shows the same dismissible “Finish setting up” nudge as JUPEB for onboarding that was started but not finalized. Its completion lookup and dismissal state are scoped to `jamb`, and the action opens the JAMB onboarding route.
+

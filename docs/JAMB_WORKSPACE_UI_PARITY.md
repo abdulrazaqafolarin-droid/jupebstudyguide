@@ -107,3 +107,22 @@ Biology source correction: the official JAMB IBASS syllabus has 23 topics groupe
 
 
 Current count: **426 source-mapped objective statements** across 106 topics. Each topic is covered by the syllabus regression test.
+
+## Interface parity follow-up — 21 November 2026
+
+The latest source pass targets visible UI consistency while preserving exam-specific workflows:
+
+- **Dashboard:** JAMB uses the same Rutex logo footer, section entrance order and bottom spacing as JUPEB. The dashboard continues to use shared subject cards, progress panel, streak display, achievement panel, leaderboard frame and global navigation.
+- **Past questions:** the sticky title/back/search/bookmark/admin header now uses the JUPEB layout treatment at the subject, year, question and bookmark stages. Search expands into the same header row instead of changing the page structure.
+- **Statistics:** both pages use the shared statistics header, overview cards, streak panel, content width, gradient page background and history-aware back behavior. JAMB-only analytics panels use the same staggered fade-and-rise treatment.
+- **Timed CBT:** the JAMB attempt keeps its server-authoritative timer and save/submit behavior, but its progress indicator, question-card transitions, navigator interaction and result/review entrances now follow the JUPEB quiz motion language. Reduced-motion preferences are respected.
+- **CBT setup and onboarding:** JAMB practice-length controls use the JUPEB quiz preset styling. JAMB subject selection, exam-target and daily-goal controls use matching selection feedback and transition timing.
+
+### Deliberate programme differences
+
+Visual parity does not mean sharing academic or scoring rules. JAMB remains a single-subject server-timed practice attempt with saved answers, review flags and independently approved answer keys. JUPEB retains its existing multi-subject quiz and syllabus workflow. Unverified JAMB answer keys, unavailable question content, syllabus certification and the full official UTME mock remain gated; no JUPEB data is substituted.
+
+### Verification boundary
+
+These changes are committed on the open Draft PR branch. GitHub validation must pass on the final branch head, and signed-in browser/mobile acceptance is still required before declaring full parity. Production remains unchanged.
+

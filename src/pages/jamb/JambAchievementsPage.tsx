@@ -169,6 +169,7 @@ export default function JambAchievementsPage() {
               />
             </div>
           ))}
+        </section>
 
         {filtered.length === 0 && (
           <div className="py-16 text-center">

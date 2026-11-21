@@ -466,7 +466,7 @@ export default function JambDailyMissionPage() {
 
         {!ready && <p className="text-center text-xs text-muted-foreground">Restoring your saved mission history…</p>}
         <p className="text-center text-[10px] text-muted-foreground">
-          JAMB missions are stored separately from JUPEB. <Trophy className="inline h-3 w-3" /> Mission completion is a Rutex study activity, not an official JAMB result.
+          <Trophy className="inline h-3 w-3" /> Mission completion is a Rutex study activity, not an official JAMB result.
         </p>
       </main>
     </div>

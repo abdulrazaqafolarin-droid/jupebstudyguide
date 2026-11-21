@@ -85,7 +85,7 @@ export default function JambCbtSetupPage() {
       <div className="mx-auto max-w-2xl">
         <Link
           to="/jamb"
-          className="mb-6 inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
@@ -149,10 +149,10 @@ export default function JambCbtSetupPage() {
                       }}
                       aria-pressed={selected}
                       className={cn(
-                        "rounded-xl border-2 px-5 py-2.5 text-left font-semibold transition-all",
+                        "px-5 py-2.5 rounded-xl border-2 font-semibold transition-all",
                         selected
-                          ? "border-primary bg-primary/10 text-primary shadow-sm"
-                          : "border-border text-foreground hover:border-primary/50",
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border hover:border-primary/50 text-foreground",
                         starting && "cursor-not-allowed opacity-60",
                       )}
                     >

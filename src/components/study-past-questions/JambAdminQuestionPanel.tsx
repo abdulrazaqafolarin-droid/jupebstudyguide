@@ -70,6 +70,9 @@ export function JambAdminQuestionPanel({
   const [showPreview, setShowPreview] = useState(false);
   const [cropFileName, setCropFileName] = useState<string>("");
   const [editingQuestion, setEditingQuestion] = useState<JambQuestion | null>(null);
+  const [managerQuestions, setManagerQuestions] = useState<JambQuestion[]>(questions ?? []);
+  const managerQuestionsRef = useRef<JambQuestion[]>(questions ?? []);
+  managerQuestionsRef.current = managerQuestions;
   const [sourceReference, setSourceReference] = useState("");
   const [sourceDocument, setSourceDocument] = useState("");
   const [rightsNote, setRightsNote] = useState("");
@@ -98,16 +101,32 @@ export function JambAdminQuestionPanel({
     }
   }, [isOpen]);
 
-  // Opening the admin question bank also resumes any queued initial backfill
-  // or failed indexing jobs. Queueing is server-side, so no question data is
-  // bundled into the app and edits remain saved if Gemini is unavailable.
+  const refreshManagerQuestions = useCallback(async () => {
+    if (!isOpen) return;
+    setError(null);
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke("question-import", {
+        body: { exam_program_id: "jamb", action: "manage-question", operation: "list", subject, year },
+      });
+      if (invokeError) throw invokeError;
+      if (data?.error) throw new Error(String(data.error));
+      setManagerQuestions(Array.isArray(data?.questions) ? data.questions as JambQuestion[] : []);
+      if (data?.truncated) {
+        setError("This year has more than 500 questions. The current manager list is capped at 500; pagination is needed before ordering more.");
+      }
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Could not load the full JAMB question list.");
+    }
+  }, [isOpen, subject, year]);
+
   useEffect(() => {
     if (isOpen) {
+      void refreshManagerQuestions();
       void processPendingQuestionEmbeddings().catch((indexError) => {
-        console.warn("[Question RAG] Could not resume indexing:", indexError);
+        console.warn("[JAMB Question RAG] Could not resume indexing:", indexError);
       });
     }
-  }, [isOpen]);
+  }, [isOpen, refreshManagerQuestions]);
 
   const loadQuestion = useCallback(async (q: JambQuestion) => {
     const requestId = ++loadQuestionRequestRef.current;
@@ -176,8 +195,9 @@ export function JambAdminQuestionPanel({
     setExplanation("");
     setDifficulty("medium");
     setTopic("");
-    const nextSortOrder = questions?.length
-      ? Math.max(...questions.map((item) => item.sortOrder ?? 0)) + 1
+    const currentManagerQuestions = managerQuestionsRef.current;
+    const nextSortOrder = currentManagerQuestions.length
+      ? Math.max(...currentManagerQuestions.map((item) => item.sortOrder ?? 0)) + 1
       : 0;
     setSortOrder(String(nextSortOrder));
     setSourceReference("");
@@ -186,7 +206,7 @@ export function JambAdminQuestionPanel({
     setRightsConfirmed(false);
     setAnswerKeyVerified(false);
     setError(null);
-  }, [questions]);
+  }, []);
 
   useEffect(() => {
     if (mode === "edit" && question) {
@@ -405,12 +425,14 @@ export function JambAdminQuestionPanel({
       if (!saved) throw new Error("The server did not return the saved JAMB question.");
 
       if (mode === "edit" && editingQuestion) {
+        setManagerQuestions((previous) => previous.map((item) => item.id === saved.id ? saved : item));
         onQuestionUpdated(saved);
         const removedImageUrls = existingImageUrls.filter((url) => !resolvedImageUrls.includes(url));
         if (removedImageUrls.length > 0) {
           await deleteQuestionImageUrls(removedImageUrls).catch(() => {});
         }
       } else {
+        setManagerQuestions((previous) => [...previous, saved].sort((a, b) => a.sortOrder - b.sortOrder));
         onQuestionAdded(saved);
       }
 
@@ -452,6 +474,7 @@ export function JambAdminQuestionPanel({
       if (data?.error) throw new Error(String(data.error));
       // Keep image assets for historical CBT attempts and review records.
       setSaving(false);
+      setManagerQuestions((previous) => previous.filter((item) => item.id !== editingQuestion.id));
       onQuestionDeleted(editingQuestion.id);
       setMode(null);
       onClose();
@@ -474,12 +497,12 @@ export function JambAdminQuestionPanel({
   };
 
   const handleDragSort = async () => {
-    if (dragItem.current === null || dragOverItem.current === null || !questions) return;
+    if (dragItem.current === null || dragOverItem.current === null || managerQuestions.length === 0) return;
     if (dragItem.current === dragOverItem.current) return;
-    const reordered = [...questions];
+    const reordered = [...managerQuestions];
     const [removed] = reordered.splice(dragItem.current, 1);
     reordered.splice(dragOverItem.current, 0, removed);
-    const firstSortOrder = Math.min(...questions.map((q) => q.sortOrder ?? 0));
+    const firstSortOrder = Math.min(...managerQuestions.map((q) => q.sortOrder ?? 0));
     const reorderedWithPositions = reordered.map((q, index) => ({
       ...q,
       sortOrder: firstSortOrder + index,
@@ -501,6 +524,7 @@ export function JambAdminQuestionPanel({
     }
     dragItem.current = null;
     dragOverItem.current = null;
+    setManagerQuestions(reorderedWithPositions);
     if (onQuestionsReordered) onQuestionsReordered(reorderedWithPositions);
     else reorderedWithPositions.forEach((item) => onQuestionUpdated(item));
   };
@@ -948,9 +972,9 @@ export function JambAdminQuestionPanel({
                     Select a question to edit, or add a new one.
                   </p>
 
-                  {questions && questions.length > 0 && (
+                  {managerQuestions.length > 0 && (
                     <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1">
-                      {questions.map((q, idx) => (
+                      {managerQuestions.map((q, idx) => (
                         <div
                           key={q.id}
                           draggable

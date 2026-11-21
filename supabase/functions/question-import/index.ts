@@ -430,6 +430,69 @@ Deno.serve(async (request: Request) => {
       const answerKeyTable = supabase.from("study_question_answer_keys") as any;
       const auditTable = supabase.from("jamb_question_admin_audit" as any) as any;
 
+      if (operation === "list") {
+        const subject = asText(body.subject).toLowerCase();
+        const year = Number(body.year);
+        if (!SUBJECTS.has(subject) || !Number.isInteger(year) || year < 1970 || year > 2100) {
+          return respond({ error: "A supported JAMB subject and year are required" }, 400);
+        }
+        const { data: rows, error: rowsError } = await questionTable
+          .select("id,subject,year,category,question,options,difficulty,course,sort_order,image_url,image_urls,image_position,source_ref,source_document,source_page,source_question_number")
+          .eq("exam_program_id", "jamb")
+          .eq("subject", subject)
+          .eq("year", year)
+          .eq("hidden", false)
+          .eq("review_status", "published")
+          .eq("category", "objective")
+          .order("sort_order", { ascending: true })
+          .order("id", { ascending: true })
+          .limit(500);
+        if (rowsError) return respond({ error: rowsError.message }, 500);
+
+        const questionIds = (rows ?? []).map((row: Record<string, unknown>) => String(row.id));
+        if (questionIds.length === 0) return respond({ questions: [], total: 0, truncated: false });
+
+        const [keysResult, auditsResult] = await Promise.all([
+          answerKeyTable.select("question_id,correct_answer,explanation,review_status").in("question_id", questionIds),
+          auditTable.select("question_id,rights_note,source_document,source_reference,created_at")
+            .in("question_id", questionIds).order("created_at", { ascending: false }).limit(2000),
+        ]);
+        if (keysResult.error) return respond({ error: keysResult.error.message }, 500);
+        if (auditsResult.error) return respond({ error: auditsResult.error.message }, 500);
+
+        const keyByQuestion = new Map<string, Record<string, unknown>>();
+        for (const key of keysResult.data ?? []) keyByQuestion.set(String(key.question_id), key as Record<string, unknown>);
+        const auditByQuestion = new Map<string, Record<string, unknown>>();
+        for (const audit of auditsResult.data ?? []) {
+          const id = String(audit.question_id ?? "");
+          if (id && !auditByQuestion.has(id)) auditByQuestion.set(id, audit as Record<string, unknown>);
+        }
+
+        const questions = (rows ?? []).map((row: Record<string, unknown>) => {
+          const id = String(row.id);
+          const key = keyByQuestion.get(id);
+          const audit = auditByQuestion.get(id);
+          const imageUrls = Array.isArray(row.image_urls)
+            ? row.image_urls.filter((url: unknown): url is string => typeof url === "string")
+            : typeof row.image_url === "string" && row.image_url ? [row.image_url] : [];
+          return {
+            id, subject: row.subject, year: row.year, category: "objective",
+            question: row.question ?? "", options: row.options ?? [],
+            correctAnswer: key?.correct_answer ?? "", explanation: key?.explanation ?? "",
+            answerKeyStatus: key?.review_status ?? "missing",
+            answerKeyVerified: key?.review_status === "approved",
+            difficulty: row.difficulty ?? "medium", topic: row.course ?? "",
+            sortOrder: row.sort_order ?? 0, imageUrl: row.image_url ?? imageUrls[0] ?? null,
+            imageUrls, imagePosition: row.image_position ?? (imageUrls.length ? "image-only" : "text-only"),
+            sourceReference: row.source_ref ?? "",
+            sourceDocument: row.source_document ?? audit?.source_document ?? "",
+            sourcePage: row.source_page ?? null, sourceQuestionNumber: row.source_question_number ?? "",
+            rightsNote: audit?.rights_note ?? "",
+          };
+        });
+        return respond({ questions, total: questions.length, truncated: questions.length === 500 });
+      }
+
       if (operation === "get") {
         const questionId = asText(body.question_id);
         if (!questionId) return respond({ error: "question_id is required" }, 400);

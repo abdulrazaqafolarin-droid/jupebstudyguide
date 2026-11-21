@@ -143,3 +143,6 @@ The JAMB leaderboard remains a data-contract blocker rather than a visual stylin
 
 The shared visual changes do not alter JAMB's content eligibility, answer-key approval, scoring or spaced-review rules.
 
+- **Active Revision Cards header:** after a subject is selected, JAMB now switches from the generic secondary-page header to the same sticky study-session header pattern as JUPEB: Back, subject pill, programme-specific streak and current question position. The streak is computed from JAMB saved answers only.
+- **Revision flow order:** the Learn All / Review Due / Shuffle controls now appear before the three study metric cards, matching the JUPEB study-view sequence. The content width and top spacing match the JUPEB study screen.
+

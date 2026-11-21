@@ -161,6 +161,36 @@ Questions: 2/2 | Source: fixture
         self.assertFalse(any(item["answer_key_verified"] for item in package["items"]))
         self.assertEqual(report["publishable_without_human_review"], 0)
 
+    def test_english_numbering_audit_catches_duplicate_numbers_even_when_counts_match(self):
+        fixture = """JAMB ENGLISH 2017 - OBJECTIVE
+Questions: 2/2 | Source: fixture
+==============================================================================
+1. First item
+   A. One
+   B. Two
+   C. Three
+   D. Four
+
+1. Duplicate number instead of question 2
+   A. Alpha
+   B. Beta
+   C. Gamma
+   D. Delta
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "english-numbering.txt"
+            path.write_text(fixture, encoding="utf-8")
+            package, report = parse_english_source(path)
+
+        year = package["years"][0]
+        self.assertEqual(year["parsed_question_count"], 2)
+        self.assertEqual(year["duplicate_question_numbers"], [1])
+        self.assertEqual(year["missing_question_numbers"], [2])
+        self.assertIn("duplicate_source_question_number_in_year", package["items"][0]["validation_errors"])
+        self.assertIn("duplicate_source_question_number_in_year", package["items"][1]["validation_errors"])
+        self.assertGreater(report["year_sections_with_numbering_issues"], 0)
+        self.assertEqual(report["publishable_without_human_review"], 0)
+
     def test_committed_english_source_if_available_stays_review_only(self):
         from scripts.import_jamb_sources import ENGLISH_SOURCE
 
@@ -173,7 +203,10 @@ Questions: 2/2 | Source: fixture
         self.assertEqual(len(package["years"]), 43)
         self.assertEqual(report["source_answer_count"], 750)
         self.assertEqual(report["source_explanation_count"], 750)
+        self.assertEqual(report["source_answer_explanation_pair_count"], 750)
+        self.assertGreater(report["valid_option_set_count"], 0)
         self.assertEqual(report["publishable_without_human_review"], 0)
+        self.assertTrue(all(item["source_reference"] == f'{item["year"]}:Q{item["source_question_number"]}' for item in package["items"]))
         self.assertTrue(all(not item["answer_key_verified"] for item in package["items"]))
         self.assertTrue(all(item["review_status"] == "needs_review" for item in package["items"]))
 

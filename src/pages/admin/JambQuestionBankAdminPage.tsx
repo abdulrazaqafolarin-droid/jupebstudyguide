@@ -48,6 +48,7 @@ interface EditState {
   options: Array<{ label: string; text: string }>;
   correctAnswer: string;
   explanation: string;
+  answerKeyVerified: boolean;
   imageUrls: string[];
 }
 
@@ -79,6 +80,7 @@ function toEditState(payload: Record<string, unknown>): EditState {
     })),
     correctAnswer: typeof payload.correct_answer === "string" ? payload.correct_answer : "",
     explanation: typeof payload.explanation === "string" ? payload.explanation : "",
+    answerKeyVerified: false,
     imageUrls,
   };
 }
@@ -304,14 +306,15 @@ export default function JambQuestionBankAdminPage() {
     setEdit((previous) => previous ? ({
       ...previous,
       options: previous.options.map((option, optionIndex) => optionIndex === index ? { ...option, [field]: value } : option),
+      answerKeyVerified: false,
     }) : previous);
   };
 
   const addOption = () => setEdit((previous) => previous && previous.options.length < 5
-    ? { ...previous, options: [...previous.options, { label: String.fromCharCode(65 + previous.options.length), text: "" }] }
+    ? { ...previous, options: [...previous.options, { label: String.fromCharCode(65 + previous.options.length), text: "" }], answerKeyVerified: false }
     : previous);
   const removeOption = (index: number) => setEdit((previous) => previous
-    ? { ...previous, options: previous.options.filter((_, optionIndex) => optionIndex !== index) }
+    ? { ...previous, options: previous.options.filter((_, optionIndex) => optionIndex !== index), answerKeyVerified: false }
     : previous);
 
   const uploadQuestionImages = async (files: FileList | null) => {
@@ -328,7 +331,7 @@ export default function JambQuestionBankAdminPage() {
         if (error) throw error;
         urls.push(supabase.storage.from("question-images").getPublicUrl(path).data.publicUrl);
       }
-      setEdit((previous) => previous ? { ...previous, imageUrls: urls } : previous);
+      setEdit((previous) => previous ? { ...previous, imageUrls: urls, answerKeyVerified: false } : previous);
       toast.success("Question image(s) uploaded.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Image upload failed.");
@@ -339,6 +342,10 @@ export default function JambQuestionBankAdminPage() {
 
   const reviewCurrent = async (decision: "approved" | "rejected") => {
     if (!currentItem || !edit || !selectedBatchId) return;
+    if (decision === "approved" && !edit.answerKeyVerified) {
+      toast.error("Confirm that you independently verified this answer and explanation before approving.");
+      return;
+    }
     setSavingReview(true);
     try {
       const options = edit.options
@@ -354,7 +361,7 @@ export default function JambQuestionBankAdminPage() {
         topic: edit.topic.trim() || null,
         options,
         correct_answer: decision === "approved" ? edit.correctAnswer : null,
-        answer_key_verified: decision === "approved",
+        answer_key_verified: decision === "approved" && edit.answerKeyVerified,
         explanation: decision === "approved" ? edit.explanation.trim() || null : null,
         image_urls: edit.imageUrls,
         image_url: edit.imageUrls[0] ?? null,
@@ -581,9 +588,9 @@ export default function JambQuestionBankAdminPage() {
                 {Array.isArray(currentPayload?.figure_descriptions) && currentPayload.figure_descriptions.length > 0 && (
                   <div className="rounded-xl border border-border p-3"><p className="text-xs font-semibold">Figure descriptions from source</p><ul className="mt-1 list-disc pl-5 text-xs text-muted-foreground">{(currentPayload.figure_descriptions as string[]).map((figure, index) => <li key={index}>{figure}</li>)}</ul></div>
                 )}
-                <label className="block space-y-1.5 text-sm"><span className="font-medium">Question text</span><textarea value={edit.question} onChange={(event) => setEdit((previous) => previous ? { ...previous, question: event.target.value } : previous)} rows={4} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
+                <label className="block space-y-1.5 text-sm"><span className="font-medium">Question text</span><textarea value={edit.question} onChange={(event) => setEdit((previous) => previous ? { ...previous, question: event.target.value, answerKeyVerified: false } : previous)} rows={4} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Verified source year</span><input type="number" value={edit.year} onChange={(event) => setEdit((previous) => previous ? { ...previous, year: event.target.value } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
+                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Verified source year</span><input type="number" value={edit.year} onChange={(event) => setEdit((previous) => previous ? { ...previous, year: event.target.value, answerKeyVerified: false } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
                   <label className="block space-y-1.5 text-sm"><span className="font-medium">Topic (optional)</span><input value={edit.topic} onChange={(event) => setEdit((previous) => previous ? { ...previous, topic: event.target.value } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
                 </div>
                 <label className="block space-y-1.5 text-sm">
@@ -591,7 +598,7 @@ export default function JambQuestionBankAdminPage() {
                   <input
                     type="text"
                     value={edit.sourceReference}
-                    onChange={(event) => setEdit((previous) => previous ? { ...previous, sourceReference: event.target.value } : previous)}
+                    onChange={(event) => setEdit((previous) => previous ? { ...previous, sourceReference: event.target.value, answerKeyVerified: false } : previous)}
                     placeholder="e.g. 2018:Q33"
                     aria-label="Verified source reference"
                     className="w-full rounded-xl border border-border bg-background p-3 text-sm"
@@ -615,13 +622,24 @@ export default function JambQuestionBankAdminPage() {
                   {edit.imageUrls.map((url) => <div key={url} className="break-all rounded-lg bg-muted p-2 text-[10px]">{url}</div>)}
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Verified correct option (optional)</span><select value={edit.correctAnswer} onChange={(event) => setEdit((previous) => previous ? { ...previous, correctAnswer: event.target.value } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm"><option value="">No verified answer key</option>{edit.options.map((option) => <option key={option.label} value={option.label}>{option.label}</option>)}</select></label>
-                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Explanation (required)</span><textarea value={edit.explanation} onChange={(event) => setEdit((previous) => previous ? { ...previous, explanation: event.target.value } : previous)} rows={2} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
+                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Correct answer (required)</span><select value={edit.correctAnswer} onChange={(event) => setEdit((previous) => previous ? { ...previous, correctAnswer: event.target.value, answerKeyVerified: false } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm"><option value="">No verified answer key</option>{edit.options.map((option) => <option key={option.label} value={option.label}>{option.label}</option>)}</select></label>
+                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Explanation (required)</span><textarea value={edit.explanation} onChange={(event) => setEdit((previous) => previous ? { ...previous, explanation: event.target.value, answerKeyVerified: false } : previous)} rows={2} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
                 </div>
+                <label className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-xs leading-relaxed">
+                  <input
+                    type="checkbox"
+                    checked={edit.answerKeyVerified}
+                    onChange={(event) => setEdit((previous) => previous
+                      ? { ...previous, answerKeyVerified: event.target.checked }
+                      : previous)}
+                    className="mt-0.5 accent-primary"
+                  />
+                  <span>I independently checked the selected correct answer and explanation against a reliable answer source. Approving this item certifies that verification.</span>
+                </label>
                 <div className="flex flex-wrap gap-2 border-t border-border pt-4">
                   <Button
                     onClick={() => void reviewCurrent("approved")}
-                    disabled={savingReview || !edit.correctAnswer || edit.explanation.trim().length < 12 || currentItem.status === "published"}
+                    disabled={savingReview || !edit.answerKeyVerified || !edit.correctAnswer || edit.explanation.trim().length < 12 || currentItem.status === "published"}
                   >
                     <ShieldCheck className="mr-2 h-4 w-4" />Approve with verified answer and explanation
                   </Button>

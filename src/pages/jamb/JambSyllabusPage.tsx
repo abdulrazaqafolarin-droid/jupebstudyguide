@@ -82,11 +82,13 @@ export default function JambSyllabusPage() {
   return (
     <div className="min-h-screen bg-background">
       <WorkspacePageHeader
-        title="Syllabus"
+        title="JAMB Syllabus"
         backTo="/jamb"
+        subtitle={`${overall.total} topics | ${overall.completed} completed`}
         backLabel="Back to JAMB workspace"
         icon={GraduationCap}
         compact
+        animated
         wide
       />
 

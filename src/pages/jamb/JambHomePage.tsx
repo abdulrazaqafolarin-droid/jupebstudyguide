@@ -283,19 +283,19 @@ export default function JambHomePage() {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-[1.1] animate-in-up stagger-3">
               Master Your Exams with
-              <span className="text-gradient-gold block mt-2">Focused Practice</span>
+              <span className="text-gradient-gold block mt-2">Spaced Repetition</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-in-up stagger-4">
-              Study Physics, Chemistry and Biology with past-question practice, timed CBT and an AI tutor.
+              Study reviewed Physics, Chemistry & Biology past questions with spaced-repetition revision and timed CBT practice. Build confidence one question at a time.
             </p>
             <div className="flex flex-wrap justify-center gap-4 animate-in-up stagger-5">
               <Button
                 size="lg"
-                onClick={() => navigate("/jamb/past-questions")}
+                onClick={() => navigate("/jamb/syllabus")}
                 className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 hover:scale-105 active:scale-95 transition-all duration-200 glow-gold animate-pulse-glow shadow-lg shadow-primary/25"
               >
                 <CalendarDays className="w-5 h-5 mr-2" />
-                Explore JAMB Questions
+                JAMB Syllabus
               </Button>
               <Button
                 size="lg"
@@ -309,11 +309,11 @@ export default function JambHomePage() {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => navigate("/jamb/ai")}
+                onClick={() => navigate("/jamb/past-questions")}
                 className="border-accent/40 text-accent hover:bg-accent/10 hover:border-accent hover:scale-105 active:scale-95 transition-all duration-200"
               >
-                <Bot className="w-5 h-5 mr-2" />
-                AI Study Tutor
+                <BookOpen className="w-5 h-5 mr-2" />
+                Past Questions
               </Button>
             </div>
           </div>

@@ -18,6 +18,7 @@ import {
   JambSchemaUnavailableError, searchJambQuestions,
   type JambQuestion, type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
+import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
 import { Button } from "@/components/ui/button";
@@ -33,58 +34,8 @@ const PAGE_VARIANTS = {
 };
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
 
-const SUBJECT_CARD_COLORS: Record<JambSubject, { gradient: string; light: string; accent: string }> = {
-  physics: { gradient: "from-blue-600/40 to-cyan-400/40", light: "bg-blue-500/10", accent: "border-blue-500/30" },
-  chemistry: { gradient: "from-emerald-600/40 to-teal-400/40", light: "bg-emerald-500/10", accent: "border-emerald-500/30" },
-  biology: { gradient: "from-green-600/40 to-lime-400/40", light: "bg-green-500/10", accent: "border-green-500/30" },
-};
-
 function isJambSubject(value: string | null | undefined): value is JambSubject {
   return Boolean(value && JAMB_SUBJECTS.includes(value as JambSubject));
-}
-
-function SubjectCard({
-  subject,
-  summary,
-  onClick,
-}: {
-  subject: JambSubject;
-  summary?: JambSubjectSummary;
-  onClick: () => void;
-}) {
-  const info = JAMB_SUBJECT_INFO[subject];
-  const colors = SUBJECT_CARD_COLORS[subject];
-  const count = summary?.count;
-
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      whileTap={{ scale: 0.97 }}
-      className="relative group flex min-h-[210px] flex-col items-start overflow-hidden rounded-2xl border border-border/60 bg-card p-5 text-left"
-    >
-      <div className={"absolute inset-0 bg-gradient-to-br " + colors.gradient + " opacity-20 transition-opacity duration-500 group-hover:opacity-30"} />
-      <div className={"absolute inset-0 " + colors.light + " opacity-0 transition-opacity duration-500 group-hover:opacity-100"} />
-      <div className={"relative z-10 flex h-12 w-12 items-center justify-center rounded-xl border text-2xl " + colors.light + " " + colors.accent}>
-        {info.icon}
-      </div>
-      <div className="relative z-10 mt-3 w-full">
-        <h2 className="text-base font-semibold">{info.label}</h2>
-        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{info.description}</p>
-        <span className="mt-3 block text-xs tabular-nums text-muted-foreground/70">
-          {count === undefined ? "Loading question coverage…" : count.toLocaleString() + " published questions"}
-        </span>
-      </div>
-      <div className="relative z-10 mt-auto flex w-full items-center justify-between pt-4">
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary">
-          <BookOpen className="h-3.5 w-3.5" />
-          Start Practice
-        </span>
-        <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-      </div>
-    </motion.button>
-  );
 }
 
 export default function JambPastQuestionsPage() {
@@ -623,21 +574,18 @@ export default function JambPastQuestionsPage() {
                 <h2 className="text-2xl font-bold">Subjects</h2>
                 <span className="text-xs text-muted-foreground">{totalPublished.toLocaleString()} questions total</span>
               </div>
-              <motion.div
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
-                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
-                initial="hidden"
-                animate="show"
-              >
-                {JAMB_SUBJECTS.map((item) => (
-                  <motion.div
-                    key={item}
-                    variants={{ hidden: { opacity: 0, y: 24, scale: 0.95 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] } } }}
-                  >
-                    <SubjectCard subject={item} summary={summaries.find((row) => row.subject === item)} onClick={() => chooseSubject(item)} />
-                  </motion.div>
-                ))}
-              </motion.div>
+              <SubjectCardGrid
+                items={JAMB_SUBJECTS.map((subject) => ({
+                  subject,
+                  label: JAMB_SUBJECT_INFO[subject].label,
+                  icon: JAMB_SUBJECT_INFO[subject].icon,
+                  description: JAMB_SUBJECT_INFO[subject].description,
+                }))}
+                counts={Object.fromEntries(summaries.map((row) => [row.subject, row.count]))}
+                onSelect={(selectedSubject) => {
+                  if (isJambSubject(selectedSubject)) chooseSubject(selectedSubject);
+                }}
+              />
 
             </motion.section>
           )}

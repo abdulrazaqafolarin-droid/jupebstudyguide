@@ -37,12 +37,20 @@ function TypingDots({ compact = false }: { compact?: boolean }) {
   return (
     <div className={cn('flex items-center', compact ? 'gap-1 px-1' : 'gap-1.5 px-1 py-1')} aria-label="Tutor is thinking">
       {[0, 1, 2].map((i) => (
-        <motion.span
-          key={i}
-          animate={{ y: [0, compact ? -5 : -3, 0] }}
-          transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
-          className={cn('rounded-full bg-primary/60', compact ? 'h-1.5 w-1.5' : 'h-1.5 w-1.5')}
-        />
+        compact ? (
+          <motion.span
+            key={i}
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
+            className="h-1.5 w-1.5 rounded-full bg-primary/60"
+          />
+        ) : (
+          <span
+            key={i}
+            className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60"
+            style={{ animationDelay: `${i * 150}ms` }}
+          />
+        )
       ))}
     </div>
   );

@@ -2,26 +2,30 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
-  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronDown, ChevronRight, ChevronUp, Clock3,
+  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronDown, ChevronUp, Clock3,
   CheckCircle2, GraduationCap, Library, ShieldAlert, Star, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import StreakDisplay from "@/components/StreakDisplay";
+import { SubjectCard } from "@/components/SubjectCard";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
+import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
 import {
   JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
 import { getJambMissionSummary, jambLocalDateKey } from "@/lib/jamb-daily-mission";
 import {
+  getJambQuestionMetadataByIds,
   getJambSubjectSummaries, JambSchemaUnavailableError,
+  type JambQuestionMetadata,
   type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
+import { getJambReviewStats } from "@/lib/jamb-review";
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
-const bouncySpring: Transition = { type: "spring", stiffness: 400, damping: 10, mass: 0.7 };
 const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
 const containerVariants: Variants = {
   hidden: {},
@@ -31,72 +35,6 @@ const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.9 },
   show: { opacity: 1, y: 0, scale: 1, transition: springBounce },
 };
-
-function JambSubjectCard({
-  subject,
-  summary,
-  onClick,
-}: {
-  subject: (typeof JAMB_SUBJECTS)[number];
-  summary?: JambSubjectSummary;
-  onClick: () => void;
-}) {
-  const info = JAMB_SUBJECT_INFO[subject];
-  const count = summary?.count ?? 0;
-  const years = summary?.years ?? [];
-
-  const subjectCardTone = subject === "physics"
-    ? "border-physics/20 hover:border-physics/50 hover:bg-physics/[0.03]"
-    : subject === "chemistry"
-      ? "border-chemistry/20 hover:border-chemistry/50 hover:bg-chemistry/[0.03]"
-      : "border-biology/20 hover:border-biology/50 hover:bg-biology/[0.03]";
-
-  const glowTone = subject === "physics"
-    ? "bg-gradient-to-br from-physics/10 to-transparent"
-    : subject === "chemistry"
-      ? "bg-gradient-to-br from-chemistry/10 to-transparent"
-      : "bg-gradient-to-br from-biology/10 to-transparent";
-
-  return (
-    <motion.button
-      onClick={onClick}
-      className="w-full text-left group"
-      whileHover={{ y: -10, scale: 1.02, transition: bouncySpring }}
-      whileTap={{ scale: 0.96, transition: bouncySpring }}
-    >
-      <div className={`bg-card rounded-2xl border p-6 chalk-texture relative overflow-hidden transition-colors ${subjectCardTone}`}>
-        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${glowTone}`} />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <motion.div
-              className="flex items-center gap-3"
-              whileHover={{ x: 4, transition: { type: "spring", stiffness: 300 } }}
-            >
-              <span className="text-3xl transition-transform duration-300 group-hover:scale-110 inline-block">{info.icon}</span>
-              <div>
-                <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">{info.label}</h3>
-                <p className="text-sm text-muted-foreground">{count.toLocaleString()} questions</p>
-              </div>
-            </motion.div>
-            <motion.div whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 300 }}>
-              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-200" />
-            </motion.div>
-          </div>
-          {years.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {years.slice(0, 6).map((year) => (
-                <span key={year} className="rounded-full bg-background/80 border border-border/50 px-2 py-0.5 text-[11px] font-medium tabular-nums">{year}</span>
-              ))}
-              {years.length > 6 && <span className="text-[11px] text-muted-foreground self-center">+{years.length - 6} more</span>}
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">{summary ? "No questions available yet" : "Loading…"}</p>
-          )}
-        </div>
-      </div>
-    </motion.button>
-  );
-}
 
 function getJambActivityStats(savedAnswers: Record<string, { selected: string; savedAt: number }>) {
   const toKey = (date: Date) =>
@@ -244,7 +182,14 @@ export default function JambHomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { savedAnswers, isReady: progressReady } = useJambPracticeProgress();
+  const { progress: reviewProgress, isReady: reviewProgressReady } = useJambReviewProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
+  const reviewQuestionIds = useMemo(
+    () => Object.keys(reviewProgress).sort(),
+    [reviewProgress],
+  );
+  const [reviewQuestionMetadata, setReviewQuestionMetadata] = useState<JambQuestionMetadata[]>([]);
+  const [reviewMetadataReady, setReviewMetadataReady] = useState(false);
   const { history: dailyMissionHistory, ready: missionHistoryReady } = useJambDailyMissions();
   const todayKey = jambLocalDateKey();
   const todayMissionProgress = useMemo(
@@ -254,6 +199,41 @@ export default function JambHomePage() {
       .map((mission) => ({ mission, summary: getJambMissionSummary(mission) })),
     [dailyMissionHistory, todayKey],
   );
+
+  useEffect(() => {
+    if (!reviewProgressReady) return;
+    let active = true;
+    setReviewMetadataReady(false);
+    getJambQuestionMetadataByIds(reviewQuestionIds)
+      .then((rows) => {
+        if (active) setReviewQuestionMetadata(rows);
+      })
+      .catch((reason: unknown) => {
+        if (!active) return;
+        console.warn("JAMB subject-card progress could not be restored:", reason);
+        setReviewQuestionMetadata([]);
+      })
+      .finally(() => {
+        if (active) setReviewMetadataReady(true);
+      });
+    return () => { active = false; };
+  }, [reviewProgressReady, reviewQuestionIds]);
+
+  const subjectReviewStats = useMemo(
+    () => JAMB_SUBJECTS.map((subject) => {
+      const questionIds = reviewQuestionMetadata
+        .filter((question) => question.subject === subject)
+        .map((question) => question.id);
+      const stats = getJambReviewStats(questionIds, reviewProgress);
+      return {
+        subject,
+        studiedCount: stats.studied,
+        learnedCount: stats.mastered,
+      };
+    }),
+    [reviewQuestionMetadata, reviewProgress],
+  );
+
   useEffect(() => {
     let active = true;
     getJambSubjectSummaries()
@@ -521,9 +501,14 @@ export default function JambHomePage() {
           >
             {JAMB_SUBJECTS.map((subject) => (
               <motion.div key={subject} variants={cardVariants}>
-                <JambSubjectCard
+                <SubjectCard
                   subject={subject}
-                  summary={summaries.find((row) => row.subject === subject)}
+                  infoOverride={{ name: JAMB_SUBJECT_INFO[subject].label, icon: JAMB_SUBJECT_INFO[subject].icon }}
+                  questionCount={summaries.find((row) => row.subject === subject)?.count ?? 0}
+                  questionCountReady={!loading}
+                  studiedCount={subjectReviewStats.find((row) => row.subject === subject)?.studiedCount ?? 0}
+                  learnedCount={subjectReviewStats.find((row) => row.subject === subject)?.learnedCount ?? 0}
+                  statsReady={reviewProgressReady && reviewMetadataReady}
                   onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
                 />
               </motion.div>

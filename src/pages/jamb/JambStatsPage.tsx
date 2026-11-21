@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Brain, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
@@ -145,7 +146,12 @@ export default function JambStatsPage() {
           footer={<p className="text-xs text-muted-foreground">Last JAMB activity: {answersReady ? lastActivity : "Loading…"}</p>}
         />
 
-        <section className="rounded-2xl border border-border bg-card p-5">
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-2xl border border-border bg-card p-5"
+        >
           <div className="mb-4 flex items-center gap-2">
             <Brain className="h-5 w-5 text-primary" />
             <h2 className="font-semibold">JAMB revision progress</h2>
@@ -162,9 +168,14 @@ export default function JambStatsPage() {
           </div>
           <p className="mt-3 text-xs text-muted-foreground">A card is mastered only after an approved answer key is confirmed.</p>
           <Link to="/jamb/study" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">Open Revision Cards <Brain className="h-3.5 w-3.5" /></Link>
-        </section>
+        </motion.section>
 
-        <section className="rounded-2xl border border-border bg-card p-5">
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="rounded-2xl border border-border bg-card p-5"
+        >
           <div className="mb-4 flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
             <h2 className="font-semibold">Questions practised by subject</h2>
@@ -190,9 +201,14 @@ export default function JambStatsPage() {
               No JAMB questions have been published yet. Subject progress will populate as reviewed questions are approved and published.
             </p>
           )}
-        </section>
+        </motion.section>
 
-        <section className="rounded-2xl border border-border bg-card p-5">
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="rounded-2xl border border-border bg-card p-5"
+        >
           <div className="mb-4 flex items-center gap-2">
             <Clock3 className="h-5 w-5 text-primary" />
             <h2 className="font-semibold">Recent practice · 7 days</h2>
@@ -209,9 +225,14 @@ export default function JambStatsPage() {
             ))}
           </div>
           <p className="mt-3 text-[11px] text-muted-foreground">Activity counts reflect each question's latest saved practice answer.</p>
-        </section>
+        </motion.section>
 
-        <section className="rounded-2xl border border-border bg-card p-5">
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="rounded-2xl border border-border bg-card p-5"
+        >
           <div className="mb-4 flex items-center gap-2">
             <Trophy className="h-5 w-5 text-primary" />
             <h2 className="font-semibold">Timed CBT results · JAMB only</h2>
@@ -274,14 +295,19 @@ export default function JambStatsPage() {
               </div>
             </>
           )}
-        </section>
+        </motion.section>
 
-        <section className="rounded-2xl border border-border bg-amber-500/5 p-5">
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="rounded-2xl border border-border bg-amber-500/5 p-5"
+        >
           <h2 className="mb-2 font-semibold">Score details</h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
             Only independently approved answer keys contribute to accuracy. Saved-answer activity and timed CBT results are reported separately.
           </p>
-        </section>
+        </motion.section>
 
         <div className="flex flex-wrap gap-3">
           <Link to="/jamb/past-questions" className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">Continue practice</Link>

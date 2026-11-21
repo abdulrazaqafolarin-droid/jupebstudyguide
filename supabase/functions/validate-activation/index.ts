@@ -1,6 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { checkAuthSessionActive } from "../_shared/auth-session.ts";
+async function checkAuthSessionActive(
+  supabaseUrl: string,
+  anonKey: string,
+  accessToken: string,
+): Promise<boolean | null> {
+  if (!supabaseUrl || !anonKey || !accessToken) return null;
+  try {
+    const response = await fetch(
+      supabaseUrl.replace(/\/$/, "") + "/rest/v1/rpc/current_auth_session_is_active",
+      {
+        method: "POST",
+        headers: {
+          apikey: anonKey,
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: "{}",
+      },
+    );
+    if (!response.ok) return null;
+    const result: unknown = await response.json();
+    return result === true;
+  } catch {
+    return null;
+  }
+}
+
 
 const OWNER_EMAIL = "abdulrazaqafolarin@gmail.com";
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";

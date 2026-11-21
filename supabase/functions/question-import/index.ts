@@ -141,6 +141,9 @@ Deno.serve(async (request: Request) => {
         resumable_source_chunks: true,
         stable_item_offsets: true,
         duplicate_chunk_retries: true,
+        supported_subjects: [...SUBJECTS],
+        source_answer_suggestions_supported: true,
+        verified_answer_and_explanation_required: true,
       });
     }
 

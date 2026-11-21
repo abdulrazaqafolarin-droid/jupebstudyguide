@@ -11,6 +11,7 @@ import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { StudyFlashcardSurface } from "@/components/StudyFlashcardSurface";
+import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -271,12 +272,15 @@ export default function JambStudyPage() {
                   const info = JAMB_SUBJECT_INFO[subject];
                   const summary = summaries.find((row) => row.subject === subject);
                   return (
-                    <button key={subject} type="button" onClick={() => selectSubject(subject)} className="rounded-2xl border border-border bg-card p-5 text-left transition-colors hover:border-primary/40 hover:bg-accent/20">
-                      <span className="text-3xl">{info.icon}</span>
-                      <h3 className="mt-3 font-semibold">{info.label}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground">{loadingSubjects ? "Loading…" : (summary?.count ?? 0).toLocaleString() + " reviewed questions"}</p>
-                      <span className="mt-4 flex items-center gap-1 text-xs font-semibold text-primary">Start revision <ArrowRight className="h-3.5 w-3.5" /></span>
-                    </button>
+                    <SelectableSubjectCard
+                      key={subject}
+                      icon={info.icon}
+                      label={info.label}
+                      description="JAMB objective revision"
+                      meta={loadingSubjects ? "Loading…" : (summary?.count ?? 0).toLocaleString() + " reviewed questions"}
+                      selected={false}
+                      onSelect={() => selectSubject(subject)}
+                    />
                   );
                 })}
               </div>

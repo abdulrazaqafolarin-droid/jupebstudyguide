@@ -160,3 +160,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **Dashboard nudge and study metric detail:** the JAMB dashboard now has the per-programme onboarding reminder, and the JAMB Revision Cards “Due Today” metric uses the same flame icon treatment as JUPEB while retaining JAMB's own due count.
 
+- **Syllabus topic rows:** each JAMB topic now uses JUPEB's staggered left-to-right fade/slide entrance, rounded bordered card, expanded-state surface tint and matching row/detail padding. JAMB topic source-page references, objective statements, completion states and Tutor/practice actions remain programme-specific.
+

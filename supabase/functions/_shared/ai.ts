@@ -1,5 +1,6 @@
 import { routerText, routerJSON, routerStream } from "./ai-router.ts";
 import type { RouterMessage, RouterOpts } from "./ai-router.ts";
+import { isProgrammeEntitlementActive } from "./trial-access.ts";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 const CORS_HEADERS = {
@@ -60,14 +61,12 @@ export async function guardAiAccess(
 
   const profile = profileResult.data as ProfileRow;
   const entitlement = entitlementResult.data as EntitlementRow | null;
-  const now = Date.now();
-  const active = (value: string | null | undefined) => {
-    if (!value) return false;
-    const expiry = Date.parse(value);
-    return Number.isFinite(expiry) && expiry > now;
-  };
   const isAdmin = profile.is_admin === true;
-  if (!isAdmin && !active(entitlement?.trial_expires_at) && !active(entitlement?.subscription_expires_at)) {
+  if (!isProgrammeEntitlementActive({
+    is_admin: isAdmin,
+    trial_expires_at: entitlement?.trial_expires_at,
+    subscription_expires_at: entitlement?.subscription_expires_at,
+  })) {
     return new Response(
       JSON.stringify({ error: `Your ${examProgramId.toUpperCase()} trial or subscription has ended. Activate this programme to continue using AI features.` }),
       { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },

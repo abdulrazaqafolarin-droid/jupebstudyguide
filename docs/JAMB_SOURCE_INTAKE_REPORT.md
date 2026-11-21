@@ -67,3 +67,10 @@ The shared Supabase migration is applied, but the JAMB question count remains **
 
 ## Semantic indexing after publication
 Publishing a reviewed question triggers the existing shared embedding-job queue. The JAMB admin screen processes up to 50 queued items after publication and exposes an additional bounded indexing action. The worker uses the configured Gemini embedding key. If that key is unavailable or the provider fails, the source questions remain published, lexical retrieval remains available, and failed vector jobs stay queued for retry; no source question is discarded.
+
+
+## Live backend readiness — 22 November 2026
+
+The shared project now has the JAMB verification migration recorded as `20261121233500`, and the `question-import` Edge Function is active at **v5**. Its live subject allowlist includes Use of English. Database approval triggers require a valid ordered A-D/A-E option set with non-empty option text, a matching correct option, a verification attestation and a meaningful explanation. Ungraded JAMB approval is rejected.
+
+Post-deployment read-only checks confirm the JAMB question, answer-key, import-batch and import-item counts remain zero. The backend release has not uploaded any source documents, staged any candidate, marked any answer verified or published any question. Source-use permission and per-item human review remain mandatory.

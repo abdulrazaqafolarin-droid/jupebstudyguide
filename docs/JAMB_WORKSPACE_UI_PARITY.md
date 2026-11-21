@@ -166,3 +166,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **JAMB onboarding mobile layout:** the study-subject tile grid now uses two columns on mobile and three columns at wider breakpoints, matching the compact JUPEB subject-picker layout while retaining the compulsory English notice and locked Mathematics tile.
 
+- **JAMB mission copy:** the mission-history footer now explains only that mission completion is a Rutex study activity, not an official JAMB result; it no longer mentions JUPEB in the student-facing notice.
+

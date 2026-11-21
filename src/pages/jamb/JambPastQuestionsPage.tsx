@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft, Bookmark, BookmarkCheck, BookOpen, Bot,
   CalendarDays, Check, ChevronLeft, ChevronRight,
@@ -35,11 +35,11 @@ const PAGE_VARIANTS = {
 };
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
 
-const SUBJECT_GRID_VARIANTS: Variants = {
+const SUBJECT_GRID_VARIANTS = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08 } },
 };
-const SUBJECT_CARD_VARIANTS: Variants = {
+const SUBJECT_CARD_VARIANTS = {
   hidden: { opacity: 0, y: 24, scale: 0.95 },
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] } },
 };
@@ -698,35 +698,32 @@ export default function JambPastQuestionsPage() {
                       whileHover={{ y: -6, transition: { duration: 0.2 } }}
                       whileTap={{ scale: 0.97 }}
                       onClick={() => chooseSubject(item)}
-                      className="relative group flex flex-col items-start p-5 rounded-2xl border border-border/60 bg-card text-left overflow-hidden"
+                      className="relative group flex flex-col items-start overflow-hidden rounded-2xl border border-border/60 bg-card p-5 text-left"
                     >
-                      <div className={"absolute inset-0 bg-gradient-to-br " + colors.gradient + " opacity-20 group-hover:opacity-30 transition-opacity duration-500"} />
-                      <div className={"absolute inset-0 " + colors.light + " opacity-0 group-hover:opacity-100 transition-opacity duration-500"} />
-                      <div className={"absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r " + colors.gradient + " scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"} />
+                      <div className={"absolute inset-0 bg-gradient-to-br " + colors.gradient + " opacity-20 transition-opacity duration-500 group-hover:opacity-30"} />
+                      <div className={"absolute inset-0 " + colors.light + " opacity-0 transition-opacity duration-500 group-hover:opacity-100"} />
+                      <div className={"absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r " + colors.gradient + " origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"} />
                       <div className="relative z-10">
-                        <div className={"w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3 border " + colors.light + " " + colors.accent}>
+                        <div className={"mb-3 flex h-12 w-12 items-center justify-center rounded-xl border text-2xl " + colors.light + " " + colors.accent}>
                           {info.icon}
                         </div>
                         <h3 className="text-base font-semibold">{info.label}</h3>
-                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{info.description}</p>
+                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{info.description}</p>
                         {count !== undefined ? (
-                          <span className="text-xs text-muted-foreground/60 mt-3 block tabular-nums">
+                          <span className="mt-3 block text-xs tabular-nums text-muted-foreground/60">
                             {count} question{count !== 1 ? "s" : ""}
                           </span>
                         ) : !loading ? (
-                          <span className="text-xs text-muted-foreground/60 mt-3 block">0 questions</span>
+                          <span className="mt-3 block text-xs text-muted-foreground/60">0 questions</span>
                         ) : (
-                          <span className="text-xs text-muted-foreground/60 mt-3 block">Loading question coverage…</span>
+                          <span className="mt-3 block text-xs text-muted-foreground/60">Loading question coverage…</span>
                         )}
                       </div>
-                      <div className="relative z-10 mt-4 w-full flex items-center justify-between">
-                        <span className="text-xs font-semibold text-primary flex items-center gap-1.5">
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                            <path d="M2.5 1.5v9l7-4.5-7-4.5z" fill="currentColor" />
-                          </svg>
-                          Start Practice
+                      <div className="relative z-10 mt-4 flex w-full items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
+                          <BookOpen className="h-3.5 w-3.5" /> Start Practice
                         </span>
-                        <span className="text-[10px] text-muted-foreground/40 group-hover:text-muted-foreground/70 transition-colors">
+                        <span className="text-[10px] text-muted-foreground/40 group-hover:text-muted-foreground/70">
                           {count ? `${Math.ceil(count / 10)} min` : "—"}
                         </span>
                       </div>

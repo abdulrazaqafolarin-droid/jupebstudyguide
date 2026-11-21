@@ -122,8 +122,15 @@ def parse_subject(subject: str, source_path: Path) -> tuple[dict[str, Any], dict
             fingerprints[fingerprint] = item_index
             duplicate_of = None
 
-        source_q_numbers = [ref["question_number"] for ref in references if ref["question_number"]]
-        source_q_number = source_q_numbers[0] if len(source_q_numbers) == 1 else str(original_number)
+        source_q_numbers = [
+            ref["question_number"]
+            for ref in references
+            if ref["question_number"] and re.fullmatch(r"\d+", str(ref["question_number"]))
+        ]
+        has_one_resolved_reference = len(references) == 1 and len(source_q_numbers) == 1
+        if not has_one_resolved_reference:
+            errors.append("missing_or_ambiguous_source_question_number")
+        source_q_number = source_q_numbers[0] if has_one_resolved_reference else None
         source_reference = "; ".join(ref["raw"] for ref in references) or None
         category = "objective" if len(options) >= 2 else "unclassified"
 

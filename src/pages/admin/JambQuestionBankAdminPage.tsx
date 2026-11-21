@@ -41,6 +41,7 @@ interface StagedItem {
 interface EditState {
   question: string;
   year: string;
+  sourceReference: string;
   topic: string;
   options: Array<{ label: string; text: string }>;
   correctAnswer: string;
@@ -68,6 +69,7 @@ function toEditState(payload: Record<string, unknown>): EditState {
   return {
     question: typeof payload.question === "string" ? payload.question : "",
     year: payload.year === null || payload.year === undefined ? "" : String(payload.year),
+    sourceReference: typeof payload.source_reference === "string" ? payload.source_reference : "",
     topic: typeof payload.topic === "string" ? payload.topic : "",
     options: options.map((option) => ({
       label: typeof option.label === "string" ? option.label : "",
@@ -340,6 +342,7 @@ export default function JambQuestionBankAdminPage() {
         ...currentPayload,
         subject: selectedBatch?.subject_code,
         year: edit.year.trim() ? Number(edit.year) : null,
+        source_reference: edit.sourceReference.trim(),
         category: "objective",
         question: edit.question.trim(),
         topic: edit.topic.trim() || null,
@@ -489,6 +492,18 @@ export default function JambQuestionBankAdminPage() {
                   <label className="block space-y-1.5 text-sm"><span className="font-medium">Verified source year</span><input type="number" value={edit.year} onChange={(event) => setEdit((previous) => previous ? { ...previous, year: event.target.value } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
                   <label className="block space-y-1.5 text-sm"><span className="font-medium">Topic (optional)</span><input value={edit.topic} onChange={(event) => setEdit((previous) => previous ? { ...previous, topic: event.target.value } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
                 </div>
+                <label className="block space-y-1.5 text-sm">
+                  <span className="font-medium">Verified source reference</span>
+                  <input
+                    type="text"
+                    value={edit.sourceReference}
+                    onChange={(event) => setEdit((previous) => previous ? { ...previous, sourceReference: event.target.value } : previous)}
+                    placeholder="e.g. 2018:Q33"
+                    aria-label="Verified source reference"
+                    className="w-full rounded-xl border border-border bg-background p-3 text-sm"
+                  />
+                  <span className="text-xs text-muted-foreground">Resolve this to exactly one year and question number. The year must match the source year above; do not use the document's local item number as a JAMB question number.</span>
+                </label>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between"><h3 className="text-sm font-semibold">Options</h3><Button type="button" size="sm" variant="outline" onClick={addOption} disabled={edit.options.length >= 5}>Add option</Button></div>
                   {edit.options.map((option, index) => (

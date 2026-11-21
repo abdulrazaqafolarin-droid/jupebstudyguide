@@ -3,6 +3,7 @@ import { CORS_HEADERS } from "../_shared/jamb-http.ts";
 import type { Database, Json } from "../_shared/rutex-database.types.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 import { JAMB_IMPORT_PROTOCOL_VERSION, resolveJambImportItemRange } from "../_shared/jamb-import-range.ts";
+import { parseJambSourceReference } from "../_shared/jamb-source-reference.ts";
 
 type AdminSupabase = SupabaseClient<Database>;
 
@@ -35,6 +36,8 @@ function normalizeItem(item: JsonObject, batch: {
     : [];
   const question = asText(item.question);
   const year = Number.isInteger(item.year) ? Number(item.year) : null;
+  const rawSourceReference = asText(item.source_reference);
+  const parsedSourceReference = parseJambSourceReference(rawSourceReference);
   const inheritedErrors = Array.isArray(item.validation_errors)
     ? item.validation_errors.filter((value): value is string => typeof value === "string")
     : [];
@@ -42,6 +45,8 @@ function normalizeItem(item: JsonObject, batch: {
 
   if (!SUBJECTS.has(subject)) errors.push("unsupported_jamb_subject");
   if (!year) errors.push("missing_or_ambiguous_source_year");
+  if (!parsedSourceReference) errors.push("missing_or_ambiguous_source_reference");
+  else if (year !== parsedSourceReference.year) errors.push("source_reference_year_mismatch");
   if (question.length < 8) errors.push("question_text_missing_or_too_short");
   if (options.length !== 4 && options.length !== 5) errors.push("four_or_five_options_required_for_historical_source_review");
   const labels = options.map((option) => option.label);
@@ -70,8 +75,8 @@ function normalizeItem(item: JsonObject, batch: {
     topic: asText(item.topic) || null,
     source_document: asText(item.source_document) || batch.source_document,
     source_page: Number.isInteger(item.source_page) ? Number(item.source_page) : null,
-    source_question_number: asText(item.source_question_number) || null,
-    source_reference: asText(item.source_reference) || null,
+    source_question_number: parsedSourceReference?.questionNumber ?? null,
+    source_reference: rawSourceReference || null,
     source_line: Number.isInteger(item.source_line) ? Number(item.source_line) : null,
     figure_descriptions: figureDescriptions,
     image_urls: imageUrls,
@@ -334,10 +339,13 @@ Deno.serve(async (request: Request) => {
         const year = Number.isInteger(payload.year) ? Number(payload.year) : null;
         const figures = Array.isArray(payload.figure_descriptions) ? payload.figure_descriptions : [];
         const images = Array.isArray(payload.image_urls) ? payload.image_urls.filter((url) => typeof url === "string") : [];
+        const sourceReference = parseJambSourceReference(asText(payload.source_reference));
         const errors: string[] = [];
         if (!SUBJECTS.has(subject)) errors.push("unsupported_jamb_subject");
         if (subject !== String(batch.subject_code)) errors.push("subject_must_match_source_batch");
         if (!year || year < 1970 || year > 2100) errors.push("verified_source_year_required");
+        if (!sourceReference) errors.push("single_verified_source_reference_required");
+        else if (year !== sourceReference.year) errors.push("source_reference_year_must_match_verified_source_year");
         if (asText(payload.question).length < 8) errors.push("question_text_missing_or_too_short");
         if ((options.length !== 4 && options.length !== 5) ||
             (labels.join(",") !== "A,B,C,D" && labels.join(",") !== "A,B,C,D,E") ||
@@ -356,6 +364,11 @@ Deno.serve(async (request: Request) => {
         if (errors.length > 0) {
           return respond({ error: "This question still has validation issues", validation_errors: [...new Set(errors)] }, 422);
         }
+        if (!sourceReference) {
+          return respond({ error: "A single verified source reference is required" }, 422);
+        }
+        payload.source_reference = sourceReference.canonical;
+        payload.source_question_number = sourceReference.questionNumber;
         const canonical = JSON.stringify({ options, question: asText(payload.question), subject, year });
         const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
         payload.content_hash = Array.from(new Uint8Array(digest)).map((value) => value.toString(16).padStart(2, "0")).join("");

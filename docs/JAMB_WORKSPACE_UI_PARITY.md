@@ -164,3 +164,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **CBT answer review:** review rows now reuse the shared answer-option component. Correct/incorrect styling is shown only when an approved answer key makes the item gradable; an ungraded saved choice stays in the neutral selected state rather than being mislabeled as wrong.
 
+- **JAMB onboarding mobile layout:** the study-subject tile grid now uses two columns on mobile and three columns at wider breakpoints, matching the compact JUPEB subject-picker layout while retaining the compulsory English notice and locked Mathematics tile.
+

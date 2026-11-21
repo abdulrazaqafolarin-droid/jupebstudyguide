@@ -15,6 +15,7 @@ interface HistorySidebarProps {
   onClose?: () => void;
   heading?: string;
   emptyMessage?: string;
+  showNewChatButton?: boolean;
 }
 
 /**
@@ -33,6 +34,7 @@ export function HistorySidebar({
   onClose,
   heading = 'Study Chat',
   emptyMessage = 'No chats yet — open a topic from the syllabus to start one.',
+  showNewChatButton = true,
 }: HistorySidebarProps) {
   const [search, setSearch] = useState('');
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -73,9 +75,11 @@ export function HistorySidebar({
           <span className="truncate text-sm font-semibold">{heading}</span>
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          <Button variant="outline" size="sm" className="h-7 gap-1 px-2 text-xs" onClick={onNewChat}>
-            <Plus className="h-3 w-3" /> New
-          </Button>
+          {showNewChatButton && (
+            <Button variant="outline" size="sm" className="h-7 gap-1 px-2 text-xs" onClick={onNewChat}>
+              <Plus className="h-3 w-3" /> New
+            </Button>
+          )}
           {onClose && (
             <Button
               variant="ghost"

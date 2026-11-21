@@ -5,11 +5,12 @@ import {
   useReducedMotion, type PanInfo,
 } from "framer-motion";
 import {
-  Bot, MessageCircle, Plus, ChevronLeft, X, Minimize2, Library, Trash2, Loader2,
+  Bot, MessageCircle, Plus, ChevronLeft, X, Minimize2, Library, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudyChat } from "@/hooks/useStudyChat";
 import { ThreadView } from "@/components/study-chat/ThreadView";
+import { HistorySidebar } from "@/components/study-chat/HistorySidebar";
 import { Composer } from "@/components/study-chat/Composer";
 import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
 
@@ -89,7 +90,7 @@ export function JambFloatingAITutor() {
 
   const {
     chats, activeChatId, messages, isStreaming, listLoading, streamError,
-    activeTopic, switchChat, newChat, deleteChat, sendMessage,
+    activeTopic, switchChat, newChat, renameChat, deleteChat, sendMessage,
     sendEdited, retry, stop,
   } = useStudyChat("jamb", JAMB_TUTOR_PROMPT);
 
@@ -486,57 +487,20 @@ export function JambFloatingAITutor() {
             {!isMinimized && (
               <div className="flex min-h-0 flex-1 flex-col">
                 {showHistory ? (
-                  <div className="min-h-0 flex-1 overflow-y-auto p-2">
-                    {listLoading ? (
-                      <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                      </div>
-                    ) : chats.length === 0 ? (
-                      <p className="px-2 py-6 text-center text-xs text-muted-foreground">Your JAMB chats will appear here.</p>
-                    ) : (
-                      <motion.div
-                        className="space-y-1"
-                        initial="hidden"
-                        animate="show"
-                        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.04 } } }}
-                      >
-                        {chats.map((chat) => (
-                          <motion.div
-                            key={chat.id}
-                            variants={{
-                              hidden: { opacity: 0, y: 10, scale: 0.95 },
-                              show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 200, damping: 24 } },
-                            }}
-                            className={[
-                              "group flex items-center gap-2 rounded-lg p-2.5 transition-colors",
-                              chat.id === activeChatId ? "border border-primary/20 bg-primary/10" : "hover:bg-white/5",
-                            ].join(" ")}
-                          >
-                            <MessageCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
-                            <button
-                              type="button"
-                              onClick={() => selectChat(chat.id)}
-                              className="min-w-0 flex-1 truncate text-left text-xs font-medium"
-                            >
-                              {chat.title}
-                            </button>
-                            {chats.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                                aria-label={`Delete ${chat.title}`}
-                                title="Delete chat"
-                                onClick={() => { void deleteChat(chat.id); }}
-                              >
-                                <Trash2 className="h-3 w-3 text-destructive" />
-                              </Button>
-                            )}
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    )}
+                  <div className="min-h-0 flex-1">
+                    <HistorySidebar
+                      chats={chats}
+                      activeChatId={activeChatId}
+                      loading={listLoading}
+                      onSelect={selectChat}
+                      onNewChat={() => { void createNewChat(); }}
+                      onRename={(chatId, title) => { void renameChat(chatId, title); }}
+                      onDelete={(chatId) => { void deleteChat(chatId); }}
+                      onClose={() => setShowHistory(false)}
+                      heading="JAMB chat history"
+                      emptyMessage="Your JAMB chats will appear here."
+                      showNewChatButton={false}
+                    />
                   </div>
                 ) : listLoading ? (
                   <div className="flex flex-1 items-center justify-center">

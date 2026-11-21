@@ -119,7 +119,7 @@ export default function JambStatsPage() {
     <div className="min-h-screen bg-background">
       <WorkspacePageHeader title="Study Stats" backTo="/jamb" backLabel="Back to JAMB workspace" subtitle="Your learning analytics" compact />
 
-      <main className="mx-auto max-w-3xl space-y-6 px-4 py-6 pb-10">
+      <main className="mx-auto max-w-2xl space-y-6 px-4 py-6 pb-10">
         {error && (
           <div role="alert" className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">
             {error} Your local JAMB practice totals remain available where loaded.

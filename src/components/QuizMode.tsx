@@ -11,6 +11,7 @@ import { QuestionMath } from '@/components/QuestionMath';
 import { QuestionImage } from '@/components/QuestionImage';
 import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
 import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
+import { cn } from '@/lib/utils';
 
 interface QuizModeProps {
   questions: Question[];
@@ -386,9 +387,10 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
                 label={option.label}
                 state={
                   showResult && isCorrectOption ? "correct"
-                    : showResult && isSelected ? "incorrect"
-                      : showResult ? "muted"
-                        : "default"
+                    : showResult && isSelected && hasRealAnswer(currentQuestion) ? "incorrect"
+                      : showResult && isSelected ? "selected"
+                        : showResult ? "muted"
+                          : "default"
                 }
                 selected={isSelected}
                 disabled={selectedOption !== null}
@@ -404,12 +406,14 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
         {showResult && (
           <div className={cn(
             'mt-6 p-4 rounded-xl animate-in-up',
-            hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer 
-              ? 'bg-accent/10 border border-accent/30' 
-              : 'bg-destructive/10 border border-destructive/30'
+            !hasRealAnswer(currentQuestion)
+              ? 'bg-amber-500/5 border border-amber-500/30'
+              : selectedOption === currentQuestion.correctAnswer
+                ? 'bg-accent/10 border border-accent/30'
+                : 'bg-destructive/10 border border-destructive/30'
           )}>
             <p className="text-sm leading-relaxed">
-              <strong className={hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
+              <strong className={!hasRealAnswer(currentQuestion) ? 'text-amber-600 dark:text-amber-400' : selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
                 {hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? '✓ Correct!' : !hasRealAnswer(currentQuestion) ? 'Answer recorded' : '✗ Incorrect'}
               </strong>
               {' '}<QuestionMath content={currentQuestion.explanation} inline />

@@ -241,17 +241,22 @@ Deno.serve(async (req) => {
         }, { onConflict: "user_id,exam_program_id" });
       if (entitlementError) return json({ error: "Could not assign this programme subscription" }, 500);
 
-      // Keep legacy profile fields in sync for older JUPEB account screens.
+      // These profile-level fields are global legacy JUPEB state. Do not
+      // overwrite them with a JAMB subscription or it could make an old
+      // JUPEB-only client display the wrong access status.
+      const legacyProfilePatch = examProgramId === "jupeb"
+        ? {
+            is_activated: true,
+            trial_started_at: null,
+            trial_expires_at: null,
+            subscription_started_at: startIso,
+            subscription_expires_at: expiryIso,
+            subscription_duration_days: days,
+          }
+        : { is_activated: true };
       const { error: profileUpdateError } = await admin
         .from("profiles")
-        .update({
-          is_activated: true,
-          trial_started_at: null,
-          trial_expires_at: null,
-          subscription_started_at: startIso,
-          subscription_expires_at: expiryIso,
-          subscription_duration_days: days,
-        })
+        .update(legacyProfilePatch)
         .eq("user_id", targetUser.id);
       if (profileUpdateError) return json({ error: "Subscription saved but legacy profile sync failed" }, 500);
 

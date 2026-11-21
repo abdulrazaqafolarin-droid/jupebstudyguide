@@ -148,6 +148,8 @@ export function JambAdminQuestionPanel({
         setExplanation(String(detail.explanation || ""));
         setSourceReference(String(detail.sourceReference || ""));
         setSourceDocument(String(detail.sourceDocument || ""));
+        setDifficulty(String(detail.difficulty || q.difficulty || "medium"));
+        setTopic(String(detail.topic || q.topic || ""));
         setRightsNote(String(detail.rightsNote || ""));
         setRightsConfirmed(Boolean(detail.rightsNote));
         setAnswerKeyVerified(detail.answerKeyVerified === true);
@@ -340,7 +342,7 @@ export function JambAdminQuestionPanel({
 
     const qId = mode === "edit" && editingQuestion
       ? editingQuestion.id
-      : "jamb-" + crypto.randomUUID().replaceAll("-", "");
+      : "jamb-" + crypto.randomUUID().replace(/-/g, "");
     const existingImageUrls = mode === "edit" && editingQuestion
       ? (editingQuestion.imageUrls?.length ? editingQuestion.imageUrls : editingQuestion.imageUrl ? [editingQuestion.imageUrl] : [])
       : [];

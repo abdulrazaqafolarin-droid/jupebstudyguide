@@ -57,6 +57,7 @@ export function SubjectCardGrid({ onSelect, counts, countsReady = true, items }:
 
         return (
           <motion.button
+            type="button"
             key={subject}
             variants={item}
             whileHover={{ y: -6, transition: { duration: 0.2 } }}

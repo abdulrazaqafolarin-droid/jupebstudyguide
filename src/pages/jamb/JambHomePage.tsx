@@ -96,8 +96,8 @@ const JAMB_ACHIEVEMENTS: Achievement[] = JAMB_MILESTONES.map((milestone) => ({
   description: milestone.description,
   icon: milestone.icon,
   rarity: milestone.rarity,
-  condition: (stats) => stats.totalQuestionsAnswered >= milestone.target,
-  getProgress: (stats) => ({
+  condition: (stats: AchievementStats) => stats.totalQuestionsAnswered >= milestone.target,
+  getProgress: (stats: AchievementStats) => ({
     current: Math.min(stats.totalQuestionsAnswered, milestone.target),
     max: milestone.target,
   }),
@@ -114,7 +114,9 @@ function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; 
     subjectsStudied: 0,
   };
   const unlocked = ready ? JAMB_ACHIEVEMENTS.filter((achievement) => achievement.condition(stats)) : [];
-  const locked = JAMB_ACHIEVEMENTS.filter((achievement) => !unlocked.some((item) => item.id === achievement.id));
+  const locked = ready
+    ? JAMB_ACHIEVEMENTS.filter((achievement) => !unlocked.some((item) => item.id === achievement.id))
+    : [];
 
   return (
     <AchievementsPanel
@@ -124,6 +126,7 @@ function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; 
       lockedAchievements={locked}
       totalCount={JAMB_ACHIEVEMENTS.length}
       stats={stats}
+      loading={!ready}
     />
   );
 }

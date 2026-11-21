@@ -39,6 +39,7 @@ export function YearAccordion({ years, counts, categoryCounts, selectedYear, onS
             transition={{ delay: i * 0.03, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
           >
             <button
+              type="button"
               onClick={() => onSelectYear(isOpen ? null : year)}
               className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-card border hover:bg-accent/50 transition-colors active:scale-[0.97]"
             >
@@ -80,6 +81,7 @@ export function YearAccordion({ years, counts, categoryCounts, selectedYear, onS
                       </div>
                     )}
                     <button
+                      type="button"
                       onClick={() => (onViewYear ?? onSelectYear)(year)}
                       className="px-4 py-2 text-xs font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-[0.97]"
                     >

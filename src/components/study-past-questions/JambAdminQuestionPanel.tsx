@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Trash2, Plus, AlertTriangle, GripVertical, ListOrdered, ImageIcon, Upload, XCircle, Loader2, Eye } from "lucide-react";
 import type { JambQuestion } from "@/lib/jamb-question-service";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadQuestionImage, deleteQuestionImage, deleteQuestionImageUrls } from "@/lib/admin-questions-service";
+import { uploadQuestionImage, deleteQuestionImageUrls } from "@/lib/admin-questions-service";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
@@ -450,7 +450,7 @@ export function JambAdminQuestionPanel({
       });
       if (invokeError) throw invokeError;
       if (data?.error) throw new Error(String(data.error));
-      await deleteQuestionImage(editingQuestion.id).catch(() => {});
+      // Keep image assets for historical CBT attempts and review records.
       setSaving(false);
       onQuestionDeleted(editingQuestion.id);
       setMode(null);

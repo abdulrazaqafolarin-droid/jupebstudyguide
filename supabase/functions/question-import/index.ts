@@ -739,18 +739,25 @@ Deno.serve(async (request: Request) => {
           rights_note: rightsNote,
           payload_sha256: null,
           before_payload: { question: row, answer_key: key },
-          after_payload: null,
+          after_payload: { hidden: true, review_status: "rejected", removed_from_active_bank: true },
         }).select("id").single();
-        if (auditError) return respond({ error: "Question was not deleted because its audit record failed: " + auditError.message }, 500);
+        if (auditError) return respond({ error: "Question was not removed because its audit record failed: " + auditError.message }, 500);
 
-        const { error: deleteError } = await questionTable.delete()
-          .eq("id", questionId)
-          .eq("exam_program_id", "jamb");
-        if (deleteError) {
+        // Preserve question rows, approved keys, images and attempt references.
+        // The JUPEB admin manager's established delete behavior is a soft hide;
+        // hard-deleting here would break exam_attempt_questions foreign keys.
+        const { error: hideError } = await questionTable.update({
+          hidden: true,
+          review_status: "rejected",
+          reviewed_by: user.id,
+          reviewed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }).eq("id", questionId).eq("exam_program_id", "jamb");
+        if (hideError) {
           await auditTable.delete().eq("id", audit.id);
-          return respond({ error: deleteError.message }, 500);
+          return respond({ error: hideError.message }, 500);
         }
-        return respond({ deleted: true, question_id: questionId });
+        return respond({ deleted: true, question_id: questionId, soft_deleted: true });
       }
 
       if (operation === "reorder") {

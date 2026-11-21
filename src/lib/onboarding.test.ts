@@ -5,6 +5,7 @@ import {
   firstIncompleteStep,
   getFlow,
   getOnboardingFlow,
+  getProgrammeOnboardingFlow,
   mergeOnboardingData,
   normalizeOnboardingData,
   privacyValueFromToggle,
@@ -53,6 +54,22 @@ describe('getOnboardingFlow', () => {
     const original = [...FULL_FLOW];
     getOnboardingFlow(original, 'jamb');
     expect(original).toEqual(FULL_FLOW);
+  });
+});
+
+describe('getProgrammeOnboardingFlow', () => {
+  it('uses JAMB preferences for new and returning students', () => {
+    expect(getProgrammeOnboardingFlow(true, 'jamb')).toEqual([
+      'welcome', 'theme', 'jamb-study', 'chat', 'notify', 'finish',
+    ]);
+    expect(getProgrammeOnboardingFlow(false, 'jamb')).toEqual([
+      'welcome', 'theme', 'jamb-study', 'chat', 'finish',
+    ]);
+  });
+
+  it('keeps both JUPEB flows unchanged', () => {
+    expect(getProgrammeOnboardingFlow(true, 'jupeb')).toEqual(FULL_FLOW);
+    expect(getProgrammeOnboardingFlow(false, 'jupeb')).toEqual(TRIMMED_FLOW);
   });
 });
 

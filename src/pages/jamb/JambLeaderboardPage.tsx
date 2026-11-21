@@ -1,26 +1,12 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, BarChart3, BookOpen, ShieldCheck, Trophy } from "lucide-react";
+import { BarChart3, BookOpen, ShieldCheck, Trophy } from "lucide-react";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 
 export default function JambLeaderboardPage() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
-          <Link to="/jamb" aria-label="Back to JAMB workspace">
-            <Button variant="ghost" size="icon" className="shrink-0">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="flex items-center gap-2 text-lg font-bold">
-              <Trophy className="h-5 w-5 text-accent" />
-              Leaderboard
-            </h1>
-          </div>
-        </div>
-      </header>
+      <WorkspacePageHeader title="Leaderboard" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} iconClassName="text-accent" />
 
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
         <motion.section

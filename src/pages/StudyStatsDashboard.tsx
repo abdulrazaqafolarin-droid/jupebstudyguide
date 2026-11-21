@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Trophy, Flame, BookOpen, Brain, Target, Award, Zap, TrendingUp } from 'lucide-react';
+import { Trophy, Flame, BookOpen, Brain, Target, Award, Zap, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, Area, AreaChart, CartesianGrid } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudyProgress } from '@/hooks/useStudyProgress';
@@ -14,6 +14,7 @@ import type { Subject } from '@/types/question';
 import type { StudyCategory } from '@/types/study-questions';
 import { cn } from '@/lib/utils';
 import { StatsOverviewCards } from '@/components/StatsOverviewCards';
+import { WorkspacePageHeader } from '@/components/WorkspacePageHeader';
 
 const SUBJECTS: Subject[] = ['physics', 'chemistry', 'biology', 'math'];
 const CATEGORIES: StudyCategory[] = ['objective', 'theory', 'practical'];
@@ -113,17 +114,7 @@ export default function StudyStatsDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-1 -ml-1 rounded-lg hover:bg-accent transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="font-semibold text-sm">Study Stats</h1>
-            <p className="text-[10px] text-muted-foreground">Your learning analytics</p>
-          </div>
-        </div>
-      </header>
+      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your learning analytics" compact />
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* Overview Cards */}

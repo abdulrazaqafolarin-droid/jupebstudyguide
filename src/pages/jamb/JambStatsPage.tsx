@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Flame, Brain, Trophy } from "lucide-react";
+import { BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Flame, Brain, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -17,6 +17,7 @@ import {
 } from "@/lib/jamb-question-service";
 import StreakDisplay from "@/components/StreakDisplay";
 import { StatsOverviewCards } from "@/components/StatsOverviewCards";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 
 export default function JambStatsPage() {
   const { user } = useAuth();
@@ -116,16 +117,7 @@ export default function JambStatsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border">
-        <div className="mx-auto max-w-2xl px-4 h-14 flex items-center gap-3">
-          <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-semibold">Study Stats</h1>
-          </div>
-        </div>
-      </header>
+      <WorkspacePageHeader title="Study Stats" backTo="/jamb" backLabel="Back to JAMB workspace" subtitle="Your learning analytics" compact />
 
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-6 pb-10">
         {error && (

@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Bookmark, BookOpen, Flame, Search, Star, Trophy, Award } from "lucide-react";
+import { Bookmark, BookOpen, Flame, Search, Star, Trophy, Award } from "lucide-react";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import { Button } from "@/components/ui/button";
 import AchievementBadge from "@/components/AchievementBadge";
 import type { Achievement, AchievementStats } from "@/hooks/useAchievements";
@@ -68,21 +69,7 @@ export default function JambAchievementsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
-          <Link to="/jamb" aria-label="Back to JAMB workspace">
-            <Button variant="ghost" size="icon" className="shrink-0">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="flex items-center gap-2 text-lg font-bold">
-              <Trophy className="h-5 w-5 text-primary" />
-              Achievements
-            </h1>
-          </div>
-        </div>
-      </header>
+      <WorkspacePageHeader title="Achievements" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} />
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-10">
         <section className="space-y-4 rounded-xl border border-border bg-card p-5">

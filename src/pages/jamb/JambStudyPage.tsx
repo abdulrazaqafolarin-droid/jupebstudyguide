@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
+import { StudyFlashcardSurface } from "@/components/StudyFlashcardSurface";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -322,7 +323,11 @@ export default function JambStudyPage() {
             {loadingQuestions && questions.length === 0 ? (
               <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>
             ) : question ? (
-              <section className="space-y-4 rounded-2xl border border-border bg-card p-4 sm:p-6">
+              <StudyFlashcardSurface
+                ariaLabel="JAMB revision question"
+                className="min-h-[520px]"
+                contentClassName="p-4 sm:p-6 space-y-4"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{subjectInfo?.label} · {question.year}</span>
@@ -393,7 +398,7 @@ export default function JambStudyPage() {
                   </Link>
                   {feedback?.gradable && <Button size="sm" variant="outline" onClick={nextCard}>Next card <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
                 </div>
-              </section>
+              </StudyFlashcardSurface>
             ) : loadingQuestions ? (
               <div className="flex justify-center py-12"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>
             ) : (

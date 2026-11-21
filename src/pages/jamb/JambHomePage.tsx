@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
   ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, Clock3,
-  CheckCircle2, GraduationCap, Library, ShieldAlert, ShieldCheck, Target,
+  CheckCircle2, Flame, GraduationCap, Library, ShieldAlert, ShieldCheck, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";

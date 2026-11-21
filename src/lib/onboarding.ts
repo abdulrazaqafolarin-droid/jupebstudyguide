@@ -82,6 +82,14 @@ export function getOnboardingFlow(flow: OnboardingStepId[], program: ExamProgram
   return shared;
 }
 
+/** Build the active onboarding flow for a student and examination programme. */
+export function getProgrammeOnboardingFlow(
+  isNewStudent: boolean,
+  program: ExamProgramId,
+): OnboardingStepId[] {
+  return getOnboardingFlow(getFlow(isNewStudent), program);
+}
+
 /** First unfinished step (or the last step when everything is done). */
 export function firstIncompleteStep(flow: OnboardingStepId[], completedSteps: string[]): OnboardingStepId {
   for (const step of flow) {

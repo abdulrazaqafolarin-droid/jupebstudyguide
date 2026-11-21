@@ -21,7 +21,7 @@ import { normalizeJambStudyPreferences } from '@/lib/jamb-study-preferences';
 import { firstIncompleteStep, getOnboardingFlow, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
 import { normalizeSchoolName, parseSeatNumber } from '@/lib/profile-fields';
 import type { Subject } from '@/types/question';
-import { JAMB_SUBJECTS, type JambSubject } from '@/lib/jamb-config';
+import type { JambScienceSubject } from '@/lib/jamb-study-preferences';
 import { Loader2 } from 'lucide-react';
 
 const STEP_CTA: Record<OnboardingStepId, string> = {
@@ -67,7 +67,7 @@ export default function Onboarding() {
   const [electives, setElectives] = useState<Subject[]>([]);
   const [examTarget, setExamTarget] = useState('this-session');
   const [dailyGoal, setDailyGoal] = useState(30);
-  const [jambSubjects, setJambSubjects] = useState<JambSubject[]>([]);
+  const [jambSubjects, setJambSubjects] = useState<JambScienceSubject[]>([]);
   const [jambExamTarget, setJambExamTarget] = useState<JambExamTarget>('this-session');
   const [jambDailyGoal, setJambDailyGoal] = useState<15 | 30 | 60>(30);
   const [schoolName, setSchoolName] = useState('');

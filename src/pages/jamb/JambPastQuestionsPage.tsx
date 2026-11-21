@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot,
+  ArrowLeft, Bookmark, BookmarkCheck, BookOpen, Bot,
   CalendarDays, Check, ChevronLeft, ChevronRight,
   Grid3X3, Loader2, Search, Shield, ShieldAlert, X,
 } from "lucide-react";

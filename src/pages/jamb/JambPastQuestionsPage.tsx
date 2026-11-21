@@ -426,67 +426,86 @@ export default function JambPastQuestionsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border/50 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 py-3">
-          {view === "subjects" ? (
-            <Link
-              to="/jamb"
-              aria-label="Back to JAMB home"
-              className="flex-shrink-0 rounded-xl px-2 py-1.5 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
+      <header className="sticky top-0 z-10 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2">
+          {showGlobalSearch ? (
+            <div className="flex items-center gap-2 w-full">
+              <input
+                type="text"
+                value={globalSearchTerm}
+                onChange={(event) => setGlobalSearchTerm(event.target.value)}
+                placeholder="Search questions..."
+                className="flex-1 bg-secondary/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 border border-border/40"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => { setShowGlobalSearch(false); setGlobalSearchTerm(""); setGlobalSearchResults([]); }}
+                className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors"
+                aria-label="Close search"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           ) : (
-            <button
-              type="button"
-              onClick={handleBack}
-              aria-label="Go back"
-              className="flex-shrink-0 rounded-xl px-2 py-1.5 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-          )}
-
-          <div className="min-w-0 flex-1 text-center">
-            <h1 className="truncate bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-sm font-bold">
-              {view === "subjects" ? "Study Past Questions"
-                : view === "years" ? subjectInfo.label + " · Select Year"
-                  : view === "bookmarks" ? "Bookmarked Questions"
-                    : subjectInfo.label + " · " + (year ?? "All Years")}
-            </h1>
-            <p className="text-[10px] text-muted-foreground/70">JAMB UTME Exam Prep</p>
-          </div>
-
-          <div className="flex flex-shrink-0 items-center gap-1">
-            <button
-              type="button"
-              onClick={() => { setShowGlobalSearch((value) => !value); setGlobalSearchTerm(""); setGlobalSearchResults([]); }}
-              className="rounded-xl p-2 transition-colors hover:bg-accent active:scale-95"
-              aria-label="Search questions"
-              title="Search questions"
-            >
-              <Search className="h-[18px] w-[18px] text-muted-foreground" />
-            </button>
-            {isAdmin && (
-              <Link to="/admin/jamb-questions" className="rounded-xl p-2 transition-colors hover:bg-accent active:scale-95" aria-label="Admin: Manage questions" title="Admin: Manage questions">
-                <Shield className="h-[18px] w-[18px] text-muted-foreground" />
-              </Link>
-            )}
-            <button
-              type="button"
-              onClick={() => setView("bookmarks")}
-              className="relative rounded-xl p-2 transition-colors hover:bg-accent active:scale-95"
-              aria-label="View bookmarked questions"
-            >
-              <Bookmark className="h-[18px] w-[18px] text-muted-foreground" />
-              {bookmarks.length > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
-                  {bookmarks.length > 99 ? "99+" : bookmarks.length}
-                </span>
+            <>
+              {view === "subjects" ? (
+                <Link
+                  to="/jamb"
+                  aria-label="Back to JAMB home"
+                  className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="text-sm font-medium hidden sm:inline">Back</span>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  aria-label="Go back"
+                  className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span className="text-sm font-medium hidden sm:inline">Back</span>
+                </button>
               )}
-            </button>
-          </div>
+              <div className="flex-1 text-center">
+                <h1 className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+                  Study Past Questions
+                </h1>
+                <p className="text-[10px] text-muted-foreground/60 -mt-0.5">JAMB UTME Exam Prep</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => { setShowGlobalSearch(true); setGlobalSearchTerm(""); setGlobalSearchResults([]); }}
+                  className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                  aria-label="Search questions"
+                >
+                  <Search className="w-[18px] h-[18px] text-muted-foreground" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView("bookmarks")}
+                  className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                  aria-label="View bookmarked questions"
+                >
+                  <Bookmark className="w-[18px] h-[18px] text-muted-foreground" />
+                </button>
+                {isAdmin && (
+                  <Link
+                    to="/admin/jamb-questions"
+                    className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                    aria-label="Admin: Manage questions"
+                    title="Admin: Manage questions"
+                  >
+                    <Shield className="w-[18px] h-[18px] text-muted-foreground" />
+                  </Link>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </header>
 

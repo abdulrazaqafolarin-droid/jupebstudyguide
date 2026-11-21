@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useExamProgram } from '@/contexts/ExamProgramContext';
 import {
-  getFlow, mergeOnboardingData, normalizeOnboardingData,
+  getFlow, getOnboardingFlow, mergeOnboardingData, normalizeOnboardingData,
   type OnboardingData, type OnboardingStepId,
 } from '@/lib/onboarding';
 import { fetchOnboardingStatus, patchCachedOnboardingStatus } from '@/lib/onboardingStatus';
@@ -29,7 +29,7 @@ export function useOnboarding() {
       .then((status) => {
         if (cancelled) return;
         const next = normalizeOnboardingData(status.data);
-        setFlow(getFlow(status.isNewStudent));
+        setFlow(getOnboardingFlow(getFlow(status.isNewStudent), programId));
         setData(next);
         setDisplayName(status.displayName);
         setIsReplay(status.finalized === true);

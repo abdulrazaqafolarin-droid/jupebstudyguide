@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
-  ArrowLeft, Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
+  Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
   Clock3, Loader2, RefreshCw, ShieldCheck, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -199,17 +200,14 @@ export default function JambDailyMissionPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-card/90 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-4xl items-center gap-3 px-4">
-          <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-semibold">Daily Mission</h1>
-          </div>
-          <CalendarDays className="h-5 w-5 text-primary" />
-        </div>
-      </header>
+      <WorkspacePageHeader
+        title="Daily Mission"
+        backTo="/jamb"
+        backLabel="Back to JAMB workspace"
+        compact
+        wide
+        rightContent={<CalendarDays className="h-5 w-5 text-primary" />}
+      />
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-12">
         <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">

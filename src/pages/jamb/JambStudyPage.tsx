@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
-  ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Brain,
+  ArrowRight, Bookmark, BookmarkCheck, BookOpen, Brain,
   Check, Clock3, Loader2, RefreshCw, Shuffle, Sparkles, Target, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -228,21 +229,22 @@ export default function JambStudyPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-4xl items-center gap-3 px-4">
-          <Link to="/jamb" aria-label="Back to JAMB workspace" className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate text-sm font-semibold">Revision Cards</h1>
-          </div>
-          {selectedSubject && (
-            <Button size="sm" variant="ghost" onClick={() => { setSelectedSubject(null); setQuestions([]); setMode("learn"); setCurrentIndex(0); }}>
-              Change subject
-            </Button>
-          )}
-        </div>
-      </header>
+      <WorkspacePageHeader
+        title="Revision Cards"
+        backTo="/jamb"
+        backLabel="Back to JAMB workspace"
+        compact
+        wide
+        rightContent={selectedSubject ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => { setSelectedSubject(null); setQuestions([]); setMode("learn"); setCurrentIndex(0); }}
+          >
+            Change subject
+          </Button>
+        ) : undefined}
+      />
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-24">
         {!selectedSubject ? (

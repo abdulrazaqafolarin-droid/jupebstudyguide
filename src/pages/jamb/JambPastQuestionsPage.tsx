@@ -3,7 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot,
-  CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight,
+  CalendarDays, Check, ChevronLeft, ChevronRight,
   Grid3X3, Loader2, Search, Shield, ShieldAlert, X,
 } from "lucide-react";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
@@ -19,6 +19,7 @@ import {
   type JambQuestion, type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
+import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
 import { Button } from "@/components/ui/button";
@@ -657,51 +658,12 @@ export default function JambPastQuestionsPage() {
                   <Button variant="outline" className="mt-4" onClick={() => setView("subjects")}>Back to subjects</Button>
                 </div>
               ) : (
-                <div className="space-y-1.5">
-                  {years.map((item, index) => {
-                    const expanded = expandedYear === item;
-                    return (
-                      <motion.div
-                        key={item}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.03, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setExpandedYear(expanded ? null : item)}
-                          aria-expanded={expanded}
-                          className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-left transition-colors hover:bg-accent/50 active:scale-[0.97]"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-semibold tabular-nums">{item}</span>
-                            
-                          </div>
-                          <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                          </motion.div>
-                        </button>
-                        <AnimatePresence>
-                          {expanded && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-                              className="overflow-hidden"
-                            >
-                              <div className="space-y-3 px-4 py-3">
-                                <Button size="sm" onClick={() => chooseYear(item)}>
-                                  View Questions
-                                </Button>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                <YearAccordion
+                  years={years}
+                  selectedYear={expandedYear}
+                  onSelectYear={setExpandedYear}
+                  onViewYear={chooseYear}
+                />
               )}
             </motion.section>
           )}

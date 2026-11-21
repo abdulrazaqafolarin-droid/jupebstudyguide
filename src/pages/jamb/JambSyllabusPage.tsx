@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, BookOpen, BookOpenCheck, ChevronDown, ExternalLink,
-  , Search, ShieldAlert, Sparkles, CircleCheck, CircleDashed,
+  Search, ShieldAlert, Sparkles, CircleCheck, CircleDashed,
   PlayCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";

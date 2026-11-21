@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
+import { ArrowLeft, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
 import type { Subject } from "@/types/question";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
 import { getJambCbtAvailableQuestionCount } from "@/lib/jamb-question-service";
 
@@ -100,53 +101,40 @@ export default function JambCbtSetupPage() {
                 <Target className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">CBT Practice</h1>
+                <div>
+                  <h1 className="text-xl font-bold">CBT Practice</h1>
+                  <p className="text-sm text-muted-foreground">Choose a subject and a practice length.</p>
+                </div>
               </div>
             </div>
 
             <section className="mt-6">
-              <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Subject</h2>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Subject</h2>
               <div className="grid grid-cols-2 gap-3">
                 {JAMB_SUBJECTS.map((item) => {
                   const selected = subject === item;
                   const info = JAMB_SUBJECT_INFO[item];
                   return (
-                    <button
+                    <SelectableSubjectCard
                       key={item}
-                      type="button"
+                      icon={info.icon}
+                      label={info.label}
+                      description={<span className="line-clamp-2">{info.description}</span>}
+                      selected={selected}
                       disabled={starting}
-                      onClick={() => {
+                      onSelect={() => {
                         idempotencyKeyRef.current = null;
                         hasManuallySelectedSubject.current = true;
                         setSubject(item);
                       }}
-                      aria-pressed={selected}
-                      className={cn(
-                        "relative flex items-center gap-3 rounded-xl border-2 p-4 text-left transition-all",
-                        selected
-                          ? "border-primary bg-primary/10 shadow-sm"
-                          : "border-border bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50",
-                        starting && "cursor-not-allowed opacity-60",
-                      )}
-                    >
-                      <span className="text-2xl" aria-hidden="true">{info.icon}</span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">{info.label}</span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground line-clamp-2">{info.description}</span>
-                      </span>
-                      {selected && (
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                          <Check className="h-3.5 w-3.5" />
-                        </span>
-                      )}
-                    </button>
+                    />
                   );
                 })}
               </div>
             </section>
 
             <section className="mt-6">
-              <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Practice length</h2>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Practice length</h2>
               <div className="flex flex-wrap gap-2">
                 {JAMB_CBT_PRACTICE_PRESETS.map((item, index) => {
                   const selected = presetIndex === index;
@@ -161,9 +149,9 @@ export default function JambCbtSetupPage() {
                       }}
                       aria-pressed={selected}
                       className={cn(
-                        "min-w-[112px] rounded-xl border-2 px-5 py-2.5 text-left transition-all",
+                        "rounded-xl border-2 px-5 py-2.5 text-left font-semibold transition-all",
                         selected
-                          ? "border-primary bg-primary/10 text-primary"
+                          ? "border-primary bg-primary/10 text-primary shadow-sm"
                           : "border-border text-foreground hover:border-primary/50",
                         starting && "cursor-not-allowed opacity-60",
                       )}

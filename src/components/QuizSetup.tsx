@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { Subject, SUBJECT_INFO } from '@/types/question';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Check, Target, Sparkles } from 'lucide-react';
+import { SelectableSubjectCard } from '@/components/SelectableSubjectCard';
+import { ArrowLeft, Target, Sparkles } from 'lucide-react';
 
 export interface QuizPlan {
   /** Per-subject question counts. Subject is omitted when count is 0. */
@@ -90,29 +91,15 @@ export const QuizSetup = ({ available, onStart, onBack }: QuizSetupProps) => {
               const isSelected = selected.has(subject);
               const disabled = count === 0;
               return (
-                <button
+                <SelectableSubjectCard
                   key={subject}
-                  onClick={() => toggleSubject(subject)}
+                  icon={info.icon}
+                  label={info.name}
+                  meta={`${count} available`}
+                  selected={isSelected}
                   disabled={disabled}
-                  className={cn(
-                    'relative p-4 rounded-xl border-2 text-left transition-all',
-                    'flex items-center gap-3',
-                    disabled && 'opacity-40 cursor-not-allowed',
-                    !disabled && isSelected && 'border-primary bg-primary/10',
-                    !disabled && !isSelected && 'border-border hover:border-primary/50 bg-secondary/30',
-                  )}
-                >
-                  <span className="text-2xl">{info.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{info.name}</p>
-                    <p className="text-xs text-muted-foreground">{count} available</p>
-                  </div>
-                  {isSelected && (
-                    <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5" />
-                    </span>
-                  )}
-                </button>
+                  onSelect={() => toggleSubject(subject)}
+                />
               );
             })}
           </div>

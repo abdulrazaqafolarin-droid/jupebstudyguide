@@ -375,9 +375,8 @@ export default function JambPastQuestionsPage() {
         <div className="space-y-2">
           {question.options.map((option) => {
             const isSelected = current === option.label;
-            const hasApprovedFeedback = feedback?.gradable === true;
-            const isApproved = hasApprovedFeedback && feedback.correctOption === option.label;
-            const isWrongSelection = hasApprovedFeedback && isSelected && feedback.isCorrect === false;
+            const isApproved = feedback?.gradable === true && feedback.correctOption === option.label;
+            const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
             return (
               <button
                 key={option.label}

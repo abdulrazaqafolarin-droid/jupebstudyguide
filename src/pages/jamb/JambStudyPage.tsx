@@ -3,8 +3,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
-  ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot, Brain, Flame,
-  Loader2, RefreshCw, Shuffle, Sparkles, Target,
+  ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot, Brain, Check, Flame,
+  Loader2, RefreshCw, Shuffle, Sparkles, Target, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuestionImage } from "@/components/QuestionImage";
@@ -72,7 +72,7 @@ export default function JambStudyPage() {
   const initialLoadStarted = useRef(false);
 
   const { bookmarks, toggle: toggleBookmark, isReady: bookmarksReady } = useJambBookmarks();
-  const { saveAnswer } = useJambPracticeProgress();
+  const { savedAnswers, saveAnswer } = useJambPracticeProgress();
   const {
     rateQuestion, dueQuestionIds, getStats, isReady: reviewReady,
   } = useJambReviewProgress();

@@ -223,3 +223,38 @@ At this checkpoint, PR head was `ed3934fe7c2f4d7611259e834fe4ce2732ccb486`. The 
 - **Rutex Master Next artifact-only** run `44489083112` completed successfully. The successor APK package/version/signing verification and artifact upload passed. The Supabase publication step was skipped, so no updater release was published.
 - Vercel checks reported success for both connected projects. A signed-in student/admin walkthrough and physical-device acceptance test remain outstanding. The Supabase Preview check was skipped because this Git branch is not associated with a Supabase Preview branch.
 - PR #78 remains Draft. No merge, Production UI deployment, JAMB question publication or updater-release publication was performed.
+
+
+## Question-bank import continuation — 22 November 2026
+
+The feature branch now includes Use of English in the four-subject question-bank importer. The source parser and admin review UI already recognise `use_of_english`; the live backend still needs its matching release before an English batch can be staged.
+
+| Source subject | Review candidates | Source answer keys | Source explanations | Verified keys |
+|---|---:|---:|---:|---:|
+| Physics | 896 | 0 | 0 | 0 |
+| Chemistry | 1,940 | 0 | 0 | 0 |
+| Biology | 1,833 | 0 | 0 | 0 |
+| Use of English | 3,914 | 750 suggestions | 750 suggestions | 0 |
+| **Total** | **8,583** | **750 suggestions** | **750 suggestions** | **0** |
+
+These are intake candidates, not published questions. The science source packs do not supply verified answer keys or explanations. The English source includes 750 answer/explanation suggestions, but all remain unverified and are not written into the protected answer-key table at staging time.
+
+### Live backend gate
+
+A read-only check of the connected Supabase project on 22 November 2026 confirmed:
+
+- `question-import` is active at **v4** and its live subject allowlist is still Physics, Chemistry and Biology. It does not yet accept Use of English.
+- Feature-branch code includes Use of English, keeps source answer/explanation candidates separate from verified fields, and blocks approval without a verified answer and explanation.
+- Migration `20261121233000_require_verified_jamb_answer_and_explanation` is present on the feature branch but is **not recorded in the live migration history**.
+- Live JAMB question rows, answer-key rows, import batches and import items remain **0**.
+
+Do not upload or stage an English batch until the Edge Function and migration are released together. The migration also adds Use of English to the JAMB batch publisher allowlist and enforces answer-key/explanation completeness at the database boundary.
+
+### Review and rights gates
+
+- All source candidates stay `needs_review` on import. A source-supplied answer is a suggestion, never an approved key.
+- Every item must retain four or five ordered, non-empty options, one verified correct option, and a meaningful explanation before approval/publication. Ungraded JAMB approval is rejected.
+- Comprehension passages are preserved with their dependent questions. The English audit reports duplicate/missing/out-of-range source numbers, count mismatches, invalid options, answer-option mismatches and missing passage context.
+- A Rutex administrator must still attest to the source-use permission/rights note before a source file is staged. No rights attestation, source upload, batch creation, answer-key publication or question publication was performed as part of this code-only continuation.
+
+No Production UI change or question content was published.

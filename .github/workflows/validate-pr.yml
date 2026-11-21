@@ -69,7 +69,7 @@ jobs:
           name: jamb-syllabus-source-extraction
           path: artifacts/jamb-syllabus/
           if-no-files-found: error
-          retention-days: 3
+          retention-days: 7
 
       - name: Test JAMB syllabus extraction
         run: python -m unittest scripts.test_jamb_syllabus_sources

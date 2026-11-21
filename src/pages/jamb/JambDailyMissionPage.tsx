@@ -6,6 +6,7 @@ import {
   Clock3, Loader2, RefreshCw, ShieldCheck, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
@@ -256,27 +257,30 @@ export default function JambDailyMissionPage() {
                 const info = JAMB_SUBJECT_INFO[subject];
                 const count = summaries.find((row) => row.subject === subject)?.count ?? 0;
                 const existing = todayMissions.find((mission) => mission.subject === subject);
-                const disabled = loadingBank || count < 3 || Boolean(startingSubject);
+                const unavailable = loadingBank || count < 3 || Boolean(startingSubject);
+                const meta = startingSubject === subject
+                  ? "Preparing mission…"
+                  : loadingBank
+                    ? "Checking published questions…"
+                    : count < 3
+                      ? `${count.toLocaleString()} reviewed questions · awaiting coverage`
+                      : `${count.toLocaleString()} published questions · ${existing ? "Resume / review" : "Start mission"}`;
                 return (
-                  <div key={subject} className="rounded-2xl border border-border bg-card p-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{info.icon}</span>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold">{info.label}</h3>
-                        {studyPreferencesReady && studyPreferences.subjects.includes(subject) && <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Your focus</span>}
-                        <p className="text-xs text-muted-foreground">{loadingBank ? "Loading…" : `${count.toLocaleString()} published questions`}</p>
-                      </div>
-                    </div>
-                    {existing ? (
-                      <Button className="mt-4 w-full" variant="outline" onClick={() => navigate(`/jamb/daily-mission/${existing.id}`)}>
-                        Resume / review
-                      </Button>
-                    ) : (
-                      <Button className="mt-4 w-full" disabled={disabled} onClick={() => void startMission(subject)}>
-                        {startingSubject === subject ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing…</> : count < 3 && !loadingBank ? "Awaiting reviewed questions" : "Start mission"}
-                      </Button>
-                    )}
-                  </div>
+                  <SelectableSubjectCard
+                    key={subject}
+                    icon={info.icon}
+                    label={info.label}
+                    description={studyPreferencesReady && studyPreferences.subjects.includes(subject)
+                      ? <span className="font-semibold text-primary">Your focus</span>
+                      : undefined}
+                    meta={meta}
+                    selected={Boolean(existing)}
+                    disabled={!existing && unavailable}
+                    onSelect={() => {
+                      if (existing) navigate(`/jamb/daily-mission/${existing.id}`);
+                      else if (!unavailable) void startMission(subject);
+                    }}
+                  />
                 );
               })}
             </div>

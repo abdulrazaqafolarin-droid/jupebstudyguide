@@ -12,6 +12,8 @@ import { SubjectCard } from "@/components/SubjectCard";
 import AchievementsPanel from "@/components/AchievementsPanel";
 import { LeaderboardPanelFrame } from "@/components/LeaderboardPanelFrame";
 import type { Achievement, AchievementStats } from "@/hooks/useAchievements";
+import { getJambAchievementProgress, getJambActivityStats as getJambAchievementActivity } from "@/lib/jamb-analytics";
+import type { JambAchievementMetrics } from "@/lib/jamb-analytics";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -82,41 +84,33 @@ function getJambActivityStats(savedAnswers: Record<string, { selected: string; s
   };
 }
 
-const JAMB_MILESTONES = [
-  { id: "first", label: "First answer", target: 1, description: "Save your first practice answer", icon: "📘", rarity: "common" as const },
-  { id: "ten", label: "Getting started", target: 10, description: "Save 10 practice answers", icon: "📚", rarity: "common" as const },
-  { id: "fifty", label: "Consistent learner", target: 50, description: "Save 50 practice answers", icon: "🧠", rarity: "uncommon" as const },
-  { id: "hundred", label: "Question explorer", target: 100, description: "Save 100 practice answers", icon: "💯", rarity: "rare" as const },
-  { id: "five-hundred", label: "JAMB champion", target: 500, description: "Save 500 practice answers", icon: "🏆", rarity: "epic" as const },
-];
+type JambAchievementProgress = ReturnType<typeof getJambAchievementProgress>[number];
 
-const JAMB_ACHIEVEMENTS: Achievement[] = JAMB_MILESTONES.map((milestone) => ({
-  id: milestone.id,
-  name: milestone.label,
-  description: milestone.description,
-  icon: milestone.icon,
-  rarity: milestone.rarity,
-  condition: (stats: AchievementStats) => stats.totalQuestionsAnswered >= milestone.target,
-  getProgress: (stats: AchievementStats) => ({
-    current: Math.min(stats.totalQuestionsAnswered, milestone.target),
-    max: milestone.target,
-  }),
-}));
+function toJambPanelAchievement(item: JambAchievementProgress): Achievement {
+  return {
+    id: item.id,
+    name: item.label,
+    description: item.description,
+    icon: item.category === "Consistency" ? "🔥" : item.category === "Organisation" ? "🔖" : "📘",
+    rarity: "common",
+    condition: () => item.unlocked,
+    getProgress: () => ({ current: item.current, max: item.target }),
+  };
+}
 
-function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; ready: boolean }) {
+function JambMilestonesPanel({ metrics, ready }: { metrics: JambAchievementMetrics; ready: boolean }) {
+  const progress = getJambAchievementProgress(metrics);
   const stats: AchievementStats = {
-    totalQuestionsAnswered: answeredCount,
+    totalQuestionsAnswered: metrics.answerCount,
     totalCorrect: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-    totalDaysStudied: 0,
+    currentStreak: metrics.currentStreak,
+    longestStreak: metrics.longestStreak,
+    totalDaysStudied: metrics.totalDaysStudied,
     questionsLearned: 0,
     subjectsStudied: 0,
   };
-  const unlocked = ready ? JAMB_ACHIEVEMENTS.filter((achievement) => achievement.condition(stats)) : [];
-  const locked = ready
-    ? JAMB_ACHIEVEMENTS.filter((achievement) => !unlocked.some((item) => item.id === achievement.id))
-    : [];
+  const unlocked = ready ? progress.filter((item) => item.unlocked).map(toJambPanelAchievement) : [];
+  const locked = ready ? progress.filter((item) => !item.unlocked).map(toJambPanelAchievement) : [];
 
   return (
     <AchievementsPanel
@@ -124,7 +118,7 @@ function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; 
       linkTo="/jamb/achievements"
       unlockedAchievements={unlocked}
       lockedAchievements={locked}
-      totalCount={JAMB_ACHIEVEMENTS.length}
+      totalCount={progress.length}
       stats={stats}
       loading={!ready}
     />
@@ -147,6 +141,12 @@ export default function JambHomePage() {
   const [reviewMetadataReady, setReviewMetadataReady] = useState(false);
   const [reviewMetadataError, setReviewMetadataError] = useState(false);
   const { history: dailyMissionHistory, ready: missionHistoryReady } = useJambDailyMissions();
+  const achievementMetrics = useMemo<JambAchievementMetrics>(() => ({
+    ...getJambAchievementActivity(savedAnswers),
+    bookmarkCount: bookmarks.length,
+    completedMissionCount: dailyMissionHistory.filter((mission) => mission.status === "completed").length,
+  }), [savedAnswers, bookmarks, dailyMissionHistory]);
+  const achievementsReady = progressReady && bookmarksReady && missionHistoryReady;
   const todayKey = jambLocalDateKey();
   const todayMissionProgress = useMemo(
     () => dailyMissionHistory
@@ -420,7 +420,7 @@ export default function JambHomePage() {
             totalDaysStudied={progressReady ? jambActivity.totalDaysStudied : 0}
             hasStudiedToday={progressReady && jambActivity.hasStudiedToday}
           />
-          <JambMilestonesPanel answeredCount={totalAnswered} ready={progressReady} />
+          <JambMilestonesPanel metrics={achievementMetrics} ready={achievementsReady} />
         </section>
 
         {/* JAMB rankings share the leaderboard card shell but remain gated from JUPEB scores. */}

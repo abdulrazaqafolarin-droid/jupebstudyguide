@@ -328,29 +328,23 @@ export default function JambCbtPage() {
               <div className="mt-4 space-y-2">
                 {item.question_snapshot.options.map((option) => {
                   const selected = item.selected_option === option.label;
-                  const correct = item.correct_answer === option.label;
+                  const correct = item.gradable && item.correct_answer === option.label;
+                  const incorrectSelection = item.gradable && selected && !correct;
                   return (
-                    <div
+                    <QuestionOptionButton
                       key={option.label}
-                      className={`flex items-start gap-3 rounded-xl border-2 p-3 text-sm ${
-                        correct
-                          ? "border-emerald-500 bg-emerald-500/10"
-                          : selected
-                            ? "border-destructive bg-destructive/5"
-                            : "border-border bg-secondary/20"
-                      }`}
+                      label={option.label}
+                      state={correct ? "correct" : incorrectSelection ? "incorrect" : selected ? "selected" : "default"}
+                      selected={selected}
+                      disabled
+                      contentClassName="break-words text-pretty"
                     >
-                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-mono font-semibold ${
-                        correct
-                          ? "bg-emerald-500 text-white"
-                          : selected
-                            ? "bg-destructive text-destructive-foreground"
-                            : "bg-secondary text-foreground"
-                      }`}>{option.label}</span>
-                      <div className="min-w-0 flex-1 pt-1"><QuestionMath content={option.text} inline /></div>
-                      {selected && <span className="text-[10px] font-semibold uppercase text-muted-foreground">Your answer</span>}
-                      {correct && <span className="text-[10px] font-semibold uppercase text-emerald-700">Approved key</span>}
-                    </div>
+                      <span className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-1">
+                        <span className="min-w-0 flex-1"><QuestionMath content={option.text} inline /></span>
+                        {selected && <span className="text-[10px] font-semibold uppercase text-muted-foreground">Your answer</span>}
+                        {correct && <span className="text-[10px] font-semibold uppercase text-emerald-700">Approved key</span>}
+                      </span>
+                    </QuestionOptionButton>
                   );
                 })}
               </div>

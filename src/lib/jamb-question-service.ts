@@ -139,6 +139,47 @@ export async function getJambSubjectSummaries(): Promise<JambSubjectSummary[]> {
   return results;
 }
 
+
+/** Mirrors the JAMB CBT server's exact A-D candidate eligibility rule. */
+export function isJambCbtQuestionCandidate(candidate: { question: unknown; options: unknown }): boolean {
+  const question = String(candidate.question ?? "").trim();
+  let parsed = candidate.options;
+  if (typeof parsed === "string") {
+    try { parsed = JSON.parse(parsed); } catch { return false; }
+  }
+  if (!Array.isArray(parsed)) return false;
+
+  const options = parsed.flatMap((value): Array<{ label: string; text: string }> => {
+    if (!value || typeof value !== "object") return [];
+    const option = value as Record<string, unknown>;
+    const label = String(option.label ?? "").toUpperCase();
+    const text = String(option.text ?? "");
+    return /^[A-E]$/.test(label) && text.trim() ? [{ label, text }] : [];
+  });
+  return question.length >= 8 &&
+    options.length === 4 &&
+    options.map((option) => option.label).join(",") === "A,B,C,D";
+}
+
+/** Count the same first 500 published candidates the server can draw from. */
+export async function getJambCbtAvailableQuestionCount(
+  subject: Exclude<Subject, "math">,
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("study_questions")
+    .select("question,options")
+    .eq("exam_program_id", "jamb")
+    .eq("review_status", "published")
+    .eq("hidden", false)
+    .eq("subject", subject)
+    .eq("category", "objective")
+    .limit(500);
+
+  if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
+  if (error) throw error;
+  return (data ?? []).filter(isJambCbtQuestionCandidate).length;
+}
+
 export interface JambQuestionMetadata {
   id: string;
   subject: Exclude<Subject, "math">;

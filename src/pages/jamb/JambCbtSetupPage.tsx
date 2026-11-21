@@ -8,6 +8,7 @@ import type { Subject } from "@/types/question";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
+import { getJambCbtAvailableQuestionCount } from "@/lib/jamb-question-service";
 
 export default function JambCbtSetupPage() {
   const navigate = useNavigate();
@@ -16,8 +17,19 @@ export default function JambCbtSetupPage() {
   const [subject, setSubject] = useState<Exclude<Subject, "math">>("physics");
   const [presetIndex, setPresetIndex] = useState(1);
   const [starting, setStarting] = useState(false);
+  const [availability, setAvailability] = useState<{
+    subject: Exclude<Subject, "math">;
+    count: number;
+    loading: boolean;
+    error: boolean;
+  }>({ subject: "physics", count: 0, loading: true, error: false });
   const idempotencyKeyRef = useRef<string | null>(null);
   const preset = JAMB_CBT_PRACTICE_PRESETS[presetIndex];
+  const availabilityIsCurrent = availability.subject === subject;
+  const availabilityLoading = !availabilityIsCurrent || availability.loading;
+  const availabilityError = availabilityIsCurrent && availability.error;
+  const availableQuestions = availabilityIsCurrent ? availability.count : 0;
+  const enoughQuestions = !availabilityLoading && !availabilityError && availableQuestions >= preset.questionCount;
 
   useEffect(() => {
     if (!preferencesReady || hasManuallySelectedSubject.current) return;
@@ -25,7 +37,22 @@ export default function JambCbtSetupPage() {
     if (preferred && JAMB_SUBJECTS.includes(preferred)) setSubject(preferred);
   }, [preferencesReady, preferences.subjects]);
 
+  useEffect(() => {
+    let active = true;
+    setAvailability({ subject, count: 0, loading: true, error: false });
+    getJambCbtAvailableQuestionCount(subject)
+      .then((count) => {
+        if (active) setAvailability({ subject, count, loading: false, error: false });
+      })
+      .catch((reason: unknown) => {
+        console.error("[jamb-cbt] availability check failed:", reason);
+        if (active) setAvailability({ subject, count: 0, loading: false, error: true });
+      });
+    return () => { active = false; };
+  }, [subject]);
+
   const startPractice = async () => {
+    if (!enoughQuestions) return;
     setStarting(true);
     const idempotencyKey = idempotencyKeyRef.current ?? crypto.randomUUID();
     idempotencyKeyRef.current = idempotencyKey;
@@ -153,6 +180,21 @@ export default function JambCbtSetupPage() {
                 <Clock3 className="h-4 w-4 shrink-0 text-primary" />
                 The {preset.questionCount}-question session runs for {preset.durationMinutes} minutes. The timer starts on the server when the attempt is created and will not restart if you refresh.
               </div>
+              <div className="mt-3 rounded-xl border border-border bg-secondary/20 p-3 text-xs leading-relaxed" aria-live="polite">
+                {availabilityLoading ? (
+                  <span className="text-muted-foreground">Checking reviewed JAMB CBT questions for {JAMB_SUBJECT_INFO[subject].label}…</span>
+                ) : availabilityError ? (
+                  <span className="text-destructive">Could not check question availability. Refresh this page and try again.</span>
+                ) : availableQuestions < preset.questionCount ? (
+                  <span className="text-muted-foreground">
+                    {availableQuestions} eligible A–D questions are published for {JAMB_SUBJECT_INFO[subject].label}. This preset needs {preset.questionCount}; practice will unlock after enough questions are reviewed and published.
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">
+                    {availableQuestions} eligible A–D questions are available for {JAMB_SUBJECT_INFO[subject].label}.
+                  </span>
+                )}
+              </div>
             </section>
 
             <section className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
@@ -169,12 +211,18 @@ export default function JambCbtSetupPage() {
 
             <Button
               onClick={startPractice}
-              disabled={starting}
+              disabled={starting || !enoughQuestions}
               size="lg"
               className="mt-6 w-full bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90"
             >
               {starting ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing session…</>
+              ) : availabilityLoading ? (
+                "Checking question availability…"
+              ) : availabilityError ? (
+                "Availability unavailable"
+              ) : availableQuestions < preset.questionCount ? (
+                "Awaiting reviewed questions"
               ) : (
                 <><ShieldCheck className="mr-2 h-4 w-4" />Start timed practice</>
               )}

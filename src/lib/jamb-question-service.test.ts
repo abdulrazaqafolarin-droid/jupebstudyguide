@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 // of the unit test so the privacy contract is tested without backend access.
 vi.mock("@/integrations/supabase/client", () => ({ supabase: {} }));
 
-import { toSafeJambQuestionPayload, type JambQuestion } from "./jamb-question-service";
+import { isJambCbtQuestionCandidate, toSafeJambQuestionPayload, type JambQuestion } from "./jamb-question-service";
 
 describe("toSafeJambQuestionPayload", () => {
   it("exposes learner-facing question content but never answer-key material", () => {
@@ -64,5 +64,47 @@ describe("toSafeJambQuestionPayload", () => {
     expect(payload).not.toHaveProperty("explanation");
     expect(payload).not.toHaveProperty("answer_key_verified");
     expect(payload).not.toHaveProperty("score");
+  });
+});
+
+describe("isJambCbtQuestionCandidate", () => {
+  const options = [
+    { label: "A", text: "First" },
+    { label: "B", text: "Second" },
+    { label: "C", text: "Third" },
+    { label: "D", text: "Fourth" },
+  ];
+
+  it("accepts a readable four-option A-D JAMB question", () => {
+    expect(isJambCbtQuestionCandidate({
+      question: "Which quantity is measured in amperes?",
+      options,
+    })).toBe(true);
+  });
+
+  it("accepts the JSON string representation used by stored options", () => {
+    expect(isJambCbtQuestionCandidate({
+      question: "Which quantity is measured in amperes?",
+      options: JSON.stringify(options),
+    })).toBe(true);
+  });
+
+  it("rejects five-option historical questions", () => {
+    expect(isJambCbtQuestionCandidate({
+      question: "Which quantity is measured in amperes?",
+      options: [...options, { label: "E", text: "Fifth" }],
+    })).toBe(false);
+  });
+
+  it("rejects malformed labels, blank options and short stems", () => {
+    expect(isJambCbtQuestionCandidate({
+      question: "Which quantity is measured in amperes?",
+      options: [...options.slice(0, 2), { label: "E", text: "Third" }, options[3]],
+    })).toBe(false);
+    expect(isJambCbtQuestionCandidate({
+      question: "Which quantity is measured in amperes?",
+      options: [...options.slice(0, 3), { label: "D", text: " " }],
+    })).toBe(false);
+    expect(isJambCbtQuestionCandidate({ question: "Short?", options })).toBe(false);
   });
 });

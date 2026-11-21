@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUserStorage } from "@/hooks/useUserStorage";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
   ArrowRight, BookOpen, Brain, Bookmark, CalendarDays, Clock3,
-  CheckCircle2, Flame, GraduationCap, Library, ShieldAlert, ShieldCheck, Target,
+  CheckCircle2, Flame, GraduationCap, Library, ShieldAlert, ShieldCheck, Sparkles, Target, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardProgressPanel } from "@/components/DashboardProgressPanel";
@@ -30,6 +32,7 @@ import {
 } from "@/lib/jamb-question-service";
 import { getJambReviewStats } from "@/lib/jamb-review";
 import { DashboardPanelShell } from "@/components/DashboardPanelShell";
+import { fetchOnboardingStatus, getCachedOnboardingStatus } from "@/lib/onboardingStatus";
 import rutexLogo from "@/assets/rutex-logo.jpg";
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
@@ -129,6 +132,25 @@ function JambMilestonesPanel({ metrics, ready }: { metrics: JambAchievementMetri
 
 export default function JambHomePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [programmeOnboarding, setProgrammeOnboarding] = useState<{ completedAt: string | null; finalized: boolean } | null>(null);
+  const [nudgeDismissed, setNudgeDismissed] = useUserStorage<boolean>("onboarding-nudge-dismissed:jamb", false);
+  const showSetupNudge = !nudgeDismissed && Boolean(programmeOnboarding?.completedAt) && !programmeOnboarding?.finalized;
+
+  useEffect(() => {
+    if (!user) { setProgrammeOnboarding(null); return; }
+    let cancelled = false;
+    const cached = getCachedOnboardingStatus(user.id, "jamb");
+    if (cached?.loaded) setProgrammeOnboarding({ completedAt: cached.completedAt, finalized: cached.finalized });
+    fetchOnboardingStatus(user.id, "jamb")
+      .then((status) => {
+        if (!cancelled) setProgrammeOnboarding({ completedAt: status.completedAt, finalized: status.finalized });
+      })
+      .catch((reason) => {
+        if (!cancelled) console.error("[JAMB onboarding] dashboard reminder check failed:", reason);
+      });
+    return () => { cancelled = true; };
+  }, [user?.id]);
   const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -322,6 +344,34 @@ export default function JambHomePage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 pt-8">
+        {showSetupNudge && (
+          <section className="mb-6 animate-in-up">
+            <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10 p-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">Finish setting up</p>
+                <p className="text-xs text-muted-foreground">Study preferences, chat and notifications — about 1 minute.</p>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => navigate("/jamb/onboarding")}
+                className="h-9 shrink-0 rounded-lg bg-gradient-to-r from-primary to-accent px-3 text-xs text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Finish
+              </Button>
+              <button
+                type="button"
+                onClick={() => setNudgeDismissed(true)}
+                aria-label="Dismiss setup reminder"
+                className="shrink-0 p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </section>
+        )}
         {error && (
           <section className="mb-6 animate-in-up">
             <div className="bg-amber-500/5 rounded-2xl border border-amber-500/20 p-4 flex items-start gap-3">

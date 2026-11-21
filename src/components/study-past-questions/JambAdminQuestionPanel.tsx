@@ -586,11 +586,10 @@ export function JambAdminQuestionPanel({
                 <div className="p-4 rounded-xl border border-destructive/30 bg-destructive/5 space-y-3">
                   <div className="flex items-center gap-2 text-destructive font-medium">
                     <AlertTriangle className="h-5 w-5" />
-                    <span>Delete this question permanently?</span>
+                    <span>Remove this question from the active JAMB bank?</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    This will remove the question from the database for ALL users.
-                    This action cannot be undone.
+                    This hides the question from learners while preserving approved answer keys and historical CBT attempt records.
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -599,7 +598,7 @@ export function JambAdminQuestionPanel({
                       onClick={handleDelete}
                       disabled={saving}
                     >
-                      {saving ? "Deleting..." : "Delete Forever"}
+                      {saving ? "Removing..." : "Remove Question"}
                     </Button>
                     <Button
                       variant="outline"

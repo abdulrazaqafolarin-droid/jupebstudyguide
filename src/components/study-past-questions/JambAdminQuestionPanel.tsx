@@ -574,7 +574,7 @@ export function JambAdminQuestionPanel({
           >
             <div className="flex items-center justify-between p-4 border-b shrink-0">
               <h2 className="font-semibold text-sm flex items-center gap-2">
-                {mode === "add" ? "Add New Question" : "Edit Question"}
+                {mode === "add" ? "Add New Question" : mode === "edit" ? "Edit Question" : "Question Manager"}
               </h2>
               <div className="flex items-center gap-2">
                 {mode === "edit" && editingQuestion && (

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
@@ -48,6 +49,7 @@ function isJambSubject(value: string | null): value is JambSubject {
 
 export default function JambStudyPage() {
   const [searchParams] = useSearchParams();
+  const shouldReduceMotion = useReducedMotion();
   const requestedSubject = searchParams.get("subject")?.toLowerCase() ?? null;
   const initialSubject = isJambSubject(requestedSubject) ? requestedSubject : null;
   const [selectedSubject, setSelectedSubject] = useState<JambSubject | null>(initialSubject);
@@ -337,11 +339,19 @@ export default function JambStudyPage() {
                     </Link>
                   </Button>
                 </div>
-                <StudyFlashcardSurface
-                ariaLabel="JAMB revision question"
-                className="min-h-[520px]"
-                contentClassName="p-4 sm:p-6 space-y-4"
-              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={question.id}
+                    initial={shouldReduceMotion ? false : { opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={shouldReduceMotion ? undefined : { opacity: 0, x: -24 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.23, 1, 0.32, 1] }}
+                  >
+                    <StudyFlashcardSurface
+                      ariaLabel="JAMB revision question"
+                      className="min-h-[520px]"
+                      contentClassName="p-4 sm:p-6 space-y-4"
+                    >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{subjectInfo?.label} · {question.year}</span>
@@ -411,7 +421,9 @@ export default function JambStudyPage() {
                     <Button size="sm" variant="outline" onClick={nextCard}>Next card <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>
                   </div>
                 )}
-              </StudyFlashcardSurface>
+                    </StudyFlashcardSurface>
+                  </motion.div>
+                </AnimatePresence>
               </>
             ) : loadingQuestions ? (
               <div className="flex justify-center py-12"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>

@@ -156,3 +156,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **Dashboard onboarding reminder:** JAMB now shows the same dismissible “Finish setting up” nudge as JUPEB for onboarding that was started but not finalized. Its completion lookup and dismissal state are scoped to `jamb`, and the action opens the JAMB onboarding route.
 
+- **Floating AI Tutor motion:** the JAMB floating Tutor now staggers the panel header and composer entrances using the same short fade/blur timing pattern as JUPEB. The JAMB version respects reduced-motion preferences.
+

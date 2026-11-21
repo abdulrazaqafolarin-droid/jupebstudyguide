@@ -66,28 +66,6 @@ function findNearestCorner(x: number, y: number): Point {
   }, corners[0]);
 }
 
-function FloatingTypingLoader() {
-  return (
-    <div className="flex items-center gap-2 px-1 py-3">
-      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/20">
-        <Bot className="h-3 w-3 text-primary" />
-      </div>
-      <div className="rounded-xl border border-white/5 bg-white/[0.06] px-3 py-2.5">
-        <div className="flex items-center gap-1 px-1">
-          {[0, 1, 2].map((index) => (
-            <motion.span
-              key={index}
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut", delay: index * 0.15 }}
-              className="h-1.5 w-1.5 rounded-full bg-primary/60"
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function JambFloatingAITutor() {
   const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();

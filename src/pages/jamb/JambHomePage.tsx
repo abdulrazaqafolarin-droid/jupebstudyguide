@@ -3,16 +3,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
   ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronDown, ChevronRight, ChevronUp, Clock3,
-  GraduationCap, Library, ShieldAlert, Star, Target, Trophy,
+  CheckCircle2, GraduationCap, Library, ShieldAlert, Star, Target, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import StreakDisplay from "@/components/StreakDisplay";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
+import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
 import {
   JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
+import { getJambMissionSummary, jambLocalDateKey } from "@/lib/jamb-daily-mission";
 import {
   getJambSubjectSummaries, JambSchemaUnavailableError,
   type JambSubjectSummary,
@@ -242,6 +244,15 @@ export default function JambHomePage() {
   const [error, setError] = useState<string | null>(null);
   const { savedAnswers, isReady: progressReady } = useJambPracticeProgress();
   const { bookmarks, isReady: bookmarksReady } = useJambBookmarks();
+  const { history: dailyMissionHistory, ready: missionHistoryReady } = useJambDailyMissions();
+  const todayKey = jambLocalDateKey();
+  const todayMissionProgress = useMemo(
+    () => dailyMissionHistory
+      .filter((mission) => mission.localDate === todayKey)
+      .sort((a, b) => a.subject.localeCompare(b.subject))
+      .map((mission) => ({ mission, summary: getJambMissionSummary(mission) })),
+    [dailyMissionHistory, todayKey],
+  );
   useEffect(() => {
     let active = true;
     getJambSubjectSummaries()
@@ -346,20 +357,79 @@ export default function JambHomePage() {
           </section>
         )}
 
-        {/* Practice-only mission workflow; syllabus lessons remain gated until verified. */}
-        <section className="mb-8 animate-in-up">
+        {/* Daily mission — the same card hierarchy as JUPEB, with JAMB-only attempts and scoring. */}
+        <section aria-label="Daily mission" className="mb-12 animate-in-up stagger-1">
           <div className="overflow-hidden rounded-2xl border border-border bg-card">
-            <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-accent/5 p-5 md:p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-accent/5 p-6 md:p-8">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                 <CalendarDays className="h-5 w-5 text-primary" />
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="text-lg font-bold">Daily Mission</h2>
+                <h2 className="text-xl font-bold">Daily Mission</h2>
+                <p className="text-sm text-muted-foreground">A focused practice set, answer checks, and a review of your progress.</p>
               </div>
+              {missionHistoryReady && todayMissionProgress.length > 0 && (
+                <span className="hidden rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground sm:inline-flex">
+                  {todayMissionProgress.every(({ mission }) => mission.status === "completed")
+                    ? "Completed today"
+                    : `${todayMissionProgress.length} started today`}
+                </span>
+              )}
             </div>
-            <div className="space-y-4 p-5 md:p-6">
+
+            <div className="space-y-4 p-6 md:p-8">
+              {!missionHistoryReady ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground" role="status">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  Restoring your JAMB mission history…
+                </div>
+              ) : todayMissionProgress.length > 0 ? (
+                <div className="space-y-3">
+                  {todayMissionProgress.map(({ mission, summary }) => (
+                    <motion.div
+                      key={mission.id}
+                      whileHover={{ y: -2, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+                      className="rounded-xl border border-border bg-background/50 p-4 transition-colors hover:border-primary/25"
+                    >
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-lg" aria-hidden="true">{JAMB_SUBJECT_INFO[mission.subject].icon}</span>
+                        <span className="min-w-0 flex-1 text-sm font-semibold">{JAMB_SUBJECT_INFO[mission.subject].label}</span>
+                        <span className={mission.status === "completed"
+                          ? "inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-600"
+                          : "inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[10px] font-medium text-muted-foreground"}>
+                          {mission.status === "completed" ? <><CheckCircle2 className="h-3 w-3" /> Completed</> : <><Clock3 className="h-3 w-3" /> In progress</>}
+                        </span>
+                      </div>
+                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-secondary">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${summary.totalQuestions > 0 ? (summary.checkedQuestions / summary.totalQuestions) * 100 : 0}%` }}
+                          transition={{ duration: 0.65, ease: "easeOut" }}
+                          className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                        />
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
+                        <span>{summary.checkedQuestions} of {summary.totalQuestions} checked</span>
+                        <span>{summary.accuracy === null ? "Awaiting graded answers" : `${summary.accuracy}% accuracy`}</span>
+                      </div>
+                      <Link
+                        to={`/jamb/daily-mission/${mission.id}`}
+                        className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
+                      >
+                        {mission.status === "completed" ? "Review mission" : "Resume mission"}
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Choose a subject to start a short practice set built only from reviewed and published JAMB questions.
+                </p>
+              )}
               <Button onClick={() => navigate("/jamb/daily-mission")} className="gap-2">
-                <CalendarDays className="h-4 w-4" /> Open today's mission
+                <CalendarDays className="h-4 w-4" />
+                {todayMissionProgress.length > 0 ? "Open mission hub & history" : "Open today's mission"}
               </Button>
             </div>
           </div>

@@ -115,14 +115,13 @@ export default function JambStatsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-card/90 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
+      <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border">
+        <div className="mx-auto max-w-2xl px-4 h-14 flex items-center gap-3">
           <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="min-w-0 flex-1">
             <h1 className="text-sm font-semibold">Study Stats</h1>
-            <p className="text-[10px] text-muted-foreground">Your JAMB learning analytics</p>
           </div>
         </div>
       </header>

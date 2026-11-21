@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Bookmark, BookOpen, Flame, LockKeyhole, Search, Star, Trophy, Award } from "lucide-react";
+import { ArrowLeft, Bookmark, BookOpen, Flame, Search, Star, Trophy, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AchievementBadge from "@/components/AchievementBadge";
+import type { Achievement, AchievementStats } from "@/hooks/useAchievements";
 import { Input } from "@/components/ui/input";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
@@ -32,6 +34,15 @@ export default function JambAchievementsPage() {
   const activity = useMemo(() => getJambActivityStats(savedAnswers), [savedAnswers]);
   const completedMissionCount = missionHistory.filter((mission) => mission.status === "completed").length;
   const metrics: JambAchievementMetrics = { ...activity, bookmarkCount: bookmarks.length, completedMissionCount };
+  const badgeStats: AchievementStats = {
+    totalQuestionsAnswered: metrics.answerCount,
+    totalCorrect: 0,
+    currentStreak: metrics.currentStreak,
+    longestStreak: metrics.longestStreak,
+    totalDaysStudied: metrics.totalDaysStudied,
+    questionsLearned: 0,
+    subjectsStudied: 0,
+  };
   const achievements = getJambAchievementProgress(metrics);
   const unlockedCount = achievements.filter((item) => item.unlocked).length;
   const ready = answersReady && bookmarksReady && missionsReady;
@@ -155,16 +166,22 @@ export default function JambAchievementsPage() {
                 : "rounded-xl border border-border bg-card/70 p-4 transition-colors hover:border-border"}
             >
               <div className="flex items-start gap-3">
-                <div className={achievement.unlocked
-                  ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
-                  : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground"}>
-                  {achievement.category === "Consistency"
-                    ? <Flame className="h-5 w-5" />
-                    : achievement.category === "Organisation"
-                      ? <Bookmark className="h-5 w-5" />
-                      : achievement.unlocked
-                        ? <Star className="h-5 w-5 fill-current" />
-                        : <LockKeyhole className="h-5 w-5" />}
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+                  <AchievementBadge
+                    achievement={{
+                      id: achievement.id,
+                      name: achievement.label,
+                      description: achievement.description,
+                      icon: achievement.category === "Consistency" ? "🔥" : achievement.category === "Organisation" ? "🔖" : "📘",
+                      rarity: "common",
+                      condition: () => achievement.unlocked,
+                      getProgress: () => ({ current: achievement.current, max: achievement.target }),
+                    } satisfies Achievement}
+                    unlocked={ready && achievement.unlocked}
+                    size="sm"
+                    showDetails={false}
+                    stats={badgeStats}
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">

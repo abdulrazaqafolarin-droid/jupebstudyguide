@@ -168,3 +168,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **JAMB mission copy:** the mission-history footer now explains only that mission completion is a Rutex study activity, not an official JAMB result; it no longer mentions JUPEB in the student-facing notice.
 
+- **JAMB onboarding terminology:** the syllabus-verification notice now states directly that unreviewed JAMB content will not be used to mark answers correct, without referencing JUPEB in student-facing copy.
+

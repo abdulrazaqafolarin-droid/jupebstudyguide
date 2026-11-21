@@ -75,6 +75,7 @@ export function JambAdminQuestionPanel({
   managerQuestionsRef.current = managerQuestions;
   const [sourceReference, setSourceReference] = useState("");
   const [sourceDocument, setSourceDocument] = useState("");
+  const [sourcePage, setSourcePage] = useState("");
   const [rightsNote, setRightsNote] = useState("");
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
   const [answerKeyVerified, setAnswerKeyVerified] = useState(false);
@@ -150,6 +151,7 @@ export function JambAdminQuestionPanel({
     setSortOrder(q.sortOrder != null ? String(q.sortOrder) : "0");
     setSourceReference(q.sourceReference || "");
     setSourceDocument(q.sourceDocument || "");
+    setSourcePage(q.sourcePage != null ? String(q.sourcePage) : "");
     setRightsNote("");
     setRightsConfirmed(false);
     setAnswerKeyVerified(false);
@@ -167,6 +169,7 @@ export function JambAdminQuestionPanel({
         setExplanation(String(detail.explanation || ""));
         setSourceReference(String(detail.sourceReference || ""));
         setSourceDocument(String(detail.sourceDocument || ""));
+        setSourcePage(detail.sourcePage == null ? "" : String(detail.sourcePage));
         setDifficulty(String(detail.difficulty || q.difficulty || "medium"));
         setTopic(String(detail.topic || q.topic || ""));
         setRightsNote(String(detail.rightsNote || ""));
@@ -174,7 +177,9 @@ export function JambAdminQuestionPanel({
         setAnswerKeyVerified(detail.answerKeyVerified === true);
       }
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Could not load the protected JAMB answer key.");
+      if (requestId === loadQuestionRequestRef.current) {
+        setError(loadError instanceof Error ? loadError.message : "Could not load the protected JAMB answer key.");
+      }
     }
   }, []);
 
@@ -202,6 +207,7 @@ export function JambAdminQuestionPanel({
     setSortOrder(String(nextSortOrder));
     setSourceReference("");
     setSourceDocument("");
+    setSourcePage("");
     setRightsNote("");
     setRightsConfirmed(false);
     setAnswerKeyVerified(false);
@@ -285,6 +291,7 @@ export function JambAdminQuestionPanel({
       ...current,
       { id: Date.now() + "-" + Math.random(), url: previewUrl, file },
     ]);
+    setAnswerKeyVerified(false);
     setShowPreview(true);
   }, []);
 
@@ -324,6 +331,7 @@ export function JambAdminQuestionPanel({
       }
       const remaining = current.filter((image) => image.id !== imageId);
       if (remaining.length === 0) setImagePosition("image-above");
+      setAnswerKeyVerified(false);
       return remaining;
     });
   };
@@ -349,6 +357,10 @@ export function JambAdminQuestionPanel({
     }
     if (!sourceDocument.trim() || !/^((19|20)\d{2}):Q\d+$/i.test(sourceReference.trim())) {
       setError("Enter a source document and a single source reference such as 2024:Q12");
+      return;
+    }
+    if (sourcePage.trim() && (!Number.isInteger(Number(sourcePage)) || Number(sourcePage) < 1)) {
+      setError("Source PDF page must be a positive whole number");
       return;
     }
     if (!rightsConfirmed || rightsNote.trim().length < 12) {
@@ -407,6 +419,7 @@ export function JambAdminQuestionPanel({
         image_position: imagePosition,
         source_reference: sourceReference.trim(),
         source_document: sourceDocument.trim(),
+        source_page: sourcePage.trim() ? Number(sourcePage) : null,
         rights_confirmed: rightsConfirmed,
         rights_note: rightsNote.trim(),
         answer_key_verified: answerKeyVerified,
@@ -427,10 +440,8 @@ export function JambAdminQuestionPanel({
       if (mode === "edit" && editingQuestion) {
         setManagerQuestions((previous) => previous.map((item) => item.id === saved.id ? saved : item));
         onQuestionUpdated(saved);
-        const removedImageUrls = existingImageUrls.filter((url) => !resolvedImageUrls.includes(url));
-        if (removedImageUrls.length > 0) {
-          await deleteQuestionImageUrls(removedImageUrls).catch(() => {});
-        }
+        // Older CBT snapshots and admin audit records may still reference these files.
+        // Keep prior image objects; only newly uploaded, unsaved files are cleaned up on failure.
       } else {
         setManagerQuestions((previous) => [...previous, saved].sort((a, b) => a.sortOrder - b.sortOrder));
         onQuestionAdded(saved);
@@ -720,7 +731,7 @@ export function JambAdminQuestionPanel({
                     </label>
                     <textarea
                       value={questionText}
-                      onChange={e => setQuestionText(e.target.value)}
+                      onChange={e => { setQuestionText(e.target.value); setAnswerKeyVerified(false); }}
                       rows={3}
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
                       placeholder="Type the question text, or leave blank if using an image..."
@@ -837,6 +848,18 @@ export function JambAdminQuestionPanel({
                         onChange={(event) => { setSourceReference(event.target.value); setRightsConfirmed(false); }}
                         className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         placeholder="e.g. 2024:Q12"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Source PDF page</label>
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={sourcePage}
+                        onChange={(event) => setSourcePage(event.target.value)}
+                        className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        placeholder="e.g. 24"
                       />
                     </div>
                   </div>

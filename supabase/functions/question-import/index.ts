@@ -442,8 +442,8 @@ Deno.serve(async (request: Request) => {
         if (!SUBJECTS.has(subject) || !Number.isInteger(year) || year < 1970 || year > 2100) {
           return respond({ error: "A supported JAMB subject and year are required" }, 400);
         }
-        const { data: rows, error: rowsError } = await questionTable
-          .select("id,subject,year,category,question,options,difficulty,course,sort_order,image_url,image_urls,image_position,source_ref,source_document,source_page,source_question_number")
+        const { data: rows, error: rowsError, count: rowsResultCountRaw } = await questionTable
+          .select("id,subject,year,category,question,options,difficulty,course,sort_order,image_url,image_urls,image_position,source_ref,source_document,source_page,source_question_number", { count: "exact" })
           .eq("exam_program_id", "jamb")
           .eq("subject", subject)
           .eq("year", year)
@@ -454,6 +454,7 @@ Deno.serve(async (request: Request) => {
           .order("id", { ascending: true })
           .limit(500);
         if (rowsError) return respond({ error: rowsError.message }, 500);
+        const rowsResultCount = rowsResultCountRaw ?? rows?.length ?? 0;
 
         const questionIds = (rows ?? []).map((row) => row.id);
         if (questionIds.length === 0) return respond({ questions: [], total: 0, truncated: false });
@@ -497,7 +498,7 @@ Deno.serve(async (request: Request) => {
             rightsNote: audit?.rights_note ?? "",
           };
         });
-        return respond({ questions, total: questions.length, truncated: questions.length === 500 });
+        return respond({ questions, total: rowsResultCount ?? questions.length, truncated: (rowsResultCount ?? questions.length) > questions.length });
       }
 
       if (operation === "get") {
@@ -604,7 +605,13 @@ Deno.serve(async (request: Request) => {
         const imagePosition = asText(payload.image_position) || (imageUrls.length ? "image-only" : "text-only");
         const sourcePage = Number.isInteger(payload.source_page) && Number(payload.source_page) > 0
           ? Number(payload.source_page)
-          : null;
+          : operation === "update" && beforeQuestion?.source_page != null
+            ? beforeQuestion.source_page
+            : null;
+        if (payload.source_page !== undefined && payload.source_page !== null &&
+            (!Number.isInteger(payload.source_page) || Number(payload.source_page) < 1)) {
+          return respond({ error: "Source PDF page must be a positive whole number" }, 400);
+        }
 
         if (!SUBJECTS.has(subject)) return respond({ error: "Choose a supported JAMB subject" }, 400);
         if (!Number.isInteger(year) || year < 1970 || year > 2100) {
@@ -724,6 +731,7 @@ Deno.serve(async (request: Request) => {
         const { error: keySaveError } = await answerKeyTable.upsert(keyPayload, { onConflict: "question_id" });
         if (keySaveError) {
           if (operation === "create") {
+            await answerKeyTable.delete().eq("question_id", questionId);
             await questionTable.delete().eq("id", questionId).eq("exam_program_id", "jamb");
           } else if (beforeQuestion) {
             await questionTable.update(beforeQuestion).eq("id", questionId).eq("exam_program_id", "jamb");

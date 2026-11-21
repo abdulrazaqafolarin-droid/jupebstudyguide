@@ -148,13 +148,48 @@ export default function JambStatsPage() {
     };
   }), [publishedMetadata, subjectSummaries, savedAnswers, reviewProgress, getRevisionStats]);
 
-  const cbtHistoryForUser = cbtHistoryOwnerId === (user?.id ?? null) ? cbtHistory : [];
+  const cbtHistoryForUser = useMemo(
+    () => cbtHistoryOwnerId === (user?.id ?? null) ? cbtHistory : [],
+    [cbtHistoryOwnerId, cbtHistory, user?.id],
+  );
   const cbtHistorySupportedForUser = cbtHistoryOwnerId === (user?.id ?? null) ? cbtHistorySupported : null;
   const cbtHistoryLoadingForUser = loadingCbtHistory || Boolean(user?.id && cbtHistoryOwnerId !== user.id);
   const cbtAnalytics = useMemo(() => getJambCbtAnalytics(cbtHistoryForUser), [cbtHistoryForUser]);
-  const lastActivity = activity.lastActivityAt
-    ? new Date(activity.lastActivityAt).toLocaleString()
-    : "No JAMB practice recorded yet";
+  const weeklyCbtScores = useMemo(() => {
+    const today = new Date();
+    const currentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    currentWeek.setDate(currentWeek.getDate() - currentWeek.getDay());
+    const weeks: Array<{ week: string; averageScore: number | null; count: number }> = [];
+    for (let index = 11; index >= 0; index -= 1) {
+      const start = new Date(currentWeek);
+      start.setDate(currentWeek.getDate() - index * 7);
+      const week = start.getFullYear() + "-" +
+        String(start.getMonth() + 1).padStart(2, "0") + "-" +
+        String(start.getDate()).padStart(2, "0");
+      const scores = cbtHistoryForUser.flatMap((attempt) => {
+        const timestamp = attempt.submittedAt ?? attempt.startedAt;
+        const date = new Date(timestamp);
+        if (!Number.isFinite(date.getTime())) return [];
+        const attemptWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        attemptWeek.setDate(attemptWeek.getDate() - attemptWeek.getDay());
+        const attemptKey = attemptWeek.getFullYear() + "-" +
+          String(attemptWeek.getMonth() + 1).padStart(2, "0") + "-" +
+          String(attemptWeek.getDate()).padStart(2, "0");
+        return attemptKey === week && typeof attempt.score === "number" &&
+          Number.isFinite(attempt.score) && attempt.score >= 0 && attempt.score <= 100
+          ? [attempt.score]
+          : [];
+      });
+      weeks.push({
+        week,
+        averageScore: scores.length
+          ? Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10
+          : null,
+        count: scores.length,
+      });
+    }
+    return weeks;
+  }, [cbtHistoryForUser]);
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <motion.header
@@ -254,91 +289,57 @@ export default function JambStatsPage() {
               </span>
             )}
           </div>
-          <p className="text-[10px] text-muted-foreground">Last JAMB activity: {answersReady ? lastActivity : "Loading…"}</p>
         </motion.div>
 
-        {/* JAMB CBT replaces the JUPEB XP score chart; no JUPEB score feed is reused. */}
+        {/* Same score-card layout as JUPEB, using only this user's JAMB CBT results. */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="bg-card rounded-2xl border p-5 space-y-4"
         >
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-500" /> Timed CBT performance
+              <Trophy className="w-4 h-4 text-amber-500" />
+              Average CBT Score
             </h2>
-            <span className="text-xl font-bold text-amber-500 tabular-nums">
+            <span className="text-2xl font-bold text-amber-500 tabular-nums">
               {cbtHistoryLoadingForUser ? "—" : cbtAnalytics.averageScore === null ? "—" : cbtAnalytics.averageScore + "%"}
             </span>
           </div>
           {cbtHistoryLoadingForUser ? (
-            <p className="text-xs text-muted-foreground">Loading your completed JAMB attempts…</p>
+            <p className="text-xs text-muted-foreground text-center py-4">Loading your JAMB score history…</p>
           ) : cbtHistorySupportedForUser === false ? (
-            <p className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-xs leading-relaxed text-muted-foreground">
-              We could not load your JAMB CBT history. Check your connection or study-session access and reopen this page. No JUPEB scores are substituted.
+            <p className="text-xs text-muted-foreground text-center py-4">
+              Your JAMB CBT score history could not be loaded. Check your connection and reopen this page.
             </p>
-          ) : cbtHistoryForUser.length === 0 ? (
+          ) : cbtAnalytics.scoredAttemptCount > 0 ? (
+            <div className="h-40">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={weeklyCbtScores}>
+                  <defs>
+                    <linearGradient id="jambCbtScoreGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="week" tickFormatter={formatScoreDate} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <Tooltip
+                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
+                    labelFormatter={formatScoreDate}
+                    formatter={(value: number | null) => [value === null ? "No graded attempt" : value + "%", "Average score"]}
+                  />
+                  <Area type="monotone" dataKey="averageScore" stroke="hsl(var(--primary))" fill="url(#jambCbtScoreGradient)" strokeWidth={2} connectNulls />
+                  <Line type="monotone" dataKey="averageScore" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
             <p className="text-xs text-muted-foreground text-center py-4">
               Complete a JAMB timed practice session to start building your score history.
             </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { label: "Attempts", value: cbtAnalytics.attemptCount.toLocaleString() },
-                  { label: "Best score", value: cbtAnalytics.bestScore === null ? "—" : cbtAnalytics.bestScore + "%" },
-                  { label: "Ungraded", value: cbtAnalytics.ungradedAttemptCount.toLocaleString() },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-xl bg-secondary/50 p-3">
-                    <p className="text-lg font-bold tabular-nums">{item.value}</p>
-                    <p className="mt-1 text-[10px] text-muted-foreground">{item.label}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="h-40">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={cbtAnalytics.weekly}>
-                    <defs>
-                      <linearGradient id="jambCbtScoreGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="date" tickFormatter={formatScoreDate} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                    <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip
-                      contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
-                      labelFormatter={formatScoreDate}
-                      formatter={(value: number | null) => [value === null ? "Ungraded" : value + "%", "Average score"]}
-                    />
-                    <Area type="monotone" dataKey="averageScore" stroke="hsl(var(--primary))" fill="url(#jambCbtScoreGradient)" strokeWidth={2} connectNulls />
-                    <Line type="monotone" dataKey="averageScore" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold">Latest attempts</h3>
-                {cbtHistoryForUser.slice(0, 5).map((attempt) => (
-                  <div key={attempt.id} className="flex items-center justify-between gap-3 rounded-xl border p-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">
-                        {JAMB_SUBJECT_INFO[JAMB_SUBJECTS.includes(attempt.subject as (typeof JAMB_SUBJECTS)[number])
-                          ? attempt.subject as (typeof JAMB_SUBJECTS)[number]
-                          : "physics"].label} · {attempt.examYear}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {(attempt.submittedAt ?? attempt.startedAt) ? new Date(attempt.submittedAt ?? attempt.startedAt).toLocaleString() : "Date unavailable"}
-                        {" · "}{attempt.durationMinutes} min
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">{attempt.correct} correct · {attempt.wrong} wrong · {attempt.ungraded} ungraded</p>
-                    </div>
-                    <p className="shrink-0 text-lg font-bold tabular-nums">{attempt.score === null ? "—" : attempt.score + "%"}</p>
-                  </div>
-                ))}
-              </div>
-            </>
           )}
         </motion.div>
 

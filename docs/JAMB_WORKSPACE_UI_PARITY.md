@@ -170,3 +170,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 
 - **JAMB onboarding terminology:** the syllabus-verification notice now states directly that unreviewed JAMB content will not be used to mark answers correct, without referencing JUPEB in student-facing copy.
 
+- **JAMB Syllabus overview copy:** the introductory note now explains the available source packs, official IBASS links and JAMB-workspace progress without cross-referencing JUPEB or sounding like internal implementation notes.
+

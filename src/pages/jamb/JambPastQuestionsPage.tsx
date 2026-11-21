@@ -429,7 +429,7 @@ export default function JambPastQuestionsPage() {
       <header className="sticky top-0 z-10 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-2">
-          {showGlobalSearch ? (
+          {view === "subjects" && showGlobalSearch ? (
             <div className="flex items-center gap-2 w-full">
               <input
                 type="text"
@@ -448,32 +448,18 @@ export default function JambPastQuestionsPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-          ) : (
+          ) : view === "subjects" ? (
             <>
-              {view === "subjects" ? (
-                <Link
-                  to="/jamb"
-                  aria-label="Back to JAMB home"
-                  className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                  <span className="text-sm font-medium hidden sm:inline">Back</span>
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  aria-label="Go back"
-                  className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                  <span className="text-sm font-medium hidden sm:inline">Back</span>
-                </button>
-              )}
+              <Link
+                to="/jamb"
+                aria-label="Back to JAMB home"
+                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="text-sm font-medium hidden sm:inline">Back</span>
+              </Link>
               <div className="flex-1 text-center">
-                <h1 className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                  Study Past Questions
-                </h1>
+                <h1 className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Study Past Questions</h1>
                 <p className="text-[10px] text-muted-foreground/60 -mt-0.5">JAMB UTME Exam Prep</p>
               </div>
               <div className="flex items-center gap-1">
@@ -504,6 +490,54 @@ export default function JambPastQuestionsPage() {
                   </Link>
                 )}
               </div>
+            </>
+          ) : view === "years" ? (
+            <>
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <h1 className="flex-1 text-center text-sm font-bold truncate">{subjectInfo.label} · Select Year</h1>
+              <div className="flex-shrink-0 w-9" />
+            </>
+          ) : view === "questions" ? (
+            <>
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <h1 className="flex-1 text-center text-sm font-bold truncate">{subjectInfo.label} · {year ?? "All Years"}</h1>
+              {isAdmin ? (
+                <Link
+                  to="/admin/jamb-questions"
+                  className="flex-shrink-0 rounded-lg p-2 transition-all hover:bg-accent active:scale-95"
+                  aria-label="Admin: Manage questions"
+                  title="Admin: Manage questions"
+                >
+                  <Shield className="h-[18px] w-[18px] text-muted-foreground" />
+                </Link>
+              ) : <div className="flex-shrink-0 w-9" />}
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex-shrink-0 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors rounded-xl px-2 py-1.5 hover:bg-accent/50"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <h1 className="flex-1 text-center text-sm font-semibold truncate">Bookmarked Questions</h1>
+              <div className="flex-shrink-0 w-9" />
             </>
           )}
         </div>

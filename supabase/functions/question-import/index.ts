@@ -4,6 +4,7 @@ import type { Database, Json } from "../_shared/rutex-database.types.ts";
 import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 import { JAMB_IMPORT_PROTOCOL_VERSION, resolveJambImportItemRange } from "../_shared/jamb-import-range.ts";
 import { parseJambSourceReference } from "../_shared/jamb-source-reference.ts";
+import { extractJambSourceAnswerSuggestions } from "../_shared/jamb-import-answer-suggestions.ts";
 
 type AdminSupabase = SupabaseClient<Database>;
 
@@ -74,6 +75,7 @@ function normalizeItem(item: JsonObject, batch: {
     category: "objective",
     question,
     options,
+    ...extractJambSourceAnswerSuggestions(item),
     correct_answer: null,
     explanation: null,
     answer_key_verified: false,

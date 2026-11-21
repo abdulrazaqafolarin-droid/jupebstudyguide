@@ -78,8 +78,12 @@ function toEditState(payload: Record<string, unknown>): EditState {
       label: typeof option.label === "string" ? option.label : "",
       text: typeof option.text === "string" ? option.text : "",
     })),
-    correctAnswer: typeof payload.correct_answer === "string" ? payload.correct_answer : "",
-    explanation: typeof payload.explanation === "string" ? payload.explanation : "",
+    correctAnswer: typeof payload.correct_answer === "string"
+      ? payload.correct_answer
+      : typeof payload.source_answer_candidate === "string" ? payload.source_answer_candidate : "",
+    explanation: typeof payload.explanation === "string"
+      ? payload.explanation
+      : typeof payload.source_explanation_candidate === "string" ? payload.source_explanation_candidate : "",
     answerKeyVerified: false,
     imageUrls,
   };
@@ -622,8 +626,27 @@ export default function JambQuestionBankAdminPage() {
                   {edit.imageUrls.map((url) => <div key={url} className="break-all rounded-lg bg-muted p-2 text-[10px]">{url}</div>)}
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Correct answer (required)</span><select value={edit.correctAnswer} onChange={(event) => setEdit((previous) => previous ? { ...previous, correctAnswer: event.target.value, answerKeyVerified: false } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm"><option value="">No verified answer key</option>{edit.options.map((option) => <option key={option.label} value={option.label}>{option.label}</option>)}</select></label>
-                  <label className="block space-y-1.5 text-sm"><span className="font-medium">Explanation (required)</span><textarea value={edit.explanation} onChange={(event) => setEdit((previous) => previous ? { ...previous, explanation: event.target.value, answerKeyVerified: false } : previous)} rows={2} className="w-full rounded-xl border border-border bg-background p-3 text-sm" /></label>
+                  <label className="block space-y-1.5 text-sm">
+                    <span className="font-medium">Correct answer (required)</span>
+                    <select value={edit.correctAnswer} onChange={(event) => setEdit((previous) => previous ? { ...previous, correctAnswer: event.target.value, answerKeyVerified: false } : previous)} className="w-full rounded-xl border border-border bg-background p-3 text-sm">
+                      <option value="">Choose the independently verified option</option>
+                      {edit.options.map((option) => <option key={option.label} value={option.label}>{option.label}</option>)}
+                    </select>
+                    {typeof currentPayload?.source_answer_candidate === "string" && (
+                      <span className="block text-xs text-amber-700 dark:text-amber-400">
+                        Source suggestion: {String(currentPayload.source_answer_candidate)} · unverified; check it against a reliable answer source
+                      </span>
+                    )}
+                  </label>
+                  <label className="block space-y-1.5 text-sm">
+                    <span className="font-medium">Explanation (required)</span>
+                    <textarea value={edit.explanation} onChange={(event) => setEdit((previous) => previous ? { ...previous, explanation: event.target.value, answerKeyVerified: false } : previous)} rows={2} className="w-full rounded-xl border border-border bg-background p-3 text-sm" />
+                    {typeof currentPayload?.source_explanation_candidate === "string" && (
+                      <span className="block text-xs text-amber-700 dark:text-amber-400">
+                        This explanation came from the submitted source and has not been independently verified.
+                      </span>
+                    )}
+                  </label>
                 </div>
                 <label className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-xs leading-relaxed">
                   <input

@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { isProgrammeEntitlementActive } from "./trial-access.ts";
 
 interface ProfileAccess { is_admin: boolean | null }
 interface ProgrammeEntitlement {
@@ -36,13 +37,11 @@ export async function hasActiveStudyAccess(
   }
   const profile = profileResult.data as ProfileAccess;
   const entitlement = entitlementResult.data as ProgrammeEntitlement | null;
-  const now = Date.now();
-  const active = (value: string | null | undefined) => {
-    if (!value) return false;
-    const expiry = Date.parse(value);
-    return Number.isFinite(expiry) && expiry > now;
-  };
-  if (profile.is_admin || active(entitlement?.trial_expires_at) || active(entitlement?.subscription_expires_at)) {
+  if (isProgrammeEntitlementActive({
+    is_admin: profile.is_admin,
+    trial_expires_at: entitlement?.trial_expires_at,
+    subscription_expires_at: entitlement?.subscription_expires_at,
+  })) {
     return { allowed: true };
   }
   return { allowed: false, reason: `Your ${examProgramId.toUpperCase()} trial or subscription has ended. Activate this programme to continue.` };

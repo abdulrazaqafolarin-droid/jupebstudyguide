@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
-  ArrowRight, Bookmark, BookmarkCheck, BookOpen, Brain,
+  ArrowRight, Bookmark, BookmarkCheck, BookOpen, Bot, Brain,
   Clock3, Loader2, RefreshCw, Shuffle, Sparkles, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -323,7 +323,21 @@ export default function JambStudyPage() {
             {loadingQuestions && questions.length === 0 ? (
               <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>
             ) : question ? (
-              <StudyFlashcardSurface
+              <>
+                <div className="mb-4 flex justify-end">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="gap-2 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/30 hover:border-primary hover:bg-primary/20 transition-all"
+                  >
+                    <Link to={`/jamb/ai?subject=${question.subject}&questionId=${encodeURIComponent(question.id)}`}>
+                      <Bot className="h-4 w-4 text-primary" />
+                      <span>Ask AI Tutor</span>
+                      <Sparkles className="h-3 w-3 text-accent" />
+                    </Link>
+                  </Button>
+                </div>
+                <StudyFlashcardSurface
                 ariaLabel="JAMB revision question"
                 className="min-h-[520px]"
                 contentClassName="p-4 sm:p-6 space-y-4"
@@ -392,13 +406,13 @@ export default function JambStudyPage() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-                  <Link to={"/jamb/ai?subject=" + question.subject + "&questionId=" + encodeURIComponent(question.id)} className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
-                    <Sparkles className="h-3.5 w-3.5" /> Ask JAMB AI tutor
-                  </Link>
-                  {feedback?.gradable && <Button size="sm" variant="outline" onClick={nextCard}>Next card <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
-                </div>
+                {feedback?.gradable && (
+                  <div className="flex justify-end border-t border-border pt-3">
+                    <Button size="sm" variant="outline" onClick={nextCard}>Next card <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>
+                  </div>
+                )}
               </StudyFlashcardSurface>
+              </>
             ) : loadingQuestions ? (
               <div className="flex justify-center py-12"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>
             ) : (

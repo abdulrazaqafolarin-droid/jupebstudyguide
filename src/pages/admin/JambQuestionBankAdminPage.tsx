@@ -212,7 +212,7 @@ export default function JambQuestionBankAdminPage() {
       } catch {
         throw new Error("The JAMB source importer update is not deployed yet. No source file was uploaded. Retry after the admin importer service has been updated.");
       }
-      if (!supportsResumableJambImport(capabilities)) {
+      if (!supportsResumableJambImport(capabilities, parsed.subject)) {
         throw new Error("The deployed JAMB importer does not support safe resumable uploads yet. No source file was uploaded.");
       }
 

@@ -127,10 +127,28 @@ def parse_english_source(source_path: Path) -> tuple[dict[str, Any], dict[str, A
                 "year": year,
                 "declared_question_count": declared_count,
                 "parsed_question_count": 0,
+                "duplicate_question_numbers": [],
+                "missing_question_numbers": list(range(1, declared_count + 1)) if declared_count else [],
+                "question_numbers_outside_declared_count": [],
                 "issues": ["no_numbered_questions_found"],
             })
             issue_counts["no_numbered_questions_found"] += 1
             continue
+
+        # Preserve the source numbering exactly and audit the sequence separately
+        # from the number of blocks parsed. A matching count can still hide a gap
+        # and a duplicate (for example, two Q17 blocks and no Q18).
+        source_question_numbers = [int(match.group(1)) for match in source_q_starts]
+        source_number_counts = Counter(source_question_numbers)
+        duplicate_question_numbers = sorted(number for number, count in source_number_counts.items() if count > 1)
+        missing_question_numbers = (
+            sorted(set(range(1, declared_count + 1)) - set(source_question_numbers))
+            if declared_count is not None else []
+        )
+        question_numbers_outside_declared_count = (
+            sorted(set(number for number in source_question_numbers if number > declared_count))
+            if declared_count is not None else []
+        )
 
         prefix = section_text[:source_q_starts[0].start()]
         _, initial_passages = _extract_passage_blocks(prefix)
@@ -151,6 +169,11 @@ def parse_english_source(source_path: Path) -> tuple[dict[str, Any], dict[str, A
                 pending_passage = ""
 
             original_number = int(question_match.group(1))
+            # A duplicate or out-of-range source number is not silently accepted.
+            if original_number in duplicate_question_numbers:
+                option_errors_for_number = True
+            else:
+                option_errors_for_number = False
             # Strip only the leading source number; question text and passage wording remain intact.
             question_body = re.sub(r"^\s*\d{1,3}\.\s*", "", block_without_passages, count=1).strip()
 
@@ -198,6 +221,10 @@ def parse_english_source(source_path: Path) -> tuple[dict[str, Any], dict[str, A
                 option_errors.append("passage_context_missing_or_not_separately_extractable")
 
             errors = list(option_errors)
+            if option_errors_for_number:
+                errors.append("duplicate_source_question_number_in_year")
+            if declared_count is not None and original_number > declared_count:
+                errors.append("source_question_number_exceeds_declared_count")
             if len(question.strip()) < 8:
                 errors.append("question_text_missing_or_too_short")
             if not answer:
@@ -266,10 +293,22 @@ def parse_english_source(source_path: Path) -> tuple[dict[str, Any], dict[str, A
         if declared_count is not None and parsed_count != declared_count:
             section_issues.append("declared_question_count_mismatch")
             issue_counts["declared_question_count_mismatch"] += 1
+        if duplicate_question_numbers:
+            section_issues.append("duplicate_source_question_numbers")
+            issue_counts["duplicate_source_question_numbers"] += len(duplicate_question_numbers)
+        if missing_question_numbers:
+            section_issues.append("missing_source_question_numbers")
+            issue_counts["missing_source_question_numbers"] += len(missing_question_numbers)
+        if question_numbers_outside_declared_count:
+            section_issues.append("question_numbers_outside_declared_count")
+            issue_counts["question_numbers_outside_declared_count"] += len(question_numbers_outside_declared_count)
         year_reports.append({
             "year": year,
             "declared_question_count": declared_count,
             "parsed_question_count": parsed_count,
+            "duplicate_question_numbers": duplicate_question_numbers,
+            "missing_question_numbers": missing_question_numbers,
+            "question_numbers_outside_declared_count": question_numbers_outside_declared_count,
             "issue_counts": dict(year_issues),
             "issues": section_issues,
         })
@@ -297,6 +336,16 @@ def parse_english_source(source_path: Path) -> tuple[dict[str, Any], dict[str, A
         "validation_issue_counts": dict(issue_counts),
         "source_answer_count": sum(bool(item["correct_answer"]) for item in items),
         "source_explanation_count": sum(bool(item["explanation"]) for item in items),
+        "source_answer_explanation_pair_count": sum(bool(item["correct_answer"] and item["explanation"]) for item in items),
+        "source_answer_option_mismatch_count": sum("source_answer_does_not_match_parsed_option" in item["validation_errors"] for item in items),
+        "valid_option_set_count": sum(
+            len(item["options"]) in (4, 5)
+            and [option["label"] for option in item["options"]] == (["A", "B", "C", "D"] if len(item["options"]) == 4 else ["A", "B", "C", "D", "E"])
+            and all(option["text"].strip() for option in item["options"])
+            for item in items
+        ),
+        "missing_passage_context_count": sum("passage_context_missing_or_not_separately_extractable" in item["validation_errors"] for item in items),
+        "year_sections_with_numbering_issues": sum(bool(year["issues"]) for year in year_reports),
         "publishable_without_human_review": 0,
     }
     return package, report

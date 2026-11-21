@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Award, Bookmark, BookOpen, Flame, LockKeyhole, Star, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
@@ -28,12 +29,17 @@ export default function JambAchievementsPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-4xl items-center gap-3 px-4">
-          <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
-            <ArrowLeft className="h-5 w-5" />
+        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3">
+          <Link to="/jamb" aria-label="Back to JAMB home">
+            <Button variant="ghost" size="icon" className="shrink-0">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
           </Link>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-sm font-semibold">Achievements</h1>
+          <div className="flex-1">
+            <h1 className="flex items-center gap-2 text-lg font-bold">
+              <Trophy className="h-5 w-5 text-primary" />
+              Achievements
+            </h1>
           </div>
         </div>
       </header>

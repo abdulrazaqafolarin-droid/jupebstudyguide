@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, BookOpen, BookOpenCheck, ChevronDown, ExternalLink,
-  Search, ShieldAlert, Sparkles, CircleCheck, CircleDashed,
+  GraduationCap, Search, ShieldAlert, Sparkles, CircleCheck, CircleDashed,
   PlayCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -89,7 +89,10 @@ export default function JambSyllabusPage() {
           <Link to="/jamb" aria-label="Back to JAMB home" className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+              <GraduationCap className="h-5 w-5 text-primary" />
+            </div>
             <h1 className="text-sm font-semibold">Syllabus</h1>
           </div>
         </div>

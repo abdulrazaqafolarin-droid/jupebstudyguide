@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Award, BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Flame, Brain, Trophy } from "lucide-react";
+import { ArrowLeft, BarChart3, BookOpen, Bookmark, CalendarDays, Clock3, Flame, Brain, Trophy } from "lucide-react";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -123,9 +123,6 @@ export default function JambStatsPage() {
           <div className="min-w-0 flex-1">
             <h1 className="text-sm font-semibold">Study Stats</h1>
           </div>
-          <Link to="/jamb/achievements" className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
-            <Award className="h-4 w-4" /> Achievements
-          </Link>
         </div>
       </header>
 

@@ -86,11 +86,24 @@ export function JambFloatingAITutor() {
           <motion.button
             type="button" aria-label="Open AI tutor" title="Open AI tutor"
             onClick={() => setIsOpen(true)}
+            drag
+            dragMomentum={false}
+            dragElastic={0}
+            dragConstraints={{
+              left: typeof window !== "undefined" ? -(window.innerWidth - 72) : -1000,
+              right: 0,
+              top: typeof window !== "undefined" ? -(window.innerHeight - 140) : -700,
+              bottom: 0,
+            }}
             initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.85, opacity: 0 }} whileTap={{ scale: 0.94 }}
-            className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-lg shadow-primary/30 transition-shadow hover:shadow-xl hover:shadow-primary/40"
+            exit={{ scale: 0.85, opacity: 0 }} whileTap={{ scale: 0.94 }} whileDrag={{ scale: 1.04 }}
+            className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-50 flex h-14 w-14 cursor-grab items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-lg shadow-primary/30 transition-shadow hover:shadow-xl hover:shadow-primary/40 active:cursor-grabbing"
           >
-            <span className="absolute inset-0 rounded-full animate-ping bg-primary/20" />
+            <motion.span
+              className="absolute inset-0 rounded-full"
+              animate={{ boxShadow: ["0 0 0 0 hsla(38, 92%, 50%, 0.3)", "0 0 0 16px hsla(38, 92%, 50%, 0)"] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut" }}
+            />
             <MessageCircle className="relative z-10 h-6 w-6" />
             <span className="absolute -right-0.5 -top-0.5 z-10 h-3.5 w-3.5 rounded-full border-2 border-background bg-green-500" />
           </motion.button>

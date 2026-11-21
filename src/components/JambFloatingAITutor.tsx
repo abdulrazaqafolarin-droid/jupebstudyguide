@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AnimatePresence, animate, motion, useMotionValue, useMotionValueEvent,
@@ -394,9 +394,10 @@ export function JambFloatingAITutor() {
               isMinimized ? "h-auto" : "h-[540px] max-h-[calc(100vh-6rem)]",
             ].join(" ")}
           >
-            <div
-              className={[
-                "flex shrink-0 items-center justify-between gap-2 border-b border-white/5 p-3",
+            <StaggerContent delay={0.12} reduced={shouldReduceMotion} className="shrink-0">
+              <div
+                className={[
+                  "flex shrink-0 items-center justify-between gap-2 border-b border-white/5 p-3",
                 "bg-gradient-to-r from-primary/[0.08] via-accent/[0.06] to-transparent",
                 isMinimized ? "cursor-pointer" : "",
               ].join(" ")}
@@ -482,7 +483,8 @@ export function JambFloatingAITutor() {
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-            </div>
+              </div>
+            </StaggerContent>
 
             {!isMinimized && (
               <div className="flex min-h-0 flex-1 flex-col">
@@ -524,17 +526,19 @@ export function JambFloatingAITutor() {
                         compact
                       />
                     </main>
-                    <Composer
-                      value={input}
-                      onChange={setInput}
-                      onSend={(attachment) => { void send(attachment); }}
-                      onStop={stop}
-                      isStreaming={isStreaming}
-                      placeholder="Ask me anything…"
-                      editing={editingIndex !== null}
-                      onCancelEdit={() => { setEditingIndex(null); setInput(""); }}
-                      compact
-                    />
+                    <StaggerContent delay={0.25} reduced={shouldReduceMotion} className="shrink-0">
+                      <Composer
+                        value={input}
+                        onChange={setInput}
+                        onSend={(attachment) => { void send(attachment); }}
+                        onStop={stop}
+                        isStreaming={isStreaming}
+                        placeholder="Ask me anything…"
+                        editing={editingIndex !== null}
+                        onCancelEdit={() => { setEditingIndex(null); setInput(""); }}
+                        compact
+                      />
+                    </StaggerContent>
                   </>
                 )}
               </div>
@@ -543,5 +547,28 @@ export function JambFloatingAITutor() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+function StaggerContent({
+  children,
+  delay = 0,
+  reduced = false,
+  className,
+}: {
+  children: ReactNode;
+  delay?: number;
+  reduced?: boolean;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      initial={reduced ? false : { opacity: 0, filter: "blur(4px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
+      transition={{ duration: reduced ? 0 : 0.35, delay: reduced ? 0 : delay, ease: [0.23, 1, 0.32, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   );
 }

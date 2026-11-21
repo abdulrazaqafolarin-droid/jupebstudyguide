@@ -146,3 +146,9 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 - **Active Revision Cards header:** after a subject is selected, JAMB now switches from the generic secondary-page header to the same sticky study-session header pattern as JUPEB: Back, subject pill, programme-specific streak and current question position. The streak is computed from JAMB saved answers only.
 - **Revision flow order:** the Learn All / Review Due / Shuffle controls now appear before the three study metric cards, matching the JUPEB study-view sequence. The content width and top spacing match the JUPEB study screen.
 
+## Shared account and mission polish — 21 November 2026
+
+- **Security Settings:** the TOTP authenticator issuer follows the active exam workspace, so accounts enrolling from JAMB see “JAMB Study Guide” rather than the JUPEB issuer label. The same MFA enrollment and verification implementation remains shared.
+- **Daily Mission:** the active JAMB mission header/progress/questions/actions are constrained to the same 3xl reading width as the JUPEB mission experience. The JAMB mission hub and history retain their wider layout.
+- **Navigation/account review:** the same BottomNav and HamburgerMenu components serve both programmes. JAMB menu links map to their JAMB routes, shared Chat/Profile/Settings/Friends/Discover pages derive programme context, and Discover avoids importing JUPEB score rankings into JAMB.
+

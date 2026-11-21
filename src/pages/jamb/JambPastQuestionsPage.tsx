@@ -41,7 +41,7 @@ const SUBJECT_GRID_VARIANTS = {
 };
 const SUBJECT_CARD_VARIANTS = {
   hidden: { opacity: 0, y: 24, scale: 0.95 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] } },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] as const } },
 };
 const SUBJECT_CARD_COLORS: Record<JambSubject, { gradient: string; light: string; accent: string }> = {
   physics: { gradient: "from-blue-600/40 to-cyan-400/40", light: "bg-blue-500/10", accent: "border-blue-500/30" },

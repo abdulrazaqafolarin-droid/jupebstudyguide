@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
-import { cn } from '@/lib/utils';
+import { QuestionOptionButton } from '@/components/QuestionOptionButton';
 import { ProgressRing } from './ProgressRing';
 import { Check, X, Clock, RotateCcw, ArrowRight, Timer, AlertTriangle, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
@@ -381,35 +381,21 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
             const isCorrectOption = hasRealAnswer(currentQuestion) && option.label === currentQuestion.correctAnswer;
 
             return (
-              <button
+              <QuestionOptionButton
                 key={option.label}
-                onClick={() => handleOptionClick(option.label)}
+                label={option.label}
+                state={
+                  showResult && isCorrectOption ? "correct"
+                    : showResult && isSelected ? "incorrect"
+                      : showResult ? "muted"
+                        : "default"
+                }
+                selected={isSelected}
                 disabled={selectedOption !== null}
-                className={cn(
-                  'w-full p-4 rounded-xl text-left transition-all duration-300 border-2',
-                  'flex items-start gap-3',
-                  !showResult && 'hover:border-primary hover:bg-primary/5',
-                  !showResult && 'border-border bg-secondary/30',
-                  showResult && isCorrectOption && 'border-accent bg-accent/10',
-                  showResult && isSelected && !isCorrectOption && 'border-destructive bg-destructive/10',
-                  showResult && !isSelected && !isCorrectOption && 'border-border opacity-50'
-                )}
+                onClick={() => handleOptionClick(option.label)}
               >
-                <span className={cn(
-                  'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-mono font-semibold',
-                  !showResult && 'bg-secondary text-foreground',
-                  showResult && isCorrectOption && 'bg-accent text-accent-foreground',
-                  showResult && isSelected && !isCorrectOption && 'bg-destructive text-destructive-foreground',
-                  showResult && !isSelected && !isCorrectOption && 'bg-secondary text-muted-foreground'
-                )}>
-                  {showResult && isCorrectOption ? <Check className="w-4 h-4" /> : 
-                   showResult && isSelected && !isCorrectOption ? <X className="w-4 h-4" /> :
-                   option.label}
-                </span>
-                <span className="font-mono text-sm leading-relaxed pt-1 flex-1 min-w-0">
-                  <QuestionMath content={option.text} inline />
-                </span>
-              </button>
+                <QuestionMath content={option.text} inline />
+              </QuestionOptionButton>
             );
           })}
         </div>

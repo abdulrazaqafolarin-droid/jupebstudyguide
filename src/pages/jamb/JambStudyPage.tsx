@@ -3,11 +3,12 @@ import { Link, useSearchParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
   ArrowRight, Bookmark, BookmarkCheck, BookOpen, Brain,
-  Check, Clock3, Loader2, RefreshCw, Shuffle, Sparkles, Target, X,
+  Clock3, Loader2, RefreshCw, Shuffle, Sparkles, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionMath } from "@/components/QuestionMath";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -343,18 +344,16 @@ export default function JambStudyPage() {
                     const isCorrect = feedback?.gradable && feedback.correctOption === option.label;
                     const isWrongSelection = feedback?.gradable && isSelected && !feedback.isCorrect;
                     return (
-                      <button key={option.label} type="button" onClick={() => !feedback && setSelectedOption(option.label)} disabled={Boolean(feedback) || checking} aria-pressed={isSelected} className={[
-                        "flex w-full items-start gap-3 rounded-xl border p-3 text-left text-sm transition-colors",
-                        isCorrect ? "border-emerald-500/50 bg-emerald-500/10" :
-                        isWrongSelection ? "border-destructive/50 bg-destructive/10" :
-                        isSelected ? "border-primary bg-primary/10" :
-                        "border-border bg-background hover:border-primary/40 hover:bg-accent/20",
-                      ].join(" ")}>
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 text-xs font-semibold">{option.label}</span>
-                        <QuestionMath content={option.text} inline className="min-w-0" />
-                        {isCorrect && <Check className="ml-auto h-4 w-4 shrink-0 text-emerald-600" />}
-                        {isWrongSelection && <X className="ml-auto h-4 w-4 shrink-0 text-destructive" />}
-                      </button>
+                      <QuestionOptionButton
+                        key={option.label}
+                        label={option.label}
+                        state={isCorrect ? "correct" : isWrongSelection ? "incorrect" : isSelected ? "selected" : "default"}
+                        selected={isSelected}
+                        disabled={Boolean(feedback) || checking}
+                        onClick={() => !feedback && setSelectedOption(option.label)}
+                      >
+                        <QuestionMath content={option.text} inline />
+                      </QuestionOptionButton>
                     );
                   })}
                 </div>

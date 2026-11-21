@@ -21,6 +21,7 @@ import {
 import { SubjectCardGrid } from "@/components/study-past-questions/SubjectCardGrid";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionMath } from "@/components/QuestionMath";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { QuestionImage } from "@/components/QuestionImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -378,44 +379,16 @@ export default function JambPastQuestionsPage() {
             const isApproved = feedback?.gradable === true && feedback.correctOption === option.label;
             const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
             return (
-              <button
+              <QuestionOptionButton
                 key={option.label}
-                type="button"
+                label={option.label}
+                state={isApproved ? "correct" : isWrongSelection ? "incorrect" : isSelected ? "selected" : "default"}
+                selected={isSelected}
                 onClick={() => void saveAnswer(question.id, option.label)}
-                aria-pressed={isSelected}
-                className={[
-                  "flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-all active:scale-[0.97]",
-                  isApproved
-                    ? "border-green-500/50 bg-green-50/50 font-medium text-green-700 dark:bg-green-950/20 dark:text-green-300"
-                    : isWrongSelection
-                      ? "border-red-500/50 bg-red-50/50 font-medium text-red-700 dark:bg-red-950/20 dark:text-red-300"
-                      : isSelected
-                        ? "border-primary/50 bg-primary/5 font-medium text-primary"
-                        : "border-border bg-card hover:bg-accent/50",
-                ].join(" ")}
+                contentClassName="break-words text-pretty"
               >
-                <span className={[
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold",
-                  isApproved
-                    ? "bg-green-600 text-white"
-                    : isWrongSelection
-                      ? "bg-red-600 text-white"
-                      : isSelected
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground",
-                ].join(" ")}>
-                  {option.label}
-                </span>
-                <span className="min-w-0 flex-1 break-words text-pretty">
-                  <QuestionMath content={option.text} inline />
-                </span>
-                {feedback?.gradable === true && isApproved && (
-                  <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>
-                )}
-                {feedback?.gradable === true && isWrongSelection && (
-                  <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>
-                )}
-              </button>
+                <QuestionMath content={option.text} inline />
+              </QuestionOptionButton>
             );
           })}
         </div>

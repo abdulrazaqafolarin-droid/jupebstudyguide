@@ -4,6 +4,7 @@ import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, Loade
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionMath } from "@/components/QuestionMath";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { QuestionImage } from "@/components/QuestionImage";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
@@ -382,10 +383,16 @@ export default function JambCbtPage() {
           {question.question_snapshot.imageUrls?.map((imageUrl) => <QuestionImage key={imageUrl} imageUrl={imageUrl} alt="JAMB question illustration" />)}
           <div className="mt-6 space-y-3">
             {question.question_snapshot.options.map((option) => (
-              <button key={option.label} disabled={submitting} onClick={() => void saveAnswer(question.sequence, option.label)} aria-pressed={selectedOption === option.label}
-                className={`flex w-full items-start gap-3 rounded-xl border-2 p-4 text-left text-sm transition-all duration-200 ${selectedOption === option.label ? "border-primary bg-primary/10" : "border-border bg-secondary/30 hover:border-primary/60 hover:bg-primary/5"}`}>
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-mono font-semibold ${selectedOption === option.label ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"}`}>{option.label}</span><span className="min-w-0 flex-1 pt-1 font-mono text-sm leading-relaxed"><QuestionMath content={option.text} inline /></span>
-              </button>
+              <QuestionOptionButton
+                key={option.label}
+                label={option.label}
+                state={selectedOption === option.label ? "selected" : "default"}
+                selected={selectedOption === option.label}
+                disabled={submitting}
+                onClick={() => void saveAnswer(question.sequence, option.label)}
+              >
+                <QuestionMath content={option.text} inline />
+              </QuestionOptionButton>
             ))}
           </div>
           <button disabled={submitting} onClick={() => void saveAnswer(question.sequence, selectedOption || null, !flagged)} className={`mt-5 inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium transition-colors ${flagged ? "border-amber-500/30 bg-amber-500/10 text-amber-700" : "border-border bg-secondary/50 text-muted-foreground hover:bg-secondary"}`}><Flag className="h-4 w-4" />{flagged ? "Marked for review" : "Mark for review"}</button>

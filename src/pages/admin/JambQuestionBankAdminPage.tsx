@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
+import type { JambQuestion } from "@/lib/jamb-question-service";
 import { AlertTriangle, ArrowLeft, ArrowRight, Check, CloudUpload, FileCheck2, ImagePlus, Loader2, RefreshCw, ShieldCheck, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
+import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS, JAMB_TARGET_EXAM_YEAR, type JambSubject } from "@/lib/jamb-config";
 import { supportsResumableJambImport } from "@/lib/jamb-import-client";
 import { getQuestionEmbeddingQueueStatus, processPendingQuestionEmbeddings, type QuestionEmbeddingQueueStatus } from "@/lib/question-rag-indexer";
 import type { Subject } from "@/types/question";
@@ -84,6 +86,10 @@ function toEditState(payload: Record<string, unknown>): EditState {
 
 export default function JambQuestionBankAdminPage() {
   const { user } = useAuth();
+  const [activeAdminView, setActiveAdminView] = useState<"manager" | "source-review">("manager");
+  const [managerSubject, setManagerSubject] = useState<JambSubject>("physics");
+  const [managerYear, setManagerYear] = useState(JAMB_TARGET_EXAM_YEAR);
+  const [managerPanelOpen, setManagerPanelOpen] = useState(false);
   const [jsonFile, setJsonFile] = useState<File | null>(null);
   const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
@@ -394,6 +400,89 @@ export default function JambQuestionBankAdminPage() {
   return (
     <main className="min-h-screen bg-background px-4 pb-24 pt-5">
       <div className="mx-auto max-w-5xl space-y-6">
+        <div className="flex flex-wrap gap-2 border-b border-border pb-3" role="tablist" aria-label="JAMB administration tools">
+          <Button
+            type="button"
+            variant={activeAdminView === "manager" ? "default" : "outline"}
+            size="sm"
+            role="tab"
+            aria-selected={activeAdminView === "manager"}
+            onClick={() => { setManagerPanelOpen(false); setActiveAdminView("manager"); }}
+          >
+            Published Question Manager
+          </Button>
+          <Button
+            type="button"
+            variant={activeAdminView === "source-review" ? "default" : "outline"}
+            size="sm"
+            role="tab"
+            aria-selected={activeAdminView === "source-review"}
+            onClick={() => { setManagerPanelOpen(false); setActiveAdminView("source-review"); }}
+          >
+            Source Import & Review
+          </Button>
+        </div>
+
+        {activeAdminView === "manager" ? (
+          <section className="rounded-2xl border border-border bg-card p-5 space-y-5">
+            <header className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Rutex Master · JAMB</p>
+                <h1 className="text-2xl font-bold">Published Question Manager</h1>
+                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                  Add, edit, reorder and preview JAMB questions using the same question-manager workflow as JUPEB. Approved answers and explanations are handled through the protected JAMB answer-key service.
+                </p>
+              </div>
+              <span className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">Admin only</span>
+            </header>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block space-y-1.5 text-sm">
+                <span className="font-medium">Subject</span>
+                <select
+                  value={managerSubject}
+                  onChange={(event) => setManagerSubject(event.target.value as JambSubject)}
+                  className="w-full rounded-xl border border-border bg-background p-3 text-sm"
+                >
+                  {JAMB_SUBJECTS.map((item) => (
+                    <option key={item} value={item}>{JAMB_SUBJECT_INFO[item].label}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block space-y-1.5 text-sm">
+                <span className="font-medium">Exam year</span>
+                <input
+                  type="number"
+                  min={1970}
+                  max={2100}
+                  step={1}
+                  value={managerYear}
+                  onChange={(event) => setManagerYear(Number(event.target.value))}
+                  className="w-full rounded-xl border border-border bg-background p-3 text-sm"
+                />
+              </label>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                onClick={() => setManagerPanelOpen(true)}
+                disabled={!Number.isInteger(managerYear) || managerYear < 1970 || managerYear > 2100}
+              >
+                Open Question Manager
+              </Button>
+              <Link
+                to={"/jamb/past-questions?subject=" + encodeURIComponent(managerSubject) + "&year=" + managerYear}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Open student view
+              </Link>
+            </div>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              The manager loads the selected subject and year, including its protected answer keys. Source intake, permission checks and staged human review remain in the separate Source Import & Review tab.
+            </p>
+          </section>
+        ) : (
+          <>
         <header className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Rutex Master · JAMB</p>
@@ -540,7 +629,22 @@ export default function JambQuestionBankAdminPage() {
             )}
           </section>
         )}
+          </>
+        )}
       </div>
+
+      <JambAdminQuestionPanel
+        question={null}
+        questions={[]}
+        subject={managerSubject}
+        year={managerYear}
+        category="objective"
+        onQuestionUpdated={(_question: JambQuestion) => {}}
+        onQuestionDeleted={(_id: string) => {}}
+        onQuestionAdded={(_question: JambQuestion) => {}}
+        isOpen={managerPanelOpen}
+        onClose={() => setManagerPanelOpen(false)}
+      />
     </main>
   );
 }

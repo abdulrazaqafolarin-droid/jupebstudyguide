@@ -17,7 +17,7 @@ import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
 import { supabase } from "@/integrations/supabase/client";
-import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
+import { JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
 import {
   getJambSubjectSummaries,
   searchJambQuestions,
@@ -27,7 +27,7 @@ import {
 } from "@/lib/jamb-question-service";
 import type { JambReviewQuality } from "@/lib/jamb-review";
 
-type JambSubject = (typeof JAMB_SUBJECTS)[number];
+type JambSubject = (typeof JAMB_QUESTION_BANK_SUBJECTS)[number];
 type StudyMode = "learn" | "review";
 type AnswerFeedback = {
   gradable: boolean;
@@ -46,7 +46,7 @@ const RATINGS: Array<{ value: JambReviewQuality; label: string; detail: string; 
 ];
 
 function isJambSubject(value: string | null): value is JambSubject {
-  return Boolean(value && JAMB_SUBJECTS.includes(value as JambSubject));
+  return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as JambSubject));
 }
 
 export default function JambStudyPage() {
@@ -302,7 +302,7 @@ export default function JambStudyPage() {
             <section className="space-y-3">
               <h2 className="font-semibold">Choose a subject</h2>
               <div className="grid grid-cols-2 gap-3">
-                {JAMB_SUBJECTS.map((subject) => {
+                {JAMB_QUESTION_BANK_SUBJECTS.map((subject) => {
                   const info = JAMB_SUBJECT_INFO[subject];
                   const summary = summaries.find((row) => row.subject === subject);
                   return (

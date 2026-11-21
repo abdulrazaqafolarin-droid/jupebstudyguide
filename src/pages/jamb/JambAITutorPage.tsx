@@ -9,14 +9,14 @@ import { ThreadView } from "@/components/study-chat/ThreadView";
 import { Composer } from "@/components/study-chat/Composer";
 import { StudyChatShell } from "@/components/study-chat/StudyChatShell";
 import { getJambPublishedQuestionById } from "@/lib/jamb-question-service";
-import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
+import { JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
 import { getJambSyllabusSubject, getJambSyllabusTopic, JAMB_SYLLABUS_REVIEW_NOTICE } from "@/lib/jamb-syllabus";
 import { findLatestSubjectChat, findLatestTopicChat, type StudyChatMeta } from "@/lib/study-chat";
 import { JAMB_TUTOR_PROMPT, JAMB_TUTOR_STARTERS } from "@/lib/jamb-prompts";
 import { toast } from "sonner";
 
-function isJambSubject(value: string | null): value is (typeof JAMB_SUBJECTS)[number] {
-  return Boolean(value && JAMB_SUBJECTS.includes(value as (typeof JAMB_SUBJECTS)[number]));
+function isJambSubject(value: string | null): value is (typeof JAMB_QUESTION_BANK_SUBJECTS)[number] {
+  return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as (typeof JAMB_QUESTION_BANK_SUBJECTS)[number]));
 }
 
 export default function JambAITutorPage() {

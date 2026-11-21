@@ -8,7 +8,7 @@ export default function JambLeaderboardPage() {
     <div className="min-h-screen bg-background">
       <WorkspacePageHeader title="Leaderboard" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} iconClassName="text-accent" />
 
-      <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         <motion.section
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

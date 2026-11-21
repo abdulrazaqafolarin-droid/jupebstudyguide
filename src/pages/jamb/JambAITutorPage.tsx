@@ -38,7 +38,7 @@ export default function JambAITutorPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [input, setInput] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [showTextbooks, setShowTextbooks] = useState(false);
+  const [showTextbooks, setShowTextbooks] = useState(searchParams.get("textbooks") === "1");
   const openedTargetChatKeyRef = useRef<string | null>(null);
 
   const extraSystemContext = useCallback((chat: StudyChatMeta | null) => {

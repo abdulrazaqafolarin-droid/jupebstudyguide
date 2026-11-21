@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
         { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
-    const blocked = await guardAiAccess(supabase, user, programme);
+    const blocked = await guardAiAccess(supabase, user, programme, token);
     if (blocked) return blocked;
     const userId = user.id;
 

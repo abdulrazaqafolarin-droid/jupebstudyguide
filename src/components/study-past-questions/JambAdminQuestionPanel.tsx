@@ -86,6 +86,7 @@ export function JambAdminQuestionPanel({
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
   const loadQuestionRequestRef = useRef(0);
+  const answerKeyEditRevisionRef = useRef(0);
 
   const isObjective = category === "objective";
 
@@ -131,6 +132,7 @@ export function JambAdminQuestionPanel({
 
   const loadQuestion = useCallback(async (q: JambQuestion) => {
     const requestId = ++loadQuestionRequestRef.current;
+    const answerRevisionAtLoad = answerKeyEditRevisionRef.current;
     objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     objectUrlsRef.current = [];
     pendingFilesRef.current = [];
@@ -165,8 +167,11 @@ export function JambAdminQuestionPanel({
       if (data?.error) throw new Error(String(data.error));
       const detail = data?.question;
       if (detail && requestId === loadQuestionRequestRef.current) {
-        setCorrectAnswer(String(detail.correctAnswer || ""));
-        setExplanation(String(detail.explanation || ""));
+        if (answerKeyEditRevisionRef.current === answerRevisionAtLoad) {
+          setCorrectAnswer(String(detail.correctAnswer || ""));
+          setExplanation(String(detail.explanation || ""));
+          setAnswerKeyVerified(detail.answerKeyVerified === true);
+        }
         setSourceReference(String(detail.sourceReference || ""));
         setSourceDocument(String(detail.sourceDocument || ""));
         setSourcePage(detail.sourcePage == null ? "" : String(detail.sourcePage));
@@ -174,7 +179,6 @@ export function JambAdminQuestionPanel({
         setTopic(String(detail.topic || q.topic || ""));
         setRightsNote(String(detail.rightsNote || ""));
         setRightsConfirmed(Boolean(detail.rightsNote));
-        setAnswerKeyVerified(detail.answerKeyVerified === true);
       }
     } catch (loadError) {
       if (requestId === loadQuestionRequestRef.current) {
@@ -184,6 +188,8 @@ export function JambAdminQuestionPanel({
   }, []);
 
   const resetForm = useCallback(() => {
+    loadQuestionRequestRef.current += 1;
+    answerKeyEditRevisionRef.current += 1;
     objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     objectUrlsRef.current = [];
     pendingFilesRef.current = [];
@@ -214,14 +220,6 @@ export function JambAdminQuestionPanel({
     setError(null);
   }, []);
 
-  useEffect(() => {
-    if (mode === "edit" && question) {
-      loadQuestion(question);
-    } else if (mode === "add") {
-      resetForm();
-    }
-  }, [mode, question, loadQuestion, resetForm]);
-
   const handleEdit = () => {
     if (!question) return;
     setMode("edit");
@@ -229,8 +227,8 @@ export function JambAdminQuestionPanel({
   };
 
   const handleAdd = () => {
-    setMode("add");
     resetForm();
+    setMode("add");
   };
 
   useEffect(() => {
@@ -291,6 +289,7 @@ export function JambAdminQuestionPanel({
       ...current,
       { id: Date.now() + "-" + Math.random(), url: previewUrl, file },
     ]);
+    answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
     setShowPreview(true);
   }, []);
@@ -331,6 +330,7 @@ export function JambAdminQuestionPanel({
       }
       const remaining = current.filter((image) => image.id !== imageId);
       if (remaining.length === 0) setImagePosition("image-above");
+      answerKeyEditRevisionRef.current += 1;
       setAnswerKeyVerified(false);
       return remaining;
     });
@@ -496,6 +496,7 @@ export function JambAdminQuestionPanel({
   };
 
   const updateOption = (idx: number, text: string) => {
+    answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
     setOptions(prev => prev.map((o, i) => i === idx ? { ...o, text } : o));
   };
@@ -503,6 +504,7 @@ export function JambAdminQuestionPanel({
   const addOption = () => {
     const nextLabel = String.fromCharCode(65 + options.length);
     if (options.length >= 5) return;
+    answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
     setOptions(prev => [...prev, { label: nextLabel, text: "" }]);
   };
@@ -546,6 +548,7 @@ export function JambAdminQuestionPanel({
       const filtered = prev.filter((_, i) => i !== idx);
       return filtered.map((o, i) => ({ ...o, label: String.fromCharCode(65 + i) }));
     });
+    answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
     if (correctAnswer === options[idx]?.label) {
       setCorrectAnswer("");
@@ -731,7 +734,11 @@ export function JambAdminQuestionPanel({
                     </label>
                     <textarea
                       value={questionText}
-                      onChange={e => { setQuestionText(e.target.value); setAnswerKeyVerified(false); }}
+                      onChange={e => {
+                        answerKeyEditRevisionRef.current += 1;
+                        setQuestionText(e.target.value);
+                        setAnswerKeyVerified(false);
+                      }}
                       rows={3}
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
                       placeholder="Type the question text, or leave blank if using an image..."
@@ -785,7 +792,11 @@ export function JambAdminQuestionPanel({
                       <input
                         type="text"
                         value={correctAnswer}
-                        onChange={e => setCorrectAnswer(e.target.value.toUpperCase())}
+                        onChange={e => {
+                          answerKeyEditRevisionRef.current += 1;
+                          setCorrectAnswer(e.target.value.toUpperCase());
+                          setAnswerKeyVerified(false);
+                        }}
                         className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         placeholder={isObjective ? "e.g. A, B, C, D" : "e.g. A"}
                       />
@@ -886,7 +897,11 @@ export function JambAdminQuestionPanel({
                     <label className="text-xs font-medium text-muted-foreground mb-1 block">Explanation</label>
                     <textarea
                       value={explanation}
-                      onChange={e => { setExplanation(e.target.value); setAnswerKeyVerified(false); }}
+                      onChange={e => {
+                        answerKeyEditRevisionRef.current += 1;
+                        setExplanation(e.target.value);
+                        setAnswerKeyVerified(false);
+                      }}
                       rows={3}
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
                       placeholder="Explain why the correct answer is right..."

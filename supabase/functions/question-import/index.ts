@@ -605,9 +605,11 @@ Deno.serve(async (request: Request) => {
         const imagePosition = asText(payload.image_position) || (imageUrls.length ? "image-only" : "text-only");
         const sourcePage = Number.isInteger(payload.source_page) && Number(payload.source_page) > 0
           ? Number(payload.source_page)
-          : operation === "update" && beforeQuestion?.source_page != null
-            ? beforeQuestion.source_page
-            : null;
+          : payload.source_page === null
+            ? null
+            : operation === "update" && beforeQuestion?.source_page != null
+              ? beforeQuestion.source_page
+              : null;
         if (payload.source_page !== undefined && payload.source_page !== null &&
             (!Number.isInteger(payload.source_page) || Number(payload.source_page) < 1)) {
           return respond({ error: "Source PDF page must be a positive whole number" }, 400);

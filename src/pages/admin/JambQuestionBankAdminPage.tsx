@@ -402,7 +402,7 @@ export default function JambQuestionBankAdminPage() {
           </div>
           <div className="flex items-center gap-2">
             <Button asChild variant="outline" size="sm">
-              <Link to="/jamb/past-questions?subject=physics">Manage published questions</Link>
+              <Link to={"/jamb/past-questions?subject=" + encodeURIComponent(selectedBatch?.subject_code || "physics")}>Manage published questions</Link>
             </Button>
             <Button variant="outline" size="icon" onClick={() => void refreshBatches()} aria-label="Refresh batches"><RefreshCw className="h-4 w-4" /></Button>
           </div>

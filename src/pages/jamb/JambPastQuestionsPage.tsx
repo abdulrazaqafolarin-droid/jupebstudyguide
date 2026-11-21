@@ -583,6 +583,7 @@ export default function JambPastQuestionsPage() {
                   description: JAMB_SUBJECT_INFO[subject].description,
                 }))}
                 counts={Object.fromEntries(summaries.map((row) => [row.subject, row.count]))}
+                countsReady={!loading}
                 onSelect={(selectedSubject) => {
                   if (isJambSubject(selectedSubject)) chooseSubject(selectedSubject);
                 }}

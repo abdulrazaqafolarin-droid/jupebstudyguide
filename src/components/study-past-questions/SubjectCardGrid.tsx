@@ -13,6 +13,7 @@ interface SubjectCardGridItem {
 interface SubjectCardGridProps {
   onSelect: (subject: Subject) => void;
   counts?: Partial<Record<Subject, number>>;
+  countsReady?: boolean;
   items?: SubjectCardGridItem[];
 }
 
@@ -35,7 +36,7 @@ const SUBJECT_COLORS: Record<Subject, { gradient: string; light: string; accent:
   math: { gradient: "from-purple-600/40 to-pink-400/40", light: "bg-purple-500/10", accent: "border-purple-500/30" },
 };
 
-export function SubjectCardGrid({ onSelect, counts, items }: SubjectCardGridProps) {
+export function SubjectCardGrid({ onSelect, counts, countsReady = true, items }: SubjectCardGridProps) {
   const cards = items ?? (Object.keys(STUDY_SUBJECT_INFO) as Subject[]).map((subject) => ({
     subject,
     label: subject.charAt(0).toUpperCase() + subject.slice(1),
@@ -73,11 +74,13 @@ export function SubjectCardGrid({ onSelect, counts, items }: SubjectCardGridProp
               </div>
               <h3 className="font-semibold text-base">{label}</h3>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{description}</p>
-              {count !== undefined && (
+              {count !== undefined ? (
                 <span className="text-xs text-muted-foreground/60 mt-3 block tabular-nums">
                   {count} question{count !== 1 ? "s" : ""}
                 </span>
-              )}
+              ) : !countsReady ? (
+                <span className="text-xs text-muted-foreground/60 mt-3 block">Loading question coverage…</span>
+              ) : null}
             </div>
 
             <div className="relative z-10 mt-4 w-full flex items-center justify-between">

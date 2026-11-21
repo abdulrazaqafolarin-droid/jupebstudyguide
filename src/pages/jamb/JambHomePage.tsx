@@ -2,13 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
-  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, ChevronDown, ChevronUp, Clock3,
-  CheckCircle2, GraduationCap, Library, ShieldAlert, Star, Target, Trophy,
+  ArrowRight, BookOpen, Brain, Bookmark, Bot, CalendarDays, Clock3,
+  CheckCircle2, GraduationCap, Library, ShieldAlert, ShieldCheck, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 import StreakDisplay from "@/components/StreakDisplay";
 import { SubjectCard } from "@/components/SubjectCard";
+import AchievementsPanel from "@/components/AchievementsPanel";
+import { LeaderboardPanelFrame } from "@/components/LeaderboardPanelFrame";
+import type { Achievement, AchievementStats } from "@/hooks/useAchievements";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
@@ -80,102 +83,51 @@ function getJambActivityStats(savedAnswers: Record<string, { selected: string; s
 }
 
 const JAMB_MILESTONES = [
-  { id: "first", label: "First answer", target: 1, description: "Save your first practice answer" },
-  { id: "ten", label: "Getting started", target: 10, description: "Save 10 practice answers" },
-  { id: "fifty", label: "Consistent learner", target: 50, description: "Save 50 practice answers" },
-  { id: "hundred", label: "Question explorer", target: 100, description: "Save 100 practice answers" },
-  { id: "five-hundred", label: "JAMB champion", target: 500, description: "Save 500 practice answers" },
+  { id: "first", label: "First answer", target: 1, description: "Save your first practice answer", icon: "📘", rarity: "common" as const },
+  { id: "ten", label: "Getting started", target: 10, description: "Save 10 practice answers", icon: "📚", rarity: "common" as const },
+  { id: "fifty", label: "Consistent learner", target: 50, description: "Save 50 practice answers", icon: "🧠", rarity: "uncommon" as const },
+  { id: "hundred", label: "Question explorer", target: 100, description: "Save 100 practice answers", icon: "💯", rarity: "rare" as const },
+  { id: "five-hundred", label: "JAMB champion", target: 500, description: "Save 500 practice answers", icon: "🏆", rarity: "epic" as const },
 ];
 
+const JAMB_ACHIEVEMENTS: Achievement[] = JAMB_MILESTONES.map((milestone) => ({
+  id: milestone.id,
+  name: milestone.label,
+  description: milestone.description,
+  icon: milestone.icon,
+  rarity: milestone.rarity,
+  condition: (stats) => stats.totalQuestionsAnswered >= milestone.target,
+  getProgress: (stats) => ({
+    current: Math.min(stats.totalQuestionsAnswered, milestone.target),
+    max: milestone.target,
+  }),
+}));
+
 function JambMilestonesPanel({ answeredCount, ready }: { answeredCount: number; ready: boolean }) {
-  const [showLocked, setShowLocked] = useState(false);
-  const unlocked = JAMB_MILESTONES.filter((milestone) => answeredCount >= milestone.target);
-  const locked = JAMB_MILESTONES.filter((milestone) => answeredCount < milestone.target);
-  const progress = Math.min(100, Math.round((unlocked.length / JAMB_MILESTONES.length) * 100));
+  const stats: AchievementStats = {
+    totalQuestionsAnswered: answeredCount,
+    totalCorrect: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    totalDaysStudied: 0,
+    questionsLearned: 0,
+    subjectsStudied: 0,
+  };
+  const unlocked = ready ? JAMB_ACHIEVEMENTS.filter((achievement) => achievement.condition(stats)) : [];
+  const locked = JAMB_ACHIEVEMENTS.filter((achievement) => !unlocked.some((item) => item.id === achievement.id));
 
   return (
-    <div className="bg-card rounded-xl border border-border p-5 space-y-4 transition-all duration-300 hover:border-primary/30 hover:shadow-md">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-            <Trophy className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <span className="font-semibold">JAMB Achievements</span>
-          </div>
-        </div>
-        <div className="text-right">
-          <span className="text-sm font-bold tabular-nums">{ready ? unlocked.length : "—"}</span>
-          <span className="text-sm text-muted-foreground">/{JAMB_MILESTONES.length}</span>
-        </div>
-      </div>
-
-      <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary">
-        <div className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-700 ease-out" style={{ width: ready ? `${progress}%` : "0%" }} />
-      </div>
-
-      {ready && unlocked.length > 0 ? (
-        <div className="space-y-2">
-          {unlocked.slice(0, 5).map((milestone, index) => (
-            <div key={milestone.id} className="animate-in-up" style={{ animationDelay: `${index * 0.05}s` }}>
-              <div className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 px-3 py-2.5">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Star className="h-3.5 w-3.5 fill-current" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold">{milestone.label}</p>
-                  <p className="text-[10px] text-muted-foreground">{milestone.description}</p>
-                </div>
-                <span className="text-[10px] font-semibold text-primary">Unlocked</span>
-              </div>
-            </div>
-          ))}
-          {unlocked.length > 5 && !showLocked && (
-            <p className="pt-1 text-center text-xs text-muted-foreground">+{unlocked.length - 5} more unlocked</p>
-          )}
-        </div>
-      ) : (
-        <div className="py-5 text-center">
-          <Trophy className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
-          <p className="text-sm text-muted-foreground">Start practising to unlock your first JAMB milestone.</p>
-        </div>
-      )}
-
-      {locked.length > 0 && ready && (
-        <button
-          type="button"
-          onClick={() => setShowLocked((value) => !value)}
-          className="flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {showLocked ? <><ChevronUp className="h-3 w-3" /> Hide locked</> : <><ChevronDown className="h-3 w-3" /> Show {locked.length} locked</>}
-        </button>
-      )}
-
-      {showLocked && ready && locked.length > 0 && (
-        <div className="space-y-2 border-t border-border pt-3">
-          {locked.map((milestone, index) => (
-            <div key={milestone.id} className="animate-in-up" style={{ animationDelay: `${index * 0.03}s` }}>
-              <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/20 px-3 py-2.5">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground">
-                  <Trophy className="h-3.5 w-3.5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium">{milestone.label}</p>
-                  <p className="text-[10px] text-muted-foreground">{milestone.description}</p>
-                </div>
-                <span className="text-[10px] text-muted-foreground">{milestone.target} answers</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <Link to="/jamb/achievements" className="flex items-center justify-center gap-1 text-xs font-semibold text-primary hover:underline">
-        View All Achievements <ArrowRight className="h-3.5 w-3.5" />
-      </Link>
-    </div>
+    <AchievementsPanel
+      title="JAMB Achievements"
+      linkTo="/jamb/achievements"
+      unlockedAchievements={unlocked}
+      lockedAchievements={locked}
+      totalCount={JAMB_ACHIEVEMENTS.length}
+      stats={stats}
+    />
   );
 }
+
 export default function JambHomePage() {
   const navigate = useNavigate();
   const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);
@@ -465,16 +417,25 @@ export default function JambHomePage() {
           <JambMilestonesPanel answeredCount={totalAnswered} ready={progressReady} />
         </section>
 
-        {/* JAMB rankings are kept separate from the JUPEB/platform score feed. */}
-        <section className="mb-12 animate-in-up stagger-3 rounded-2xl border border-border bg-card p-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10"><Trophy className="h-5 w-5 text-primary" /></div>
-            <div className="min-w-0 flex-1">
-              <h2 className="font-semibold">JAMB Leaderboard</h2>
-              <p className="text-xs text-muted-foreground">No verified scores yet.</p>
+        {/* JAMB rankings share the leaderboard card shell but remain gated from JUPEB scores. */}
+        <section className="mb-12 animate-in-up stagger-3">
+          <LeaderboardPanelFrame statusLabel="Pending verification">
+            <div className="flex flex-col items-center gap-2 px-4 py-7 text-center">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <p className="text-sm font-medium">No verified JAMB scores yet</p>
+              <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
+                Rankings will appear when reviewed practice and CBT results are available.
+              </p>
+              <Link
+                to="/jamb/leaderboard"
+                className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
+              >
+                View JAMB leaderboard <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
-            <Link to="/jamb/leaderboard" className="shrink-0 text-xs font-semibold text-primary hover:underline">View</Link>
-          </div>
+          </LeaderboardPanelFrame>
         </section>
 
         {/* Subject cards preserve the JUPEB card treatment with JAMB-only content. */}

@@ -11,6 +11,8 @@ interface AchievementsPanelProps {
   lockedAchievements: Achievement[];
   totalCount: number;
   stats?: AchievementStats;
+  title?: string;
+  linkTo?: string;
 }
 
 const rarityIcons = {
@@ -26,6 +28,8 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
   lockedAchievements,
   totalCount,
   stats,
+  title = "Achievements",
+  linkTo = "/achievements",
 }) => {
   const [showLocked, setShowLocked] = useState(false);
   const pct = totalCount > 0 ? (unlockedAchievements.length / totalCount) * 100 : 0;
@@ -42,7 +46,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
             <Trophy className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <span className="font-semibold">Achievements</span>
+            <span className="font-semibold">{title}</span>
             <div className="flex items-center gap-1 mt-0.5">
               {legendaries.length > 0 && (
                 <span className="text-[10px] bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-500 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
@@ -148,7 +152,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
       )}
 
       <Link
-        to="/achievements"
+        to={linkTo}
         className="flex items-center justify-center gap-1.5 py-2 text-xs font-medium text-primary hover:text-primary/80 transition-colors group border-t border-border pt-3"
       >
         View All Achievements

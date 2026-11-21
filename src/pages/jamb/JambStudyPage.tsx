@@ -296,21 +296,24 @@ export default function JambStudyPage() {
               <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{questions.length} / {totalCount} loaded</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 sm:gap-4">
-              <div className="rounded-xl border border-primary/15 bg-primary/5 p-3 text-center">
-                <BookOpen className="mx-auto mb-1 h-4 w-4 text-primary" />
-                <p className="text-2xl font-bold tabular-nums">{reviewReady ? stats.studied : "—"}</p>
-                <p className="text-[10px] text-muted-foreground">Studied</p>
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="relative overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/10 to-primary/5 p-5 text-center">
+                <div className="absolute right-0 top-0 h-16 w-16 translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-xl" />
+                <BookOpen className="mx-auto mb-2 h-5 w-5 text-primary" />
+                <p className="text-3xl font-bold text-primary tabular-nums">{reviewReady ? stats.studied : "—"}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Studied</p>
               </div>
-              <div className="rounded-xl border border-accent/15 bg-accent/5 p-3 text-center">
-                <Target className="mx-auto mb-1 h-4 w-4 text-accent" />
-                <p className="text-2xl font-bold tabular-nums">{reviewReady ? stats.mastered : "—"}</p>
-                <p className="text-[10px] text-muted-foreground">Mastered</p>
+              <div className="relative overflow-hidden rounded-2xl border border-accent/10 bg-gradient-to-br from-accent/10 to-accent/5 p-5 text-center">
+                <div className="absolute right-0 top-0 h-16 w-16 translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-xl" />
+                <Target className="mx-auto mb-2 h-5 w-5 text-accent" />
+                <p className="text-3xl font-bold text-accent tabular-nums">{reviewReady ? stats.mastered : "—"}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Mastered</p>
               </div>
-              <div className="rounded-xl border border-destructive/15 bg-destructive/5 p-3 text-center">
-                <Clock3 className="mx-auto mb-1 h-4 w-4 text-destructive" />
-                <p className="text-2xl font-bold tabular-nums">{reviewReady ? dueCount : "—"}</p>
-                <p className="text-[10px] text-muted-foreground">Due now</p>
+              <div className="relative overflow-hidden rounded-2xl border border-destructive/10 bg-gradient-to-br from-destructive/10 to-destructive/5 p-5 text-center">
+                <div className="absolute right-0 top-0 h-16 w-16 translate-x-1/2 -translate-y-1/2 rounded-full bg-destructive/10 blur-xl" />
+                <Clock3 className="mx-auto mb-2 h-5 w-5 text-destructive" />
+                <p className="text-3xl font-bold text-destructive tabular-nums">{reviewReady ? dueCount : "—"}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Due Today</p>
               </div>
             </div>
 
@@ -330,7 +333,7 @@ export default function JambStudyPage() {
               <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>
             ) : question ? (
               <>
-                <div className="mb-4 flex justify-end">
+                <div className="mx-auto mb-4 flex w-full max-w-2xl justify-end">
                   <Button
                     asChild
                     variant="outline"
@@ -346,6 +349,7 @@ export default function JambStudyPage() {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={question.id}
+                    className="mx-auto w-full max-w-2xl"
                     initial={shouldReduceMotion ? false : { opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={shouldReduceMotion ? undefined : { opacity: 0, x: -24 }}

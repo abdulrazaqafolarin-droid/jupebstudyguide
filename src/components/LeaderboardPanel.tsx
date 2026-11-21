@@ -1,7 +1,7 @@
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { ACHIEVEMENTS, AchievementStats } from '@/hooks/useAchievements';
 import { useState, useCallback } from 'react';
-import { Loader2, ArrowRight, Target, Eye } from 'lucide-react';
+import { Loader2, ArrowRight, Target, Eye, Trophy } from 'lucide-react';
 import { LeaderboardPanelFrame } from "@/components/LeaderboardPanelFrame";
 import { UserAvatar } from './UserAvatar';
 import UserAchievementPreview from './UserAchievementPreview';

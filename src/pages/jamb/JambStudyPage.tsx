@@ -418,8 +418,8 @@ export default function JambStudyPage() {
                   {question.options.map((option, optionIndex) => {
                     const isSelected = selectedOption === option.label;
                     const hasApprovedResult = feedback?.gradable === true;
-                    const isCorrectOption = hasApprovedResult && feedback.correctOption === option.label;
-                    const isWrongSelection = hasApprovedResult && isSelected && feedback.isCorrect === false;
+                    const isCorrectOption = feedback?.gradable === true && feedback.correctOption === option.label;
+                    const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
                     const isUngradableResult = feedback !== null && feedback.gradable === false;
                     const isPendingSelection = isSelected && feedback === null;
 

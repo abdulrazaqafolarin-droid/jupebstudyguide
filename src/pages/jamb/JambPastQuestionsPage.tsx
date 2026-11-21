@@ -550,7 +550,7 @@ export default function JambPastQuestionsPage() {
             )}
             <button
               type="button"
-              onClick={() => setView("bookmarks")
+              onClick={() => setView("bookmarks")}
               className="relative rounded-xl p-2 transition-colors hover:bg-accent active:scale-95"
               aria-label="View bookmarked questions"
             >

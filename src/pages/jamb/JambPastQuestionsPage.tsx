@@ -404,7 +404,7 @@ export default function JambPastQuestionsPage() {
               </div>
             ) : (
               <span className="text-muted-foreground">
-                Your choice ({current}) is saved. {feedback?.message ?? "This question has no independently reviewed answer key yet, so it remains ungraded."}
+                Your choice ({current}) is saved. {feedback?.message ?? "Select an option to check your saved response against the currently approved answer key."}
               </span>
             )}
           </div>

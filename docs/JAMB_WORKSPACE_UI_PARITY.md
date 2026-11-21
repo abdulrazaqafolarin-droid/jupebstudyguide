@@ -181,3 +181,5 @@ The shared visual changes do not alter JAMB's content eligibility, answer-key ap
 - JAMB Past Questions no longer tells a returning learner that an answer key is missing merely because the saved choice has not yet been rechecked in the current page session. It prompts the learner to check against the currently approved answer key instead.
 
 - **Past Questions answer rows:** JAMB now follows the JUPEB question viewer's compact answer-row geometry, label tile size, selected/correct/incorrect colors and inline feedback tags. JAMB still keeps ungraded responses neutral; the visual match does not copy the JUPEB viewer's assumption that every selected response can be scored.
+
+- **Revision Cards answer controls:** the JAMB option rows now match the JUPEB flashcard's larger letter tiles, two-pixel borders, staggered entrance, hover lift and result animation. The approved-key feedback panel and spaced-repetition buttons follow JUPEB's larger feedback hierarchy and motion language. JAMB's server-side answer check remains authoritative: unapproved keys never produce green/red grading or a revealed answer, and ungradable selections remain neutral with an amber notice.

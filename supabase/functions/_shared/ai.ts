@@ -1,6 +1,7 @@
 import { routerText, routerJSON, routerStream } from "./ai-router.ts";
 import type { RouterMessage, RouterOpts } from "./ai-router.ts";
 import { isProgrammeEntitlementActive } from "./trial-access.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const ALLOWED_ORIGIN = Deno.env.get("CORS_ORIGIN") || "*";
 const CORS_HEADERS = {
@@ -45,8 +46,31 @@ export async function guardAiAccess(
   supabaseClient: unknown,
   user: { id: string },
   examProgramId: "jupeb" | "jamb",
+  accessToken: string,
 ): Promise<Response | null> {
   const supabase = supabaseClient as AiAccessClient;
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceRoleKey || !accessToken) {
+    return new Response(
+      JSON.stringify({ error: "Your sign-in session could not be verified. Please retry." }),
+      { status: 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
+    );
+  }
+
+  const userScoped = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { Authorization: "Bearer " + accessToken } },
+  });
+  const { data: sessionActive, error: sessionError } = await userScoped.rpc("current_auth_session_is_active");
+  if (sessionError || sessionActive !== true) {
+    return new Response(
+      JSON.stringify({ error: sessionActive === false
+        ? "This device session is no longer active. Please sign in again."
+        : "Your sign-in session could not be verified. Please retry." }),
+      { status: sessionActive === false ? 401 : 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
+    );
+  }
   const [profileResult, entitlementResult] = await Promise.all([
     supabase.from("profiles").select("is_admin").eq("user_id", user.id).maybeSingle(),
     supabase.from("exam_program_entitlements").select("trial_expires_at,subscription_expires_at")

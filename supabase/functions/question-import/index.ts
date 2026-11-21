@@ -621,18 +621,6 @@ Deno.serve(async (request: Request) => {
           : [];
         const imageUrl = asText(payload.image_url) || imageUrls[0] || "";
         const imagePosition = asText(payload.image_position) || (imageUrls.length ? "image-only" : "text-only");
-        const sourcePage = Number.isInteger(payload.source_page) && Number(payload.source_page) > 0
-          ? Number(payload.source_page)
-          : payload.source_page === null
-            ? null
-            : operation === "update" && beforeQuestion?.source_page != null
-              ? beforeQuestion.source_page
-              : null;
-        if (payload.source_page !== undefined && payload.source_page !== null &&
-            (!Number.isInteger(payload.source_page) || Number(payload.source_page) < 1)) {
-          return respond({ error: "Source PDF page must be a positive whole number" }, 400);
-        }
-
         if (!SUBJECTS.has(subject)) return respond({ error: "Choose a supported JAMB subject" }, 400);
         if (!Number.isInteger(year) || year < 1970 || year > 2100) {
           return respond({ error: "A valid source year is required" }, 400);
@@ -676,6 +664,18 @@ Deno.serve(async (request: Request) => {
           : { data: null, error: null };
         if (beforeError) return respond({ error: beforeError.message }, 500);
         if (operation === "update" && !beforeQuestion) return respond({ error: "JAMB question not found" }, 404);
+
+        const sourcePage = Number.isInteger(payload.source_page) && Number(payload.source_page) > 0
+          ? Number(payload.source_page)
+          : payload.source_page === null
+            ? null
+            : operation === "update" && beforeQuestion?.source_page != null
+              ? beforeQuestion.source_page
+              : null;
+        if (payload.source_page !== undefined && payload.source_page !== null &&
+            (!Number.isInteger(payload.source_page) || Number(payload.source_page) < 1)) {
+          return respond({ error: "Source PDF page must be a positive whole number" }, 400);
+        }
 
         const { data: beforeKey, error: beforeKeyError } = operation === "update"
           ? await answerKeyTable.select("*").eq("question_id", questionId).maybeSingle()

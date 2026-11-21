@@ -112,7 +112,7 @@ export default function JambSyllabusPage() {
                 </span>
               </div>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                The five syllabus PDFs you committed are organised into subject sections and trackable topics. Where a JAMB-hosted IBASS PDF was available, its source link is shown separately. Your topic progress is saved separately from JUPEB.
+                The available syllabus source packs are organised into subject sections and trackable topics. Where an official JAMB IBASS PDF is available, it is linked separately. Your progress is saved in this JAMB workspace.
               </p>
               <div className="mt-4 flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Overall completed topics</span>

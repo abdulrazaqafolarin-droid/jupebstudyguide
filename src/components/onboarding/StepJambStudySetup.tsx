@@ -64,7 +64,7 @@ export function StepJambStudySetup({
           </div>
           <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
         </div>
-        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {JAMB_SUBJECTS.map((subject) => {
             const info = JAMB_SUBJECT_INFO[subject];
             const selected = subjects.includes(subject);

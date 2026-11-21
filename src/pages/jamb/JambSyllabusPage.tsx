@@ -235,16 +235,27 @@ export default function JambSyllabusPage() {
                         {subject.sections.map((section) => (
                           <div key={section.id} className="space-y-2">
                             <h3 className="border-b border-border/60 pb-2 text-sm font-semibold">{section.title}</h3>
-                            {section.topics.map((topic) => {
+                            {section.topics.map((topic, topicIndex) => {
                               const topicState = getTopicState(topic.id);
                               const topicExpanded = expandedTopics.has(topic.id);
                               return (
-                                <article key={topic.id} className="rounded-xl border border-border/60 bg-background/50">
+                                <motion.div
+                                  key={topic.id}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: topicIndex * 0.02 }}
+                                  className={[
+                                    "rounded-xl border transition-all",
+                                    topicExpanded
+                                      ? "bg-secondary/20 border-border/80"
+                                      : "bg-card/50 border-border/30 hover:bg-secondary/10",
+                                  ].join(" ")}
+                                >
                                   <button
                                     type="button"
                                     onClick={() => toggleTopic(topic.id)}
                                     aria-expanded={topicExpanded}
-                                    className="flex w-full items-center gap-3 p-3 text-left"
+                                    className="flex w-full items-center justify-between gap-3 p-3.5 text-left"
                                   >
                                     {topicState === "completed" ? (
                                       <CircleCheck className="h-4 w-4 shrink-0 text-emerald-600" />
@@ -267,7 +278,7 @@ export default function JambSyllabusPage() {
                                         exit={{ height: 0, opacity: 0 }}
                                         className="overflow-hidden"
                                       >
-                                        <div className="space-y-3 border-t border-border/60 px-3 pb-3 pt-3">
+                                        <div className="space-y-3 border-t border-border/60 px-3.5 pb-3.5 pt-3">
                                           <div>
                                             <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Topics / contents / notes</p>
                                             <ul className="mt-1.5 space-y-1">
@@ -323,7 +334,7 @@ export default function JambSyllabusPage() {
                                       </motion.div>
                                     )}
                                   </AnimatePresence>
-                                </article>
+                                </motion.div>
                               );
                             })}
                           </div>

@@ -644,6 +644,18 @@ export function JambAdminQuestionPanel({
                     </div>
                   )}
 
+                  {includeReviewQueue && (
+                    <div className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-3 text-xs leading-relaxed">
+                      <p className="flex items-center gap-2 font-semibold text-amber-800 dark:text-amber-300">
+                        <AlertTriangle className="h-4 w-4" />
+                        Unverified draft answer key
+                      </p>
+                      <p className="mt-1 text-muted-foreground">
+                        The saved answer and explanation are review drafts and may include assistant-generated content. Check the question, every option, the source reference and the answer against a reliable permitted source. Do not approve by relying on the saved suggestion alone. This question stays hidden from learners until all required checks are completed.
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block flex items-center gap-1.5">
                       <ImageIcon className="h-3.5 w-3.5" />

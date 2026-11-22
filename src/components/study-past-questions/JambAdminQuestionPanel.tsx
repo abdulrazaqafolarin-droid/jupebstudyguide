@@ -366,7 +366,7 @@ export function JambAdminQuestionPanel({
       setError("A meaningful explanation is required");
       return;
     }
-    if (!sourceDocument.trim() || !/^((19|20)\d{2}):Q\d+$/i.test(sourceReference.trim())) {
+    if (!sourceDocument.trim() || !/^((19|20)\d{2}):Q\d+[a-z]?$/i.test(sourceReference.trim())) {
       setError("Enter a source document and a single source reference such as 2024:Q12");
       return;
     }

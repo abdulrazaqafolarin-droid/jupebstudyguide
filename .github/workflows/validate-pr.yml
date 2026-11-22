@@ -117,7 +117,7 @@ jobs:
           deno-version: v2.x
 
       - name: Test programme entitlement, retrieval, CBT scoring and JAMB import recovery
-        run: deno test supabase/functions/_shared/trial-access.test.ts supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/exam-scoring.test.ts supabase/functions/_shared/jamb-import-range.test.ts supabase/functions/_shared/jamb-review-validation.test.ts supabase/functions/_shared/jamb-source-reference.test.ts supabase/functions/_shared/jamb-import-answer-suggestions.test.ts
+        run: deno test supabase/functions/_shared/trial-access.test.ts supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/exam-scoring.test.ts supabase/functions/_shared/jamb-import-range.test.ts supabase/functions/_shared/jamb-review-validation.test.ts supabase/functions/_shared/jamb-source-reference.test.ts supabase/functions/_shared/jamb-import-answer-suggestions.test.ts supabase/functions/_shared/jamb-question-visibility.test.ts
 
       - name: Type-check JAMB Edge Functions
         run: deno check supabase/functions/_shared/ai.ts supabase/functions/_shared/exam-access.ts supabase/functions/_shared/trial-access.ts supabase/functions/_shared/exam-scoring.ts supabase/functions/ai-tutor/index.ts supabase/functions/chat-proxy/index.ts supabase/functions/parse-document/index.ts supabase/functions/question-import/index.ts supabase/functions/exam-attempts/index.ts supabase/functions/exam-practice/index.ts

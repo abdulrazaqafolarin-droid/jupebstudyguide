@@ -94,6 +94,7 @@ export default function JambQuestionBankAdminPage() {
   const [activeAdminView, setActiveAdminView] = useState<"manager" | "source-review">("manager");
   const [managerSubject, setManagerSubject] = useState<JambSubject>("physics");
   const [managerYear, setManagerYear] = useState(JAMB_TARGET_EXAM_YEAR);
+  const [includeReviewQueue, setIncludeReviewQueue] = useState(false);
   const [managerPanelOpen, setManagerPanelOpen] = useState(false);
   const [jsonFile, setJsonFile] = useState<File | null>(null);
   const [sourceFile, setSourceFile] = useState<File | null>(null);
@@ -419,7 +420,7 @@ export default function JambQuestionBankAdminPage() {
             aria-selected={activeAdminView === "manager"}
             onClick={() => { setManagerPanelOpen(false); setActiveAdminView("manager"); }}
           >
-            Published Question Manager
+            Question Manager
           </Button>
           <Button
             type="button"
@@ -438,9 +439,9 @@ export default function JambQuestionBankAdminPage() {
             <header className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Rutex Master · JAMB</p>
-                <h1 className="text-2xl font-bold">Published Question Manager</h1>
+                <h1 className="text-2xl font-bold">JAMB Question Manager</h1>
                 <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-                  Add, edit, reorder and preview JAMB questions using the same question-manager workflow as JUPEB. Approved answers and explanations are handled through the protected JAMB answer-key service.
+                  Manage published questions or open the hidden review queue to inspect saved draft answers and explanations. Pending questions stay unavailable to learners until source rights, answers and explanations are verified.
                 </p>
               </div>
               <span className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">Admin only</span>
@@ -473,12 +474,24 @@ export default function JambQuestionBankAdminPage() {
               </label>
             </div>
 
+            <label className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed">
+              <input
+                type="checkbox"
+                checked={includeReviewQueue}
+                onChange={(event) => setIncludeReviewQueue(event.target.checked)}
+                className="mt-0.5 accent-primary"
+              />
+              <span>
+                Include hidden questions needing review. This opens the administrator-only queue; it does not make the questions visible to students.
+              </span>
+            </label>
+
             <div className="flex flex-wrap items-center gap-3">
               <Button
                 onClick={() => setManagerPanelOpen(true)}
                 disabled={!Number.isInteger(managerYear) || managerYear < 1970 || managerYear > 2100}
               >
-                Open Question Manager
+                {includeReviewQueue ? "Open Pending Review Queue" : "Open Question Manager"}
               </Button>
               <Link
                 to={"/jamb/past-questions?subject=" + encodeURIComponent(managerSubject) + "&year=" + managerYear}
@@ -488,7 +501,9 @@ export default function JambQuestionBankAdminPage() {
               </Link>
             </div>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              The manager loads the selected subject and year, including its protected answer keys. Source intake, permission checks and staged human review remain in the separate Source Import & Review tab.
+              {includeReviewQueue
+                ? "The review queue loads hidden, unapproved JAMB questions and their protected draft answer keys for administrator review. Saving a question requires a new source-rights confirmation and an independently checked answer and explanation."
+                : "The manager loads published questions for the selected subject and year, including their protected answer keys. Source intake and staged review remain in the separate Source Import & Review tab."}
             </p>
           </section>
         ) : (
@@ -687,6 +702,7 @@ export default function JambQuestionBankAdminPage() {
         onQuestionDeleted={(_id: string) => {}}
         onQuestionAdded={(_question: JambQuestion) => {}}
         isOpen={managerPanelOpen}
+        includeReviewQueue={includeReviewQueue}
         onClose={() => setManagerPanelOpen(false)}
       />
     </main>

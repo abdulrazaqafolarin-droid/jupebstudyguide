@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { MCQOption } from "@/types/question";
 import { JAMB_QUESTION_BANK_SUBJECTS, type JambSubject } from "@/lib/jamb-config";
+import { JAMB_STUDENT_QUESTION_VISIBILITY } from "@/lib/jamb-question-visibility";
 
 export interface JambQuestion {
   id: string;
@@ -136,8 +137,8 @@ export async function getJambSubjectSummaries(): Promise<JambSubjectSummary[]> {
       .from("study_questions")
       .select("year", { count: "exact" })
       .eq("exam_program_id", "jamb")
-      .eq("review_status", "published")
-      .eq("hidden", false)
+      .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+      .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
       .eq("subject", subject)
       .eq("category", "objective")
       .order("year", { ascending: false })
@@ -181,8 +182,8 @@ export async function getJambCbtAvailableQuestionCount(
     .from("study_questions")
     .select("question,options")
     .eq("exam_program_id", "jamb")
-    .eq("review_status", "published")
-    .eq("hidden", false)
+    .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+    .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
     .eq("subject", subject)
     .eq("category", "objective")
     .limit(500);
@@ -213,8 +214,8 @@ export async function getJambQuestionMetadataByIds(questionIds: string[]): Promi
       .from("study_questions")
       .select("id,subject,year")
       .eq("exam_program_id", "jamb")
-      .eq("review_status", "published")
-      .eq("hidden", false)
+      .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+      .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
       .in("id", ids);
 
     if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
@@ -247,8 +248,8 @@ export async function getJambPublishedQuestionMetadata(): Promise<JambQuestionMe
         .from("study_questions")
         .select("id,subject,year")
         .eq("exam_program_id", "jamb")
-        .eq("review_status", "published")
-        .eq("hidden", false)
+        .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+        .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
         .eq("subject", subject)
         .eq("category", "objective")
         .order("year", { ascending: false })
@@ -281,8 +282,8 @@ export async function getJambQuestionYears(
     .from("study_questions")
     .select("year")
     .eq("exam_program_id", "jamb")
-    .eq("review_status", "published")
-    .eq("hidden", false)
+    .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+    .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
     .eq("subject", subject)
     .eq("category", "objective")
     .order("year", { ascending: false })
@@ -305,8 +306,8 @@ export async function searchJambQuestions(args: {
     .from("study_questions")
     .select(QUESTION_COLUMNS, { count: "exact" })
     .eq("exam_program_id", "jamb")
-    .eq("review_status", "published")
-    .eq("hidden", false)
+    .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+    .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
     .eq("subject", subject)
     .eq("category", "objective")
     .order("year", { ascending: false })
@@ -333,8 +334,8 @@ export async function getJambPublishedQuestionById(questionId: string): Promise<
     .select(QUESTION_COLUMNS)
     .eq("id", questionId)
     .eq("exam_program_id", "jamb")
-    .eq("review_status", "published")
-    .eq("hidden", false)
+    .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+    .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
     .maybeSingle();
 
   if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();

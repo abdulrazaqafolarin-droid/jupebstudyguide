@@ -11,6 +11,13 @@ import { JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, JAMB_TARGET_EXAM_YEAR, 
 import { supportsResumableJambImport } from "@/lib/jamb-import-client";
 import { getQuestionEmbeddingQueueStatus, processPendingQuestionEmbeddings, type QuestionEmbeddingQueueStatus } from "@/lib/question-rag-indexer";
 
+const JAMB_REVIEW_DEFAULT_YEAR: Record<JambSubject, number> = {
+  physics: 2018,
+  chemistry: 2015,
+  biology: 2014,
+  use_of_english: 2020,
+};
+
 interface ImportPackage {
   schema_version: number;
   exam_program_id: string;
@@ -452,7 +459,11 @@ export default function JambQuestionBankAdminPage() {
                 <span className="font-medium">Subject</span>
                 <select
                   value={managerSubject}
-                  onChange={(event) => setManagerSubject(event.target.value as JambSubject)}
+                  onChange={(event) => {
+                    const nextSubject = event.target.value as JambSubject;
+                    setManagerSubject(nextSubject);
+                    if (includeReviewQueue) setManagerYear(JAMB_REVIEW_DEFAULT_YEAR[nextSubject]);
+                  }}
                   className="w-full rounded-xl border border-border bg-background p-3 text-sm"
                 >
                   {JAMB_QUESTION_BANK_SUBJECTS.map((item) => (
@@ -478,11 +489,15 @@ export default function JambQuestionBankAdminPage() {
               <input
                 type="checkbox"
                 checked={includeReviewQueue}
-                onChange={(event) => setIncludeReviewQueue(event.target.checked)}
+                onChange={(event) => {
+                  const enabled = event.target.checked;
+                  setIncludeReviewQueue(enabled);
+                  setManagerYear(enabled ? JAMB_REVIEW_DEFAULT_YEAR[managerSubject] : JAMB_TARGET_EXAM_YEAR);
+                }}
                 className="mt-0.5 accent-primary"
               />
               <span>
-                Include hidden questions needing review. This opens the administrator-only queue; it does not make the questions visible to students.
+                Include hidden questions needing review. Enabling this selects the latest imported year for the chosen subject; it opens the administrator-only queue and does not make questions visible to students.
               </span>
             </label>
 

@@ -23,6 +23,7 @@ interface JambAdminQuestionPanelProps {
   onQuestionAdded: (question: JambQuestion) => void;
   onQuestionsReordered?: (questions: JambQuestion[]) => void;
   isOpen: boolean;
+  includeReviewQueue?: boolean;
   onClose: () => void;
 }
 
@@ -50,6 +51,7 @@ export function JambAdminQuestionPanel({
   onQuestionAdded,
   onQuestionsReordered,
   isOpen,
+  includeReviewQueue = false,
   onClose,
 }: JambAdminQuestionPanelProps) {
   const [mode, setMode] = useState<Mode>(null);
@@ -108,7 +110,14 @@ export function JambAdminQuestionPanel({
     setError(null);
     try {
       const { data, error: invokeError } = await supabase.functions.invoke("question-import", {
-        body: { exam_program_id: "jamb", action: "manage-question", operation: "list", subject, year },
+        body: {
+          exam_program_id: "jamb",
+          action: "manage-question",
+          operation: "list",
+          subject,
+          year,
+          include_review_queue: includeReviewQueue,
+        },
       });
       if (invokeError) throw invokeError;
       if (data?.error) throw new Error(String(data.error));
@@ -119,7 +128,7 @@ export function JambAdminQuestionPanel({
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Could not load the full JAMB question list.");
     }
-  }, [isOpen, subject, year]);
+  }, [includeReviewQueue, isOpen, subject, year]);
 
   useEffect(() => {
     if (isOpen) {
@@ -177,8 +186,10 @@ export function JambAdminQuestionPanel({
         setSourcePage(detail.sourcePage == null ? "" : String(detail.sourcePage));
         setDifficulty(String(detail.difficulty || q.difficulty || "medium"));
         setTopic(String(detail.topic || q.topic || ""));
-        setRightsNote(String(detail.rightsNote || ""));
-        setRightsConfirmed(Boolean(detail.rightsNote));
+        // Historical audit notes are not a fresh rights attestation for this edit.
+        // Require the administrator to confirm permission and enter a current note again.
+        setRightsNote("");
+        setRightsConfirmed(false);
       }
     } catch (loadError) {
       if (requestId === loadQuestionRequestRef.current) {
@@ -510,6 +521,7 @@ export function JambAdminQuestionPanel({
   };
 
   const handleDragSort = async () => {
+    if (includeReviewQueue) return;
     if (dragItem.current === null || dragOverItem.current === null || managerQuestions.length === 0) return;
     if (dragItem.current === dragOverItem.current) return;
     const reordered = [...managerQuestions];
@@ -1006,27 +1018,40 @@ export function JambAdminQuestionPanel({
               ) : (
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">
-                    Select a question to edit, or add a new one.
+                    {includeReviewQueue
+                      ? "Select a pending question to inspect its saved draft answer and explanation. It remains hidden from students until all review checks pass."
+                      : "Select a published question to edit, or add a new one."}
                   </p>
+                  {includeReviewQueue && (
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed text-muted-foreground">
+                      Pending questions are visible here to administrators only. Saving one publishes it only after a fresh source-rights attestation, a verified answer and a meaningful explanation.
+                    </div>
+                  )}
 
                   {managerQuestions.length > 0 && (
                     <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1">
                       {managerQuestions.map((q, idx) => (
                         <div
                           key={q.id}
-                          draggable
-                          onDragStart={() => { dragItem.current = idx; }}
-                          onDragEnter={() => { dragOverItem.current = idx; }}
+                          draggable={!includeReviewQueue && q.reviewStatus === "published"}
+                          onDragStart={() => {
+                            if (!includeReviewQueue && q.reviewStatus === "published") dragItem.current = idx;
+                          }}
+                          onDragEnter={() => {
+                            if (!includeReviewQueue && q.reviewStatus === "published") dragOverItem.current = idx;
+                          }}
                           onDragEnd={handleDragSort}
                           onDragOver={(e) => e.preventDefault()}
                           className="flex items-center gap-1 group"
                         >
-                          <button
-                            className="p-1 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-muted-foreground transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-                            title="Drag to reorder"
-                          >
-                            <GripVertical className="h-4 w-4" />
-                          </button>
+                          {!includeReviewQueue && (
+                            <button
+                              className="p-1 cursor-grab active:cursor-grabbing text-muted-foreground/40 hover:text-muted-foreground transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                              title="Drag to reorder"
+                            >
+                              <GripVertical className="h-4 w-4" />
+                            </button>
+                          )}
                           <button
                             onClick={() => {
                               loadQuestion(q);
@@ -1048,10 +1073,20 @@ export function JambAdminQuestionPanel({
                               )}
                               <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                                 <span className="capitalize">{q.category}</span>
+                                {q.reviewStatus && q.reviewStatus !== "published" && (
+                                  <>
+                                    <span className="text-muted-foreground/40">&middot;</span>
+                                    <span className="rounded-md border border-amber-500/30 px-1.5 py-0.5 text-amber-700 dark:text-amber-400">
+                                      {q.reviewStatus} · hidden
+                                    </span>
+                                  </>
+                                )}
                                 {q.correctAnswer && (
                                   <>
                                     <span className="text-muted-foreground/40">&middot;</span>
-                                    <span className="font-mono text-green-600 dark:text-green-400">Ans: {q.correctAnswer}</span>
+                                    <span className={q.answerKeyVerified ? "font-mono text-green-600 dark:text-green-400" : "font-mono text-amber-700 dark:text-amber-400"}>
+                                      {q.answerKeyVerified ? "Ans:" : "Draft answer:"} {q.correctAnswer}
+                                    </span>
                                   </>
                                 )}
                                 {q.difficulty && (

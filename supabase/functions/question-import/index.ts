@@ -6,6 +6,10 @@ import { JAMB_IMPORT_PROTOCOL_VERSION, resolveJambImportItemRange } from "../_sh
 import { getJambReviewDecisionError } from "../_shared/jamb-review-validation.ts";
 import { parseJambSourceReference } from "../_shared/jamb-source-reference.ts";
 import { extractJambSourceAnswerSuggestions } from "../_shared/jamb-import-answer-suggestions.ts";
+import {
+  getJambQuestionManagerVisibility,
+  JAMB_STUDENT_QUESTION_REVIEW_STATUS,
+} from "../_shared/jamb-question-visibility.ts";
 
 type AdminSupabase = SupabaseClient<Database>;
 
@@ -462,11 +466,12 @@ Deno.serve(async (request: Request) => {
           .limit(500);
 
         // This option is available only through the admin-authenticated Edge Function.
-        // It returns review-only rows to the question manager, never to student loaders.
-        if (includeReviewQueue) {
-          listQuery = listQuery.in("review_status", ["needs_review", "approved_ungraded", "approved"]);
-        } else {
-          listQuery = listQuery.eq("hidden", false).eq("review_status", "published");
+        // The default policy remains the same published-only filter used by learners.
+        const visibility = getJambQuestionManagerVisibility(includeReviewQueue);
+        listQuery = listQuery.in("review_status", [...visibility.reviewStatuses]);
+        if (!visibility.includeHidden) {
+          listQuery = listQuery.eq("hidden", false)
+            .eq("review_status", JAMB_STUDENT_QUESTION_REVIEW_STATUS);
         }
 
         const { data: rows, error: rowsError, count: rowsResultCountRaw } = await listQuery;

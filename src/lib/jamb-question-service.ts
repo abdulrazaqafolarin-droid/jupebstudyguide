@@ -22,6 +22,9 @@ export interface JambQuestion {
   explanation?: string;
   answerKeyStatus?: string;
   answerKeyVerified?: boolean;
+  /** Present only in the protected admin question-manager response. */
+  reviewStatus?: string;
+  hidden?: boolean;
   difficulty?: "easy" | "medium" | "hard" | string;
   sourceDocument?: string;
   rightsNote?: string;

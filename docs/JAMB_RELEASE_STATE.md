@@ -273,3 +273,16 @@ The backend prerequisite has now been released to the existing Supabase project 
 The feature-branch admin import client now fails closed before uploading either file unless the live capability endpoint advertises support for the selected subject and both answer-verification safeguards. Therefore, the previous v4 function cannot accept an English upload.
 
 **Still outstanding:** source-use permission must be documented and attested by an authorised administrator for each submitted source pack, the generated JSON must be uploaded with its exact original source file, and every question must pass human review. No question has been marked verified or published. The JAMB student-facing Production UI remains disabled; PR #78 remains Draft.
+
+
+## Legacy JAMB question visibility and review queue — 22 November 2026
+
+A read-only audit of the active shared Supabase project identified **2,753 legacy JAMB question rows** already present in `study_questions`: Use of English 2,520, Physics 100, Chemistry 82 and Biology 51. All 2,753 rows remain `hidden=true` and `review_status=needs_review`.
+
+The answer and explanation fields are stored separately in the protected `study_question_answer_keys` table. All 2,753 records contain a draft answer label and a meaningful explanation, but **zero are approved**; all remain `needs_review`. The audit trail records that previously auto-approved assistant-generated keys were reverted because they had not received academic review. These drafts must not be presented to learners as verified answer keys.
+
+The JAMB admin question manager now has an opt-in **Include hidden questions needing review** mode. It uses the admin-authenticated `question-import` Edge Function to list pending legacy rows and shows their saved answers as drafts. Editing a pending row requires a fresh source-rights attestation and independent verification of the correct answer and explanation. Historical audit notes are not automatically reused as fresh permission confirmation. The question manager's normal/default list remains published-only.
+
+The live `question-import` Edge Function was updated to **v6**. Its new `include_review_queue` flag is available only after the existing Bearer-token, active-session, JAMB-entitlement and administrator checks. Without that flag, the endpoint continues to require `hidden=false` and `review_status=published`. Student-facing question retrieval and CBT selection remain published-only. No question was published or made visible to students by this continuation.
+
+The corresponding UI and type changes are committed on `feat/rutex-jamb-workspace` at `3281d139f714cb27610556eee95b4e82bf3c4eac`, within Draft PR #78. Production UI has not been deployed; the Vercel checks are currently blocked by the account's build-rate limit. Before any learner release, pending keys still require academic review, source rights must be confirmed, and Use of English's subject availability/source-reference exception must be addressed.

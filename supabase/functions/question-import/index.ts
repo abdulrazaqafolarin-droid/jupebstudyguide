@@ -450,17 +450,26 @@ Deno.serve(async (request: Request) => {
         if (!SUBJECTS.has(subject) || !Number.isInteger(year) || year < 1970 || year > 2100) {
           return respond({ error: "A supported JAMB subject and year are required" }, 400);
         }
-        const { data: rows, error: rowsError, count: rowsResultCountRaw } = await questionTable
-          .select("id,subject,year,category,question,options,difficulty,course,sort_order,image_url,image_urls,image_position,source_ref,source_document,source_page,source_question_number,source_batch_id", { count: "exact" })
+        const includeReviewQueue = body.include_review_queue === true;
+        let listQuery = questionTable
+          .select("id,subject,year,category,question,options,difficulty,course,sort_order,image_url,image_urls,image_position,source_ref,source_document,source_page,source_question_number,source_batch_id,hidden,review_status", { count: "exact" })
           .eq("exam_program_id", "jamb")
           .eq("subject", subject)
           .eq("year", year)
-          .eq("hidden", false)
-          .eq("review_status", "published")
           .eq("category", "objective")
           .order("sort_order", { ascending: true })
           .order("id", { ascending: true })
           .limit(500);
+
+        // This option is available only through the admin-authenticated Edge Function.
+        // It returns review-only rows to the question manager, never to student loaders.
+        if (includeReviewQueue) {
+          listQuery = listQuery.in("review_status", ["needs_review", "approved_ungraded", "approved"]);
+        } else {
+          listQuery = listQuery.eq("hidden", false).eq("review_status", "published");
+        }
+
+        const { data: rows, error: rowsError, count: rowsResultCountRaw } = await listQuery;
         if (rowsError) return respond({ error: rowsError.message }, 500);
         const rowsResultCount = rowsResultCountRaw ?? rows?.length ?? 0;
 
@@ -504,6 +513,8 @@ Deno.serve(async (request: Request) => {
           return {
             id, subject: row.subject, year: row.year, category: "objective",
             question: row.question ?? "", options: row.options ?? [],
+            reviewStatus: row.review_status ?? "needs_review",
+            hidden: row.hidden === true,
             correctAnswer: key?.correct_answer ?? "", explanation: key?.explanation ?? "",
             answerKeyStatus: key?.review_status ?? "missing",
             answerKeyVerified: key?.review_status === "approved",

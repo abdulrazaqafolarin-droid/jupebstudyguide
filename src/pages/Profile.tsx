@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { getWorkspacePath } from '@/lib/exam-program';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,6 +26,7 @@ import { cn } from '@/lib/utils';
 export default function ProfilePage() {
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
   const { signOut, user, deleteAccount } = useAuth();
+  const { isJambWorkspace, programId } = useExamProgram();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -109,7 +112,7 @@ export default function ProfilePage() {
           </button>
           <h1 className="font-semibold text-foreground">Profile</h1>
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')} className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" onClick={() => navigate(getWorkspacePath('/settings/profile', programId))} className="text-muted-foreground hover:text-foreground">
               <Settings className="w-4 h-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={async () => { await signOut(); }} className="text-muted-foreground hover:text-foreground">
@@ -183,7 +186,7 @@ export default function ProfilePage() {
                 <GraduationCap className="w-4 h-4 text-primary" />
                 School
               </h3>
-              <Link to="/settings/profile" className="text-xs text-primary hover:underline">
+              <Link to={getWorkspacePath('/settings/profile', programId)} className="text-xs text-primary hover:underline">
                 Edit
               </Link>
             </div>
@@ -208,7 +211,7 @@ export default function ProfilePage() {
         </section>
 
         {/* Achievements Showcase */}
-        {unlockedAchievements.length > 0 && (
+        {!isJambWorkspace && unlockedAchievements.length > 0 && (
           <section className="animate-in-up stagger-3">
             <div className="bg-card rounded-2xl border border-border p-6 space-y-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
@@ -303,8 +306,26 @@ export default function ProfilePage() {
           </section>
         )}
 
+        {isJambWorkspace && (
+          <section className="animate-in-up stagger-3">
+            <Link
+              to="/jamb/achievements"
+              className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/30 hover:bg-accent/30"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Trophy className="h-5 w-5" />
+              </div>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">JAMB Achievements</span>
+                <span className="block text-xs text-muted-foreground">View milestones earned through your JAMB practice</span>
+              </span>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
+          </section>
+        )}
+
         {/* Activation codes */}
-        <section className="animate-in-up stagger-4">
+        {!isJambWorkspace && <section className="animate-in-up stagger-4">
           <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-6 border border-accent/20 relative overflow-hidden">
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
             <div className="relative">
@@ -344,7 +365,7 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </section>
+        </section>}
 
         {/* Delete Account */}
         <section className="animate-in-up stagger-4">

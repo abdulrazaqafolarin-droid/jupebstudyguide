@@ -3,6 +3,7 @@ import { Send, ArrowLeft, Paperclip, Reply, X, Users, Check, CheckCheck, File as
 import { Button } from '@/components/ui/button';
 import { Message, Conversation } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { useImageCompression } from '@/hooks/useImageCompression';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -268,6 +269,7 @@ export function ChatArea({
   onStartDm,
 }: ChatAreaProps) {
   const { user } = useAuth();
+  const { isJambWorkspace } = useExamProgram();
   const { compressImage } = useImageCompression();
   const [input, setInput] = useState('');
   const [replyTo, setReplyTo_] = useState<Message | null>(null);
@@ -1218,7 +1220,7 @@ export function ChatArea({
         <div className="w-20 h-20 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
           <MessageCircle className="w-10 h-10 opacity-40" />
         </div>
-        <p className="text-lg font-medium">JUPEB Chat</p>
+        <p className="text-lg font-medium">{isJambWorkspace ? 'JAMB Chat' : 'JUPEB Chat'}</p>
         <p className="text-sm mt-1 opacity-60">Select a conversation or find someone to chat with</p>
       </div>
     );

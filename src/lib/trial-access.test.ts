@@ -1,51 +1,57 @@
 import { describe, expect, it } from 'vitest';
-import { hasAiAccountAccess, isTrialActive } from '../../supabase/functions/_shared/trial-access.ts';
+import { isProgrammeEntitlementActive } from '../../supabase/functions/_shared/trial-access.ts';
 
-const NOW = Date.parse('2026-11-05T12:00:00.000Z');
+const NOW = Date.parse('2026-11-19T12:00:00.000Z');
 
-describe('one-day trial AI access', () => {
-  it('allows an account whose server-issued trial has not expired', () => {
-    expect(hasAiAccountAccess({
-      is_activated: false,
+describe('programme-scoped AI entitlement checks', () => {
+  it('allows a programme whose server-issued trial has not expired', () => {
+    expect(isProgrammeEntitlementActive({
       is_admin: false,
-      trial_expires_at: '2026-11-06T12:00:00.000Z',
+      trial_expires_at: '2026-11-20T12:00:00.000Z',
+      subscription_expires_at: null,
     }, NOW)).toBe(true);
   });
 
-  it('denies access at the exact expiry instant', () => {
-    expect(isTrialActive('2026-11-05T12:00:00.000Z', NOW)).toBe(false);
-  });
-
-  it('denies a trial after its expiry', () => {
-    expect(hasAiAccountAccess({
-      is_activated: false,
-      is_admin: false,
-      trial_expires_at: '2026-11-05T11:59:59.999Z',
+  it('denies access at the exact trial expiry instant', () => {
+    expect(isProgrammeEntitlementActive({
+      trial_expires_at: '2026-11-19T12:00:00.000Z',
     }, NOW)).toBe(false);
   });
 
-  it('keeps activated accounts working even when their trial date is expired', () => {
-    expect(hasAiAccountAccess({
-      is_activated: true,
-      is_admin: false,
-      trial_expires_at: '2026-11-01T00:00:00.000Z',
+  it('denies a programme after its trial expires when no subscription is active', () => {
+    expect(isProgrammeEntitlementActive({
+      trial_expires_at: '2026-11-19T11:59:59.999Z',
+      subscription_expires_at: null,
+    }, NOW)).toBe(false);
+  });
+
+  it('allows a programme with its own unexpired paid subscription', () => {
+    expect(isProgrammeEntitlementActive({
+      trial_expires_at: null,
+      subscription_expires_at: '2026-12-19T12:00:00.000Z',
     }, NOW)).toBe(true);
   });
 
-  it('keeps administrator access independent of trial dates', () => {
-    expect(hasAiAccountAccess({
-      is_activated: false,
+  it('does not treat a legacy activated flag as a paid entitlement', () => {
+    expect(isProgrammeEntitlementActive({
+      trial_expires_at: null,
+      subscription_expires_at: null,
+    }, NOW)).toBe(false);
+  });
+
+  it('keeps administrator access independent of entitlement dates', () => {
+    expect(isProgrammeEntitlementActive({
       is_admin: true,
       trial_expires_at: null,
+      subscription_expires_at: null,
     }, NOW)).toBe(true);
   });
 
-  it('fails closed for missing profiles or invalid expiry timestamps', () => {
-    expect(hasAiAccountAccess(null, NOW)).toBe(false);
-    expect(hasAiAccountAccess({
-      is_activated: false,
-      is_admin: false,
+  it('fails closed for a missing entitlement or invalid expiry timestamps', () => {
+    expect(isProgrammeEntitlementActive(null, NOW)).toBe(false);
+    expect(isProgrammeEntitlementActive({
       trial_expires_at: 'not-a-timestamp',
+      subscription_expires_at: 'also-not-a-timestamp',
     }, NOW)).toBe(false);
   });
 });

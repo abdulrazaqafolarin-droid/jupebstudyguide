@@ -1,8 +1,15 @@
 import { CapacitorConfig } from '@capacitor/cli';
+import { env } from 'node:process';
+
+// Keep the installed JUPEB identity as the default. A deliberately isolated
+// successor build may supply a distinct app ID/name through CI environment
+// variables; local/production builds remain unchanged without those overrides.
+const appId = env.CAPACITOR_APP_ID || 'com.jupeb.master';
+const appName = env.CAPACITOR_APP_NAME || 'Rutex Master(Jupeb)';
 
 const config: CapacitorConfig = {
-  appId: 'com.jupeb.master',
-  appName: 'Rutex Master(Jupeb)',
+  appId,
+  appName,
   webDir: 'dist',
   // NOTE: no server.url — the app bundles dist locally so it opens instantly
   // without depending on a remote URL (Supabase data still needs internet).

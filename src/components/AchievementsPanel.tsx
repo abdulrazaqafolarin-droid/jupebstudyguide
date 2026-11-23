@@ -11,6 +11,9 @@ interface AchievementsPanelProps {
   lockedAchievements: Achievement[];
   totalCount: number;
   stats?: AchievementStats;
+  title?: string;
+  linkTo?: string;
+  loading?: boolean;
 }
 
 const rarityIcons = {
@@ -26,6 +29,9 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
   lockedAchievements,
   totalCount,
   stats,
+  title = "Achievements",
+  linkTo = "/achievements",
+  loading = false,
 }) => {
   const [showLocked, setShowLocked] = useState(false);
   const pct = totalCount > 0 ? (unlockedAchievements.length / totalCount) * 100 : 0;
@@ -42,7 +48,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
             <Trophy className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <span className="font-semibold">Achievements</span>
+            <span className="font-semibold">{title}</span>
             <div className="flex items-center gap-1 mt-0.5">
               {legendaries.length > 0 && (
                 <span className="text-[10px] bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-500 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
@@ -65,7 +71,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
           </div>
         </div>
         <div className="text-right">
-          <span className="text-sm font-bold">{unlockedAchievements.length}</span>
+          <span className="text-sm font-bold">{loading ? "—" : unlockedAchievements.length}</span>
           <span className="text-sm text-muted-foreground">/{totalCount}</span>
         </div>
       </div>
@@ -74,7 +80,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
       <div className="relative w-full h-3 bg-secondary rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-primary via-primary to-accent rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${pct}%` }}
+          style={{ width: loading ? "0%" : `${pct}%` }}
         />
         {pct > 0 && pct < 100 && (
           <div className="absolute top-0 h-full w-8 bg-gradient-to-r from-transparent to-white/20 rounded-full blur-sm"
@@ -105,13 +111,13 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
         <div className="text-center py-6">
           <Sparkles className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
           <p className="text-sm text-muted-foreground">
-            Start studying to unlock achievements!
+            {loading ? "Loading achievements…" : "Start studying to unlock achievements!"}
           </p>
         </div>
       )}
 
       {/* Show/hide locked toggle */}
-      {lockedAchievements.length > 0 && (
+      {!loading && lockedAchievements.length > 0 && (
         <Button
           variant="ghost"
           size="sm"
@@ -132,7 +138,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
         </Button>
       )}
 
-      {showLocked && lockedAchievements.length > 0 && (
+      {!loading && showLocked && lockedAchievements.length > 0 && (
         <div className="space-y-2 pt-3 border-t border-border">
           {lockedAchievements.map((achievement, i) => (
             <div key={achievement.id} className="animate-in-up" style={{ animationDelay: `${i * 0.03}s` }}>
@@ -148,7 +154,7 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({
       )}
 
       <Link
-        to="/achievements"
+        to={linkTo}
         className="flex items-center justify-center gap-1.5 py-2 text-xs font-medium text-primary hover:text-primary/80 transition-colors group border-t border-border pt-3"
       >
         View All Achievements

@@ -3,9 +3,18 @@ import { motion, type Variants } from "framer-motion";
 import type { Subject } from "@/types/question";
 import { STUDY_SUBJECT_INFO } from "@/types/study-questions";
 
+interface SubjectCardGridItem {
+  subject: Subject;
+  label: string;
+  icon: string;
+  description: string;
+}
+
 interface SubjectCardGridProps {
   onSelect: (subject: Subject) => void;
-  counts?: Record<Subject, number>;
+  counts?: Partial<Record<Subject, number>>;
+  countsReady?: boolean;
+  items?: SubjectCardGridItem[];
 }
 
 const container: Variants = {
@@ -27,8 +36,13 @@ const SUBJECT_COLORS: Record<Subject, { gradient: string; light: string; accent:
   math: { gradient: "from-purple-600/40 to-pink-400/40", light: "bg-purple-500/10", accent: "border-purple-500/30" },
 };
 
-export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
-  const subjects = Object.keys(STUDY_SUBJECT_INFO) as Subject[];
+export function SubjectCardGrid({ onSelect, counts, countsReady = true, items }: SubjectCardGridProps) {
+  const cards = items ?? (Object.keys(STUDY_SUBJECT_INFO) as Subject[]).map((subject) => ({
+    subject,
+    label: subject.charAt(0).toUpperCase() + subject.slice(1),
+    icon: STUDY_SUBJECT_INFO[subject].icon,
+    description: STUDY_SUBJECT_INFO[subject].description,
+  }));
 
   return (
     <motion.div
@@ -37,13 +51,13 @@ export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
       animate="show"
       className="grid grid-cols-2 md:grid-cols-4 gap-4"
     >
-      {subjects.map((subject) => {
-        const info = STUDY_SUBJECT_INFO[subject];
+      {cards.map(({ subject, label, icon, description }) => {
         const count = counts?.[subject];
         const colors = SUBJECT_COLORS[subject] ?? { gradient: "", light: "", accent: "" };
 
         return (
           <motion.button
+            type="button"
             key={subject}
             variants={item}
             whileHover={{ y: -6, transition: { duration: 0.2 } }}
@@ -57,15 +71,17 @@ export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
 
             <div className="relative z-10">
               <div className={`w-12 h-12 rounded-xl ${colors.light} flex items-center justify-center text-2xl mb-3 border ${colors.accent}`}>
-                {info.icon}
+                {icon}
               </div>
-              <h3 className="font-semibold text-base">{subject.charAt(0).toUpperCase() + subject.slice(1)}</h3>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{info.description}</p>
-              {count !== undefined && (
+              <h3 className="font-semibold text-base">{label}</h3>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{description}</p>
+              {count !== undefined ? (
                 <span className="text-xs text-muted-foreground/60 mt-3 block tabular-nums">
                   {count} question{count !== 1 ? "s" : ""}
                 </span>
-              )}
+              ) : !countsReady ? (
+                <span className="text-xs text-muted-foreground/60 mt-3 block">Loading question coverage…</span>
+              ) : null}
             </div>
 
             <div className="relative z-10 mt-4 w-full flex items-center justify-between">

@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, BookOpen, MessageSquare, Trophy, User, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getWorkspacePath, isJambWorkspacePath, isNavigationPathActive } from "@/lib/exam-program";
 import HamburgerMenu, { type HamburgerMenuHandle } from "@/components/HamburgerMenu";
 import { useChatUnreadCount } from "@/contexts/ChatUnreadContext";
 
@@ -17,18 +18,27 @@ export default function BottomNav() {
   const location = useLocation();
   const menuRef = useRef<HamburgerMenuHandle>(null);
   const { totalUnread, staleUnread } = useChatUnreadCount();
+  const jambEnabled = import.meta.env.VITE_ENABLE_JAMB === "true";
+  const isJamb = jambEnabled && (location.pathname === "/jamb" || location.pathname.startsWith("/jamb/"));
+  // Keep the same five-slot navigation on both workspaces. Only the
+  // destination changes, so the app feels like one coherent product.
+  const visibleNavItems = useMemo(() => isJamb ? navItems.map((item) => {
+    if (item.path === "/") return { ...item, path: "/jamb" };
+    if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
+    if (item.path === "/leaderboard") return { ...item, path: "/jamb/leaderboard" };
+    if (item.path === "/profile") return { ...item, path: "/jamb/profile" };
+    if (item.path === "/chat") return { ...item, path: "/jamb/chat" };
+    return item;
+  }) : navItems, [isJamb]);
 
   return (
     <>
       <HamburgerMenu ref={menuRef} />
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border pb-safe">
         <div className="flex items-center justify-around max-w-lg mx-auto px-2 py-1">
-          {navItems.map(({ path, label, icon: Icon }) => {
-            const isActive =
-              path === "/"
-                ? location.pathname === "/"
-                : location.pathname.startsWith(path);
-            const isChat = path === "/chat";
+          {visibleNavItems.map(({ path, label, icon: Icon }) => {
+            const isActive = isNavigationPathActive(location.pathname, path);
+            const isChat = path === "/chat" || path === "/jamb/chat";
             const showBadge = isChat && totalUnread > 0;
             return (
               <Link

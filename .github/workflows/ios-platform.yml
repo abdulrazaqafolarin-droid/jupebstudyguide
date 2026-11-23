@@ -117,7 +117,10 @@ jobs:
           echo "iOS Simulator application built and identity verified."
 
       - name: Install and launch on an iPhone simulator
-        timeout-minutes: 8
+        # A first-boot iPhone can spend up to eight minutes in system data
+        # migration. Installation and launch are mandatory; screenshot capture
+        # is retried and recorded as a diagnostic if the hosted simulator stalls.
+        timeout-minutes: 16
         run: |
           set -euo pipefail
           APP="$RUNNER_TEMP/rutex-ios-derived/Build/Products/Debug-iphonesimulator/App.app"
@@ -146,6 +149,16 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The branded images are already tracked in the generated iOS project.
+          # macOS sips may rewrite PNG metadata on every run; retain the committed
+          # brand assets instead of creating bot-only image commits and action_required
+          # workflow runs. The uploaded simulator artifact still contains the
+          # freshly generated app and images from this CI run.
+          git restore --worktree --staged -- \
+            ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png \
+            ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png \
+            ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png \
+            ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png
           git add ios package-lock.json
           if git diff --cached --quiet; then
             echo "iOS project and lockfile are already committed."

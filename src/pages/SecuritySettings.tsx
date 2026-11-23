@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Shield, ShieldCheck, ShieldOff, Smartphone, Key, Check, X, Loader2, Copy, CheckCheck, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { supabase } from '@/integrations/supabase/client';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,8 @@ type MfaStep = 'idle' | 'enrolling' | 'verify' | 'enrolled' | 'removing';
 export default function SecuritySettings() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { programId } = useExamProgram();
+  const authenticatorIssuer = programId === 'jamb' ? 'JAMB Study Guide' : 'JUPEB Study Guide';
   const [step, setStep] = useState<MfaStep>('idle');
   const [factorId, setFactorId] = useState<string | null>(null);
   const [challengeId, setChallengeId] = useState<string | null>(null);
@@ -45,7 +48,7 @@ export default function SecuritySettings() {
     setEnrolling(true);
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
-      issuer: 'JUPEB Study Guide',
+      issuer: authenticatorIssuer,
       friendlyName: 'Authenticator',
     });
     if (error || !data) {

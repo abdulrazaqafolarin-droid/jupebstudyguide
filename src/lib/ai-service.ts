@@ -1,6 +1,7 @@
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/chat-proxy`;
 import { supabase } from '@/integrations/supabase/client';
+import type { ExamProgramId } from '@/lib/exam-program';
 
 export interface AIChatMessage {
   role: "system" | "user" | "assistant";
@@ -13,6 +14,7 @@ export interface QuestionRef {
   subject: string;
   year: number;
   category: string;
+  exam_program_id?: ExamProgramId;
 }
 
 export interface StreamCallbacks {
@@ -75,6 +77,7 @@ export async function streamChat(
   signal?: AbortSignal,
   /** Full active question/topic context for question-bank retrieval (not just the short prompt). */
   retrievalQuery?: string,
+  examProgramId: ExamProgramId = "jupeb",
 ): Promise<void> {
   const ac = new AbortController();
   let timedOut = false;
@@ -98,6 +101,7 @@ export async function streamChat(
         messages: msgs,
         subject: subject || undefined,
         retrievalQuery: retrievalQuery?.trim() || undefined,
+        examProgramId,
       }),
       signal: ac.signal,
     });

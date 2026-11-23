@@ -3,7 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft, Bookmark, BookmarkCheck, BookOpen, Bot,
-  CalendarDays, Check, ChevronLeft, ChevronRight,
+  CalendarDays, Check, ChevronLeft, ChevronRight, FileCheck2,
   Grid3X3, Loader2, Search, Shield, ShieldAlert, X,
 } from "lucide-react";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
@@ -11,7 +11,7 @@ import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useActivation } from "@/hooks/useActivation";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE,
+  JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
 import {
   getJambQuestionYears, getJambPublishedQuestionById, getJambSubjectSummaries,
@@ -97,7 +97,12 @@ export default function JambPastQuestionsPage() {
   const [selectedAdminQuestion, setSelectedAdminQuestion] = useState<JambQuestion | null>(null);
 
   const openAdminPanel = () => {
-    setSelectedAdminQuestion(questions[activeQuestionIndex] ?? null);
+    // The subject/year screens open the same JUPEB-style manager without
+    // carrying a stale question selected from a previous subject or year.
+    const currentQuestion = view === "questions"
+      ? questions[activeQuestionIndex] ?? null
+      : null;
+    setSelectedAdminQuestion(currentQuestion);
     setAdminPanelOpen(true);
   };
 
@@ -558,14 +563,25 @@ export default function JambPastQuestionsPage() {
                   <Bookmark className="w-[18px] h-[18px] text-muted-foreground" />
                 </button>
                 {isAdmin && (
-                  <Link
-                    to="/admin/jamb-questions"
-                    className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
-                    aria-label="Admin: Manage questions"
-                    title="Admin: Manage questions"
-                  >
-                    <Shield className="w-[18px] h-[18px] text-muted-foreground" />
-                  </Link>
+                  <>
+                    <button
+                      type="button"
+                      onClick={openAdminPanel}
+                      className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                      aria-label="Admin: Manage questions"
+                      title="Admin: Manage questions"
+                    >
+                      <Shield className="w-[18px] h-[18px] text-muted-foreground" />
+                    </button>
+                    <Link
+                      to="/admin/jamb-questions"
+                      className="flex-shrink-0 p-2 rounded-xl hover:bg-accent transition-colors active:scale-95"
+                      aria-label="Admin: Source import and review"
+                      title="Admin: Source import and review"
+                    >
+                      <FileCheck2 className="w-[18px] h-[18px] text-muted-foreground" />
+                    </Link>
+                  </>
                 )}
               </div>
             </>
@@ -580,7 +596,27 @@ export default function JambPastQuestionsPage() {
                 <span className="text-sm font-medium">Back</span>
               </button>
               <h1 className="flex-1 text-center text-sm font-bold truncate">{subjectInfo.label} · Select Year</h1>
-              <div className="flex-shrink-0 w-9" />
+              {isAdmin ? (
+                <div className="flex flex-shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={openAdminPanel}
+                    className="rounded-lg p-2 transition-colors hover:bg-accent active:scale-95"
+                    aria-label="Admin: Manage questions"
+                    title="Admin: Manage questions"
+                  >
+                    <Shield className="h-[18px] w-[18px] text-muted-foreground" />
+                  </button>
+                  <Link
+                    to="/admin/jamb-questions"
+                    className="rounded-lg p-2 transition-colors hover:bg-accent active:scale-95"
+                    aria-label="Admin: Source import and review"
+                    title="Admin: Source import and review"
+                  >
+                    <FileCheck2 className="h-[18px] w-[18px] text-muted-foreground" />
+                  </Link>
+                </div>
+              ) : <div className="flex-shrink-0 w-9" />}
             </>
           ) : view === "questions" ? (
             <>
@@ -604,6 +640,16 @@ export default function JambPastQuestionsPage() {
                   <Shield className="h-[18px] w-[18px] text-muted-foreground" />
                 </button>
               ) : <div className="flex-shrink-0 w-9" />}
+              {isAdmin && (
+                <Link
+                  to="/admin/jamb-questions"
+                  className="flex-shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-95"
+                  aria-label="Admin: Source import and review"
+                  title="Admin: Source import and review"
+                >
+                  <FileCheck2 className="h-[18px] w-[18px] text-muted-foreground" />
+                </Link>
+              )}
             </>
           ) : (
             <>
@@ -1062,7 +1108,7 @@ export default function JambPastQuestionsPage() {
           question={selectedAdminQuestion}
           questions={questions}
           subject={subject}
-          year={year ?? selectedAdminQuestion?.year ?? 2027}
+          year={year ?? selectedAdminQuestion?.year ?? expandedYear ?? years[0] ?? JAMB_TARGET_EXAM_YEAR}
           category="objective"
           onQuestionUpdated={handleAdminQuestionUpdated}
           onQuestionDeleted={handleAdminQuestionDeleted}

@@ -241,7 +241,7 @@ export function JambAdminQuestionPanel({
       if (invokeError) throw invokeError;
       if (data?.error) throw new Error(String(data.error));
       const saved = data?.answerDraft;
-      if (!saved || saved.questionId !== editingQuestion.id || saved.visibility?.hidden === false) {
+      if (!saved || saved.questionId !== editingQuestion.id || data?.visibility?.hidden !== true || data?.visibility?.reviewStatus !== "needs_review") {
         if (!saved) throw new Error("The server did not return the saved answer draft.");
         throw new Error("The server returned an unexpected visibility state. Reload before continuing.");
       }

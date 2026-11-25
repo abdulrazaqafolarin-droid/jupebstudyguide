@@ -79,6 +79,20 @@ WHERE key.question_id = question.id
   AND key.review_status = 'needs_review';
 
 UPDATE public.study_question_answer_keys AS key
+SET confidence_level = 'high',
+    confidence_note = 'A 1 kg load exerts 10 N and the 1.2 cm extension is 0.012 m; k = F/x = 10/0.012 ≈ 833 N m⁻¹, matching option B.',
+    evidence_reference = 'Physics.txt | 2012:Q15 | k = mg / extension',
+    draft_version = GREATEST(key.draft_version, 1),
+    updated_at = now()
+FROM public.study_questions AS question
+WHERE key.question_id = question.id
+  AND question.id = 'jamb-3b03182910b2c6d11e0e2dd1b8a0f4bd'
+  AND question.exam_program_id = 'jamb'
+  AND question.hidden IS TRUE
+  AND question.review_status = 'needs_review'
+  AND key.review_status = 'needs_review';
+
+UPDATE public.study_question_answer_keys AS key
 SET confidence_level = 'low',
     confidence_note = 'Published past-question answer references conflict on this novel item; keep option D provisional until checked against the novel or a reliable original key.',
     evidence_reference = 'JAMB_english_READABLE.txt | 2013:Q27 | https://www.utmeprep.app/past-questions/english/2013 ; https://www.deeepsolve.com/jamb/english-language/2013',

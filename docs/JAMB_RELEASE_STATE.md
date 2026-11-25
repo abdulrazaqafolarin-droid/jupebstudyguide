@@ -286,3 +286,40 @@ The JAMB admin question manager now has an opt-in **Include hidden questions nee
 The live `question-import` Edge Function was updated to **v6**. Its new `include_review_queue` flag is available only after the existing Bearer-token, active-session, JAMB-entitlement and administrator checks. Without that flag, the endpoint continues to require `hidden=false` and `review_status=published`. Student-facing question retrieval and CBT selection remain published-only. No question was published or made visible to students by this continuation.
 
 The corresponding UI and type changes are committed on `feat/rutex-jamb-workspace` at `3281d139f714cb27610556eee95b4e82bf3c4eac`, within Draft PR #78. Production UI has not been deployed; the Vercel checks are currently blocked by the account's build-rate limit. Before any learner release, pending keys still require academic review, source rights must be confirmed, and Use of English's subject availability/source-reference exception must be addressed.
+
+## Answer-draft confidence and safe revision path — 25 November 2026
+
+A read-only review of the current connected JAMB data found 7,630 questions and 7,630 protected answer-key records across Biology (1,457), Chemistry (1,608), Physics (743) and Use of English (3,822). Every question remains `hidden=true` / `needs_review`; every answer key remains `needs_review`. None was approved or published during this continuation.
+
+The structural audit found no missing/invalid answer labels, no answer labels outside the stored options, no explanations shorter than 12 characters, no malformed or missing source references, and no malformed option sets. This verifies data shape, not academic correctness.
+
+The five candidates named in the prior review screenshot were already in the database; this continuation did not insert duplicates:
+
+| Subject / source | Existing draft | Confidence assessment |
+| --- | --- | --- |
+| Biology 2002:Q29 — mammalian erythrocytes | B | High: mature mammalian erythrocytes are biconcave and anucleate. Source wording and options are present in `Biology.txt`. |
+| Physics 1981:Q43 — 5 g wt to 20 g wt extension | E (2.24 cm) | High: Hooke's law gives a load ratio of 4, so extension is 0.56 × 4 = 2.24 cm. |
+| Use of English 2013:Q27 — `The Potter's Wheel` | D (father had gone on a long journey) | Low: online answer references conflict. Keep provisional until the novel passage or a reliable original answer key settles the discrepancy. |
+| Use of English 2016:Q6 — GPS development decade | B (1970s) | Medium: official FAA history dates the NAVSTAR GPS programme to 1973, but the original JAMB comprehension passage is missing from the extraction. |
+| Use of English 2016:Q7 — GPS's initial purpose | C (security / military purposes) | Low: official GPS history supports military use, but the exact original passage wording is absent. Do not approve based only on outside historical context. |
+
+A separate Physics 2012:Q15 question was also confirmed from the source: a 1 kg load is 10 N, the 1.2 cm extension is 0.012 m, and (k=F/x=10/0.012\approx833\,\mathrm{N\,m^{-1}}), so the stored answer B is consistent.
+
+### Review blockers found
+
+- **188 diagram-dependent questions have no attached image**: Biology 117, Chemistry 68 and Physics 3. They remain hidden; do not infer the correct option from a missing diagram or label.
+- **Eight duplicate source-reference groups need content-level review**: Biology 1981:Q47, 1995:Q26 and 2003:Q5; Chemistry 1978:Q26, 1979:Q11, 1979:Q13, 1980:Q16 and 1981:Q14. Matching references alone are not enough to decide whether records are duplicates or distinct variants.
+- The source question count and answer-key structure are complete in the current database snapshot, but these checks do not establish that all 7,630 academic answers are correct.
+
+### Feature-branch implementation
+
+The following changes are committed to `feat/rutex-jamb-workspace` within Draft PR #78:
+
+- Added private answer confidence, confidence note, evidence reference and optimistic draft-version columns. The new migration seeds confidence notes for the reviewed candidates (including the separate 2012 Physics calculation) without changing their answer letters, explanations, `needs_review` status or hidden state.
+- Added server-side draft validation and tests for answer-option matching, complete option sets, meaningful explanations, confidence notes and evidence-reference limits.
+- Added an admin-authenticated `save-answer-draft` action. It only accepts questions that are still hidden and `needs_review`; approved/rejected keys are refused. It does not alter question text, options, images, rights attestations, approval status or learner visibility. A draft-version check prevents overwriting a newer review, and a private audit entry records the before/after answer metadata while explicitly recording that no source-rights attestation was made.
+- Added confidence/evidence fields and a **Save answer draft only** control to the JAMB admin question manager. The existing publish path remains a separate action gated by fresh rights and answer verification.
+
+**Release status:** code and migration are on the feature branch only. The new migration has **not** been applied to Supabase and the changed Edge Function has **not** been deployed. No live database rows were changed by this continuation; production remains hidden and unchanged. Pair the migration and Edge Function deployment before testing the new admin save control. The PR remains Draft and has not been merged.
+
+The database did not previously contain a `v19` marker or confidence fields. This branch introduces a general monotonic `draft_version` for safe concurrent edits; it does not claim that a historical v19 draft was present in live data.

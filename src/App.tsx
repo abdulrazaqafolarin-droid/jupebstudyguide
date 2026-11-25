@@ -14,6 +14,7 @@ import { ChatUnreadProvider } from "@/contexts/ChatUnreadContext";
 import { PushNotificationsProvider } from "@/contexts/PushNotificationsContext";
 import { NativeNotificationBridge } from "@/components/NativeNotificationBridge";
 import { NativeAuthDeepLinkBridge } from "@/components/NativeAuthDeepLinkBridge";
+import { AutoCloudBackup } from "@/components/AutoCloudBackup";
 import ProtectedRoute, { AdminRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import BottomNav from "@/components/BottomNav";
@@ -47,6 +48,7 @@ const DiscoverPage = lazy(() => import("./pages/DiscoverPage"));
 const StudyPastQuestions = lazy(() => import("./pages/StudyPastQuestions"));
 const FriendsPage = lazy(() => import("./pages/FriendsPage"));
 const DownloadApp = lazy(() => import("./pages/DownloadApp"));
+const InstallPWA = lazy(() => import("./pages/InstallPWA"));
 const ActivationCodes = lazy(() => import("./pages/admin/ActivationCodes"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const SyllabusPage = lazy(() => import("./pages/SyllabusPage"));
@@ -87,7 +89,7 @@ function AppNotificationBar() {
   return (
     <InAppNotificationBar
       onOpenConversation={(convId) => {
-        navigate(`/chat?conversation=${convId}`);
+        navigate(`/chat/${encodeURIComponent(convId)}`);
       }}
       onOpenFriendsTab={() => navigate('/friends')}
     />
@@ -119,6 +121,7 @@ function AnimatedRoutes() {
         <Routes location={location} key={location.pathname}>
         <Route path="/auth" element={<ErrorBoundary><Auth /></ErrorBoundary>} />
         <Route path="/download" element={<ErrorBoundary><DownloadApp /></ErrorBoundary>} />
+        <Route path="/install" element={<ErrorBoundary><InstallPWA /></ErrorBoundary>} />
         <Route 
           path="/" 
           element={
@@ -132,7 +135,7 @@ function AnimatedRoutes() {
           } 
         />
         <Route 
-          path="/chat" 
+          path="/chat/:conversationId?" 
           element={
             <ProtectedRoute>
               <ErrorBoundary>
@@ -380,15 +383,16 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
+          <AutoCloudBackup />
         <PushNotificationsProvider>
         <ChatUnreadProvider>
           <ProfilePhotoViewerProvider>
             <Toaster />
             <Sonner />
-            <InstallPrompt />
             <SWUpdatePrompt />
             <AppUpdatePrompt />
             <BrowserRouter>
+              <InstallPrompt />
               {/* Router-root providers: presence channels and notification
                   state persist across route changes instead of churning on
                   every navigation (see ProtectedLayout note). */}

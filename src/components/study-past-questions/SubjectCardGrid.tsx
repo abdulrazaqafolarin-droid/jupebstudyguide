@@ -28,7 +28,9 @@ const SUBJECT_COLORS: Record<Subject, { gradient: string; light: string; accent:
 };
 
 export function SubjectCardGrid({ onSelect, counts }: SubjectCardGridProps) {
-  const subjects = Object.keys(STUDY_SUBJECT_INFO) as Subject[];
+  const subjects = (Object.keys(STUDY_SUBJECT_INFO) as Subject[]).filter(
+    (subject) => counts?.[subject] === undefined || counts[subject] > 0
+  );
 
   return (
     <motion.div

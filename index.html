@@ -26,15 +26,45 @@
     <a href="#root" class="sr-only skip-link">Skip to main content</a>
     <div id="root"></div>
     <script>
-      // Keep the worker for browser push notifications. App updates are
-      // delivered as normal website deployments and signed Android releases.
-      if (location.hostname !== 'localhost' && 'serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (error) {
-            console.warn('[JUPEB] service worker registration skipped:', error);
+      // swreset=1 is a one-shot recovery link for a stale PWA shell. Remove
+      // workers and Cache Storage only; preserve the student's auth and study data.
+      (function () {
+        var url = new URL(window.location.href);
+        if (url.searchParams.get('swreset') === '1') {
+          url.searchParams.delete('swreset');
+          var destination = url.pathname + (url.search ? url.search : '') + url.hash;
+          Promise.resolve().then(async function () {
+            try {
+              if ('serviceWorker' in navigator) {
+                var registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map(function (registration) {
+                  return registration.unregister();
+                }));
+              }
+              if ('caches' in window) {
+                var cacheNames = await window.caches.keys();
+                await Promise.all(cacheNames.map(function (name) {
+                  return window.caches.delete(name);
+                }));
+              }
+            } catch (error) {
+              console.warn('[JUPEB] cache recovery could not clear every entry:', error);
+            }
+            window.location.replace(destination);
           });
-        });
-      }
+          return;
+        }
+
+        // Keep the worker for browser push notifications. App updates are
+        // delivered as normal website deployments and signed Android releases.
+        if (location.hostname !== 'localhost' && 'serviceWorker' in navigator) {
+          window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(function (error) {
+              console.warn('[JUPEB] service worker registration skipped:', error);
+            });
+          });
+        }
+      })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

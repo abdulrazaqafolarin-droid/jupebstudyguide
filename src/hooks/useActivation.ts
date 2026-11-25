@@ -56,33 +56,46 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
   const isAdminEmail = user.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
 
   try {
-    const { data, error } = await withActivationTimeout(
-      (signal) => supabase
-        .from("profiles")
-        .select("is_activated, is_admin, trial_expires_at, subscription_expires_at")
-        .eq("user_id", user.id)
-        .abortSignal(signal)
-        .single(),
-      "Activation check",
-    );
+    const [profileResult, entitlementResult] = await Promise.all([
+      withActivationTimeout(
+        (signal) => supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("user_id", user.id)
+          .abortSignal(signal)
+          .single(),
+        "Profile check",
+      ),
+      withActivationTimeout(
+        (signal) => supabase
+          .from("exam_program_entitlements")
+          .select("trial_expires_at, subscription_expires_at")
+          .eq("user_id", user.id)
+          .eq("exam_program_id", "jupeb")
+          .abortSignal(signal)
+          .maybeSingle(),
+        "JUPEB entitlement check",
+      ),
+    ]);
 
-    if (error) throw error;
+    if (profileResult.error) throw profileResult.error;
+    if (entitlementResult.error) throw entitlementResult.error;
 
-    // Admin status is granted only by trusted server-side configuration or
-    // an administrator-managed profile flag. Never promote a profile from
-    // the client: users can update their own profile fields through RLS.
+    const trialExpiresAt = entitlementResult.data?.trial_expires_at ?? null;
+    const subscriptionExpiresAt = entitlementResult.data?.subscription_expires_at ?? null;
+
     return {
       status: {
-        is_activated: data?.is_activated ?? false,
-        is_admin: isAdminEmail || (data?.is_admin ?? false),
-        trial_expires_at: data?.trial_expires_at ?? null,
-        subscription_expires_at: data?.subscription_expires_at ?? null,
+        is_activated: Boolean(subscriptionExpiresAt && Date.parse(subscriptionExpiresAt) > Date.now()),
+        is_admin: isAdminEmail || (profileResult.data?.is_admin ?? false),
+        trial_expires_at: trialExpiresAt,
+        subscription_expires_at: subscriptionExpiresAt,
         checking: false,
       },
       cacheable: true,
     };
   } catch (err) {
-    console.error("Activation check error:", err);
+    console.error("JUPEB activation check error:", err);
     const cached = activationCache?.userId === user.id ? activationCache.status : null;
     return {
       status: resolveActivationFailure(isAdminEmail, cached),
@@ -166,6 +179,7 @@ export function useActivation() {
         (signal) => supabase.rpc("consume_activation_code", {
           p_code: normalized,
           p_user_id: user.id,
+          p_exam_program_id: "jupeb",
         }).abortSignal(signal),
         "Activation code validation",
       );
@@ -216,6 +230,7 @@ export interface ActivationCodeResult {
   id: string;
   code: string;
   plan_type: string | null;
+  duration_days: number | null;
   is_used: boolean;
   used_by: string | null;
   used_at: string | null;
@@ -228,31 +243,41 @@ export function useAdminCodes() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  const generateCodes = useCallback(async (count: number, plan_type: string): Promise<{ success: boolean; codes?: ActivationCodeResult[]; error?: string }> => {
+  const generateCodes = useCallback(async (count: number, durationDays: number): Promise<{ success: boolean; codes?: ActivationCodeResult[]; error?: string }> => {
+    if (!user?.id) {
+      return { success: false, error: "You must be signed in as an administrator to generate codes." };
+    }
+
     setLoading(true);
     try {
       const { data, error } = await supabase.rpc("generate_activation_codes", {
-        p_created_by: user?.id,
+        p_created_by: user.id,
         p_count: Math.min(count, 100),
-        p_plan_type: plan_type,
+        p_duration_days: durationDays,
+        p_exam_program_id: "jupeb",
       });
 
       if (error) {
         console.error("generate_activation_codes RPC error:", error);
-        setLoading(false);
         return { success: false, error: error.message };
       }
 
-      const rows = (data || []) as Array<{ code: string; plan_type: string; expires_at: string | null }>;
-      const mapped: ActivationCodeResult[] = rows.map((r) => ({
-        id: "", code: r.code, plan_type: r.plan_type, is_used: false,
-        used_by: null, used_at: null, created_at: new Date().toISOString(),
+      const rows = (data || []) as Array<{ code: string; plan_type: string; duration_days: number }>;
+      const mapped: ActivationCodeResult[] = rows.map((row) => ({
+        id: "",
+        code: row.code,
+        plan_type: row.plan_type,
+        duration_days: row.duration_days,
+        is_used: false,
+        used_by: null,
+        used_at: null,
+        created_at: new Date().toISOString(),
       }));
-      setLoading(false);
-      return { success: true, codes: mapped };
+      return { success: mapped.length > 0, codes: mapped, error: mapped.length ? undefined : "No activation codes were returned." };
     } catch (err) {
-      setLoading(false);
       return { success: false, error: err instanceof Error ? err.message : "Error" };
+    } finally {
+      setLoading(false);
     }
   }, [user]);
 
@@ -261,7 +286,8 @@ export function useAdminCodes() {
     try {
       const { data: rawCodes, error } = await supabase
         .from("activation_codes")
-        .select("id, code, plan_type, is_used, used_by, used_at, created_at")
+        .select("id, code, plan_type, duration_days, exam_program_id, is_used, used_by, used_at, created_at")
+        .eq("exam_program_id", "jupeb")
         .order("created_at", { ascending: false })
         .limit(200);
 

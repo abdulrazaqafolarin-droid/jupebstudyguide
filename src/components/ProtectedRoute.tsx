@@ -109,13 +109,14 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     return mayEnter ? <>{children}</> : <Navigate to="/" replace />;
   }
 
-  if (!status.completedAt) return <Navigate to="/onboarding" replace />;
+  if (!status.completedAt) return <Navigate to="/onboarding" replace state={{ from: location }} />;
 
   return <>{children}</>;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   // Activation and onboarding are independent backend reads. Start onboarding
   // while ActivationGate is checking, rather than serializing both network
@@ -139,7 +140,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth" replace state={{ from: location }} />;
   }
 
   return (
@@ -151,6 +152,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
   const [checking, setChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -185,7 +187,7 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!user) return <Navigate to="/auth" replace state={{ from: location }} />;
   if (!isAdmin) return <Navigate to="/" replace />;
 
   return <>{children}</>;

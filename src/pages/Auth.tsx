@@ -35,6 +35,10 @@ const Auth = () => {
   const { signIn, verifyMfa, signUp, resetPassword, updatePassword, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const requestedLocation = location.state?.from as { pathname?: string; search?: string; hash?: string } | undefined;
+  const returnTo = requestedLocation?.pathname?.startsWith('/') && !requestedLocation.pathname.startsWith('//')
+    ? `${requestedLocation.pathname}${requestedLocation.search ?? ''}${requestedLocation.hash ?? ''}`
+    : '/';
 
   useEffect(() => {
     if (new URLSearchParams(location.search).get('flow') === 'recovery') {
@@ -61,7 +65,7 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     try {
-      const { error } = await signInWithGoogle();
+      const { error } = await signInWithGoogle(returnTo);
       if (error) {
         toast({
           title: "Google sign-in failed",
@@ -163,7 +167,7 @@ const Auth = () => {
             title: "Welcome back!",
             description: "You've successfully logged in.",
           });
-          navigate('/');
+          navigate(returnTo, { replace: true });
         }
       } else {
         const { error, needsEmailConfirmation } = await signUp(email, password);
@@ -214,7 +218,7 @@ const Auth = () => {
         title: "Welcome back!",
         description: "Two-factor verification successful.",
       });
-      navigate('/');
+      navigate(returnTo, { replace: true });
     } finally {
       setMfaVerifying(false);
     }

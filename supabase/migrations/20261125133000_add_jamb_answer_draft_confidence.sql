@@ -48,7 +48,7 @@ COMMENT ON COLUMN public.study_question_answer_keys.evidence_reference IS
 COMMENT ON COLUMN public.study_question_answer_keys.draft_version IS
   'Monotonic revision number used for optimistic concurrency when saving hidden JAMB answer drafts.';
 
--- Seed confidence metadata for the five already-existing screenshot candidates.
+-- Seed confidence metadata for the five existing screenshot candidates and one separately confirmed Physics item.
 -- Answer letters, explanations, review states and question visibility are unchanged.
 UPDATE public.study_question_answer_keys AS answer_key
 SET confidence_level = 'high',

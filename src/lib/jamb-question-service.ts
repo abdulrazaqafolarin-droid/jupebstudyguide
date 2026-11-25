@@ -23,6 +23,10 @@ export interface JambQuestion {
   explanation?: string;
   answerKeyStatus?: string;
   answerKeyVerified?: boolean;
+  answerConfidence?: "unrated" | "low" | "medium" | "high";
+  confidenceNote?: string;
+  evidenceReference?: string;
+  draftVersion?: number;
   /** Present only in the protected admin question-manager response. */
   reviewStatus?: string;
   hidden?: boolean;

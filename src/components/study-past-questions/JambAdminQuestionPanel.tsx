@@ -81,6 +81,11 @@ export function JambAdminQuestionPanel({
   const [rightsNote, setRightsNote] = useState("");
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
   const [answerKeyVerified, setAnswerKeyVerified] = useState(false);
+  const [answerConfidence, setAnswerConfidence] = useState<"unrated" | "low" | "medium" | "high">("unrated");
+  const [confidenceNote, setConfidenceNote] = useState("");
+  const [evidenceReference, setEvidenceReference] = useState("");
+  const [draftVersion, setDraftVersion] = useState(0);
+  const [savedDraftMessage, setSavedDraftMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const objectUrlsRef = useRef<string[]>([]);
   const pendingFilesRef = useRef<File[]>([]);
@@ -166,6 +171,11 @@ export function JambAdminQuestionPanel({
     setRightsNote("");
     setRightsConfirmed(false);
     setAnswerKeyVerified(false);
+    setAnswerConfidence("unrated");
+    setConfidenceNote("");
+    setEvidenceReference("");
+    setDraftVersion(q.draftVersion ?? 0);
+    setSavedDraftMessage(null);
     setError(null);
 
     try {
@@ -180,6 +190,13 @@ export function JambAdminQuestionPanel({
           setCorrectAnswer(String(detail.correctAnswer || ""));
           setExplanation(String(detail.explanation || ""));
           setAnswerKeyVerified(detail.answerKeyVerified === true);
+          const confidence = String(detail.answerConfidence || "unrated");
+          setAnswerConfidence(["unrated", "low", "medium", "high"].includes(confidence)
+            ? confidence as "unrated" | "low" | "medium" | "high"
+            : "unrated");
+          setConfidenceNote(String(detail.confidenceNote || ""));
+          setEvidenceReference(String(detail.evidenceReference || ""));
+          setDraftVersion(Number.isInteger(detail.draftVersion) ? Number(detail.draftVersion) : q.draftVersion ?? 0);
         }
         setSourceReference(String(detail.sourceReference || ""));
         setSourceDocument(String(detail.sourceDocument || ""));
@@ -197,6 +214,67 @@ export function JambAdminQuestionPanel({
       }
     }
   }, []);
+
+  const handleSaveAnswerDraft = async () => {
+    if (!includeReviewQueue || mode !== "edit" || !editingQuestion) {
+      setError("Open a pending JAMB question before saving an answer draft.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    setSavedDraftMessage(null);
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke("question-import", {
+        body: {
+          exam_program_id: "jamb",
+          action: "manage-question",
+          operation: "save-answer-draft",
+          question_id: editingQuestion.id,
+          expected_draft_version: draftVersion,
+          correct_answer: correctAnswer.trim().toUpperCase(),
+          explanation: explanation.trim(),
+          confidence_level: answerConfidence,
+          confidence_note: confidenceNote.trim(),
+          evidence_reference: evidenceReference.trim(),
+        },
+      });
+      if (invokeError) throw invokeError;
+      if (data?.error) throw new Error(String(data.error));
+      const saved = data?.answerDraft;
+      if (!saved || saved.questionId !== editingQuestion.id || saved.visibility?.hidden === false) {
+        if (!saved) throw new Error("The server did not return the saved answer draft.");
+        throw new Error("The server returned an unexpected visibility state. Reload before continuing.");
+      }
+      const nextVersion = Number(saved.draftVersion);
+      setDraftVersion(Number.isInteger(nextVersion) ? nextVersion : draftVersion + 1);
+      setAnswerConfidence(saved.answerConfidence === "low" || saved.answerConfidence === "medium" || saved.answerConfidence === "high"
+        ? saved.answerConfidence
+        : "unrated");
+      setConfidenceNote(String(saved.confidenceNote ?? confidenceNote));
+      setEvidenceReference(String(saved.evidenceReference ?? evidenceReference));
+      setManagerQuestions((previous) => previous.map((item) => item.id === editingQuestion.id
+        ? {
+            ...item,
+            correctAnswer: String(saved.correctAnswer ?? correctAnswer),
+            explanation: String(saved.explanation ?? explanation),
+            answerKeyStatus: "needs_review",
+            answerKeyVerified: false,
+            answerConfidence: saved.answerConfidence,
+            confidenceNote: String(saved.confidenceNote ?? confidenceNote),
+            evidenceReference: String(saved.evidenceReference ?? evidenceReference),
+            draftVersion: Number.isInteger(nextVersion) ? nextVersion : draftVersion + 1,
+          }
+        : item));
+      setCorrectAnswer(String(saved.correctAnswer ?? correctAnswer));
+      setExplanation(String(saved.explanation ?? explanation));
+      setAnswerKeyVerified(false);
+      setSavedDraftMessage("Answer draft saved. It remains hidden from learners and is still awaiting independent review.");
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Could not save this answer draft.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const resetForm = useCallback(() => {
     loadQuestionRequestRef.current += 1;
@@ -228,6 +306,11 @@ export function JambAdminQuestionPanel({
     setRightsNote("");
     setRightsConfirmed(false);
     setAnswerKeyVerified(false);
+    setAnswerConfidence("unrated");
+    setConfidenceNote("");
+    setEvidenceReference("");
+    setDraftVersion(0);
+    setSavedDraftMessage(null);
     setError(null);
   }, []);
 
@@ -643,6 +726,11 @@ export function JambAdminQuestionPanel({
                       {error}
                     </div>
                   )}
+                  {savedDraftMessage && (
+                    <div role="status" className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-sm text-emerald-800 dark:text-emerald-300">
+                      {savedDraftMessage}
+                    </div>
+                  )}
 
                   {includeReviewQueue && (
                     <div className="rounded-xl border border-amber-500/40 bg-amber-500/5 p-3 text-xs leading-relaxed">
@@ -917,6 +1005,55 @@ export function JambAdminQuestionPanel({
                     <span>I independently checked the selected correct option and explanation against a reliable answer source. This answer key may be used for student feedback and scored CBT only after approval.</span>
                   </label>
 
+                  {includeReviewQueue && mode === "edit" && (
+                    <div className="rounded-xl border border-border/70 bg-card/50 p-3 space-y-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold">Answer draft confidence</p>
+                        <span className="text-[11px] text-muted-foreground">Draft v{draftVersion}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        These fields are saved without changing the question text, options, source record, publication state or learner visibility.
+                      </p>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Confidence level</label>
+                        <select
+                          value={answerConfidence}
+                          onChange={(event) => setAnswerConfidence(event.target.value as "unrated" | "low" | "medium" | "high")}
+                          className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        >
+                          <option value="unrated">Choose confidence</option>
+                          <option value="low">Low — tentative or incomplete evidence</option>
+                          <option value="medium">Medium — supported, but source context is incomplete</option>
+                          <option value="high">High — directly supported or independently calculated</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Why this confidence level?</label>
+                        <textarea
+                          value={confidenceNote}
+                          onChange={(event) => setConfidenceNote(event.target.value)}
+                          rows={2}
+                          className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
+                          placeholder="State what evidence supports or limits this answer..."
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Evidence / calculation reference (optional)</label>
+                        <input
+                          type="text"
+                          value={evidenceReference}
+                          onChange={(event) => setEvidenceReference(event.target.value)}
+                          maxLength={2000}
+                          className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          placeholder="e.g. Physics.txt · 2012:Q15 · k = F/x"
+                        />
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Saving this draft does not certify source-use rights or approve the answer. The question remains hidden and the key remains needs_review.
+                      </p>
+                    </div>
+                  )}
+
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1 block">Explanation</label>
                     <textarea
@@ -1131,6 +1268,18 @@ export function JambAdminQuestionPanel({
 
             {mode && !confirmDelete && (
               <div className="flex items-center justify-end gap-2 p-4 border-t shrink-0">
+                {includeReviewQueue && mode === "edit" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void handleSaveAnswerDraft()}
+                    disabled={saving || uploadingImage}
+                    className="flex items-center gap-1"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Saving..." : "Save answer draft only"}
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -1142,11 +1291,11 @@ export function JambAdminQuestionPanel({
                 <Button
                   size="sm"
                   onClick={handleSave}
-                  disabled={saving || uploadingImage}
+                  disabled={saving || uploadingImage || (includeReviewQueue && mode === "edit" && !answerKeyVerified)}
                   className="flex items-center gap-1"
                 >
                   {uploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                  {uploadingImage ? "Uploading image..." : saving ? "Saving..." : "Save"}
+                  {uploadingImage ? "Uploading image..." : saving ? "Saving..." : includeReviewQueue && mode === "edit" ? "Save & publish verified" : "Save"}
                 </Button>
               </div>
             )}

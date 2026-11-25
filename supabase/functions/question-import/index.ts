@@ -5,6 +5,7 @@ import { hasActiveStudyAccess } from "../_shared/exam-access.ts";
 import { JAMB_IMPORT_PROTOCOL_VERSION, resolveJambImportItemRange } from "../_shared/jamb-import-range.ts";
 import { getJambReviewDecisionError } from "../_shared/jamb-review-validation.ts";
 import { parseJambSourceReference } from "../_shared/jamb-source-reference.ts";
+import { getJambAnswerDraftError } from "../_shared/jamb-answer-draft.ts";
 import { extractJambSourceAnswerSuggestions } from "../_shared/jamb-import-answer-suggestions.ts";
 import {
   getJambQuestionManagerVisibility,
@@ -485,7 +486,7 @@ Deno.serve(async (request: Request) => {
           .map((row) => row.source_batch_id)
           .filter((id): id is string => typeof id === "string" && id.length > 0))];
         const [keysResult, auditsResult, batchesResult] = await Promise.all([
-          answerKeyTable.select("question_id,correct_answer,explanation,review_status").in("question_id", questionIds),
+          answerKeyTable.select("question_id,correct_answer,explanation,review_status,confidence_level,confidence_note,evidence_reference,draft_version").in("question_id", questionIds),
           auditTable.select("question_id,rights_note,source_document,source_reference,created_at")
             .in("question_id", questionIds).order("created_at", { ascending: false }).limit(2000),
           sourceBatchIds.length
@@ -523,6 +524,10 @@ Deno.serve(async (request: Request) => {
             correctAnswer: key?.correct_answer ?? "", explanation: key?.explanation ?? "",
             answerKeyStatus: key?.review_status ?? "missing",
             answerKeyVerified: key?.review_status === "approved",
+            answerConfidence: key?.confidence_level ?? "unrated",
+            confidenceNote: key?.confidence_note ?? "",
+            evidenceReference: key?.evidence_reference ?? "",
+            draftVersion: key?.draft_version ?? 0,
             difficulty: row.difficulty ?? "medium", topic: row.course ?? "",
             sortOrder: row.sort_order ?? 0, imageUrl: row.image_url ?? imageUrls[0] ?? null,
             imageUrls, imagePosition: row.image_position ?? (imageUrls.length ? "image-only" : "text-only"),
@@ -548,7 +553,7 @@ Deno.serve(async (request: Request) => {
         if (!row) return respond({ error: "JAMB question not found" }, 404);
 
         const { data: key, error: keyError } = await answerKeyTable
-          .select("correct_answer,explanation,review_status,source_ref,reviewed_by,reviewed_at")
+          .select("correct_answer,explanation,review_status,source_ref,reviewed_by,reviewed_at,confidence_level,confidence_note,evidence_reference,draft_version")
           .eq("question_id", questionId)
           .maybeSingle();
         if (keyError) return respond({ error: keyError.message }, 500);
@@ -589,6 +594,10 @@ Deno.serve(async (request: Request) => {
             explanation: key?.explanation ?? "",
             answerKeyStatus: key?.review_status ?? "missing",
             answerKeyVerified: key?.review_status === "approved",
+            answerConfidence: key?.confidence_level ?? "unrated",
+            confidenceNote: key?.confidence_note ?? "",
+            evidenceReference: key?.evidence_reference ?? "",
+            draftVersion: key?.draft_version ?? 0,
             difficulty: row.difficulty ?? "medium",
             topic: row.course ?? "",
             sortOrder: row.sort_order ?? 0,
@@ -601,6 +610,121 @@ Deno.serve(async (request: Request) => {
             sourceQuestionNumber: row.source_question_number ?? "",
             rightsNote: audit?.rights_note ?? sourceBatch?.rights_note ?? "",
           },
+        });
+      }
+
+      if (operation === "save-answer-draft") {
+        const questionId = asText(body.question_id);
+        const expectedVersion = Number(body.expected_draft_version);
+        if (!questionId || !Number.isInteger(expectedVersion) || expectedVersion < 0) {
+          return respond({ error: "question_id and the current draft version are required" }, 400);
+        }
+
+        const { data: row, error: rowError } = await questionTable
+          .select("*")
+          .eq("id", questionId)
+          .eq("exam_program_id", "jamb")
+          .maybeSingle();
+        if (rowError) return respond({ error: rowError.message }, 500);
+        if (!row) return respond({ error: "JAMB question not found" }, 404);
+
+        // This endpoint is deliberately answer-only and cannot change visibility.
+        if (row.hidden !== true || row.review_status !== "needs_review") {
+          return respond({ error: "Only hidden JAMB questions awaiting review can receive answer-draft updates" }, 409);
+        }
+
+        const { data: beforeKey, error: beforeKeyError } = await answerKeyTable
+          .select("*")
+          .eq("question_id", questionId)
+          .maybeSingle();
+        if (beforeKeyError) return respond({ error: beforeKeyError.message }, 500);
+        if (beforeKey && beforeKey.review_status !== "needs_review") {
+          return respond({ error: "Approved or rejected answer keys cannot be changed through the draft-only action" }, 409);
+        }
+
+        const currentVersion = beforeKey ? Number(beforeKey.draft_version ?? 1) : 0;
+        if (expectedVersion !== currentVersion) {
+          return respond({
+            error: "This answer draft changed since it was opened. Reload it before saving.",
+            expected_draft_version: expectedVersion,
+            current_draft_version: currentVersion,
+          }, 409);
+        }
+
+        const correctAnswer = asText(body.correct_answer).toUpperCase();
+        const explanation = asText(body.explanation);
+        const confidenceLevel = asText(body.confidence_level).toLowerCase();
+        const confidenceNote = asText(body.confidence_note);
+        const evidenceReference = asText(body.evidence_reference);
+        const validationError = getJambAnswerDraftError({
+          correctAnswer,
+          explanation,
+          confidenceLevel,
+          confidenceNote,
+          evidenceReference,
+          options: row.options,
+        });
+        if (validationError) return respond({ error: validationError }, 422);
+
+        const now = new Date().toISOString();
+        const keyPayload = {
+          question_id: questionId,
+          correct_answer: correctAnswer,
+          explanation,
+          review_status: "needs_review",
+          source_ref: row.source_ref,
+          reviewed_by: null,
+          reviewed_at: null,
+          confidence_level: confidenceLevel,
+          confidence_note: confidenceNote,
+          evidence_reference: evidenceReference || null,
+          draft_version: currentVersion + 1,
+          updated_at: now,
+        };
+        const { data: savedKey, error: keySaveError } = await answerKeyTable
+          .upsert(keyPayload, { onConflict: "question_id" })
+          .select("*")
+          .single();
+        if (keySaveError) return respond({ error: keySaveError.message }, 500);
+
+        const auditPayload = {
+          question_id: questionId,
+          actor_id: user.id,
+          operation: "answer-draft-update",
+          source_reference: row.source_ref ?? null,
+          source_document: row.source_document ?? null,
+          rights_confirmed: false,
+          rights_note: "No source-rights change or attestation; answer draft only.",
+          payload_sha256: null,
+          before_payload: beforeKey ? serializeAuditPayload({ answer_key: beforeKey }) : null,
+          after_payload: serializeAuditPayload({
+            answer_key: savedKey,
+            question_visibility: { hidden: row.hidden, review_status: row.review_status },
+          }),
+        };
+        const { error: auditSaveError } = await auditTable.insert(auditPayload);
+        if (auditSaveError) {
+          if (beforeKey) {
+            await answerKeyTable.upsert(beforeKey, { onConflict: "question_id" });
+          } else {
+            await answerKeyTable.delete().eq("question_id", questionId);
+          }
+          return respond({ error: "Answer draft was not saved because its audit record could not be written: " + auditSaveError.message }, 500);
+        }
+
+        return respond({
+          answerDraft: {
+            questionId,
+            correctAnswer: savedKey.correct_answer,
+            explanation: savedKey.explanation ?? "",
+            answerKeyStatus: savedKey.review_status,
+            answerKeyVerified: false,
+            answerConfidence: savedKey.confidence_level,
+            confidenceNote: savedKey.confidence_note ?? "",
+            evidenceReference: savedKey.evidence_reference ?? "",
+            draftVersion: savedKey.draft_version,
+          },
+          visibility: { hidden: true, reviewStatus: "needs_review" },
         });
       }
 

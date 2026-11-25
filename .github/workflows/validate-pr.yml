@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git grep -nE 'AQ\\.[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}' -- ':!*.pdf'; then
+          if git grep -nE 'AQ\.[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}' -- ':!*.pdf'; then
             echo "::error::A hard-coded Gemini API credential was found in tracked repository files."
             exit 1
           fi

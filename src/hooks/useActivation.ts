@@ -244,10 +244,14 @@ export function useAdminCodes() {
   const { user } = useAuth();
 
   const generateCodes = useCallback(async (count: number, durationDays: number): Promise<{ success: boolean; codes?: ActivationCodeResult[]; error?: string }> => {
+    if (!user?.id) {
+      return { success: false, error: "You must be signed in as an administrator to generate codes." };
+    }
+
     setLoading(true);
     try {
       const { data, error } = await supabase.rpc("generate_activation_codes", {
-        p_created_by: user?.id,
+        p_created_by: user.id,
         p_count: Math.min(count, 100),
         p_duration_days: durationDays,
         p_exam_program_id: "jupeb",

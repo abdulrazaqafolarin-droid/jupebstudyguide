@@ -10,7 +10,6 @@ on:
   push:
     branches:
       - feat/independent-question-scroll-multi-inline-crop-2026-11-11
-      - release/rutex-master-next-current-main-2026-11-25
   workflow_dispatch:
     inputs:
       publish_release:
@@ -193,7 +192,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Publish immutable successor APK and current manifest to Supabase
-        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_release) || github.ref == 'refs/heads/release/rutex-master-next-current-main-2026-11-25' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release }}
         shell: bash
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -244,7 +243,7 @@ jobs:
           echo "Rutex Master Next built and verified." >> "$GITHUB_STEP_SUMMARY"
           echo "Package: com.rutex.jupebmaster" >> "$GITHUB_STEP_SUMMARY"
           echo "Version: $APK_VERSION_NAME ($APK_VERSION_CODE)" >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ inputs.publish_release }}" == "true" ]] || [[ "$GITHUB_REF" == "refs/heads/release/rutex-master-next-current-main-2026-11-25" ]]; then
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "${{ inputs.publish_release }}" == "true" ]]; then
             echo "Successor release was published and verified in the isolated public release folder." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Artifact only. No app updater storage or production data was changed." >> "$GITHUB_STEP_SUMMARY"

@@ -4,8 +4,9 @@ import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { NATIVE_APP_SCHEME } from "@/lib/native-app-config";
 
-const APP_SCHEME = "com.jupeb.master:";
+const APP_SCHEME = `${NATIVE_APP_SCHEME}:`;
 const CALLBACK_HOST = "auth";
 
 /**

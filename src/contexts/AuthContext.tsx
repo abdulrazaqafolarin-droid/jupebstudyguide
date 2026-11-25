@@ -3,6 +3,7 @@ import { Browser } from '@capacitor/browser';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
+import { NATIVE_AUTH_REDIRECT_URI } from '@/lib/native-app-config';
 
 interface AuthContextType {
   user: User | null;
@@ -169,8 +170,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           options: {
             // iOS email verification must return to the installed app so
             // NativeAuthDeepLinkBridge can exchange and persist the session.
-            emailRedirectTo: Capacitor.getPlatform() === 'ios'
-              ? 'com.jupeb.master://auth'
+            emailRedirectTo: Capacitor.isNativePlatform()
+              ? NATIVE_AUTH_REDIRECT_URI
               : window.location.origin,
             data: { display_name: email.split('@')[0] },
           },
@@ -196,7 +197,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             // Native Android and iOS return through the registered app URL scheme.
             // Browser OAuth returns to the original protected page after session exchange.
             redirectTo: isNativePlatform
-              ? 'com.jupeb.master://auth'
+              ? NATIVE_AUTH_REDIRECT_URI
               : safeRedirectPath === '/'
                 ? window.location.origin
                 : new URL(safeRedirectPath, window.location.origin).toString(),
@@ -305,8 +306,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const { error } = await withAuthRequestTimeout(
         supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: Capacitor.getPlatform() === 'ios'
-            ? 'com.jupeb.master://auth?flow=recovery'
+          redirectTo: Capacitor.isNativePlatform()
+            ? `${NATIVE_AUTH_REDIRECT_URI}?flow=recovery`
             : `${window.location.origin}/auth?flow=recovery`,
         }),
         "Sending password reset email",

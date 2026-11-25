@@ -122,6 +122,27 @@ describe("Google OAuth platform handling", () => {
     expect(mocks.browserOpen).not.toHaveBeenCalled();
   });
 
+  it("preserves the requested internal page in the browser OAuth callback", async () => {
+    mocks.getPlatform.mockReturnValue("web");
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+
+    let outcome: { error: Error | null } | undefined;
+    await act(async () => {
+      outcome = await result.current.signInWithGoogle("/past-questions?subject=physics");
+    });
+
+    expect(outcome?.error).toBeNull();
+    expect(mocks.supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: "google",
+      options: {
+        redirectTo: new URL("/past-questions?subject=physics", window.location.origin).toString(),
+        skipBrowserRedirect: false,
+        queryParams: { prompt: "select_account" },
+      },
+    });
+    expect(mocks.browserOpen).not.toHaveBeenCalled();
+  });
+
   it("returns a useful error when the provider does not return an authorization URL", async () => {
     mocks.supabase.auth.signInWithOAuth.mockResolvedValue({
       data: { url: null },

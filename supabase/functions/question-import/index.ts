@@ -681,11 +681,25 @@ Deno.serve(async (request: Request) => {
           draft_version: currentVersion + 1,
           updated_at: now,
         };
-        const { data: savedKey, error: keySaveError } = await answerKeyTable
-          .upsert(keyPayload, { onConflict: "question_id" })
-          .select("*")
-          .single();
-        if (keySaveError) return respond({ error: keySaveError.message }, 500);
+        const keySaveResult = beforeKey
+          ? await answerKeyTable
+              .update(keyPayload)
+              .eq("question_id", questionId)
+              .eq("draft_version", currentVersion)
+              .eq("review_status", "needs_review")
+              .select("*")
+              .maybeSingle()
+          : await answerKeyTable
+              .insert(keyPayload)
+              .select("*")
+              .single();
+        if (keySaveResult.error) return respond({ error: keySaveResult.error.message }, 500);
+        const savedKey = keySaveResult.data;
+        if (!savedKey) {
+          return respond({
+            error: "This answer draft was changed by another reviewer. Reload it before saving again.",
+          }, 409);
+        }
 
         const auditPayload = {
           question_id: questionId,
@@ -705,9 +719,13 @@ Deno.serve(async (request: Request) => {
         const { error: auditSaveError } = await auditTable.insert(auditPayload);
         if (auditSaveError) {
           if (beforeKey) {
-            await answerKeyTable.upsert(beforeKey, { onConflict: "question_id" });
+            await answerKeyTable.update(beforeKey)
+              .eq("question_id", questionId)
+              .eq("draft_version", currentVersion + 1);
           } else {
-            await answerKeyTable.delete().eq("question_id", questionId);
+            await answerKeyTable.delete()
+              .eq("question_id", questionId)
+              .eq("draft_version", currentVersion + 1);
           }
           return respond({ error: "Answer draft was not saved because its audit record could not be written: " + auditSaveError.message }, 500);
         }

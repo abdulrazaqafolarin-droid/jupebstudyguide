@@ -93,9 +93,11 @@ WHERE answer_key.question_id = question.id
   AND answer_key.review_status = 'needs_review';
 
 UPDATE public.study_question_answer_keys AS answer_key
-SET confidence_level = 'low',
-    confidence_note = 'Published past-question answer references conflict on this novel item; keep option D provisional until checked against the novel or a reliable original answer_key.',
-    evidence_reference = 'JAMB_english_READABLE.txt | 2013:Q27 | https://www.utmeprep.app/past-questions/english/2013 ; https://www.deeepsolve.com/jamb/english-language/2013',
+SET correct_answer = 'B',
+    explanation = 'Multiple independent 2013 JAMB answer references identify option B: Bright lived with Teacher because his father was indebted to Teacher. One secondary answer source instead reports the long-journey option, and the original novel passage is not in the source pack; retain this as a medium-confidence draft pending the text.',
+    confidence_level = 'medium',
+    confidence_note = 'Several independent 2013 JAMB answer references agree on option B (father indebted to Teacher), while one answer source reports option D. The novel passage is not included in the source pack, so this is not approved.',
+    evidence_reference = 'JAMB_english_READABLE.txt | 2013:Q27 | https://www.deeepsolve.com/jamb/english-language/2013 ; https://myschool.ng/classroom/english-language/30407 ; https://edupadi.com/classroom/questions/this-question-is-based-on-chukwueme%20-%202321 ; https://examplayground.com/questions/jamb/english-language/2013 ; conflicting reference: https://www.utmeprep.app/past-questions/english/2013',
     draft_version = GREATEST(answer_key.draft_version, 1),
     updated_at = now()
 FROM public.study_questions AS question

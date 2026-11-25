@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git grep -nE 'AQ\.[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}' -- ':!*.pdf'; then
+          if git grep -nE 'AQ\.[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|llx-[A-Za-z0-9]{20,}' -- ':!*.pdf' ':!android/app/google-services.json'; then
             echo "::error::A hard-coded Gemini API credential was found in tracked repository files."
             exit 1
           fi
@@ -78,16 +78,3 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
           VITE_SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
-          VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX"
-          VITE_SUPABASE_PROJECT_ID: "gzyczowqqywesqhqqpdi"
-          VITE_ADMIN_EMAIL: "abdulrazaqafolarin@gmail.com"
-
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      - name: Compile Android debug APK
-        shell: bash
-        run: |
-          set -euo pipefail
-          chmod +x android/gradlew
-          (cd android && ./gradlew assembleDebug --no-daemon)

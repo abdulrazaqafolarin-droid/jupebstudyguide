@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Smartphone, Share } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Capacitor } from '@capacitor/core';
+import { useLocation } from 'react-router-dom';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -11,6 +12,8 @@ interface BeforeInstallPromptEvent extends Event {
 
 const InstallPrompt: React.FC = () => {
   const isNativeApp = Capacitor.isNativePlatform();
+  const { pathname } = useLocation();
+  const isInstallPage = pathname === '/install';
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -19,7 +22,7 @@ const InstallPrompt: React.FC = () => {
   useEffect(() => {
     // Native iOS/Android apps are already installed; the PWA install guide is
     // only relevant in a browser tab.
-    if (isNativeApp) return;
+    if (isNativeApp || isInstallPage) return;
 
     // Check if iOS
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -50,7 +53,7 @@ const InstallPrompt: React.FC = () => {
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
     };
-  }, [isNativeApp]);
+  }, [isNativeApp, isInstallPage]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -70,7 +73,7 @@ const InstallPrompt: React.FC = () => {
   };
 
   // Don't show if already installed
-  if (isNativeApp || isStandalone) return null;
+  if (isNativeApp || isStandalone || isInstallPage) return null;
 
   return (
     <AnimatePresence>

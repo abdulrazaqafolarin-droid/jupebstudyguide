@@ -323,3 +323,22 @@ The following changes are committed to `feat/rutex-jamb-workspace` within Draft 
 **Release status:** code and migration are on the feature branch only. The new migration has **not** been applied to Supabase and the changed Edge Function has **not** been deployed. No live database rows were changed by this continuation; production remains hidden and unchanged. Pair the migration and Edge Function deployment before testing the new admin save control. The PR remains Draft and has not been merged.
 
 The database did not previously contain a `v19` marker or confidence fields. This branch introduces a general monotonic `draft_version` for safe concurrent edits; it does not claim that a historical v19 draft was present in live data.
+
+## Source-reference and diagram audit follow-up — 25 November 2026
+
+The eight source-reference collision groups were compared against the exact committed `Biology.txt` and `Chemistry.txt` documents:
+
+- **Six groups are genuine duplicate question records:** Biology 2003:Q5 and Chemistry 1978:Q26, 1979:Q11, 1979:Q13, 1980:Q16 and 1981:Q14. Each pair has the same question intent and same option set; wording differences are formatting/normalization. The preferred retained row is listed in `docs/JAMB_DUPLICATE_SOURCE_REFERENCE_REVIEW.csv`. No row has been deleted or rejected yet; both records in each pair remain hidden pending a deliberate soft-deduplication operation.
+- **Two groups are not duplicates:** Biology 1981:Q47 is reused for a symbiosis question and a separate heart-diagram question in different source sections. Biology 1995:Q26 is reused for a cerebellum/walking question and a separate ovule/micropyle diagram question. The original source contains both distinct questions, so both database rows must be retained; matching source references alone must not trigger deletion.
+
+The exact 188 diagram-dependent rows have been extracted into `docs/JAMB_DIAGRAM_RECONSTRUCTION_BACKLOG.csv` with question ID, subject/year/reference, required diagram description and stem. Counts: Biology 117, Chemistry 68, Physics 3. All 188 already have an explicit `[Diagram needed: ...]` description, but none of these rows currently has an attached question image. The manifest is a reconstruction/source-recovery checklist, **not an image pack**. Do not fabricate source-specific labels or treat a textual description as a substitute for the original figure during academic verification.
+
+## Gemini credential exposure — 25 November 2026
+
+A review of the tracked `fill_answers.py` found **eight hard-coded Gemini API credentials**. The feature branch in PR #78 now reads `GEMINI_API_KEY` or `GEMINI_API_KEYS` from the local environment, and `.env.example` documents the variable names without containing actual values.
+
+The same exposed version is still present on the repository's `main` branch as of this check. A narrow source-only security PR **#81** (`security/remove-hardcoded-gemini-keys`) has been opened against `main`; it is not merged. Vercel reports the `jupebstudyguide` check successful and the `rutexjupebmaster` check pending on its current head. PR #78 also carries the cleaned utility file.
+
+**Required external remediation:** revoke/rotate all eight credentials with the provider. Replacing the current file does not remove old commits from Git history. No provider-side key rotation or Git-history rewrite was performed by this continuation. Do not use the exposed credentials again.
+
+No Supabase question rows were changed during this follow-up. The confidence migration remains absent from live migration history, the new draft-only Edge Function action is not deployed, and no question or answer key has been approved or published.

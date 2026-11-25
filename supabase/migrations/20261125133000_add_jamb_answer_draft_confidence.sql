@@ -94,10 +94,10 @@ WHERE answer_key.question_id = question.id
 
 UPDATE public.study_question_answer_keys AS answer_key
 SET correct_answer = 'B',
-    explanation = 'Multiple independent 2013 JAMB answer references identify option B: Bright lived with Teacher because his father was indebted to Teacher. One secondary answer source instead reports the long-journey option, and the original novel passage is not in the source pack; retain this as a medium-confidence draft pending the text.',
-    confidence_level = 'medium',
-    confidence_note = 'Several independent 2013 JAMB answer references agree on option B (father indebted to Teacher), while one answer source reports option D. The novel passage is not included in the source pack, so this is not approved.',
-    evidence_reference = 'JAMB_english_READABLE.txt | 2013:Q27 | https://www.deeepsolve.com/jamb/english-language/2013 ; https://myschool.ng/classroom/english-language/30407 ; https://edupadi.com/classroom/questions/this-question-is-based-on-chukwueme%20-%202321 ; https://examplayground.com/questions/jamb/english-language/2013 ; conflicting reference: https://www.utmeprep.app/past-questions/english/2013',
+    explanation = 'Bright lived with Teacher because his father owed Teacher money. The novel explains that Bright was sent to Teacher’s household as security for the loan; therefore option B is correct.',
+    confidence_level = 'high',
+    confidence_note = 'The novel passage directly states that Bright was sent to Teacher as security for his father’s loan. The long-journey answer is contradicted by the novel passage.',
+    evidence_reference = 'The Potter’s Wheel, Bright/Teacher debt passage | https://studylib.net/doc/28355577/-oceanofpdf.com-the-potters-wheel---chukwuemeka-ike ; corroborating JAMB question answer: https://myschool.ng/classroom/english-language/30407',
     draft_version = GREATEST(answer_key.draft_version, 1),
     updated_at = now()
 FROM public.study_questions AS question

@@ -147,7 +147,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             // Browser OAuth returns to the original protected page after session exchange.
             redirectTo: isNativePlatform
               ? 'com.jupeb.master://auth'
-              : new URL(safeRedirectPath, window.location.origin).toString(),
+              : safeRedirectPath === '/'
+                ? window.location.origin
+                : new URL(safeRedirectPath, window.location.origin).toString(),
             skipBrowserRedirect: isNativePlatform,
             queryParams: { prompt: 'select_account' },
           },

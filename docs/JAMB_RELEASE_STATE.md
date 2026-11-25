@@ -299,7 +299,7 @@ The five candidates named in the prior review screenshot were already in the dat
 | --- | --- | --- |
 | Biology 2002:Q29 — mammalian erythrocytes | B | High: mature mammalian erythrocytes are biconcave and anucleate. Source wording and options are present in `Biology.txt`. |
 | Physics 1981:Q43 — 5 g wt to 20 g wt extension | E (2.24 cm) | High: Hooke's law gives a load ratio of 4, so extension is 0.56 × 4 = 2.24 cm. |
-| Use of English 2013:Q27 — `The Potter's Wheel` | B (father was indebted to Teacher) | Medium: several independent 2013 JAMB answer references agree on B, but one secondary source reports the long-journey option and the original novel passage is absent. Keep unapproved. |
+| Use of English 2013:Q27 — `The Potter's Wheel` | B (father was indebted to Teacher) | High: the novel passage confirms Bright was sent to Teacher as security for his father's loan. The long-journey key is contradicted by the novel text. Remains `needs_review` until admin approval. |
 | Use of English 2016:Q6 — GPS development decade | B (1970s) | Medium: official FAA history dates the NAVSTAR GPS programme to 1973, but the original JAMB comprehension passage is missing from the extraction. |
 | Use of English 2016:Q7 — GPS's initial purpose | C (security / military purposes) | Low: official GPS history supports military use, but the exact original passage wording is absent. Do not approve based only on outside historical context. |
 
@@ -343,4 +343,4 @@ The same exposed version is still present on the repository's `main` branch as o
 
 No Supabase question rows were changed during this follow-up. The confidence migration remains absent from live migration history, the new draft-only Edge Function action is not deployed, and no question or answer key has been approved or published.
 
-The provisional answer for English 2013:Q27 was subsequently changed from D to B in the feature migration seed after cross-checking multiple 2013 answer references. The disagreement remains disclosed and the key remains `needs_review`; it is not an academically approved answer.
+The provisional answer for English 2013:Q27 was changed from D to B and upgraded to high confidence after checking the novel passage: Bright was sent to Teacher as security for his father's loan. The migration cites the passage and a corroborating JAMB answer reference. The answer key remains `needs_review` and hidden; this is not an admin approval or publication.

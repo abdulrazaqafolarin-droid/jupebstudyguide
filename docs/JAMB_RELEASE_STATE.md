@@ -344,3 +344,24 @@ The same exposed version is still present on the repository's `main` branch as o
 No Supabase question rows were changed during this follow-up. The confidence migration remains absent from live migration history, the new draft-only Edge Function action is not deployed, and no question or answer key has been approved or published.
 
 The provisional answer for English 2013:Q27 was changed from D to B and upgraded to high confidence after checking the novel passage: Bright was sent to Teacher as security for his father's loan. The migration cites the passage and a corroborating JAMB answer reference. The answer key remains `needs_review` and hidden; this is not an admin approval or publication.
+
+## Screenshot answer candidates — final source review, 25 November 2026
+
+| Subject / reference | Draft answer | Confidence and evidence |
+|---|---|---|
+| Biology 2002:Q29 — mature mammalian red blood cells | B | High: the wording/options and standard mammalian erythrocyte structure support the answer. |
+| Physics 1981:Q43 — 5 g to 20 g load extension | E (2.24 cm) | High: Hooke's law gives a fourfold load increase, so extension is (0.56\times4=2.24\text{ cm}). |
+| Physics 2012:Q15 — force constant | B (about 833 N/m) | High: (k=F/x=10/0.012\approx833\text{ N/m}). |
+| Use of English 2013:Q27 — `The Potter's Wheel` | B | High: the novel passage confirms Bright was sent to Teacher as security for the money his father owed. |
+| Use of English 2016:Q6 — GPS development decade | B (1970s) | Medium: the source's option B matches the official FAA history that NAVSTAR/GPS was initiated in 1973; the associated comprehension passage is missing from the text extraction. |
+| Use of English 2016:Q7 — GPS initial purpose | C (security purposes) | Medium: official FAA/U.S. Air Force history supports the initial military/security purpose; the exact passage wording is still missing. |
+
+### 2016 GPS question source variant
+
+The committed `JAMB_english_READABLE.txt` includes a distinct `JAMB ENGLISH 2016 - OBJECTIVE` set explicitly attributed to the MySchoolGist PDF. It contains the same GPS Q6 and Q7 stems and options as the two hidden database records, as well as Q8–Q10 about atomic clocks, GPS applications and satellite positioning. Its GPS comprehension passage is absent from the extracted text. The same source pack labels the PDF as having no answer key.
+
+A separate 2016 compilation located during this review contains a different paper variant whose Q6 and Q7 concern a different comprehension passage. Those question numbers must not be cross-applied to the MySchoolGist set. Do not change the GPS references solely because another 2016 sitting/compilation numbers its questions differently.
+
+Official background checks: the FAA describes GPS/Navstar as a joint civil/military technical program initiated in 1973; U.S. Air Force and GPS.gov material records military objectives and initial military-user requirements. This supports the proposed options but does not replace the missing JAMB comprehension passage. Keep both GPS records hidden and `needs_review` until the passage is recovered or an administrator accepts the separately documented evidence.
+
+The confidence-seed migration stores the candidate answer and assessment for these existing question IDs only. It does not approve or publish them. The live database remains unchanged until the reviewed migration and matching Edge Function are deliberately released.

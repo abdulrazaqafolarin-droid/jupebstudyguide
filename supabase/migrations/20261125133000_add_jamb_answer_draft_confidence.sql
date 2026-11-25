@@ -123,9 +123,9 @@ WHERE answer_key.question_id = question.id
   AND answer_key.review_status = 'needs_review';
 
 UPDATE public.study_question_answer_keys AS answer_key
-SET confidence_level = 'low',
-    confidence_note = 'GPS had military and security uses, but the original passage is absent; confirm the passage wording before treating option C as definitive.',
-    evidence_reference = 'JAMB_english_READABLE.txt | 2016:Q7 | https://www.faa.gov/about/office_org/headquarters_offices/ato/service_units/techops/navservices/gnss/gps ; https://www.nasa.gov/general/global-positioning-system-history/',
+SET confidence_level = 'medium',
+    confidence_note = 'Official FAA and U.S. Air Force histories describe GPS as a U.S. government/Department of Defense system developed initially for military users, which supports option C (security purposes). The source passage is missing from the text extraction, so retain this as a medium-confidence draft.',
+    evidence_reference = 'JAMB_english_READABLE.txt | MySchoolGist 2016 set | 2016:Q7 | https://www.faa.gov/about/office_org/headquarters_offices/ato/service_units/techops/navservices/gnss/gps ; https://www.af.mil/News/Article-Display/Article/111465/general-space-capability-integral-to-all-military-operations/ ; https://www.gps.gov/sites/default/files/2025-07/gps_finalreport618.pdf',
     draft_version = GREATEST(answer_key.draft_version, 1),
     updated_at = now()
 FROM public.study_questions AS question

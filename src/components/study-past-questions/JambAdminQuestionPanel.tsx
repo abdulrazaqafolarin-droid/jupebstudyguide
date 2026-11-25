@@ -908,6 +908,8 @@ export function JambAdminQuestionPanel({
                           answerKeyEditRevisionRef.current += 1;
                           setCorrectAnswer(e.target.value.toUpperCase());
                           setAnswerKeyVerified(false);
+                          setAnswerConfidence("unrated");
+                          setConfidenceNote("");
                         }}
                         className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         placeholder={isObjective ? "e.g. A, B, C, D" : "e.g. A"}
@@ -1062,6 +1064,8 @@ export function JambAdminQuestionPanel({
                         answerKeyEditRevisionRef.current += 1;
                         setExplanation(e.target.value);
                         setAnswerKeyVerified(false);
+                        setAnswerConfidence("unrated");
+                        setConfidenceNote("");
                       }}
                       rows={3}
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"

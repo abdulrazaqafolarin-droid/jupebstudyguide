@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
@@ -36,6 +36,11 @@ const STEP_CTA: Record<OnboardingStepId, string> = {
  */
 export default function Onboarding() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const requestedLocation = location.state?.from as { pathname?: string; search?: string; hash?: string } | undefined;
+  const returnTo = requestedLocation?.pathname?.startsWith('/') && !requestedLocation.pathname.startsWith('//')
+    ? `${requestedLocation.pathname}${requestedLocation.search ?? ''}${requestedLocation.hash ?? ''}`
+    : '/';
   const reduce = useReducedMotion();
   const { theme, setTheme } = useTheme();
   const { subscribe, permission, isSubscribed } = usePushNotificationsContext();
@@ -83,7 +88,7 @@ export default function Onboarding() {
   }, [loading, flow, data, isReplay, profileSchoolName, profileSeatNumber]);
 
   const step = flow[stepIdx];
-  const goHome = useCallback(() => navigate('/', { replace: true }), [navigate]);
+  const goHome = useCallback(() => navigate(returnTo, { replace: true }), [navigate, returnTo]);
 
   const advance = useCallback(() => {
     setDir(1);

@@ -40,16 +40,24 @@ export default function ProfilePage() {
   const subscriptionExpiry = activationStatus.subscription_expires_at
     ? Date.parse(activationStatus.subscription_expires_at)
     : Number.NaN;
+  const trialExpiry = activationStatus.trial_expires_at
+    ? Date.parse(activationStatus.trial_expires_at)
+    : Number.NaN;
+  const activeExpiry = Number.isFinite(subscriptionExpiry) && subscriptionExpiry > subscriptionClock
+    ? subscriptionExpiry
+    : trialExpiry;
+  const trialRemaining = Number.isFinite(trialExpiry)
+    ? Math.max(0, trialExpiry - subscriptionClock)
+    : 0;
+  const activeRemaining = Number.isFinite(activeExpiry)
+    ? Math.max(0, activeExpiry - subscriptionClock)
+    : 0;
 
   useEffect(() => {
-    if (!Number.isFinite(subscriptionExpiry) || subscriptionExpiry <= Date.now()) return;
+    if (!Number.isFinite(activeExpiry) || activeExpiry <= Date.now()) return;
     const timer = window.setInterval(() => setSubscriptionClock(Date.now()), 1000);
     return () => window.clearInterval(timer);
-  }, [subscriptionExpiry]);
-
-  const subscriptionRemaining = Number.isFinite(subscriptionExpiry)
-    ? Math.max(0, subscriptionExpiry - subscriptionClock)
-    : 0;
+  }, [activeExpiry]);
 
   // Achievements
   const [unlockedIds] = useUserStorage<string[]>('achievements-unlocked', []);
@@ -181,9 +189,9 @@ export default function ProfilePage() {
                 <Clock className="w-4 h-4 text-primary" />
                 Subscription
               </h3>
-              {!activationStatus.is_admin && activationStatus.subscription_expires_at && (
+              {!activationStatus.is_admin && (activationStatus.subscription_expires_at || activationStatus.trial_expires_at) && (
                 <span className="text-xs text-muted-foreground">
-                  "Paid term"
+                  trialRemaining > 0 ? "24-hour trial" : "Paid term"
                 </span>
               )}
             </div>
@@ -194,14 +202,14 @@ export default function ProfilePage() {
                 <p className="text-sm font-semibold text-primary">Administrator access</p>
                 <p className="text-xs text-muted-foreground mt-1">Your owner account does not require an activation code or subscription.</p>
               </div>
-            ) : Number.isFinite(subscriptionExpiry) && subscriptionRemaining > 0 ? (
+            ) : Number.isFinite(activeExpiry) && activeRemaining > 0 ? (
               <div className="rounded-xl bg-primary/5 border border-primary/15 p-3 space-y-2">
-                <p className="text-sm font-semibold text-foreground">Subscription active</p>
+                <p className="text-sm font-semibold text-foreground">{trialRemaining > 0 ? "24-hour free trial active" : "Subscription active"}</p>
                 <p className="text-2xl font-mono font-semibold tabular-nums text-primary">
-                  {formatTrialCountdown(subscriptionRemaining)}
+                  {formatTrialCountdown(activeRemaining)}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Time remaining. Expires {new Date(subscriptionExpiry).toLocaleString()}.
+                  Time remaining. {trialRemaining > 0 ? "Trial ends" : "Subscription expires"} {new Date(activeExpiry).toLocaleString()}.
                 </p>
               </div>
             ) : (

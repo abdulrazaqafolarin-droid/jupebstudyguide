@@ -385,6 +385,9 @@ export function JambAdminQuestionPanel({
     ]);
     answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
+    setAnswerConfidence("unrated");
+    setConfidenceNote("");
+    setEvidenceReference("");
     setShowPreview(true);
   }, []);
 
@@ -426,6 +429,9 @@ export function JambAdminQuestionPanel({
       if (remaining.length === 0) setImagePosition("image-above");
       answerKeyEditRevisionRef.current += 1;
       setAnswerKeyVerified(false);
+      setAnswerConfidence("unrated");
+      setConfidenceNote("");
+      setEvidenceReference("");
       return remaining;
     });
   };
@@ -592,6 +598,9 @@ export function JambAdminQuestionPanel({
   const updateOption = (idx: number, text: string) => {
     answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
+    setAnswerConfidence("unrated");
+    setConfidenceNote("");
+    setEvidenceReference("");
     setOptions(prev => prev.map((o, i) => i === idx ? { ...o, text } : o));
   };
 
@@ -600,6 +609,9 @@ export function JambAdminQuestionPanel({
     if (options.length >= 5) return;
     answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
+    setAnswerConfidence("unrated");
+    setConfidenceNote("");
+    setEvidenceReference("");
     setOptions(prev => [...prev, { label: nextLabel, text: "" }]);
   };
 
@@ -645,6 +657,9 @@ export function JambAdminQuestionPanel({
     });
     answerKeyEditRevisionRef.current += 1;
     setAnswerKeyVerified(false);
+    setAnswerConfidence("unrated");
+    setConfidenceNote("");
+    setEvidenceReference("");
     if (correctAnswer === options[idx]?.label) {
       setCorrectAnswer("");
     }
@@ -850,6 +865,9 @@ export function JambAdminQuestionPanel({
                         answerKeyEditRevisionRef.current += 1;
                         setQuestionText(e.target.value);
                         setAnswerKeyVerified(false);
+                        setAnswerConfidence("unrated");
+                        setConfidenceNote("");
+                        setEvidenceReference("");
                       }}
                       rows={3}
                       className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
@@ -961,7 +979,14 @@ export function JambAdminQuestionPanel({
                       <input
                         type="text"
                         value={sourceDocument}
-                        onChange={(event) => { setSourceDocument(event.target.value); setRightsConfirmed(false); }}
+                        onChange={(event) => {
+                          setSourceDocument(event.target.value);
+                          setRightsConfirmed(false);
+                          setAnswerKeyVerified(false);
+                          setAnswerConfidence("unrated");
+                          setConfidenceNote("");
+                          setEvidenceReference("");
+                        }}
                         className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         placeholder="Document title or original file name"
                       />
@@ -971,7 +996,14 @@ export function JambAdminQuestionPanel({
                       <input
                         type="text"
                         value={sourceReference}
-                        onChange={(event) => { setSourceReference(event.target.value); setRightsConfirmed(false); }}
+                        onChange={(event) => {
+                          setSourceReference(event.target.value);
+                          setRightsConfirmed(false);
+                          setAnswerKeyVerified(false);
+                          setAnswerConfidence("unrated");
+                          setConfidenceNote("");
+                          setEvidenceReference("");
+                        }}
                         className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         placeholder="e.g. 2024:Q12"
                       />
@@ -983,7 +1015,14 @@ export function JambAdminQuestionPanel({
                         min="1"
                         step="1"
                         value={sourcePage}
-                        onChange={(event) => setSourcePage(event.target.value)}
+                        onChange={(event) => {
+                          setSourcePage(event.target.value);
+                          setRightsConfirmed(false);
+                          setAnswerKeyVerified(false);
+                          setAnswerConfidence("unrated");
+                          setConfidenceNote("");
+                          setEvidenceReference("");
+                        }}
                         className="w-full bg-background border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         placeholder="e.g. 24"
                       />

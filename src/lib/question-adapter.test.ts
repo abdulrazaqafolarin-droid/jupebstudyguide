@@ -26,6 +26,24 @@ describe("toQuestion", () => {
     expect(converted.imagePosition).toBe("image-above");
   });
 
+  it("preserves all question images and their saved inline positions for home subject cards", () => {
+    const images = [
+      "https://example.com/first.png",
+      "https://example.com/second.png",
+    ];
+    const converted = toQuestion({
+      ...base,
+      category: "theory",
+      imageUrl: images[0],
+      imageUrls: images,
+      imagePosition: "image-inline:4,28",
+    } satisfies StudyQuestion);
+
+    expect(converted.imageUrl).toBe(images[0]);
+    expect(converted.imageUrls).toEqual(images);
+    expect(converted.imagePosition).toBe("image-inline:4,28");
+  });
+
   it("preserves theory and practical categories so quiz filters can exclude them", () => {
     const theory = toQuestion({ ...base, category: "theory", answerGuide: "A guide" } satisfies StudyQuestion);
     const practical = toQuestion({ ...base, category: "practical", title: "Lab", objective: "Test a sample", procedure: "Observe" } satisfies StudyQuestion);

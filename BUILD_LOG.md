@@ -80,7 +80,7 @@ _Nothing currently flagged._
 - 3/21 Chemistry markdowns processed (quota exhausted)
 
 ### LlamaParse: 21 chemistry markdowns with new API key
-- LlamaParse DNS now works with new key `llx-ctDSnI63AD6lFeTVSIDzL2920vNXNh1JITVebI5zqPpqTjsS`
+- LlamaParse DNS now works with new key [configured locally via LLAMA_PARSE_API_KEY]
 - 21 chemistry images parsed successfully
 - 268 Physics/Math + 202 Chemistry images still unparsed (DNS intermittent)
 
@@ -262,4 +262,3 @@ _Nothing currently flagged._
 
 ### Build verification:
 - TypeScript: 0 errors | Tests: 97/97 | Build: passes (48 precached entries, 3238 KiB)
-

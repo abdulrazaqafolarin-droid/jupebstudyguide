@@ -133,16 +133,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (redirectPath = '/') => {
     const isNativePlatform = Capacitor.getPlatform() !== 'web';
+    const safeRedirectPath = redirectPath.startsWith('/') && !redirectPath.startsWith('//')
+      ? redirectPath
+      : '/';
     try {
       const { data, error } = await withAuthRequestTimeout(
         supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
             // Native Android and iOS return through the registered app URL scheme.
-            // The web app returns to its own root after Supabase exchanges OAuth.
-            redirectTo: isNativePlatform ? 'com.jupeb.master://auth' : window.location.origin,
+            // Browser OAuth returns to the original protected page after session exchange.
+            redirectTo: isNativePlatform
+              ? 'com.jupeb.master://auth'
+              : new URL(safeRedirectPath, window.location.origin).toString(),
             skipBrowserRedirect: isNativePlatform,
             queryParams: { prompt: 'select_account' },
           },

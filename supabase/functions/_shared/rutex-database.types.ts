@@ -678,7 +678,11 @@ export type Database = {
         study_question_answer_keys: {
           Row: {
             correct_answer: string
+            confidence_level: string
+            confidence_note: string | null
             created_at: string
+            draft_version: number
+            evidence_reference: string | null
             explanation: string | null
             question_id: string
             review_status: string
@@ -689,7 +693,11 @@ export type Database = {
           }
           Insert: {
             correct_answer: string
+            confidence_level?: string
+            confidence_note?: string | null
             created_at?: string
+            draft_version?: number
+            evidence_reference?: string | null
             explanation?: string | null
             question_id: string
             review_status?: string
@@ -700,7 +708,11 @@ export type Database = {
           }
           Update: {
             correct_answer?: string
+            confidence_level?: string
+            confidence_note?: string | null
             created_at?: string
+            draft_version?: number
+            evidence_reference?: string | null
             explanation?: string | null
             question_id?: string
             review_status?: string

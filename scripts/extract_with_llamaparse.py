@@ -31,14 +31,17 @@ from PIL import Image
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-LLAMA_PARSE_KEY = "llx-ctDSnI63AD6lFeTVSIDzL2920vNXNh1JITVebI5zqPpqTjsS"
+LLAMA_PARSE_KEY = os.getenv("LLAMA_PARSE_API_KEY", "").strip()
 
 GEMINI_KEYS = [
-    "AQ.Ab8RN6K8Vn_tUD6uLEb52S6xfKyz7r-ohpvn_ueaL3qem1402Q",
-    "AQ.Ab8RN6JiTF8D7fgiQoeNskU21QrXe8v2oK96jUbpnbcrNqahMQ",
-    "AQ.Ab8RN6IIKKkS03k5ocgwQeqJh1up0zWVmxRt1Jn1XXpTHNCIvQ",
-    "AQ.Ab8RN6J3PH-1b7UWYQfD0KSbiZu0aRgEtAiqA1c6KDob6eGfKg",
+    value.strip()
+    for value in os.getenv("GEMINI_API_KEYS", "").split(",")
+    if value.strip()
 ]
+if not GEMINI_KEYS:
+    single_gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if single_gemini_key:
+        GEMINI_KEYS = [single_gemini_key]
 
 GEMINI_MODEL = "gemini-flash-latest"
 GEMINI_FALLBACK_MODELS = ["gemini-1.5-flash", "gemini-2.5-flash-lite", "gemini-flash-lite-latest", "gemini-2.5-flash"]
@@ -474,6 +477,12 @@ if __name__ == "__main__":
     parser.add_argument("--chemistry-only", action="store_true",
         help="Only process chemistry images, skip physics/math")
     args = parser.parse_args()
+
+    if not args.retry_failed and not args.save_only:
+        if not args.parse_only and not GEMINI_KEYS:
+            parser.error("Set GEMINI_API_KEY or GEMINI_API_KEYS in your local environment.")
+        if not args.gemini_only and not LLAMA_PARSE_KEY:
+            parser.error("Set LLAMA_PARSE_API_KEY in your local environment for LlamaParse extraction.")
     
     if args.retry_failed:
         cache = pickle.load(open(CACHE_FILE, "rb")) if CACHE_FILE.exists() else {}

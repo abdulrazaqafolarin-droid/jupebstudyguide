@@ -3,6 +3,7 @@ import { Browser } from '@capacitor/browser';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
+import { NATIVE_AUTH_REDIRECT_URI } from '@/lib/native-app-config';
 
 interface AuthContextType {
   user: User | null;
@@ -110,6 +111,56 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
+  // Poll the server-side session record so a device that was displaced by a
+  // later login is signed out locally, even while its cached access JWT remains
+  // within its normal expiry window.
+  useEffect(() => {
+    const accessToken = session?.access_token;
+    if (!accessToken) return;
+
+    let cancelled = false;
+    const checkDeviceSession = async () => {
+      // Do not revoke another device while this sign-in is still waiting for
+      // its required second factor. The same polling check becomes active as
+      // soon as the user completes MFA (AAL2).
+      const { data: assurance, error: assuranceError } =
+        await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (cancelled || assuranceError) {
+        if (assuranceError) console.warn("[auth] could not verify MFA level before device handoff");
+        return;
+      }
+      if (assurance?.nextLevel === "aal2" && assurance.currentLevel !== "aal2") return;
+
+      const { error } = await supabase.functions.invoke("enforce-single-session", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (cancelled || !error) return;
+
+      const response = (error as { context?: Response }).context;
+      if (response?.status === 401) {
+        await supabase.auth.signOut({ scope: "local" });
+        return;
+      }
+      console.warn("[auth] temporary device-session verification failure", error);
+    };
+
+    const handleResume = () => { void checkDeviceSession(); };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void checkDeviceSession();
+    };
+
+    void checkDeviceSession();
+    const intervalId = window.setInterval(() => { void checkDeviceSession(); }, 20_000);
+    window.addEventListener("focus", handleResume);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleResume);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [session?.access_token]);
+
   const signUp = async (email: string, password: string) => {
     try {
       const { data, error } = await withAuthRequestTimeout(
@@ -119,8 +170,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           options: {
             // iOS email verification must return to the installed app so
             // NativeAuthDeepLinkBridge can exchange and persist the session.
-            emailRedirectTo: Capacitor.getPlatform() === 'ios'
-              ? 'com.jupeb.master://auth'
+            emailRedirectTo: Capacitor.isNativePlatform()
+              ? NATIVE_AUTH_REDIRECT_URI
               : window.location.origin,
             data: { display_name: email.split('@')[0] },
           },
@@ -146,7 +197,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             // Native Android and iOS return through the registered app URL scheme.
             // Browser OAuth returns to the original protected page after session exchange.
             redirectTo: isNativePlatform
-              ? 'com.jupeb.master://auth'
+              ? NATIVE_AUTH_REDIRECT_URI
               : safeRedirectPath === '/'
                 ? window.location.origin
                 : new URL(safeRedirectPath, window.location.origin).toString(),
@@ -255,8 +306,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const { error } = await withAuthRequestTimeout(
         supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: Capacitor.getPlatform() === 'ios'
-            ? 'com.jupeb.master://auth?flow=recovery'
+          redirectTo: Capacitor.isNativePlatform()
+            ? `${NATIVE_AUTH_REDIRECT_URI}?flow=recovery`
             : `${window.location.origin}/auth?flow=recovery`,
         }),
         "Sending password reset email",

@@ -12,7 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, MessageCircle, Search, UserCheck, UserPlus, Users, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -60,6 +60,8 @@ type Tab = 'chats' | 'friends';
 
 const Chat = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { conversationId: routeConversationId } = useParams();
   const chat = useChat();
   const friends = useFriends();
   const presence = usePresenceContext();
@@ -74,22 +76,25 @@ const Chat = () => {
   const { markReadByKind } = useNotificationsContext();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [searchParams] = useSearchParams();
+  const queryConversationId = searchParams.get('conversation');
+  const isFocusedConversation = Boolean(routeConversationId);
 
-  // Handle URL params from notification bar navigation.
+  // Open direct links in a focused DM view. The old query-string form remains
+  // supported for existing notification links and shared URLs.
   // Re-runs when the query string changes so taps while already on /chat
   // switch conversations instead of being swallowed by the one-shot effect.
   useEffect(() => {
-    const convParam = searchParams.get('conversation');
+    const convParam = routeConversationId || queryConversationId;
     const tabParam = searchParams.get('tab');
     if (convParam) {
-      chat.openConversation(convParam);
-      if (isMobile) setShowSidebar(false);
+      setTab('chats');
+      void chat.openConversation(convParam);
+      if (routeConversationId || isMobile) setShowSidebar(false);
+    } else if (isMobile) {
+      setShowSidebar(true);
     }
-    if (tabParam === 'friends') {
-      setTab('friends');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+    if (tabParam === 'friends') setTab('friends');
+  }, [routeConversationId, queryConversationId, searchParams, isMobile, chat.openConversation]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleRealtimeMessage = useCallback((message: Message) => {
@@ -147,7 +152,7 @@ const Chat = () => {
   const handleStartConversation = async (userId: string) => {
     try {
       const convId = await chat.startConversation(userId);
-      if (convId && isMobile) setShowSidebar(false);
+      if (convId) navigate(`/chat/${encodeURIComponent(convId)}`);
     } catch (err) {
       toast.error(String(err));
     }
@@ -156,6 +161,7 @@ const Chat = () => {
   const handleBackToSidebar = () => {
     chat.setActiveConversation(null);
     setShowSidebar(true);
+    if (isFocusedConversation) navigate('/chat', { replace: true });
   };
 
   const openProfile = (userId: string) => {
@@ -167,7 +173,7 @@ const Chat = () => {
     <div className="h-[100dvh] flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
-      {(!isMobile || showSidebar) && (
+      {(!isFocusedConversation && (!isMobile || showSidebar)) && (
         <div className={`${isMobile ? 'w-full' : 'w-80 border-r border-border/40'} flex flex-col bg-gradient-to-b from-background via-background to-secondary/10`}>
           {/* Header */}
           <div className="relative p-3 border-b border-border/40">
@@ -474,7 +480,7 @@ const Chat = () => {
       )}
 
       {/* Chat area */}
-      {(!isMobile || !showSidebar) && (
+      {(isFocusedConversation || !isMobile || !showSidebar) && (
         <div className="flex-1 flex flex-col min-w-0 bg-gradient-to-b from-background via-background to-secondary/5">
           <ChatArea
             messages={chat.messages}
@@ -491,7 +497,7 @@ const Chat = () => {
             onPushMessage={chat.pushMessage}
             onUploadImage={chat.uploadImage}
             onUploadFile={chat.uploadFile}
-            onBack={isMobile ? handleBackToSidebar : undefined}
+            onBack={isFocusedConversation || isMobile ? handleBackToSidebar : undefined}
             isOnline={presence.isOnline}
             isTyping={presence.isTyping}
             isRecordingVn={presence.isRecordingVn}

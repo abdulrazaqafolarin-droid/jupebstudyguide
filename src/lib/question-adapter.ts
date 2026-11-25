@@ -14,6 +14,7 @@ export function toQuestion(sq: StudyQuestion): Question {
     explanation: sq.explanation ?? sq.answerGuide ?? "",
     difficulty: sq.difficulty,
     imageUrl: sq.imageUrl,
+    imageUrls: sq.imageUrls?.length ? [...sq.imageUrls] : sq.imageUrl ? [sq.imageUrl] : undefined,
     imagePosition: sq.imagePosition,
   };
 }

@@ -26,9 +26,19 @@ export function useFriends() {
   const [incomingRequests, setIncomingRequests] = useState<FriendRequest[]>([]);
   const [outgoingRequests, setOutgoingRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState(false);
+  const fetchVersionRef = useRef(0);
 
   const fetchData = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      // Invalidate any in-flight request from the previous signed-in account.
+      fetchVersionRef.current += 1;
+      setFriends([]);
+      setIncomingRequests([]);
+      setOutgoingRequests([]);
+      setLoading(false);
+      return;
+    }
+    const requestVersion = ++fetchVersionRef.current;
     setLoading(true);
 
     try {
@@ -46,49 +56,63 @@ export function useFriends() {
           .order('created_at', { ascending: false }),
       ]);
 
-      setFriends((friendsData.data || []).map((f: Record<string, unknown>) => ({
-        user_id: f.friend_id as string,
-        display_name: f.display_name as string | null,
-        avatar_url: f.avatar_url as string | null,
-      })));
-      const incoming = incomingData.data || [];
-      const outgoing = outgoingData.data || [];
-      // friend_requests has no FK to profiles, so fetch counterpart profiles separately
-      const counterpartIds = [...new Set([...incoming.map(r => r.sender_id), ...outgoing.map(r => r.receiver_id)])];
+      if (friendsData.error) throw friendsData.error;
+      if (incomingData.error) throw incomingData.error;
+      if (outgoingData.error) throw outgoingData.error;
+
+      const incoming = incomingData.data ?? [];
+      const outgoing = outgoingData.data ?? [];
+      const counterpartIds = [...new Set([
+        ...incoming.map((request) => request.sender_id),
+        ...outgoing.map((request) => request.receiver_id),
+      ])];
+
       const profileMap = new Map<string, { display_name: string | null; avatar_url: string | null }>();
       if (counterpartIds.length > 0) {
-        const { data: profs } = await supabase
+        const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
           .select('user_id, display_name, avatar_url')
           .in('user_id', counterpartIds);
-        for (const p of profs || []) {
-          profileMap.set(p.user_id, { display_name: p.display_name, avatar_url: p.avatar_url });
+        if (profilesError) throw profilesError;
+
+        for (const profile of profiles ?? []) {
+          profileMap.set(profile.user_id, {
+            display_name: profile.display_name,
+            avatar_url: profile.avatar_url,
+          });
         }
       }
-      setIncomingRequests(incoming.map(r => ({
-        id: r.id,
-        sender_id: r.sender_id,
-        receiver_id: r.receiver_id,
-        status: r.status as FriendRequest['status'],
-        created_at: r.created_at,
-        sender: profileMap.get(r.sender_id) || { display_name: null, avatar_url: null },
+
+      if (requestVersion !== fetchVersionRef.current) return;
+
+      setFriends((friendsData.data ?? []).map((friend: Record<string, unknown>) => ({
+        user_id: friend.friend_id as string,
+        display_name: friend.display_name as string | null,
+        avatar_url: friend.avatar_url as string | null,
       })));
-      setOutgoingRequests(outgoing.map(r => ({
-        id: r.id,
-        sender_id: r.sender_id,
-        receiver_id: r.receiver_id,
-        status: r.status as FriendRequest['status'],
-        created_at: r.created_at,
-        receiver: profileMap.get(r.receiver_id) || { display_name: null, avatar_url: null },
+      setIncomingRequests(incoming.map((request) => ({
+        id: request.id,
+        sender_id: request.sender_id,
+        receiver_id: request.receiver_id,
+        status: request.status as FriendRequest['status'],
+        created_at: request.created_at,
+        sender: profileMap.get(request.sender_id) || { display_name: null, avatar_url: null },
+      })));
+      setOutgoingRequests(outgoing.map((request) => ({
+        id: request.id,
+        sender_id: request.sender_id,
+        receiver_id: request.receiver_id,
+        status: request.status as FriendRequest['status'],
+        created_at: request.created_at,
+        receiver: profileMap.get(request.receiver_id) || { display_name: null, avatar_url: null },
       })));
     } catch (err) {
-      console.error('Failed to fetch friends data:', err);
-      toast.error('Failed to load friends');
-      setFriends([]);
-      setIncomingRequests([]);
-      setOutgoingRequests([]);
+      if (requestVersion !== fetchVersionRef.current) return;
+      console.error('[useFriends] Failed to fetch friends data:', err);
+      toast.error('Could not refresh your friends. Check your connection and try again.');
+    } finally {
+      if (requestVersion === fetchVersionRef.current) setLoading(false);
     }
-    setLoading(false);
   }, [user]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
@@ -97,7 +121,7 @@ export function useFriends() {
   useEffect(() => {
     if (!user) return;
     const channel = supabase
-      .channel('friend-requests-live')
+      .channel(`friend-requests-live-${user.id}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'friend_requests', filter: `receiver_id=eq.${user.id}` },
@@ -108,8 +132,16 @@ export function useFriends() {
         { event: '*', schema: 'public', table: 'friend_requests', filter: `sender_id=eq.${user.id}` },
         () => { fetchData(); }
       )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+      .subscribe((status, error) => {
+        if (status === 'SUBSCRIBED') {
+          // The subscription snapshot closes any gap between the initial fetch
+          // and joining Realtime, and runs again after reconnects.
+          void fetchData();
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          console.warn('[useFriends] Realtime channel state:', status, error);
+        }
+      });
+    return () => { void supabase.removeChannel(channel); };
   }, [user, fetchData]);
 
   const sendRequest = useCallback(async (receiverId: string) => {

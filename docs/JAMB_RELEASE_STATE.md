@@ -337,7 +337,7 @@ The exact 188 diagram-dependent rows have been extracted into `docs/JAMB_DIAGRAM
 
 A review of the tracked `fill_answers.py` found **eight hard-coded Gemini API credentials**. The feature branch in PR #78 now reads `GEMINI_API_KEY` or `GEMINI_API_KEYS` from the local environment, and `.env.example` documents the variable names without containing actual values.
 
-The same exposed version is still present on the repository's `main` branch as of this check. A narrow source-only security PR **#81** (`security/remove-hardcoded-gemini-keys`) has been opened against `main`; it is not merged. Vercel reports the `jupebstudyguide` check successful and the `rutexjupebmaster` check pending on its current head. PR #78 also carries the cleaned utility file.
+The same exposed version is still present on the repository's `main` branch as of this check. A narrow source-only security PR **#81** (`security/remove-hardcoded-gemini-keys`) has been opened against `main`; it is not merged. Both Vercel checks (`jupebstudyguide` and `rutexjupebmaster`) currently report success on its current head. PR #78 also carries the cleaned utility file.
 
 **Required external remediation:** revoke/rotate all eight credentials with the provider. Replacing the current file does not remove old commits from Git history. No provider-side key rotation or Git-history rewrite was performed by this continuation. Do not use the exposed credentials again.
 

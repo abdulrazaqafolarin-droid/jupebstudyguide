@@ -81,7 +81,7 @@ export default function AdminDashboard() {
   const [statsLoading, setStatsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [count, setCount] = useState(5);
-  const [planType, setPlanType] = useState("basic");
+  const [durationDays, setDurationDays] = useState(7);
   const [generating, setGenerating] = useState(false);
   const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeResult[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
@@ -137,21 +137,13 @@ export default function AdminDashboard() {
 
   const handleGenerate = async () => {
     setGenerating(true);
-    const result = await generateCodes(count, planType);
+    const result = await generateCodes(count, durationDays);
     setGenerating(false);
 
     if (result.success && result.codes) {
       setGeneratedCodes(result.codes);
-      toast.success(`Generated ${result.codes.length} codes`);
-      listCodes();
-      setStats(s => ({
-        ...s,
-        totalCodes: s.totalCodes + result.codes!.length,
-        planDistribution: [
-          ...s.planDistribution.filter(p => p.name !== planType),
-          { name: planType, value: (s.planDistribution.find(p => p.name === planType)?.value || 0) + result.codes!.length },
-        ],
-      }));
+      toast.success(`Generated ${result.codes.length} JUPEB codes for ${durationDays} days`);
+      await Promise.all([listCodes(), loadStats(false)]);
     } else {
       toast.error(result.error || "Failed to generate codes");
     }
@@ -510,15 +502,15 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-sm text-muted-foreground">Plan Type</label>
-                      <Select value={planType} onValueChange={setPlanType}>
-                        <SelectTrigger className="w-36 bg-background/50">
+                      <label className="text-sm text-muted-foreground">Subscription duration</label>
+                      <Select value={String(durationDays)} onValueChange={(value) => setDurationDays(Number(value))}>
+                        <SelectTrigger className="w-44 bg-background/50">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="basic">Basic</SelectItem>
-                          <SelectItem value="premium">Premium</SelectItem>
-                          <SelectItem value="lifetime">Lifetime</SelectItem>
+                          <SelectItem value="7">1 week (7 days)</SelectItem>
+                          <SelectItem value="30">1 month (30 days)</SelectItem>
+                          <SelectItem value="90">3 months (90 days)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -543,7 +535,7 @@ export default function AdminDashboard() {
                           <CheckCircle className="w-4 h-4 inline mr-1" />
                           {generatedCodes.length} codes generated
                           <span className="text-muted-foreground font-normal ml-2">
-                            (plan: {planType})
+                            (duration: {durationDays} days)
                           </span>
                         </p>
                         <div className="flex gap-1">
@@ -559,7 +551,7 @@ export default function AdminDashboard() {
                         {generatedCodes.map((c, i: number) => (
                           <div key={i} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
                             <code className="font-mono text-sm tracking-wider text-primary">{c.code}</code>
-                            <span className="text-xs text-muted-foreground capitalize">{c.plan_type}</span>
+                            <span className="text-xs text-muted-foreground">{c.duration_days ? `${c.duration_days} days` : "Legacy"}</span>
                             <button
                               onClick={() => { navigator.clipboard.writeText(c.code); toast.success("Copied!"); }}
                               className="text-muted-foreground hover:text-foreground transition-colors"
@@ -631,7 +623,7 @@ export default function AdminDashboard() {
                               <td className="py-2 px-2">
                                 <code className="font-mono text-xs bg-secondary/50 px-1.5 py-0.5 rounded">{c.code}</code>
                               </td>
-                              <td className="py-2 px-2 capitalize">{c.plan_type}</td>
+                              <td className="py-2 px-2">{c.duration_days ? `${c.duration_days} days` : "Legacy"}</td>
                               <td className="py-2 px-2">
                                 {c.is_used ? (
                                   <span className="text-emerald-500 text-xs flex items-center gap-1">

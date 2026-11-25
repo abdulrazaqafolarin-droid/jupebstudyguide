@@ -6,8 +6,8 @@ const RELEASE_BASE_URL = (
   import.meta.env.VITE_ANDROID_RELEASE_BASE_URL || DEFAULT_RELEASE_BASE_URL
 ).replace(/\/+$/, "");
 export const APK_FILE_NAME = import.meta.env.VITE_ANDROID_RELEASE_APK_NAME || "jupeb-master.apk";
-export const VERSION_URL = \`\${RELEASE_BASE_URL}/version.json\`;
-export const RELEASE_APK_URL = \`\${RELEASE_BASE_URL}/\${APK_FILE_NAME}\`;
+export const VERSION_URL = `${RELEASE_BASE_URL}/version.json`;
+export const RELEASE_APK_URL = `${RELEASE_BASE_URL}/${APK_FILE_NAME}`;
 
 /** Resolve versioned successor APK paths while preserving the legacy fixed URL. */
 export function getReleaseApkUrl(
@@ -18,9 +18,9 @@ export function getReleaseApkUrl(
   if (!Number.isSafeInteger(versionCode) || versionCode < 1) return "";
   const normalizedBaseUrl = baseUrl.replace(/\/+$/, "");
   if (apkFileName === "rutex-master-next.apk") {
-    return \`\${normalizedBaseUrl}/rutex-master-next-\${versionCode}.apk\`;
+    return `${normalizedBaseUrl}/rutex-master-next-${versionCode}.apk`;
   }
-  return \`\${normalizedBaseUrl}/\${apkFileName}\`;
+  return `${normalizedBaseUrl}/${apkFileName}`;
 }
 
 export interface ReleaseInfo {

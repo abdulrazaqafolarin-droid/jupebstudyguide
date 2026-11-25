@@ -9,17 +9,18 @@ import os
 import sys
 import time
 
-# Gemini API keys (cycles through them for rate limiting)
+# Load Gemini credentials only from the local process environment.
+# Use GEMINI_API_KEYS for comma-separated keys or GEMINI_API_KEY for one key.
+# Never commit API credentials or place them in source files.
 API_KEYS = [
-    'AQ.Ab8RN6LMs2O38kUqXbOLFMfjg35cENsHG7D5CQfzUDpU2MMwUg',
-    'AQ.Ab8RN6LQjL8_iJv_xj3Bk-r6xoQ30_XnFTpMmtlg1KVL7Jt6pA',
-    'AQ.Ab8RN6JveeweWgjL5fWcvQPjT1DDgaj7kLqYgwbdmnf2VGXwfA',
-    'AQ.Ab8RN6KNkNY8gOLeGKfmmMU4F2wWlWGlI9OSOJmTMMYYI0mkmw',
-    'AQ.Ab8RN6L_E8W6gzjXE0ccBKtJ3iwMsaSFrDNjkkL5KAqKlxN8_g',
-    'AQ.Ab8RN6L9WGKo_NWFIQ-xd-1uMQCqxyuCnLvWgcMzRufHepHW7Q',
-    'AQ.Ab8RN6LQ19sdfns_xq5V_6mXID0V5IHapOBQrLwaqEDdqwThCA',
-    'AQ.Ab8RN6ICsUC6LBlfkx4w2WtfFk3ZC0srPqMq3yIm80xkqOjbgg',
+    value.strip()
+    for value in os.getenv("GEMINI_API_KEYS", "").split(",")
+    if value.strip()
 ]
+if not API_KEYS:
+    single_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if single_key:
+        API_KEYS = [single_key]
 
 MODEL = 'gemini-flash-latest'
 BATCH_SIZE = 15
@@ -53,6 +54,11 @@ def gemini_request(prompt, api_key):
 
 def get_next_key():
     global KEY_INDEX
+    if not API_KEYS:
+        raise RuntimeError(
+            "Gemini credentials are not configured. Set GEMINI_API_KEY or "
+            "GEMINI_API_KEYS in your local environment; never commit the values."
+        )
     key = API_KEYS[KEY_INDEX % len(API_KEYS)]
     KEY_INDEX += 1
     return key
@@ -303,6 +309,11 @@ def process_subject(filepath):
 
 
 def main():
+    if not API_KEYS:
+        raise SystemExit(
+            "Gemini credentials missing. Set GEMINI_API_KEY or GEMINI_API_KEYS locally; "
+            "do not put credentials in this script."
+        )
     d = r'C:\Users\HP\Downloads\jupebstudyguide-main\jupebstudyguide-main\src\data\extracted'
     
     for fname in ['chemistry.ts', 'physics.ts', 'math.ts']:

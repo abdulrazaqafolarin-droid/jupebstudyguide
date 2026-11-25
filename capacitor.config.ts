@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.jupeb.master',
-  appName: 'Rutex Master(Jupeb)',
+  appId: process.env.CAPACITOR_APP_ID?.trim() || 'com.jupeb.master',
+  appName: process.env.CAPACITOR_APP_NAME?.trim() || 'Rutex Master(Jupeb)',
   webDir: 'dist',
   // NOTE: no server.url — the app bundles dist locally so it opens instantly
   // without depending on a remote URL (Supabase data still needs internet).

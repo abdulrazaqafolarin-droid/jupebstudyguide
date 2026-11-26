@@ -54,9 +54,13 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
       setActivationCode("");
       setShowActivationEntry(false);
       await refreshStatus();
-      toast.success(`Account activated with the ${result.plan_type || "basic"} plan.`);
+      toast.success(
+        status.subscription_expires_at
+          ? `Subscription extended with the ${result.plan_type || "selected"} plan.`
+          : `Account activated with the ${result.plan_type || "selected"} plan.`,
+      );
     }
-  }, [activationCode, validating, validateCode, refreshStatus]);
+  }, [activationCode, validating, validateCode, refreshStatus, status.subscription_expires_at]);
 
   if (status.checking) {
     return (
@@ -130,7 +134,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                   </strong>
                   <span aria-hidden="true">·</span>
                   <span className="font-mono tabular-nums" aria-live="off">
-                    {formatTrialCountdown(trialExpiresAt - clockNow)} remaining
+                    {formatTrialCountdown(activeExpiry - clockNow)} remaining
                   </span>
                   <Button
                     type="button"

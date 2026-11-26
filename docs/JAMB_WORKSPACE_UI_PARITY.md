@@ -211,3 +211,43 @@ The admin question manager and student question view now share the JUPEB multi-i
 - Regression tests for independent multi-image drag positioning and student inline-image rendering were added from the current JUPEB implementation.
 
 This is a source-level recovery change only. CI and authenticated student/admin Preview acceptance must pass before this parity fix is considered release-ready. Production remains unchanged.
+
+
+## Admin question-manager parity inventory — 26 November 2026
+
+### Shared editing capabilities
+
+The JAMB and JUPEB managers should share the student-facing editing and media workflow:
+
+- Add/edit question text, objective options, correct answer/explanation, subject, year, category, topic, difficulty and sort order.
+- Upload multiple question images with drag/drop input, image preview, remove and upload cleanup.
+- Crop a selected image using the free-size rectangle with eight resize handles or optional freehand polygon mode.
+- Choose image-only, text-only, image-above, image-beside or inline-within-question-text layout.
+- Position each image independently in the inline editor; long-press/touch drag, tap-to-place and keyboard positioning are supported.
+- Preview the question using the same layout the student viewer consumes.
+- Drag-sort published questions, save, reopen and check that the stored order and image positions round-trip.
+
+The shared media path uses the existing `study_questions.image_position`, legacy `image_url` and multi-image `image_urls` fields. The corresponding Storage and row-update policies are already applied in the shared Supabase database; the migration-source alignment PRs restore those exact migration files to GitHub.
+
+### JAMB-specific review safeguards — preserve these
+
+These are intentional additional controls, not missing JUPEB editor features:
+
+- Source document/publication and exact source reference.
+- Required source-rights confirmation and a written permission/rights note before publishing or deleting/hiding a question.
+- Answer-key draft status, answer revision tracking, confidence level, confidence note and evidence reference.
+- Human verification of the question, options, source and answer before publication.
+- Protected answer keys and explanations remain server-side; student question projections do not select them.
+- Unverified items stay hidden from learners and unapproved keys do not contribute to CBT scoring.
+- Hiding a question preserves protected answer-key and historical CBT attempt records; do not replace this with a direct hard-delete call.
+- The JAMB manager performs privileged changes through the programme-aware `question-import` Edge Function rather than copying JUPEB's direct client CRUD path.
+
+### Remaining acceptance checks
+
+1. Upload at least three images, use both crop modes, position two images at different text anchors, save, reopen, remove one image and confirm the remaining anchor still matches its image.
+2. Verify the same question on the JAMB student Preview at mobile and desktop widths, including the beside/above/image-only/text-only modes.
+3. Drag-sort published questions and verify order survives refresh; confirm review drafts cannot accidentally be published/reordered through the published-question action.
+4. Save an unverified answer draft, confirm it remains hidden and ungradable, then independently verify and publish it through the required source/rights workflow.
+5. Confirm JAMB student payloads never contain answer keys or explanations before an attempt is submitted and approved review permits them.
+
+This is a source/UI checklist. It does not authorize changing live question rows, approving content, or deploying Production.

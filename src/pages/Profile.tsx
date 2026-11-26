@@ -16,7 +16,7 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Clock, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
 import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 import { ACHIEVEMENTS, Achievement } from '@/hooks/useAchievements';
@@ -27,8 +27,28 @@ export default function ProfilePage() {
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
   const { signOut, user, deleteAccount } = useAuth();
   const { isJambWorkspace, programId } = useExamProgram();
+  const { status: entitlementStatus, refreshStatus: refreshEntitlementStatus } = useActivation(programId);
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [entitlementClock, setEntitlementClock] = useState(() => Date.now());
+
+  const trialExpiresAt = entitlementStatus.trial_expires_at
+    ? Date.parse(entitlementStatus.trial_expires_at)
+    : Number.NaN;
+  const subscriptionExpiresAt = entitlementStatus.subscription_expires_at
+    ? Date.parse(entitlementStatus.subscription_expires_at)
+    : Number.NaN;
+  const subscriptionActive = Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > entitlementClock;
+  const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > entitlementClock;
+  const activeEntitlementExpiry = subscriptionActive ? subscriptionExpiresAt : trialExpiresAt;
+
+  useEffect(() => {
+    if (!Number.isFinite(activeEntitlementExpiry) || activeEntitlementExpiry <= Date.now()) return;
+    const tick = () => setEntitlementClock(Date.now());
+    tick();
+    const interval = window.setInterval(tick, 1000);
+    return () => window.clearInterval(interval);
+  }, [activeEntitlementExpiry]);
 
   const [displayName, setDisplayName] = useState('');
   const [saving, setSaving] = useState(false);
@@ -156,6 +176,61 @@ export default function ProfilePage() {
               </div>
               <p className="text-sm text-muted-foreground bg-secondary/30 px-3 py-1 rounded-full">{user?.email}</p>
             </div>
+          </div>
+        </section>
+
+        {/* Programme-specific subscription status */}
+        <section className="animate-in-up stagger-2" aria-label={`${programId === 'jamb' ? 'JAMB / UTME' : 'JUPEB'} subscription status`}>
+          <div className="bg-card rounded-2xl border border-border p-6 space-y-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex min-w-0 items-start gap-3">
+                <div className="rounded-xl bg-primary/10 p-2 text-primary">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold">
+                    {programId === 'jamb' ? 'JAMB / UTME access' : 'JUPEB access'}
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {entitlementStatus.checking
+                      ? 'Checking your programme subscription…'
+                      : entitlementStatus.check_error
+                        ? 'Could not verify your subscription status.'
+                        : entitlementStatus.is_admin
+                          ? 'Administrator access'
+                          : subscriptionActive
+                            ? `${entitlementStatus.subscription_duration_days ?? 'Paid'}-day subscription active`
+                            : trialActive
+                              ? '24-hour free trial active'
+                              : 'No active subscription'}
+                  </p>
+                </div>
+              </div>
+              {entitlementStatus.checking ? (
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+              ) : entitlementStatus.is_admin ? (
+                <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">Admin</span>
+              ) : Number.isFinite(activeEntitlementExpiry) && activeEntitlementExpiry > entitlementClock ? (
+                <span className="shrink-0 text-right">
+                  <span className="block font-mono text-sm font-semibold tabular-nums text-primary">
+                    {formatTrialCountdown(activeEntitlementExpiry - entitlementClock)}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">remaining</span>
+                </span>
+              ) : null}
+            </div>
+            {!entitlementStatus.checking && !entitlementStatus.check_error && !entitlementStatus.is_admin &&
+              Number.isFinite(activeEntitlementExpiry) && activeEntitlementExpiry > entitlementClock && (
+                <p className="border-t border-border/60 pt-3 text-xs text-muted-foreground">
+                  {trialActive && !subscriptionActive ? 'Trial ends' : 'Subscription expires'}{' '}
+                  {new Date(activeEntitlementExpiry).toLocaleString()}.
+                </p>
+              )}
+            {entitlementStatus.check_error && (
+              <Button variant="outline" size="sm" onClick={() => void refreshEntitlementStatus()} disabled={entitlementStatus.checking}>
+                Retry subscription check
+              </Button>
+            )}
           </div>
         </section>
 

@@ -441,3 +441,18 @@ The parallel subscription/countdown repair is Draft PR **#85**. Its repository v
 ### Integration-branch validation trigger
 
 The repository validation workflow now includes `feat/jamb-programme-subscription-countdown-2026-11-26` in its push-trigger list. This branch therefore receives the same TypeScript, unit-test, lint, JAMB importer, Deno security/retrieval and web/Android build checks as the main JAMB feature branch. The first run is attached to the commit following this trigger change.
+
+
+## Integration Preview and validation result — 26 November 2026, 07:23 UTC
+
+The subscription/countdown integration branch has passed its complete GitHub repository validation on commit `dba9612cb2445d246fda1f88eeb3a3da03f65f8b` (run `45774184243`). Passing steps include the four-subject source parser tests, JAMB syllabus extraction tests, programme-entitlement / question-retrieval / CBT / import Deno tests, Deno type checks, TypeScript, unit tests, lint, web build, Capacitor sync and Android debug APK compilation.
+
+Both linked Vercel Preview projects are **READY** at that same commit:
+- Rutex Master: `https://rutexjupebmaster-8oo1tu0q7-abdulrazaqafolarin-droids-projects.vercel.app`
+- JUPEB Study Guide: `https://jupebstudyguide-lri69gb11-abdulrazaqafolarin-droids-projects.vercel.app`
+
+The JAMB Preview flag `VITE_ENABLE_JAMB=true` remains scoped to the integration branch's Preview environment in both projects. The flag was not enabled for Production. PR #86 remains Draft and targets `feat/rutex-jamb-workspace`; PR #78 remains Draft. No merge or Production deployment was made.
+
+The successful validation workflow generated a temporary `jamb-source-intake-bundle` artifact containing the four exact original TXT files, four matching JSON review packages and the parser audit. The bundle contains 8,583 source candidate blocks across the four source documents (Physics 896, Chemistry 1,940, Biology 1,833, Use of English 3,914). These are **candidate blocks, not unique missing references or publishable questions**. All generated science items remain ungraded and `needs_review`; source-provided English keys/explanations remain unverified suggestions. The artifact has short retention; download it promptly if it is needed for the authenticated admin staging step.
+
+A source-reference reconciliation must use the exact import parser and single-citation rules. A simple text regex over all citation-like tokens over-counts references in multi-reference/ambiguous candidates and must not replace the previously reconciled 526-item source-review queue. The 526 missing source-reference count is still the working intake queue from the detailed prior reconciliation; no records have been uploaded or published.

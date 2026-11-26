@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 
@@ -130,6 +131,7 @@ function getInitialPosition() {
 
 export const FloatingAITutor = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [showChatList, setShowChatList] = useState(false);
@@ -481,7 +483,7 @@ export const FloatingAITutor = () => {
 
     let ragContext = "";
     try {
-      ragContext = await searchRelevantChunks(userMessage);
+      if (user?.id) ragContext = await searchRelevantChunks(userMessage, 'jupeb', user.id);
     } catch (e) { console.warn('RAG search failed:', e); }
 
     if (ac.signal.aborted || activeChatIdRef.current !== chatId) return;
@@ -558,7 +560,7 @@ export const FloatingAITutor = () => {
         setIsLoading(false);
       },
     }, ragContext, undefined, ac.signal);
-  }, [activeChatId, attachment, messages, setMessages, clearAttachment, saveUserMessage, saveAssistantMessage, deleteMessagesFrom, editingIndex]);
+  }, [activeChatId, attachment, messages, setMessages, clearAttachment, saveUserMessage, saveAssistantMessage, deleteMessagesFrom, editingIndex, user?.id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -748,7 +750,7 @@ export const FloatingAITutor = () => {
                       <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/5" onClick={() => newChat()} title="New chat">
                         <Plus className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/5 relative" onClick={() => toast("Textbook upload coming soon!")} title="Textbooks">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white/5 relative" onClick={() => { setIsOpen(false); navigate('/study-chat?textbooks=1'); }} title="Textbooks">
                         <Library className="w-4 h-4" />
                       </Button>
                     </>

@@ -9,7 +9,7 @@ import { UserAvatar } from "@/components/UserAvatar";
 import UserAchievementPreview from "@/components/UserAchievementPreview";
 import { Button } from "@/components/ui/button";
 import {
-  Trophy, ArrowLeft, Crown, Loader2, TrendingUp,
+  Trophy, Crown, Loader2, TrendingUp,
   Timer, Sparkles, Star, Eye, Share2, MessageCircle
 } from "lucide-react";
 import {
@@ -21,6 +21,7 @@ import {
 import AchievementBadge from "@/components/AchievementBadge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 
 const MEDAL = ["🥇", "🥈", "🥉"];
 
@@ -101,21 +102,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="shrink-0">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div className="flex-1">
-            <h1 className="font-bold text-lg flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-accent" />
-              Leaderboard
-            </h1>
-          </div>
-        </div>
-      </header>
+      <WorkspacePageHeader title="Leaderboard" backTo="/" backLabel="Back to JUPEB workspace" icon={Trophy} iconClassName="text-accent" />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         <div className="grid gap-4 md:grid-cols-2">

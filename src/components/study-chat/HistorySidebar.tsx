@@ -13,6 +13,9 @@ interface HistorySidebarProps {
   onRename: (chatId: string, title: string) => void;
   onDelete: (chatId: string) => void;
   onClose?: () => void;
+  heading?: string;
+  emptyMessage?: string;
+  showNewChatButton?: boolean;
 }
 
 /**
@@ -29,6 +32,9 @@ export function HistorySidebar({
   onRename,
   onDelete,
   onClose,
+  heading = 'Study Chat',
+  emptyMessage = 'No chats yet — open a topic from the syllabus to start one.',
+  showNewChatButton = true,
 }: HistorySidebarProps) {
   const [search, setSearch] = useState('');
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -66,12 +72,14 @@ export function HistorySidebar({
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
           </div>
-          <span className="truncate text-sm font-semibold">Study Chat</span>
+          <span className="truncate text-sm font-semibold">{heading}</span>
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          <Button variant="outline" size="sm" className="h-7 gap-1 px-2 text-xs" onClick={onNewChat}>
-            <Plus className="h-3 w-3" /> New
-          </Button>
+          {showNewChatButton && (
+            <Button variant="outline" size="sm" className="h-7 gap-1 px-2 text-xs" onClick={onNewChat}>
+              <Plus className="h-3 w-3" /> New
+            </Button>
+          )}
           {onClose && (
             <Button
               variant="ghost"
@@ -108,7 +116,7 @@ export function HistorySidebar({
           <p className="px-1.5 py-2 text-xs text-muted-foreground">
             {search
               ? 'No chats match your search.'
-              : 'No chats yet — open a topic from the syllabus to start one.'}
+              : emptyMessage}
           </p>
         )}
         {groups.map((group) => (

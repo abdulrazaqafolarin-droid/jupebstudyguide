@@ -1,0 +1,474 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+import {
+  Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
+  Clock3, Loader2, RefreshCw, ShieldCheck, Target, Trophy,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
+import { QuestionMath } from "@/components/QuestionMath";
+import { QuestionImage } from "@/components/QuestionImage";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
+import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
+import { useJambBookmarks } from "@/hooks/useJambBookmarks";
+import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  getJambMissionQuestionOffset,
+  getJambMissionSummary,
+  jambLocalDateKey,
+  createJambDailyMission,
+  selectJambMissionAnswer,
+  applyJambMissionAnswerCheck,
+  type JambDailyMissionRecord,
+  type JambMissionSubject,
+} from "@/lib/jamb-daily-mission";
+import {
+  getJambSubjectSummaries,
+  getJambPublishedQuestionById,
+  searchJambQuestions,
+  type JambQuestion,
+  type JambSubjectSummary,
+} from "@/lib/jamb-question-service";
+import { JAMB_SUBJECT_INFO, JAMB_SUBJECTS } from "@/lib/jamb-config";
+import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
+import { orderJambSubjectsByPreference } from "@/lib/jamb-study-preferences";
+
+function formatDate(value: string): string {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+    weekday: "short", day: "numeric", month: "short", year: "numeric",
+  });
+}
+
+function accuracyLabel(mission: JambDailyMissionRecord): string {
+  const summary = getJambMissionSummary(mission);
+  if (summary.accuracy === null) return mission.status === "completed" ? "No score" : "Not graded yet";
+  return `${summary.accuracy}% · ${summary.gradableQuestions} graded`;
+}
+
+export default function JambDailyMissionPage() {
+  const navigate = useNavigate();
+  const { missionId } = useParams<{ missionId?: string }>();
+  const { history, ready, remoteSupported, createMission, updateMission } = useJambDailyMissions();
+  const { bookmarks, toggle: toggleBookmark, isReady: bookmarksReady } = useJambBookmarks();
+  const { saveAnswer: savePracticeAnswer } = useJambPracticeProgress();
+  const { preferences: studyPreferences, isReady: studyPreferencesReady } = useJambStudyPreferences();
+  const orderedSubjects = useMemo(() => orderJambSubjectsByPreference(JAMB_SUBJECTS, studyPreferences), [studyPreferences]);
+  const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);
+  const [loadingBank, setLoadingBank] = useState(true);
+  const [startingSubject, setStartingSubject] = useState<JambMissionSubject | null>(null);
+  const [questions, setQuestions] = useState<JambQuestion[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [pageError, setPageError] = useState<string | null>(null);
+  const [answerErrors, setAnswerErrors] = useState<Record<string, string>>({});
+  const [checking, setChecking] = useState<Record<string, boolean>>({});
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  const requestSequence = useRef<Record<string, number>>({});
+
+  const today = jambLocalDateKey();
+  const todayMissions = useMemo(
+    () => history.filter((mission) => mission.localDate === today)
+      .sort((a, b) => a.subject.localeCompare(b.subject)),
+    [history, today],
+  );
+  // The hub stays a hub even when today's missions exist, so learners can
+  // start or resume more than one subject mission on the same day.
+  const activeMission = useMemo(
+    () => missionId ? history.find((mission) => mission.id === missionId) ?? null : null,
+    [history, missionId],
+  );
+  const activeMissionId = activeMission?.id ?? null;
+  const questionIdsKey = activeMission?.questionIds.join("|") ?? "";
+
+  useEffect(() => {
+    let active = true;
+    getJambSubjectSummaries()
+      .then((rows) => { if (active) setSummaries(rows); })
+      .catch((reason: unknown) => {
+        if (active) setPageError(reason instanceof Error ? reason.message : "JAMB question coverage could not be loaded.");
+      })
+      .finally(() => { if (active) setLoadingBank(false); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!activeMissionId || !questionIdsKey) {
+      setQuestions([]);
+      setLoadingQuestions(false);
+      return;
+    }
+    let active = true;
+    setLoadingQuestions(true);
+    const ids = questionIdsKey.split("|").filter(Boolean);
+    Promise.all(ids.map((id) => getJambPublishedQuestionById(id)))
+      .then((rows) => {
+        if (active) setQuestions(rows.filter((question): question is JambQuestion => Boolean(question)));
+      })
+      .catch((reason: unknown) => {
+        if (active) setPageError(reason instanceof Error ? reason.message : "This saved JAMB mission could not be restored.");
+      })
+      .finally(() => { if (active) setLoadingQuestions(false); });
+    return () => { active = false; };
+  }, [activeMissionId, questionIdsKey]);
+
+  const startMission = async (subject: JambMissionSubject) => {
+    const existing = history.find((mission) => mission.localDate === today && mission.subject === subject);
+    if (existing) {
+      navigate(`/jamb/daily-mission/${existing.id}`);
+      return;
+    }
+
+    const coverage = summaries.find((row) => row.subject === subject);
+    const count = coverage?.count ?? 0;
+    const pageSize = Math.min(10, count);
+    if (pageSize < 3) {
+      setPageError(`A ${JAMB_SUBJECT_INFO[subject].label} mission needs at least three reviewed and published JAMB questions. This subject currently has ${count}.`);
+      return;
+    }
+
+    setStartingSubject(subject);
+    setPageError(null);
+    try {
+      const offset = getJambMissionQuestionOffset(today, subject, count, pageSize);
+      const result = await searchJambQuestions({ subject, offset, limit: pageSize });
+      if (result.questions.length < 3) {
+        setPageError("There are not enough published questions available to create this mission yet.");
+        return;
+      }
+      const candidate = createJambDailyMission(today, subject, result.questions.map((question) => question.id));
+      if (!candidate) {
+        setPageError("The daily mission could not be created from this question set.");
+        return;
+      }
+      const saved = await createMission(candidate);
+      navigate(`/jamb/daily-mission/${saved.id}`);
+    } catch (reason) {
+      setPageError(reason instanceof Error ? reason.message : "Could not prepare today's JAMB mission.");
+    } finally {
+      setStartingSubject(null);
+    }
+  };
+
+  const checkAnswer = async (mission: JambDailyMissionRecord, questionId: string, option: string) => {
+    const requestKey = `${mission.id}:${questionId}`;
+    const sequence = (requestSequence.current[requestKey] ?? 0) + 1;
+    requestSequence.current[requestKey] = sequence;
+    updateMission(mission.id, (current) => selectJambMissionAnswer(current, questionId, option));
+    savePracticeAnswer(questionId, option);
+    setChecking((previous) => ({ ...previous, [questionId]: true }));
+    setAnswerErrors((previous) => ({ ...previous, [questionId]: "" }));
+
+    try {
+      const { data, error } = await supabase.functions.invoke("exam-practice", {
+        body: {
+          action: "check-answer",
+          exam_program_id: "jamb",
+          question_id: questionId,
+          selected_option: option,
+        },
+      });
+      if (error) throw error;
+      if (requestSequence.current[requestKey] !== sequence) return;
+      updateMission(mission.id, (current) => applyJambMissionAnswerCheck(current, questionId, {
+        gradable: data?.gradable === true,
+        isCorrect: data?.gradable === true ? data.is_correct === true : undefined,
+        correctOption: typeof data?.correct_option === "string" ? data.correct_option : undefined,
+        explanation: typeof data?.explanation === "string" ? data.explanation : undefined,
+      }));
+      if (data?.gradable !== true && data?.message) {
+        setAnswerErrors((previous) => ({ ...previous, [questionId]: String(data.message) }));
+      }
+    } catch (reason) {
+      if (requestSequence.current[requestKey] !== sequence) return;
+      setAnswerErrors((previous) => ({
+        ...previous,
+        [questionId]: reason instanceof Error
+          ? reason.message
+          : "Answer checking is unavailable. Your selection is saved; retry the check when connected.",
+      }));
+    } finally {
+      if (requestSequence.current[requestKey] === sequence) {
+        setChecking((previous) => ({ ...previous, [questionId]: false }));
+      }
+    }
+  };
+
+  const activeSummary = activeMission ? getJambMissionSummary(activeMission) : null;
+  const historyRows = [...history]
+    .sort((a, b) => b.localDate.localeCompare(a.localDate) || b.updatedAt.localeCompare(a.updatedAt));
+  const visibleHistoryRows = showAllHistory ? historyRows : historyRows.slice(0, 20);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <WorkspacePageHeader
+        title="Daily Mission"
+        backTo="/jamb"
+        backLabel="Back to JAMB workspace"
+        compact
+        wide
+        rightContent={<CalendarDays className="h-5 w-5 text-primary" />}
+      />
+
+      <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-12">
+        <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Target className="h-5 w-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg font-bold">Build a daily practice habit</h2>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                Choose a subject and practise with up to 10 reviewed questions.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1"><ShieldCheck className="h-3.5 w-3.5" /> Answers checked by the JAMB service</span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1"><Clock3 className="h-3.5 w-3.5" /> Up to 10 questions</span>
+          </div>
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+            Syllabus-led lessons remain disabled pending official source verification. Only approved answer keys count towards accuracy.
+          </p>
+        </section>
+
+        {!remoteSupported && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
+            Cloud sync is unavailable; your missions remain saved on this device.
+          </div>
+        )}
+
+        {pageError && (
+          <div role="alert" className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">
+            {pageError}
+          </div>
+        )}
+
+        {!activeMission && (
+          <section className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="font-semibold">Choose today's subject</h2>
+              </div>
+              <span className="text-xs text-muted-foreground">{today}</span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {orderedSubjects.map((subject) => {
+                const info = JAMB_SUBJECT_INFO[subject];
+                const count = summaries.find((row) => row.subject === subject)?.count ?? 0;
+                const existing = todayMissions.find((mission) => mission.subject === subject);
+                const unavailable = loadingBank || count < 3 || Boolean(startingSubject);
+                const meta = startingSubject === subject
+                  ? "Preparing mission…"
+                  : loadingBank
+                    ? "Checking published questions…"
+                    : count < 3
+                      ? `${count.toLocaleString()} reviewed questions · awaiting coverage`
+                      : `${count.toLocaleString()} published questions · ${existing ? "Resume / review" : "Start mission"}`;
+                return (
+                  <SelectableSubjectCard
+                    key={subject}
+                    icon={info.icon}
+                    label={info.label}
+                    description={studyPreferencesReady && studyPreferences.subjects.includes(subject)
+                      ? <span className="font-semibold text-primary">Your focus</span>
+                      : undefined}
+                    meta={meta}
+                    selected={Boolean(existing)}
+                    disabled={!existing && unavailable}
+                    onSelect={() => {
+                      if (existing) navigate(`/jamb/daily-mission/${existing.id}`);
+                      else if (!unavailable) void startMission(subject);
+                    }}
+                  />
+                );
+              })}
+            </div>
+            {!loadingBank && summaries.every((row) => row.count === 0) && (
+              <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+                No reviewed JAMB questions are published yet.
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeMission && (
+          <section className="space-y-4">
+            <div className="mx-auto w-full max-w-3xl space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{JAMB_SUBJECT_INFO[activeMission.subject].label}</span>
+                <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{formatDate(activeMission.localDate)}</span>
+                <span className={activeMission.status === "completed" ? "rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600" : "rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"}>
+                  {activeMission.status === "completed" ? "Completed" : "In progress"}
+                </span>
+              </div>
+              <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold">Today's practice set</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">{activeSummary?.checkedQuestions ?? 0} of {activeSummary?.totalQuestions ?? activeMission.questionIds.length} answer checks completed</p>
+                </div>
+                {activeSummary?.accuracy !== null && activeSummary?.accuracy !== undefined && (
+                  <div className="text-right">
+                    <p className="text-2xl font-bold tabular-nums">{activeSummary.accuracy}%</p>
+                    <p className="text-[10px] text-muted-foreground">of {activeSummary.gradableQuestions} gradable</p>
+                  </div>
+                )}
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-secondary">
+                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${activeSummary ? (activeSummary.checkedQuestions / Math.max(1, activeSummary.totalQuestions)) * 100 : 0}%` }} />
+              </div>
+              {activeMission.status === "completed" && activeSummary?.accuracy === null && (
+                <p className="mt-3 text-xs text-muted-foreground">This mission is complete, but no accuracy score is shown because the checked questions did not have approved answer keys.</p>
+              )}
+            </div>
+
+            {loadingQuestions ? (
+              <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Restoring mission questions…</div>
+            ) : questions.length === 0 ? (
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">The saved question set is no longer available in the published JAMB bank. Your mission record is retained; return to the hub to view other missions.</div>
+            ) : (
+              <div className="space-y-4">
+                {questions.map((question, index) => {
+                  const answer = activeMission.answers[question.id];
+                  const canChange = activeMission.status !== "completed" || (answer?.checked && !answer.gradable);
+                  const correctOption = question.options.find((option) => option.label === answer?.correctOption);
+                  return (
+                    <article key={question.id} className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <p className="text-xs font-semibold text-muted-foreground">Question {index + 1} of {questions.length} · {question.year}</p>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            disabled={!bookmarksReady}
+                            onClick={() => void toggleBookmark(question.id)}
+                            aria-label={bookmarks.includes(question.id) ? "Remove bookmark" : "Bookmark question"}
+                            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:opacity-40"
+                          >
+                            {bookmarks.includes(question.id) ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+                          </button>
+                          {answer?.checked && answer.gradable && (
+                            <span className={answer.isCorrect ? "rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-600" : "rounded-full bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-destructive"}>
+                              {answer.isCorrect ? "Correct" : "Review"}
+                            </span>
+                          )}
+                          {answer?.checked && !answer.gradable && (
+                            <span className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground">Not graded</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mb-4 text-sm leading-relaxed"><QuestionMath content={question.question} /></div>
+                      {question.imageUrls.map((url) => <QuestionImage key={url} imageUrl={url} alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"} />)}
+                      <div className="space-y-3">
+                        {question.options.map((option) => {
+                          const selected = answer?.selectedOption === option.label;
+                          const isApproved = answer?.checked === true
+                            && answer.gradable
+                            && answer.correctOption === option.label;
+                          const isIncorrectSelection = answer?.checked === true
+                            && answer.gradable
+                            && selected
+                            && answer.isCorrect === false;
+                          return (
+                            <QuestionOptionButton
+                              key={option.label}
+                              label={option.label}
+                              state={
+                                isApproved ? "correct"
+                                  : isIncorrectSelection ? "incorrect"
+                                    : answer?.checked && answer.gradable ? "muted"
+                                      : selected ? "selected" : "default"
+                              }
+                              selected={selected}
+                              disabled={!canChange || Boolean(checking[question.id])}
+                              onClick={() => void checkAnswer(activeMission, question.id, option.label)}
+                              contentClassName="break-words text-pretty"
+                            >
+                              <QuestionMath inline content={option.text} />
+                            </QuestionOptionButton>
+                          );
+                        })}
+                      </div>
+                      {checking[question.id] && <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking with the JAMB answer service…</p>}
+                      {answerErrors[question.id] && <p role="alert" className="mt-3 text-xs text-amber-600">{answerErrors[question.id]}</p>}
+                      {answer && !answer.checked && !checking[question.id] && (
+                        <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><RefreshCw className="h-3.5 w-3.5" /> Choose an option to save it and request a secure answer check.</p>
+                      )}
+                      {answer?.checked && answer.gradable && (
+                        <div className="mt-3 space-y-2 rounded-lg border border-border bg-muted/30 p-3">
+                          {answer.correctOption && (
+                            <p className="text-xs font-semibold">
+                              Correct answer: {answer.correctOption}
+                              {correctOption && <> — <QuestionMath inline content={correctOption.text} /></>}
+                            </p>
+                          )}
+                          {answer.explanation && (
+                            <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                              <QuestionMath inline content={answer.explanation} />
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      {answer?.checked && !answer.gradable && (
+                        <p className="mt-3 text-xs text-muted-foreground">This answer is saved, but it is excluded from accuracy because an approved key is not available.</p>
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => navigate("/jamb/daily-mission")}>Mission hub & history</Button>
+              <Button variant="outline" onClick={() => navigate("/jamb/past-questions")}>Browse past questions</Button>
+            </div>
+            </div>
+          </section>
+        )}
+
+        <section className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-semibold">Mission history</h2>
+            <span className="text-xs text-muted-foreground">{history.length} saved</span>
+          </div>
+          {historyRows.length === 0 ? (
+            <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Your completed and in-progress JAMB daily practice sessions will appear here.</div>
+          ) : (
+            <div className="space-y-2">
+              {visibleHistoryRows.map((mission) => {
+                const summary = getJambMissionSummary(mission);
+                const selected = mission.id === activeMissionId;
+                return (
+                  <button
+                    key={mission.id}
+                    type="button"
+                    onClick={() => navigate(`/jamb/daily-mission/${mission.id}`)}
+                    className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-colors ${selected ? "border-primary/40 bg-primary/5" : "border-border bg-card hover:bg-accent/40"}`}
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-lg">{JAMB_SUBJECT_INFO[mission.subject].icon}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-semibold">{JAMB_SUBJECT_INFO[mission.subject].label} · {formatDate(mission.localDate)}</span>
+                      <span className="block text-xs text-muted-foreground">{summary.checkedQuestions}/{summary.totalQuestions} checked · {mission.status === "completed" ? "Completed" : "In progress"}</span>
+                    </span>
+                    <span className="shrink-0 text-xs font-semibold tabular-nums">{accuracyLabel(mission)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {historyRows.length > 20 && (
+            <Button variant="ghost" size="sm" className="w-full" onClick={() => setShowAllHistory((value) => !value)}>
+              {showAllHistory ? "Show recent 20 missions" : `Show all ${historyRows.length} missions`}
+            </Button>
+          )}
+        </section>
+
+        {!ready && <p className="text-center text-xs text-muted-foreground">Restoring your saved mission history…</p>}
+        <p className="text-center text-[10px] text-muted-foreground">
+          <Trophy className="inline h-3 w-3" /> Mission completion is a Rutex study activity, not an official JAMB result.
+        </p>
+      </main>
+    </div>
+  );
+}

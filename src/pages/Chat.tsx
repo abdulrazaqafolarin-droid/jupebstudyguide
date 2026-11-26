@@ -12,11 +12,13 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { ArrowLeft, MessageCircle, Search, UserCheck, UserPlus, Users, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotificationsContext } from '@/contexts/NotificationsContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { getWorkspacePath } from '@/lib/exam-program';
 import { toast } from 'sonner';
 
 let faviconOriginalHref: string | null = null;
@@ -59,9 +61,8 @@ function updateFaviconBadge(count: number) {
 type Tab = 'chats' | 'friends';
 
 const Chat = () => {
+  const { isJambWorkspace, programId } = useExamProgram();
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const { conversationId: routeConversationId } = useParams();
   const chat = useChat();
   const friends = useFriends();
   const presence = usePresenceContext();
@@ -76,25 +77,22 @@ const Chat = () => {
   const { markReadByKind } = useNotificationsContext();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [searchParams] = useSearchParams();
-  const queryConversationId = searchParams.get('conversation');
-  const isFocusedConversation = Boolean(routeConversationId);
 
-  // Open direct links in a focused DM view. The old query-string form remains
-  // supported for existing notification links and shared URLs.
+  // Handle URL params from notification bar navigation.
   // Re-runs when the query string changes so taps while already on /chat
   // switch conversations instead of being swallowed by the one-shot effect.
   useEffect(() => {
-    const convParam = routeConversationId || queryConversationId;
+    const convParam = searchParams.get('conversation');
     const tabParam = searchParams.get('tab');
     if (convParam) {
-      setTab('chats');
-      void chat.openConversation(convParam);
-      if (routeConversationId || isMobile) setShowSidebar(false);
-    } else if (isMobile) {
-      setShowSidebar(true);
+      chat.openConversation(convParam);
+      if (isMobile) setShowSidebar(false);
     }
-    if (tabParam === 'friends') setTab('friends');
-  }, [routeConversationId, queryConversationId, searchParams, isMobile, chat.openConversation]);
+    if (tabParam === 'friends') {
+      setTab('friends');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleRealtimeMessage = useCallback((message: Message) => {
@@ -125,10 +123,11 @@ const Chat = () => {
   // Update document title and favicon with total unread count
   const totalUnread = chat.totalUnreadCount;
   useEffect(() => {
-    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] JUPEB Study Guide` : 'JUPEB Study Guide';
+    const programmeTitle = isJambWorkspace ? 'JAMB Study Guide' : 'JUPEB Study Guide';
+    const title = totalUnread > 0 ? `[${totalUnread > 99 ? '99+' : totalUnread}] ${programmeTitle}` : programmeTitle;
     document.title = title;
     updateFaviconBadge(totalUnread);
-  }, [totalUnread]);
+  }, [totalUnread, isJambWorkspace]);
 
   useEffect(() => {
     if (addFriendQuery.trim().length < 2) { setAddFriendResults([]); return; }
@@ -152,7 +151,7 @@ const Chat = () => {
   const handleStartConversation = async (userId: string) => {
     try {
       const convId = await chat.startConversation(userId);
-      if (convId) navigate(`/chat/${encodeURIComponent(convId)}`);
+      if (convId && isMobile) setShowSidebar(false);
     } catch (err) {
       toast.error(String(err));
     }
@@ -161,7 +160,6 @@ const Chat = () => {
   const handleBackToSidebar = () => {
     chat.setActiveConversation(null);
     setShowSidebar(true);
-    if (isFocusedConversation) navigate('/chat', { replace: true });
   };
 
   const openProfile = (userId: string) => {
@@ -173,13 +171,13 @@ const Chat = () => {
     <div className="h-[100dvh] flex flex-col bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="flex flex-1 overflow-hidden">
       {/* Sidebar */}
-      {(!isFocusedConversation && (!isMobile || showSidebar)) && (
+      {(!isMobile || showSidebar) && (
         <div className={`${isMobile ? 'w-full' : 'w-80 border-r border-border/40'} flex flex-col bg-gradient-to-b from-background via-background to-secondary/10`}>
           {/* Header */}
           <div className="relative p-3 border-b border-border/40">
             <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
             <div className="flex items-center gap-2">
-              <Link to="/">
+              <Link to={isJambWorkspace ? "/jamb" : "/"}>
                 <Button variant="ghost" size="icon" className="shrink-0 rounded-xl hover:bg-accent/50">
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
@@ -189,7 +187,7 @@ const Chat = () => {
                 <p className="text-[10px] text-muted-foreground/60 -mt-0.5">Chat with friends</p>
               </div>
               <div className="ml-auto flex gap-1">
-                <Link to="/settings/profile">
+                <Link to={getWorkspacePath("/settings/profile", programId)}>
                   <Button variant="ghost" size="icon" className="shrink-0 rounded-xl hover:bg-accent/50">
                     <Settings className="w-4 h-4" />
                   </Button>
@@ -480,7 +478,7 @@ const Chat = () => {
       )}
 
       {/* Chat area */}
-      {(isFocusedConversation || !isMobile || !showSidebar) && (
+      {(!isMobile || !showSidebar) && (
         <div className="flex-1 flex flex-col min-w-0 bg-gradient-to-b from-background via-background to-secondary/5">
           <ChatArea
             messages={chat.messages}
@@ -497,7 +495,7 @@ const Chat = () => {
             onPushMessage={chat.pushMessage}
             onUploadImage={chat.uploadImage}
             onUploadFile={chat.uploadFile}
-            onBack={isFocusedConversation || isMobile ? handleBackToSidebar : undefined}
+            onBack={isMobile ? handleBackToSidebar : undefined}
             isOnline={presence.isOnline}
             isTyping={presence.isTyping}
             isRecordingVn={presence.isRecordingVn}

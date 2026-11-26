@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { getLegacyProgramStorageKey } from '@/lib/user-storage-keys';
 
 /**
  * Per-user namespaced localStorage hook.
  *
  * Storage key shape:  `u:<userId>:<key>`
+ *
+ * For the three JUPEB onboarding keys above, the first read copies a value
+ * from the old unscoped JUPEB key into the JUPEB namespace. The old value is
+ * retained so rollback does not destroy browser data. JAMB never reads it.
  *
  * isReady is scoped to the current storage key, not just to the first successful
  * read. This prevents a previous account's in-memory state from being treated
@@ -24,7 +29,7 @@ export function useUserStorage<T>(
   useEffect(() => {
     if (loading) return;
 
-    if (!storageKey) {
+    if (!storageKey || !userId) {
       setValue(defaultValue);
       setLoadedStorageKey(null);
       return;
@@ -33,15 +38,30 @@ export function useUserStorage<T>(
     // The previous account's value must not be considered ready for this key.
     setLoadedStorageKey(undefined);
     try {
-      const raw = localStorage.getItem(storageKey);
-      setValue(raw ? (JSON.parse(raw) as T) : defaultValue);
+      let raw = localStorage.getItem(storageKey);
+
+      // Copy legacy JUPEB onboarding values only when the scoped key is absent.
+      // Never use a prior JUPEB value to seed JAMB.
+      if (raw === null) {
+        const legacyKey = getLegacyProgramStorageKey(key);
+        if (legacyKey) {
+          const legacyStorageKey = `u:${userId}:${legacyKey}`;
+          const legacyRaw = localStorage.getItem(legacyStorageKey);
+          if (legacyRaw !== null) {
+            raw = legacyRaw;
+            localStorage.setItem(storageKey, legacyRaw);
+          }
+        }
+      }
+
+      setValue(raw !== null ? (JSON.parse(raw) as T) : defaultValue);
     } catch (err) {
       console.warn('Failed to read user storage:', err);
       setValue(defaultValue);
     }
     setLoadedStorageKey(storageKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storageKey, loading]);
+  }, [storageKey, loading, userId]);
 
   const update = useCallback(
     (next: T | ((prev: T) => T)) => {

@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { ACHIEVEMENTS, Achievement } from '@/hooks/useAchievements';
 import { useUserStorage } from '@/hooks/useUserStorage';
 import AchievementBadge from '@/components/AchievementBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Crown, Swords, Search, Trophy, Star } from 'lucide-react';
+import { Crown, Swords, Search, Trophy, Star } from 'lucide-react';
+import { WorkspacePageHeader } from '@/components/WorkspacePageHeader';
 import { cn } from '@/lib/utils';
 
 const RARITIES = ['all', 'legendary', 'epic', 'rare', 'uncommon', 'common'] as const;
@@ -63,21 +63,7 @@ export default function AchievementsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="shrink-0">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div className="flex-1">
-            <h1 className="font-bold text-lg flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-primary" />
-              Achievements
-            </h1>
-          </div>
-        </div>
-      </header>
+      <WorkspacePageHeader title="Achievements" backTo="/" backLabel="Back to JUPEB workspace" icon={Trophy} />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Stats header */}

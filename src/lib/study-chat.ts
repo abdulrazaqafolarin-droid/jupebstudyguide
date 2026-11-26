@@ -2,10 +2,12 @@ import { SYLLABUSES, type SyllabusTopic } from '@/types/syllabus';
 import type { Subject } from '@/types/question';
 import type { AIMessage } from '@/hooks/useAITutorChats';
 import { todayDateString } from '@/lib/daily-mission';
+import type { ExamProgramId } from '@/lib/exam-program';
 
 /** Row shape of `ai_chats` as consumed by the Study Chat UI. */
 export interface StudyChatMeta {
   id: string;
+  exam_program_id: ExamProgramId;
   title: string;
   topic_id: string | null;
   subtopic: string | null;
@@ -19,7 +21,46 @@ export interface StudyChatMeta {
 export const CONTEXT_MESSAGE_CAP = 30;
 
 export const CHAT_SELECT_COLS =
-  'id,title,topic_id,subtopic,subject,created_at,updated_at';
+  'id,exam_program_id,title,topic_id,subtopic,subject,created_at,updated_at';
+
+/** JAMB has no verified syllabus catalogue yet, so topic context is JUPEB-only. */
+export function canUseSyllabusTopicContext(
+  examProgramId: ExamProgramId,
+  topicId: string | null | undefined,
+): boolean {
+  return examProgramId === "jupeb" && Boolean(topicId);
+}
+
+
+/**
+ * Find the newest conversation matching a syllabus topic within one
+ * programme and subject. Chat lists are expected newest-first.
+ */
+export function findLatestTopicChat(
+  chats: StudyChatMeta[],
+  examProgramId: ExamProgramId,
+  subject: string,
+  topicId: string,
+): StudyChatMeta | null {
+  return chats.find((chat) =>
+    chat.exam_program_id === examProgramId
+    && chat.subject === subject
+    && chat.topic_id === topicId
+  ) ?? null;
+}
+
+/** Find the newest untethered conversation for one programme/subject. */
+export function findLatestSubjectChat(
+  chats: StudyChatMeta[],
+  examProgramId: ExamProgramId,
+  subject: string,
+): StudyChatMeta | null {
+  return chats.find((chat) =>
+    chat.exam_program_id === examProgramId
+    && chat.subject === subject
+    && !chat.topic_id
+  ) ?? null;
+}
 
 /** Newest-N window of a thread for the model (order preserved). */
 export function trimMessagesForContext<T>(messages: T[], cap = CONTEXT_MESSAGE_CAP): T[] {

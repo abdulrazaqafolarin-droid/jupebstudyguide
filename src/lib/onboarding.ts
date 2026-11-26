@@ -13,8 +13,10 @@
  * home-page "Finish setup" nudge appear.
  */
 import { normalizeSchoolName, normalizeSeatNumber } from './profile-fields';
+import type { ExamProgramId } from './exam-program';
+import { normalizeJambStudyPreferences, type JambStudyPreferences } from './jamb-study-preferences';
 
-export type OnboardingStepId = 'welcome' | 'theme' | 'study' | 'chat' | 'notify' | 'finish';
+export type OnboardingStepId = 'welcome' | 'theme' | 'study' | 'jamb-study' | 'chat' | 'notify' | 'finish';
 
 export const FULL_FLOW: OnboardingStepId[] = ['welcome', 'theme', 'study', 'chat', 'notify', 'finish'];
 export const TRIMMED_FLOW: OnboardingStepId[] = ['welcome', 'theme', 'chat', 'finish'];
@@ -24,6 +26,8 @@ export interface OnboardingData {
   subjects?: string[];
   examTarget?: string;
   dailyGoalMinutes?: number;
+  /** JAMB-only preferences; never overwrite JUPEB's syllabus selections. */
+  jambStudy?: JambStudyPreferences;
   schoolName?: string;
   examSeatNumber?: string;
   finalized?: boolean;
@@ -43,6 +47,10 @@ export function normalizeOnboardingData(raw: unknown): OnboardingData {
   }
   if (typeof r.examTarget === 'string') data.examTarget = r.examTarget;
   if (typeof r.dailyGoalMinutes === 'number') data.dailyGoalMinutes = r.dailyGoalMinutes;
+  if (r.jambStudy && typeof r.jambStudy === 'object' && !Array.isArray(r.jambStudy)) {
+    const j = r.jambStudy as Record<string, unknown>;
+    data.jambStudy = normalizeJambStudyPreferences(j);
+  }
   if (typeof r.schoolName === 'string') data.schoolName = normalizeSchoolName(r.schoolName) ?? undefined;
   if (typeof r.examSeatNumber === 'string') data.examSeatNumber = normalizeSeatNumber(r.examSeatNumber) ?? undefined;
   if (typeof r.finalized === 'boolean') data.finalized = r.finalized;
@@ -59,6 +67,27 @@ export function normalizeOnboardingData(raw: unknown): OnboardingData {
 
 export function getFlow(isNewStudent: boolean): OnboardingStepId[] {
   return isNewStudent ? [...FULL_FLOW] : [...TRIMMED_FLOW];
+}
+
+/**
+ * JUPEB keeps its syllabus-led study step. JAMB gets a separate preference
+ * step (with its own completion ID and data object), including for existing
+ * students whose historic account receives the trimmed onboarding flow.
+ */
+export function getOnboardingFlow(flow: OnboardingStepId[], program: ExamProgramId): OnboardingStepId[] {
+  if (program !== 'jamb') return [...flow];
+  const shared: OnboardingStepId[] = flow.filter((step) => step !== 'study' && step !== 'jamb-study');
+  const themeIndex = shared.indexOf('theme');
+  shared.splice(themeIndex >= 0 ? themeIndex + 1 : 1, 0, 'jamb-study');
+  return shared;
+}
+
+/** Build the active onboarding flow for a student and examination programme. */
+export function getProgrammeOnboardingFlow(
+  isNewStudent: boolean,
+  program: ExamProgramId,
+): OnboardingStepId[] {
+  return getOnboardingFlow(getFlow(isNewStudent), program);
 }
 
 /** First unfinished step (or the last step when everything is done). */

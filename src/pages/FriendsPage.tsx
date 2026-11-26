@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2, MessageCircle, Search, UserCheck, UserPlus, Users } from "lucide-react";
+import { ArrowLeft, MessageCircle, Search, UserCheck, UserPlus, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFriends } from "@/hooks/useFriends";
 import { useChat, Profile } from "@/hooks/useChat";
 import { usePresenceContext } from "@/contexts/PresenceContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
+import { useExamProgram } from "@/contexts/ExamProgramContext";
 import { UserProfileDialog } from "@/components/profile/UserProfileDialog";
 import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { toast } from "sonner";
 export default function FriendsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isJambWorkspace } = useExamProgram();
   const friends = useFriends();
   const chat = useChat();
   const { isOnline } = usePresenceContext();
@@ -27,7 +29,6 @@ export default function FriendsPage() {
   const [searchingUsers, setSearchingUsers] = useState(false);
   const [profileTarget, setProfileTarget] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [startingConversation, setStartingConversation] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
@@ -50,17 +51,13 @@ export default function FriendsPage() {
   }, [addFriendQuery, chat.searchUsers]);
 
   const handleStartConversation = async (userId: string) => {
-    if (startingConversation) return;
-    setStartingConversation(userId);
     try {
       const convId = await chat.startConversation(userId);
-      if (!convId) throw new Error("Could not open this direct message. Please try again.");
-      navigate(`/chat/${encodeURIComponent(convId)}`);
+      navigate(isJambWorkspace
+        ? (convId ? `/jamb/chat?conversation=${convId}` : "/jamb/chat")
+        : (convId ? `/chat?conversation=${convId}` : "/chat"));
     } catch (err) {
-      console.error("[Friends] Failed to open direct message:", err);
-      toast.error(err instanceof Error ? err.message : "Could not open this direct message.");
-    } finally {
-      setStartingConversation(null);
+      toast.error(String(err));
     }
   };
 
@@ -251,12 +248,7 @@ export default function FriendsPage() {
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
             All Friends ({friends.friends.length})
           </h3>
-          {friends.loading && friends.friends.length === 0 ? (
-            <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading friends…
-            </div>
-          ) : friends.friends.length === 0 ? (
+          {friends.friends.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -316,16 +308,11 @@ export default function FriendsPage() {
                       className="h-8 text-xs rounded-lg shrink-0"
                       onClick={(e) => {
                         e.stopPropagation();
-                        void handleStartConversation(f.user_id);
+                        handleStartConversation(f.user_id);
                       }}
-                      disabled={startingConversation === f.user_id}
                     >
-                      {startingConversation === f.user_id ? (
-                        <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
-                      ) : (
-                        <MessageCircle className="w-3.5 h-3.5 mr-1" />
-                      )}
-                      {startingConversation === f.user_id ? "Opening…" : "Chat"}
+                      <MessageCircle className="w-3.5 h-3.5 mr-1" />
+                      Chat
                     </Button>
                   </div>
                 </motion.div>

@@ -48,9 +48,9 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check Supabase Edge Functions
-        run: deno check supabase/functions/push-fcm/index.ts supabase/functions/notification-action/index.ts supabase/functions/question-rag-index/index.ts supabase/functions/chat-proxy/index.ts supabase/functions/ai-tutor/index.ts supabase/functions/validate-activation/index.ts
+        run: deno check supabase/functions/push-fcm/index.ts supabase/functions/notification-action/index.ts supabase/functions/question-rag-index/index.ts supabase/functions/chat-proxy/index.ts supabase/functions/ai-tutor/index.ts supabase/functions/validate-activation/index.ts supabase/functions/parse-document/index.ts supabase/functions/question-import/index.ts supabase/functions/exam-practice/index.ts supabase/functions/exam-attempts/index.ts supabase/functions/enforce-single-session/index.ts
       - name: Test AI image routing, question RAG and APNs delivery
-        run: deno test supabase/functions/_shared/ai-router.test.ts supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/apns.test.ts
+        run: deno test supabase/functions/_shared/ai-router.test.ts supabase/functions/_shared/question-retrieve.test.ts supabase/functions/_shared/apns.test.ts supabase/functions/_shared/trial-access.test.ts supabase/functions/_shared/exam-scoring.test.ts supabase/functions/_shared/jamb-answer-draft.test.ts supabase/functions/_shared/jamb-import-answer-suggestions.test.ts supabase/functions/_shared/jamb-import-range.test.ts supabase/functions/_shared/jamb-question-visibility.test.ts supabase/functions/_shared/jamb-review-validation.test.ts supabase/functions/_shared/jamb-source-reference.test.ts
       - name: Type-check application TypeScript
         run: npx tsc --noEmit -p tsconfig.app.json --pretty false && npx tsc --noEmit -p tsconfig.node.json --pretty false && npx tsc --noEmit -p tsconfig.sw.json --pretty false
       - name: Validate private question-source tooling

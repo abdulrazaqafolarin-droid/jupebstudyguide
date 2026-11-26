@@ -7,7 +7,7 @@ import { GraduationCap } from 'lucide-react';
  * Nothing here asks for a decision; it exists to make the student feel
  * expected.
  */
-export function StepWelcome({ displayName }: { displayName: string | null }) {
+export function StepWelcome({ displayName, programLabel }: { displayName: string | null; programLabel: string }) {
   const reduce = useReducedMotion();
   const words = (displayName ?? 'Student').trim().split(/\s+/).slice(0, 3);
 
@@ -30,7 +30,7 @@ export function StepWelcome({ displayName }: { displayName: string | null }) {
           className="text-3xl font-bold leading-tight"
         >
           Welcome to{' '}
-          <span className="text-gradient-gold text-shimmer-sweep">JUPEB Master</span>
+          <span className="text-gradient-gold text-shimmer-sweep">Rutex Master</span>
         </motion.h1>
 
         <p className="text-muted-foreground text-lg font-medium flex flex-wrap justify-center gap-x-2" aria-label={`Welcome ${words.join(' ')}`}>
@@ -62,7 +62,7 @@ export function StepWelcome({ displayName }: { displayName: string | null }) {
         transition={{ delay: reduce ? 0 : 0.5, duration: 0.3 }}
         className="text-sm text-muted-foreground"
       >
-        Let's set up your study space — about 30 seconds.
+        Let's set up your {programLabel} study space — about 30 seconds.
       </motion.p>
     </div>
   );

@@ -3,6 +3,7 @@ import { ChatMockup } from './ChatMockup';
 import { Switch } from '@/components/ui/switch';
 
 interface StepChatPrivacyProps {
+  programLabel: string;
   online: boolean;
   receipts: boolean;
   discover: boolean;
@@ -19,6 +20,7 @@ interface StepChatPrivacyProps {
  * genuinely how chat behaves — not an onboarding-only decoration.
  */
 export function StepChatPrivacy({
+  programLabel,
   online,
   receipts,
   discover,
@@ -56,7 +58,7 @@ export function StepChatPrivacy({
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold">Meet your classmates</h2>
         <p className="text-sm text-muted-foreground">
-          Real JUPEB students — search classmates, create study groups, send voice notes.
+          Real {programLabel} students — search classmates, create study groups, send voice notes.
         </p>
       </div>
 

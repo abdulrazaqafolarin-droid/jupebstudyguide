@@ -9,6 +9,9 @@ interface SubjectCardProps {
   studiedCount: number;
   learnedCount: number;
   onClick: () => void;
+  infoOverride?: { name: string; icon: string };
+  questionCountReady?: boolean;
+  statsReady?: boolean;
 }
 
 const bouncySpring = { type: "spring" as const, stiffness: 400, damping: 10, mass: 0.7 };
@@ -19,8 +22,11 @@ export const SubjectCard = ({
   studiedCount,
   learnedCount,
   onClick,
+  infoOverride,
+  questionCountReady = true,
+  statsReady = true,
 }: SubjectCardProps) => {
-  const info = SUBJECT_INFO[subject];
+  const info = infoOverride ?? SUBJECT_INFO[subject];
   const progressPercent = questionCount > 0 ? (learnedCount / questionCount) * 100 : 0;
 
   return (
@@ -60,7 +66,7 @@ export const SubjectCard = ({
               <div>
                 <h3 className="text-xl font-semibold group-hover:text-primary transition-colors duration-200">{info.name}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {questionCount} questions
+                  {questionCountReady ? `${questionCount.toLocaleString()} questions` : "Loading…"}
                 </p>
               </div>
             </motion.div>
@@ -77,7 +83,7 @@ export const SubjectCard = ({
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Mastery</span>
               <span className="font-medium text-primary">
-                {learnedCount}/{questionCount}
+                {statsReady ? `${learnedCount}/${questionCount}` : "—"}
               </span>
             </div>
             <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
@@ -107,11 +113,11 @@ export const SubjectCard = ({
           >
             <div className="bg-secondary/40 rounded-lg px-2.5 py-1">
               <span className="text-muted-foreground">Studied </span>
-              <span className="font-medium text-foreground">{studiedCount}</span>
+              <span className="font-medium text-foreground">{statsReady ? studiedCount : "—"}</span>
             </div>
             <div className="bg-accent/10 rounded-lg px-2.5 py-1">
               <span className="text-muted-foreground">Mastered </span>
-              <span className="font-medium text-accent">{learnedCount}</span>
+              <span className="font-medium text-accent">{statsReady ? learnedCount : "—"}</span>
             </div>
           </motion.div>
         </div>

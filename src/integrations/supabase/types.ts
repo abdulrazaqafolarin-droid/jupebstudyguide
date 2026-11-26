@@ -95,6 +95,33 @@ export type Database = {
         }
         Relationships: []
       }
+      exam_program_onboarding: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          data: Json
+          exam_program_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          exam_program_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          data?: Json
+          exam_program_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_api_keys: {
         Row: {
           api_key: string
@@ -1112,6 +1139,41 @@ export type Database = {
           },
         ]
       }
+      exam_user_syllabus_progress: {
+        Row: {
+          created_at: string
+          exam_program_id: string
+          state: string
+          topic_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exam_program_id?: string
+          state?: string
+          topic_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exam_program_id?: string
+          state?: string
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_user_syllabus_progress_exam_program_id_fkey"
+            columns: ["exam_program_id"]
+            isOneToOne: false
+            referencedRelation: "exam_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string
@@ -1477,6 +1539,7 @@ export type Database = {
           privacy_read_receipts: string
           public_key: string | null
           school_name: string | null
+          selected_exam_program: string | null
           subscription_duration_days: number | null
           subscription_expires_at: string | null
           subscription_started_at: string | null
@@ -1510,6 +1573,7 @@ export type Database = {
           privacy_read_receipts?: string
           public_key?: string | null
           school_name?: string | null
+          selected_exam_program?: string | null
           subscription_duration_days?: number | null
           subscription_expires_at?: string | null
           subscription_started_at?: string | null
@@ -1543,6 +1607,7 @@ export type Database = {
           privacy_read_receipts?: string
           public_key?: string | null
           school_name?: string | null
+          selected_exam_program?: string | null
           subscription_duration_days?: number | null
           subscription_expires_at?: string | null
           subscription_started_at?: string | null
@@ -2261,6 +2326,7 @@ export type Database = {
         Args: { p_count?: number; p_created_by: string; p_duration_days?: number; p_exam_program_id?: string }
         Returns: { code: string; duration_days: number; expires_at: string; plan_type: string }[]
       }
+      select_exam_program: { Args: { p_exam_program_id: string }; Returns: Json }
       get_admin_dashboard_stats: {
         Args: { p_admin_email?: string }
         Returns: Json

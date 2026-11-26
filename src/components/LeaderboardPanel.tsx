@@ -1,8 +1,8 @@
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { ACHIEVEMENTS, AchievementStats } from '@/hooks/useAchievements';
 import { useState, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Trophy, Loader2, ArrowRight, Target, Eye } from 'lucide-react';
+import { Loader2, ArrowRight, Target, Eye, Trophy } from 'lucide-react';
+import { LeaderboardPanelFrame } from "@/components/LeaderboardPanelFrame";
 import { UserAvatar } from './UserAvatar';
 import UserAchievementPreview from './UserAchievementPreview';
 import { useAuth } from '@/contexts/AuthContext';
@@ -59,19 +59,7 @@ export const LeaderboardPanel = ({ stats }: LeaderboardPanelProps) => {
   }, [navigate]);
 
   return (
-    <Card className="border-border/50 overflow-hidden">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
-            <Trophy className="w-4 h-4 text-accent" />
-          </div>
-          Leaderboard
-          <span className="ml-auto text-[10px] font-normal text-muted-foreground flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Live
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-2">
+    <LeaderboardPanelFrame statusLabel="Live" isLive>
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="flex flex-col items-center gap-2">
@@ -238,8 +226,7 @@ export const LeaderboardPanel = ({ stats }: LeaderboardPanelProps) => {
           onChat={startChat}
           stats={previewUser?.user_id === user?.id ? stats : undefined}
         />
-      </CardContent>
-    </Card>
+    </LeaderboardPanelFrame>
   );
 };
 

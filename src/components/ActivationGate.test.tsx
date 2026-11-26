@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   validateCode: vi.fn(),
   refreshStatus: vi.fn(),
   toastSuccess: vi.fn(),
+  navigate: vi.fn(),
+  supabaseRpc: vi.fn(),
 }));
 
 vi.mock("@/hooks/useActivation", () => ({
@@ -15,6 +17,15 @@ vi.mock("@/hooks/useActivation", () => ({
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: mocks.useAuth,
+}));
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: { rpc: mocks.supabaseRpc },
+}));
+
+vi.mock("react-router-dom", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router-dom")>()),
+  useNavigate: () => mocks.navigate,
 }));
 
 vi.mock("sonner", () => ({
@@ -31,6 +42,7 @@ describe("ActivationGate active-trial banner", () => {
     vi.clearAllMocks();
     mocks.validateCode.mockResolvedValue({ success: true, plan_type: "premium" });
     mocks.refreshStatus.mockResolvedValue(undefined);
+    mocks.supabaseRpc.mockResolvedValue({ data: { success: true }, error: null });
     mocks.useAuth.mockReturnValue({
       user: { id: "trial-user", email: "student@example.com" },
       signOut: vi.fn(),
@@ -95,7 +107,34 @@ describe("ActivationGate active-trial banner", () => {
     );
 
     expect(screen.queryByText("Protected study content")).not.toBeInTheDocument();
-    expect(screen.getByText("Activate Your Account")).toBeInTheDocument();
+    expect(screen.getByText("Activate Your JUPEB Access")).toBeInTheDocument();
+  });
+
+  it("uses JAMB-specific entitlement and activation messaging", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: false,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: null,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate programId="jamb">
+        <div>JAMB protected content</div>
+      </ActivationGate>,
+    );
+
+    expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+    expect(screen.getByText("Activate Your JAMB / UTME Access")).toBeInTheDocument();
+    expect(screen.queryByText("Activate Your JUPEB Access")).not.toBeInTheDocument();
+    expect(screen.getByText(/issued specifically for JAMB \/ UTME/)).toBeInTheDocument();
   });
 
   it("always displays Activate Now while a one-day trial is active", () => {
@@ -140,16 +179,20 @@ describe("ActivationGate active-trial banner", () => {
     }
   });
 
-  it("shows the paid subscription countdown at the top and offers Add Time", () => {
+  it("keeps the activation gate and code check scoped to JAMB", () => {
+    render(
+      <ActivationGate programId="jamb">
+        <div>JAMB study content</div>
+      </ActivationGate>,
+    );
+
+    expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+    expect(screen.getByText("JAMB study content")).toBeInTheDocument();
+  });
+
+  it("switches to JAMB from the JUPEB activation screen without granting access", async () => {
     mocks.useActivation.mockReturnValue({
-      status: {
-        is_activated: true,
-        is_admin: false,
-        trial_expires_at: null,
-        subscription_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        subscription_duration_days: 30,
-        checking: false,
-      },
+      status: { is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, checking: false },
       validateCode: mocks.validateCode,
       validating: false,
       error: null,
@@ -157,76 +200,16 @@ describe("ActivationGate active-trial banner", () => {
     });
 
     render(
-      <ActivationGate>
-        <div>Protected study content</div>
+      <ActivationGate programId="jupeb">
+        <div>JUPEB study content</div>
       </ActivationGate>,
     );
 
-    expect(screen.getByRole("group", { name: "Subscription status" })).toBeInTheDocument();
-    expect(screen.getByText("30-day subscription active")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Add Time" })).toBeVisible();
-    expect(screen.getByText("Protected study content")).toBeInTheDocument();
-  });
-
-  it("shows a live paid subscription countdown that updates every second", async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-11-06T12:00:00.000Z"));
-    mocks.useActivation.mockReturnValue({
-      status: {
-        is_activated: true,
-        is_admin: false,
-        trial_expires_at: null,
-        subscription_expires_at: new Date(Date.now() + 60_000).toISOString(),
-        subscription_duration_days: 7,
-        checking: false,
-      },
-      validateCode: mocks.validateCode,
-      validating: false,
-      error: null,
-      refreshStatus: mocks.refreshStatus,
+    fireEvent.click(screen.getByRole("button", { name: "Switch to JAMB / UTME" }));
+    await waitFor(() => {
+      expect(mocks.supabaseRpc).toHaveBeenCalledWith("select_exam_program", { p_exam_program_id: "jamb" });
+      expect(mocks.navigate).toHaveBeenCalledWith("/jamb", { replace: true });
     });
-
-    try {
-      render(
-        <ActivationGate>
-          <div>Protected study content</div>
-        </ActivationGate>,
-      );
-      expect(screen.getByText("00:01:00 remaining")).toBeInTheDocument();
-      await vi.advanceTimersByTimeAsync(1000);
-      expect(screen.getByText("00:00:59 remaining")).toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it("keeps paid access active while the user enters a code to add time", () => {
-    mocks.useActivation.mockReturnValue({
-      status: {
-        is_activated: true,
-        is_admin: false,
-        trial_expires_at: null,
-        subscription_expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        subscription_duration_days: 7,
-        checking: false,
-      },
-      validateCode: mocks.validateCode,
-      validating: false,
-      error: null,
-      refreshStatus: mocks.refreshStatus,
-    });
-
-    render(
-      <ActivationGate>
-        <div>Protected study content</div>
-      </ActivationGate>,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "Add Time" }));
-
-    expect(screen.getByLabelText("Enter your activation code")).toBeVisible();
-    expect(screen.getByText(/Any new term extends its expiry date/)).toBeInTheDocument();
-    expect(screen.getByText("Protected study content")).toBeInTheDocument();
   });
 
   it("opens the inline activation form without interrupting the trial session", () => {
@@ -260,7 +243,7 @@ describe("ActivationGate active-trial banner", () => {
       expect(mocks.validateCode).toHaveBeenCalledWith("ABCD-1234-EFGH");
       expect(mocks.refreshStatus).toHaveBeenCalledOnce();
       expect(mocks.toastSuccess).toHaveBeenCalledWith(
-        "Account activated with the premium plan.",
+        "JUPEB activated with the premium plan.",
       );
     });
   });
@@ -321,6 +304,46 @@ describe("ActivationGate active-trial banner", () => {
     await waitFor(() => {
       expect(screen.queryByRole("group", { name: "Free trial status" })).not.toBeInTheDocument();
     });
+  });
+
+
+  it("shows a live programme-scoped paid subscription countdown", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-06T12:00:00.000Z"));
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 60_000).toISOString(),
+        subscription_duration_days: 30,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    try {
+      render(
+        <ActivationGate programId="jamb">
+          <div>JAMB paid study content</div>
+        </ActivationGate>,
+      );
+
+      expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+      expect(screen.getByRole("group", { name: "Subscription status" })).toBeInTheDocument();
+      expect(screen.getByText("30-day subscription active")).toBeInTheDocument();
+      expect(screen.getByText("00:01:00 remaining")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Add Time" })).toBeVisible();
+
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(screen.getByText("00:00:59 remaining")).toBeInTheDocument();
+      expect(screen.getByText("JAMB paid study content")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
 });

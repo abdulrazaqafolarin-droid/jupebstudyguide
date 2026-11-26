@@ -3,18 +3,19 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Trophy, MessageSquare, User, Shield, Download,
-  Bell, BellRing, X, LogOut, ChevronLeft, BookOpen, Library, Lock, Award,
-  Users, TrendingUp, Compass, Sparkles
+  X, LogOut, BookOpen, Library, Award,
+  Users, TrendingUp, Compass, Sparkles, GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotificationsContext } from "@/contexts/NotificationsContext";
 import { usePushNotificationsContext } from "@/contexts/PushNotificationsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { getWorkspacePath, isJambWorkspacePath, isNavigationPathActive } from "@/lib/exam-program";
 import { SUPER_ADMIN_EMAIL } from "@/lib/adminEmail";
-import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/UserAvatar";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { ExamWorkspaceSwitcher } from "@/components/ExamWorkspaceSwitcher";
 
 const navLinks = [
   { path: "/", label: "Home", icon: Home },
@@ -43,6 +44,8 @@ interface HamburgerMenuProps {
 const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ streakData }, ref) => {
   const { user, signOut } = useAuth();
   const location = useLocation();
+  const jambEnabled = import.meta.env.VITE_ENABLE_JAMB === "true";
+  const isJambWorkspace = jambEnabled && (location.pathname === "/jamb" || location.pathname.startsWith("/jamb/"));
   const [open, setOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileName, setProfileName] = useState<string | null>(null);
@@ -84,9 +87,40 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
     fetchProfile();
   }, [fetchProfile]);
 
-  const allLinks = isAdmin
-    ? [...navLinks, { path: "/admin", label: "Admin", icon: Shield }]
+  // The menu has the same structure in JUPEB and JAMB. Workspace-specific
+  // study destinations are remapped, while shared account/social destinations
+  // remain shared. JAMB question review remains a separate admin destination.
+  const workspaceLinks = isJambWorkspace
+    ? navLinks
+        .map((item) => {
+          if (item.path === "/") return { ...item, path: "/jamb" };
+          if (item.path === "/past-questions") return { ...item, path: "/jamb/past-questions" };
+          if (item.path === "/syllabus") return { ...item, path: "/jamb/syllabus" };
+          if (item.path === "/study-chat") return { ...item, path: "/jamb/ai" };
+          if (item.path === "/achievements") return { ...item, path: "/jamb/achievements" };
+          if (item.path === "/stats") return { ...item, path: "/jamb/stats" };
+          if (item.path === "/leaderboard") return { ...item, path: "/jamb/leaderboard" };
+          if (item.path === "/discover") return { ...item, path: "/jamb/discover" };
+          if (item.path === "/profile") return { ...item, path: "/jamb/profile" };
+          if (item.path === "/friends") return { ...item, path: "/jamb/friends" };
+          if (item.path === "/chat") return { ...item, path: "/jamb/chat" };
+          return item;
+        })
     : navLinks;
+
+  const allLinks = [
+    ...workspaceLinks,
+    ...(isAdmin
+      ? [{
+          path: isJambWorkspace ? "/admin/jamb-questions" : "/admin",
+          label: "Admin",
+          icon: Shield,
+        }]
+      : []),
+    ...(jambEnabled && !isJambWorkspace
+      ? [{ path: "/jamb", label: "JAMB Workspace", icon: GraduationCap }]
+      : []),
+  ];
 
   const close = () => setOpen(false);
 
@@ -174,11 +208,9 @@ const HamburgerMenu = forwardRef<HamburgerMenuHandle, HamburgerMenuProps>(({ str
                 </div>
 
                 <div className="flex-1 py-2 overflow-y-auto overscroll-contain">
+                  {jambEnabled && <div className="px-3 pb-2"><ExamWorkspaceSwitcher /></div>}
                   {allLinks.map(({ path, label, icon: Icon }) => {
-                    const isActive =
-                      path === "/"
-                        ? location.pathname === "/"
-                        : location.pathname.startsWith(path);
+                    const isActive = isNavigationPathActive(location.pathname, path);
                     return (
                       <div key={path}>
                         <Link

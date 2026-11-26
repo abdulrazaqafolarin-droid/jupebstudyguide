@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { formatQuestionForEmbedding } from "../_shared/question-retrieve.ts";
+import { checkAuthSessionActive } from "../_shared/auth-session.ts";
 import { generateEmbedding, resolveEmbedKeys } from "../_shared/textbook-embed.ts";
 
 interface ClaimedJob {
@@ -87,8 +88,14 @@ Deno.serve(async (req) => {
   if (!token) return json({ error: "authentication-required" }, 401);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-  if (!supabaseUrl || !serviceKey) return json({ error: "server-configuration-missing" }, 503);
+  if (!supabaseUrl || !anonKey || !serviceKey) return json({ error: "server-configuration-missing" }, 503);
+
+  // The service-role client below bypasses RLS. Verify the caller's exact
+  // active device session first so a revoked admin token cannot keep indexing.
+  const sessionActive = await checkAuthSessionActive(supabaseUrl, anonKey, token);
+  if (sessionActive !== true) return json({ error: "session-inactive" }, 401);
 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },

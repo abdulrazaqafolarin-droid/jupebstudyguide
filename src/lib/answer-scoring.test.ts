@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { gradeAnswer, hasGradableAnswer, percentageScore } from "./answer-scoring";
+import { gradeAnswer, gradeObjectiveAnswer, hasGradableAnswer, percentageScore } from "./answer-scoring";
 
 describe("answer scoring", () => {
   it("treats missing and placeholder keys as ungradable", () => {
@@ -18,6 +18,31 @@ describe("answer scoring", () => {
 
   it("does not count a blank answer as correct", () => {
     expect(gradeAnswer("", "C")).toEqual({ isGradable: true, isCorrect: false });
+  });
+
+  it("grades objective answers only when the key matches a listed option", () => {
+    const options = [{ label: "A" }, { label: "B" }, { label: "C" }, { label: "D" }];
+
+    expect(gradeObjectiveAnswer("c", "C", options)).toEqual({
+      isGradable: true,
+      isCorrect: true,
+    });
+    expect(gradeObjectiveAnswer("A", "0.0630 min (no listed option)", options)).toEqual({
+      isGradable: false,
+      isCorrect: false,
+    });
+    expect(gradeObjectiveAnswer("A", null, options)).toEqual({
+      isGradable: false,
+      isCorrect: false,
+    });
+    expect(gradeObjectiveAnswer("A", "E", options)).toEqual({
+      isGradable: false,
+      isCorrect: false,
+    });
+    expect(gradeObjectiveAnswer("A", "A", undefined)).toEqual({
+      isGradable: false,
+      isCorrect: false,
+    });
   });
 
   it("calculates the percentage from gradable questions only", () => {

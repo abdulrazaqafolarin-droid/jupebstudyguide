@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useActivation, useAdminCodes, type ActivationCodeResult } from "@/hooks/useActivation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Key, Copy, CheckCircle, Loader2, Shield, Users, TrendingUp, RefreshCw } from "lucide-react";
@@ -23,6 +25,9 @@ export default function AdminActivationCodes() {
 
   const [count, setCount] = useState(5);
   const [durationDays, setDurationDays] = useState(7);
+  const [assignDurationDays, setAssignDurationDays] = useState(7);
+  const [targetEmail, setTargetEmail] = useState("");
+  const [assigning, setAssigning] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeResult[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,6 +56,39 @@ export default function AdminActivationCodes() {
       listCodes();
     } else {
       toast.error(result.error || "Failed to generate codes");
+    }
+  };
+
+  const handleAssignSubscription = async () => {
+    const email = targetEmail.trim().toLowerCase();
+    if (!email) {
+      toast.error("Enter the user's account email");
+      return;
+    }
+
+    setAssigning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("validate-activation", {
+        body: {
+          action: "assign-subscription",
+          target_email: email,
+          duration_days: assignDurationDays,
+          exam_program_id: "jupeb",
+        },
+      });
+
+      if (error || !data?.success) {
+        toast.error(data?.error || error?.message || "Could not assign subscription");
+        return;
+      }
+
+      toast.success(`Assigned ${data.duration_days}-day JUPEB subscription to ${data.email}`);
+      setTargetEmail("");
+      await refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not assign subscription");
+    } finally {
+      setAssigning(false);
     }
   };
 
@@ -214,6 +252,45 @@ export default function AdminActivationCodes() {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Assign a purchased term directly to an existing JUPEB account. */}
+        <Card className="border-accent/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="w-5 h-5 text-accent" />
+              Assign Subscription to User
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col sm:flex-row gap-3 items-end">
+            <div className="flex-1 w-full space-y-1.5">
+              <label htmlFor="subscription-user-email" className="text-sm text-muted-foreground">User account email</label>
+              <Input
+                id="subscription-user-email"
+                type="email"
+                value={targetEmail}
+                onChange={(event) => setTargetEmail(event.target.value)}
+                placeholder="student@example.com"
+                autoComplete="off"
+                disabled={assigning}
+              />
+            </div>
+            <div className="w-full sm:w-56 space-y-1.5">
+              <label className="text-sm text-muted-foreground">Purchased duration</label>
+              <Select value={String(assignDurationDays)} onValueChange={(value) => setAssignDurationDays(Number(value))}>
+                <SelectTrigger className="bg-background/50"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">1 Week (7 days)</SelectItem>
+                  <SelectItem value="30">1 Month (30 days)</SelectItem>
+                  <SelectItem value="90">3 Months (90 days)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={handleAssignSubscription} disabled={assigning || !targetEmail.trim()}>
+              {assigning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+              Assign access
+            </Button>
           </CardContent>
         </Card>
 

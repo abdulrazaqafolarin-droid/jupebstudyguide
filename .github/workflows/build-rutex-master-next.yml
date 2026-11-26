@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - feat/independent-question-scroll-multi-inline-crop-2026-11-11
+      - release/successor-updater-2026-11-26
   workflow_dispatch:
     inputs:
       publish_release:
@@ -192,7 +193,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Publish immutable successor APK and current manifest to Supabase
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_release) || (github.event_name == 'push' && github.ref == 'refs/heads/release/successor-updater-2026-11-26') }}
         shell: bash
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

@@ -20,13 +20,24 @@ export function AppUpdateSettings() {
   const [checking, setChecking] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [noticeDismissed, setNoticeDismissed] = useState(false);
 
   useEffect(() => {
     if (!isAndroidApp()) return;
     let active = true;
-    getInstalledVersion().then((version) => {
-      if (active) setInstalled(version);
+
+    Promise.all([getInstalledVersion(), fetchLatestRelease()]).then(([current, release]) => {
+      if (!active) return;
+
+      setInstalled(current);
+      setLatest(release);
+
+      if (current && release && isNewer(current.versionCode, release.versionCode)) {
+        setNotice(release.versionName);
+      }
     });
+
     return () => {
       active = false;
     };
@@ -99,10 +110,20 @@ export function AppUpdateSettings() {
           </p>
         </div>
       </div>
-      {updateAvailable && latest && (
-        <p className="text-sm text-primary">
-          Version {latest.versionName} is available.
-        </p>
+      {updateAvailable && latest && !noticeDismissed && notice === latest.versionName && (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2" role="status" aria-live="polite">
+          <p className="text-sm font-semibold">A new version is available</p>
+          <p className="text-sm text-muted-foreground">Rutex Master Next {latest.versionName} is ready to update.</p>
+          <div className="flex gap-2">
+            <Button type="button" onClick={checkForUpdates} disabled={checking || downloading} className="flex-1">
+              Update now
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setNoticeDismissed(true)}>Later</Button>
+          </div>
+        </div>
+      )}
+      {updateAvailable && latest && noticeDismissed && (
+        <p className="text-sm text-primary">Version {latest.versionName} is available.</p>
       )}
       {downloading && (
         <div className="space-y-1">

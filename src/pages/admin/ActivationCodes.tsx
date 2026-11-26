@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useActivation, useAdminCodes, type ActivationCodeResult } from "@/hooks/useActivation";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Key, Copy, CheckCircle, Loader2, Shield, Users, TrendingUp, RefreshCw } from "lucide-react";
@@ -20,6 +22,9 @@ export default function AdminActivationCodes() {
   const navigate = useNavigate();
   const [count, setCount] = useState(5);
   const [durationDays, setDurationDays] = useState("7");
+  const [assignDurationDays, setAssignDurationDays] = useState("7");
+  const [targetEmail, setTargetEmail] = useState("");
+  const [assigning, setAssigning] = useState(false);
   const [programId, setProgramId] = useState<ExamProgramId>("jupeb");
   const [generating, setGenerating] = useState(false);
   const [generatedCodes, setGeneratedCodes] = useState<ActivationCodeResult[]>([]);
@@ -44,6 +49,39 @@ export default function AdminActivationCodes() {
       toast.success(`Generated ${result.codes.length} ${PROGRAM_LABEL[programId]} codes`);
       void listCodes();
     } else toast.error(result.error || "Failed to generate codes");
+  };
+
+  const handleAssignSubscription = async () => {
+    const email = targetEmail.trim().toLowerCase();
+    if (!email) {
+      toast.error("Enter the user's account email");
+      return;
+    }
+
+    setAssigning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("validate-activation", {
+        body: {
+          action: "assign-subscription",
+          target_email: email,
+          duration_days: Number(assignDurationDays),
+          exam_program_id: programId,
+        },
+      });
+
+      if (error || !data?.success) {
+        toast.error(data?.error || error?.message || "Could not assign subscription");
+        return;
+      }
+
+      toast.success(`Assigned ${data.duration_days}-day ${PROGRAM_LABEL[programId]} subscription to ${data.email}`);
+      setTargetEmail("");
+      await refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not assign subscription");
+    } finally {
+      setAssigning(false);
+    }
   };
 
   const copyAll = async () => {
@@ -104,6 +142,43 @@ export default function AdminActivationCodes() {
               <div className="flex items-center justify-between"><p className="text-sm font-medium text-accent"><CheckCircle className="mr-1 inline h-4 w-4" /> {generatedCodes.length} {PROGRAM_LABEL[programId]} codes generated</p><Button variant="ghost" size="sm" onClick={() => void copyAll()}><Copy className="mr-1 h-3 w-3" /> Copy all</Button></div>
               <div className="max-h-48 overflow-y-auto rounded-lg bg-secondary/30 p-3">{generatedCodes.map((code, i) => <div key={`${code.code}-${i}`} className="flex items-center justify-between gap-3 border-b border-border/30 py-1.5 last:border-0"><code className="font-mono text-sm tracking-wider text-primary">{code.code}</code><span className="text-xs text-muted-foreground">{PROGRAM_LABEL[code.exam_program_id]} · {code.duration_days} days</span><button type="button" aria-label="Copy activation code" onClick={() => { void navigator.clipboard.writeText(code.code); toast.success("Copied"); }}><Copy className="h-3 w-3" /></button></div>)}</div>
             </div>}
+          </CardContent>
+        </Card>
+        <Card className="border-accent/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="h-5 w-5 text-accent" />
+              Assign Subscription to User
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col items-end gap-3 sm:flex-row">
+            <div className="w-full flex-1 space-y-1.5">
+              <label htmlFor="subscription-user-email" className="text-sm text-muted-foreground">User account email</label>
+              <Input
+                id="subscription-user-email"
+                type="email"
+                value={targetEmail}
+                onChange={(event) => setTargetEmail(event.target.value)}
+                placeholder="student@example.com"
+                autoComplete="off"
+                disabled={assigning}
+              />
+            </div>
+            <div className="w-full space-y-1.5 sm:w-56">
+              <label className="text-sm text-muted-foreground">Purchased duration</label>
+              <Select value={assignDurationDays} onValueChange={setAssignDurationDays}>
+                <SelectTrigger className="bg-background/50"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">1 Week (7 days)</SelectItem>
+                  <SelectItem value="30">1 Month (30 days)</SelectItem>
+                  <SelectItem value="90">3 Months (90 days)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={() => void handleAssignSubscription()} disabled={assigning || !targetEmail.trim()}>
+              {assigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+              Assign {PROGRAM_LABEL[programId]} access
+            </Button>
           </CardContent>
         </Card>
         <Card><CardHeader><CardTitle className="flex items-center gap-2 text-lg"><TrendingUp className="h-5 w-5 text-primary" /> All Codes ({codes.length})</CardTitle></CardHeader>

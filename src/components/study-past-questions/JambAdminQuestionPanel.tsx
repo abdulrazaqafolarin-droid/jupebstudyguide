@@ -846,10 +846,10 @@ export function JambAdminQuestionPanel({
                           <option value="text-only">Text Only</option>
                           <option value="image-above">Images Above Text</option>
                           <option value="image-beside">First Image Beside Text</option>
-                          <option value="image-inline">First Image Inline Within Question Text</option>
+                          <option value="image-inline">All Images Inline Within Question Text</option>
                         </select>
                         <p className="text-xs text-muted-foreground/60 mt-1">
-                          Image order is preserved. Inline positioning applies to the first image; additional images follow it.
+                          Each image can be positioned independently. Press and hold an image to drag it to a text line, or focus it and use the arrow keys.
                         </p>
                       </div>
                     )}
@@ -1136,7 +1136,7 @@ export function JambAdminQuestionPanel({
                                 {isInlineImagePosition(imagePosition) ? (
                                   <QuestionImagePositioner
                                     content={questionText}
-                                    imageSrc={images[0].url}
+                                    images={images.map(({ id, url }) => ({ id, url }))}
                                     imagePosition={imagePosition}
                                     onPositionChange={setImagePosition}
                                   />
@@ -1171,13 +1171,6 @@ export function JambAdminQuestionPanel({
                                     {imagePosition !== "image-only" && questionText.trim() && (
                                       <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
                                     )}
-                                  </div>
-                                )}
-                                {isInlineImagePosition(imagePosition) && images.length > 1 && (
-                                  <div className="space-y-2">
-                                    {images.slice(1).map((image, index) => (
-                                      <img key={image.id} src={image.url} alt={"Additional question image " + (index + 2)} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
-                                    ))}
                                   </div>
                                 )}
                               </>

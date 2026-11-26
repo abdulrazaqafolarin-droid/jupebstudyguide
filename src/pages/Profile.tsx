@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { useActivation } from '@/hooks/useActivation';
+import { formatTrialCountdown } from '@/lib/trial-countdown';
 import { getWorkspacePath } from '@/lib/exam-program';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

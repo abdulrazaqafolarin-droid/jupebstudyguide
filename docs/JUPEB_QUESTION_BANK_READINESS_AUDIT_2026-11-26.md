@@ -56,6 +56,9 @@ The current generic scorer only checks whether an answer string exists, so those
 
 The legacy JUPEB profile subscription columns differ from entitlement data for two records in the date/start/duration aggregates. There are no active legacy-profile subscriptions without a matching JUPEB entitlement. The current main-branch JUPEB `useActivation` hook reads `exam_program_entitlements` directly, so entitlement rows are the access source of truth. Do not overwrite entitlement dates from legacy profile fields as a bulk repair; inspect any affected account separately before making a change.
 
+The legacy profile/entitlement comparison was also checked against the currently deployed AI Edge Function sources. Although the current Git `main` copy of `supabase/functions/_shared/ai.ts` is stale and still reads the legacy profile flags, the deployed functions are not using that old code: AI Tutor v102, Chat Proxy v133 and Document Parser v70 all include the programme-scoped `_shared/ai.ts` helper, which queries `exam_program_entitlements` using the active `exam_program_id` and reads only `profiles.is_admin` separately. The deployed helper is an exact source match for the entitlement guard restored by PR #89. Thus the legacy field mismatch does **not** currently create a production AI-access bypass or denial; PR #89 is needed to bring the Git source back into alignment with the already deployed safe behavior. No Edge Function deployment was performed in this audit.
+
+
 ## Current recovery decisions
 
 1. Keep the 243 hidden JUPEB rows hidden until provenance, question completeness, answers and explanations are reviewed.

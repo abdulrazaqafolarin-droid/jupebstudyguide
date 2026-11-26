@@ -36,6 +36,15 @@ vi.mock('sonner', () => ({
 
 import { AppUpdateSettings } from './AppUpdateSettings';
 
+const newerRelease = {
+  versionCode: 202001,
+  versionName: '2.0.20.1',
+  commit: 'test-new-release',
+  builtAt: '2026-11-11T00:00:00Z',
+  url: 'https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-202001.apk',
+  sha256: 'b'.repeat(64),
+};
+
 describe('AppUpdateSettings', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -69,16 +78,57 @@ describe('AppUpdateSettings', () => {
 
     expect(await screen.findByText('Installed version 2.0.19.1')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /check for updates/i })).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(mocks.getInstalledVersion).toHaveBeenCalledOnce();
+    expect(mocks.fetchLatestRelease).toHaveBeenCalledOnce();
+  });
+
+  it('announces a newer release on startup with Update now and Later actions', async () => {
+    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
+
+    render(<AppUpdateSettings />);
+
+    expect(await screen.findByRole('status')).toHaveTextContent('A new version is available');
+    expect(screen.getByText('Rutex Master Next 2.0.20.1 is ready to update.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /update now/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /later/i })).toBeInTheDocument();
+    expect(mocks.downloadApk).not.toHaveBeenCalled();
+    expect(mocks.installDownloadedApk).not.toHaveBeenCalled();
+  });
+
+  it('does not announce an equal or older manifest version', async () => {
+    mocks.fetchLatestRelease.mockResolvedValue({
+      ...newerRelease,
+      versionCode: 201800,
+      versionName: '2.0.18.0',
+      url: 'https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-201800.apk',
+    });
+
+    render(<AppUpdateSettings />);
+
+    expect(await screen.findByText('Installed version 2.0.19.1')).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /update now/i })).not.toBeInTheDocument();
+  });
+
+  it('lets the user postpone the startup notice without hiding update availability', async () => {
+    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
+
+    render(<AppUpdateSettings />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /later/i }));
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.getByText('Version 2.0.20.1 is available.')).toBeInTheDocument();
+    expect(mocks.downloadApk).not.toHaveBeenCalled();
   });
 
   it('reports when the installed app is already current', async () => {
     mocks.fetchLatestRelease.mockResolvedValue({
+      ...newerRelease,
       versionCode: 201901,
       versionName: '2.0.19.1',
-      commit: 'test',
-      builtAt: '2026-11-11T00:00:00Z',
       url: 'https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-201901.apk',
-      sha256: 'a'.repeat(64),
     });
 
     render(<AppUpdateSettings />);
@@ -92,23 +142,16 @@ describe('AppUpdateSettings', () => {
   });
 
   it('downloads and hands a newer verified release to the Android installer', async () => {
-    mocks.fetchLatestRelease.mockResolvedValue({
-      versionCode: 202001,
-      versionName: '2.0.20.1',
-      commit: 'test-new-release',
-      builtAt: '2026-11-11T00:00:00Z',
-      url: 'https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-202001.apk',
-      sha256: 'b'.repeat(64),
-    });
+    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
 
     render(<AppUpdateSettings />);
-    fireEvent.click(await screen.findByRole('button', { name: /check for updates/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /update now/i }));
 
     await waitFor(() => {
       expect(mocks.downloadApk).toHaveBeenCalledWith(
-        'https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-202001.apk',
-        202001,
-        'b'.repeat(64),
+        newerRelease.url,
+        newerRelease.versionCode,
+        newerRelease.sha256,
         expect.any(Function),
       );
       expect(mocks.installDownloadedApk).toHaveBeenCalledWith('/cache/rutex-master-next.apk');
@@ -116,18 +159,11 @@ describe('AppUpdateSettings', () => {
   });
 
   it('opens Android install permission settings when the app is not allowed to install packages', async () => {
-    mocks.fetchLatestRelease.mockResolvedValue({
-      versionCode: 202001,
-      versionName: '2.0.20.1',
-      commit: 'test-new-release',
-      builtAt: '2026-11-11T00:00:00Z',
-      url: 'https://example.supabase.co/app-releases/rutex-master-next/rutex-master-next-202001.apk',
-      sha256: 'c'.repeat(64),
-    });
+    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
     mocks.canInstallPackages.mockResolvedValue(false);
 
     render(<AppUpdateSettings />);
-    fireEvent.click(await screen.findByRole('button', { name: /check for updates/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /update now/i }));
 
     await waitFor(() => {
       expect(mocks.openInstallSettings).toHaveBeenCalledOnce();

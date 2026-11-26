@@ -39,6 +39,7 @@ jobs:
       VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_GVQs-O9yijr0XIbB6cVvEw_pvQyFXbX
       VITE_SUPABASE_PROJECT_ID: gzyczowqqywesqhqqpdi
       VITE_ADMIN_EMAIL: abdulrazaqafolarin@gmail.com
+      VITE_ENABLE_JAMB: "true"
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v4

@@ -13,7 +13,7 @@ import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
 import { isInlineImagePosition } from "@/lib/question-image-position";
 import { QuestionTextWithImage } from "./QuestionTextWithImage";
-import { gradeAnswer, percentageScore } from "@/lib/answer-scoring";
+import { gradeAnswer, gradeObjectiveAnswer, percentageScore } from "@/lib/answer-scoring";
 import { getQuestionDisplayNumber } from "@/lib/question-numbering";
 
 interface AnswerEntry {
@@ -188,7 +188,9 @@ export function QuestionViewer({
   const handleSubmitAll = useCallback(() => {
     const all: AnswerEntry[] = questions.map((q) => {
       const answer = answers[q.id] ?? theoryAnswers[q.id] ?? "";
-      const { isCorrect, isGradable } = gradeAnswer(answer, q.correctAnswer);
+      const { isCorrect, isGradable } = q.category === "objective"
+        ? gradeObjectiveAnswer(answer, q.correctAnswer, q.options)
+        : gradeAnswer(answer, q.correctAnswer);
       return { questionId: q.id, answer, isCorrect, isGradable };
     });
     setResults(all);
@@ -219,10 +221,10 @@ export function QuestionViewer({
 
   const bookmark = isBookmarked?.(question?.id ?? "");
   const userAnswer = answers[question?.id ?? ""];
-  const { isGradable: isAnswerGradable, isCorrect: isAnswerCorrect } = gradeAnswer(
-    userAnswer,
-    question?.correctAnswer,
-  );
+  const answerResult = question?.category === "objective"
+    ? gradeObjectiveAnswer(userAnswer, question.correctAnswer, question.options)
+    : gradeAnswer(userAnswer, question?.correctAnswer);
+  const { isGradable: isAnswerGradable, isCorrect: isAnswerCorrect } = answerResult;
 
   if (!questions.length) {
     return (
@@ -251,7 +253,7 @@ export function QuestionViewer({
           </p>
           {gradableCount < results.length && (
             <p className="text-xs text-muted-foreground mt-1">
-              {results.length - gradableCount} question(s) excluded because an answer key is missing.
+              {results.length - gradableCount} question(s) excluded because no verified answer key matches the available options.
             </p>
           )}
         </div>
@@ -276,7 +278,7 @@ export function QuestionViewer({
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
                 </p>
                 {r.isGradable === false ? (
-                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no verified answer key is available.</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no verified answer key matches the available options.</p>
                 ) : q.correctAnswer && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {r.isCorrect ? "Correct" : `Correct answer: ${q.correctAnswer}`}
@@ -550,10 +552,10 @@ export function QuestionViewer({
                           {opt.label}
                             </span>
                           <span className="text-pretty break-words flex-1 min-w-0"><QuestionMath content={opt.text} inline /></span>
-                          {showFeedback && isCorrect && (
+                          {showFeedback && isAnswerGradable && isCorrect && (
                             <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>
                           )}
-                          {showFeedback && isSelected && !isCorrect && (
+                          {showFeedback && isAnswerGradable && isSelected && !isCorrect && (
                             <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>
                           )}
                         </button>
@@ -589,7 +591,7 @@ export function QuestionViewer({
                           )}
                           {!isAnswerGradable && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              No verified answer key is available for this question.
+                              No verified answer key matches the listed options, so this question will not affect your score.
                             </p>
                           )}
                         </div>

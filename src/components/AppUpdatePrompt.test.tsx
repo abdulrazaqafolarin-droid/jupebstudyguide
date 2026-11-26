@@ -157,6 +157,38 @@ describe("AppUpdatePrompt", () => {
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
+  it("deletes a postponed APK when Android's installer has not opened yet", async () => {
+    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
+    mocks.canInstallPackages.mockResolvedValue(false);
+
+    render(<AppUpdatePrompt />);
+    fireEvent.click(await screen.findByRole("button", { name: /^update$/i }));
+
+    await waitFor(() => expect(mocks.openInstallSettings).toHaveBeenCalledOnce());
+    expect(screen.getByRole("status")).toHaveTextContent("Android needs install permission.");
+    fireEvent.click(screen.getByRole("button", { name: /^later$/i }));
+
+    await waitFor(() => {
+      expect(mocks.deleteDownloadedApkFile).toHaveBeenCalledWith(
+        "/cache/rutex-master-next-202001.apk",
+      );
+    });
+    expect(window.localStorage.getItem("app-update-dismissed:202001")).toBe("1");
+  });
+
+  it("keeps the APK file when Later is tapped after Android's installer has opened", async () => {
+    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
+
+    render(<AppUpdatePrompt />);
+    fireEvent.click(await screen.findByRole("button", { name: /^update$/i }));
+
+    expect(await screen.findByText("Installer opened. Confirm the update in Android’s system prompt.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /^later$/i }));
+
+    expect(mocks.deleteDownloadedApkFile).not.toHaveBeenCalled();
+    expect(window.localStorage.getItem("app-update-dismissed:202001")).toBe("1");
+  });
+
   it("pauses a release requiring an uninstall instead of risking local study data", async () => {
     mocks.fetchLatestRelease.mockResolvedValue({
       ...newerRelease,

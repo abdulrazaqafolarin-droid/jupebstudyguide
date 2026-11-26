@@ -20,7 +20,20 @@ export function AppUpdateSettings() {
   const [checking, setChecking] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [noticeDismissed, setNoticeDismissed] = useState(false);
 
+  useEffect(() => {
+    if (!isAndroidApp()) return;
+    let active = true;
+    fetchLatestRelease().then((release) => {
+      if (!active || !release) return;
+      setLatest(release);
+      setNotice(release.versionName);
+    });
+    return () => { active = false; };
+  }, []);
+  
   useEffect(() => {
     if (!isAndroidApp()) return;
     let active = true;

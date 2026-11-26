@@ -220,7 +220,7 @@ This is a source-level recovery change only. CI and authenticated student/admin 
 The JAMB and JUPEB managers should share the student-facing editing and media workflow:
 
 - Add/edit question text, objective options, correct answer/explanation, subject, year, category, topic, difficulty and sort order.
-- Upload multiple question images with drag/drop input, image preview, remove and upload cleanup.
+- Upload multiple question images with drag/drop input, image preview, remove and upload cleanup. Drag thumbnails to reorder them, or use the accessible earlier/later controls on touch devices; inline text anchors stay attached to the same image.
 - Crop a selected image using the free-size rectangle with eight resize handles or optional freehand polygon mode.
 - Choose image-only, text-only, image-above, image-beside or inline-within-question-text layout.
 - Position each image independently in the inline editor; long-press/touch drag, tap-to-place and keyboard positioning are supported.
@@ -244,7 +244,7 @@ These are intentional additional controls, not missing JUPEB editor features:
 
 ### Remaining acceptance checks
 
-1. Upload at least three images, use both crop modes, position two images at different text anchors, save, reopen, remove one image and confirm the remaining anchor still matches its image.
+1. Upload at least three images, use both crop modes, reorder thumbnails, position two images at different text anchors, save, reopen, remove one image and confirm the remaining anchor still matches its image.
 2. Verify the same question on the JAMB student Preview at mobile and desktop widths, including the beside/above/image-only/text-only modes.
 3. Drag-sort published questions and verify order survives refresh; confirm review drafts cannot accidentally be published/reordered through the published-question action.
 4. Save an unverified answer draft, confirm it remains hidden and ungradable, then independently verify and publish it through the required source/rights workflow.

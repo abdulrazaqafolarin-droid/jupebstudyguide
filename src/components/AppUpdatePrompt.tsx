@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   canInstallPackages,
   downloadApk,
+  deleteDownloadedApkFile,
   fetchLatestRelease,
   getInstalledVersion,
   installDownloadedApk,
@@ -42,6 +43,12 @@ export function AppUpdatePrompt() {
   const lastCheckAtRef = useRef(0);
 
   const dismiss = useCallback((versionCode: number) => {
+    const pending = pendingInstallRef.current;
+    if (pending?.filePath) {
+      // "Later" means the learner declined this downloaded copy; avoid keeping
+      // an orphaned APK in the app-private cache.
+      void deleteDownloadedApkFile(pending.filePath).catch(() => {});
+    }
     try {
       localStorage.setItem(DISMISS_KEY_PREFIX + versionCode, "1");
     } catch {

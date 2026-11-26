@@ -6,8 +6,7 @@ import { Button } from './ui/button';
 import { AITutor } from './AITutor';
 import { QuestionMath } from './QuestionMath';
 import { MathRenderer } from './MathRenderer';
-import { QuestionImage } from './QuestionImage';
-import { StudyFlashcardSurface } from '@/components/StudyFlashcardSurface';
+import { QuestionPrompt } from './QuestionPrompt';
 import { streamChat } from '@/lib/ai-service';
 import type { AIChatMessage } from '@/lib/ai-service';
 
@@ -104,6 +103,11 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   }, [question, aiTheoryLoading]);
 
   const subjectInfo = SUBJECT_INFO[question.subject];
+  // Some theory rows arrive with options: [] from the database adapter.
+  // An empty array is truthy in JavaScript, so test its length instead of
+  // relying on the presence of the array to decide whether this is an MCQ.
+  const questionOptions = question.options ?? [];
+  const hasOptions = questionOptions.length > 0;
 
   const handleOptionClick = (label: string) => {
     if (selectedOption) return;
@@ -112,7 +116,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   };
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    setIsFlipped((current) => !current);
   };
 
   const handleRating = (quality: number) => {
@@ -123,7 +127,6 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
   };
 
   const isCorrect = selectedOption === question.correctAnswer;
-
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* AI Tutor Button */}
@@ -139,19 +142,33 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
         </Button>
       </div>
 
-      <div className="flashcard-container">
+      <div
+        className="flashcard-container protected-study-content"
+        onCopy={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+        onCut={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+        onContextMenu={(event) => { if (!(event.target instanceof HTMLElement && event.target.closest("input,textarea,[contenteditable='true']"))) event.preventDefault(); }}
+        onDragStart={(event) => event.preventDefault()}
+      >
         <div
-          className={cn(
-            'flashcard relative w-full min-h-[520px] cursor-pointer',
-            isFlipped && 'flipped'
-          )}
-          onClick={!question.options ? handleFlip : undefined}
+          className={cn('flashcard relative w-full min-h-[320px] cursor-pointer', isFlipped && 'flipped')}
+          onClick={!hasOptions ? (event) => {
+            // Scrolling and controls are independent interactions; only taps
+            // on the non-interactive card surface reveal the answer.
+            const target = event.target;
+            if (
+              target instanceof Element &&
+              target.closest("button,a,input,textarea,select,[role=button]")
+            ) return;
+            handleFlip();
+          } : undefined}
         >
-          {/* Front of card */}
-          <StudyFlashcardSurface
-            className="absolute inset-0"
-            contentClassName="h-full p-6 flex flex-col"
-          >
+          {/* Keep both faces mounted for the original two-sided 3D flip. */}
+          <div className="flashcard-face relative min-h-[320px] rounded-2xl border-2 border-border shadow-xl overflow-hidden">
+            {/* Card background with subtle gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
+            <div className="absolute inset-0 chalk-texture opacity-30" />
+            
+            <div className="relative p-6 flex flex-col">
               {/* Header */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                 <span className={cn(
@@ -166,16 +183,32 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
               </div>
 
               {/* The image is supplementary; always show the written question too. */}
-              <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
-                <QuestionImage imageUrl={question.imageUrl} />
-                <div className="text-lg font-medium mb-4 leading-relaxed">
-                  <QuestionMath content={question.question} />
+              <div className="flex flex-col gap-3">
+                {/* Question prompt scrolls independently from its answer options. */}
+                <div
+                  aria-label="Scrollable question"
+                  data-flashcard-scroll-region="question"
+                  className={cn(
+                    "flashcard-scroll-region overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin",
+                    hasOptions
+                      ? "h-auto max-h-[min(28dvh,240px)] shrink-0"
+                      : "h-auto max-h-[min(52dvh,480px)] shrink-0"
+                  )}
+                >
+                  <QuestionPrompt
+                    question={question}
+                    textClassName="text-lg font-medium leading-relaxed"
+                  />
                 </div>
 
-                {/* MCQ Options - Scrollable container */}
-                {question.options && (
-                  <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[280px] pr-1 scrollbar-thin">
-                    {question.options.map((option, oi) => {
+                {/* MCQ options have their own independent scroll area. */}
+                {hasOptions && (
+                  <div
+                    aria-label="Scrollable answer options"
+                    data-flashcard-scroll-region="options"
+                    className="flashcard-scroll-region max-h-[min(32dvh,280px)] overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin space-y-2.5"
+                  >
+                    {questionOptions.map((option, oi) => {
                       const isSelected = selectedOption === option.label;
                       const isCorrectOption = option.label === question.correctAnswer;
                       const showResult = selectedOption !== null;
@@ -221,22 +254,23 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 )}
 
                 {/* Essay question hint */}
-                {!question.options && (
-                  <div className="mt-auto text-center text-muted-foreground py-8">
-                    <p className="text-sm mb-2">Think about your answer, then click to reveal</p>
-                    <RotateCcw className="w-6 h-6 mx-auto animate-pulse text-primary/60" />
+                {!hasOptions && (
+                  <div className="shrink-0 text-center text-muted-foreground py-2">
+                    <p className="text-sm mb-1">Tap the card to reveal the answer</p>
+                    <RotateCcw className="w-5 h-5 mx-auto animate-pulse text-primary/60" />
                   </div>
                 )}
               </div>
-          </StudyFlashcardSurface>
+            </div>
+          </div>
 
           {/* Back of card (for essay questions) */}
-          {!question.options && (
-            <StudyFlashcardSurface
-              tone="answer"
-              className="absolute inset-0 flashcard-back"
-              contentClassName="h-full p-6 flex flex-col"
-            >
+          {!hasOptions && (
+            <div className="flashcard-face flashcard-back min-h-[320px] rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-accent/10" />
+              <div className="absolute inset-0 chalk-texture opacity-30" />
+              
+              <div className="relative h-full min-h-[320px] p-6 flex flex-col">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-accent/30">
                   <span className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium bg-accent/20 text-accent'
@@ -245,62 +279,64 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </span>
                 </div>
 
-                <div className="flex-1 min-h-0 overflow-y-auto space-y-4">
-                  {question.explanation ? (
-                    <div className="text-base leading-relaxed">
-                      <QuestionMath content={question.explanation} />
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <section className="min-h-0 flex-1 rounded-2xl border border-primary/20 bg-primary/5 shadow-sm flex flex-col overflow-hidden">
+                    <div className="shrink-0 border-b border-primary/15 px-3 py-2.5 flex items-center gap-2 text-sm font-semibold text-primary">
+                      <Bot className="h-4 w-4" />
+                      AI model answer
                     </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No written explanation is available for this question yet.</p>
-                  )}
-
-                  {aiTheoryAnswer && (
-                    <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm">
-                      <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-primary">
-                        <Bot className="h-4 w-4" />
-                        AI model answer
-                      </div>
-                      <MathRenderer content={aiTheoryAnswer} className="text-sm leading-relaxed text-foreground" />
-                    </div>
-                  )}
-
-                  {aiTheoryError && (
-                    <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
-                      {aiTheoryError}
-                    </p>
-                  )}
-
-                  {aiTheoryLoading ? (
-                    <div className="flex items-center justify-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground" aria-live="polite">
-                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                      Generating a model answer…
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      aria-label="Generate an AI model answer for this theory question"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        void handleAIRevealAnswer();
-                      }}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/15 active:scale-[0.99]"
+                    <div
+                      aria-label="Scrollable AI model answer"
+                      data-flashcard-scroll-region="ai-answer"
+                      aria-live="polite"
+                      className="flashcard-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-contain touch-pan-y p-3 space-y-3"
                     >
-                      <Sparkles className="h-4 w-4" />
-                      {aiTheoryAnswer || aiTheoryError ? 'Regenerate AI answer' : 'AI Reveal Answer'}
-                    </button>
-                  )}
+                      {aiTheoryAnswer ? (
+                        <MathRenderer content={aiTheoryAnswer} className="text-sm leading-relaxed text-foreground" />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Generate an AI model answer for this question. You can scroll through the answer here.</p>
+                      )}
+
+                      {aiTheoryError && (
+                        <p role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
+                          {aiTheoryError}
+                        </p>
+                      )}
+
+                      {aiTheoryLoading ? (
+                        <div className="flex items-center justify-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                          Generating a model answer…
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          aria-label="Generate an AI model answer for this theory question"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            void handleAIRevealAnswer();
+                          }}
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/15 active:scale-[0.99]"
+                        >
+                          <Sparkles className="h-4 w-4" />
+                          {aiTheoryAnswer || aiTheoryError ? 'Regenerate AI answer' : 'AI Reveal Answer'}
+                        </button>
+                      )}
+                    </div>
+                  </section>
                 </div>
 
                 <div className="mt-3 pt-2 text-center text-muted-foreground">
                   <p className="text-sm">Click to see question again</p>
                 </div>
-            </StudyFlashcardSurface>
+              </div>
+            </div>
           )}
         </div>
       </div>
 
       {/* Explanation panel for MCQs */}
-      {showExplanation && question.options && (
+      {showExplanation && hasOptions && (
         <div className={cn(
           'mt-6 p-5 rounded-2xl border-2 animate-scale-in',
           isCorrect ? 'bg-gradient-to-br from-accent/10 to-accent/5 border-accent/40' : 'bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/40'

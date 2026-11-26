@@ -365,3 +365,74 @@ A separate 2016 compilation located during this review contains a different pape
 Official background checks: the FAA describes GPS/Navstar as a joint civil/military technical program initiated in 1973; U.S. Air Force and GPS.gov material records military objectives and initial military-user requirements. This supports the proposed options but does not replace the missing JAMB comprehension passage. Keep both GPS records hidden and `needs_review` until the passage is recovered or an administrator accepts the separately documented evidence.
 
 The confidence-seed migration stores the candidate answer and assessment for these existing question IDs only. It does not approve or publish them. The live database remains unchanged until the reviewed migration and matching Edge Function are deliberately released.
+
+
+## Live Supabase and release checkpoint — 26 November 2026
+
+This checkpoint supersedes earlier snapshots in this document where their database counts, migration or Edge Function versions differ.
+
+### Live question bank and review state
+
+The connected shared Supabase project is `gzyczowqqywesqhqqpdi`. The live JAMB programme currently contains **7,630 question rows**:
+
+| Subject | Rows | Hidden | Visible / published |
+| --- | ---: | ---: | ---: |
+| Use of English | 3,822 | 3,822 | 0 |
+| Chemistry | 1,608 | 1,608 | 0 |
+| Biology | 1,457 | 1,457 | 0 |
+| Physics | 743 | 743 | 0 |
+| **Total** | **7,630** | **7,630** | **0** |
+
+There are 7,630 corresponding protected answer-key rows. Every one remains `needs_review`; no key is independently approved or available to students. Six answer records have evidence-backed drafts (four high-confidence and two medium-confidence, all still unapproved); the remaining 7,624 are unrated. A high-confidence draft is not an approval.
+
+The question-import staging tables are empty: **0 import batches, 0 import items and 0 private source uploads**. The question rows above pre-exist this staging workflow; the empty batch tables must not be interpreted as an empty JAMB question table. The admin audit table contains 3,799 rows.
+
+The four-source reconciliation previously found 526 target source references missing from the JAMB rows, 76 database references not located in the four committed source files, and 8 repeated references requiring individual review. The source-based review queue is still 526 references. Do not treat the simple 442-row difference (8,072 target less 7,630 stored rows) or the 450 strict-reference gap as the final import quantity until the 76 out-of-source references and 8 repeated records have been individually reconciled.
+
+### Live migrations and Edge Functions
+
+The live migration history includes:
+- `20261117215633_create_jamb_workspace`
+- `20261121215313_jamb_question_manager_audit`
+- `20261121233500_require_verified_jamb_answer_and_explanation`
+- `20261125194350_add_jamb_answer_draft_confidence`
+
+The live `question-import` function is **v8 / ACTIVE**. Its deployed entrypoint matches the JAMB feature-branch implementation apart from a final-newline difference. It supports source-rights confirmation, source hashing, resumable imports, answer-draft saving, confidence/evidence metadata and separate review/publication safeguards.
+
+The live `validate-activation` function is **v47 / ACTIVE** and matches the subscription feature-branch implementation, including programme-scoped manual subscription assignment. The live `exam_program_entitlements` table includes `subscription_duration_days`.
+
+### Programme-specific subscriptions
+
+The current records remain separate by `exam_program_id`:
+
+| Record | JUPEB | JAMB |
+| --- | ---: | ---: |
+| Programme entitlement rows | 32 | 0 |
+| Active trials | 0 | 0 |
+| Active subscriptions | 2 | 0 |
+| Activation codes | 51 | 0 |
+| Activation codes used | 24 | 0 |
+| Activation codes unused | 27 | 0 |
+| Profiles currently selecting this programme | 163 | 0 |
+
+The live onboarding RPC grants the one-day signup trial only when a non-admin account makes its first programme selection. Switching to the other programme later does not manufacture another free trial. JAMB paid codes and manual assignments are supported by the programme-aware admin flow, but no JAMB entitlement or code has yet been created in the live database.
+
+### Preview and pull-request state
+
+The current subscription-parity integration is on `feat/jamb-programme-subscription-countdown-2026-11-26`, with Draft PR **#86** targeting `feat/rutex-jamb-workspace`, not `main`. Its latest shared commit is `06dd08c97600a6f3d4865d3c76f1ae9099e0de95`.
+
+Both connected Vercel projects report **READY** for Preview at that commit:
+- Rutex Master: `https://rutexjupebmaster-hj6pr1wge-abdulrazaqafolarin-droids-projects.vercel.app`
+- JUPEB Study Guide: `https://jupebstudyguide-6kgeuesr5-abdulrazaqafolarin-droids-projects.vercel.app`
+
+For this integration branch only, `VITE_ENABLE_JAMB=true` is configured in the Vercel Preview environment for both projects. No Production target was set for that variable. Production remains unchanged; PR #78 (the main JAMB workspace implementation) and PR #86 remain Draft.
+
+The parallel subscription/countdown repair is Draft PR **#85**. Its repository validation, PR validation and artifact build passed. The iOS simulator app itself compiled and its bundle identity passed; only the simulator install/launch smoke step failed after an iOS simulator data-migration failure and a 120-second `simctl install` timeout. This is an emulator-startup failure, not an iOS compile failure.
+
+### Remaining gates
+
+- Reconcile the 526 missing references with the 76 out-of-source and 8 duplicate records without assuming they cancel one another.
+- Recover or regenerate the 78-item answer-review package (43 text-based, 29 diagram-dependent, 6 defective) and keep every item in draft until reviewed.
+- Obtain an authenticated administrator session and an authorised source-use rights attestation before uploading original source files to the private bucket.
+- Continue independent answer/explanation verification; do not publish any question or key by bulk import.
+- Complete a signed-in student/admin walkthrough of both Preview deployments before considering PR merge or any Production deployment.

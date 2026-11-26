@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   isNewer: vi.fn((installedCode: number, latestCode: number) => latestCode > installedCode),
   canInstallPackages: vi.fn(),
   downloadApk: vi.fn(),
+  deleteDownloadedApkFile: vi.fn(),
   installDownloadedApk: vi.fn(),
   openInstallSettings: vi.fn(),
 }));
@@ -19,6 +20,7 @@ vi.mock("@/lib/app-updater", () => ({
   isNewer: mocks.isNewer,
   canInstallPackages: mocks.canInstallPackages,
   downloadApk: mocks.downloadApk,
+  deleteDownloadedApkFile: mocks.deleteDownloadedApkFile,
   installDownloadedApk: mocks.installDownloadedApk,
   openInstallSettings: mocks.openInstallSettings,
 }));
@@ -51,6 +53,7 @@ describe("AppUpdatePrompt", () => {
     mocks.isNewer.mockImplementation((installedCode, latestCode) => latestCode > installedCode);
     mocks.canInstallPackages.mockResolvedValue(true);
     mocks.downloadApk.mockResolvedValue("/cache/rutex-master-next-202001.apk");
+    mocks.deleteDownloadedApkFile.mockResolvedValue(undefined);
     mocks.installDownloadedApk.mockResolvedValue(undefined);
     mocks.openInstallSettings.mockResolvedValue(undefined);
   });
@@ -134,6 +137,24 @@ describe("AppUpdatePrompt", () => {
       );
     });
     expect(await screen.findByText("Installer opened. Confirm the update in Android’s system prompt.")).toBeInTheDocument();
+  });
+
+  it("deletes a downloaded APK when the learner taps Later", async () => {
+    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
+
+    render(<AppUpdatePrompt />);
+    fireEvent.click(await screen.findByRole("button", { name: /^update$/i }));
+
+    expect(await screen.findByText("Installer opened. Confirm the update in Android’s system prompt.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /^later$/i }));
+
+    await waitFor(() => {
+      expect(mocks.deleteDownloadedApkFile).toHaveBeenCalledWith(
+        "/cache/rutex-master-next-202001.apk",
+      );
+    });
+    expect(window.localStorage.getItem("app-update-dismissed:202001")).toBe("1");
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("pauses a release requiring an uninstall instead of risking local study data", async () => {

@@ -39,6 +39,25 @@ describe("answer scoring", () => {
       isGradable: false,
       isCorrect: false,
     });
+    expect(gradeObjectiveAnswer("A", "A", [
+      { label: "A" }, { label: "B" }, { label: "TEXT" }, { label: "D" },
+    ])).toEqual({
+      isGradable: false,
+      isCorrect: false,
+    });
+    expect(gradeObjectiveAnswer("A", "A", [
+      { label: "A" }, { label: "B" }, { label: "B" }, { label: "D" },
+    ])).toEqual({
+      isGradable: false,
+      isCorrect: false,
+    });
+    // Original option order may vary; label identity, not display position, controls grading.
+    expect(gradeObjectiveAnswer("D", "D", [
+      { label: "A" }, { label: "C" }, { label: "D" }, { label: "B" },
+    ])).toEqual({
+      isGradable: true,
+      isCorrect: true,
+    });
     expect(gradeObjectiveAnswer("A", "A", undefined)).toEqual({
       isGradable: false,
       isCorrect: false,

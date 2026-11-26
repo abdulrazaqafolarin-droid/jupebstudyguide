@@ -306,4 +306,44 @@ describe("ActivationGate active-trial banner", () => {
     });
   });
 
+
+  it("shows a live programme-scoped paid subscription countdown", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-06T12:00:00.000Z"));
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 60_000).toISOString(),
+        subscription_duration_days: 30,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    try {
+      render(
+        <ActivationGate programId="jamb">
+          <div>JAMB paid study content</div>
+        </ActivationGate>,
+      );
+
+      expect(mocks.useActivation).toHaveBeenCalledWith("jamb");
+      expect(screen.getByRole("group", { name: "Subscription status" })).toBeInTheDocument();
+      expect(screen.getByText("30-day subscription active")).toBeInTheDocument();
+      expect(screen.getByText("00:01:00 remaining")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Add Time" })).toBeVisible();
+
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(screen.getByText("00:00:59 remaining")).toBeInTheDocument();
+      expect(screen.getByText("JAMB paid study content")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
 });

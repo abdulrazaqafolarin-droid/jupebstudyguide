@@ -129,5 +129,7 @@ describe("parseReleaseInfo", () => {
     expect(parseReleaseInfo({ versionCode: 41, url: "https://example.com/jupeb-master.apk" })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 0, url: RELEASE_APK_URL, sha256: "a".repeat(64) })).toBeNull();
     expect(parseReleaseInfo({ versionCode: 41, url: getReleaseApkUrl(41), sha256: "not-a-checksum" })).toBeNull();
+    // The deployed legacy root manifest must not be accepted without a SHA-256.
+    expect(parseReleaseInfo({ versionCode: 44, url: getReleaseApkUrl(44) })).toBeNull();
   });
 });

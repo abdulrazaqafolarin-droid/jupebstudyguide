@@ -48,7 +48,6 @@ export function resolveActivationFailure(
     is_admin: isAdminEmail,
     trial_expires_at: null,
     subscription_expires_at: null,
-    subscription_duration_days: null,
     checking: false,
     check_error: !isAdminEmail,
   };

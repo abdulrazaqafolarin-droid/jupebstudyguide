@@ -36,11 +36,21 @@ export function hasGradableObjectiveAnswer(
   correctAnswer: string | null | undefined,
   options: ReadonlyArray<{ label: string }> | null | undefined,
 ): boolean {
-  if (!hasGradableAnswer(correctAnswer) || !options?.length) return false;
-  const expected = correctAnswer!.trim().toUpperCase();
-  return options.some((option) =>
-    typeof option?.label === "string" && option.label.trim().toUpperCase() === expected
+  if (!hasGradableAnswer(correctAnswer) || !options || ![4, 5].includes(options.length)) {
+    return false;
+  }
+
+  const labels = options.map((option) =>
+    typeof option?.label === "string" ? option.label.trim().toUpperCase() : ""
   );
+  if (labels.some((label) => !/^[A-E]$/.test(label))) return false;
+  if (new Set(labels).size !== labels.length) return false;
+
+  // A four-option paper must expose A–D; a five-option paper must expose A–E.
+  const expectedLabels = labels.length === 4 ? ["A", "B", "C", "D"] : ["A", "B", "C", "D", "E"];
+  if (expectedLabels.some((label) => !labels.includes(label))) return false;
+
+  return labels.includes(correctAnswer!.trim().toUpperCase());
 }
 
 export function gradeObjectiveAnswer(

@@ -291,3 +291,37 @@ Additional read-only content/provenance checks found:
 - 3,400 distinct candidate questions have at least one linked `jamb_question_admin_audit` record with `rights_confirmed = true`; 4,230 have no such linked rights-confirmation audit. Do not infer permission from a source filename, source reference or populated answer draft.
 
 The next content task is therefore a controlled admin reconciliation of these 7,630 hidden candidate rows: prioritise the 4,230 without a linked rights audit, restore page-level source references where possible, calculate missing content hashes, fix the 64 short question texts, and independently verify the answer and meaningful explanation against a reliable permitted source. Then use the supported review/publish flow. Until then keep all 7,630 hidden and ungradable. No mass publication or key approval is authorised by this audit.
+
+## Source-pack to live-row reconciliation — 26 November 2026
+
+The four original JAMB source packs are already committed to both current `main` and the JAMB feature branch, with identical Git blob hashes on both sides:
+
+| Source file | Git blob SHA | Parser candidate count in the 17 November intake audit |
+| --- | --- | ---: |
+| `Physics.txt` | `d56cce52bb9d7ad5d605326bca7747ae5a50f1cb` | 896 |
+| `Chemistry.txt` | `f949f2b8afac249a18ded07dcd68e47a11997e0d` | 1,940 |
+| `Biology.txt` | `70dedd280d3afde432de6d046f6731178eb2291a` | 1,833 |
+| `JAMB_english_READABLE.txt` | `dc486d5ce7e327d82bf04f1ca2ada72df2d919c0` | 3,914 |
+| **Total** | | **8,583** |
+
+The parser/source-intake audit on integration commit `dba9612cb2445d246fda1f88eeb3a3da03f65f8b` completed successfully on GitHub Actions run `45774184243`. It ran the source PDF extraction, source importer tests against committed packs and fixtures, generated the review-only JSON package bundle and uploaded it as artifact `jamb-source-intake-bundle` (ID `15095018017`). A separate syllabus PDF extraction artifact was also uploaded. This was **artifact-only**: no source document was uploaded to the live private bucket and no import batch/item was created.
+
+The 26 November live database rows all identify one of these same four source document names, but the live record counts are smaller than the parser candidate counts:
+
+| Subject | Source candidates | Existing live candidate rows | Difference |
+| --- | ---: | ---: | ---: |
+| Physics | 896 | 743 | 153 |
+| Chemistry | 1,940 | 1,608 | 332 |
+| Biology | 1,833 | 1,457 | 376 |
+| Use of English | 3,914 | 3,822 | 92 |
+| **Total** | **8,583** | **7,630** | **953** |
+
+This 953-record delta is a reconciliation gap, **not an instruction to import 953 rows**. The parser's raw candidate count includes blocks with missing/multiple/ambiguous references, non-standard option patterns, duplicate candidates and figure placeholders; some may be rejected or already represented by a different normalized row. The live table also contains candidate rows that do not have import-batch IDs. A source-by-source, exact-reference reconciliation is required before any insert, deduplication or publication.
+
+The current table has 7,630 rows but only 7,622 distinct `source_ref` values. A fresh read-only duplicate-reference query found eight repeated source references:
+- Biology: `1981:Q47`, `1995:Q26`, `2003:Q5` (two rows per reference)
+- Chemistry: `1978:Q26`, `1979:Q11`, `1979:Q13`, `1980:Q16`, `1981:Q14` (two rows per reference)
+
+These eight duplicate-reference groups must be compared against the committed `JAMB_DUPLICATE_SOURCE_REFERENCE_REVIEW.csv`; do not automatically delete one row from a repeated reference because some suffix variants or distinct questions can legitimately reuse printed numbers. The latest recorded source-intake audit also retains a **526-item missing/ambiguous source-reference review queue** and 76 references previously found outside the four source documents. Those counts are from the earlier parser/reference reconciliation, not a fresh run in this turn; the new live SQL check independently confirms the eight repeated reference groups and the 7,630/7,622 live row/reference totals.
+
+All 7,630 live candidate rows still have `source_page IS NULL` and `source_batch_id IS NULL`. Restore page-level provenance where possible, recompute missing content hashes, resolve the 526 reference queue and compare the 76 external references before staging. Do not bulk-insert the 953-row arithmetic difference, and keep all existing rows hidden until source rights, question structure, figure and answer/explanation review are complete.

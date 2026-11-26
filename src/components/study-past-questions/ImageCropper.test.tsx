@@ -1,9 +1,11 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ImageCropper } from "./ImageCropper";
 
 describe("Admin free cropper", () => {
-  it("offers a single rectangular Free Crop mode with all eight resize handles", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("offers rectangular Free Crop and Freehand modes while preserving the eight rectangle handles", () => {
     render(
       <ImageCropper
         image="data:image/jpeg;base64,ZmFrZQ=="
@@ -14,10 +16,9 @@ describe("Admin free cropper", () => {
       />,
     );
 
-    expect(screen.getByText("Free Crop")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Rectangle" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Freehand" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByText(/Freely drag the edges and corners/)).toBeInTheDocument();
-    expect(screen.queryByText(/Freehand/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Freehand/i })).not.toBeInTheDocument();
 
     const image = screen.getByRole("img", { name: "Original image with adjustable crop area" });
     const container = image.parentElement as HTMLDivElement;
@@ -98,6 +99,70 @@ describe("Admin free cropper", () => {
     expect(read("width")).toBeCloseTo(start.width - 21);
     expect(read("height")).toBeCloseTo(start.height - 9);
     expect((start.width - read("width"))).not.toBe((start.height - read("height")));
+  });
+
+  it("allows tracing a freehand polygon and enables Apply Crop after three points", () => {
+    const context = {
+      setTransform: vi.fn(),
+      clearRect: vi.fn(),
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      closePath: vi.fn(),
+      fill: vi.fn(),
+      stroke: vi.fn(),
+    };
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
+      () => context as unknown as CanvasRenderingContext2D,
+    );
+
+    render(
+      <ImageCropper
+        image="data:image/jpeg;base64,ZmFrZQ=="
+        fileName="question.jpg"
+        onCropComplete={() => {}}
+        onSkip={() => {}}
+        onCancel={() => {}}
+      />,
+    );
+
+    const image = screen.getByRole("img", { name: "Original image with adjustable crop area" });
+    const container = image.parentElement as HTMLDivElement;
+    Object.defineProperty(container, "clientWidth", { configurable: true, value: 400 });
+    Object.defineProperty(container, "clientHeight", { configurable: true, value: 300 });
+    Object.defineProperty(image, "naturalWidth", { configurable: true, value: 600 });
+    Object.defineProperty(image, "naturalHeight", { configurable: true, value: 400 });
+    fireEvent.load(image);
+
+    fireEvent.click(screen.getByRole("button", { name: "Freehand" }));
+    const canvas = screen.getByTestId("freehand-crop-canvas");
+    expect(screen.queryByRole("group", { name: "Free crop selection" })).not.toBeInTheDocument();
+
+    Object.defineProperty(canvas, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({
+        left: 0, top: 0, right: 400, bottom: 300, width: 400, height: 300, x: 0, y: 0,
+        toJSON: () => ({}),
+      }) as DOMRect,
+    });
+
+    const dispatchPointer = (target: Element, type: string, values: Record<string, string | number>) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.entries(values).forEach(([key, value]) => {
+        Object.defineProperty(event, key, { configurable: true, value });
+      });
+      target.dispatchEvent(event);
+    };
+
+    act(() => {
+      dispatchPointer(canvas, "pointerdown", { pointerId: 31, pointerType: "touch", clientX: 40, clientY: 30 });
+      dispatchPointer(canvas, "pointermove", { pointerId: 31, pointerType: "touch", clientX: 120, clientY: 40 });
+      dispatchPointer(canvas, "pointermove", { pointerId: 31, pointerType: "touch", clientX: 90, clientY: 150 });
+      dispatchPointer(canvas, "pointerup", { pointerId: 31, pointerType: "touch" });
+    });
+
+    expect(screen.getByRole("button", { name: "Freehand" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Apply Crop" })).toBeEnabled();
   });
 
 });

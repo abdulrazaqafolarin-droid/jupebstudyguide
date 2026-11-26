@@ -19,7 +19,7 @@ Shared presentation components should be reused where they do not carry programm
 
 - **Textbook/tutor support:** PDF textbooks can be indexed from either tutor screen. Each tutor selects a separate IndexedDB database keyed by account and programme. Extracted text is transmitted to the configured embedding service; the text chunks and returned vectors are stored locally and retrieved only by the matching account/programme code path. Scanned/image-only PDFs are rejected because OCR is not part of this importer. The old pre-isolation `jupeb-rag` browser database is left untouched and is not automatically imported, because its chunks have no account ownership metadata.
 - **Offline continuity:** JAMB saved answers and bookmarks are local-first and per-account. Newer answers reconcile by timestamp; local bookmark deletions use persisted tombstones; cloud writes are serialized per question and sync is retried on reconnect/focus/visible events. Automated reconciliation tests cover stale-cloud answers, local deletion and duplicate entries.
-- **Admin intake continuity:** source uploads resume from the original SHA-256 and stable candidate offsets. Retried chunks are idempotent on the unique batch/item key and do not overwrite reviewed records. The updated importer is deployed as `question-import` v3 with protocol v2 resumable chunks, stable offsets and duplicate-safe retries. Administrator authentication, source-rights confirmation and human review remain mandatory.
+- **Admin intake continuity:** source uploads resume from the original SHA-256 and stable candidate offsets. Retried chunks are idempotent on the unique batch/item key and do not overwrite reviewed records. The currently active importer is deployed as `question-import` v8 and supports protocol v2 resumable chunks, stable offsets and duplicate-safe retries. Its live version was confirmed from the Supabase Edge Function registry on 26 November 2026. Administrator authentication, source-rights confirmation and human review remain mandatory.
 
 ## Conversation isolation
 
@@ -35,7 +35,7 @@ A signed-in student/admin mobile walkthrough is still outstanding. Both Vercel P
 
 ## Content and release boundaries
 
-The JAMB subject bank still contains zero published question rows and zero import batches. The committed Physics, Chemistry and Biology packs parse to candidate source material, not independently approved questions. Before staging, an authorised administrator must attest to source-use rights; candidates then require human checks for year, wording, option order, duplicates and figures. Missing answer keys must not be invented.
+The 26 November 2026 live audit found 7,630 JAMB candidate rows already present in `study_questions`, across Use of English (3,822), Chemistry (1,608), Biology (1,457) and Physics (743). All 7,630 are hidden with `review_status = 'needs_review'`; their 7,630 protected answer-key rows are also `needs_review`. There are currently zero student-visible published JAMB rows, zero JAMB import batches and zero JAMB import items. These records are therefore not a student-ready question bank and must not be treated as approved or gradable. The newer resumable importer is active at v8, but its batch tables are empty; do not assume the existing 7,630 candidate rows are linked to an import batch. Before publication, an authorised administrator must confirm source-use rights and independently review source year, wording, option order, duplicates, figures, answer and explanation. Missing answer keys must not be invented.
 
 The JAMB syllabus is not marked verified, and a complete official UTME mock remains disabled until the compulsory Use of English content, official exam configuration and source review are complete. Mathematics is visibly locked in the onboarding subject guide until its Rutex question content is reviewed and published. Matching the JUPEB UI does not make unverified JAMB content official or gradable.
 
@@ -71,9 +71,9 @@ JAMB daily mission records use a separate `jamb_daily_missions` table with an ow
 ## Live backend reconciliation — 18 November 2026
 
 - `exam-attempts` v5 is active and contains the authenticated, owner-filtered JAMB CBT history action.
-- `question-import` v3 is active and supports the resumable/idempotent protocol v2 source upload flow.
+- At the time of that 18 November snapshot, `question-import` v3 was active and supported the resumable/idempotent protocol v2 source upload flow.
 - `jamb_daily_missions` is live with RLS and one owner/active-session policy. `anon` and `PUBLIC` have no table grants; authenticated has SELECT/INSERT/UPDATE/DELETE only. Its rollout row count was zero.
-- The latest verified live JAMB counts remain zero question rows and zero import batches. No source material has been staged or published.
+- At the time of that 18 November snapshot, the reported JAMB counts were zero question rows and zero import batches. The later 26 November live audit below supersedes those counts.
 - Full official UTME mock, syllabus-led daily lessons, subject coverage beyond Physics/Chemistry/Biology, and ranked leaderboard remain gated by official source verification, English/other content intake and approved answer keys. No JUPEB data is substituted.
 
 
@@ -251,3 +251,26 @@ These are intentional additional controls, not missing JUPEB editor features:
 5. Confirm JAMB student payloads never contain answer keys or explanations before an attempt is submitted and approved review permits them.
 
 This is a source/UI checklist. It does not authorize changing live question rows, approving content, or deploying Production.
+
+## Live database and importer reconciliation — 26 November 2026
+
+Read-only checks against the connected production Supabase project confirmed the following counts. No rows were changed during this audit.
+
+| Measure | Live count | Meaning |
+| --- | ---: | --- |
+| JAMB `study_questions` rows | 7,630 | Existing JAMB candidate records |
+| JAMB hidden + `needs_review` | 7,630 | All current JAMB question rows remain unavailable to students |
+| JAMB protected answer-key rows marked `needs_review` | 7,630 | No candidate key is currently approved |
+| JAMB visible + published rows | 0 | No student-ready JAMB questions are currently published |
+| JAMB import batches | 0 | No active/import-history batch rows are registered |
+| JAMB import items linked to batches | 0 | The 7,630 existing rows are not represented in the import-item queue |
+| JUPEB `study_questions` rows | 3,227 | Existing JUPEB question records |
+| JUPEB visible + published rows | 2,984 | Current learner-visible published JUPEB records |
+
+The 7,630 JAMB rows are distributed as Use of English 3,822, Chemistry 1,608, Biology 1,457 and Physics 743. This is a candidate inventory, not a published bank. Do not make these rows visible, expose their answer keys, or count them as reviewed merely because they exist in `study_questions`.
+
+The Supabase Edge Function registry reports `question-import` ACTIVE at version 8 (updated 26 November 2026). Its deployed source includes protocol v2 resumable staging, duplicate-safe item offsets, administrator/session/entitlement checks, required source-rights confirmation, answer-draft validation, separate protected answer keys, audit records and JAMB-specific question-manager operations. The absence of rows in `question_import_batches` and `question_import_items` means the legacy candidate inventory has not been staged through that current batch workflow. Version 8 is deployed; this documentation update does not deploy or alter it.
+
+The JAMB answer-key protection migration `20261126101025_jamb_protect_answer_key_storage.sql` is already present in the live Supabase migration ledger. Do not replay it. Current Edge Function versions observed read-only are `question-import` v8, `question-rag-index` v4 and `exam-attempts` v6; these deployed versions are distinct from the older v3/v5 references in earlier snapshots.
+
+The next content task is a careful administrator-facing reconciliation of these 7,630 hidden candidate rows against the source-import workflow: establish source/provenance and rights, validate original question text/options/figures, independently verify an answer and meaningful explanation, then use the supported review/publish flow. Until then keep all 7,630 hidden and ungradable. No mass publication or key approval is authorised by this audit.

@@ -26,21 +26,20 @@ export function AppUpdateSettings() {
   useEffect(() => {
     if (!isAndroidApp()) return;
     let active = true;
+
     Promise.all([getInstalledVersion(), fetchLatestRelease()]).then(([current, release]) => {
-      if (!active || !current || !release || !isNewer(current.versionCode, release.versionCode)) return;
+      if (!active) return;
+
+      // Keep the installed-version label useful even when the release manifest
+      // is unavailable or does not contain a newer version.
       setInstalled(current);
       setLatest(release);
-      setNotice(release.versionName);
+
+      if (current && release && isNewer(current.versionCode, release.versionCode)) {
+        setNotice(release.versionName);
+      }
     });
-    return () => { active = false; };
-  }, []);
-  
-  useEffect(() => {
-    if (!isAndroidApp()) return;
-    let active = true;
-    getInstalledVersion().then((version) => {
-      if (active) setInstalled(version);
-    });
+
     return () => {
       active = false;
     };

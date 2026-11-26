@@ -358,7 +358,7 @@ export default function StudyPastQuestions() {
   const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : null;
 
   useEffect(() => {
-    if (!quizComplete || score < 70) return;
+    if (!quizComplete || score === null || score < 70) return;
 
     let cancelled = false;
     let secondBurst: number | undefined;

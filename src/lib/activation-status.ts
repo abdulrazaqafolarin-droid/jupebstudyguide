@@ -4,6 +4,8 @@ export interface ActivationStatusSnapshot {
   trial_expires_at: string | null;
   /** End of a 7-, 30-, or 90-day activation-code subscription. */
   subscription_expires_at?: string | null;
+  /** Duration of the most recently activated paid term, when known. */
+  subscription_duration_days?: number | null;
   checking: boolean;
   /** True only when the first verification failed and no trusted cache exists. */
   check_error?: boolean;
@@ -46,6 +48,7 @@ export function resolveActivationFailure(
     is_admin: isAdminEmail,
     trial_expires_at: null,
     subscription_expires_at: null,
+    subscription_duration_days: null,
     checking: false,
     check_error: !isAdminEmail,
   };

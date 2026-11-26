@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { encryptApiKey, decryptApiKey, isVaultProvider } from "../_shared/keyVault.ts";
 import { validateKey } from "../_shared/ai-router.ts";
+import { checkAuthSessionActive } from "../_shared/auth-session.ts";
 
 /// DEPLOYMENT — FIRST-TIME SETUP
 /// ==============================
@@ -17,7 +18,8 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") || "";
+const OWNER_EMAIL = "abdulrazaqafolarin@gmail.com";
+const ADMIN_EMAIL = (Deno.env.get("ADMIN_EMAIL") || OWNER_EMAIL).trim().toLowerCase();
 
 type Action =
   | "check-setup"
@@ -78,8 +80,31 @@ Deno.serve(async (req) => {
     );
   }
 
-  // Verify admin email
-  if (!user.email || user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+  const sessionActive = await checkAuthSessionActive(
+    supabaseUrl,
+    Deno.env.get("SUPABASE_ANON_KEY") || "",
+    token,
+  );
+  if (sessionActive !== true) {
+    return new Response(
+      JSON.stringify({ error: sessionActive === false ? "This device session is no longer active. Please sign in again." : "Could not verify this device session." }),
+      { status: sessionActive === false ? 401 : 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  }
+
+  // The established owner email must also carry the protected admin flag
+  // from the database; an email address alone never grants key-vault access.
+  const { data: ownerProfile, error: ownerProfileError } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (
+    ownerProfileError ||
+    user.email?.trim().toLowerCase() !== OWNER_EMAIL ||
+    ADMIN_EMAIL !== OWNER_EMAIL ||
+    ownerProfile?.is_admin !== true
+  ) {
     return new Response(
       JSON.stringify({ error: "Admin access required" }),
       { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }

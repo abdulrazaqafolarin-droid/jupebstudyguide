@@ -214,7 +214,7 @@ jobs:
           path: ${{ env.APK_PATH }}
 
       - name: Mirror APK + version file to public storage
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && if: github.ref == 'refs/heads/main' && steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true'
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && github.ref == 'refs/heads/main' && steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true'
         env:
           SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -278,7 +278,7 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && if: steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
         with:
           tag_name: android-latest
           name: "Android APK (latest)"

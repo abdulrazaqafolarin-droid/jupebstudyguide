@@ -10,6 +10,11 @@ on:
         required: false
         default: false
         type: boolean
+      publish_release:
+        description: "PRODUCTION RELEASE: publish the verified APK and replace the public in-app updater manifest. Leave unchecked for artifact-only validation."
+        required: false
+        default: false
+        type: boolean
       confirm_legacy_device_data_loss:
         description: "SECOND REQUIRED ACKNOWLEDGEMENT: explicitly accept permanent loss of device-only data on existing legacy installations. Do not select unless the owner has approved and students have been informed."
         required: false
@@ -209,7 +214,7 @@ jobs:
           path: ${{ env.APK_PATH }}
 
       - name: Mirror APK + version file to public storage
-        if: github.ref == 'refs/heads/main' && steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true'
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && if: github.ref == 'refs/heads/main' && steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true'
         env:
           SUPABASE_URL: "https://gzyczowqqywesqhqqpdi.supabase.co"
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -273,7 +278,7 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == true && if: steps.build-apk.outputs.signing-mode == 'stable' && steps.update-signing.outputs.compatible == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
         with:
           tag_name: android-latest
           name: "Android APK (latest)"

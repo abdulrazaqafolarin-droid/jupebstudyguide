@@ -456,3 +456,61 @@ The JAMB Preview flag `VITE_ENABLE_JAMB=true` remains scoped to the integration 
 The successful validation workflow generated a temporary `jamb-source-intake-bundle` artifact containing the four exact original TXT files, four matching JSON review packages and the parser audit. The bundle contains 8,583 source candidate blocks across the four source documents (Physics 896, Chemistry 1,940, Biology 1,833, Use of English 3,914). These are **candidate blocks, not unique missing references or publishable questions**. All generated science items remain ungraded and `needs_review`; source-provided English keys/explanations remain unverified suggestions. The artifact has short retention; download it promptly if it is needed for the authenticated admin staging step.
 
 A source-reference reconciliation must use the exact import parser and single-citation rules. A simple text regex over all citation-like tokens over-counts references in multi-reference/ambiguous candidates and must not replace the previously reconciled 526-item source-review queue. The 526 missing source-reference count is still the working intake queue from the detailed prior reconciliation; no records have been uploaded or published.
+
+
+---
+
+## Latest continuation — 26 November 2026, 10:15 UTC
+
+This section supersedes earlier snapshots in this document where the answer-key migration, current CI head, session-protection source, Preview state or live JAMB key-storage state differ.
+
+### Programme subscription and repository validation
+
+- Draft PR **#86** remains open against `feat/rutex-jamb-workspace`; it does not target `main`.
+- Current integration head: `0efa5493d21e37c212617c6902b177ee76e67117`.
+- GitHub validation run **45798953309** completed successfully on that exact head. The workflow passed JAMB source/syllabus extraction and importer tests, programme-entitlement/retrieval/CBT/import Deno tests, Deno type-checks, TypeScript, unit tests, lint, web build and Android debug build.
+- The branch restores `supabase/functions/_shared/auth-session.ts` and `supabase/functions/enforce-single-session/index.ts`, and adds fail-closed current-session checks to the repository copies of `admin-key-manager`, `question-rag-index` and `textbook-ingest`. These are source changes only; no Edge Function was deployed during this continuation.
+- The programme subscription status card reads `exam_program_entitlements` using the active workspace's `exam_program_id`. Activation-code generation, assignment and redemption are programme-scoped. Switching workspace does not create a second free trial.
+
+### JAMB answer-key isolation — live database state
+
+**Important operational record:** migration `20261126101025_jamb_protect_answer_key_storage` was applied to the connected shared Supabase project `gzyczowqqywesqhqqpdi` on 26 November 2026 and is now recorded in Supabase migration history. Its source is `supabase/migrations/20261126101025_jamb_protect_answer_key_storage.sql`.
+
+The migration was intended to separate the protected JAMB answer keys from learner-readable question rows. During the SQL preflight, the migration file's own transaction boundary caused it to commit despite an outer rollback wrapper. This was subsequently verified against the live database, and its recorded migration version was reconciled with Supabase migration history. Future operators must treat this migration as **already applied**; do not replay the old `20261126090000` filename or manually restore inline answer fields.
+
+Post-application read-only verification:
+
+| JAMB integrity check | Live result |
+| --- | ---: |
+| Question rows | 7,630 |
+| Inline `correct_answer` / `explanation` fields remaining | 0 |
+| Corresponding protected answer-key rows | 7,630 |
+| Protected rows with non-empty answer | 7,630 |
+| Protected rows with meaningful explanation | 7,630 |
+| Keys still `needs_review` | 7,630 |
+| Approved keys | 0 |
+| Missing protected keys | 0 |
+| Questions visible or outside `needs_review` | 0 |
+
+The JAMB-only CHECK constraint prevents answer/explanation values being written back to `study_questions`. The two retrieval RPCs, `match_study_questions` and `match_study_questions_text`, are now executable by `service_role` only; `anon` and `authenticated` cannot execute them. JUPEB legacy answer fields and fallback behaviour are retained.
+
+The active JAMB student pathways were rechecked in Supabase:
+- `exam-practice` v3 reads a protected answer key only when its `review_status='approved'`; otherwise it returns an ungraded result.
+- `exam-attempts` v6 scores and returns answer feedback only from approved key rows; attempt question snapshots do not include keys.
+- `question-import` v8 keeps draft-answer saves in the protected table and does not approve or publish them by saving a draft.
+- The JAMB bank remains entirely hidden and unpublished. No JAMB key was approved and no question was published by this migration.
+
+### Preview state and release gates
+
+- On the Rutex Master Vercel project, the latest READY preview for this branch is commit `5a0a59294f83445ed6e5711045e6bf45cadb7e1e`: `https://rutexjupebmaster-ral96v0l9-abdulrazaqafolarin-droids-projects.vercel.app`.
+- That preview is one commit behind the current head. It includes the aligned migration file but predates the cleanup commit that removed the superseded filename.
+- The `jupebstudyguide` Vercel project has no fresh Preview for the current integration head; its latest READY preview is still older (commit `d2c38448`). Do not describe either project as previewed at the exact current head.
+- Both deployments are Vercel Previews, not Production. No Production deployment was made.
+- No signed-in JAMB student or administrator walkthrough has been completed. The Preview feature flag remains Preview-only.
+- No source-rights attestation, import batch, private source upload, answer approval or question publication has been recorded.
+
+### Source-reference reconciliation
+
+The previously documented **526** missing-source-reference queue remains the working review target, not a certified newly reproduced total. A fresh strict-parser comparison on 26 November produced a different result (542 missing subject/reference pairs, 97 out-of-source groups and 8 repeated database groups). The source files contain cross-subject reference-number collisions and historical reused references; the strict recount therefore does not supersede the previously reconciled 526-item manifest. Keep the established 526 target unchanged until the 21 differing out-of-source/source-reference classifications are individually reconciled against the original audit manifest and duplicate-review CSV.
+
+The four source files still contain 8,583 raw candidate blocks, not 8,583 unique missing references or publishable questions. They remain review-only; science keys are blank, and English source-supplied answer/explanation pairs remain unverified suggestions.

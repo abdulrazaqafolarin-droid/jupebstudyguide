@@ -6,7 +6,9 @@ describe("answer scoring", () => {
     expect(hasGradableAnswer(undefined)).toBe(false);
     expect(hasGradableAnswer("")).toBe(false);
     expect(hasGradableAnswer(" TBD ")).toBe(false);
+    expect(hasGradableAnswer(" tBd ")).toBe(false);
     expect(gradeAnswer("A", null)).toEqual({ isGradable: false, isCorrect: false });
+    expect(gradeAnswer("A", " tBd ")).toEqual({ isGradable: false, isCorrect: false });
   });
 
   it("compares answers after trimming and normalizing case", () => {

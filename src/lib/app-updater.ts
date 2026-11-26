@@ -216,3 +216,9 @@ export async function installDownloadedApk(absolutePath: string): Promise<void> 
   if (!isAndroidApp()) throw new Error("APK installation is only available in the Android app");
   await AppUpdater.installApk({ filePath: absolutePath });
 }
+
+/** Remove a verified APK that the learner explicitly dismissed before installation. */
+export async function deleteDownloadedApkFile(absolutePath: string): Promise<void> {
+  if (!isAndroidApp() || !absolutePath.trim()) return;
+  await AppUpdater.deleteDownloadedApk({ filePath: absolutePath });
+}

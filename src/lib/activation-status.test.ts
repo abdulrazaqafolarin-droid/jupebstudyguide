@@ -37,6 +37,7 @@ describe("resolveActivationFailure", () => {
       is_admin: false,
       trial_expires_at: null,
       subscription_expires_at: null,
+      subscription_duration_days: null,
       checking: false,
       check_error: true,
     });
@@ -48,6 +49,7 @@ describe("resolveActivationFailure", () => {
       is_admin: true,
       trial_expires_at: null,
       subscription_expires_at: null,
+      subscription_duration_days: null,
       checking: false,
       check_error: false,
     });

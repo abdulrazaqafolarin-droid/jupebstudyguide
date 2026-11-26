@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { CORS_HEADERS } from "../_shared/ai.ts";
 import { chunkText } from "../_shared/textbook-chunk.ts";
 import { generateEmbeddings } from "../_shared/textbook-embed.ts";
+import { checkAuthSessionActive } from "../_shared/auth-session.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -22,11 +23,19 @@ Deno.serve(async (req) => {
     const authSupabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: { user } } = await authSupabase.auth.getUser();
-    if (!user) {
+    const { data: { user }, error: userError } = await authSupabase.auth.getUser(token);
+    if (userError || !user) {
       return new Response(
         JSON.stringify({ error: "Invalid authentication" }),
         { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
+    const sessionActive = await checkAuthSessionActive(supabaseUrl, supabaseAnonKey, token);
+    if (sessionActive !== true) {
+      return new Response(
+        JSON.stringify({ error: sessionActive === false ? "This device session is no longer active." : "Could not verify this device session." }),
+        { status: sessionActive === false ? 401 : 503, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
 

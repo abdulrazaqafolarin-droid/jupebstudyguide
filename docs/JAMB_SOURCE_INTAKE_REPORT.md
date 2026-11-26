@@ -74,3 +74,21 @@ Publishing a reviewed question triggers the existing shared embedding-job queue.
 The shared project now has the JAMB verification migration recorded as `20261121233500`, and the `question-import` Edge Function is active at **v5**. Its live subject allowlist includes Use of English. Database approval triggers require a valid ordered A-D/A-E option set with non-empty option text, a matching correct option, a verification attestation and a meaningful explanation. Ungraded JAMB approval is rejected.
 
 Post-deployment read-only checks confirm the JAMB question, answer-key, import-batch and import-item counts remain zero. The backend release has not uploaded any source documents, staged any candidate, marked any answer verified or published any question. Source-use permission and per-item human review remain mandatory.
+
+
+## Superseding live state — 26 November 2026
+
+The sections above labelled 17 and 22 November are historical intake and backend snapshots. Their statements that the JAMB question count was zero and that the active importer was v5 no longer describe the connected live project.
+
+The current shared Supabase project `gzyczowqqywesqhqqpdi` contains 7,630 JAMB question rows (English 3,822; Chemistry 1,608; Biology 1,457; Physics 743), all hidden and `needs_review`, plus 7,630 protected answer-key rows. None are published. The live `question-import` Edge Function is v8 / ACTIVE. Its import staging tables currently contain zero batches and zero items, and the private source-document bucket contains zero source uploads. The existing question rows were populated before the current source-import queue was staged; an empty import batch table does not mean the question bank is empty.
+
+The successful validation run `45774184243` on integration commit `dba9612cb2445d246fda1f88eeb3a3da03f65f8b` re-ran:
+- the four-source review-package generation;
+- JAMB syllabus extraction;
+- importer/parser tests against source files and fixtures;
+- programme-entitlement, retrieval, CBT scoring and import-recovery tests;
+- Deno checks, TypeScript, unit tests, lint, web build and Android debug APK compilation.
+
+It generated a review-only source intake artifact. The artifact is reproducible and contains matching original source files; it is not a source-rights attestation and does not create any Supabase import batch. A signed-in administrator must still confirm source-use rights and review each item before staging. The 419 science figure placeholders need source-specific original figures or approved reconstructions; source text alone is not the diagrams.
+
+The previous 526-item missing-reference queue remains the current source-review target from the more detailed reconciliation. Do not substitute a raw-regex recount: citation-like tokens in ambiguous/multiple-reference blocks are not all valid unique source references. Before importing, reconcile the 76 database references previously found outside the four source documents and the eight repeated references against the duplicate-review CSV. Some repeats represent distinct questions and must be retained; other pairs are candidates for soft deduplication.

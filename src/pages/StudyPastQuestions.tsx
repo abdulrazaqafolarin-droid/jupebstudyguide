@@ -33,7 +33,7 @@ import { StudyTimer } from "@/components/study-past-questions/StudyTimer";
 import { AdminQuestionPanel } from "@/components/study-past-questions/AdminQuestionPanel";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { gradeAnswer } from "@/lib/answer-scoring";
+import { gradeAnswer, gradeObjectiveAnswer } from "@/lib/answer-scoring";
 import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 
 type View = "subjects" | "years" | "questions" | "bookmarks";
@@ -342,7 +342,9 @@ export default function StudyPastQuestions() {
     if (timer.state === "expired" && !quizComplete && effectiveQuestions.length > 0) {
       const results = effectiveQuestions.map((q) => {
         const answer = userAnswers[q.id] || "";
-        const { isCorrect, isGradable } = gradeAnswer(answer, q.correctAnswer);
+        const { isCorrect, isGradable } = q.category === "objective"
+          ? gradeObjectiveAnswer(answer, q.correctAnswer, q.options)
+          : gradeAnswer(answer, q.correctAnswer);
         return { questionId: q.id, answer, isCorrect, isGradable };
       });
       setQuizResults(results);
@@ -353,10 +355,10 @@ export default function StudyPastQuestions() {
 
   const correctCount = quizResults.filter((r) => r.isGradable !== false && r.isCorrect).length;
   const totalCount = quizResults.filter((r) => r.isGradable !== false).length;
-  const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+  const score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : null;
 
   useEffect(() => {
-    if (!quizComplete || score < 70) return;
+    if (!quizComplete || score === null || score < 70) return;
 
     let cancelled = false;
     let secondBurst: number | undefined;
@@ -819,22 +821,30 @@ export default function StudyPastQuestions() {
                   <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-card to-secondary/30 p-8 text-center">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
                     <div className="relative z-10">
-                      <div className="text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{score}%</div>
+                      <div className="text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{score === null ? "—" : `${score}%`}</div>
                       <p className="text-muted-foreground mt-2">
-                        {correctCount} of {totalCount} correct
+                        {correctCount} of {totalCount} gradable questions correct
                       </p>
-                      <div className="mt-6 mx-auto max-w-xs h-3 rounded-full bg-muted/50 overflow-hidden ring-1 ring-border/20">
-                        <motion.div
-                          className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${score}%` }}
-                          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-4">
-                        {score >= 70 ? "Excellent work! " : score >= 50 ? "Good effort! " : "Keep practicing! "}
-                        {score >= 70 ? "🎉" : score >= 50 ? "💪" : "📚"}
-                      </p>
+                      {totalCount > 0 ? (
+                        <>
+                          <div className="mt-6 mx-auto max-w-xs h-3 rounded-full bg-muted/50 overflow-hidden ring-1 ring-border/20">
+                            <motion.div
+                              className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                              initial={{ width: 0 }}
+                              animate={{ width: `${score ?? 0}%` }}
+                              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-4">
+                            {(score ?? 0) >= 70 ? "Excellent work! " : (score ?? 0) >= 50 ? "Good effort! " : "Keep practicing! "}
+                            {(score ?? 0) >= 70 ? "🎉" : (score ?? 0) >= 50 ? "💪" : "📚"}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-xs text-muted-foreground mt-4">
+                          This attempt has no verified answer keys, so no percentage score was calculated.
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -850,15 +860,19 @@ export default function StudyPastQuestions() {
                           transition={{ delay: i * 0.03 }}
                           className={cn(
                             "p-4 rounded-xl border transition-all",
-                            r.isCorrect
-                              ? "border-emerald-500/20 bg-gradient-to-r from-emerald-500/5 to-transparent"
-                              : "border-red-500/20 bg-gradient-to-r from-red-500/5 to-transparent"
+                            r.isGradable === false
+                              ? "border-border bg-muted/30"
+                              : r.isCorrect
+                                ? "border-emerald-500/20 bg-gradient-to-r from-emerald-500/5 to-transparent"
+                                : "border-red-500/20 bg-gradient-to-r from-red-500/5 to-transparent"
                           )}
                         >
                           <div className="flex items-start gap-3">
                             <div className={cn(
                               "shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mt-0.5",
-                              r.isCorrect ? "bg-emerald-500/20 text-emerald-500" : "bg-red-500/20 text-red-500"
+                              r.isGradable === false
+                                ? "bg-muted text-muted-foreground"
+                                : r.isCorrect ? "bg-emerald-500/20 text-emerald-500" : "bg-red-500/20 text-red-500"
                             )}>
                               {i + 1}
                             </div>
@@ -868,14 +882,20 @@ export default function StudyPastQuestions() {
                                 <span className="text-muted-foreground">Your answer:</span>
                                 <span className={cn(
                                   "font-mono font-medium px-1.5 py-0.5 rounded",
-                                  r.isCorrect
-                                    ? "text-emerald-500 bg-emerald-500/10"
-                                    : "text-red-500 bg-red-500/10"
+                                  r.isGradable === false
+                                    ? "text-muted-foreground bg-muted"
+                                    : r.isCorrect
+                                      ? "text-emerald-500 bg-emerald-500/10"
+                                      : "text-red-500 bg-red-500/10"
                                 )}>
                                   {r.answer || "(skipped)"}
                                 </span>
                               </div>
-                              {q.correctAnswer && !r.isCorrect && (
+                              {r.isGradable === false ? (
+                                <p className="text-xs mt-1 text-muted-foreground">
+                                  Not scored — no verified answer key matches the listed options.
+                                </p>
+                              ) : q.correctAnswer && !r.isCorrect && (
                                 <p className="text-xs mt-1 text-muted-foreground">
                                   Correct: <span className="text-emerald-500 font-mono font-medium">{q.correctAnswer}</span>
                                 </p>

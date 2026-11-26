@@ -27,33 +27,22 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     ? Date.parse(status.subscription_expires_at)
     : Number.NaN;
 
+  const subscriptionActive = Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > clockNow;
+  const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
+  const activeExpiry = subscriptionActive ? subscriptionExpiresAt : trialExpiresAt;
+
+  // Keep both the one-day trial and paid-term countdowns live at second
+  // resolution. The timer is shared so paid plans do not silently stop ticking
+  // when there is no trial expiry on the account.
   useEffect(() => {
-    if (!Number.isFinite(trialExpiresAt)) return;
+    if (!Number.isFinite(activeExpiry) || activeExpiry <= Date.now()) return;
     const tick = () => setClockNow(Date.now());
     tick();
-    if (trialExpiresAt <= Date.now()) return;
     const interval = window.setInterval(tick, 1000);
     return () => window.clearInterval(interval);
-  }, [trialExpiresAt]);
+  }, [activeExpiry]);
 
-  const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > clockNow;
   const hasStudyAccess = canAccessStudyContent(status, clockNow);
-
-  // Re-render when a subscription expires, even when the free-trial countdown
-  // is not running, so the UI gate stays in step with the database policy.
-  useEffect(() => {
-    if (!Number.isFinite(subscriptionExpiresAt)) return;
-    const remaining = subscriptionExpiresAt - clockNow;
-    if (remaining <= 0) return;
-    // Wake at most once per minute while a long subscription is active, then
-    // re-check at its exact expiry. This avoids browser timeout overflow for
-    // 30- and 90-day codes.
-    const timeoutId = window.setTimeout(
-      () => setClockNow(Date.now()),
-      Math.min(remaining + 25, 60_000),
-    );
-    return () => window.clearTimeout(timeoutId);
-  }, [subscriptionExpiresAt, clockNow]);
 
   const handleTrialActivation = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,9 +54,13 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
       setActivationCode("");
       setShowActivationEntry(false);
       await refreshStatus();
-      toast.success(`Account activated with the ${result.plan_type || "basic"} plan.`);
+      toast.success(
+        status.subscription_expires_at
+          ? `Subscription extended with the ${result.plan_type || "selected"} plan.`
+          : `Account activated with the ${result.plan_type || "selected"} plan.`,
+      );
     }
-  }, [activationCode, validating, validateCode, refreshStatus]);
+  }, [activationCode, validating, validateCode, refreshStatus, status.subscription_expires_at]);
 
   if (status.checking) {
     return (
@@ -114,9 +107,9 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
     return (
       <div className="activation-gate-shell min-h-[100dvh] w-full bg-background">
         <AnimatePresence initial={false}>
-          {trialActive && !status.is_admin && (
+          {(subscriptionActive || trialActive) && !status.is_admin && (
             <motion.div
-              key="trial-status-banner"
+              key="access-status-banner"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -128,16 +121,20 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
             >
               <div
                 role="group"
-                aria-label="Free trial status"
+                aria-label={subscriptionActive ? "Subscription status" : "Free trial status"}
                 aria-live="off"
                 className="border-b border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-primary"
               >
                 <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
                   <Clock className="h-3.5 w-3.5" />
-                  <strong>1-day free trial active</strong>
+                  <strong>
+                    {subscriptionActive
+                      ? `${status.subscription_duration_days ?? "Paid"}-day subscription active`
+                      : "1-day free trial active"}
+                  </strong>
                   <span aria-hidden="true">·</span>
                   <span className="font-mono tabular-nums" aria-live="off">
-                    {formatTrialCountdown(trialExpiresAt - clockNow)} remaining
+                    {formatTrialCountdown(activeExpiry - clockNow)} remaining
                   </span>
                   <Button
                     type="button"
@@ -148,7 +145,7 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                     aria-controls="trial-activation-entry"
                   >
                     <Key className="mr-1.5 h-3 w-3" />
-                    Activate Now
+                    {subscriptionActive ? "Add Time" : "Activate Now"}
                   </Button>
                 </div>
               </div>
@@ -182,7 +179,9 @@ export const ActivationGate = ({ children }: ActivationGateProps) => {
                     </div>
                   </form>
                   <p className="mx-auto mt-2 max-w-2xl text-[11px] text-muted-foreground">
-                    Your free trial remains active while you enter a code. You can keep studying if you close this panel.
+                    {subscriptionActive
+                      ? "Your current paid subscription remains active while you enter another code. Any new term extends its expiry date."
+                      : "Your 24-hour free trial remains active while you enter a code. You can keep studying if you close this panel."}
                   </p>
                 </div>
               )}

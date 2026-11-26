@@ -191,7 +191,11 @@ export default function ProfilePage() {
               </h3>
               {!activationStatus.is_admin && (activationStatus.subscription_expires_at || activationStatus.trial_expires_at) && (
                 <span className="text-xs text-muted-foreground">
-                  {trialRemaining > 0 ? "24-hour trial" : "Paid term"}
+                  {trialRemaining > 0
+                    ? "24-hour trial"
+                    : activationStatus.subscription_duration_days
+                      ? `${activationStatus.subscription_duration_days}-day term`
+                      : "Paid term"}
                 </span>
               )}
             </div>

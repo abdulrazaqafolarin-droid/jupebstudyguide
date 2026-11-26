@@ -7,7 +7,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { fileBase64, mimeType, documentName, subject, documentText } = await req.json();
+    const { fileBase64, mimeType, documentName, subject, documentText, examProgramId } = await req.json();
+    const programme = examProgramId === undefined ? 'jupeb' : examProgramId;
+    if (programme !== 'jupeb' && programme !== 'jamb') {
+      return new Response(JSON.stringify({ error: 'Unsupported examination programme' }), { status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+    }
 
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -28,7 +32,7 @@ Deno.serve(async (req) => {
         { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
-    const blocked = await guardAiAccess(supabase, user);
+    const blocked = await guardAiAccess(supabase, user, programme, token);
     if (blocked) return blocked;
     const userId = user.id;
 

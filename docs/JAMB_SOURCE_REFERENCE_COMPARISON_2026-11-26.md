@@ -18,6 +18,19 @@ This is a fresh exact-parser comparison of the four CI source-review packages ag
 
 The prior detailed audit's working queue remains **526**. This fresh comparison yields 542 exact missing subject/reference pairs, 97 out-of-source reference groups and 8 repeated live groups. The counts differ from the earlier reconciliation (526 / 76 / 8), so this file is retained as a comparison snapshot until the difference is resolved against the original detailed audit manifest. Do not use its 542-row list as a replacement import target without that reconciliation.
 
+A block-level text cross-check of the 97 strict-set exceptions produced these heuristic groups (word-set Jaccard similarity after removing generated diagram notes; this is a triage aid, not academic verification):
+
+| Block-level class | Groups |
+| --- | ---: |
+| Strong wording match under same reference (score ≥ 0.65) | 27 |
+| Partial wording match under same reference (0.35–0.649) | 7 |
+| Reference token occurs, but wording differs / remains diagram-sensitive | 38 |
+| Strong wording match under another reference (score ≥ 0.65) | 5 |
+| Partial wording match under another reference (0.35–0.649) | 4 |
+| No meaningful source-block match (score < 0.35) | 16 |
+
+This means the 97 groups are not 97 new questions to add. Some may be source-number corrections, diagram-dependent variants or reused references; others need source recovery. Review the added similarity and alternate-reference columns in the outside-source CSV before deciding whether to update a reference, preserve a distinct variant or treat a record as genuinely out of source.
+
 Reference numbers are scoped by subject. Reused references in different subjects are not duplicates. The two known Biology reused-reference groups (1981:Q47 and 1995:Q26) also contain distinct questions and must be retained. The six known same-subject duplicate pairs remain pending soft deduplication; the database has not been changed by this report.
 
 ## Files

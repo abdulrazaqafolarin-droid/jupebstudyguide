@@ -140,6 +140,95 @@ describe("ActivationGate active-trial banner", () => {
     }
   });
 
+  it("shows the paid subscription countdown at the top and offers Add Time", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        subscription_duration_days: 30,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate>
+        <div>Protected study content</div>
+      </ActivationGate>,
+    );
+
+    expect(screen.getByRole("group", { name: "Subscription status" })).toBeInTheDocument();
+    expect(screen.getByText("30-day subscription active")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add Time" })).toBeVisible();
+    expect(screen.getByText("Protected study content")).toBeInTheDocument();
+  });
+
+  it("shows a live paid subscription countdown that updates every second", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-06T12:00:00.000Z"));
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 60_000).toISOString(),
+        subscription_duration_days: 7,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    try {
+      render(
+        <ActivationGate>
+          <div>Protected study content</div>
+        </ActivationGate>,
+      );
+      expect(screen.getByText("00:01:00 remaining")).toBeInTheDocument();
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(screen.getByText("00:00:59 remaining")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("keeps paid access active while the user enters a code to add time", () => {
+    mocks.useActivation.mockReturnValue({
+      status: {
+        is_activated: true,
+        is_admin: false,
+        trial_expires_at: null,
+        subscription_expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        subscription_duration_days: 7,
+        checking: false,
+      },
+      validateCode: mocks.validateCode,
+      validating: false,
+      error: null,
+      refreshStatus: mocks.refreshStatus,
+    });
+
+    render(
+      <ActivationGate>
+        <div>Protected study content</div>
+      </ActivationGate>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add Time" }));
+
+    expect(screen.getByLabelText("Enter your activation code")).toBeVisible();
+    expect(screen.getByText(/Any new term extends its expiry date/)).toBeInTheDocument();
+    expect(screen.getByText("Protected study content")).toBeInTheDocument();
+  });
+
   it("opens the inline activation form without interrupting the trial session", () => {
     render(
       <ActivationGate>

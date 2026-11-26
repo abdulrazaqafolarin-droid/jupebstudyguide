@@ -69,6 +69,8 @@ const SYLLABUS_TEACHING_PROMPT = `You are teaching a JUPEB A-level student as pa
 
 Remember: Your job is to make this student TRULY understand. Use proper LaTeX formatting for ALL mathematical expressions!`;
 
+const JAMB_TUTOR_SYSTEM_PROMPT = "You are Rutex Master’s JAMB/UTME study tutor. Teach Nigerian UTME candidates accurately and patiently. Use Feynman-style explanations, short learning chunks, worked examples, active recall and clear exam tips. Format mathematics with LaTeX. Do not claim that a topic is in the current official JAMB syllabus unless a verified JAMB syllabus source is present in retrieved material. Do not invent question years, answer keys or exam rules. Distinguish verified JAMB question-bank references from general subject knowledge. If a question has no reviewed answer key, say it is ungraded and reason transparently. Never use JUPEB curriculum or JUPEB question references as JAMB sources.";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: CORS_HEADERS });
@@ -94,19 +96,26 @@ Deno.serve(async (req) => {
     );
   }
 
-  const blocked = await guardAiAccess(supabase, user);
-  if (blocked) return blocked;
-
   try {
     const encoder = new TextEncoder();
     const {
       messages, question, generalChat, syllabusTeaching, topic, subject,
-      day, learningObjectives, attachment, retrievalQuery,
+      day, learningObjectives, attachment, retrievalQuery, examProgramId,
     } = await req.json();
 
-    let systemContent = TUTOR_SYSTEM_PROMPT;
+    if (examProgramId !== undefined && examProgramId !== "jupeb" && examProgramId !== "jamb") {
+      return new Response(JSON.stringify({ error: "Unsupported examination programme" }), { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
+    }
+    const programme = examProgramId === "jamb" ? "jamb" : "jupeb";
+    const blocked = await guardAiAccess(supabase, user, programme, token);
+    if (blocked) return blocked;
+    let systemContent = programme === "jamb" ? JAMB_TUTOR_SYSTEM_PROMPT : TUTOR_SYSTEM_PROMPT;
 
-    if (syllabusTeaching && topic) {
+    if (programme === "jamb") {
+      systemContent += "\n\nJAMB/UTME context is active. Never use JUPEB curriculum, syllabuses, assessment rules or question references. No verified official JAMB syllabus is loaded in this workspace; qualify syllabus claims accordingly.";
+    }
+
+    if (programme === "jupeb" && syllabusTeaching && topic) {
       systemContent += "\n\n" + SYLLABUS_TEACHING_PROMPT;
       systemContent += `\n\n--- Current Teaching Session ---
 Subject: ${subject}
@@ -119,7 +128,7 @@ Learning Objectives for Today:
 ${learningObjectives?.map((obj: string, i: number) => `${i + 1}. ${obj}`).join('\n') || 'N/A'}
 
 Begin teaching this topic step by step. Start with fundamentals and build up to A-level depth. Check understanding frequently.`;
-    } else if (generalChat) {
+    } else if (generalChat && programme === "jupeb") {
       systemContent += "\n\n" + GENERAL_CHAT_PROMPT;
     } else if (question) {
       systemContent += `\n\n--- Current Question Being Studied ---\nSubject: ${question.subject}\nTopic: ${question.topic}\nQuestion: ${question.question}\n${question.options ? `Options: ${JSON.stringify(question.options)}` : ''}\nCorrect Answer: ${question.correctAnswer}\nExplanation: ${question.explanation}`;
@@ -147,14 +156,18 @@ Begin teaching this topic step by step. Start with fundamentals and build up to 
     if (questionSearchQuery) {
       const ragPromise = (async () => {
         const embedKeys = await resolveEmbedKeys(supabaseUrl, supabaseKey, Deno.env.get("KEY_ENCRYPTION_SECRET"));
+        const chunkPromise = programme === "jamb"
+          ? Promise.resolve([])
+          : retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
+              subject: subject || undefined,
+              maxChunks: 3,
+              embedKeys,
+            });
         return await Promise.all([
-          retrieveRelevantChunks(supabaseUrl, supabaseKey, questionSearchQuery, {
-            subject: subject || undefined,
-            maxChunks: 3,
-            embedKeys,
-          }),
+          chunkPromise,
           retrieveRelevantQuestions(supabaseUrl, supabaseKey, questionSearchQuery, {
             subject: subject || undefined,
+            examProgramId: programme,
             maxQuestions: getRequestedQuestionCount(questionSearchQuery),
             embedKey: embedKeys,
           }),

@@ -129,7 +129,7 @@ export const ActivationGate = ({ children, programId = "jupeb" }: ActivationGate
               >
                 <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2">
                   <Clock className="h-3.5 w-3.5" />
-                  <strong>{subscriptionActive ? `${status.subscription_duration_days ?? "Paid"}-day subscription active` : "1-day free trial active"}</strong>
+                  <strong>{subscriptionActive ? (status.subscription_duration_days ? status.subscription_duration_days + "-day subscription active" : "Paid subscription active") : "1-day free trial active"}</strong>
                   <span aria-hidden="true">·</span>
                   <span className="font-mono tabular-nums" aria-live="off">
                     {formatTrialCountdown(activeExpiry - clockNow)} remaining

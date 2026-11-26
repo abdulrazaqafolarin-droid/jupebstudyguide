@@ -436,3 +436,8 @@ The parallel subscription/countdown repair is Draft PR **#85**. Its repository v
 - Obtain an authenticated administrator session and an authorised source-use rights attestation before uploading original source files to the private bucket.
 - Continue independent answer/explanation verification; do not publish any question or key by bulk import.
 - Complete a signed-in student/admin walkthrough of both Preview deployments before considering PR merge or any Production deployment.
+
+
+### Integration-branch validation trigger
+
+The repository validation workflow now includes `feat/jamb-programme-subscription-countdown-2026-11-26` in its push-trigger list. This branch therefore receives the same TypeScript, unit-test, lint, JAMB importer, Deno security/retrieval and web/Android build checks as the main JAMB feature branch. The first run is attached to the commit following this trigger change.

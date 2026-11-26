@@ -5,6 +5,7 @@ import {
   getQuestionPositionTokens,
   getSafeQuestionImageOffset,
   isInlineImagePosition,
+  reorderQuestionImages,
   splitQuestionAtImageOffset,
 } from "./question-image-position";
 
@@ -59,4 +60,27 @@ describe("question image text anchors", () => {
     expect(starts).toContain(content.indexOf("remains"));
     expect(starts).not.toContain(content.indexOf("phrase"));
   });
+  it("keeps inline anchors attached to their images when thumbnails are reordered", () => {
+    const images = [{ id: "first" }, { id: "second" }, { id: "third" }];
+    const content = "0123456789abcdefghijklmnopqrstuvwxyz";
+    const result = reorderQuestionImages(images, "image-inline:4,18,32", content, 0, 2);
+
+    expect(result.images.map((image) => image.id)).toEqual(["second", "third", "first"]);
+    expect(result.imagePosition).toBe("image-inline:18,32,4");
+    expect(getInlineImageOffsets(result.imagePosition, content, 3)).toEqual([18, 32, 4]);
+    expect(images.map((image) => image.id)).toEqual(["first", "second", "third"]);
+  });
+
+  it("preserves non-inline layouts and ignores invalid thumbnail moves", () => {
+    const images = [{ id: "first" }, { id: "second" }];
+    expect(reorderQuestionImages(images, "image-beside", "Question", 0, 1)).toEqual({
+      images: [{ id: "second" }, { id: "first" }],
+      imagePosition: "image-beside",
+    });
+    expect(reorderQuestionImages(images, "image-inline:2,8", "Question text", 0, 8)).toEqual({
+      images,
+      imagePosition: "image-inline:2,8",
+    });
+  });
+
 });

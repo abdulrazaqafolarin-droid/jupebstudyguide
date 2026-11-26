@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Trash2, Plus, AlertTriangle, GripVertical, ListOrdered, ImageIcon, Upload, XCircle, Loader2, Eye } from "lucide-react";
+import { X, Save, Trash2, Plus, AlertTriangle, GripVertical, ListOrdered, ImageIcon, Upload, XCircle, Loader2, Eye, ArrowDown, ArrowUp } from "lucide-react";
 import type { JambQuestion } from "@/lib/jamb-question-service";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadQuestionImage, deleteQuestionImageUrls } from "@/lib/admin-questions-service";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
 import { QuestionMath } from "@/components/QuestionMath";
-import { createInlineImagePosition, isInlineImagePosition } from "@/lib/question-image-position";
+import { createInlineImagePosition, getInlineImageOffsets, isInlineImagePosition, reorderQuestionImages } from "@/lib/question-image-position";
 import { QuestionImagePositioner } from "./QuestionImagePositioner";
 import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 
@@ -92,6 +92,8 @@ export function JambAdminQuestionPanel({
   const isCroppingRef = useRef(false);
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
+  const dragImageItem = useRef<number | null>(null);
+  const dragImageOverItem = useRef<number | null>(null);
   const loadQuestionRequestRef = useRef(0);
   const answerKeyEditRevisionRef = useRef(0);
 
@@ -419,6 +421,13 @@ export function JambAdminQuestionPanel({
   }, []);
 
   const handleRemoveImage = (imageId: string) => {
+    const removedIndex = images.findIndex((image) => image.id === imageId);
+    if (removedIndex >= 0 && isInlineImagePosition(imagePosition)) {
+      const nextOffsets = getInlineImageOffsets(imagePosition, questionText, images.length)
+        .filter((_, index) => index !== removedIndex);
+      if (nextOffsets.length > 0) setImagePosition(createInlineImagePosition(nextOffsets));
+    }
+
     setImages((current) => {
       const removed = current.find((image) => image.id === imageId);
       if (removed?.url.startsWith("blob:")) {
@@ -434,6 +443,21 @@ export function JambAdminQuestionPanel({
       setEvidenceReference("");
       return remaining;
     });
+  };
+
+  const moveImage = (fromIndex: number, toIndex: number) => {
+    const result = reorderQuestionImages(images, imagePosition, questionText, fromIndex, toIndex);
+    setImages(result.images);
+    setImagePosition(result.imagePosition);
+  };
+
+  const handleImageDragSort = () => {
+    const fromIndex = dragImageItem.current;
+    const toIndex = dragImageOverItem.current;
+    dragImageItem.current = null;
+    dragImageOverItem.current = null;
+    if (fromIndex === null || toIndex === null || fromIndex === toIndex) return;
+    moveImage(fromIndex, toIndex);
   };
 
   const handleSave = async () => {
@@ -769,17 +793,73 @@ export function JambAdminQuestionPanel({
                     {images.length > 0 && (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
                         {images.map((image, index) => (
-                          <div key={image.id} className="relative rounded-xl overflow-hidden border bg-muted/30">
+                          <div
+                            key={image.id}
+                            draggable={images.length > 1}
+                            onDragStart={(event) => {
+                              dragImageItem.current = index;
+                              dragImageOverItem.current = index;
+                              event.dataTransfer.effectAllowed = "move";
+                            }}
+                            onDragEnter={(event) => {
+                              event.preventDefault();
+                              dragImageOverItem.current = index;
+                            }}
+                            onDragOver={(event) => {
+                              event.preventDefault();
+                              dragImageOverItem.current = index;
+                              event.dataTransfer.dropEffect = "move";
+                            }}
+                            onDrop={(event) => {
+                              event.preventDefault();
+                              dragImageOverItem.current = index;
+                              handleImageDragSort();
+                            }}
+                            onDragEnd={handleImageDragSort}
+                            role="group"
+                            aria-label={"Question image " + (index + 1) + " and reorder controls"}
+                            data-testid="question-image-draft-card"
+                            data-image-draft-index={index}
+                            className="relative rounded-xl overflow-hidden border bg-muted/30"
+                          >
                             <img
                               src={image.url}
                               alt={"Question image " + (index + 1)}
+                              draggable={false}
                               className="w-full h-32 object-contain"
                             />
                             <div className="absolute top-1.5 left-1.5 rounded-md bg-black/65 px-2 py-0.5 text-[10px] text-white">
                               Image {index + 1}{image.file ? " · pending upload" : ""}
                             </div>
+                            {images.length > 1 && (
+                              <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-md bg-black/70 p-1">
+                                <button
+                                  type="button"
+                                  draggable={false}
+                                  onClick={() => moveImage(index, index - 1)}
+                                  disabled={index === 0}
+                                  className="rounded p-1 text-white hover:bg-white/20 disabled:opacity-30"
+                                  title={"Move image " + (index + 1) + " earlier"}
+                                  aria-label={"Move image " + (index + 1) + " earlier"}
+                                >
+                                  <ArrowUp className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  draggable={false}
+                                  onClick={() => moveImage(index, index + 1)}
+                                  disabled={index === images.length - 1}
+                                  className="rounded p-1 text-white hover:bg-white/20 disabled:opacity-30"
+                                  title={"Move image " + (index + 1) + " later"}
+                                  aria-label={"Move image " + (index + 1) + " later"}
+                                >
+                                  <ArrowDown className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            )}
                             <button
                               type="button"
+                              draggable={false}
                               onClick={() => handleRemoveImage(image.id)}
                               className="absolute top-1.5 right-1.5 p-1.5 rounded-lg bg-black/65 text-white hover:bg-red-600 transition-colors"
                               title={"Remove image " + (index + 1)}
@@ -846,10 +926,10 @@ export function JambAdminQuestionPanel({
                           <option value="text-only">Text Only</option>
                           <option value="image-above">Images Above Text</option>
                           <option value="image-beside">First Image Beside Text</option>
-                          <option value="image-inline">First Image Inline Within Question Text</option>
+                          <option value="image-inline">All Images Inline Within Question Text</option>
                         </select>
                         <p className="text-xs text-muted-foreground/60 mt-1">
-                          Image order is preserved. Inline positioning applies to the first image; additional images follow it.
+                          Each image can be positioned independently. Press and hold an image to drag it to a text line, or focus it and use the arrow keys.
                         </p>
                       </div>
                     )}
@@ -1136,7 +1216,7 @@ export function JambAdminQuestionPanel({
                                 {isInlineImagePosition(imagePosition) ? (
                                   <QuestionImagePositioner
                                     content={questionText}
-                                    imageSrc={images[0].url}
+                                    images={images.map(({ id, url }) => ({ id, url }))}
                                     imagePosition={imagePosition}
                                     onPositionChange={setImagePosition}
                                   />
@@ -1171,13 +1251,6 @@ export function JambAdminQuestionPanel({
                                     {imagePosition !== "image-only" && questionText.trim() && (
                                       <QuestionMath content={questionText} className="text-base font-medium leading-relaxed" />
                                     )}
-                                  </div>
-                                )}
-                                {isInlineImagePosition(imagePosition) && images.length > 1 && (
-                                  <div className="space-y-2">
-                                    {images.slice(1).map((image, index) => (
-                                      <img key={image.id} src={image.url} alt={"Additional question image " + (index + 2)} className="w-full max-h-64 object-contain rounded-xl border bg-muted/30" />
-                                    ))}
                                   </div>
                                 )}
                               </>

@@ -30,17 +30,19 @@ async function loadActivation(user: { id: string; email?: string }, programId: E
   try {
     const [profileResult, entitlementResult] = await Promise.all([
       withTimeout((signal) => supabase.from("profiles").select("is_admin").eq("user_id", user.id).abortSignal(signal).single(), "Profile check"),
-      withTimeout((signal) => supabase.from("exam_program_entitlements").select("trial_expires_at,subscription_expires_at").eq("user_id", user.id).eq("exam_program_id", programId).abortSignal(signal).maybeSingle(), "Programme entitlement check"),
+      withTimeout((signal) => supabase.from("exam_program_entitlements").select("trial_expires_at,subscription_expires_at,subscription_duration_days").eq("user_id", user.id).eq("exam_program_id", programId).abortSignal(signal).maybeSingle(), "Programme entitlement check"),
     ]);
     if (profileResult.error) throw profileResult.error;
     if (entitlementResult.error) throw entitlementResult.error;
     const trialExpiry = entitlementResult.data?.trial_expires_at ?? null;
     const subscriptionExpiry = entitlementResult.data?.subscription_expires_at ?? null;
+    const subscriptionDurationDays = entitlementResult.data?.subscription_duration_days ?? null;
     return {
       is_activated: Boolean(subscriptionExpiry && Date.parse(subscriptionExpiry) > Date.now()),
       is_admin: isAdminEmail || profileResult.data?.is_admin === true,
       trial_expires_at: trialExpiry,
       subscription_expires_at: subscriptionExpiry,
+      subscription_duration_days: subscriptionDurationDays,
       checking: false,
     };
   } catch (error) {
@@ -117,6 +119,7 @@ export function useActivation(programId: ExamProgramId = "jupeb") {
         is_admin: status.is_admin,
         trial_expires_at: null,
         subscription_expires_at: typeof result.subscription_expires_at === "string" ? result.subscription_expires_at : null,
+        subscription_duration_days: typeof result.duration_days === "number" ? result.duration_days : null,
         checking: false,
       };
       const currentKey = keyFor(user.id, programId);

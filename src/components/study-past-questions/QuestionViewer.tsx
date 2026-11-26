@@ -13,8 +13,8 @@ import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
 import { isInlineImagePosition } from "@/lib/question-image-position";
 import { QuestionTextWithImage } from "./QuestionTextWithImage";
-import { gradeAnswer, percentageScore } from "@/lib/answer-scoring";
-import { getQuestionDisplayNumber } from "@/lib/question-numbering";
+import { gradeAnswer, gradeObjectiveAnswer, percentageScore } from "@/lib/answer-scoring";
+import { getStudyQuestionDisplayNumber } from "@/lib/study-question-numbering";
 
 interface AnswerEntry {
   questionId: string;
@@ -188,7 +188,9 @@ export function QuestionViewer({
   const handleSubmitAll = useCallback(() => {
     const all: AnswerEntry[] = questions.map((q) => {
       const answer = answers[q.id] ?? theoryAnswers[q.id] ?? "";
-      const { isCorrect, isGradable } = gradeAnswer(answer, q.correctAnswer);
+      const { isCorrect, isGradable } = q.category === "objective"
+        ? gradeObjectiveAnswer(answer, q.correctAnswer, q.options)
+        : gradeAnswer(answer, q.correctAnswer);
       return { questionId: q.id, answer, isCorrect, isGradable };
     });
     setResults(all);
@@ -219,8 +221,10 @@ export function QuestionViewer({
 
   const bookmark = isBookmarked?.(question?.id ?? "");
   const userAnswer = answers[question?.id ?? ""];
-  const hasRealAnswer = !!question?.correctAnswer && question.correctAnswer !== "TBD" && question.correctAnswer !== "tbd";
-  const isAnswerCorrect = hasRealAnswer && userAnswer?.toUpperCase() === question?.correctAnswer?.toUpperCase();
+  const answerResult = question?.category === "objective"
+    ? gradeObjectiveAnswer(userAnswer, question.correctAnswer, question.options)
+    : gradeAnswer(userAnswer, question?.correctAnswer);
+  const { isGradable: isAnswerGradable, isCorrect: isAnswerCorrect } = answerResult;
 
   if (!questions.length) {
     return (
@@ -249,7 +253,7 @@ export function QuestionViewer({
           </p>
           {gradableCount < results.length && (
             <p className="text-xs text-muted-foreground mt-1">
-              {results.length - gradableCount} question(s) excluded because an answer key is missing.
+              {results.length - gradableCount} question(s) excluded because no verified answer key matches the available options.
             </p>
           )}
         </div>
@@ -268,13 +272,13 @@ export function QuestionViewer({
                 }`}
               >
                 <p className="text-sm font-medium mb-1">
-                  Q{getQuestionDisplayNumber(i)}. {q.question}
+                  Q{getStudyQuestionDisplayNumber(questions, i)}. {q.question}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Your answer: <span className="font-mono">{r.answer || "(skipped)"}</span>
                 </p>
                 {r.isGradable === false ? (
-                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no answer key is available.</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Not graded — no verified answer key matches the available options.</p>
                 ) : q.correctAnswer && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {r.isCorrect ? "Correct" : `Correct answer: ${q.correctAnswer}`}
@@ -351,7 +355,7 @@ export function QuestionViewer({
                       {status === "answered" ? (
                         <Check className="h-3.5 w-3.5" />
                       ) : (
-                        getQuestionDisplayNumber(idx)
+                        getStudyQuestionDisplayNumber(questions, idx)
                       )}
                     </button>
                   );
@@ -383,7 +387,7 @@ export function QuestionViewer({
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1 gap-2">
               <span className="text-xs text-muted-foreground tabular-nums truncate">
-                Q{getQuestionDisplayNumber(current)}/{total}
+                Q{getStudyQuestionDisplayNumber(questions, current)}/{total}
               </span>
               <span className="text-xs text-muted-foreground tabular-nums flex-shrink-0">
                 {answeredCount}/{total}
@@ -525,9 +529,9 @@ export function QuestionViewer({
                           key={opt.label}
                           onClick={() => handleMCQSelect(opt.label)}
                           className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm text-left transition-all active:scale-[0.97] ${
-                            showFeedback && isCorrect
+                            showFeedback && isAnswerGradable && isCorrect
                               ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20 text-green-700 dark:text-green-300 font-medium"
-                              : showFeedback && isSelected
+                              : showFeedback && isAnswerGradable && isSelected
                               ? "border-red-500/50 bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-300 font-medium"
                               : isSelected
                               ? "border-primary/50 bg-primary/5 text-primary font-medium"
@@ -536,9 +540,9 @@ export function QuestionViewer({
                         >
                           <span
                             className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
-                              showFeedback && isCorrect
+                              showFeedback && isAnswerGradable && isCorrect
                                 ? "bg-green-600 text-white"
-                                : showFeedback && isSelected
+                                : showFeedback && isAnswerGradable && isSelected
                                 ? "bg-red-600 text-white"
                                 : isSelected
                                 ? "bg-primary text-primary-foreground"
@@ -548,10 +552,10 @@ export function QuestionViewer({
                           {opt.label}
                             </span>
                           <span className="text-pretty break-words flex-1 min-w-0"><QuestionMath content={opt.text} inline /></span>
-                          {showFeedback && isCorrect && (
+                          {showFeedback && isAnswerGradable && isCorrect && (
                             <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>
                           )}
-                          {showFeedback && isSelected && !isCorrect && (
+                          {showFeedback && isAnswerGradable && isSelected && !isCorrect && (
                             <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>
                           )}
                         </button>
@@ -562,21 +566,30 @@ export function QuestionViewer({
                       <div className="space-y-3 pt-2">
                         <div className={cn(
                           "p-3 rounded-xl border",
-                          isAnswerCorrect
-                            ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
-                            : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
+                          !isAnswerGradable
+                            ? "border-border bg-muted/30"
+                            : isAnswerCorrect
+                              ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
+                              : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20"
                         )}>
                           <p className={cn(
                             "text-sm font-medium",
-                            isAnswerCorrect ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"
+                            !isAnswerGradable
+                              ? "text-muted-foreground"
+                              : isAnswerCorrect ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"
                           )}>
-                            {isAnswerCorrect ? "Correct!" : "Incorrect"}
+                            {!isAnswerGradable ? "Not scored" : isAnswerCorrect ? "Correct!" : "Incorrect"}
                           </p>
-                          {!isAnswerCorrect && hasRealAnswer && question.correctAnswer && (
+                          {isAnswerGradable && !isAnswerCorrect && question.correctAnswer && (
                             <p className="text-xs text-muted-foreground mt-1">
                               The correct answer is <span className="font-mono font-medium text-green-600 dark:text-green-400">
                                 {question.correctAnswer}
                               </span>
+                            </p>
+                          )}
+                          {!isAnswerGradable && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              No verified answer key matches the listed options, so this question will not affect your score.
                             </p>
                           )}
                         </div>

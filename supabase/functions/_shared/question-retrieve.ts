@@ -2,6 +2,7 @@ import { generateEmbedding } from "./textbook-embed.ts";
 
 export interface RetrievedQuestion {
   question_id: string;
+  exam_program_id?: "jupeb" | "jamb";
   subject: string;
   year: number;
   category: string;
@@ -16,6 +17,7 @@ export interface QuestionReference {
   kind: "question";
   number: number;
   question_id: string;
+  exam_program_id: "jupeb" | "jamb";
   subject: string;
   year: number;
   category: string;
@@ -24,6 +26,7 @@ export interface QuestionReference {
 
 export interface RetrieveQuestionsOptions {
   subject?: string;
+  examProgramId?: "jupeb" | "jamb";
   year?: number;
   category?: string;
   maxQuestions?: number;
@@ -78,6 +81,7 @@ export function formatQuestionForEmbedding(q: {
   year: number | string;
   category: string;
   question: string;
+  exam_program_id?: "jupeb" | "jamb";
   options?: unknown;
   correct_answer?: string | null;
   explanation?: string | null;
@@ -92,6 +96,9 @@ export function formatQuestionForEmbedding(q: {
   if (q.options) lines.push(`Options: ${JSON.stringify(q.options)}`);
   if (q.correct_answer) lines.push(`Answer: ${q.correct_answer}`);
   if (q.explanation) lines.push(`Explanation: ${q.explanation}`);
+  // Keep existing JUPEB embedding bytes compatible. JAMB documents carry an
+  // explicit programme prefix so cross-programme vectors remain distinguishable.
+  if (q.exam_program_id === "jamb") lines.unshift("JAMB UTME past question");
   return lines.join("\n");
 }
 
@@ -225,6 +232,7 @@ export async function retrieveRelevantQuestions(
   const lexicalPromise = callQuestionRpc(supabaseUrl, supabaseKey, "match_study_questions_text", {
     query_text: cleanQuery,
     match_count: candidateCount,
+    filter_exam_program: options.examProgramId ?? "jupeb",
     filter_subject: filters.subject || null,
     filter_year: filters.year || null,
     filter_category: filters.category || null,
@@ -236,6 +244,7 @@ export async function retrieveRelevantQuestions(
         query_embedding: `[${embedding.join(",")}]`,
         match_threshold: threshold,
         match_count: candidateCount,
+        filter_exam_program: options.examProgramId ?? "jupeb",
         filter_subject: filters.subject || null,
         filter_year: filters.year || null,
         filter_category: filters.category || null,
@@ -245,6 +254,7 @@ export async function retrieveRelevantQuestions(
   const [lexicalRows, vectorRows] = await Promise.all([lexicalPromise, vectorPromise]);
   // Keep explicit year/category/subject requests tight across both retrieval wires.
   const filteredVectorRows = vectorRows.filter((question) =>
+    (question.exam_program_id === (options.examProgramId ?? "jupeb")) &&
     (!filters.subject || question.subject === filters.subject) &&
     (!filters.year || question.year === filters.year) &&
     (!filters.category || question.category === filters.category)
@@ -291,6 +301,7 @@ export function buildQuestionRAGContext(questions: RetrievedQuestion[]): {
     kind: "question",
     number: i + 1,
     question_id: q.question_id,
+    exam_program_id: q.exam_program_id ?? "jupeb",
     subject: q.subject,
     year: q.year,
     category: q.category,
@@ -313,7 +324,23 @@ export function buildQuestionRAGContext(questions: RetrievedQuestion[]): {
     return parts.join("\n");
   });
 
-  const promptBlock = `\n\n=== RETRIEVED QUESTIONS FROM THE LIVE JUPEB QUESTION BANK ===\n${sections.join("\n\n")}\n\n=== HOW TO USE THESE REFERENCES ===\n- These are retrieved records from the app's live question bank, not invented examples.\n- Prefer the student's selected/current question when one is supplied. Use these related questions as additional past-question examples.\n- Cite the exact year, subject and category using [Q1], [Q2], etc. Do not invent a year or claim an unrelated result is an exact match.\n- Restate the relevant question before solving it. Explain the reasoning step by step.\n- For theory and practical questions, explain the marking points or procedure when those details are present.\n- For objective questions, explain why the correct option is right and why likely alternatives are wrong.\n- At most 12 question records are retrieved in one reply. If the student asks for the entire bank or more than 12 records, be transparent that this answer shows the strongest retrieved batch and invite them to request the next batch or narrow by subject/year/category. Never imply that a 12-question result is the entire bank.\n- If retrieval returns no relevant match, say so briefly and teach from reliable subject knowledge without fabricating a source.`;
+  const program = questions[0]?.exam_program_id ?? "jupeb";
+  const programLabel = program === "jamb" ? "JAMB/UTME" : "JUPEB";
+  const promptBlock = `
+
+=== RETRIEVED QUESTIONS FROM THE LIVE ${programLabel} QUESTION BANK ===
+${sections.join("\n\n")}
+
+=== HOW TO USE THESE REFERENCES ===
+- These records are retrieved only from the active ${programLabel} question bank. Do not describe them as belonging to another programme.
+- Prefer the selected/current question when one is supplied. Use these related questions as additional past-question examples.
+- Cite the exact year, subject and category using [Q1], [Q2], etc. Do not invent a year or claim an unrelated result is an exact match.
+- Restate the relevant question before solving it. Explain the reasoning step by step.
+- Explain marking points only when those details are present.
+- For objective questions, explain only a reviewed correct option and why likely alternatives are wrong.
+- At most 12 question records are retrieved in one reply. If the student asks for the entire bank or more than 12 records, be transparent that this answer shows the strongest retrieved batch and invite them to request the next batch or narrow by subject/year/category.
+- If retrieval returns no relevant match, say so briefly and teach from reliable subject knowledge without fabricating a source.
+`;
 
   return { promptBlock, references };
 }

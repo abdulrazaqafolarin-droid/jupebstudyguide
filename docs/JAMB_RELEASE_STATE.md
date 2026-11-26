@@ -543,3 +543,20 @@ The per-question subject JSONs/master queue are **not present in the current rep
 The 26 November strict parser currently finds 542 missing subject/reference pairs: Physics 133, Chemistry 124, Biology 175, English 110. Compared with the historical 526 split, the discrepancy is exactly +3 Physics and +13 Chemistry. The current out-of-set live database reference-group count is 97 rather than the v9 historical 76; the repeated database groups remain 8. The current comparison report and CSV files preserve this difference for reconciliation. They do not change the 526 task target.
 
 Do not approve or publish any v17 letter/concept draft without checking its exact question/options, source evidence, explanation, and any known image/passage/format conflicts. Draft confidence is not verified correctness.
+
+
+### Live protected answer-key confidence audit — 26 November 2026
+
+A read-only query of `study_question_answer_keys` after migration v20261126101025 found:
+
+| Subject | Protected keys | High | Medium | Low | Unrated |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Biology | 1,457 | 1 | 0 | 0 | 1,456 |
+| Chemistry | 1,608 | 0 | 0 | 0 | 1,608 |
+| Physics | 743 | 2 | 0 | 0 | 741 |
+| Use of English | 3,822 | 1 | 2 | 0 | 3,819 |
+| **Total** | **7,630** | **4** | **2** | **0** | **7,624** |
+
+Only six protected keys have a rated confidence level. Those six have a confidence note and evidence reference; the remaining 7,624 are explicitly `unrated` with no confidence note/evidence reference. All 7,630 keys remain `needs_review`, and all are on draft version 1. These confidence labels are triage metadata, not proof of correctness. Do not promote a key based on a high confidence label alone.
+
+The v17 526-question queue progress (169 letter drafts, 51 concept-only solutions, 306 without an answer/concept) is a separate historical workstream. Its subject JSON/master queue was not found in the current repo tree or Library inventory during this audit, so no v17 answer drafts were imported or written to Supabase.

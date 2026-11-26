@@ -44,9 +44,10 @@ export function AppUpdatePrompt() {
 
   const dismiss = useCallback((versionCode: number) => {
     const pending = pendingInstallRef.current;
-    if (pending?.filePath) {
-      // "Later" means the learner declined this downloaded copy; avoid keeping
-      // an orphaned APK in the app-private cache.
+    if (pending?.filePath && phaseRef.current.kind !== "ready") {
+      // Clean up a postponed download only before Android's installer has opened.
+      // Once the FileProvider URI is handed to Android, the installer may still
+      // be reading the APK even though the native launch call has returned.
       void deleteDownloadedApkFile(pending.filePath).catch(() => {});
     }
     try {

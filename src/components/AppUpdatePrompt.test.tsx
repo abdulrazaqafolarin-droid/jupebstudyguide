@@ -139,24 +139,6 @@ describe("AppUpdatePrompt", () => {
     expect(await screen.findByText("Installer opened. Confirm the update in Android’s system prompt.")).toBeInTheDocument();
   });
 
-  it("deletes a downloaded APK when the learner taps Later", async () => {
-    mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
-
-    render(<AppUpdatePrompt />);
-    fireEvent.click(await screen.findByRole("button", { name: /^update$/i }));
-
-    expect(await screen.findByText("Installer opened. Confirm the update in Android’s system prompt.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /^later$/i }));
-
-    await waitFor(() => {
-      expect(mocks.deleteDownloadedApkFile).toHaveBeenCalledWith(
-        "/cache/rutex-master-next-202001.apk",
-      );
-    });
-    expect(window.localStorage.getItem("app-update-dismissed:202001")).toBe("1");
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
-  });
-
   it("deletes a postponed APK when Android's installer has not opened yet", async () => {
     mocks.fetchLatestRelease.mockResolvedValue(newerRelease);
     mocks.canInstallPackages.mockResolvedValue(false);

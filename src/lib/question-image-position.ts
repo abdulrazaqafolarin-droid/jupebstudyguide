@@ -65,6 +65,44 @@ export function createInlineImagePosition(offset: number | readonly number[]): Q
   return ("image-inline:" + normalized.join(",")) as QuestionImagePosition;
 }
 
+/** Reorder images without detaching their saved inline text anchors. */
+export function reorderQuestionImages<T>(
+  images: readonly T[],
+  imagePosition: string,
+  content: string,
+  fromIndex: number,
+  toIndex: number,
+): { images: T[]; imagePosition: string } {
+  const reorderedImages = [...images];
+  if (
+    !Number.isInteger(fromIndex) ||
+    !Number.isInteger(toIndex) ||
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= reorderedImages.length ||
+    toIndex >= reorderedImages.length ||
+    fromIndex === toIndex
+  ) {
+    return { images: reorderedImages, imagePosition };
+  }
+
+  const [movedImage] = reorderedImages.splice(fromIndex, 1);
+  reorderedImages.splice(toIndex, 0, movedImage);
+
+  if (!isInlineImagePosition(imagePosition)) {
+    return { images: reorderedImages, imagePosition };
+  }
+
+  const offsets = getInlineImageOffsets(imagePosition, content, images.length);
+  const [movedOffset] = offsets.splice(fromIndex, 1);
+  offsets.splice(toIndex, 0, movedOffset ?? content.length);
+
+  return {
+    images: reorderedImages,
+    imagePosition: createInlineImagePosition(offsets),
+  };
+}
+
 /** Split question content at a safe saved character anchor. */
 export function splitQuestionAtImageOffset(
   content: string,

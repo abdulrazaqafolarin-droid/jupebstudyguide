@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   canInstallPackages,
   downloadApk,
+  deleteDownloadedApkFile,
   fetchLatestRelease,
   getInstalledVersion,
   installDownloadedApk,
@@ -42,6 +43,13 @@ export function AppUpdatePrompt() {
   const lastCheckAtRef = useRef(0);
 
   const dismiss = useCallback((versionCode: number) => {
+    const pending = pendingInstallRef.current;
+    if (pending?.filePath && phaseRef.current.kind !== "ready") {
+      // Clean up a postponed download only before Android's installer has opened.
+      // Once the FileProvider URI is handed to Android, the installer may still
+      // be reading the APK even though the native launch call has returned.
+      void deleteDownloadedApkFile(pending.filePath).catch(() => {});
+    }
     try {
       localStorage.setItem(DISMISS_KEY_PREFIX + versionCode, "1");
     } catch {

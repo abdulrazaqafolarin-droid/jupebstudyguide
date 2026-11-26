@@ -198,3 +198,16 @@ The parity code is committed on the open Draft PR. GitHub branch-head validation
 ## JAMB publication completeness policy — 21 November 2026
 
 The source-review workflow no longer offers an ungraded approval path. Its approval action requires a verified correct option and a non-empty explanation of at least 12 characters; server validation enforces both. A new database migration adds triggers to reject `approved_ungraded` import items and to require each JAMB answer-key row to match an option on the associated question and include a meaningful explanation. The migration is committed but must be applied before deploying the matching Edge Function and admin UI together.
+
+
+## Multi-image inline positioning round-trip — 26 November 2026
+
+The admin question manager and student question view now share the JUPEB multi-image positioning contract:
+
+- The JAMB admin preview passes every uploaded image to the drag-positioning editor. Each image can be independently long-pressed and moved to a measured text line; keyboard arrow controls remain available.
+- The persisted `image_position` value can contain an independent comma-separated text anchor for each image. The shared position helper keeps legacy single-image anchors readable and supplies safe defaults for images without an explicit anchor.
+- The JAMB student past-question card now renders the saved image layout instead of always appending images after the question text. Inline, beside, above, image-only and text-only layouts are respected.
+- The extra-image fallback below the editor preview was removed for inline mode because the multi-image editor now positions every image itself.
+- Regression tests for independent multi-image drag positioning and student inline-image rendering were added from the current JUPEB implementation.
+
+This is a source-level recovery change only. CI and authenticated student/admin Preview acceptance must pass before this parity fix is considered release-ready. Production remains unchanged.

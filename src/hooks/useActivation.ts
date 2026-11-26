@@ -69,7 +69,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
       withActivationTimeout(
         (signal) => supabase
           .from("exam_program_entitlements")
-          .select("trial_expires_at, subscription_expires_at")
+          .select("trial_expires_at, subscription_expires_at, subscription_duration_days")
           .eq("user_id", user.id)
           .eq("exam_program_id", "jupeb")
           .abortSignal(signal)
@@ -83,6 +83,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
 
     const trialExpiresAt = entitlementResult.data?.trial_expires_at ?? null;
     const subscriptionExpiresAt = entitlementResult.data?.subscription_expires_at ?? null;
+    const subscriptionDurationDays = entitlementResult.data?.subscription_duration_days ?? null;
 
     return {
       status: {
@@ -90,6 +91,7 @@ async function loadActivation(user: { id: string; email?: string }): Promise<{
         is_admin: isAdminEmail || (profileResult.data?.is_admin ?? false),
         trial_expires_at: trialExpiresAt,
         subscription_expires_at: subscriptionExpiresAt,
+        subscription_duration_days: subscriptionDurationDays,
         checking: false,
       },
       cacheable: true,
@@ -128,7 +130,7 @@ export function useActivation() {
   const [status, setStatus] = useState<ActivationStatus>(
     cachedForUser
       ? cachedForUser.status
-      : { is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, checking: !!user },
+      : { is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, subscription_duration_days: null, checking: !!user },
   );
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +139,7 @@ export function useActivation() {
     async (force = false) => {
       if (!user) {
         activationCache = null;
-        setStatus({ is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, checking: false });
+        setStatus({ is_activated: false, is_admin: false, trial_expires_at: null, subscription_expires_at: null, subscription_duration_days: null, checking: false });
         return;
       }
 
@@ -201,6 +203,10 @@ export function useActivation() {
             typeof result.subscription_expires_at === "string"
               ? result.subscription_expires_at
               : status.subscription_expires_at ?? null,
+          subscription_duration_days:
+            typeof result.duration_days === "number"
+              ? result.duration_days
+              : status.subscription_duration_days ?? null,
           checking: false,
         };
         activationCache = { userId: user.id, status: next, fetchedAt: Date.now() };
@@ -219,7 +225,7 @@ export function useActivation() {
       setValidating(false);
       return { success: false, error: msg };
     }
-  }, [user, status.is_admin, status.subscription_expires_at]);
+  }, [user, status.is_admin, status.subscription_expires_at, status.subscription_duration_days]);
 
   const refreshStatus = useCallback(() => checkStatus(true), [checkStatus]);
 

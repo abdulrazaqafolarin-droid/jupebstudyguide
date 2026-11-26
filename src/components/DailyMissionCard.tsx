@@ -4,6 +4,7 @@ import { Progress } from "./ui/progress";
 import { Checkbox } from "./ui/checkbox";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
+import { DashboardPanelShell } from "@/components/DashboardPanelShell";
 import { SUBJECT_INFO, Subject } from "@/types/question";
 import type { DailyTask, StudySessionData } from "@/types/syllabus";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
@@ -111,24 +112,17 @@ export function DailyMissionCard({
   const visiblePrevious = showAllPrevious ? previousMissions : previousMissions.slice(0, 3);
 
   return (
-    <section aria-label="Daily mission" className="mb-12 animate-in-up stagger-1">
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="flex items-center gap-3 border-b border-border bg-gradient-to-r from-primary/5 via-transparent to-accent/5 p-6 md:p-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-            <CalendarDays className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-bold">Daily Mission</h2>
-            <p className="text-sm text-muted-foreground">A focused lesson, adaptive questions, and recovery when you need it.</p>
-          </div>
-          {todayMission && (
-            <Badge variant={missionCompleted ? "default" : "outline"} className="hidden text-xs sm:inline-flex">
-              {missionCompleted ? "Completed today" : `Attempt ${todayMission.attemptNumber}`}
-            </Badge>
-          )}
-        </div>
-
-        <div className="space-y-4 p-6 md:p-8">
+    <DashboardPanelShell
+      icon={CalendarDays}
+      title="Daily Mission"
+      description="A focused lesson, adaptive questions, and recovery when you need it."
+      trailing={todayMission ? (
+        <Badge variant={missionCompleted ? "default" : "outline"} className="hidden text-xs sm:inline-flex">
+          {missionCompleted ? "Completed today" : `Attempt ${todayMission.attemptNumber}`}
+        </Badge>
+      ) : null}
+      ariaLabel="Daily mission"
+    >
           {!session && !todayMission && (
             <>
               <p className="text-sm text-muted-foreground">
@@ -309,9 +303,7 @@ export function DailyMissionCard({
               </div>
             </div>
           )}
-        </div>
-      </div>
-    </section>
+    </DashboardPanelShell>
   );
 }
 

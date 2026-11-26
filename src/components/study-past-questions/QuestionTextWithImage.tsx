@@ -13,7 +13,12 @@ interface InlineQuestionImage {
 
 interface QuestionTextWithImageProps {
   content: string;
-  images: InlineQuestionImage[];
+  /** Current multi-image API. */
+  images?: InlineQuestionImage[];
+  /** Legacy single-image API retained for existing question-paper callers. */
+  imageSrc?: string;
+  imageAlt?: string;
+  onImageError?: () => void;
   imagePosition: string;
   className?: string;
   textClassName?: string;
@@ -26,11 +31,17 @@ interface QuestionTextWithImageProps {
  */
 export function QuestionTextWithImage({
   content,
-  images,
+  images: suppliedImages,
+  imageSrc,
+  imageAlt,
+  onImageError,
   imagePosition,
   className,
   textClassName,
 }: QuestionTextWithImageProps) {
+  const images = suppliedImages ?? (imageSrc
+    ? [{ id: "legacy-inline-image", src: imageSrc, alt: imageAlt, onError: onImageError }]
+    : []);
   const offsets = getInlineImageOffsets(imagePosition, content, images.length);
   const placements = images
     .map((image, index) => ({ image, offset: offsets[index] ?? content.length, index }))

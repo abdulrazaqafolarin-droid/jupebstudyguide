@@ -16,18 +16,19 @@ const CATEGORY_COLORS: Record<StudyCategory, string> = {
 
 interface YearAccordionProps {
   years: number[];
-  counts: Record<number, number>;
+  counts?: Record<number, number>;
   categoryCounts?: Record<number, Record<StudyCategory, number>>;
   selectedYear: number | null;
   onSelectYear: (year: number | null) => void;
+  onViewYear?: (year: number) => void;
 }
 
-export function YearAccordion({ years, counts, categoryCounts, selectedYear, onSelectYear }: YearAccordionProps) {
+export function YearAccordion({ years, counts, categoryCounts, selectedYear, onSelectYear, onViewYear }: YearAccordionProps) {
   return (
     <div className="space-y-1.5">
       {years.map((year, i) => {
         const isOpen = selectedYear === year;
-        const count = counts[year] ?? 0;
+        const count = counts?.[year];
         const cats = categoryCounts?.[year];
 
         return (
@@ -38,14 +39,17 @@ export function YearAccordion({ years, counts, categoryCounts, selectedYear, onS
             transition={{ delay: i * 0.03, duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
           >
             <button
+              type="button"
               onClick={() => onSelectYear(isOpen ? null : year)}
               className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-card border hover:bg-accent/50 transition-colors active:scale-[0.97]"
             >
               <div className="flex items-center gap-3">
                 <span className="font-semibold text-sm">{year}</span>
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {count} question{count !== 1 ? "s" : ""}
-                </span>
+                {count !== undefined && (
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {count} question{count !== 1 ? "s" : ""}
+                  </span>
+                )}
               </div>
               <motion.div
                 animate={{ rotate: isOpen ? 180 : 0 }}
@@ -77,7 +81,8 @@ export function YearAccordion({ years, counts, categoryCounts, selectedYear, onS
                       </div>
                     )}
                     <button
-                      onClick={() => onSelectYear(year)}
+                      type="button"
+                      onClick={() => (onViewYear ?? onSelectYear)(year)}
                       className="px-4 py-2 text-xs font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors active:scale-[0.97]"
                     >
                       View Questions

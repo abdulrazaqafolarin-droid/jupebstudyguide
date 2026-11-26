@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
@@ -7,21 +7,28 @@ import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { StepWelcome } from '@/components/onboarding/StepWelcome';
 import { StepTheme } from '@/components/onboarding/StepTheme';
 import { StepStudySetup } from '@/components/onboarding/StepStudySetup';
+import { StepJambStudySetup } from '@/components/onboarding/StepJambStudySetup';
 import { StepChatPrivacy } from '@/components/onboarding/StepChatPrivacy';
 import { StepNotifications } from '@/components/onboarding/StepNotifications';
 import { StepFinish } from '@/components/onboarding/StepFinish';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { usePushNotificationsContext } from '@/contexts/PushNotificationsContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { useUserStorage } from '@/hooks/useUserStorage';
-import { firstIncompleteStep, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
+import { useJambStudyPreferences } from '@/hooks/useJambStudyPreferences';
+import type { JambExamTarget } from '@/lib/jamb-study-preferences';
+import { normalizeJambStudyPreferences } from '@/lib/jamb-study-preferences';
+import { firstIncompleteStep, getOnboardingFlow, privacyValueFromToggle, type OnboardingStepId } from '@/lib/onboarding';
 import { normalizeSchoolName, parseSeatNumber } from '@/lib/profile-fields';
 import type { Subject } from '@/types/question';
+import type { JambScienceSubject } from '@/lib/jamb-study-preferences';
 import { Loader2 } from 'lucide-react';
 
 const STEP_CTA: Record<OnboardingStepId, string> = {
   welcome: "Let's go",
   theme: 'Continue',
   study: 'Continue',
+  'jamb-study': 'Continue',
   chat: 'Continue',
   notify: 'Turn on reminders',
   finish: 'Start my first mission',
@@ -36,17 +43,15 @@ const STEP_CTA: Record<OnboardingStepId, string> = {
  */
 export default function Onboarding() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const requestedLocation = location.state?.from as { pathname?: string; search?: string; hash?: string } | undefined;
-  const returnTo = requestedLocation?.pathname?.startsWith('/') && !requestedLocation.pathname.startsWith('//')
-    ? `${requestedLocation.pathname}${requestedLocation.search ?? ''}${requestedLocation.hash ?? ''}`
-    : '/';
+  const { programId, isJambWorkspace } = useExamProgram();
   const reduce = useReducedMotion();
   const { theme, setTheme } = useTheme();
   const { subscribe, permission, isSubscribed } = usePushNotificationsContext();
   const { loading, flow, data, displayName, isReplay, profileSchoolName, profileSeatNumber, saveStep, complete } = useOnboarding();
-  const [, setStoredElectives] = useUserStorage<string[]>('onboarding-subjects', []);
-  const [, setStoredDailyGoal] = useUserStorage<number>('onboarding-daily-goal', 30);
+  const [, setStoredElectives] = useUserStorage<string[]>(`onboarding-subjects:${programId}`, []);
+  const [, setStoredDailyGoal] = useUserStorage<number>(`onboarding-daily-goal:${programId}`, 30);
+  const { preferences: storedJambPreferences, setPreferences: setStoredJambPreferences, isReady: jambPreferencesReady } = useJambStudyPreferences();
+  const workspaceFlow = useMemo(() => getOnboardingFlow(flow, programId), [flow, programId]);
 
   const [stepIdx, setStepIdx] = useState(0);
   const [dir, setDir] = useState(1);
@@ -62,6 +67,9 @@ export default function Onboarding() {
   const [electives, setElectives] = useState<Subject[]>([]);
   const [examTarget, setExamTarget] = useState('this-session');
   const [dailyGoal, setDailyGoal] = useState(30);
+  const [jambSubjects, setJambSubjects] = useState<JambScienceSubject[]>([]);
+  const [jambExamTarget, setJambExamTarget] = useState<JambExamTarget>('this-session');
+  const [jambDailyGoal, setJambDailyGoal] = useState<15 | 30 | 60>(30);
   const [schoolName, setSchoolName] = useState('');
   const [seatNumber, setSeatNumber] = useState('');
   const [chatOnline, setChatOnline] = useState(true);
@@ -73,27 +81,34 @@ export default function Onboarding() {
   // initial state ran while flow was still empty).
   const seededRef = useRef(false);
   useEffect(() => {
-    if (loading || flow.length === 0 || seededRef.current) return;
+    if (loading || (programId === 'jamb' && !jambPreferencesReady) || workspaceFlow.length === 0 || seededRef.current) return;
     seededRef.current = true;
-    const target = isReplay ? flow[0] : firstIncompleteStep(flow, data.completedSteps ?? []);
-    setStepIdx(Math.max(0, flow.indexOf(target)));
+    const target = isReplay ? workspaceFlow[0] : firstIncompleteStep(workspaceFlow, data.completedSteps ?? []);
+    setStepIdx(Math.max(0, workspaceFlow.indexOf(target)));
     setElectives((data.subjects ?? []).filter((s): s is Subject => s === 'biology' || s === 'math'));
     setExamTarget(data.examTarget ?? 'this-session');
     setDailyGoal(data.dailyGoalMinutes ?? 30);
+    const jambPreferences = normalizeJambStudyPreferences(data.jambStudy ?? storedJambPreferences);
+    setJambSubjects(jambPreferences.subjects);
+    setJambExamTarget(jambPreferences.examTarget);
+    setJambDailyGoal(jambPreferences.dailyGoalMinutes);
     setSchoolName(data.schoolName ?? profileSchoolName ?? '');
     setSeatNumber(data.examSeatNumber ?? profileSeatNumber ?? '');
     setChatOnline(data.chat?.online ?? true);
     setChatReceipts(data.chat?.receipts ?? true);
     setChatDiscover(data.chat?.discover ?? true);
-  }, [loading, flow, data, isReplay, profileSchoolName, profileSeatNumber]);
+  }, [loading, workspaceFlow, data, isReplay, profileSchoolName, profileSeatNumber, programId, jambPreferencesReady, storedJambPreferences]);
 
-  const step = flow[stepIdx];
-  const goHome = useCallback(() => navigate(returnTo, { replace: true }), [navigate, returnTo]);
+  const step = workspaceFlow[stepIdx];
+  const goHome = useCallback(
+    () => navigate(isJambWorkspace ? '/jamb' : '/', { replace: true }),
+    [navigate, isJambWorkspace],
+  );
 
   const advance = useCallback(() => {
     setDir(1);
-    setStepIdx((i) => Math.min(i + 1, flow.length - 1));
-  }, [flow.length]);
+    setStepIdx((i) => Math.min(i + 1, workspaceFlow.length - 1));
+  }, [workspaceFlow.length]);
 
   const handleBack = useCallback(() => {
     setDir(-1);
@@ -151,6 +166,31 @@ export default function Onboarding() {
         );
         break;
       }
+      case 'jamb-study': {
+        const seat = parseSeatNumber(seatNumber);
+        if (seat.status === 'invalid') {
+          toast.error('Exam seat number should be the last 3 or 4 digits of your ID card.');
+          return;
+        }
+        const school = normalizeSchoolName(schoolName);
+        setStoredJambPreferences({ subjects: jambSubjects, examTarget: jambExamTarget, dailyGoalMinutes: jambDailyGoal });
+        await persistAndAdvance(
+          'jamb-study',
+          {
+            jambStudy: {
+              subjects: jambSubjects,
+              examTarget: jambExamTarget,
+              dailyGoalMinutes: jambDailyGoal,
+            },
+            schoolName: school ?? undefined,
+            examSeatNumber: seat.status === 'valid' ? seat.value : undefined,
+          },
+          programId === 'jupeb'
+            ? { school_name: school, exam_seat_number: seat.status === 'valid' ? seat.value : null }
+            : {},
+        );
+        break;
+      }
       case 'chat': {
         const extra = {
           privacy_online_status: privacyValueFromToggle(chatOnline),
@@ -184,7 +224,7 @@ export default function Onboarding() {
         break;
       }
     }
-  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, schoolName, seatNumber, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal]);
+  }, [step, saving, persistAndAdvance, saveStep, advance, effectiveTheme, electives, dailyGoal, examTarget, jambSubjects, jambExamTarget, jambDailyGoal, schoolName, seatNumber, chatOnline, chatReceipts, chatDiscover, permission, isSubscribed, subscribe, complete, goHome, setStoredElectives, setStoredDailyGoal, setStoredJambPreferences]);
 
   const handleSkip = useCallback(async () => {
     // In a replay the student already finalized once — skipping must not
@@ -196,8 +236,8 @@ export default function Onboarding() {
 
   const handleBrowseClassmates = useCallback(async () => {
     await complete(isReplay);
-    navigate('/discover');
-  }, [complete, navigate, isReplay]);
+    navigate(isJambWorkspace ? '/jamb/discover' : '/discover');
+  }, [complete, navigate, isReplay, isJambWorkspace]);
 
   if (loading || !step) {
     return (
@@ -208,13 +248,16 @@ export default function Onboarding() {
   }
 
   const notificationsGranted = permission === 'granted' || isSubscribed;
-  const ctaLabel =
-    step === 'notify' && notificationsGranted ? 'Continue' : STEP_CTA[step];
+  const ctaLabel = step === 'finish' && isJambWorkspace
+    ? 'Open JAMB workspace'
+    : step === 'notify' && notificationsGranted
+      ? 'Continue'
+      : STEP_CTA[step];
 
   return (
     <OnboardingShell
       stepIndex={stepIdx}
-      stepCount={flow.length}
+      stepCount={workspaceFlow.length}
       ctaLabel={ctaLabel}
       ctaDisabled={saving || requesting}
       onCta={handleCta}
@@ -240,7 +283,7 @@ export default function Onboarding() {
           animate={{ opacity: 1, transform: 'translateX(0px)' }}
           transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
         >
-          {step === 'welcome' && <StepWelcome displayName={displayName} />}
+          {step === 'welcome' && <StepWelcome displayName={displayName} programLabel={isJambWorkspace ? "JAMB / UTME" : "JUPEB"} />}
           {step === 'theme' && (
             <StepTheme
               selected={effectiveTheme}
@@ -266,8 +309,25 @@ export default function Onboarding() {
               onExamSeatNumber={setSeatNumber}
             />
           )}
+          {step === 'jamb-study' && (
+            <StepJambStudySetup
+              subjects={jambSubjects}
+              examTarget={jambExamTarget}
+              dailyGoalMinutes={jambDailyGoal}
+              schoolName={schoolName}
+              examSeatNumber={seatNumber}
+              onToggleSubject={(subject) => setJambSubjects((previous) =>
+                previous.includes(subject) ? previous.filter((item) => item !== subject) : [...previous, subject]
+              )}
+              onExamTarget={setJambExamTarget}
+              onDailyGoal={setJambDailyGoal}
+              onSchoolName={setSchoolName}
+              onExamSeatNumber={setSeatNumber}
+            />
+          )}
           {step === 'chat' && (
             <StepChatPrivacy
+              programLabel={isJambWorkspace ? "JAMB" : "JUPEB"}
               online={chatOnline}
               receipts={chatReceipts}
               discover={chatDiscover}
@@ -288,7 +348,8 @@ export default function Onboarding() {
             <StepFinish
               displayName={displayName}
               theme={effectiveTheme}
-              subjectCount={2 + electives.length}
+              subjectCount={isJambWorkspace ? jambSubjects.length : 2 + electives.length}
+              studyPlanEnabled={!isJambWorkspace}
               chatEnabled={chatOnline || chatReceipts || chatDiscover}
             />
           )}

@@ -2,6 +2,10 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/contexts/AuthContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { useActivation } from '@/hooks/useActivation';
+import { formatTrialCountdown } from '@/lib/trial-countdown';
+import { getWorkspacePath } from '@/lib/exam-program';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,21 +18,39 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, Clock, Crown, DollarSign, GraduationCap, Loader2, LogOut, Mail, MessageCircle, Medal, Settings, ShieldAlert, Sparkles, Swords, Trash2, Trophy } from 'lucide-react';
 import { ADMIN_EMAIL } from '@/lib/adminEmail';
 import { toast } from 'sonner';
 import { ACHIEVEMENTS, Achievement } from '@/hooks/useAchievements';
 import { useUserStorage } from '@/hooks/useUserStorage';
-import { useActivation } from '@/hooks/useActivation';
-import { formatTrialCountdown } from '@/lib/trial-countdown';
 import { cn } from '@/lib/utils';
 
 export default function ProfilePage() {
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
   const { signOut, user, deleteAccount } = useAuth();
-  const { status: activationStatus } = useActivation();
+  const { isJambWorkspace, programId } = useExamProgram();
+  const { status: entitlementStatus, refreshStatus: refreshEntitlementStatus } = useActivation(programId);
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [entitlementClock, setEntitlementClock] = useState(() => Date.now());
+
+  const trialExpiresAt = entitlementStatus.trial_expires_at
+    ? Date.parse(entitlementStatus.trial_expires_at)
+    : Number.NaN;
+  const subscriptionExpiresAt = entitlementStatus.subscription_expires_at
+    ? Date.parse(entitlementStatus.subscription_expires_at)
+    : Number.NaN;
+  const subscriptionActive = Number.isFinite(subscriptionExpiresAt) && subscriptionExpiresAt > entitlementClock;
+  const trialActive = Number.isFinite(trialExpiresAt) && trialExpiresAt > entitlementClock;
+  const activeEntitlementExpiry = subscriptionActive ? subscriptionExpiresAt : trialExpiresAt;
+
+  useEffect(() => {
+    if (!Number.isFinite(activeEntitlementExpiry) || activeEntitlementExpiry <= Date.now()) return;
+    const tick = () => setEntitlementClock(Date.now());
+    tick();
+    const interval = window.setInterval(tick, 1000);
+    return () => window.clearInterval(interval);
+  }, [activeEntitlementExpiry]);
 
   const [displayName, setDisplayName] = useState('');
   const [saving, setSaving] = useState(false);
@@ -36,28 +58,6 @@ export default function ProfilePage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [deleting, setDeleting] = useState(false);
-  const [subscriptionClock, setSubscriptionClock] = useState(() => Date.now());
-  const subscriptionExpiry = activationStatus.subscription_expires_at
-    ? Date.parse(activationStatus.subscription_expires_at)
-    : Number.NaN;
-  const trialExpiry = activationStatus.trial_expires_at
-    ? Date.parse(activationStatus.trial_expires_at)
-    : Number.NaN;
-  const activeExpiry = Number.isFinite(subscriptionExpiry) && subscriptionExpiry > subscriptionClock
-    ? subscriptionExpiry
-    : trialExpiry;
-  const trialRemaining = Number.isFinite(trialExpiry)
-    ? Math.max(0, trialExpiry - subscriptionClock)
-    : 0;
-  const activeRemaining = Number.isFinite(activeExpiry)
-    ? Math.max(0, activeExpiry - subscriptionClock)
-    : 0;
-
-  useEffect(() => {
-    if (!Number.isFinite(activeExpiry) || activeExpiry <= Date.now()) return;
-    const timer = window.setInterval(() => setSubscriptionClock(Date.now()), 1000);
-    return () => window.clearInterval(timer);
-  }, [activeExpiry]);
 
   // Achievements
   const [unlockedIds] = useUserStorage<string[]>('achievements-unlocked', []);
@@ -134,7 +134,7 @@ export default function ProfilePage() {
           </button>
           <h1 className="font-semibold text-foreground">Profile</h1>
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')} className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" onClick={() => navigate(getWorkspacePath('/settings/profile', programId))} className="text-muted-foreground hover:text-foreground">
               <Settings className="w-4 h-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={async () => { await signOut(); }} className="text-muted-foreground hover:text-foreground">
@@ -181,46 +181,57 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* Subscription status */}
-        <section className="animate-in-up stagger-2" aria-label="Subscription status">
+        {/* Programme-specific subscription status */}
+        <section className="animate-in-up stagger-2" aria-label={`${programId === 'jamb' ? 'JAMB / UTME' : 'JUPEB'} subscription status`}>
           <div className="bg-card rounded-2xl border border-border p-6 space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-sm font-semibold flex items-center gap-2">
-                <Clock className="w-4 h-4 text-primary" />
-                Subscription
-              </h3>
-              {!activationStatus.is_admin && (activationStatus.subscription_expires_at || activationStatus.trial_expires_at) && (
-                <span className="text-xs text-muted-foreground">
-                  {trialRemaining > 0
-                    ? "24-hour trial"
-                    : activationStatus.subscription_duration_days
-                      ? `${activationStatus.subscription_duration_days}-day term`
-                      : "Paid term"}
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex min-w-0 items-start gap-3">
+                <div className="rounded-xl bg-primary/10 p-2 text-primary">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold">
+                    {programId === 'jamb' ? 'JAMB / UTME access' : 'JUPEB access'}
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {entitlementStatus.checking
+                      ? 'Checking your programme subscription…'
+                      : entitlementStatus.check_error
+                        ? 'Could not verify your subscription status.'
+                        : entitlementStatus.is_admin
+                          ? 'Administrator access'
+                          : subscriptionActive
+                            ? `${entitlementStatus.subscription_duration_days ?? 'Paid'}-day subscription active`
+                            : trialActive
+                              ? '24-hour free trial active'
+                              : 'No active subscription'}
+                  </p>
+                </div>
+              </div>
+              {entitlementStatus.checking ? (
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+              ) : entitlementStatus.is_admin ? (
+                <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">Admin</span>
+              ) : Number.isFinite(activeEntitlementExpiry) && activeEntitlementExpiry > entitlementClock ? (
+                <span className="shrink-0 text-right">
+                  <span className="block font-mono text-sm font-semibold tabular-nums text-primary">
+                    {formatTrialCountdown(activeEntitlementExpiry - entitlementClock)}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">remaining</span>
                 </span>
-              )}
+              ) : null}
             </div>
-            {activationStatus.checking ? (
-              <p className="text-sm text-muted-foreground">Checking subscription…</p>
-            ) : activationStatus.is_admin ? (
-              <div className="rounded-xl bg-primary/5 border border-primary/15 p-3">
-                <p className="text-sm font-semibold text-primary">Administrator access</p>
-                <p className="text-xs text-muted-foreground mt-1">Your owner account does not require an activation code or subscription.</p>
-              </div>
-            ) : Number.isFinite(activeExpiry) && activeRemaining > 0 ? (
-              <div className="rounded-xl bg-primary/5 border border-primary/15 p-3 space-y-2">
-                <p className="text-sm font-semibold text-foreground">{trialRemaining > 0 ? "24-hour free trial active" : "Subscription active"}</p>
-                <p className="text-2xl font-mono font-semibold tabular-nums text-primary">
-                  {formatTrialCountdown(activeRemaining)}
+            {!entitlementStatus.checking && !entitlementStatus.check_error && !entitlementStatus.is_admin &&
+              Number.isFinite(activeEntitlementExpiry) && activeEntitlementExpiry > entitlementClock && (
+                <p className="border-t border-border/60 pt-3 text-xs text-muted-foreground">
+                  {trialActive && !subscriptionActive ? 'Trial ends' : 'Subscription expires'}{' '}
+                  {new Date(activeEntitlementExpiry).toLocaleString()}.
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Time remaining. {trialRemaining > 0 ? "Trial ends" : "Subscription expires"} {new Date(activeExpiry).toLocaleString()}.
-                </p>
-              </div>
-            ) : (
-              <div className="rounded-xl bg-muted/50 border border-border p-3">
-                <p className="text-sm font-semibold text-foreground">No active subscription</p>
-                <p className="text-xs text-muted-foreground mt-1">Enter a valid activation code to unlock the study content.</p>
-              </div>
+              )}
+            {entitlementStatus.check_error && (
+              <Button variant="outline" size="sm" onClick={() => void refreshEntitlementStatus()} disabled={entitlementStatus.checking}>
+                Retry subscription check
+              </Button>
             )}
           </div>
         </section>
@@ -252,7 +263,7 @@ export default function ProfilePage() {
                 <GraduationCap className="w-4 h-4 text-primary" />
                 School
               </h3>
-              <Link to="/settings/profile" className="text-xs text-primary hover:underline">
+              <Link to={getWorkspacePath('/settings/profile', programId)} className="text-xs text-primary hover:underline">
                 Edit
               </Link>
             </div>
@@ -277,7 +288,7 @@ export default function ProfilePage() {
         </section>
 
         {/* Achievements Showcase */}
-        {unlockedAchievements.length > 0 && (
+        {!isJambWorkspace && unlockedAchievements.length > 0 && (
           <section className="animate-in-up stagger-3">
             <div className="bg-card rounded-2xl border border-border p-6 space-y-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
@@ -372,8 +383,26 @@ export default function ProfilePage() {
           </section>
         )}
 
+        {isJambWorkspace && (
+          <section className="animate-in-up stagger-3">
+            <Link
+              to="/jamb/achievements"
+              className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/30 hover:bg-accent/30"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Trophy className="h-5 w-5" />
+              </div>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">JAMB Achievements</span>
+                <span className="block text-xs text-muted-foreground">View milestones earned through your JAMB practice</span>
+              </span>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
+          </section>
+        )}
+
         {/* Activation codes */}
-        <section className="animate-in-up stagger-4">
+        {!isJambWorkspace && <section className="animate-in-up stagger-4">
           <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-6 border border-accent/20 relative overflow-hidden">
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
             <div className="relative">
@@ -413,7 +442,7 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-        </section>
+        </section>}
 
         {/* Delete Account */}
         <section className="animate-in-up stagger-4">

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, ChevronDown, Clock, BarChart3, GraduationCap, ArrowLeft, Search, Sparkles } from 'lucide-react';
+import { BookOpen, ChevronDown, Clock, BarChart3, GraduationCap, Search, Sparkles } from 'lucide-react';
+import { WorkspacePageHeader } from '@/components/WorkspacePageHeader';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { SYLLABUSES } from '@/types/syllabus';
@@ -68,31 +69,16 @@ export default function SyllabusPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <motion.header
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/50"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3 relative">
-          <motion.button
-            whileHover={{ x: -3 }}
-            onClick={() => navigate(-1)}
-            className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </motion.button>
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="font-semibold heading text-sm">JUPEB Syllabus</h1>
-              <p className="text-[11px] text-muted-foreground">{totalTopics} topics | ~{totalHours}h</p>
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <WorkspacePageHeader
+        title="JUPEB Syllabus"
+        onBack={() => navigate(-1)}
+        backLabel="Back to JUPEB workspace"
+        icon={GraduationCap}
+        subtitle={`${totalTopics} topics | ~${totalHours}h`}
+        compact
+        animated
+        wide
+      />
 
       <motion.main
         initial={{ opacity: 0 }}

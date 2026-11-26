@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Question, Subject, SUBJECT_INFO } from '@/types/question';
-import { cn } from '@/lib/utils';
+import { QuestionOptionButton } from '@/components/QuestionOptionButton';
 import { ProgressRing } from './ProgressRing';
 import { Check, X, Clock, RotateCcw, ArrowRight, Timer, AlertTriangle, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
@@ -8,9 +8,10 @@ import { useQuizTimer } from '@/hooks/useQuizTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { QuestionMath } from '@/components/QuestionMath';
-import { QuestionPrompt } from '@/components/QuestionPrompt';
+import { QuestionImage } from '@/components/QuestionImage';
 import { gradeAnswer, hasGradableAnswer } from '@/lib/answer-scoring';
 import { filterObjectiveQuizQuestions } from '@/lib/quiz-question-filter';
+import { cn } from '@/lib/utils';
 
 interface QuizModeProps {
   questions: Question[];
@@ -368,11 +369,11 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
           </span>
         </div>
 
-        <QuestionPrompt
-          question={currentQuestion}
-          textClassName="text-lg font-medium mb-6 leading-relaxed"
-          inlineMath
-        />
+        {/* Image is shown alongside the complete written prompt when available. */}
+        <QuestionImage imageUrl={currentQuestion.imageUrl} />
+        <h3 className="text-lg font-medium mb-6 leading-relaxed">
+          <QuestionMath content={currentQuestion.question} inline />
+        </h3>
 
         {/* Options */}
         <div className="space-y-3">
@@ -381,35 +382,22 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
             const isCorrectOption = hasRealAnswer(currentQuestion) && option.label === currentQuestion.correctAnswer;
 
             return (
-              <button
+              <QuestionOptionButton
                 key={option.label}
-                onClick={() => handleOptionClick(option.label)}
+                label={option.label}
+                state={
+                  showResult && isCorrectOption ? "correct"
+                    : showResult && isSelected && hasRealAnswer(currentQuestion) ? "incorrect"
+                      : showResult && isSelected ? "selected"
+                        : showResult ? "muted"
+                          : "default"
+                }
+                selected={isSelected}
                 disabled={selectedOption !== null}
-                className={cn(
-                  'w-full p-4 rounded-xl text-left transition-all duration-300 border-2',
-                  'flex items-start gap-3',
-                  !showResult && 'hover:border-primary hover:bg-primary/5',
-                  !showResult && 'border-border bg-secondary/30',
-                  showResult && isCorrectOption && 'border-accent bg-accent/10',
-                  showResult && isSelected && !isCorrectOption && 'border-destructive bg-destructive/10',
-                  showResult && !isSelected && !isCorrectOption && 'border-border opacity-50'
-                )}
+                onClick={() => handleOptionClick(option.label)}
               >
-                <span className={cn(
-                  'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center font-mono font-semibold',
-                  !showResult && 'bg-secondary text-foreground',
-                  showResult && isCorrectOption && 'bg-accent text-accent-foreground',
-                  showResult && isSelected && !isCorrectOption && 'bg-destructive text-destructive-foreground',
-                  showResult && !isSelected && !isCorrectOption && 'bg-secondary text-muted-foreground'
-                )}>
-                  {showResult && isCorrectOption ? <Check className="w-4 h-4" /> : 
-                   showResult && isSelected && !isCorrectOption ? <X className="w-4 h-4" /> :
-                   option.label}
-                </span>
-                <span className="font-mono text-sm leading-relaxed pt-1 flex-1 min-w-0">
-                  <QuestionMath content={option.text} inline />
-                </span>
-              </button>
+                <QuestionMath content={option.text} inline />
+              </QuestionOptionButton>
             );
           })}
         </div>
@@ -418,12 +406,14 @@ export const QuizMode = ({ questions: incomingQuestions, onComplete, onExit, sub
         {showResult && (
           <div className={cn(
             'mt-6 p-4 rounded-xl animate-in-up',
-            hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer 
-              ? 'bg-accent/10 border border-accent/30' 
-              : 'bg-destructive/10 border border-destructive/30'
+            !hasRealAnswer(currentQuestion)
+              ? 'bg-amber-500/5 border border-amber-500/30'
+              : selectedOption === currentQuestion.correctAnswer
+                ? 'bg-accent/10 border border-accent/30'
+                : 'bg-destructive/10 border border-destructive/30'
           )}>
             <p className="text-sm leading-relaxed">
-              <strong className={hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
+              <strong className={!hasRealAnswer(currentQuestion) ? 'text-amber-600 dark:text-amber-400' : selectedOption === currentQuestion.correctAnswer ? 'text-accent' : 'text-destructive'}>
                 {hasRealAnswer(currentQuestion) && selectedOption === currentQuestion.correctAnswer ? '✓ Correct!' : !hasRealAnswer(currentQuestion) ? 'Answer recorded' : '✗ Incorrect'}
               </strong>
               {' '}<QuestionMath content={currentQuestion.explanation} inline />

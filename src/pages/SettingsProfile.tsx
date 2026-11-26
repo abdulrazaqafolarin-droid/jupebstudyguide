@@ -9,11 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
+import { getWorkspacePath } from '@/lib/exam-program';
 import { useImageCompression } from '@/hooks/useImageCompression';
 import { AvatarCropper } from '@/components/profile/AvatarCropper';
 import { PrivacySettings } from '@/components/profile/PrivacySettings';
 import { LocalDataBackup } from '@/components/profile/LocalDataBackup';
-import { AppUpdateSettings } from '@/components/profile/AppUpdateSettings';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
@@ -30,6 +31,7 @@ export default function SettingsProfile() {
   const { profile, loading, updateProfile, uploadAvatar } = useProfile();
   const { compressImage } = useImageCompression();
   const navigate = useNavigate();
+  const { programId } = useExamProgram();
 
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
@@ -307,7 +309,6 @@ export default function SettingsProfile() {
         </motion.section>
 
         <LocalDataBackup />
-        <AppUpdateSettings />
 
         {/* Replay welcome tour */}
         <motion.section
@@ -316,7 +317,7 @@ export default function SettingsProfile() {
           transition={{ delay: 0.14 }}
         >
           <button
-            onClick={() => navigate('/onboarding?replay=1')}
+            onClick={() => navigate(`${getWorkspacePath('/onboarding', programId)}?replay=1`)}
             className="w-full flex items-center justify-between bg-card rounded-2xl border border-border p-5 hover:bg-accent/50 transition-colors"
           >
             <div className="flex items-center gap-3">
@@ -339,7 +340,7 @@ export default function SettingsProfile() {
           transition={{ delay: 0.12 }}
         >
           <Link
-            to="/settings/security"
+            to={getWorkspacePath('/settings/security', programId)}
             className="flex items-center justify-between bg-card rounded-2xl border border-border p-5 hover:bg-accent/50 transition-colors"
           >
             <div className="flex items-center gap-3">

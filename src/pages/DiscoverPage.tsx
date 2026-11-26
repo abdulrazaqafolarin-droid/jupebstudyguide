@@ -1,29 +1,31 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, MessageCircle, Users, Trophy, Clock, ArrowLeft, Loader2, Compass } from 'lucide-react';
+import { Search, MessageCircle, User, Users, Trophy, Clock, ArrowLeft, Loader2, Compass } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { usePresenceContext } from '@/contexts/PresenceContext';
+import { useExamProgram } from '@/contexts/ExamProgramContext';
 import { UserAvatar } from '@/components/UserAvatar';
 import { UserProfileDialog } from '@/components/profile/UserProfileDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import { toast } from 'sonner';
 
 interface DiscoverUser {
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
+  email: string | null;
+  last_seen_at: string | null;
   total_score: number;
+  is_online: boolean;
 }
 
 export default function DiscoverPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isOnline, getLastSeen } = usePresenceContext();
+  const { isJambWorkspace } = useExamProgram();
   const [users, setUsers] = useState<DiscoverUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,105 +34,118 @@ export default function DiscoverPage() {
   const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      setUsers([]);
-      setLoading(false);
-      return;
-    }
+    if (!user) return;
+    let active = true;
+    setLoading(true);
 
-    let isCurrent = true;
-    const loadDiscoverUsers = async () => {
-      setLoading(true);
-      try {
-        const [profilesRes, leaderboardRes] = await Promise.all([
-          supabase
-            .from('profiles')
-            .select('user_id, display_name, avatar_url')
-            .neq('user_id', user.id)
-            .order('display_name')
-            .range(0, 49),
-          supabase.rpc('get_weekly_leaderboard', {
-            p_week_start: new Date().toISOString().slice(0, 10),
-          }),
-        ]);
+    const loadPeople = async () => {
+      const profilesRes = await supabase
+        .from('profiles')
+        .select('user_id, display_name, avatar_url, last_seen_at')
+        .neq('user_id', user.id)
+        .order('display_name')
+        .range(0, 49);
+      if (profilesRes.error) throw new Error(profilesRes.error.message);
+      const profileData = profilesRes.data ?? [];
 
-        if (profilesRes.error) throw profilesRes.error;
-        if (leaderboardRes.error) throw leaderboardRes.error;
-
-        const profileData = profilesRes.data ?? [];
-        const leaderboardData = (leaderboardRes.data ?? []) as {
-          user_id: string;
-          week_score: number;
-        }[];
-        const scoreMap = new Map(leaderboardData.map((row) => [row.user_id, row.week_score]));
-
-        const enriched: DiscoverUser[] = profileData.map((profile) => ({
-          user_id: profile.user_id,
-          display_name: profile.display_name,
-          avatar_url: profile.avatar_url,
-          total_score: scoreMap.get(profile.user_id) ?? 0,
-        }));
-
-        enriched.sort((a, b) => b.total_score - a.total_score);
-        if (isCurrent) setUsers(enriched);
-      } catch (err) {
-        console.error('[Discover] Failed to load members:', err);
-        if (isCurrent) {
-          setUsers([]);
-          toast.error('Could not load members. Check your connection and try again.');
+      // Discover is a shared people directory. Only the JUPEB workspace
+      // requests weekly JUPEB score data; JAMB sees an alphabetical directory
+      // and must never inherit JUPEB leaderboard points.
+      let scoreMap = new Map<string, number>();
+      if (!isJambWorkspace) {
+        const leaderboardRes = await supabase.rpc('get_weekly_leaderboard', {
+          p_week_start: new Date().toISOString().slice(0, 10),
+        });
+        if (!leaderboardRes.error) {
+          const rows = (leaderboardRes.data ?? []) as { user_id: string; week_score: number }[];
+          scoreMap = new Map(rows.map((item) => [item.user_id, item.week_score]));
         }
-      } finally {
-        if (isCurrent) setLoading(false);
+      }
+
+      const enriched: DiscoverUser[] = profileData.map((profile) => ({
+        user_id: profile.user_id,
+        display_name: profile.display_name,
+        avatar_url: profile.avatar_url,
+        email: null,
+        last_seen_at: profile.last_seen_at,
+        total_score: scoreMap.get(profile.user_id) ?? 0,
+        is_online: false,
+      }));
+
+      if (isJambWorkspace) {
+        enriched.sort((a, b) =>
+          (a.display_name ?? "").localeCompare(b.display_name ?? ""),
+        );
+      } else {
+        enriched.sort((a, b) => b.total_score - a.total_score);
+      }
+      if (!active) return;
+      setUsers(enriched);
+
+      // Privacy-respecting online status check.
+      const onlineIds = profileData
+        .filter((profile) =>
+          profile.last_seen_at &&
+          Date.now() - new Date(profile.last_seen_at).getTime() < 5 * 60 * 1000,
+        )
+        .map((profile) => profile.user_id);
+
+      if (onlineIds.length > 0) {
+        const { data } = await supabase.rpc('can_view_online_status_many', {
+          p_user_ids: onlineIds.slice(0, 50),
+        });
+        if (!active) return;
+        const visibleOnlineIds = new Set(
+          ((data ?? []) as { user_id: string; allowed: boolean }[])
+            .filter((row) => row.allowed)
+            .map((row) => row.user_id),
+        );
+        setUsers((previous) => previous.map((item) => ({
+          ...item,
+          is_online: visibleOnlineIds.has(item.user_id),
+        })));
       }
     };
 
-    void loadDiscoverUsers();
-    return () => {
-      isCurrent = false;
-    };
-  }, [user]);
+    void loadPeople()
+      .catch((reason: unknown) => {
+        if (active) console.error("Discover people load failed:", reason);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
+    return () => { active = false; };
+  }, [user, isJambWorkspace]);
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return users;
     const q = searchQuery.toLowerCase();
     return users.filter(u =>
-      u.display_name?.toLowerCase().includes(q)
+      u.display_name?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q)
     );
   }, [users, searchQuery]);
 
-  // PresenceContext receives Supabase Presence updates directly; no polling is needed here.
-  const onlineUsers = useMemo(() => filtered.filter(u => isOnline(u.user_id)), [filtered, isOnline]);
-  const topUsers = useMemo(() => [...filtered].sort((a, b) => b.total_score - a.total_score).slice(0, 20), [filtered]);
+  const onlineUsers = useMemo(() => filtered.filter(u => u.is_online), [filtered]);
+  const topUsers = useMemo(() => isJambWorkspace
+    ? []
+    : [...filtered].sort((a, b) => b.total_score - a.total_score).slice(0, 20), [filtered, isJambWorkspace]);
 
   const handleChat = async (otherUserId: string) => {
-    if (!user || startingChat) return;
+    if (!user) return;
     setStartingChat(otherUserId);
-    try {
-      const { data, error } = await supabase.rpc('find_or_create_dm', {
-        other_user_id: otherUserId,
-      });
-      if (error) throw error;
-
-      const result = data as { conversation_id?: string; error?: string } | null;
-      if (result?.error) throw new Error(result.error);
-      if (!result?.conversation_id) {
-        throw new Error('The direct message could not be created. Please try again.');
-      }
-
-      navigate(`/chat/${encodeURIComponent(result.conversation_id)}`);
-    } catch (err) {
-      console.error('[Discover] Failed to open direct message:', err);
-      toast.error(err instanceof Error ? err.message : 'Could not open this direct message.');
-    } finally {
-      setStartingChat(null);
-    }
+    const { data, error } = await supabase.rpc('find_or_create_dm', { other_user_id: otherUserId });
+    setStartingChat(null);
+    if (error || !data) return;
+    const dm = data as unknown as { id: string };
+    navigate(`${isJambWorkspace ? "/jamb/chat" : "/chat"}?conversation=${dm.id}`);
   };
 
   const openProfile = (targetUserId: string) => {
     // Keep the dedicated editable page for the signed-in user's own profile.
     if (targetUserId === user?.id) {
-      navigate('/profile');
+      navigate(isJambWorkspace ? "/jamb/profile" : "/profile");
       return;
     }
     setProfileTarget(targetUserId);
@@ -154,7 +169,7 @@ export default function DiscoverPage() {
               <Compass className="w-4 h-4 text-primary" />
               Discover
             </h1>
-            <p className="text-[10px] text-muted-foreground">Find study partners</p>
+            <p className="text-[10px] text-muted-foreground">{isJambWorkspace ? "Find study partners" : "Find learners and see weekly scorers"}</p>
           </div>
         </div>
       </header>
@@ -205,7 +220,7 @@ export default function DiscoverPage() {
             )}
 
             {/* Top Users */}
-            {!searchQuery && (
+            {!isJambWorkspace && !searchQuery && (
               <section className="space-y-3">
                 <h2 className="text-sm font-semibold flex items-center gap-2">
                   <Trophy className="w-4 h-4 text-amber-500" />
@@ -231,7 +246,7 @@ export default function DiscoverPage() {
                       </span>
                       <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-9 h-9 ring-0" targetUserId={u.user_id} />
-                        {isOnline(u.user_id) && (
+                        {u.is_online && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
                         )}
                       </button>
@@ -247,9 +262,7 @@ export default function DiscoverPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                        aria-label={`Message ${u.display_name || "user"}`}
-                        title={`Message ${u.display_name || "user"}`}
+                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => handleChat(u.user_id)}
                         disabled={startingChat === u.user_id}
                       >
@@ -279,7 +292,7 @@ export default function DiscoverPage() {
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {(searchQuery ? filtered : filtered.slice(5)).map((u) => (
+                  {(searchQuery || isJambWorkspace ? filtered : filtered.slice(5)).map((u) => (
                     <motion.div
                       key={u.user_id}
                       initial={{ opacity: 0 }}
@@ -288,7 +301,7 @@ export default function DiscoverPage() {
                     >
                       <button onClick={() => openProfile(u.user_id)} className="relative shrink-0">
                         <UserAvatar url={u.avatar_url} name={u.display_name} className="w-10 h-10 ring-0" targetUserId={u.user_id} />
-                        {isOnline(u.user_id) && (
+                        {u.is_online && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-background" />
                         )}
                       </button>
@@ -300,20 +313,22 @@ export default function DiscoverPage() {
                           {u.display_name || 'User'}
                         </button>
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Trophy className="w-3 h-3" />
-                            {u.total_score.toLocaleString()} pts
-                          </span>
-                          {getLastSeen(u.user_id) && !isOnline(u.user_id) && (
+                          {!isJambWorkspace && (
+                            <span className="flex items-center gap-1">
+                              <Trophy className="w-3 h-3" />
+                              {u.total_score.toLocaleString()} pts
+                            </span>
+                          )}
+                          {u.last_seen_at && !u.is_online && (
                             <>
                               <span className="text-muted-foreground/40">&middot;</span>
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
-                                {formatDistanceToNow(new Date(getLastSeen(u.user_id)!), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(u.last_seen_at), { addSuffix: true })}
                               </span>
                             </>
                           )}
-                          {isOnline(u.user_id) && (
+                          {u.is_online && (
                             <>
                               <span className="text-muted-foreground/40">&middot;</span>
                               <span className="text-emerald-500 font-medium">Online</span>
@@ -324,9 +339,7 @@ export default function DiscoverPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                        aria-label={`Message ${u.display_name || "user"}`}
-                        title={`Message ${u.display_name || "user"}`}
+                        className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => handleChat(u.user_id)}
                         disabled={startingChat === u.user_id}
                       >

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ImageCropper } from "./ImageCropper";
 import { QuestionMath } from "@/components/QuestionMath";
-import { createInlineImagePosition, isInlineImagePosition } from "@/lib/question-image-position";
+import { createInlineImagePosition, getInlineImageOffsets, isInlineImagePosition } from "@/lib/question-image-position";
 import { QuestionImagePositioner } from "./QuestionImagePositioner";
 import { processPendingQuestionEmbeddings } from "@/lib/question-rag-indexer";
 
@@ -419,6 +419,13 @@ export function JambAdminQuestionPanel({
   }, []);
 
   const handleRemoveImage = (imageId: string) => {
+    const removedIndex = images.findIndex((image) => image.id === imageId);
+    if (removedIndex >= 0 && isInlineImagePosition(imagePosition)) {
+      const nextOffsets = getInlineImageOffsets(imagePosition, questionText, images.length)
+        .filter((_, index) => index !== removedIndex);
+      if (nextOffsets.length > 0) setImagePosition(createInlineImagePosition(nextOffsets));
+    }
+
     setImages((current) => {
       const removed = current.find((image) => image.id === imageId);
       if (removed?.url.startsWith("blob:")) {

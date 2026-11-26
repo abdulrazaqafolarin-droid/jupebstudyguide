@@ -26,8 +26,9 @@ export function AppUpdateSettings() {
   useEffect(() => {
     if (!isAndroidApp()) return;
     let active = true;
-    fetchLatestRelease().then((release) => {
-      if (!active || !release) return;
+    Promise.all([getInstalledVersion(), fetchLatestRelease()]).then(([current, release]) => {
+      if (!active || !current || !release || !isNewer(current.versionCode, release.versionCode)) return;
+      setInstalled(current);
       setLatest(release);
       setNotice(release.versionName);
     });
@@ -112,10 +113,20 @@ export function AppUpdateSettings() {
           </p>
         </div>
       </div>
-      {updateAvailable && latest && (
-        <p className="text-sm text-primary">
-          Version {latest.versionName} is available.
-        </p>
+      {updateAvailable && latest && !noticeDismissed && notice === latest.versionName && (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2" role="status" aria-live="polite">
+          <p className="text-sm font-semibold">A new version is available</p>
+          <p className="text-sm text-muted-foreground">Rutex Master Next {latest.versionName} is ready to update.</p>
+          <div className="flex gap-2">
+            <Button type="button" onClick={checkForUpdates} disabled={checking || downloading} className="flex-1">
+              Update now
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setNoticeDismissed(true)}>Later</Button>
+          </div>
+        </div>
+      )}
+      {updateAvailable && latest && noticeDismissed && (
+        <p className="text-sm text-primary">Version {latest.versionName} is available.</p>
       )}
       {downloading && (
         <div className="space-y-1">

@@ -16,6 +16,7 @@ import type { AIMessage } from '@/hooks/useAITutorChats';
 function chat(updatedAt: Date, overrides: Partial<StudyChatMeta> = {}): StudyChatMeta {
   return {
     id: `chat-${updatedAt.getTime()}-${Math.random().toString(36).slice(2, 7)}`,
+    exam_program_id: 'jupeb',
     title: 'Chat',
     topic_id: null,
     subtopic: null,

@@ -201,6 +201,12 @@ export async function downloadApk(
   }
 }
 
+/** Remove a verified APK that the learner explicitly dismissed before installation. */
+export async function deleteDownloadedApkFile(absolutePath: string): Promise<void> {
+  if (!isAndroidApp() || !absolutePath.trim()) return;
+  await AppUpdater.deleteDownloadedApk({ filePath: absolutePath });
+}
+
 export async function canInstallPackages(): Promise<boolean> {
   if (!isAndroidApp()) return false;
   const result = await AppUpdater.canInstallPackages();

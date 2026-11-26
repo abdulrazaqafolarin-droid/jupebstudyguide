@@ -514,3 +514,32 @@ The active JAMB student pathways were rechecked in Supabase:
 The previously documented **526** missing-source-reference queue remains the working review target, not a certified newly reproduced total. A fresh strict-parser comparison on 26 November produced a different result (542 missing subject/reference pairs, 97 out-of-source groups and 8 repeated database groups). The source files contain cross-subject reference-number collisions and historical reused references; the strict recount therefore does not supersede the previously reconciled 526-item manifest. Keep the established 526 target unchanged until the 21 differing out-of-source/source-reference classifications are individually reconciled against the original audit manifest and duplicate-review CSV.
 
 The four source files still contain 8,583 raw candidate blocks, not 8,583 unique missing references or publishable questions. They remain review-only; science keys are blank, and English source-supplied answer/explanation pairs remain unverified suggestions.
+
+
+---
+
+## Recovered 526-question answer-progress baseline — v17 (24 November 2026)
+
+The Library copy of `JAMB_526_Answer_Key_Progress_v17.md` was recovered on 26 November. This supersedes the older v9 worked-example count (9 drafts) as the latest recorded answer-progress snapshot. The exact 526 queue split remains Physics 130, Chemistry 111, Biology 175 and Use of English 110.
+
+| Subject | Queue items | Letter drafts | Concept-only solutions | Still without answer/concept |
+| --- | ---: | ---: | ---: | ---: |
+| Physics | 130 | 44 | 9 | 77 |
+| Chemistry | 111 | 68 | 14 | 29 |
+| Biology | 175 | 14 | 16 | 145 |
+| Use of English | 110 | 43 | 12 | 55 |
+| **Total** | **526** | **169** | **51** | **306** |
+
+V17 specifically added two English 2016 GPS comprehension drafts:
+- 2016:Q8 — D, medium confidence; option wording appears corrupted.
+- 2016:Q9 — C, medium confidence; passage context is absent from the extracted text.
+
+All 526 queue records were stated to remain in their subject JSON files and master queue. Every answer key remains `answer_key_verified=false`; none was published. No Supabase import, database write, deployment or merge was performed as part of that v17 work.
+
+The per-question subject JSONs/master queue are **not present in the current repo tree or Library inventory recovered in this pass**; the available Library records are the v9 manifest and v17 aggregate progress note. Do not fabricate the missing 526 question list from counts. Use the current four-source strict-parser comparison as a separate forensic cross-check only; its 542 missing-pair list is not a replacement for the historical 526 queue.
+
+### Current comparison versus historical queue
+
+The 26 November strict parser currently finds 542 missing subject/reference pairs: Physics 133, Chemistry 124, Biology 175, English 110. Compared with the historical 526 split, the discrepancy is exactly +3 Physics and +13 Chemistry. The current out-of-set live database reference-group count is 97 rather than the v9 historical 76; the repeated database groups remain 8. The current comparison report and CSV files preserve this difference for reconciliation. They do not change the 526 task target.
+
+Do not approve or publish any v17 letter/concept draft without checking its exact question/options, source evidence, explanation, and any known image/passage/format conflicts. Draft confidence is not verified correctness.

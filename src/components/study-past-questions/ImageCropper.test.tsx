@@ -18,7 +18,7 @@ describe("Admin free cropper", () => {
 
     expect(screen.getByRole("button", { name: "Rectangle" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Freehand" })).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByText(/Freely drag the edges and corners/)).toBeInTheDocument();
+    expect(screen.getByText(/Drag inside the crop box to move it/)).toBeInTheDocument();
 
     const image = screen.getByRole("img", { name: "Original image with adjustable crop area" });
     const container = image.parentElement as HTMLDivElement;
@@ -156,8 +156,14 @@ describe("Admin free cropper", () => {
 
     act(() => {
       dispatchPointer(canvas, "pointerdown", { pointerId: 31, pointerType: "touch", clientX: 40, clientY: 30 });
+    });
+    act(() => {
       dispatchPointer(canvas, "pointermove", { pointerId: 31, pointerType: "touch", clientX: 120, clientY: 40 });
+    });
+    act(() => {
       dispatchPointer(canvas, "pointermove", { pointerId: 31, pointerType: "touch", clientX: 90, clientY: 150 });
+    });
+    act(() => {
       dispatchPointer(canvas, "pointerup", { pointerId: 31, pointerType: "touch" });
     });
 

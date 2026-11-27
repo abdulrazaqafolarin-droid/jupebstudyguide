@@ -560,3 +560,19 @@ A read-only query of `study_question_answer_keys` after migration v2026112610102
 Only six protected keys have a rated confidence level. Those six have a confidence note and evidence reference; the remaining 7,624 are explicitly `unrated` with no confidence note/evidence reference. All 7,630 keys remain `needs_review`, and all are on draft version 1. These confidence labels are triage metadata, not proof of correctness. Do not promote a key based on a high confidence label alone.
 
 The v17 526-question queue progress (169 letter drafts, 51 concept-only solutions, 306 without an answer/concept) is a separate historical workstream. Its subject JSON/master queue was not found in the current repo tree or Library inventory during this audit, so no v17 answer drafts were imported or written to Supabase.
+
+## Answer-queue recovery and reference triage — 27 November 2026
+
+The GitHub Actions source bundle `jamb-source-intake-bundle` (run `45774184243`, artifact `15095018017`) was recovered and inspected. It contains the four review-only subject JSON packages and matching source text. It has 8,583 candidates in total, but it does not contain the previous hand-edited v17 master answer queue.
+
+The saved v9/v17 summaries still define the historical 526-item target (Physics 130, Chemistry 111, Biology 175, Use of English 110); v17 records 169 letter drafts, 51 concept-only solutions and 306 unanswered items. The exact question-level v17 list is absent from the current Library, repository and checked JAMB branches. Do not claim the current parser output is a recovery of that list.
+
+The 26 November strict-parser comparison reports 542 missing subject/reference pairs (Physics 133, Chemistry 124, Biology 175, English 110), 97 live out-of-source groups and eight repeated live groups. The +16 difference from the historical 526 queue is confined to Physics (+3) and Chemistry (+13), and remains unexplained. The 542 CSV is a newer comparison snapshot, not a replacement import target.
+
+The 27 November review files record the discrepancy and the nine strongest/partial alternate-reference candidates:
+- `docs/JAMB_RECONCILIATION_RECOVERY_2026-11-27.md`
+- `docs/JAMB_OUTSIDE_SOURCE_ALT_REFERENCE_REVIEW_2026-11-27.csv`
+
+One likely duplicate/reference error was identified: Biology 1991:Q49 repeats the exact fertilizer-loss question already present at source-matched 1991:Q41. It is only a soft-deduplication candidate; no row was deleted or changed. Other alternate matches were retained pending page-level source evidence.
+
+No source question was inserted, no answer key was approved, no question was unhidden or published, and no JAMB row was deleted or renumbered during this recovery pass.

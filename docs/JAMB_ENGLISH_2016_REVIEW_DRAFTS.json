@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "exam_program_id": "jamb",
+  "subject": "use_of_english",
+  "year": 2016,
+  "package_purpose": "Hidden administrator-review drafts for missing 2016 JAMB English questions. This is source data for the existing question-import workflow, not a direct database seed.",
+  "source": {
+    "document": "Use of English JAMB Past Questions And Answers.pdf",
+    "publisher": "MySchoolGist",
+    "url": "https://myschoolgist.com/wp-content/uploads/2024/11/Use-of-English-JAMB-Past-Questions-And-Answers.pdf",
+    "permission_attestation": "The user confirmed permission to store and use this question paper in the Rutex JAMB question bank in this conversation on 2026-11-27.",
+    "question_section_pdf_text_lines": {
+      "q3": "22916-22921",
+      "q8": "22945-22950",
+      "q9": "22951-22955"
+    },
+    "answer_table_pdf_text_lines": "23410-23418",
+    "original_pdf_page": null,
+    "sha256": null,
+    "import_status": "not_uploaded_to_private_question_source_documents_storage"
+  },
+  "safety": {
+    "requested_visibility": "hidden",
+    "requested_review_status": "needs_review",
+    "answer_key_verified": false,
+    "publish_allowed": false,
+    "learner_scoring_allowed": false,
+    "note": "Source answer letters are stored only as candidates. They must not be promoted into verified answer-key fields until independently reviewed."
+  },
+  "items": [
+    {
+      "item_number": 3,
+      "subject": "use_of_english",
+      "year": 2016,
+      "category": "objective",
+      "source_reference": "2016:Q3",
+      "question": "The two types of films mentioned in the passage are those for",
+      "options": [
+        {
+          "label": "A",
+          "text": "wide and specialized audiences"
+        },
+        {
+          "label": "B",
+          "text": "localised and newsreel audiences"
+        },
+        {
+          "label": "C",
+          "text": "theatre and wide audiences"
+        },
+        {
+          "label": "D",
+          "text": "localized and parish audiences"
+        }
+      ],
+      "correct_answer": "A",
+      "explanation": null,
+      "answer_key_verified": false,
+      "source_answer_candidate": "A",
+      "source_document": "Use of English JAMB Past Questions And Answers.pdf (MySchoolGist)",
+      "source_page": null,
+      "source_question_number": "3",
+      "source_url": "https://myschoolgist.com/wp-content/uploads/2024/11/Use-of-English-JAMB-Past-Questions-And-Answers.pdf",
+      "source_answer_table_reference": "2016 solution table; parsed PDF text lines 23410-23418",
+      "source_context_status": "film-making passage is present in the same source PDF",
+      "canonical_transcription_status": "Q3 was omitted from the committed JAMB_english_READABLE.txt extraction and recovered from the MySchoolGist PDF",
+      "validation_errors": [
+        "source_answer_candidate_requires_independent_human_verification",
+        "original_pdf_page_number_not_yet_recorded"
+      ],
+      "review_status": "needs_review",
+      "hidden": true
+    },
+    {
+      "item_number": 8,
+      "subject": "use_of_english",
+      "year": 2016,
+      "category": "objective",
+      "source_reference": "2016:Q8",
+      "question": "The expression, atomic clocks, as used in the passage, means",
+      "options": [
+        {
+          "label": "A",
+          "text": "poisonous substance"
+        },
+        {
+          "label": "B",
+          "text": "formidable sentinel"
+        },
+        {
+          "label": "C",
+          "text": "sentient sense"
+        },
+        {
+          "label": "D",
+          "text": "sensitive weapon"
+        }
+      ],
+      "correct_answer": "B",
+      "explanation": null,
+      "answer_key_verified": false,
+      "source_answer_candidate": "B",
+      "source_document": "Use of English JAMB Past Questions And Answers.pdf (MySchoolGist)",
+      "source_page": null,
+      "source_question_number": "8",
+      "source_url": "https://myschoolgist.com/wp-content/uploads/2024/11/Use-of-English-JAMB-Past-Questions-And-Answers.pdf",
+      "source_answer_table_reference": "2016 solution table; parsed PDF text lines 23410-23418",
+      "source_context_status": "GPS comprehension passage is absent from this source copy; only the question stem/options are present",
+      "prior_draft_conflict": "Historical v17 answer-progress draft recorded D; MySchoolGist's own answer table records B. Preserve B as the source-key candidate while retaining the conflict for human review.",
+      "option_quality_note": "All four supplied options appear semantically corrupted or mismatched to 'atomic clocks'; verify against an original JAMB paper before any answer is approved.",
+      "validation_errors": [
+        "gps_passage_missing_from_available_source_copy",
+        "source_answer_candidate_conflicts_with_historical_v17_draft",
+        "option_wording_requires_original_paper_verification",
+        "source_answer_candidate_requires_independent_human_verification",
+        "original_pdf_page_number_not_yet_recorded"
+      ],
+      "review_status": "needs_review",
+      "hidden": true
+    },
+    {
+      "item_number": 9,
+      "subject": "use_of_english",
+      "year": 2016,
+      "category": "objective",
+      "source_reference": "2016:Q9",
+      "question": "A suitable title for the passage is",
+      "options": [
+        {
+          "label": "A",
+          "text": "High Definition Receiver in Cars"
+        },
+        {
+          "label": "B",
+          "text": "Longitude and Latitude Precise Measurement"
+        },
+        {
+          "label": "C",
+          "text": "Science and Technology in the 70s"
+        },
+        {
+          "label": "D",
+          "text": "An Exploration into Science and Technology"
+        }
+      ],
+      "correct_answer": "D",
+      "explanation": null,
+      "answer_key_verified": false,
+      "source_answer_candidate": "D",
+      "source_document": "Use of English JAMB Past Questions And Answers.pdf (MySchoolGist)",
+      "source_page": null,
+      "source_question_number": "9",
+      "source_url": "https://myschoolgist.com/wp-content/uploads/2024/11/Use-of-English-JAMB-Past-Questions-And-Answers.pdf",
+      "source_answer_table_reference": "2016 solution table; parsed PDF text lines 23410-23418",
+      "source_context_status": "GPS comprehension passage is absent from this source copy; only the question stem/options are present",
+      "prior_draft_conflict": "Historical v17 answer-progress draft recorded C; MySchoolGist's own answer table records D. Preserve D as the source-key candidate while retaining the conflict for human review.",
+      "validation_errors": [
+        "gps_passage_missing_from_available_source_copy",
+        "source_answer_candidate_conflicts_with_historical_v17_draft",
+        "source_answer_candidate_requires_independent_human_verification",
+        "original_pdf_page_number_not_yet_recorded"
+      ],
+      "review_status": "needs_review",
+      "hidden": true
+    }
+  ],
+  "import_blockers": [
+    "The source PDF has not yet been uploaded to the private Supabase question-source-documents bucket, so the normal importer cannot verify its SHA-256 hash.",
+    "The GPS passage required to understand 2016 Q8 and Q9 is absent from the available MySchoolGist copy.",
+    "Q8/Q9 source answer letters conflict with the previously recorded v17 answer drafts; neither candidate is verified."
+  ]
+}

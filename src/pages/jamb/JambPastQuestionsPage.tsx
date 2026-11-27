@@ -457,7 +457,7 @@ export default function JambPastQuestionsPage() {
         <QuestionPrompt
           question={question}
           alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-          className="mb-4 max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1"
+          className="mb-4"
           textClassName="text-base font-medium leading-relaxed"
         />
         <div className="space-y-2">

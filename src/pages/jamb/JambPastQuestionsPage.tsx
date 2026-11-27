@@ -14,7 +14,7 @@ import {
   JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
 import {
-  getJambQuestionYearSummaries, getJambPublishedQuestionById, getJambSubjectSummaries,
+  compareJambQuestionOrder, getJambQuestionYearSummaries, getJambPublishedQuestionById, getJambSubjectSummaries,
   invalidateJambQuestionSearchCache, JambSchemaUnavailableError, searchJambQuestions,
   type JambQuestion, type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
@@ -111,7 +111,7 @@ export default function JambPastQuestionsPage() {
     invalidateJambQuestionSearchCache();
     setQuestions((previous) => previous.map((question) =>
       question.id === updated.id ? { ...question, ...updated } : question,
-    ).sort((a, b) => a.sortOrder - b.sortOrder));
+    ).sort(compareJambQuestionOrder));
     setBookmarkQuestions((previous) => previous.map((question) =>
       question.id === updated.id ? { ...question, ...updated } : question,
     ));
@@ -128,7 +128,7 @@ export default function JambPastQuestionsPage() {
 
   const handleAdminQuestionAdded = (added: JambQuestion) => {
     invalidateJambQuestionSearchCache();
-    setQuestions((previous) => [...previous, added].sort((a, b) => a.sortOrder - b.sortOrder));
+    setQuestions((previous) => [...previous, added].sort(compareJambQuestionOrder));
     setCount((previous) => previous + 1);
     setActiveQuestionIndex(Math.min(questions.length, JAMB_INITIAL_QUESTION_PAGE_SIZE - 1));
     setSelectedAdminQuestion(added);
@@ -140,7 +140,7 @@ export default function JambPastQuestionsPage() {
     setQuestions((previous) => previous.map((question) => {
       const position = positions.get(question.id);
       return position === undefined ? question : { ...question, sortOrder: position };
-    }).sort((a, b) => a.sortOrder - b.sortOrder));
+    }).sort(compareJambQuestionOrder));
   };
 
   useEffect(() => {

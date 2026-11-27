@@ -85,3 +85,15 @@ The six previously reviewed records retain their saved confidence/evidence metad
 5. Only save answer drafts with exact option matching, evidence, a confidence note and audit history; keep all keys unapproved until an independent human review and source-rights confirmation.
 
 No questions were inserted, deleted, approved, unhidden or published by this source reconciliation.
+
+## Alternate-reference review completed — 27 November 2026
+
+Nine of the strongest/partial alternate-reference candidates from the outside-source CSV were compared with the live question rows and the original Biology/English source text. The item-by-item decisions are in `docs/JAMB_OUTSIDE_SOURCE_ALT_REFERENCE_REVIEW_2026-11-27.csv`.
+
+- **One probable duplicate/reference error:** Biology 1991:Q49 is the fertilizer-loss question that the original Biology source prints as 1991:Q41. The live bank already contains the same question and options under 1991:Q41. Keep Q41 as the source-matched row and treat Q49 as a soft-deduplication candidate; no row was modified or deleted.
+- **One preserved duplicate printed number:** English 1981 has two different source questions both printed as Q29. The second is correctly kept separately as the normalized Q29b record.
+- **One sequence/OCR exception retained:** English 1986:Q85 appears between Q84 and Q86 in the source sequence although its extracted leading numeral is “5.” Keep Q85 hidden pending original page-image confirmation.
+- **One source-number collision:** English 1988 has two different source questions both printed as Q39 (“concerted effort” and “cupboard love”). The live bank has them under Q38 and Q39; preserve both until the source page/variant confirms a suffix or alternate reference.
+- **Four other records are not proven duplicates:** the adjacent 2015 and 2016 novel questions are distinct stems; 2016:Q77 and 2019:Q77 share a generic collocation but are year-scoped; 2018:Q11 has missing passage context; and 2016:Q70 / 2018:Q70 repeat the same sentence/options in different years. Preserve them pending page-level verification.
+
+No source reference, answer, key state, question visibility or database row was changed during this review.

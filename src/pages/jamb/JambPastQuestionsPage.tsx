@@ -439,7 +439,9 @@ export default function JambPastQuestionsPage() {
             <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>
             <span>{JAMB_SUBJECT_INFO[question.subject].label}</span>
             {question.topic && <><span className="text-muted-foreground/40">·</span><span>{question.topic}</span></>}
-            {question.sourceQuestionNumber && <span>· Source Q{question.sourceQuestionNumber}</span>}
+            {question.sourceQuestionNumber && (
+              <span>· Source Q{question.sourceQuestionNumber.replace(/^Q/i, "")}</span>
+            )}
           </div>
           <button
             type="button"

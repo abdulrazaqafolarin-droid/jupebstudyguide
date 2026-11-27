@@ -301,7 +301,7 @@ The five candidates named in the prior review screenshot were already in the dat
 | Physics 1981:Q43 — 5 g wt to 20 g wt extension | E (2.24 cm) | High: Hooke's law gives a load ratio of 4, so extension is 0.56 × 4 = 2.24 cm. |
 | Use of English 2013:Q27 — `The Potter's Wheel` | B (father was indebted to Teacher) | High: the novel passage confirms Bright was sent to Teacher as security for his father's loan. The long-journey key is contradicted by the novel text. Remains `needs_review` until admin approval. |
 | Use of English 2016:Q6 — GPS development decade | B (1970s) | Medium: official FAA history dates the NAVSTAR GPS programme to 1973, but the original JAMB comprehension passage is missing from the extraction. |
-| Use of English 2016:Q7 — GPS's initial purpose | C (security / military purposes) | Low: official GPS history supports military use, but the exact original passage wording is absent. Do not approve based only on outside historical context. |
+| Use of English 2016:Q7 — GPS's initial purpose | C (security purposes) | Medium: exact MySchoolGist source option C is “security purposes”; Smithsonian and U.S. Space Force histories confirm the original military applications. The passage is missing, and the database's option text currently adds “and military”; restore the source wording before approval. |
 
 A separate Physics 2012:Q15 question was also confirmed from the source: a 1 kg load is 10 N, the 1.2 cm extension is 0.012 m, and (k=F/x=10/0.012\approx833\,\mathrm{N\,m^{-1}}), so the stored answer B is consistent.
 
@@ -354,11 +354,11 @@ The provisional answer for English 2013:Q27 was changed from D to B and upgraded
 | Physics 2012:Q15 — force constant | B (about 833 N/m) | High: (k=F/x=10/0.012\approx833\text{ N/m}). |
 | Use of English 2013:Q27 — `The Potter's Wheel` | B | High: the novel passage confirms Bright was sent to Teacher as security for the money his father owed. |
 | Use of English 2016:Q6 — GPS development decade | B (1970s) | Medium: the source's option B matches the official FAA history that NAVSTAR/GPS was initiated in 1973; the associated comprehension passage is missing from the text extraction. |
-| Use of English 2016:Q7 — GPS initial purpose | C (security purposes) | Medium: official FAA/U.S. Air Force history supports the initial military/security purpose; the exact passage wording is still missing. |
+| Use of English 2016:Q7 — GPS initial purpose | C (security purposes) | Medium: the exact source option is “security purposes”; Smithsonian and U.S. Space Force histories support the original military applications. The missing passage prevents full passage-based verification. The DB option currently expands the wording and should be restored before approval. |
 
 ### 2016 GPS question source variant
 
-The committed `JAMB_english_READABLE.txt` includes a distinct `JAMB ENGLISH 2016 - OBJECTIVE` set explicitly attributed to the MySchoolGist PDF. It contains the same GPS Q6 and Q7 stems and options as the two hidden database records, as well as Q8–Q10 about atomic clocks, GPS applications and satellite positioning. Its GPS comprehension passage is absent from the extracted text. The same source pack labels the PDF as having no answer key.
+The committed `JAMB_english_READABLE.txt` includes a distinct `JAMB ENGLISH 2016 - OBJECTIVE` set explicitly attributed to the MySchoolGist PDF. Its Q6 and Q7 stems match the two hidden GPS database records. Q6 source options are “eighties”, “seventies”, “Sixties” and “fifties”; Q7 source option C is exactly “security purposes”. The database currently expands that Q7 option to “Security and military purposes”; restore the source wording during the next admin edit before approval. Q8–Q10 concern atomic clocks, GPS applications and satellite positioning. The GPS comprehension passage itself is absent from the extracted text. The same source pack labels the PDF as having no answer key. A different 2016 compilation has a different question numbering and should not be used to renumber this MySchoolGist set.
 
 A separate 2016 compilation located during this review contains a different paper variant whose Q6 and Q7 concern a different comprehension passage. Those question numbers must not be cross-applied to the MySchoolGist set. Do not change the GPS references solely because another 2016 sitting/compilation numbers its questions differently.
 

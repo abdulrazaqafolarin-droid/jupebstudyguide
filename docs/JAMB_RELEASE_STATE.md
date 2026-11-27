@@ -560,3 +560,20 @@ A read-only query of `study_question_answer_keys` after migration v2026112610102
 Only six protected keys have a rated confidence level. Those six have a confidence note and evidence reference; the remaining 7,624 are explicitly `unrated` with no confidence note/evidence reference. All 7,630 keys remain `needs_review`, and all are on draft version 1. These confidence labels are triage metadata, not proof of correctness. Do not promote a key based on a high confidence label alone.
 
 The v17 526-question queue progress (169 letter drafts, 51 concept-only solutions, 306 without an answer/concept) is a separate historical workstream. Its subject JSON/master queue was not found in the current repo tree or Library inventory during this audit, so no v17 answer drafts were imported or written to Supabase.
+
+## MySchoolGist 2016 Use of English answer reconciliation — 27 November 2026
+
+The original MySchoolGist question PDF and its 2016 solution table were compared with the live English records:
+
+- Q1: the source solution table lists C ("picture and sound"). The stored answer was already C, but its earlier explanation referred to a conflicting external answer sheet. The draft explanation and evidence note have been aligned to the MySchoolGist source version.
+- Q4: the live draft previously said B ("How to Put Over a Message"). The MySchoolGist source solution table lists C ("The Art of Film-making") for the exact question and option set. The protected answer draft has been corrected to C.
+- Both updates are answer-only audit events (`answer-draft-update`, `rights_confirmed=false`). Both questions remain hidden and both answer keys remain `needs_review`; no answer has been approved or published.
+
+The source solution table lists Q1–Q10 as C, A, A, C, D, B, C, B, D, B. The source-gap manifest `docs/JAMB_ENGLISH_2016_SOURCE_GAPS.csv` documents questions still absent from the live bank:
+
+- Q3 is missing from the committed transcription, although it appears in the PDF with the film-making passage.
+- Q8 and Q9 are present in the extraction/import package but absent from the live question table. Their GPS comprehension passage is not reproduced in the available extracted source, so their solution-table suggestions remain low-confidence pending source recovery and human review.
+
+No Q3/Q8/Q9 rows were inserted into Supabase. They must go through the rights-confirmed source-intake workflow and passage review; the manifest is not an import or approval instruction.
+
+Live migration ledger records this data-only reconciliation as version `20261127084013` (`reconcile_jamb_2016_english_answer_drafts`). The repository migration filename is aligned to that exact applied version to avoid a second application during a future database push.

@@ -58,6 +58,11 @@ export function QuestionViewer({
   const [results, setResults] = useState<AnswerEntry[]>([]);
   const [showJumpGrid, setShowJumpGrid] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
+  // Practical question headers still render their own image gallery.
+  const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
+  const handleImageError = useCallback((url: string) => {
+    setBrokenImages((previous) => new Set(previous).add(url));
+  }, []);
   // Both JUPEB and JAMB use the same prompt renderer so stored image-layout
   // metadata cannot hide a valid written question when its image is unavailable.
   const renderQuestionMedia = useCallback((q: StudyQuestion) => (

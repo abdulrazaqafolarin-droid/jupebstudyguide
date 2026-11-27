@@ -15,8 +15,17 @@ function normalizeQuestionImageUrl(value: string): string {
   return url;
 }
 
+type QuestionPromptQuestion = Omit<
+  Pick<Question, "id" | "question" | "imageUrl" | "imageUrls" | "imagePosition">,
+  "imagePosition"
+> & {
+  // Database-backed question banks may retain a stale or legacy layout value.
+  // The renderer validates inline positions before passing them to image layout.
+  imagePosition?: string | null;
+};
+
 interface QuestionPromptProps {
-  question: Pick<Question, "id" | "question" | "imageUrl" | "imageUrls" | "imagePosition">;
+  question: QuestionPromptQuestion;
   alt?: string;
   className?: string;
   textClassName?: string;

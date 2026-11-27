@@ -102,7 +102,7 @@ const JAMB_QUESTION_SEARCH_CACHE_MAX_ENTRIES = 16;
 
 function getSourceQuestionSequence(value?: string): { number: number; suffix: string } | null {
   const sourceNumber = String(value ?? "").trim();
-  const match = /(\\d+)/.exec(sourceNumber);
+  const match = /(\d+)/.exec(sourceNumber);
   if (!match) return null;
   const suffix = sourceNumber.slice((match.index ?? 0) + match[0].length)
     .match(/^[a-z]+/i)?.[0]?.toLowerCase() ?? "";

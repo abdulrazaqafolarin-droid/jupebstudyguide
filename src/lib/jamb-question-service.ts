@@ -122,6 +122,9 @@ export function compareJambQuestionOrder(a: JambQuestion, b: JambQuestion): numb
   const aOrder = a.sortOrder > 0 ? a.sortOrder : aSequence?.number ?? Number.MAX_SAFE_INTEGER;
   const bOrder = b.sortOrder > 0 ? b.sortOrder : bSequence?.number ?? Number.MAX_SAFE_INTEGER;
   if (aOrder !== bOrder) return aOrder - bOrder;
+  const aHasExplicitOrder = a.sortOrder > 0;
+  const bHasExplicitOrder = b.sortOrder > 0;
+  if (aHasExplicitOrder !== bHasExplicitOrder) return aHasExplicitOrder ? -1 : 1;
 
   if (aSequence && bSequence && aSequence.number === bSequence.number) {
     const suffixOrder = aSequence.suffix.localeCompare(bSequence.suffix);

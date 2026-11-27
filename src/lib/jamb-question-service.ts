@@ -91,6 +91,52 @@ function mapOptions(value: unknown): MCQOption[] {
   return [];
 }
 
+interface SearchCacheEntry {
+  loadedAt: number;
+  questions: JambQuestion[];
+}
+
+const jambQuestionSearchCache = new Map<string, SearchCacheEntry>();
+const JAMB_QUESTION_SEARCH_CACHE_TTL_MS = 60_000;
+const JAMB_QUESTION_SEARCH_CACHE_MAX_ENTRIES = 16;
+
+function getSourceQuestionSequence(value?: string): { number: number; suffix: string } | null {
+  const sourceNumber = String(value ?? "").trim();
+  const match = /(\\d+)/.exec(sourceNumber);
+  if (!match) return null;
+  const suffix = sourceNumber.slice((match.index ?? 0) + match[0].length)
+    .match(/^[a-z]+/i)?.[0]?.toLowerCase() ?? "";
+  return { number: Number(match[0]), suffix };
+}
+
+/**
+ * Preserve explicit admin ordering where present. Legacy/imported JAMB rows
+ * often have sort_order=0, so use their printed source number as the fallback.
+ * This prevents IDs from deciding question order and keeps Q29/Q29b together.
+ */
+export function compareJambQuestionOrder(a: JambQuestion, b: JambQuestion): number {
+  if (a.year !== b.year) return b.year - a.year;
+
+  const aSequence = getSourceQuestionSequence(a.sourceQuestionNumber);
+  const bSequence = getSourceQuestionSequence(b.sourceQuestionNumber);
+  const aOrder = a.sortOrder > 0 ? a.sortOrder : aSequence?.number ?? Number.MAX_SAFE_INTEGER;
+  const bOrder = b.sortOrder > 0 ? b.sortOrder : bSequence?.number ?? Number.MAX_SAFE_INTEGER;
+  if (aOrder !== bOrder) return aOrder - bOrder;
+
+  if (aSequence && bSequence && aSequence.number === bSequence.number) {
+    const suffixOrder = aSequence.suffix.localeCompare(bSequence.suffix);
+    if (suffixOrder !== 0) return suffixOrder;
+  }
+
+  if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+  return a.id.localeCompare(b.id);
+}
+
+/** Clear cached learner question lists after the admin manager changes a bank. */
+export function invalidateJambQuestionSearchCache(): void {
+  jambQuestionSearchCache.clear();
+}
+
 function mapQuestion(row: QuestionRow): JambQuestion {
   let imageUrls: string[] = [];
   if (Array.isArray(row.image_urls)) {
@@ -279,9 +325,14 @@ export async function getJambPublishedQuestionMetadata(): Promise<JambQuestionMe
   return perSubject.flat();
 }
 
-export async function getJambQuestionYears(
+export interface JambQuestionYearSummaries {
+  years: number[];
+  counts: Record<number, number>;
+}
+
+export async function getJambQuestionYearSummaries(
   subject: JambSubject,
-): Promise<number[]> {
+): Promise<JambQuestionYearSummaries> {
   const { data, error } = await supabase
     .from("study_questions")
     .select("year")
@@ -295,7 +346,14 @@ export async function getJambQuestionYears(
 
   if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
   if (error) throw error;
-  return [...new Set((data ?? []).map((row) => row.year))].sort((a, b) => b - a);
+
+  const counts: Record<number, number> = {};
+  for (const row of data ?? []) counts[row.year] = (counts[row.year] ?? 0) + 1;
+  return { years: Object.keys(counts).map(Number).sort((a, b) => b - a), counts };
+}
+
+export async function getJambQuestionYears(subject: JambSubject): Promise<number[]> {
+  return (await getJambQuestionYearSummaries(subject)).years;
 }
 
 export async function searchJambQuestions(args: {
@@ -306,29 +364,60 @@ export async function searchJambQuestions(args: {
   limit?: number;
 }): Promise<{ questions: JambQuestion[]; count: number }> {
   const { subject, year, search, offset = 0, limit = 20 } = args;
-  let query = supabase
-    .from("study_questions")
-    .select(QUESTION_COLUMNS, { count: "exact" })
-    .eq("exam_program_id", "jamb")
-    .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
-    .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
-    .eq("subject", subject)
-    .eq("category", "objective")
-    .order("year", { ascending: false })
-    .order("sort_order", { ascending: true })
-    .order("id", { ascending: true })
-    .range(offset, offset + limit - 1);
+  const normalizedSearch = search?.trim() ?? "";
+  const cacheKey = [subject, year ?? "all", normalizedSearch.toLocaleLowerCase()].join("|");
+  const cached = jambQuestionSearchCache.get(cacheKey);
+  const now = Date.now();
+  let entry = cached && now - cached.loadedAt < JAMB_QUESTION_SEARCH_CACHE_TTL_MS
+    ? cached
+    : undefined;
 
-  if (year) query = query.eq("year", year);
-  if (search?.trim()) query = query.ilike("question", `%${search.trim().replace(/[%_]/g, "\\$&")}%`);
+  if (!entry) {
+    const pageSize = 500;
+    const allRows: QuestionRow[] = [];
+    let exactCount = 0;
 
-  const { data, error, count } = await query;
-  if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
-  if (error) throw error;
+    while (true) {
+      let query = supabase
+        .from("study_questions")
+        .select(QUESTION_COLUMNS, { count: "exact" })
+        .eq("exam_program_id", "jamb")
+        .eq("review_status", JAMB_STUDENT_QUESTION_VISIBILITY.review_status)
+        .eq("hidden", JAMB_STUDENT_QUESTION_VISIBILITY.hidden)
+        .eq("subject", subject)
+        .eq("category", "objective")
+        .order("id", { ascending: true });
 
+      if (year) query = query.eq("year", year);
+      if (normalizedSearch) {
+        query = query.ilike("question", `%${normalizedSearch.replace(/[%_]/g, "\\$&")}%`);
+      }
+
+      const pageOffset = allRows.length;
+      const { data, error, count } = await query.range(pageOffset, pageOffset + pageSize - 1);
+      if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
+      if (error) throw error;
+
+      if (pageOffset === 0) exactCount = count ?? data?.length ?? 0;
+      const page = (data ?? []) as unknown as QuestionRow[];
+      allRows.push(...page);
+      if (page.length < pageSize || allRows.length >= exactCount) break;
+    }
+
+    const questions = allRows.map(mapQuestion).sort(compareJambQuestionOrder);
+    entry = { loadedAt: now, questions };
+    if (jambQuestionSearchCache.size >= JAMB_QUESTION_SEARCH_CACHE_MAX_ENTRIES) {
+      const oldestKey = jambQuestionSearchCache.keys().next().value;
+      if (oldestKey) jambQuestionSearchCache.delete(oldestKey);
+    }
+    jambQuestionSearchCache.set(cacheKey, entry);
+  }
+
+  const safeOffset = Math.max(0, Math.floor(offset));
+  const safeLimit = Math.max(1, Math.min(500, Math.floor(limit)));
   return {
-    questions: ((data ?? []) as unknown as QuestionRow[]).map(mapQuestion),
-    count: count ?? 0,
+    questions: entry.questions.slice(safeOffset, safeOffset + safeLimit),
+    count: entry.questions.length,
   };
 }
 

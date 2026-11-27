@@ -401,7 +401,7 @@ export async function searchJambQuestions(args: {
       if (isMissingJambSchema(error)) throw new JambSchemaUnavailableError();
       if (error) throw error;
 
-      if (pageOffset === 0) exactCount = count ?? data?.length ?? 0;
+      if (pageOffset === 0) exactCount = count ?? Number.MAX_SAFE_INTEGER;
       const page = (data ?? []) as unknown as QuestionRow[];
       allRows.push(...page);
       if (page.length < pageSize || allRows.length >= exactCount) break;

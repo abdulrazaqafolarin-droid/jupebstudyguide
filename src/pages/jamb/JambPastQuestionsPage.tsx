@@ -14,8 +14,8 @@ import {
   JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
 import {
-  getJambQuestionYears, getJambPublishedQuestionById, getJambSubjectSummaries,
-  JambSchemaUnavailableError, searchJambQuestions,
+  getJambQuestionYearSummaries, getJambPublishedQuestionById, getJambSubjectSummaries,
+  invalidateJambQuestionSearchCache, JambSchemaUnavailableError, searchJambQuestions,
   type JambQuestion, type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
@@ -65,6 +65,7 @@ export default function JambPastQuestionsPage() {
   );
   const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);
   const [years, setYears] = useState<number[]>([]);
+  const [yearCounts, setYearCounts] = useState<Record<number, number>>({});
   const [year, setYear] = useState<number | null>(requestedYear);
   const [expandedYear, setExpandedYear] = useState<number | null>(requestedYear);
   const [search, setSearch] = useState("");
@@ -107,6 +108,7 @@ export default function JambPastQuestionsPage() {
   };
 
   const handleAdminQuestionUpdated = (updated: JambQuestion) => {
+    invalidateJambQuestionSearchCache();
     setQuestions((previous) => previous.map((question) =>
       question.id === updated.id ? { ...question, ...updated } : question,
     ).sort((a, b) => a.sortOrder - b.sortOrder));
@@ -116,6 +118,7 @@ export default function JambPastQuestionsPage() {
   };
 
   const handleAdminQuestionDeleted = (id: string) => {
+    invalidateJambQuestionSearchCache();
     setQuestions((previous) => previous.filter((question) => question.id !== id));
     setBookmarkQuestions((previous) => previous.filter((question) => question.id !== id));
     setCount((previous) => Math.max(0, previous - 1));
@@ -124,6 +127,7 @@ export default function JambPastQuestionsPage() {
   };
 
   const handleAdminQuestionAdded = (added: JambQuestion) => {
+    invalidateJambQuestionSearchCache();
     setQuestions((previous) => [...previous, added].sort((a, b) => a.sortOrder - b.sortOrder));
     setCount((previous) => previous + 1);
     setActiveQuestionIndex(Math.min(questions.length, JAMB_INITIAL_QUESTION_PAGE_SIZE - 1));
@@ -131,6 +135,7 @@ export default function JambPastQuestionsPage() {
   };
 
   const handleAdminQuestionsReordered = (reordered: JambQuestion[]) => {
+    invalidateJambQuestionSearchCache();
     const positions = new Map(reordered.map((question) => [question.id, question.sortOrder]));
     setQuestions((previous) => previous.map((question) => {
       const position = positions.get(question.id);
@@ -155,10 +160,11 @@ export default function JambPastQuestionsPage() {
     let active = true;
     setLoadingYears(true);
     setError(null);
-    getJambQuestionYears(subject)
-      .then((available) => {
+    getJambQuestionYearSummaries(subject)
+      .then(({ years: available, counts }) => {
         if (active) {
           setYears(available);
+          setYearCounts(counts);
           setSchemaUnavailable(false);
           setExpandedYear((previous) => previous !== null && available.includes(previous) ? previous : null);
         }
@@ -166,6 +172,7 @@ export default function JambPastQuestionsPage() {
       .catch((reason: unknown) => {
         if (!active) return;
         setYears([]);
+        setYearCounts({});
         setSchemaUnavailable(reason instanceof JambSchemaUnavailableError);
         setError(reason instanceof Error ? reason.message : "Unable to load available years.");
       })
@@ -872,6 +879,7 @@ export default function JambPastQuestionsPage() {
               ) : (
                 <YearAccordion
                   years={years}
+                  counts={yearCounts}
                   selectedYear={expandedYear}
                   onSelectYear={setExpandedYear}
                   onViewYear={chooseYear}

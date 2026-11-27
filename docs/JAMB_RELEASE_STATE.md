@@ -576,3 +576,15 @@ The 27 November review files record the discrepancy and the nine strongest/parti
 One likely duplicate/reference error was identified: Biology 1991:Q49 repeats the exact fertilizer-loss question already present at source-matched 1991:Q41. It is only a soft-deduplication candidate; no row was deleted or changed. Other alternate matches were retained pending page-level source evidence.
 
 No source question was inserted, no answer key was approved, no question was unhidden or published, and no JAMB row was deleted or renumbered during this recovery pass.
+
+## 2016 English source gaps — corrected against recovered v17 baseline, 27 November 2026
+
+A review of the recovered Library file `JAMB_526_Answer_Key_Progress_v17.md` found that the prior gap manifest's Q8/Q9 suggestions (B and D) conflicted with the historical queue baseline. That B/D pair is withdrawn.
+
+- **2016:Q3:** missing from the committed `JAMB_english_READABLE.txt` but present in secondary transcriptions of the MySchoolGist film-making passage. Candidate A is supported by the passage's distinction between a wide audience and a specialized audience; Acadmate and Stepwise both list A. Preserve the exact original PDF page before staging.
+- **2016:Q8:** preserve the historical v17 suggestion D, medium confidence, with an explicit warning that the option wording is corrupted and the GPS passage is missing. Do not replace it with B without direct source-page evidence.
+- **2016:Q9:** preserve the historical v17 suggestion C, medium confidence, with an explicit warning that the GPS passage is missing. Do not replace it with D without direct source-page evidence.
+
+The separate solution compilations contain disagreements for 2016 English keys. Q1=C and Q4=C remain medium-confidence answer-only drafts because the text meaning and the Acadmate 2016 question reference support those choices, but the full source answer-key page could not be independently reopened in this pass. Both database rows remain hidden and `needs_review`; the answer-only audit records have `rights_confirmed=false`.
+
+The corrected manifest `docs/JAMB_ENGLISH_2016_SOURCE_GAPS.csv` is the controlling gap note for Q3/Q8/Q9. None of those questions has been inserted into the live database. Source rights, original page/diagram evidence, and human answer review remain mandatory.

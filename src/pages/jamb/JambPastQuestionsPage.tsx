@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -376,7 +376,7 @@ export default function JambPastQuestionsPage() {
     setShowQuestionGrid(false);
   };
 
-  const goToNextQuestion = () => {
+  const goToNextQuestion = useCallback(() => {
     if (activeQuestionIndex < questions.length - 1) {
       setActiveQuestionIndex((value) => value + 1);
       return;
@@ -385,9 +385,9 @@ export default function JambPastQuestionsPage() {
       pendingQuestionIndexRef.current = 0;
       setOffset((value) => value + JAMB_INITIAL_QUESTION_PAGE_SIZE);
     }
-  };
+  }, [activeQuestionIndex, questions.length, offset, count]);
 
-  const goToPreviousQuestion = () => {
+  const goToPreviousQuestion = useCallback(() => {
     if (activeQuestionIndex > 0) {
       setActiveQuestionIndex((value) => value - 1);
       return;
@@ -396,7 +396,30 @@ export default function JambPastQuestionsPage() {
       pendingQuestionIndexRef.current = JAMB_INITIAL_QUESTION_PAGE_SIZE - 1;
       setOffset((value) => Math.max(0, value - JAMB_INITIAL_QUESTION_PAGE_SIZE));
     }
-  };
+  }, [activeQuestionIndex, offset]);
+
+  // Match JUPEB's arrow-key navigation without hijacking arrow keys while a
+  // learner is typing in search or any editable control.
+  useEffect(() => {
+    if (view !== "questions") return;
+    const handleQuestionNavigation = (event: KeyboardEvent) => {
+      if (showQuestionGrid || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const target = event.target;
+      if (target instanceof HTMLElement &&
+          target.closest("input, textarea, select, [contenteditable='true']")) {
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goToPreviousQuestion();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goToNextQuestion();
+      }
+    };
+    window.addEventListener("keydown", handleQuestionNavigation);
+    return () => window.removeEventListener("keydown", handleQuestionNavigation);
+  }, [view, showQuestionGrid, goToNextQuestion, goToPreviousQuestion]);
 
   const renderQuestionCard = (question: JambQuestion) => {
     const bookmarked = bookmarksReady && bookmarks.includes(question.id);

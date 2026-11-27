@@ -124,8 +124,8 @@ WHERE answer_key.question_id = question.id
 
 UPDATE public.study_question_answer_keys AS answer_key
 SET confidence_level = 'medium',
-    confidence_note = 'Official FAA and U.S. Air Force histories describe GPS as a U.S. government/Department of Defense system developed initially for military users, which supports option C (security purposes). The source passage is missing from the text extraction, so retain this as a medium-confidence draft.',
-    evidence_reference = 'JAMB_english_READABLE.txt | MySchoolGist 2016 set | 2016:Q7 | https://www.faa.gov/about/office_org/headquarters_offices/ato/service_units/techops/navservices/gnss/gps ; https://www.af.mil/News/Article-Display/Article/111465/general-space-capability-integral-to-all-military-operations/ ; https://www.gps.gov/sites/default/files/2025-07/gps_finalreport618.pdf',
+    confidence_note = 'The exact MySchoolGist JAMB 2016 source lists Q7 option C as “security purposes”; Smithsonian and U.S. Space Force histories confirm initial military applications. The comprehension passage is missing, so keep medium confidence rather than approval. The stored option wording adds “and military” and should be restored to the source wording before approval.',
+    evidence_reference = 'JAMB_english_READABLE.txt | JAMB ENGLISH 2016 - OBJECTIVE | Q7 exact option C: security purposes | https://timeandnavigation.si.edu/satellite-navigation/gps ; https://www.ussf-cfc.spaceforce.mil/News/Article-Display/Article/4172691/space-warfighter-heritage-gps-improved-for-public-use',
     draft_version = GREATEST(answer_key.draft_version, 1),
     updated_at = now()
 FROM public.study_questions AS question

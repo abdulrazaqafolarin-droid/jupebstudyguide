@@ -20,9 +20,7 @@ import {
 } from "@/lib/jamb-question-service";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionMath } from "@/components/QuestionMath";
-import { QuestionImage } from "@/components/QuestionImage";
-import { QuestionTextWithImage } from "@/components/study-past-questions/QuestionTextWithImage";
-import { isInlineImagePosition } from "@/lib/question-image-position";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
@@ -404,13 +402,6 @@ export default function JambPastQuestionsPage() {
     const bookmarked = bookmarksReady && bookmarks.includes(question.id);
     const current = selected[question.id] ?? savedAnswers[question.id]?.selected ?? "";
     const feedback = feedbacks[question.id];
-    const imagePosition = question.imagePosition || (question.imageUrls.length > 0 ? "image-only" : "text-only");
-    const positionedImages = question.imageUrls.map((url, index) => ({
-      id: question.id + "-image-" + index,
-      src: url,
-      alt: JAMB_SUBJECT_INFO[question.subject].label + " question illustration " + (index + 1),
-    }));
-
     return (
       <article key={question.id} className="rounded-2xl border border-border bg-card p-4 chalk-texture sm:p-5">
         <div className="mb-3 flex items-start justify-between gap-3">
@@ -433,51 +424,12 @@ export default function JambPastQuestionsPage() {
           </button>
         </div>
 
-        {isInlineImagePosition(imagePosition) ? (
-          <QuestionTextWithImage
-            content={question.question}
-            images={positionedImages}
-            imagePosition={imagePosition}
-          />
-        ) : imagePosition === "image-beside" && question.imageUrls.length > 0 ? (
-          <>
-            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div className="sm:w-1/2 sm:shrink-0">
-                <QuestionImage
-                  imageUrl={question.imageUrls[0]}
-                  alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-                  className="mb-0"
-                />
-              </div>
-              {question.question.trim() && (
-                <QuestionMath
-                  content={question.question}
-                  className="text-base font-medium leading-relaxed sm:w-1/2"
-                />
-              )}
-            </div>
-            {question.imageUrls.length > 1 && (
-              <QuestionImage
-                imageUrls={question.imageUrls.slice(1)}
-                alt={JAMB_SUBJECT_INFO[question.subject].label + " additional question illustration"}
-              />
-            )}
-          </>
-        ) : (
-          <>
-            {imagePosition !== "text-only" && question.imageUrls.length > 0 && (
-              <QuestionImage
-                imageUrls={question.imageUrls}
-                alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-              />
-            )}
-            {imagePosition !== "image-only" && question.question.trim() && (
-              <div className="mb-4 max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1">
-                <QuestionMath content={question.question} />
-              </div>
-            )}
-          </>
-        )}
+        <QuestionPrompt
+          question={question}
+          alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
+          className="mb-4 max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1"
+          textClassName="text-base font-medium leading-relaxed"
+        />
         <div className="space-y-2">
           {question.options.map((option) => {
             const isSelected = current === option.label;

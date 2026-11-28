@@ -561,7 +561,6 @@ export default function JambPastQuestionsPage() {
               </Link>
               <div className="flex-1 text-center">
                 <h1 className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Study Past Questions</h1>
-                <p className="text-[10px] text-muted-foreground/60 -mt-0.5">JAMB UTME Exam Prep</p>
               </div>
               <div className="flex items-center gap-1">
                 <button

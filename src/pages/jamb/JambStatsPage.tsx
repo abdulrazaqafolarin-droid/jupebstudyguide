@@ -335,27 +335,10 @@ export default function JambStatsPage() {
           })}
         </div>
 
-        <div className="rounded-xl border border-border/50 bg-card p-4 flex items-start gap-3">
-          <Award className="w-4 h-4 mt-0.5 text-primary" />
-          <div>
-            <p className="text-xs font-semibold">About your JAMB stats</p>
-            <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-              Practice activity, spaced-repetition mastery and timed CBT scores are measured separately. Only server-approved answer keys can grade a question or contribute to a CBT score.
-            </p>
-            {publishedQuestionCount === 0 && !loadingBank && (
-              <p className="mt-1 text-[11px] text-muted-foreground">The JAMB bank has no published questions yet. Statistics will fill in as reviewed questions are approved and published.</p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Link to="/jamb/past-questions" className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">
-            Continue practice
-          </Link>
-          <Link to="/jamb/cbt/setup" className="rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-accent">
-            Timed CBT
-          </Link>
-        </div>
+        <p className="text-[11px] leading-relaxed text-muted-foreground">
+          Only server-approved JAMB answer keys are graded.
+          {publishedQuestionCount === 0 && !loadingBank ? " No questions are published yet." : ""}
+        </p>
       </main>
     </div>
   );

@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface SyllabusSubjectAccordionProps {
+const subjectItemVariants = {\n  hidden: { opacity: 0, y: 12 },\n  show: { opacity: 1, y: 0 },\n};\n\ninterface SyllabusSubjectAccordionProps {
   icon: string;
   title: string;
   metadata: string;
@@ -30,7 +30,7 @@ export function SyllabusSubjectAccordion({
   children,
 }: SyllabusSubjectAccordionProps) {
   return (
-    <motion.div className="relative">
+    <motion.div variants={subjectItemVariants} className="relative">
       <button
         type="button"
         aria-expanded={expanded}

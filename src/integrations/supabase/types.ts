@@ -2053,13 +2053,6 @@ export type Database = {
             referencedRelation: "exam_programs"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "exam_user_study_sessions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       study_sessions: {

@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
 import {
   ArrowRight, BookOpen, Brain, Bookmark, CalendarDays, Clock3,
-  CheckCircle2, Flame, GraduationCap, Library, ShieldAlert, ShieldCheck, Sparkles, Target, X,
+  CheckCircle2, Flame, GraduationCap, Library, ShieldCheck, Sparkles, Target, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WorkspaceHomeHero from "@/components/WorkspaceHomeHero";
@@ -38,7 +38,6 @@ import { fetchOnboardingStatus, getCachedOnboardingStatus } from "@/lib/onboardi
 import rutexLogo from "@/assets/rutex-logo.jpg";
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
-const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
 const containerVariants: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },

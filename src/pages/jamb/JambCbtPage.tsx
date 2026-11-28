@@ -10,16 +10,18 @@ import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
+import { JAMB_SUBJECT_INFO, type JambSubject } from "@/lib/jamb-config";
 
 interface AttemptQuestion {
   sequence: number;
   question_id: string;
-  subject: string;
+  subject: JambSubject;
   question_snapshot: {
     question: string;
     options: Array<{ label: string; text: string }>;
     imageUrls?: string[];
     year?: number;
+    topic?: string | null;
   };
 }
 interface AttemptPayload {
@@ -417,10 +419,12 @@ export default function JambCbtPage() {
           className="rounded-2xl border border-border bg-card p-6 chalk-texture animate-scale-in"
         >
             <div className="mb-4 flex items-center justify-between gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {question.subject} · {question.question_snapshot.year ?? "JAMB practice"}
+              <span
+                className={`rounded-full px-3 py-1 text-sm font-medium subject-${question.subject}`}
+                title={question.question_snapshot.year ? `Source year ${question.question_snapshot.year}` : undefined}
+              >
+                {JAMB_SUBJECT_INFO[question.subject].icon} {question.question_snapshot.topic?.trim() || JAMB_SUBJECT_INFO[question.subject].label}
               </span>
-              <span className="text-[11px] text-muted-foreground">{saving ? "Saving answer…" : "Changes saved"}</span>
             </div>
             <QuestionPrompt
               question={{

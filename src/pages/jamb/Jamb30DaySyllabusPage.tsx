@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import {
   ArrowLeft, BookOpen, CalendarDays, CheckCircle2, ChevronDown, Clock3,
   ExternalLink, Flame, GraduationCap, Lock, MoreHorizontal, Pencil,
-  Play, PlayCircle, Plus, RotateCcw, Sparkles, Target, Trash2, Trophy,
+  Play, PlayCircle, Plus, Sparkles, Target, Trash2, Trophy,
 } from "lucide-react";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import {
   JAMB_SYLLABUS,
   JAMB_SYLLABUS_REVIEW_NOTICE,
   JAMB_SYLLABUS_VERIFIED,
-  type JambSyllabusSubjectId,
 } from "@/lib/jamb-syllabus";
 import {
   JAMB_PLAN_DAYS,
@@ -362,7 +361,6 @@ function JambTopicAccordion({ topic, expanded, onToggle }: JambTopicAccordionPro
 interface JambSessionCardProps {
   session: JambStudySession;
   canAdvanceToDay: (sessionId: string, day: number) => boolean;
-  onOpenDay: (session: JambStudySession, day: number) => void;
   onCompleteDay: (sessionId: string, day: number, mastery: number) => void;
   onRename: (id: string, name: string) => void;
   onPause: (id: string) => void;
@@ -582,7 +580,6 @@ export default function Jamb30DaySyllabusPage() {
                 key={session.id}
                 session={session}
                 canAdvanceToDay={canAdvanceToDay}
-                onOpenDay={() => undefined}
                 onCompleteDay={handleCompleteDay}
                 onRename={renameSession}
                 onPause={pauseSession}

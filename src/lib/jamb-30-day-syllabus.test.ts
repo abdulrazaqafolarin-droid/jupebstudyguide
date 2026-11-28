@@ -1,0 +1,97 @@
+import { describe, expect, it } from "vitest";
+import { JAMB_SYLLABUS_SUBJECTS } from "@/lib/jamb-syllabus";
+import {
+  generateJamb30DayTasks,
+  getJambPlanTopicPool,
+  getJambStudySessionProgress,
+  mergeJambStudySessions,
+  normalizeJambPlanSubjects,
+  type JambStudySession,
+} from "@/lib/jamb-30-day-syllabus";
+
+describe("JAMB 30-day syllabus plan", () => {
+  it("keeps Use of English compulsory and normalizes subjects without duplicates", () => {
+    expect(normalizeJambPlanSubjects(["physics", "chemistry", "biology"])).toEqual([
+      "use_of_english", "physics", "chemistry", "biology",
+    ]);
+    expect(normalizeJambPlanSubjects(["use_of_english", "physics", "physics", "math"])).toEqual([
+      "use_of_english", "math", "physics",
+    ]);
+  });
+
+  it("builds exactly 30 days from the selected JAMB subjects", () => {
+    const subjects = ["use_of_english", "physics", "chemistry", "biology"] as const;
+    const tasks = generateJamb30DayTasks(subjects);
+    const expectedTopics = getJambPlanTopicPool(subjects);
+
+    expect(tasks).toHaveLength(30);
+    expect(tasks.map((task) => task.day)).toEqual(Array.from({ length: 30 }, (_, index) => index + 1));
+    expect(tasks.every((task) => !task.isCompleted)).toBe(true);
+    expect(tasks.flatMap((task) => task.topics).map((topic) => topic.id)).toEqual(
+      expectedTopics.map((topic) => topic.id),
+    );
+  });
+
+  it("does not silently accept more than three optional subjects", () => {
+    expect(() => generateJamb30DayTasks(JAMB_SYLLABUS_SUBJECTS)).toThrow(
+      "A JAMB study plan must contain Use of English and exactly three other subjects.",
+    );
+  });
+
+  it("rejects an invalid plan length", () => {
+    expect(() => generateJamb30DayTasks(["physics", "chemistry", "biology"], 0)).toThrow(
+      "Study plan length must be between 1 and 120 days.",
+    );
+  });
+
+  it("reports completed-day progress accurately", () => {
+    const tasks = generateJamb30DayTasks(["physics", "chemistry", "biology"]);
+    expect(getJambStudySessionProgress(tasks)).toEqual({
+      completedDays: 0, totalDays: 30, percentage: 0,
+    });
+    const partiallyComplete = tasks.map((task) => task.day <= 3 ? { ...task, isCompleted: true } : task);
+    expect(getJambStudySessionProgress(partiallyComplete)).toEqual({
+      completedDays: 3, totalDays: 30, percentage: 10,
+    });
+  });
+
+  it("merges completed days from local and cloud without duplicating sessions", () => {
+    const tasks = generateJamb30DayTasks(["physics", "chemistry", "biology"]);
+    const base: JambStudySession = {
+      id: "session-1",
+      name: "My JAMB plan",
+      subjects: ["use_of_english", "physics", "chemistry", "biology"],
+      status: "active",
+      startDate: "2026-11-28",
+      dailyGoalMinutes: 30,
+      createdAt: "2026-11-28T08:00:00.000Z",
+      updatedAt: "2026-11-28T08:00:00.000Z",
+      progress: {
+        subjects: ["use_of_english", "physics", "chemistry", "biology"],
+        currentDay: 1,
+        dailyTasks: tasks,
+        startedAt: "2026-11-28T08:00:00.000Z",
+        overallProgress: 0,
+        subjectProgress: {
+          use_of_english: 0, math: 0, physics: 0, chemistry: 0, biology: 0,
+        },
+      },
+    };
+    const local = {
+      ...base,
+      updatedAt: "2026-11-28T09:00:00.000Z",
+      progress: {
+        ...base.progress,
+        dailyTasks: base.progress.dailyTasks.map((task) => task.day === 1
+          ? { ...task, isCompleted: true, masteryScore: 100, completedAt: "2026-11-28T09:00:00.000Z" }
+          : task),
+      },
+    };
+    const cloud = { ...base, updatedAt: "2026-11-28T08:30:00.000Z" };
+
+    const merged = mergeJambStudySessions([local], [cloud]);
+    expect(merged).toHaveLength(1);
+    expect(merged[0].progress.dailyTasks[0].isCompleted).toBe(true);
+    expect(merged[0].progress.overallProgress).toBeCloseTo(100 / 30);
+  });
+});

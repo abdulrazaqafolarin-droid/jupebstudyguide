@@ -32,12 +32,9 @@ export default function JambLeaderboardPage() {
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
               <TrendingUp className="w-4 h-4 text-primary" />
               Your Rank
-              <span className="ml-auto rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-600">
-                Pending verification
-              </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Your verified JAMB rank will appear here.
+              Your rank will appear here.
             </p>
           </div>
         </div>
@@ -51,7 +48,7 @@ export default function JambLeaderboardPage() {
             <Trophy className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
             <p className="text-sm font-medium">No verified JAMB scores yet</p>
             <p className="text-xs text-muted-foreground mt-1 mb-4">
-              Rankings will appear here when eligible scores are verified.
+              Rankings appear after eligible JAMB scores are verified.
             </p>
             <Button asChild>
               <Link to="/jamb/past-questions">Go Study Now</Link>

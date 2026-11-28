@@ -21,6 +21,7 @@ import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
+import { JambDailyMissionCard } from "@/components/jamb/JambDailyMissionCard";
 import { useJamb30DaySessions } from "@/hooks/useJamb30DaySessions";
 import {
   JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
@@ -332,6 +333,8 @@ export default function JambHomePage() {
             </div>
           </section>
         )}
+
+        <JambDailyMissionCard history={dailyMissionHistory} ready={missionHistoryReady} />
 
         {/* Programme-specific values inside the shared progress panel — never reads JUPEB data. */}
         <DashboardProgressPanel

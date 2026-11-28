@@ -194,7 +194,7 @@ export default function JambStatsPage() {
     return weeks;
   }, [cbtHistoryForUser]);
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your learning analytics" compact />
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
@@ -329,16 +329,11 @@ export default function JambStatsPage() {
                 <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
                   <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: percent + "%" }} />
                 </div>
-                <p className="text-[10px] text-muted-foreground">{row.mastered} mastered · {row.due} due</p>
               </motion.div>
             );
           })}
         </div>
 
-        <p className="text-[11px] leading-relaxed text-muted-foreground">
-          Only server-approved JAMB answer keys are graded.
-          {publishedQuestionCount === 0 && !loadingBank ? " No questions are published yet." : ""}
-        </p>
       </main>
     </div>
   );

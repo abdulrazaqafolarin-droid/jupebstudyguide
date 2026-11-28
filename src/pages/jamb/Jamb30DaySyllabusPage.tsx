@@ -101,6 +101,7 @@ function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonPr
     <JambAITutorPage
       embeddedSubject={teachingTopic.subject}
       embeddedTopicId={teachingTopic.id}
+      embeddedDay={task.day}
       onClose={() => setTeachingTopic(null)}
       onComplete={() => {
         setTeachingCompleted(true);

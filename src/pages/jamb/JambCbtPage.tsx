@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
@@ -412,15 +412,10 @@ export default function JambCbtPage() {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.section
-            key={question.sequence}
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
-            transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="rounded-2xl border border-border bg-card p-6 chalk-texture"
-          >
+        <section
+          key={question.sequence}
+          className="rounded-2xl border border-border bg-card p-6 chalk-texture animate-scale-in"
+        >
             <div className="mb-4 flex items-center justify-between gap-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {question.subject} · {question.question_snapshot.year ?? "JAMB practice"}
@@ -474,8 +469,7 @@ export default function JambCbtPage() {
                 </Button>
               )}
             </div>
-          </motion.section>
-        </AnimatePresence>
+        </section>
 
         <motion.section
           initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}

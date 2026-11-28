@@ -462,6 +462,30 @@ export default function JambHomePage() {
               <p className="font-medium mt-2">Daily Mission</p>
               <p className="text-xs text-muted-foreground">Daily practice set</p>
             </motion.button>
+            <motion.button
+              type="button"
+              onClick={() => navigate("/jamb/syllabus")}
+              className="p-4 rounded-xl border border-physics/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-physics hover:bg-physics/5"
+              variants={cardVariants}
+              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
+              whileTap={{ scale: 0.95, transition: fastSpring }}
+            >
+              <BookOpen className="w-7 h-7 mx-auto text-physics" />
+              <p className="font-medium mt-2">JAMB Syllabus</p>
+              <p className="text-xs text-muted-foreground">Browse subjects</p>
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={() => navigate("/jamb/ai")}
+              className="p-4 rounded-xl border border-chemistry/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-chemistry hover:bg-chemistry/5"
+              variants={cardVariants}
+              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
+              whileTap={{ scale: 0.95, transition: fastSpring }}
+            >
+              <Sparkles className="w-7 h-7 mx-auto text-chemistry" />
+              <p className="font-medium mt-2">AI Tutor</p>
+              <p className="text-xs text-muted-foreground">Study any topic</p>
+            </motion.button>
           </motion.div>
         </section>
 

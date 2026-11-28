@@ -15,7 +15,6 @@ interface SessionCardProps {
   onPause: (id: string) => void;
   onResume: (id: string) => void;
   onDelete: (id: string) => void;
-  onStartTeaching?: (session: StudySessionData, day: number) => void;
 }
 
 function calculateStreak(tasks: StudySessionData["progress"]["dailyTasks"]): number {
@@ -51,7 +50,6 @@ export function SessionCard({
   onPause,
   onResume,
   onDelete,
-  onStartTeaching,
 }: SessionCardProps) {
   const { progress } = session;
   const completedDays = progress.dailyTasks.filter((task) => task.isCompleted).length;
@@ -101,7 +99,6 @@ export function SessionCard({
               onBack();
             }}
             onBack={onBack}
-            onAskTutor={() => onStartTeaching?.(session, day)}
           />
         );
       }}

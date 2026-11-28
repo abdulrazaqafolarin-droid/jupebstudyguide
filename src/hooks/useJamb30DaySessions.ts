@@ -7,6 +7,7 @@ import {
   generateJamb30DayTasks,
   isJambStudySession,
   mergeJambStudySessions,
+  reorderJambStudySessionSubjects,
   type JambPlanSubject,
   type JambStudySession,
 } from "@/lib/jamb-30-day-syllabus";
@@ -231,6 +232,14 @@ export function useJamb30DaySessions() {
     }));
   }, [setStored]);
 
+  const reorderSubjects = useCallback((sessionId: string, orderedSubjects: JambPlanSubject[]) => {
+    setStored((previous) => previous.map((session) =>
+      session.id === sessionId
+        ? reorderJambStudySessionSubjects(session, orderedSubjects)
+        : session,
+    ));
+  }, [setStored]);
+
   const canAdvanceToDay = useCallback((sessionId: string, day: number) => {
     const session = sessions.find((item) => item.id === sessionId);
     if (!session || day < 1 || day > TOTAL_DAYS) return false;
@@ -250,6 +259,7 @@ export function useJamb30DaySessions() {
     deleteSession,
     completeDay,
     canAdvanceToDay,
+    reorderSubjects,
     renameSession,
     pauseSession,
     resumeSession,

@@ -20,6 +20,8 @@ interface StudyChatShellProps {
   showTextbooks: boolean;
   onTextbooksOpenChange: (open: boolean) => void;
   onNewChat: () => void;
+  onBack?: () => void;
+  headerActions?: ReactNode;
   children: ReactNode;
 }
 
@@ -45,6 +47,8 @@ export function StudyChatShell({
   showTextbooks,
   onTextbooksOpenChange,
   onNewChat,
+  onBack,
+  headerActions,
   children,
 }: StudyChatShellProps) {
   const programmeName = programId === "jamb" ? "JAMB" : "JUPEB";
@@ -72,14 +76,26 @@ export function StudyChatShell({
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <header className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-background/80 px-3 py-2.5 backdrop-blur-sm">
-            <Link
-              to={backTo}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
-              aria-label={backLabel}
-              title={backLabel}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                aria-label={backLabel}
+                title={backLabel}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+            ) : (
+              <Link
+                to={backTo}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                aria-label={backLabel}
+                title={backLabel}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+            )}
             {isMobile && (
               <button
                 type="button"
@@ -95,6 +111,7 @@ export function StudyChatShell({
               <h1 className="truncate text-sm font-semibold">{title}</h1>
               <p className="truncate text-[10px] text-muted-foreground">{subtitle}</p>
             </div>
+            {headerActions}
             <Button
               variant="outline"
               size="sm"

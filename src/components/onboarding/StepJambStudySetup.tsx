@@ -1,10 +1,15 @@
-import { motion } from "framer-motion";
-import { Check, Lock } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { OnboardingSubjectTile } from "@/components/onboarding/OnboardingSubjectTile";
 import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
 import type { JambScienceSubject, JambExamTarget, JambStudyPreferences } from "@/lib/jamb-study-preferences";
 import { cn } from "@/lib/utils";
 import { MAX_SCHOOL_NAME_LENGTH, parseSeatNumber } from "@/lib/profile-fields";
+
+const SELECTED_SUBJECT_STYLE: Record<JambScienceSubject, { card: string; icon: string }> = {
+  physics: { card: "border-physics bg-physics/10", icon: "hsl(var(--physics))" },
+  chemistry: { card: "border-chemistry bg-chemistry/10", icon: "hsl(var(--chemistry))" },
+  biology: { card: "border-biology bg-biology/10", icon: "hsl(var(--biology))" },
+};
 
 const EXAM_TARGETS = [
   { id: "this-session", label: "This session" },
@@ -31,7 +36,7 @@ interface StepJambStudySetupProps {
   onExamSeatNumber: (value: string) => void;
 }
 
-/** JAMB counterpart to JUPEB's study-plan step, without inventing a syllabus. */
+/** JAMB subject rules and availability, using the shared JUPEB setup structure. */
 export function StepJambStudySetup({
   subjects,
   examTarget,
@@ -49,70 +54,50 @@ export function StepJambStudySetup({
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h2 className="text-2xl font-bold">Set up your JAMB study plan</h2>
+        <h2 className="text-2xl font-bold">Build your study plan</h2>
         <p className="text-sm text-muted-foreground">
-          Choose the subjects you want to focus on and set a daily practice goal. These are preferences, not an official subject-combination check.
+          These set up your JAMB revision and Daily Missions.
         </p>
       </div>
+
       <section className="space-y-2.5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">UTME subject guide</p>
-        <div className="relative flex items-center gap-3 rounded-xl border-2 border-primary/40 bg-primary/5 p-3">
-          <span className="text-2xl">📘</span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold">Use of English</p>
-            <p className="text-[10px] text-muted-foreground">Compulsory paper · Rutex question content pending</p>
-          </div>
-          <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
-        </div>
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Your subjects</p>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+          <OnboardingSubjectTile
+            variant="required"
+            icon={JAMB_SUBJECT_INFO.use_of_english.icon}
+            title={JAMB_SUBJECT_INFO.use_of_english.label}
+            subtitle="Required · content pending"
+          />
           {JAMB_SUBJECTS.map((subject) => {
             const info = JAMB_SUBJECT_INFO[subject];
             const selected = subjects.includes(subject);
+            const style = SELECTED_SUBJECT_STYLE[subject];
             return (
-              <motion.button
+              <OnboardingSubjectTile
                 key={subject}
-                type="button"
+                icon={info.icon}
+                title={info.label}
+                subtitle={selected ? "Added" : "Elective"}
+                selected={selected}
+                selectedClassName={style.card}
+                selectedIconBackground={style.icon}
                 onClick={() => onToggleSubject(subject)}
-                aria-pressed={selected}
-                whileTap={{ scale: 0.97 }}
-                className={cn(
-                  "flex items-center gap-2.5 rounded-xl border-2 p-3 text-left transition-colors",
-                  selected ? "border-primary bg-primary/10" : "border-border hover:border-primary/30",
-                )}
-              >
-                <span className="text-2xl">{info.icon}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold">{info.label}</span>
-                  <span className="block text-[10px] text-muted-foreground">
-                    {selected ? "Pinned to your focus" : "Add to your focus"}
-                  </span>
-                </span>
-                {selected && (
-                  <motion.span
-                    initial={{ opacity: 0, transform: "scale(0.6)" }}
-                    animate={{ opacity: 1, transform: "scale(1)" }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
-                  >
-                    <Check className="h-3 w-3" strokeWidth={3} />
-                  </motion.span>
-                )}
-              </motion.button>
+              />
             );
           })}
-          <div className="flex items-center gap-2.5 rounded-xl border-2 border-dashed border-border bg-secondary/20 p-3 opacity-80" aria-disabled="true">
-            <span className="text-2xl">{JAMB_SUBJECT_INFO.math.icon}</span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-semibold">{JAMB_SUBJECT_INFO.math.label}</span>
-              <span className="block text-[10px] text-muted-foreground">Rutex question content pending review</span>
-            </span>
-            <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          </div>
+          <OnboardingSubjectTile
+            variant="unavailable"
+            icon={JAMB_SUBJECT_INFO.math.icon}
+            title={JAMB_SUBJECT_INFO.math.label}
+            subtitle="Pending review"
+          />
         </div>
         <p className="text-[10px] leading-relaxed text-muted-foreground">
-          Select any of the science subjects currently available in Rutex. Your preferences do not change your official UTME subject combination. More subjects will appear when their question content has been reviewed and published.
+          Subject choices are study preferences, not official UTME combination advice. More question content is added after review.
         </p>
       </section>
+
       <section className="space-y-2.5">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">When are you writing?</p>
         <div className="flex gap-2">
@@ -132,6 +117,7 @@ export function StepJambStudySetup({
           ))}
         </div>
       </section>
+
       <section className="space-y-2.5">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Daily study goal</p>
         <div className="flex gap-2">
@@ -151,6 +137,7 @@ export function StepJambStudySetup({
           ))}
         </div>
       </section>
+
       <section className="space-y-2.5">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Your school</p>
         <Input
@@ -161,7 +148,9 @@ export function StepJambStudySetup({
           aria-label="School name"
           className="bg-background/50"
         />
-        <p className="text-[10px] text-muted-foreground">Shown as a tag on your profile everywhere it appears — leaderboard, chat, groups.</p>
+        <p className="text-[10px] text-muted-foreground">
+          Shown as a tag on your profile everywhere it appears — leaderboard, chat, groups.
+        </p>
         <Input
           value={examSeatNumber}
           onChange={(event) => onExamSeatNumber(event.target.value)}
@@ -175,11 +164,10 @@ export function StepJambStudySetup({
           {seatInvalid ? "Type the last 3 or 4 digits — e.g. 4321" : "Last 3 or 4 digits on your ID card. Optional — only you can see it."}
         </p>
       </section>
-      <div className="rounded-xl border border-border bg-secondary/20 p-3">
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          JAMB syllabus topics and daily lessons are still being verified. Unreviewed content will not be used to mark answers correct.
-        </p>
-      </div>
+
+      <p className="text-[10px] leading-relaxed text-muted-foreground">
+        JAMB syllabus content is under review; only verified answer keys can be graded.
+      </p>
     </div>
   );
 }

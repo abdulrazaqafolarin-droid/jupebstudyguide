@@ -316,51 +316,74 @@ function isValidPlanTopic(value: unknown): value is JambPlanTopic {
 
 /** Validate remote JSON before it is rendered or merged into local study progress. */
 export function isJambStudySession(value: unknown): value is JambStudySession {
-  if (!isRecord(value) || !isRecord(value.progress)) return false;
-  const session = value;
-  const progress = session.progress;
+  if (!isRecord(value)) return false;
+  const session: Record<string, unknown> = value;
+  if (!isRecord(session.progress)) return false;
+  const progress: Record<string, unknown> = session.progress;
+
   const subjects = session.subjects;
+  const progressSubjects = progress.subjects;
+  const subjectProgress = progress.subjectProgress;
+  const dailyTasks = progress.dailyTasks;
+  if (
+    !Array.isArray(subjects) ||
+    !Array.isArray(progressSubjects) ||
+    !isRecord(subjectProgress) ||
+    !Array.isArray(dailyTasks)
+  ) return false;
+
+  const startDate = session.startDate;
+  const createdAt = session.createdAt;
+  const updatedAt = session.updatedAt;
+  const startedAt = progress.startedAt;
+  const lastStudiedAt = progress.lastStudiedAt;
+  const currentDay = progress.currentDay;
+  const overallProgress = progress.overallProgress;
+  const dailyGoalMinutes = session.dailyGoalMinutes;
+
   if (
     typeof session.id !== "string" || !session.id ||
     typeof session.name !== "string" ||
-    !Array.isArray(subjects) ||
     subjects.length !== 4 ||
     !subjects.every((subject) => typeof subject === "string" && SUBJECT_ORDER.includes(subject as JambPlanSubject)) ||
     new Set(subjects).size !== 4 ||
     !subjects.includes("use_of_english") ||
     !["active", "paused", "completed"].includes(String(session.status)) ||
-    typeof session.startDate !== "string" || !Number.isFinite(Date.parse(session.startDate)) ||
-    typeof session.createdAt !== "string" || !Number.isFinite(Date.parse(session.createdAt)) ||
-    typeof session.updatedAt !== "string" || !Number.isFinite(Date.parse(session.updatedAt)) ||
-    typeof session.dailyGoalMinutes !== "number" ||
-    !Number.isFinite(session.dailyGoalMinutes) || session.dailyGoalMinutes < 5 || session.dailyGoalMinutes > 480 ||
-    !Array.isArray(progress.subjects) ||
-    progress.subjects.length !== 4 ||
-    !progress.subjects.every((subject) => typeof subject === "string" && SUBJECT_ORDER.includes(subject as JambPlanSubject)) ||
-    !progress.subjects.includes("use_of_english") ||
-    !Number.isInteger(progress.currentDay) || Number(progress.currentDay) < 1 || Number(progress.currentDay) > JAMB_PLAN_DAYS ||
-    typeof progress.startedAt !== "string" || !Number.isFinite(Date.parse(progress.startedAt)) ||
-    (progress.lastStudiedAt !== undefined && (typeof progress.lastStudiedAt !== "string" || !Number.isFinite(Date.parse(progress.lastStudiedAt)))) ||
-    typeof progress.overallProgress !== "number" || !Number.isFinite(progress.overallProgress) || progress.overallProgress < 0 || progress.overallProgress > 100 ||
-    !isRecord(progress.subjectProgress) ||
-    !SUBJECT_ORDER.every((subject) => typeof progress.subjectProgress[subject] === "number" &&
-      Number.isFinite(progress.subjectProgress[subject]) &&
-      Number(progress.subjectProgress[subject]) >= 0 &&
-      Number(progress.subjectProgress[subject]) <= 100) ||
-    !Array.isArray(progress.dailyTasks) ||
-    progress.dailyTasks.length !== JAMB_PLAN_DAYS
+    typeof startDate !== "string" || !Number.isFinite(Date.parse(startDate)) ||
+    typeof createdAt !== "string" || !Number.isFinite(Date.parse(createdAt)) ||
+    typeof updatedAt !== "string" || !Number.isFinite(Date.parse(updatedAt)) ||
+    typeof dailyGoalMinutes !== "number" || !Number.isFinite(dailyGoalMinutes) ||
+    dailyGoalMinutes < 5 || dailyGoalMinutes > 480 ||
+    progressSubjects.length !== 4 ||
+    !progressSubjects.every((subject) => typeof subject === "string" && SUBJECT_ORDER.includes(subject as JambPlanSubject)) ||
+    !progressSubjects.includes("use_of_english") ||
+    typeof currentDay !== "number" || !Number.isInteger(currentDay) ||
+    currentDay < 1 || currentDay > JAMB_PLAN_DAYS ||
+    typeof startedAt !== "string" || !Number.isFinite(Date.parse(startedAt)) ||
+    (lastStudiedAt !== undefined && (typeof lastStudiedAt !== "string" || !Number.isFinite(Date.parse(lastStudiedAt)))) ||
+    typeof overallProgress !== "number" || !Number.isFinite(overallProgress) ||
+    overallProgress < 0 || overallProgress > 100 ||
+    !SUBJECT_ORDER.every((subject) => typeof subjectProgress[subject] === "number" &&
+      Number.isFinite(subjectProgress[subject]) &&
+      Number(subjectProgress[subject]) >= 0 &&
+      Number(subjectProgress[subject]) <= 100) ||
+    dailyTasks.length !== JAMB_PLAN_DAYS
   ) return false;
 
-  return progress.dailyTasks.every((task, index) =>
-    isRecord(task) &&
-    Number.isInteger(task.day) && task.day === index + 1 &&
-    typeof task.subject === "string" && SUBJECT_ORDER.includes(task.subject as JambPlanSubject) &&
-    Array.isArray(task.topics) && task.topics.every(isValidPlanTopic) &&
-    Array.isArray(task.learningObjectives) && task.learningObjectives.every((item) => typeof item === "string") &&
-    Array.isArray(task.checkpointQuestions) && task.checkpointQuestions.every((item) => typeof item === "string") &&
-    typeof task.isCompleted === "boolean" &&
-    (task.completedAt === undefined || (typeof task.completedAt === "string" && Number.isFinite(Date.parse(task.completedAt)))) &&
-    (task.masteryScore === undefined || (typeof task.masteryScore === "number" &&
-      Number.isFinite(task.masteryScore) && task.masteryScore >= 0 && task.masteryScore <= 100))
-  );
+  return dailyTasks.every((task, index) => {
+    if (!isRecord(task)) return false;
+    const day = task.day;
+    const subject = task.subject;
+    const completedAt = task.completedAt;
+    const masteryScore = task.masteryScore;
+    return typeof day === "number" && Number.isInteger(day) && day === index + 1 &&
+      typeof subject === "string" && SUBJECT_ORDER.includes(subject as JambPlanSubject) &&
+      Array.isArray(task.topics) && task.topics.every(isValidPlanTopic) &&
+      Array.isArray(task.learningObjectives) && task.learningObjectives.every((item) => typeof item === "string") &&
+      Array.isArray(task.checkpointQuestions) && task.checkpointQuestions.every((item) => typeof item === "string") &&
+      typeof task.isCompleted === "boolean" &&
+      (completedAt === undefined || (typeof completedAt === "string" && Number.isFinite(Date.parse(completedAt)))) &&
+      (masteryScore === undefined || (typeof masteryScore === "number" &&
+        Number.isFinite(masteryScore) && masteryScore >= 0 && masteryScore <= 100));
+  });
 }

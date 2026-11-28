@@ -149,6 +149,85 @@ export function generateJamb30DayTasks(
   return tasks;
 }
 
+function getSubjectPlanTopics(subject: JambPlanSubject): JambPlanTopic[] {
+  return JAMB_SYLLABUS[subject].sections.flatMap((section) =>
+    section.topics.map((topic) => toPlanTopic(subject, section.title, topic)),
+  );
+}
+
+/** Rebalance only the unstarted days while preserving completed/locked work. */
+export function reorderJambStudySessionSubjects(
+  session: JambStudySession,
+  orderedSubjects: readonly JambPlanSubject[],
+): JambStudySession {
+  const allowed = new Set(session.subjects);
+  const subjectOrder = orderedSubjects.filter((subject, index) =>
+    allowed.has(subject) && orderedSubjects.indexOf(subject) === index,
+  );
+  for (const subject of session.subjects) {
+    if (!subjectOrder.includes(subject)) subjectOrder.push(subject);
+  }
+
+  const locked = session.progress.dailyTasks.filter((task) =>
+    task.isCompleted || task.day < session.progress.currentDay,
+  );
+  const lockedDays = new Set(locked.map((task) => task.day));
+  const coveredTopicIds = new Set(locked.flatMap((task) => task.topics.map((topic) => topic.id)));
+  const pool = subjectOrder.flatMap((subject) =>
+    getSubjectPlanTopics(subject).filter((topic) => !coveredTopicIds.has(topic.id)),
+  );
+  const remainingDays = Array.from({ length: JAMB_PLAN_DAYS }, (_, index) => index + 1)
+    .filter((day) => !lockedDays.has(day));
+  const topicsPerDay = Math.max(1, Math.ceil(pool.length / Math.max(1, remainingDays.length)));
+  let topicIndex = 0;
+
+  const remainingTasks: JambDailyTask[] = remainingDays.map((day) => {
+    const topics = pool.slice(topicIndex, topicIndex + topicsPerDay);
+    topicIndex += topics.length;
+    const subject = topics[topics.length - 1]?.subject ?? subjectOrder[0];
+    return {
+      day,
+      subject,
+      topics,
+      learningObjectives: topics.length > 0
+        ? buildLearningObjectives(topics)
+        : ["Review previous topics", "Practise JAMB past questions", "Strengthen weak areas"],
+      checkpointQuestions: topics.length > 0
+        ? buildCheckpoints(topics)
+        : ["Can you answer questions from the topics covered this week?"],
+      isCompleted: false,
+    };
+  });
+
+  const dailyTasks = [...locked, ...remainingTasks].sort((a, b) => a.day - b.day);
+  const completedCount = dailyTasks.filter((task) => task.isCompleted).length;
+  const subjectProgress = { ...session.progress.subjectProgress };
+  for (const subject of session.subjects) {
+    const allSubjectTopics = getSubjectPlanTopics(subject);
+    const completedTopicIds = new Set(dailyTasks
+      .filter((task) => task.isCompleted)
+      .flatMap((task) => task.topics
+        .filter((topic) => topic.subject === subject)
+        .map((topic) => topic.id)));
+    subjectProgress[subject] = allSubjectTopics.length > 0
+      ? (completedTopicIds.size / allSubjectTopics.length) * 100
+      : 0;
+  }
+
+  return {
+    ...session,
+    subjects: subjectOrder,
+    updatedAt: new Date().toISOString(),
+    progress: {
+      ...session.progress,
+      subjects: subjectOrder,
+      dailyTasks,
+      overallProgress: (completedCount / JAMB_PLAN_DAYS) * 100,
+      subjectProgress,
+    },
+  };
+}
+
 export function getJambStudySessionProgress(tasks: readonly JambDailyTask[]) {
   const completed = tasks.filter((task) => task.isCompleted).length;
   return {

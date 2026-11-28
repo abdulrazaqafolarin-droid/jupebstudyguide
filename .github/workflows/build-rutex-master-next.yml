@@ -228,8 +228,29 @@ jobs:
             -H "x-upsert: true" \
             --data-binary "@dist-successor/version.json" >/dev/null
 
-          REMOTE_MANIFEST="$(curl --fail --silent --show-error "$PUBLIC_BASE/version.json")"
-          printf '%s' "$REMOTE_MANIFEST" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["versionCode"] == int(sys.argv[1]); assert d["url"] == sys.argv[2]; assert d["sha256"] == sys.argv[3]' "$APK_VERSION_CODE" "$APK_URL" "$EXPECTED_HASH"
+          # Supabase's public CDN may briefly serve an older manifest immediately
+          # after an upsert. Use a unique query string, bypass caches, and retry
+          # before declaring the release invalid.
+          REMOTE_MANIFEST=""
+          MANIFEST_MATCH=false
+          for attempt in 1 2 3 4 5; do
+            MANIFEST_URL="$PUBLIC_BASE/version.json?verify=$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$attempt"
+            if ! REMOTE_MANIFEST="$(curl --fail --silent --show-error \
+              -H "Cache-Control: no-cache, no-store" "$MANIFEST_URL")"; then
+              sleep 2
+              continue
+            fi
+            if printf '%s' "$REMOTE_MANIFEST" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("versionCode") == int(sys.argv[1]) and d.get("url") == sys.argv[2] and d.get("sha256") == sys.argv[3] else 1)' "$APK_VERSION_CODE" "$APK_URL" "$EXPECTED_HASH"; then
+              MANIFEST_MATCH=true
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$MANIFEST_MATCH" != true ]]; then
+            printf '%s' "$REMOTE_MANIFEST" | python3 -c 'import json,sys; d=json.load(sys.stdin); print("Remote manifest values:", {k:d.get(k) for k in ("versionCode","url","sha256")})' || true
+            echo "::error::Public manifest verification failed after cache-busted retries."
+            exit 1
+          fi
           REMOTE_HASH="$(curl --fail --silent --show-error "$APK_URL" | sha256sum | awk '{print $1}')"
           test "$REMOTE_HASH" = "$EXPECTED_HASH"
           echo "Published and publicly verified successor release $APK_VERSION_NAME ($APK_VERSION_CODE)." >> "$GITHUB_STEP_SUMMARY"

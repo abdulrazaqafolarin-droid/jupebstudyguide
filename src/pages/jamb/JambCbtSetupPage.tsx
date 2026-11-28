@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
+import { ArrowLeft, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, type JambSubject } from "@/lib/jamb-config";

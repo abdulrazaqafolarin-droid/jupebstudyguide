@@ -33,7 +33,7 @@ export function WorkspaceQuickActions({ items }: { items: WorkspaceQuickAction[]
     <section className="mt-12">
       <h2 className="mb-6 text-2xl font-bold">Quick Actions</h2>
       <motion.div
-        className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-5"
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
         variants={containerVariants}
         initial="hidden"
         whileInView="show"

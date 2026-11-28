@@ -22,6 +22,7 @@ import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { SubjectCardGrid, type SubjectCardGridItem } from "@/components/study-past-questions/SubjectCardGrid";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
@@ -455,41 +456,17 @@ export default function JambPastQuestionsPage() {
             const isApproved = feedback?.gradable === true && feedback.correctOption === option.label;
             const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
             return (
-              <button
+              <QuestionOptionButton
                 key={option.label}
-                type="button"
-                aria-pressed={isSelected}
+                label={option.label}
+                state={isApproved ? "correct" : isWrongSelection ? "incorrect" : isSelected ? "selected" : "default"}
+                selected={isSelected}
                 disabled={Boolean(checking[question.id])}
                 onClick={() => void saveAnswer(question.id, option.label)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm text-left transition-all active:scale-[0.97] disabled:cursor-wait disabled:opacity-80 ${
-                  isApproved
-                    ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20 text-green-700 dark:text-green-300 font-medium"
-                    : isWrongSelection
-                      ? "border-red-500/50 bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-300 font-medium"
-                      : isSelected
-                        ? "border-primary/50 bg-primary/5 text-primary font-medium"
-                        : "border-border bg-card hover:bg-accent/50"
-                }`}
+                contentClassName="break-words text-pretty"
               >
-                <span
-                  className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
-                    isApproved
-                      ? "bg-green-600 text-white"
-                      : isWrongSelection
-                        ? "bg-red-600 text-white"
-                        : isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {option.label}
-                </span>
-                <span className="text-pretty break-words flex-1 min-w-0">
-                  <QuestionMath content={option.text} inline />
-                </span>
-                {isApproved && <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>}
-                {isWrongSelection && <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>}
-              </button>
+                <QuestionMath content={option.text} inline />
+              </QuestionOptionButton>
             );
           })}
         </div>

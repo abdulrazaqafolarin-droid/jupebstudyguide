@@ -500,6 +500,14 @@ export default function JambStudyPage() {
                             <QuestionMath content={feedback.explanation} />
                           </div>
                         )}
+                        <Link
+                          to={"/jamb/ai?subject=" + question.subject + "&questionId=" + encodeURIComponent(question.id)}
+                          className="inline-flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/10 hover:text-primary/80"
+                        >
+                          <Bot className="h-4 w-4" />
+                          <span>Need a deeper explanation?</span>
+                          <Sparkles className="h-3 w-3 text-accent" />
+                        </Link>
                       </div>
                     </div>
                     <p className="text-sm font-medium mb-3">How well did you know this?</p>

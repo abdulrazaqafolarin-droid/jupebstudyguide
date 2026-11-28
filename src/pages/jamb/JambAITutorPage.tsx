@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { BookOpen, CheckCircle, GraduationCap, Plus, Sparkles, X } from "lucide-react";
+import { BookOpen, CheckCircle, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useStudyChat } from "@/hooks/useStudyChat";
@@ -276,40 +276,22 @@ export default function JambAITutorPage({
       onNewChat={() => { void createChat(); }}
     >
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {onClose && visibleTutorTopic && (
-          <div className="border-b border-white/5 bg-gradient-to-r from-primary/[0.08] via-accent/[0.06] to-transparent">
-            <div className="mx-auto max-w-4xl px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15">
-                  <GraduationCap className="h-4 w-4 text-primary" />
-                </div>
-                <div className="min-w-0">
-                  <h1 className="truncate text-sm font-semibold text-foreground">{visibleTutorTopic.title}</h1>
-                  <p className="truncate text-[11px] text-muted-foreground/70">{visibleTutorSubject?.label} · JAMB syllabus</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
         {questionContext && (
-          <div className="mx-auto w-full max-w-3xl px-4 pt-4">
-            <section className="rounded-xl border border-primary/20 bg-primary/5 p-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 shrink-0 text-primary" />
-                <p className="min-w-0 flex-1 truncate text-xs font-semibold text-primary">
-                  Opened from a JAMB question{questionContextTitle ? ` · ${questionContextTitle}` : ""}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => { setQuestionContext(""); setQuestionContextTitle(""); }}
-                  aria-label="Remove question context"
-                  className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">{questionContext}</p>
-            </section>
+          <div className="mx-auto w-full max-w-3xl px-4 pt-3">
+            <details className="rounded-lg border border-border/50 bg-card/50 px-3 py-2">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-medium text-muted-foreground">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                Question context{questionContextTitle ? ` · ${questionContextTitle}` : ""}
+              </summary>
+              <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">{questionContext}</p>
+              <button
+                type="button"
+                onClick={() => { setQuestionContext(""); setQuestionContextTitle(""); }}
+                className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <X className="h-3 w-3" /> Remove context
+              </button>
+            </details>
           </div>
         )}
 

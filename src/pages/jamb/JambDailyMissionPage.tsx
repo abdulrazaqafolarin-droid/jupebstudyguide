@@ -213,7 +213,7 @@ export default function JambDailyMissionPage() {
       />
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-12">
-                {!remoteSupported && (
+        {!remoteSupported && (
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
             Cloud sync is unavailable; your missions remain saved on this device.
           </div>
@@ -229,10 +229,8 @@ export default function JambDailyMissionPage() {
           <section className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div>
-                  <h2 className="font-semibold">Today's subject</h2>
-                  <p className="mt-1 text-xs text-muted-foreground">Practice only · up to 10 questions · approved keys only</p>
-                </div>
+                <h2 className="font-semibold">Today's subject</h2>
+                <p className="mt-1 text-xs text-muted-foreground">Practice only · up to 10 questions · approved keys only</p>
               </div>
               <span className="text-xs text-muted-foreground">{today}</span>
             </div>
@@ -279,7 +277,7 @@ export default function JambDailyMissionPage() {
         {activeMission && (
           <section className="space-y-4">
             <div className="mx-auto w-full max-w-3xl space-y-4">
-                        <WorkspaceMissionHeader
+              <WorkspaceMissionHeader
               badges={(
                 <>
                   <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">{JAMB_SUBJECT_INFO[activeMission.subject].label}</span>

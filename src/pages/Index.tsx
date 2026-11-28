@@ -47,6 +47,7 @@ import { useNavigate } from 'react-router-dom';
 import rutexLogo from '@/assets/rutex-logo.jpg';
 import { Button } from '@/components/ui/button';
 import WorkspaceHomeHero from '@/components/WorkspaceHomeHero';
+import WorkspaceQuickActions from '@/components/WorkspaceQuickActions';
 import { useProfile } from '@/hooks/useProfile';
 import { shouldShowSetupNudge } from '@/lib/onboarding';
 import { useExamProgram } from '@/contexts/ExamProgramContext';
@@ -939,54 +940,36 @@ const Index = () => {
           </motion.div>
         </section>
 
-        {/* Quick Actions */}
-        <section className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
-          <motion.div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            {(['physics', 'chemistry', 'biology', 'math'] as Subject[]).map(subject => {
+        <WorkspaceQuickActions
+          items={[
+            ...(["physics", "chemistry", "biology", "math"] as Subject[]).map((subject) => {
               const info = SUBJECT_INFO[subject];
               const objectiveCount = getQuizQuestionsBySubject(subject).length;
-              return (
-                <motion.button
-                  key={subject}
-                  onClick={() => handleStartQuiz(subject)}
-                  className={cn(
-                    'p-4 rounded-xl border transition-all duration-300',
-                    'hover:-translate-y-1 hover:shadow-lg',
-                    subject === 'physics' && 'border-physics/30 hover:border-physics hover:bg-physics/5',
-                    subject === 'chemistry' && 'border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5',
-                    subject === 'biology' && 'border-biology/30 hover:border-biology hover:bg-biology/5',
-                    subject === 'math' && 'border-math/30 hover:border-math hover:bg-math/5',
-                  )}
-                  variants={cardVariants}
-                  whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-                  whileTap={{ scale: 0.95, transition: fastSpring }}
-                >
-                  <span className="text-2xl">{info.icon}</span>
-                  <p className="font-medium mt-2">{info.name} Quiz</p>
-                  <p className="text-xs text-muted-foreground">{objectiveCount} objective available · up to 10 per quiz</p>
-                </motion.button>
-              );
-            })}
-            <motion.button
-              onClick={() => toast("Textbook upload coming soon!")}
-              className="p-4 rounded-xl border border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"
-              variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-              whileTap={{ scale: 0.95, transition: fastSpring }}
-            >
-              <Library className="w-7 h-7 mx-auto text-primary" />
-              <p className="font-medium mt-2">Upload Textbook</p>
-              <p className="text-xs text-muted-foreground">PDF for AI reference</p>
-            </motion.button>
-          </motion.div>
-        </section>
+              const toneClassName = {
+                physics: "border-physics/30 hover:border-physics hover:bg-physics/5",
+                chemistry: "border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5",
+                biology: "border-biology/30 hover:border-biology hover:bg-biology/5",
+                math: "border-math/30 hover:border-math hover:bg-math/5",
+              }[subject];
+              return {
+                id: subject,
+                title: info.name + " Quiz",
+                description: objectiveCount + " objective available · up to 10 per quiz",
+                icon: <span className="text-2xl leading-none">{info.icon}</span>,
+                toneClassName,
+                onClick: () => handleStartQuiz(subject),
+              };
+            }),
+            {
+              id: "upload-textbook",
+              title: "Upload Textbook",
+              description: "PDF for AI reference",
+              icon: <Library className="h-7 w-7 text-primary" />,
+              toneClassName: "border-primary/30 hover:border-primary hover:bg-primary/5",
+              onClick: () => toast("Textbook upload coming soon!"),
+            },
+          ]}
+        />
 
         {/* Tips */}
         <section className="mt-12 bg-card rounded-2xl border border-border p-6 chalk-texture">

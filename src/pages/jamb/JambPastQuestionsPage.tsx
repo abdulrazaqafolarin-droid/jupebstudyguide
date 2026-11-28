@@ -477,6 +477,7 @@ export default function JambPastQuestionsPage() {
             );
           })}
         </div>
+        </div>
 
         {current && (
           <div className="space-y-3 pt-2" aria-live="polite">

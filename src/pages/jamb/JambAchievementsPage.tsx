@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Bookmark, BookOpen, Flame, Search, Star, Trophy, Award } from "lucide-react";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+import WorkspaceAchievementProgress from "@/components/WorkspaceAchievementProgress";
 import { Button } from "@/components/ui/button";
 import AchievementBadge from "@/components/AchievementBadge";
 import type { Achievement, AchievementStats } from "@/hooks/useAchievements";
@@ -86,14 +86,12 @@ export default function JambAchievementsPage() {
       <WorkspacePageHeader title="Achievements" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <section className="space-y-4 rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <span className="text-2xl font-bold tabular-nums">{ready ? unlockedCount : "—"}</span>
-              <span className="text-muted-foreground">/{achievements.length}</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Achievements unlocked</p>
-            </div>
-            <div className="flex flex-wrap items-center justify-end gap-1.5">
+        <WorkspaceAchievementProgress
+          unlockedCount={ready ? unlockedCount : "—"}
+          totalCount={achievements.length}
+          percentage={ready ? percentage : 0}
+          badges={(
+            <>
               {categoryStats.filter((category) => ready && category.unlocked > 0).map((category) => (
                 <span
                   key={category.value}
@@ -102,21 +100,12 @@ export default function JambAchievementsPage() {
                   {category.value === "Practice" ? <BookOpen className="h-3 w-3" />
                     : category.value === "Consistency" ? <Flame className="h-3 w-3" />
                       : <Bookmark className="h-3 w-3" />}
-                  {ready ? `${category.unlocked}/${category.total}` : "—"}
+                  {category.unlocked}/{category.total}
                 </span>
               ))}
-            </div>
-          </div>
-
-          <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${ready ? percentage : 0}%` }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="h-full rounded-full bg-gradient-to-r from-primary via-accent to-primary"
-            />
-          </div>
-        </section>
+            </>
+          )}
+        />
 
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

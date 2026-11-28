@@ -7,6 +7,7 @@ import { AITutor } from './AITutor';
 import { QuestionMath } from './QuestionMath';
 import { MathRenderer } from './MathRenderer';
 import { QuestionPrompt } from './QuestionPrompt';
+import { StudyFlashcardSurface } from './StudyFlashcardSurface';
 import { streamChat } from '@/lib/ai-service';
 import type { AIChatMessage } from '@/lib/ai-service';
 
@@ -163,12 +164,10 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
           } : undefined}
         >
           {/* Keep both faces mounted for the original two-sided 3D flip. */}
-          <div className="flashcard-face relative min-h-[320px] rounded-2xl border-2 border-border shadow-xl overflow-hidden">
-            {/* Card background with subtle gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
-            <div className="absolute inset-0 chalk-texture opacity-30" />
-            
-            <div className="relative p-6 flex flex-col">
+          <StudyFlashcardSurface
+            className="min-h-[320px]"
+            contentClassName="flex min-h-[320px] flex-col p-6"
+          >
               {/* Header */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                 <span className={cn(
@@ -261,16 +260,15 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </div>
                 )}
               </div>
-            </div>
-          </div>
+          </StudyFlashcardSurface>
 
           {/* Back of card (for essay questions) */}
           {!hasOptions && (
-            <div className="flashcard-face flashcard-back min-h-[320px] rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-accent/10" />
-              <div className="absolute inset-0 chalk-texture opacity-30" />
-              
-              <div className="relative h-full min-h-[320px] p-6 flex flex-col">
+            <StudyFlashcardSurface
+              tone="answer"
+              className="flashcard-back min-h-[320px]"
+              contentClassName="flex h-full min-h-[320px] flex-col p-6"
+            >
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-accent/30">
                   <span className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium bg-accent/20 text-accent'
@@ -329,8 +327,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 <div className="mt-3 pt-2 text-center text-muted-foreground">
                   <p className="text-sm">Click to see question again</p>
                 </div>
-              </div>
-            </div>
+            </StudyFlashcardSurface>
           )}
         </div>
       </div>

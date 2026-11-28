@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { Check, Lock } from 'lucide-react';
+import { OnboardingSubjectTile } from '@/components/onboarding/OnboardingSubjectTile';
 import { SUBJECT_INFO, type Subject } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -79,52 +78,29 @@ export function StepStudySetup({
           {CORE.map((subject) => {
             const info = SUBJECT_INFO[subject];
             return (
-              <div
+              <OnboardingSubjectTile
                 key={subject}
-                className="relative rounded-xl border-2 border-primary/40 bg-primary/5 p-3 flex items-center gap-2.5"
-              >
-                <span className="text-2xl">{info.icon}</span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold truncate">{info.name}</p>
-                  <p className="text-[10px] text-muted-foreground">Required</p>
-                </div>
-                <Lock className="w-3.5 h-3.5 text-muted-foreground ms-auto shrink-0" aria-hidden />
-              </div>
+                variant="required"
+                icon={info.icon}
+                title={info.name}
+                subtitle="Required"
+              />
             );
           })}
           {ELECTIVES.map((subject) => {
             const info = SUBJECT_INFO[subject];
             const isSelected = electives.includes(subject);
             return (
-              <motion.button
+              <OnboardingSubjectTile
                 key={subject}
+                icon={info.icon}
+                title={info.name}
+                subtitle={isSelected ? "Added" : "Elective"}
+                selected={isSelected}
+                selectedClassName={SELECTED_CLASS[subject]}
+                selectedIconBackground={`hsl(var(--${info.color}))`}
                 onClick={() => onToggleElective(subject)}
-                aria-pressed={isSelected}
-                whileTap={{ scale: 0.97 }}
-                className={cn(
-                  'rounded-xl border-2 p-3 flex items-center gap-2.5 text-left transition-colors duration-150',
-                  isSelected
-                    ? cn(SELECTED_CLASS[subject], 'border-2')
-                    : 'border-border hover:border-primary/30',
-                )}
-              >
-                <span className="text-2xl">{info.icon}</span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold truncate">{info.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{isSelected ? 'Added' : 'Elective'}</p>
-                </div>
-                {isSelected && (
-                  <motion.span
-                    initial={{ opacity: 0, transform: 'scale(0.6)' }}
-                    animate={{ opacity: 1, transform: 'scale(1)' }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                    className="ms-auto shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ background: `hsl(var(--${info.color}))` }}
-                  >
-                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                  </motion.span>
-                )}
-              </motion.button>
+              />
             );
           })}
         </div>

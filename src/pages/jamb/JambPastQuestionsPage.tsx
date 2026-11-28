@@ -429,12 +429,13 @@ export default function JambPastQuestionsPage() {
     const feedback = feedbacks[question.id];
     return (
       <article key={question.id} className="space-y-5 protected-study-content">
-        {(year === null || question.topic) && (
-          <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-3">
+          {(year === null || question.topic) && (
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-muted-foreground">
               {year === null && <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>}
               {question.topic && <span>{question.topic}</span>}
             </div>
+          )}
           <button
             type="button"
             onClick={() => toggleJambBookmark(question.id)}
@@ -446,8 +447,7 @@ export default function JambPastQuestionsPage() {
               ? <BookmarkCheck className="h-5 w-5 text-primary" />
               : <Bookmark className="h-5 w-5 text-muted-foreground" />}
           </button>
-          </div>
-        )}
+        </div>
 
         <div className="space-y-3">
           <QuestionPrompt
@@ -491,26 +491,28 @@ export default function JambPastQuestionsPage() {
             ].join(" ")}>
               {checking[question.id] ? (
                 <p className="text-xs font-medium text-muted-foreground">Checking answer…</p>
+              ) : !feedback ? (
+                <p className="text-sm font-medium text-muted-foreground">Answer saved.</p>
               ) : (
                 <>
                   <p className={[
                     "text-sm font-medium",
-                    !feedback?.gradable
+                    !feedback.gradable
                       ? "text-muted-foreground"
                       : feedback.isCorrect
                         ? "text-green-700 dark:text-green-300"
                         : "text-red-700 dark:text-red-300",
                   ].join(" ")}>
-                    {!feedback?.gradable ? "Not scored" : feedback.isCorrect ? "Correct!" : "Incorrect"}
+                    {!feedback.gradable ? "Not scored" : feedback.isCorrect ? "Correct!" : "Incorrect"}
                   </p>
-                  {feedback?.gradable && !feedback.isCorrect && feedback.correctOption && (
+                  {feedback.gradable && !feedback.isCorrect && feedback.correctOption && (
                     <p className="mt-1 text-xs text-muted-foreground">
                       The correct answer is <span className="font-mono font-medium text-green-600 dark:text-green-400">{feedback.correctOption}</span>
                     </p>
                   )}
-                  {!feedback?.gradable && (
+                  {!feedback.gradable && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {feedback?.message ?? "No verified answer key matches the listed options, so this question will not affect your score."}
+                      {feedback.message ?? "No verified answer key matches the listed options, so this question will not affect your score."}
                     </p>
                   )}
                 </>

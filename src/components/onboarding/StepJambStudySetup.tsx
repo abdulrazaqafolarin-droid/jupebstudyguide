@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { Info } from "lucide-react";
 import { OnboardingSubjectTile } from "@/components/onboarding/OnboardingSubjectTile";
 import { JAMB_SUBJECTS, JAMB_SUBJECT_INFO } from "@/lib/jamb-config";
 import type { JambScienceSubject, JambExamTarget, JambStudyPreferences } from "@/lib/jamb-study-preferences";
@@ -86,16 +87,24 @@ export function StepJambStudySetup({
               />
             );
           })}
-          <OnboardingSubjectTile
-            variant="unavailable"
-            icon={JAMB_SUBJECT_INFO.math.icon}
-            title={JAMB_SUBJECT_INFO.math.label}
-            subtitle="Pending review"
-          />
         </div>
-        <p className="text-[10px] leading-relaxed text-muted-foreground">
-          Subject choices are study preferences, not official UTME combination advice. More question content is added after review.
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[10px] text-muted-foreground">
+            {JAMB_SUBJECT_INFO.math.label} · Question bank pending review
+          </p>
+          <details className="group relative shrink-0">
+            <summary
+              aria-label="Subject and syllabus guidance"
+              title="Subject and syllabus guidance"
+              className="flex h-7 w-7 cursor-pointer list-none items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent"
+            >
+              <Info className="h-4 w-4" />
+            </summary>
+            <div className="absolute right-0 top-8 z-20 w-64 rounded-xl border border-border bg-popover p-3 text-[11px] leading-relaxed text-popover-foreground shadow-lg">
+              Subject choices are study preferences, not official UTME combination advice. JAMB syllabus content is under review; only verified answer keys can be graded.
+            </div>
+          </details>
+        </div>
       </section>
 
       <section className="space-y-2.5">
@@ -165,9 +174,6 @@ export function StepJambStudySetup({
         </p>
       </section>
 
-      <p className="text-[10px] leading-relaxed text-muted-foreground">
-        JAMB syllabus content is under review; only verified answer keys can be graded.
-      </p>
     </div>
   );
 }

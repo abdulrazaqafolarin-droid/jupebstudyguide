@@ -55,6 +55,11 @@ export interface JambStudySession {
 
 const SUBJECT_ORDER = JAMB_SYLLABUS_SUBJECTS;
 
+/** Keep the visible next-day pointer monotonic when older days are revisited. */
+export function advanceJambPlanCurrentDay(currentDay: number, completedDay: number): number {
+  return Math.max(currentDay, Math.min(completedDay + 1, JAMB_PLAN_DAYS));
+}
+
 export function normalizeJambPlanSubjects(subjects: readonly JambPlanSubject[]): JambPlanSubject[] {
   const unique = new Set(subjects);
   const selected = SUBJECT_ORDER.filter((subject) => unique.has(subject));

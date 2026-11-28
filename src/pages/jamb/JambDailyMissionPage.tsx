@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { QuestionMath } from "@/components/QuestionMath";
-import { QuestionImage } from "@/components/QuestionImage";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
@@ -358,8 +358,11 @@ export default function JambDailyMissionPage() {
                           )}
                         </div>
                       </div>
-                      <div className="mb-4 text-sm leading-relaxed"><QuestionMath content={question.question} /></div>
-                      {question.imageUrls.map((url) => <QuestionImage key={url} imageUrl={url} alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"} />)}
+                      <QuestionPrompt
+                        question={question}
+                        alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
+                        textClassName="text-sm leading-relaxed"
+                      />
                       <div className="space-y-3">
                         {question.options.map((option) => {
                           const selected = answer?.selectedOption === option.label;

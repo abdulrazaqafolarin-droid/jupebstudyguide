@@ -212,27 +212,69 @@ export function mergeJambStudySessions(
   return [...byId.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function isValidPlanTopic(value: unknown): value is JambPlanTopic {
+  if (!isRecord(value)) return false;
+  return typeof value.id === "string" && value.id.length > 0
+    && typeof value.number === "string"
+    && typeof value.title === "string" && value.title.length > 0
+    && typeof value.sectionTitle === "string"
+    && typeof value.subject === "string" && SUBJECT_ORDER.includes(value.subject as JambPlanSubject)
+    && Array.isArray(value.outline) && value.outline.every((item) => typeof item === "string")
+    && Array.isArray(value.objectives) && value.objectives.every((item) => typeof item === "string")
+    && Array.isArray(value.sourcePages) && value.sourcePages.every((page) => Number.isInteger(page) && page > 0);
+}
+
+/** Validate remote JSON before it is rendered or merged into local study progress. */
 export function isJambStudySession(value: unknown): value is JambStudySession {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-  const session = value as Partial<JambStudySession>;
+  if (!isRecord(value) || !isRecord(value.progress)) return false;
+  const session = value;
+  const progress = session.progress;
+  const subjects = session.subjects;
   if (
     typeof session.id !== "string" || !session.id ||
     typeof session.name !== "string" ||
-    !Array.isArray(session.subjects) ||
-    !session.subjects.every((subject) => SUBJECT_ORDER.includes(subject)) ||
+    !Array.isArray(subjects) ||
+    subjects.length !== 4 ||
+    !subjects.every((subject) => typeof subject === "string" && SUBJECT_ORDER.includes(subject as JambPlanSubject)) ||
+    new Set(subjects).size !== 4 ||
+    !subjects.includes("use_of_english") ||
     !["active", "paused", "completed"].includes(String(session.status)) ||
     typeof session.startDate !== "string" || !Number.isFinite(Date.parse(session.startDate)) ||
     typeof session.createdAt !== "string" || !Number.isFinite(Date.parse(session.createdAt)) ||
     typeof session.updatedAt !== "string" || !Number.isFinite(Date.parse(session.updatedAt)) ||
-    !session.progress || !Array.isArray(session.progress.dailyTasks) ||
-    session.progress.dailyTasks.length !== JAMB_PLAN_DAYS
+    typeof session.dailyGoalMinutes !== "number" ||
+    !Number.isFinite(session.dailyGoalMinutes) || session.dailyGoalMinutes < 5 || session.dailyGoalMinutes > 480 ||
+    !Array.isArray(progress.subjects) ||
+    progress.subjects.length !== 4 ||
+    !progress.subjects.every((subject) => typeof subject === "string" && SUBJECT_ORDER.includes(subject as JambPlanSubject)) ||
+    !progress.subjects.includes("use_of_english") ||
+    !Number.isInteger(progress.currentDay) || Number(progress.currentDay) < 1 || Number(progress.currentDay) > JAMB_PLAN_DAYS ||
+    typeof progress.startedAt !== "string" || !Number.isFinite(Date.parse(progress.startedAt)) ||
+    (progress.lastStudiedAt !== undefined && (typeof progress.lastStudiedAt !== "string" || !Number.isFinite(Date.parse(progress.lastStudiedAt)))) ||
+    typeof progress.overallProgress !== "number" || !Number.isFinite(progress.overallProgress) || progress.overallProgress < 0 || progress.overallProgress > 100 ||
+    !isRecord(progress.subjectProgress) ||
+    !SUBJECT_ORDER.every((subject) => typeof progress.subjectProgress[subject] === "number" &&
+      Number.isFinite(progress.subjectProgress[subject]) &&
+      Number(progress.subjectProgress[subject]) >= 0 &&
+      Number(progress.subjectProgress[subject]) <= 100) ||
+    !Array.isArray(progress.dailyTasks) ||
+    progress.dailyTasks.length !== JAMB_PLAN_DAYS
   ) return false;
-  return session.progress.dailyTasks.every((task, index) =>
-    task.day === index + 1 &&
-    SUBJECT_ORDER.includes(task.subject) &&
-    Array.isArray(task.topics) &&
-    Array.isArray(task.learningObjectives) &&
-    Array.isArray(task.checkpointQuestions) &&
-    typeof task.isCompleted === "boolean",
+
+  return progress.dailyTasks.every((task, index) =>
+    isRecord(task) &&
+    Number.isInteger(task.day) && task.day === index + 1 &&
+    typeof task.subject === "string" && SUBJECT_ORDER.includes(task.subject as JambPlanSubject) &&
+    Array.isArray(task.topics) && task.topics.every(isValidPlanTopic) &&
+    Array.isArray(task.learningObjectives) && task.learningObjectives.every((item) => typeof item === "string") &&
+    Array.isArray(task.checkpointQuestions) && task.checkpointQuestions.every((item) => typeof item === "string") &&
+    typeof task.isCompleted === "boolean" &&
+    (task.completedAt === undefined || (typeof task.completedAt === "string" && Number.isFinite(Date.parse(task.completedAt)))) &&
+    (task.masteryScore === undefined || (typeof task.masteryScore === "number" &&
+      Number.isFinite(task.masteryScore) && task.masteryScore >= 0 && task.masteryScore <= 100))
   );
 }

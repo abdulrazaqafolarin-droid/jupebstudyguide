@@ -427,9 +427,6 @@ export default function JambPastQuestionsPage() {
             <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>
             <span>{JAMB_SUBJECT_INFO[question.subject].label}</span>
             {question.topic && <><span className="text-muted-foreground/40">·</span><span>{question.topic}</span></>}
-            {question.sourceQuestionNumber && (
-              <span>· Source Q{question.sourceQuestionNumber.replace(/^Q/i, "")}</span>
-            )}
           </div>
           <button
             type="button"
@@ -483,7 +480,7 @@ export default function JambPastQuestionsPage() {
               </div>
             ) : (
               <span className="text-muted-foreground">
-                Your choice ({current}) is saved. {feedback?.message ?? "Select an option to check your saved response against the currently approved answer key."}
+                Your choice is saved. {feedback?.message ?? "Answer checking is unavailable for this question."}
               </span>
             )}
           </div>
@@ -495,8 +492,8 @@ export default function JambPastQuestionsPage() {
             className="inline-flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <Bot className="h-4 w-4" />
-            Need a deeper explanation?
-            <span aria-hidden="true">✦</span>
+            Ask AI Tutor
+            
           </Link>
         </div>
       </article>

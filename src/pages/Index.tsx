@@ -66,7 +66,6 @@ function fireConfetti(options: ConfettiOptions) {
 }
 
 const springBounce: Transition = { type: "spring", stiffness: 300, damping: 12, mass: 0.8 };
-const fastSpring: Transition = { type: "spring", stiffness: 400, damping: 15, mass: 0.6 };
 const containerVariants: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },

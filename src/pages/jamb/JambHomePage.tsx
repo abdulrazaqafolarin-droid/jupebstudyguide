@@ -601,19 +601,9 @@ export default function JambHomePage() {
                   learnedCount={subjectReviewStats.find((row) => row.subject === subject)?.learnedCount ?? 0}
                   statsReady={reviewProgressReady && reviewMetadataReady && !reviewMetadataError}
                   onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
-                />    key={subject}
-                  onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
-                  className={`p-4 rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${subject === "physics" ? "border-physics/30 hover:border-physics hover:bg-physics/5" : subject === "chemistry" ? "border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5" : subject === "biology" ? "border-biology/30 hover:border-biology hover:bg-biology/5" : "border-primary/30 hover:border-primary hover:bg-primary/5"}`}
-                  variants={cardVariants}
-                  whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-                  whileTap={{ scale: 0.95, transition: fastSpring }}
-                >
-                  <span className="text-2xl">{info.icon}</span>
-                  <p className="font-medium mt-2">{info.label} Practice</p>
-                  <p className="text-xs text-muted-foreground">{summaries.find((row) => row.subject === subject)?.count ?? 0} published questions</p>
-                </motion.button>
-              );
-            })}
+                />
+              </motion.div>
+            ))}
             <motion.button
               onClick={() => navigate("/jamb/study")}
               className="p-4 rounded-xl border border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"

@@ -556,7 +556,7 @@ export default function JambHomePage() {
               </div>
               <p className="text-sm font-medium">No verified JAMB scores yet</p>
               <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
-                Rankings will appear when reviewed practice and CBT results are available.
+                JAMB rankings appear after scores are verified.
               </p>
               <Link
                 to="/jamb/leaderboard"
@@ -635,10 +635,10 @@ export default function JambHomePage() {
             Study Tips
           </h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex gap-2"><span className="text-primary">1.</span><span><strong>Practise consistently</strong> — short daily sessions are easier to sustain than last-minute cramming.</span></li>
-            <li className="flex gap-2"><span className="text-primary">2.</span><span><strong>Review saved answers</strong> — revisit questions you found difficult instead of only moving forward.</span></li>
-            <li className="flex gap-2"><span className="text-primary">3.</span><span><strong>Use the timer deliberately</strong> — practise pacing without confusing a short drill with a full official mock.</span></li>
-            <li className="flex gap-2"><span className="text-primary">4.</span><span><strong>Check verified keys</strong> — unreviewed questions remain ungraded; do not treat an AI guess as an official answer.</span></li>
+            <li className="flex gap-2"><span className="text-primary">1.</span><span><strong>Study daily</strong> — consistency beats cramming.</span></li>
+            <li className="flex gap-2"><span className="text-primary">2.</span><span><strong>Review difficult questions</strong> — revisit saved answers.</span></li>
+            <li className="flex gap-2"><span className="text-primary">3.</span><span><strong>Practise with the timer</strong> — build exam-day pacing.</span></li>
+            <li className="flex gap-2"><span className="text-primary">4.</span><span><strong>Use verified answers</strong> — unreviewed keys are not official scores.</span></li>
           </ul>
         </section>
 

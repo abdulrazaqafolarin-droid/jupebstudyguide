@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
+import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";

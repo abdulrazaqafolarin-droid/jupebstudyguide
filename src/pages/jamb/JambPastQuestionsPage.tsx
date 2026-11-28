@@ -421,7 +421,7 @@ export default function JambPastQuestionsPage() {
     const current = selected[question.id] ?? savedAnswers[question.id]?.selected ?? "";
     const feedback = feedbacks[question.id];
     return (
-      <article key={question.id} className="rounded-2xl border border-border bg-card p-4 chalk-texture sm:p-5">
+      <article key={question.id} className="space-y-5 protected-study-content">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-muted-foreground">
             <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>

@@ -10,6 +10,7 @@ interface SyllabusDayViewProps {
   canAdvance: boolean;
   onComplete: (masteryScore: number) => void;
   onBack: () => void;
+  onAskTutor?: (topic: SyllabusTopic, question: string) => void;
 }
 
 export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({

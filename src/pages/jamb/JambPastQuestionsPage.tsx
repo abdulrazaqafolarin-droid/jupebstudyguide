@@ -36,6 +36,11 @@ const PAGE_VARIANTS = {
   exit: { opacity: 0, x: -20 },
 };
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
+const QUESTION_SLIDE_VARIANTS = {
+  enter: (direction: number) => ({ x: direction * 60, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction: number) => ({ x: direction * -60, opacity: 0 }),
+};
 
 
 function isJambSubject(value: string | null | undefined): value is JambSubject {
@@ -66,6 +71,7 @@ export default function JambPastQuestionsPage() {
   const [count, setCount] = useState(0);
   const [offset, setOffset] = useState(0);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+  const [questionDirection, setQuestionDirection] = useState(1);
   const [showQuestionGrid, setShowQuestionGrid] = useState(false);
   const pendingQuestionIndexRef = useRef(0);
   const answerCheckSequenceRef = useRef<Record<string, number>>({});
@@ -365,11 +371,13 @@ export default function JambPastQuestionsPage() {
 
   const goToQuestion = (index: number) => {
     if (index < 0 || index >= questions.length) return;
+    setQuestionDirection(index >= activeQuestionIndex ? 1 : -1);
     setActiveQuestionIndex(index);
     setShowQuestionGrid(false);
   };
 
   const goToNextQuestion = useCallback(() => {
+    setQuestionDirection(1);
     if (activeQuestionIndex < questions.length - 1) {
       setActiveQuestionIndex((value) => value + 1);
       return;
@@ -381,6 +389,7 @@ export default function JambPastQuestionsPage() {
   }, [activeQuestionIndex, questions.length, offset, count]);
 
   const goToPreviousQuestion = useCallback(() => {
+    setQuestionDirection(-1);
     if (activeQuestionIndex > 0) {
       setActiveQuestionIndex((value) => value - 1);
       return;
@@ -966,9 +975,11 @@ export default function JambPastQuestionsPage() {
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeQuestion.id}
-                      initial={{ opacity: 0, x: 24 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -24 }}
+                      custom={questionDirection}
+                      variants={QUESTION_SLIDE_VARIANTS}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
                       transition={PAGE_TRANSITION}
                     >
                       {renderQuestionCard(activeQuestion)}

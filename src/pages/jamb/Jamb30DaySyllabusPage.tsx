@@ -28,6 +28,7 @@ import {
   type JambStudySession,
 } from "@/lib/jamb-30-day-syllabus";
 import { useJamb30DaySessions } from "@/hooks/useJamb30DaySessions";
+import { JambSubjectReorder } from "@/components/jamb/JambSubjectReorder";
 
 const OPTIONAL_SUBJECTS = (Object.keys(JAMB_SYLLABUS) as JambPlanSubject[])
   .filter((subject) => subject !== "use_of_english");
@@ -366,10 +367,11 @@ interface JambSessionCardProps {
   onPause: (id: string) => void;
   onResume: (id: string) => void;
   onDelete: (id: string) => void;
+  onReorderSubjects: (id: string, order: JambPlanSubject[]) => void;
 }
 
 function JambSessionCard({
-  session, canAdvanceToDay, onCompleteDay, onRename, onPause, onResume, onDelete,
+  session, canAdvanceToDay, onCompleteDay, onRename, onPause, onResume, onDelete, onReorderSubjects,
 }: JambSessionCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -446,6 +448,12 @@ function JambSessionCard({
         </div>
         <div className="mt-3 flex justify-between text-xs text-muted-foreground"><span>{completedDays} days completed</span><span className="flex items-center gap-1"><Flame className="h-3.5 w-3.5 text-orange-500" />{streak} day streak</span></div>
         <Progress value={percentage} className="mt-1.5 h-2.5" />
+        <div className="mt-3">
+          <JambSubjectReorder
+            subjects={session.subjects}
+            onApply={(ordered) => onReorderSubjects(session.id, ordered)}
+          />
+        </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {session.status === "active" && session.progress.currentDay <= JAMB_PLAN_DAYS && (
@@ -481,7 +489,7 @@ export default function Jamb30DaySyllabusPage() {
   const [showNewSession, setShowNewSession] = useState(false);
   const {
     sessions, createSession, deleteSession, completeDay, canAdvanceToDay,
-    renameSession, pauseSession, resumeSession, isLoaded,
+    reorderSubjects, renameSession, pauseSession, resumeSession, isLoaded,
   } = useJamb30DaySessions();
 
   const totals = useMemo(() => {
@@ -585,6 +593,7 @@ export default function Jamb30DaySyllabusPage() {
                 onPause={pauseSession}
                 onResume={resumeSession}
                 onDelete={deleteSession}
+                onReorderSubjects={reorderSubjects}
               />
             ))}
           </div>

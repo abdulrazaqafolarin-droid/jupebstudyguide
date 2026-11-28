@@ -8,6 +8,7 @@ import {
   isJambStudySession,
   mergeJambStudySessions,
   reorderJambStudySessionSubjects,
+  advanceJambPlanCurrentDay,
   type JambPlanSubject,
   type JambStudySession,
 } from "@/lib/jamb-30-day-syllabus";
@@ -232,7 +233,7 @@ export function useJamb30DaySessions() {
         progress: {
           ...session.progress,
           dailyTasks: updatedTasks,
-          currentDay: Math.min(day + 1, TOTAL_DAYS),
+          currentDay: advanceJambPlanCurrentDay(session.progress.currentDay, day),
           lastStudiedAt: now,
           overallProgress: (completedCount / TOTAL_DAYS) * 100,
           subjectProgress,

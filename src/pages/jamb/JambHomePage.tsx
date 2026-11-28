@@ -297,42 +297,36 @@ export default function JambHomePage() {
       <main className="max-w-4xl mx-auto px-4 pt-8">
         {showSetupNudge && (
           <section className="mb-6 animate-in-up">
-            <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 to-accent/10 p-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15">
-                <Sparkles className="h-5 w-5 text-primary" />
+            <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl border border-primary/20 p-4 flex items-center gap-3">
+              <span className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5 text-primary" />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold">Finish setting up</p>
-                <p className="text-xs text-muted-foreground">Theme, study plan & chat — about 1 minute.</p>
+                <p className="text-xs text-muted-foreground">Theme, study plan &amp; chat — about 1 minute.</p>
               </div>
               <Button
                 size="sm"
                 onClick={() => navigate("/jamb/onboarding")}
-                className="h-9 shrink-0 rounded-lg bg-gradient-to-r from-primary to-accent px-3 text-xs text-primary-foreground transition-opacity hover:opacity-90"
+                className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 transition-opacity rounded-lg h-9 px-3 text-xs shrink-0"
               >
                 Finish
               </Button>
               <button
-                type="button"
                 onClick={() => setNudgeDismissed(true)}
                 aria-label="Dismiss setup reminder"
-                className="shrink-0 p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                className="p-1.5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
               >
-                <X className="h-4 w-4" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           </section>
         )}
+
         {error && (
-          <section className="mb-6 animate-in-up">
-            <div className="bg-amber-500/5 rounded-2xl border border-amber-500/20 p-4 flex items-start gap-3">
-              <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="min-w-0">
-                <p className="text-sm font-semibold">JAMB question bank</p>
-                <p className="text-xs text-muted-foreground mt-1">{error}</p>
-              </div>
-            </div>
-          </section>
+          <p role="alert" className="mb-4 text-xs text-destructive">
+            Question bank unavailable: {error}
+          </p>
         )}
 
         <JambDailyMissionCard history={dailyMissionHistory} ready={missionHistoryReady} />

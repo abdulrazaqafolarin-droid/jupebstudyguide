@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WorkspaceHomeHero from "@/components/WorkspaceHomeHero";
+import WorkspaceQuickActions from "@/components/WorkspaceQuickActions";
 import { DashboardProgressPanel } from "@/components/DashboardProgressPanel";
 import StreakDisplay from "@/components/StreakDisplay";
 import { SubjectCard } from "@/components/SubjectCard";
@@ -420,77 +421,50 @@ export default function JambHomePage() {
           </motion.div>
         </section>
 
-        <section className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
-          <motion.div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            <motion.button
-              type="button"
-              onClick={() => navigate("/jamb/study")}
-              className="p-4 rounded-xl border border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary hover:bg-primary/5"
-              variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-              whileTap={{ scale: 0.95, transition: fastSpring }}
-            >
-              <Brain className="w-7 h-7 mx-auto text-primary" />
-              <p className="font-medium mt-2">Revision Cards</p>
-              <p className="text-xs text-muted-foreground">Review due questions</p>
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={() => navigate("/jamb/cbt/setup")}
-              className="p-4 rounded-xl border border-accent/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-accent hover:bg-accent/5"
-              variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-              whileTap={{ scale: 0.95, transition: fastSpring }}
-            >
-              <Clock3 className="w-7 h-7 mx-auto text-accent" />
-              <p className="font-medium mt-2">Timed CBT</p>
-              <p className="text-xs text-muted-foreground">Exam-time practice</p>
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={() => navigate("/jamb/past-questions")}
-              className="p-4 rounded-xl border border-biology/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-biology hover:bg-biology/5"
-              variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-              whileTap={{ scale: 0.95, transition: fastSpring }}
-            >
-              <BookOpen className="w-7 h-7 mx-auto text-biology" />
-              <p className="font-medium mt-2">Past Questions</p>
-              <p className="text-xs text-muted-foreground">Practise by subject</p>
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={() => navigate("/jamb/syllabus")}
-              className="p-4 rounded-xl border border-physics/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-physics hover:bg-physics/5"
-              variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-              whileTap={{ scale: 0.95, transition: fastSpring }}
-            >
-              <BookOpen className="w-7 h-7 mx-auto text-physics" />
-              <p className="font-medium mt-2">JAMB Syllabus</p>
-              <p className="text-xs text-muted-foreground">Browse subjects</p>
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={() => navigate("/jamb/ai")}
-              className="p-4 rounded-xl border border-chemistry/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-chemistry hover:bg-chemistry/5"
-              variants={cardVariants}
-              whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
-              whileTap={{ scale: 0.95, transition: fastSpring }}
-            >
-              <Sparkles className="w-7 h-7 mx-auto text-chemistry" />
-              <p className="font-medium mt-2">AI Tutor</p>
-              <p className="text-xs text-muted-foreground">Study any topic</p>
-            </motion.button>
-          </motion.div>
-        </section>
+        <WorkspaceQuickActions
+          items={[
+            {
+              id: "revision",
+              title: "Revision Cards",
+              description: "Review due questions",
+              icon: <Brain className="h-7 w-7 text-primary" />,
+              toneClassName: "border-primary/30 hover:border-primary hover:bg-primary/5",
+              onClick: () => navigate("/jamb/study"),
+            },
+            {
+              id: "cbt",
+              title: "Timed CBT",
+              description: "Exam-time practice",
+              icon: <Clock3 className="h-7 w-7 text-accent" />,
+              toneClassName: "border-accent/30 hover:border-accent hover:bg-accent/5",
+              onClick: () => navigate("/jamb/cbt/setup"),
+            },
+            {
+              id: "past-questions",
+              title: "Past Questions",
+              description: "Practise by subject",
+              icon: <BookOpen className="h-7 w-7 text-biology" />,
+              toneClassName: "border-biology/30 hover:border-biology hover:bg-biology/5",
+              onClick: () => navigate("/jamb/past-questions"),
+            },
+            {
+              id: "syllabus",
+              title: "JAMB Syllabus",
+              description: "Browse subjects",
+              icon: <BookOpen className="h-7 w-7 text-physics" />,
+              toneClassName: "border-physics/30 hover:border-physics hover:bg-physics/5",
+              onClick: () => navigate("/jamb/syllabus"),
+            },
+            {
+              id: "ai-tutor",
+              title: "AI Tutor",
+              description: "Study any topic",
+              icon: <Sparkles className="h-7 w-7 text-chemistry" />,
+              toneClassName: "border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5",
+              onClick: () => navigate("/jamb/ai"),
+            },
+          ]}
+        />
 
         <section className="mt-12 bg-card rounded-2xl border border-border p-6 chalk-texture">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">

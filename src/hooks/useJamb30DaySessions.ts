@@ -33,12 +33,22 @@ export function useJamb30DaySessions() {
   );
   const [readyUserId, setReadyUserId] = useState<string | null>(null);
   const [restoreAttempt, setRestoreAttempt] = useState(0);
-  const sessionsRef = useRef(stored);
+  const sessions = useMemo(
+    () => (Array.isArray(stored) ? stored.filter(isJambStudySession) : [])
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [stored],
+  );
+  const sessionsRef = useRef(sessions);
+  sessionsRef.current = sessions;
   const lastSuccessfulHash = useRef("");
 
+  // Ignore malformed local JSON entries without allowing them to reach the UI
+  // or the merge routine. The cloud-read gate still protects remote writes.
   useEffect(() => {
-    sessionsRef.current = stored;
-  }, [stored]);
+    if (storageReady && (!Array.isArray(stored) || sessions.length !== stored.length)) {
+      setStored(sessions);
+    }
+  }, [storageReady, stored, sessions, setStored]);
 
   useEffect(() => {
     if (authLoading || !user?.id || !storageReady) {
@@ -103,11 +113,6 @@ export function useJamb30DaySessions() {
       document.removeEventListener("visibilitychange", retryRestore);
     };
   }, [user?.id, storageReady, readyUserId]);
-
-  const sessions = useMemo(
-    () => [...stored].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    [stored],
-  );
 
   useEffect(() => {
     if (!user?.id || !storageReady || readyUserId !== user.id) return;

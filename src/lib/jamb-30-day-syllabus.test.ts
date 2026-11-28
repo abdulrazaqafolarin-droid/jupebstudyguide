@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { JAMB_SYLLABUS_SUBJECTS } from "@/lib/jamb-syllabus";
 import {
+  advanceJambPlanCurrentDay,
   generateJamb30DayTasks,
   isJambStudySession,
   getJambPlanTopicPool,
@@ -55,6 +56,12 @@ describe("JAMB 30-day syllabus plan", () => {
     expect(getJambStudySessionProgress(partiallyComplete)).toEqual({
       completedDays: 3, totalDays: 30, percentage: 10,
     });
+  });
+
+  it("never moves the current day backwards when an earlier day is revisited", () => {
+    expect(advanceJambPlanCurrentDay(1, 1)).toBe(2);
+    expect(advanceJambPlanCurrentDay(5, 2)).toBe(5);
+    expect(advanceJambPlanCurrentDay(30, 30)).toBe(30);
   });
 
   it("merges completed days from local and cloud without duplicating sessions", () => {

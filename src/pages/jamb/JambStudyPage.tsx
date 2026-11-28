@@ -312,10 +312,6 @@ export default function JambStudyPage() {
           </>
         ) : (
           <>
-            <p className="text-center text-xs text-muted-foreground">
-              {questions.length.toLocaleString()} of {totalCount.toLocaleString()} published questions loaded
-            </p>
-
             <div className="mb-8 flex justify-center gap-2">
               <Button
                 variant={mode === "learn" ? "default" : "outline"}

@@ -419,30 +419,27 @@ export default function JambPastQuestionsPage() {
   }, [view, showQuestionGrid, goToNextQuestion, goToPreviousQuestion]);
 
   const renderQuestionCard = (question: JambQuestion) => {
-    const bookmarked = bookmarksReady && bookmarks.includes(question.id);
     const current = selected[question.id] ?? savedAnswers[question.id]?.selected ?? "";
     const feedback = feedbacks[question.id];
     return (
       <article key={question.id} className="space-y-5 protected-study-content">
-        <div className="flex items-start justify-between gap-3">
-          {(year === null || question.topic) && (
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-muted-foreground">
-              {year === null && <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>}
-              {question.topic && <span>{question.topic}</span>}
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={() => toggleJambBookmark(question.id)}
-            aria-pressed={bookmarked}
-            aria-label={bookmarked ? "Remove bookmark" : "Bookmark question"}
-            className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-95"
-          >
-            {bookmarked
-              ? <BookmarkCheck className="h-5 w-5 text-primary" />
-              : <Bookmark className="h-5 w-5 text-muted-foreground" />}
-          </button>
-        </div>
+        {(year === null || question.topic) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {year === null && (
+              <span
+                className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary"
+                title={"Source year " + question.year}
+              >
+                {question.year}
+              </span>
+            )}
+            {question.topic && (
+              <span className={`rounded-full px-3 py-1 text-sm font-medium subject-${question.subject}`}>
+                {JAMB_SUBJECT_INFO[question.subject].icon} {question.topic}
+              </span>
+            )}
+          </div>
+        )}
 
         <div className="space-y-3">
           <QuestionPrompt
@@ -975,7 +972,7 @@ export default function JambPastQuestionsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-center justify-between gap-2">
                         <span className="truncate text-xs tabular-nums text-muted-foreground">
-                          Question {offset + activeQuestionIndex + 1} of {count.toLocaleString()}
+                          Q{offset + activeQuestionIndex + 1}/{count.toLocaleString()}
                         </span>
                         <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
                           {answeredOnPage}/{questions.length}
@@ -995,9 +992,35 @@ export default function JambPastQuestionsPage() {
                       onClick={() => setShowQuestionGrid(true)}
                       className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-95"
                       aria-label="Jump to question"
+                      title="Jump to question"
                     >
                       <Grid3X3 className="h-5 w-5 text-muted-foreground" />
                     </button>
+                    {activeQuestion && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => toggleJambBookmark(activeQuestion.id)}
+                          aria-pressed={bookmarksReady && bookmarks.includes(activeQuestion.id)}
+                          aria-label={bookmarksReady && bookmarks.includes(activeQuestion.id) ? "Remove bookmark" : "Bookmark question"}
+                          title={bookmarksReady && bookmarks.includes(activeQuestion.id) ? "Remove bookmark" : "Bookmark question"}
+                          className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-[0.97]"
+                          disabled={!bookmarksReady}
+                        >
+                          {bookmarksReady && bookmarks.includes(activeQuestion.id)
+                            ? <BookmarkCheck className="h-5 w-5 text-primary" />
+                            : <Bookmark className="h-5 w-5 text-muted-foreground" />}
+                        </button>
+                        <Link
+                          to={`/jamb/ai?subject=${activeQuestion.subject}&questionId=${encodeURIComponent(activeQuestion.id)}`}
+                          aria-label="Ask AI Tutor"
+                          title="Ask AI Tutor"
+                          className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-[0.97]"
+                        >
+                          <Bot className="h-5 w-5 text-muted-foreground" />
+                        </Link>
+                      </>
+                    )}
                   </div>
 
                   <AnimatePresence mode="wait">

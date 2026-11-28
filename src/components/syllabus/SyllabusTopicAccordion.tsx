@@ -125,7 +125,7 @@ export function SyllabusTopicAccordion({
             </div>
           </motion.div>
         )}
-      </AnimatePresence>}
+      </AnimatePresence>
     </div>
   );
 }

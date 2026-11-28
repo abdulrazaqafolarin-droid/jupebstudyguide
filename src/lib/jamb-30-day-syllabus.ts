@@ -269,16 +269,23 @@ export function mergeJambStudySessions(
       };
     });
     const completedDays = tasks.filter((task) => task.isCompleted).length;
+    const studiedDates = [session.progress.lastStudiedAt, cloud.progress.lastStudiedAt]
+      .filter((value): value is string => Boolean(value))
+      .sort();
+    const subjectProgress = { ...older.progress.subjectProgress };
+    for (const subject of SUBJECT_ORDER) {
+      subjectProgress[subject] = Math.max(
+        older.progress.subjectProgress[subject] ?? 0,
+        preferred.progress.subjectProgress[subject] ?? 0,
+      );
+    }
     const progress: JambStudyProgress = {
       ...preferred.progress,
       dailyTasks: tasks,
       currentDay: Math.max(session.progress.currentDay, cloud.progress.currentDay),
       overallProgress: tasks.length ? (completedDays / tasks.length) * 100 : 0,
-      subjectProgress: { ...older.progress.subjectProgress, ...preferred.progress.subjectProgress },
-      lastStudiedAt: [session.progress.lastStudiedAt, cloud.progress.lastStudiedAt]
-        .filter((value): value is string => Boolean(value))
-        .sort()
-        .at(-1),
+      subjectProgress,
+      lastStudiedAt: studiedDates[studiedDates.length - 1],
     };
     byId.set(session.id, {
       ...preferred,

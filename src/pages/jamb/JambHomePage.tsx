@@ -465,10 +465,22 @@ export default function JambHomePage() {
             Study Tips
           </h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex gap-2"><span className="text-primary">1.</span><span><strong>Study daily</strong> — consistency beats cramming.</span></li>
-            <li className="flex gap-2"><span className="text-primary">2.</span><span><strong>Review difficult questions</strong> — revisit saved answers.</span></li>
-            <li className="flex gap-2"><span className="text-primary">3.</span><span><strong>Practise with the timer</strong> — build exam-day pacing.</span></li>
-            <li className="flex gap-2"><span className="text-primary">4.</span><span><strong>Use verified answers</strong> — unreviewed keys are not official scores.</span></li>
+            <li className="flex gap-2">
+              <span className="text-primary">1.</span>
+              <span><strong>Consistency beats intensity</strong> — Study a little every day.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">2.</span>
+              <span><strong>Review due questions first</strong> — Keep your revision cards up to date.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">3.</span>
+              <span><strong>Rate honestly</strong> — Difficult questions return sooner.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">4.</span>
+              <span><strong>Use verified answers</strong> — Unreviewed keys are not official scores.</span>
+            </li>
           </ul>
         </section>
 

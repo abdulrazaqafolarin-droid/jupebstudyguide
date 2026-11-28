@@ -302,7 +302,7 @@ export default function JambHomePage() {
               <span className="text-gradient-gold block mt-2">Spaced Repetition</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-in-up stagger-4">
-              Study reviewed Physics, Chemistry & Biology past questions with spaced-repetition revision and timed CBT practice. Build confidence one question at a time.
+              Study Use of English, Physics, Chemistry, Biology & Mathematics past questions with scientifically proven learning techniques. Never forget what you've learned.
             </p>
             <div className="flex flex-wrap justify-center gap-4 animate-in-up stagger-5">
               <Button
@@ -592,53 +592,16 @@ export default function JambHomePage() {
           >
             {JAMB_QUESTION_BANK_SUBJECTS.map((subject) => (
               <motion.div key={subject} variants={cardVariants}>
-                {subject === "use_of_english" ? (
-                  <button
-                    type="button"
-                    onClick={() => navigate("/jamb/past-questions?subject=use_of_english")}
-                    className="w-full rounded-xl border border-primary/30 bg-card p-4 text-left transition-all hover:-translate-y-1 hover:border-primary hover:bg-primary/5 hover:shadow-lg"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-2xl" aria-hidden="true">{JAMB_SUBJECT_INFO.use_of_english.icon}</span>
-                      <span className="rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary">Compulsory</span>
-                    </div>
-                    <p className="mt-3 text-sm font-semibold">{JAMB_SUBJECT_INFO.use_of_english.label}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {summaries.find((row) => row.subject === "use_of_english")?.count ?? 0} published questions
-                    </p>
-                  </button>
-                ) : (
-                  <SubjectCard
-                    subject={subject}
-                    infoOverride={{ name: JAMB_SUBJECT_INFO[subject].label, icon: JAMB_SUBJECT_INFO[subject].icon }}
-                    questionCount={summaries.find((row) => row.subject === subject)?.count ?? 0}
-                    questionCountReady={!loading}
-                    studiedCount={subjectReviewStats.find((row) => row.subject === subject)?.studiedCount ?? 0}
-                    learnedCount={subjectReviewStats.find((row) => row.subject === subject)?.learnedCount ?? 0}
-                    statsReady={reviewProgressReady && reviewMetadataReady && !reviewMetadataError}
-                    onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
-                  />
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
-        </section>
-
-        {/* Quick Actions follow the JUPEB dashboard's card grid and interaction pattern. */}
-        <section className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
-          <motion.div
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-5"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-50px" }}
-          >
-            {JAMB_QUESTION_BANK_SUBJECTS.map((subject) => {
-              const info = JAMB_SUBJECT_INFO[subject];
-              return (
-                <motion.button
-                  key={subject}
+                <SubjectCard
+                  subject={subject}
+                  infoOverride={{ name: JAMB_SUBJECT_INFO[subject].label, icon: JAMB_SUBJECT_INFO[subject].icon }}
+                  questionCount={summaries.find((row) => row.subject === subject)?.count ?? 0}
+                  questionCountReady={!loading}
+                  studiedCount={subjectReviewStats.find((row) => row.subject === subject)?.studiedCount ?? 0}
+                  learnedCount={subjectReviewStats.find((row) => row.subject === subject)?.learnedCount ?? 0}
+                  statsReady={reviewProgressReady && reviewMetadataReady && !reviewMetadataError}
+                  onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
+                />    key={subject}
                   onClick={() => navigate(`/jamb/past-questions?subject=${subject}`)}
                   className={`p-4 rounded-xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${subject === "physics" ? "border-physics/30 hover:border-physics hover:bg-physics/5" : subject === "chemistry" ? "border-chemistry/30 hover:border-chemistry hover:bg-chemistry/5" : subject === "biology" ? "border-biology/30 hover:border-biology hover:bg-biology/5" : "border-primary/30 hover:border-primary hover:bg-primary/5"}`}
                   variants={cardVariants}

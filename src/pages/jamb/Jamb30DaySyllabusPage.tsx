@@ -369,7 +369,7 @@ interface JambSessionCardProps {
 }
 
 function JambSessionCard({
-  session, canAdvanceToDay, onOpenDay, onCompleteDay, onRename, onPause, onResume, onDelete,
+  session, canAdvanceToDay, onCompleteDay, onRename, onPause, onResume, onDelete,
 }: JambSessionCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);

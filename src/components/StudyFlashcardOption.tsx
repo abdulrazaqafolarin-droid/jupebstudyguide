@@ -78,7 +78,9 @@ export function StudyFlashcardOption({
         "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-mono text-sm font-bold transition-all duration-200",
         styles.label,
       )}>
-        {state === "correct" ? <Check className="h-4 w-4" />\n          : state === "incorrect" ? <X className="h-4 w-4" />\n            : label}
+        {state === "correct" ? <Check className="h-4 w-4" />
+          : state === "incorrect" ? <X className="h-4 w-4" />
+            : label}
       </span>
       <span className={cn(
         "min-w-0 flex-1 pt-1 text-sm leading-relaxed transition-opacity duration-200",

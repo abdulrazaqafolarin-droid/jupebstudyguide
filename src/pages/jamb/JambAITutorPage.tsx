@@ -19,13 +19,25 @@ function isJambSubject(value: string | null): value is (typeof JAMB_QUESTION_BAN
   return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as (typeof JAMB_QUESTION_BANK_SUBJECTS)[number]));
 }
 
-export default function JambAITutorPage() {
+interface JambAITutorPageProps {
+  embeddedSubject?: string;
+  embeddedTopicId?: string;
+  onClose?: () => void;
+  onComplete?: () => void;
+}
+
+export default function JambAITutorPage({
+  embeddedSubject,
+  embeddedTopicId,
+  onClose,
+  onComplete,
+}: JambAITutorPageProps) {
   const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
-  const requestedSubject = searchParams.get("subject")?.toLowerCase() ?? null;
+  const requestedSubject = (embeddedSubject ?? searchParams.get("subject"))?.toLowerCase() ?? null;
   const subject = isJambSubject(requestedSubject) ? requestedSubject : undefined;
   const syllabusSubject = requestedSubject ? getJambSyllabusSubject(requestedSubject) : undefined;
-  const requestedTopicId = searchParams.get("topic");
+  const requestedTopicId = embeddedTopicId ?? searchParams.get("topic");
   const syllabusTopic = requestedSubject && requestedTopicId
     ? getJambSyllabusTopic(requestedSubject, requestedTopicId)
     : undefined;
@@ -217,7 +229,13 @@ export default function JambAITutorPage() {
     <StudyChatShell
       programId="jamb"
       backTo="/jamb"
-      backLabel="Back to JAMB workspace"
+      backLabel={onClose ? "Back to lesson" : "Back to JAMB workspace"}
+      onBack={onClose}
+      headerActions={onComplete ? (
+        <Button size="sm" onClick={onComplete} className="h-7 shrink-0 px-2 text-xs">
+          Finish learning
+        </Button>
+      ) : undefined}
       historyLabel="JAMB tutor history"
       title={activeChatMeta?.title ?? "Study Chat"}
       subtitle={

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+import { WorkspaceMissionHeader } from "@/components/WorkspaceMissionHeader";
 import {
   Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
-  Clock3, Loader2, RefreshCw, ShieldCheck, Target, Trophy,
+  Loader2, RefreshCw, Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
@@ -212,28 +213,7 @@ export default function JambDailyMissionPage() {
       />
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-12">
-        <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Target className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-lg font-bold">Build a daily practice habit</h2>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Choose a subject and practise with up to 10 reviewed questions.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1"><ShieldCheck className="h-3.5 w-3.5" /> Answers checked by the JAMB service</span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1"><Clock3 className="h-3.5 w-3.5" /> Up to 10 questions</span>
-          </div>
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            Syllabus-led lessons remain disabled pending official source verification. Only approved answer keys count towards accuracy.
-          </p>
-        </section>
-
-        {!remoteSupported && (
+                {!remoteSupported && (
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
             Cloud sync is unavailable; your missions remain saved on this device.
           </div>
@@ -249,7 +229,10 @@ export default function JambDailyMissionPage() {
           <section className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="font-semibold">Choose today's subject</h2>
+                <div>
+                  <h2 className="font-semibold">Today's subject</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">Practice only · up to 10 questions · approved keys only</p>
+                </div>
               </div>
               <span className="text-xs text-muted-foreground">{today}</span>
             </div>
@@ -296,33 +279,36 @@ export default function JambDailyMissionPage() {
         {activeMission && (
           <section className="space-y-4">
             <div className="mx-auto w-full max-w-3xl space-y-4">
-            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{JAMB_SUBJECT_INFO[activeMission.subject].label}</span>
-                <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{formatDate(activeMission.localDate)}</span>
-                <span className={activeMission.status === "completed" ? "rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600" : "rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"}>
-                  {activeMission.status === "completed" ? "Completed" : "In progress"}
-                </span>
-              </div>
-              <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-bold">Today's practice set</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">{activeSummary?.checkedQuestions ?? 0} of {activeSummary?.totalQuestions ?? activeMission.questionIds.length} answer checks completed</p>
-                </div>
-                {activeSummary?.accuracy !== null && activeSummary?.accuracy !== undefined && (
-                  <div className="text-right">
+                        <WorkspaceMissionHeader
+              badges={(
+                <>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">{JAMB_SUBJECT_INFO[activeMission.subject].label}</span>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">{formatDate(activeMission.localDate)}</span>
+                  <span className={activeMission.status === "completed" ? "rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white" : "rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground"}>
+                    {activeMission.status === "completed" ? "Completed" : "In progress"}
+                  </span>
+                </>
+              )}
+              title="Today's practice set"
+              description={(activeSummary?.checkedQuestions ?? 0) + " of " + (activeSummary?.totalQuestions ?? activeMission.questionIds.length) + " answer checks completed"}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                {activeSummary?.accuracy !== null && activeSummary?.accuracy !== undefined ? (
+                  <div>
                     <p className="text-2xl font-bold tabular-nums">{activeSummary.accuracy}%</p>
                     <p className="text-[10px] text-muted-foreground">of {activeSummary.gradableQuestions} gradable</p>
                   </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Accuracy appears after approved answer keys are checked.</p>
                 )}
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-secondary">
-                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${activeSummary ? (activeSummary.checkedQuestions / Math.max(1, activeSummary.totalQuestions)) * 100 : 0}%` }} />
+                <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-secondary">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: String(activeSummary ? (activeSummary.checkedQuestions / Math.max(1, activeSummary.totalQuestions)) * 100 : 0) + "%" }} />
+                </div>
               </div>
               {activeMission.status === "completed" && activeSummary?.accuracy === null && (
-                <p className="mt-3 text-xs text-muted-foreground">This mission is complete, but no accuracy score is shown because the checked questions did not have approved answer keys.</p>
+                <p className="mt-3 text-xs text-muted-foreground">Ungraded answers remain saved and do not affect accuracy.</p>
               )}
-            </div>
+            </WorkspaceMissionHeader>
 
             {loadingQuestions ? (
               <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Restoring mission questions…</div>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { Question } from "@/types/question";
+import type { Question, QuestionImagePosition } from "@/types/question";
 import QuestionMath from "@/components/QuestionMath";
 import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionTextWithImage } from "@/components/study-past-questions/QuestionTextWithImage";
@@ -15,8 +15,17 @@ function normalizeQuestionImageUrl(value: string): string {
   return url;
 }
 
+type QuestionPromptQuestion = Omit<
+  Pick<Question, "id" | "question" | "imageUrl" | "imageUrls" | "imagePosition">,
+  "imagePosition"
+> & {
+  // Database-backed question banks may retain a stale or legacy layout value.
+  // The renderer validates inline positions before passing them to image layout.
+  imagePosition?: string | null;
+};
+
 interface QuestionPromptProps {
-  question: Pick<Question, "id" | "question" | "imageUrl" | "imageUrls" | "imagePosition">;
+  question: QuestionPromptQuestion;
   alt?: string;
   className?: string;
   textClassName?: string;
@@ -51,7 +60,10 @@ export function QuestionPrompt({
   const failedUrls = failed.questionId === question.id ? failed.urls : new Set<string>();
   const imageUrls = allImageUrls.filter((url) => !failedUrls.has(url));
   const showImages = question.imagePosition !== "text-only";
-  const hasInlineImages = showImages && imageUrls.length > 0 && isInlineImagePosition(question.imagePosition);
+  const inlineImagePosition = isInlineImagePosition(question.imagePosition)
+    ? question.imagePosition as QuestionImagePosition
+    : null;
+  const hasInlineImages = showImages && imageUrls.length > 0 && inlineImagePosition !== null;
 
   const markFailed = (url: string) => {
     setFailed((previous) => ({
@@ -71,7 +83,7 @@ export function QuestionPrompt({
           visible: !failedUrls.has(src),
           onError: () => markFailed(src),
         }))}
-        imagePosition={question.imagePosition!}
+        imagePosition={inlineImagePosition!}
         className={cn("text-base font-medium leading-relaxed", className)}
         textClassName={textClassName}
       />

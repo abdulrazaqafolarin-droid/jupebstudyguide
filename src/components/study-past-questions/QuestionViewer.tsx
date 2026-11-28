@@ -11,8 +11,7 @@ import type { Subject, Question } from "@/types/question";
 import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
-import { isInlineImagePosition } from "@/lib/question-image-position";
-import { QuestionTextWithImage } from "./QuestionTextWithImage";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { gradeAnswer, gradeObjectiveAnswer, percentageScore } from "@/lib/answer-scoring";
 import { getStudyQuestionDisplayNumber } from "@/lib/study-question-numbering";
 
@@ -59,76 +58,20 @@ export function QuestionViewer({
   const [results, setResults] = useState<AnswerEntry[]>([]);
   const [showJumpGrid, setShowJumpGrid] = useState(false);
   const [showAITutor, setShowAITutor] = useState(false);
+  // Practical question headers still render their own image gallery.
   const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
   const handleImageError = useCallback((url: string) => {
     setBrokenImages((previous) => new Set(previous).add(url));
   }, []);
-
-  // Renders the question image and/or text according to the admin-chosen
-  // Image Layout (image_position): text-only, image-only, image-above, image-beside, or a saved inline text anchor.
-  const renderQuestionMedia = useCallback((q: StudyQuestion) => {
-    const imageUrls = (q.imageUrls?.length ? q.imageUrls : q.imageUrl ? [q.imageUrl] : [])
-      .filter((url): url is string => typeof url === "string" && url.length > 0);
-    const displayImageUrls = imageUrls.filter((url) => !brokenImages.has(url));
-    const hasImage = displayImageUrls.length > 0;
-    const pos = q.imagePosition || (hasImage ? "image-only" : "text-only");
-
-    if (hasImage && isInlineImagePosition(pos)) {
-      return (
-        <QuestionTextWithImage
-          content={q.question || ""}
-          images={displayImageUrls.map((url, index) => ({
-            id: url + "-" + index,
-            src: url,
-            alt: "Question illustration " + (index + 1),
-            onError: () => handleImageError(url),
-          }))}
-          imagePosition={pos}
-        />
-      );
-    }
-
-    if (pos === "text-only" || !hasImage) {
-      return q.question ? (
-        <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />
-      ) : null;
-    }
-
-    const images = displayImageUrls.map((url, index) => (
-      <img
-        key={url + index}
-        src={url}
-        alt={displayImageUrls.length > 1 ? "Question illustration " + (index + 1) : "Question"}
-        className="w-full max-h-64 object-contain rounded-xl border bg-muted/30"
-        loading="lazy"
-        onError={() => handleImageError(url)}
-      />
-    ));
-    const imageGallery = (
-      <div className={displayImageUrls.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : "w-full"}>
-        {images}
-      </div>
-    );
-    if (pos === "image-only") return imageGallery;
-    if (pos === "image-above") {
-      return (
-        <>
-          {imageGallery}
-          {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed" />}
-        </>
-      );
-    }
-    if (pos === "image-beside") {
-      return (
-        <div className="flex flex-col sm:flex-row gap-4 items-start">
-          <div className="sm:w-1/2 shrink-0">{images[0]}</div>
-          {q.question && <QuestionMath content={q.question} className="text-base font-medium leading-relaxed sm:w-1/2" />}
-          {images.length > 1 && <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">{images.slice(1)}</div>}
-        </div>
-      );
-    }
-    return imageGallery;
-  }, [brokenImages, handleImageError]);
+  // Both JUPEB and JAMB use the same prompt renderer so stored image-layout
+  // metadata cannot hide a valid written question when its image is unavailable.
+  const renderQuestionMedia = useCallback((q: StudyQuestion) => (
+    <QuestionPrompt
+      question={q}
+      alt="Question illustration"
+      textClassName="text-base font-medium leading-relaxed"
+    />
+  ), []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 

@@ -103,4 +103,20 @@ describe("QuestionPrompt", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
     expect(screen.getByText("A question with a diagram.")).toBeInTheDocument();
   });
+
+  it("keeps the written question visible when image-only is saved but no image is attached", () => {
+    render(
+      <QuestionPrompt
+        question={{
+          ...baseQuestion,
+          imageUrls: [],
+          imageUrl: undefined,
+          imagePosition: "image-only",
+        }}
+      />,
+    );
+
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByText("A question with a diagram.")).toBeInTheDocument();
+  });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -14,15 +14,13 @@ import {
   JAMB_QUESTION_BANK_SUBJECTS, JAMB_SUBJECT_INFO, JAMB_INITIAL_QUESTION_PAGE_SIZE, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
 import {
-  getJambQuestionYears, getJambPublishedQuestionById, getJambSubjectSummaries,
-  JambSchemaUnavailableError, searchJambQuestions,
+  compareJambQuestionOrder, getJambQuestionYearSummaries, getJambPublishedQuestionById, getJambSubjectSummaries,
+  invalidateJambQuestionSearchCache, JambSchemaUnavailableError, searchJambQuestions,
   type JambQuestion, type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
 import { QuestionMath } from "@/components/QuestionMath";
-import { QuestionImage } from "@/components/QuestionImage";
-import { QuestionTextWithImage } from "@/components/study-past-questions/QuestionTextWithImage";
-import { isInlineImagePosition } from "@/lib/question-image-position";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
@@ -67,6 +65,7 @@ export default function JambPastQuestionsPage() {
   );
   const [summaries, setSummaries] = useState<JambSubjectSummary[]>([]);
   const [years, setYears] = useState<number[]>([]);
+  const [yearCounts, setYearCounts] = useState<Record<number, number>>({});
   const [year, setYear] = useState<number | null>(requestedYear);
   const [expandedYear, setExpandedYear] = useState<number | null>(requestedYear);
   const [search, setSearch] = useState("");
@@ -109,15 +108,17 @@ export default function JambPastQuestionsPage() {
   };
 
   const handleAdminQuestionUpdated = (updated: JambQuestion) => {
+    invalidateJambQuestionSearchCache();
     setQuestions((previous) => previous.map((question) =>
       question.id === updated.id ? { ...question, ...updated } : question,
-    ).sort((a, b) => a.sortOrder - b.sortOrder));
+    ).sort(compareJambQuestionOrder));
     setBookmarkQuestions((previous) => previous.map((question) =>
       question.id === updated.id ? { ...question, ...updated } : question,
     ));
   };
 
   const handleAdminQuestionDeleted = (id: string) => {
+    invalidateJambQuestionSearchCache();
     setQuestions((previous) => previous.filter((question) => question.id !== id));
     setBookmarkQuestions((previous) => previous.filter((question) => question.id !== id));
     setCount((previous) => Math.max(0, previous - 1));
@@ -126,18 +127,20 @@ export default function JambPastQuestionsPage() {
   };
 
   const handleAdminQuestionAdded = (added: JambQuestion) => {
-    setQuestions((previous) => [...previous, added].sort((a, b) => a.sortOrder - b.sortOrder));
+    invalidateJambQuestionSearchCache();
+    setQuestions((previous) => [...previous, added].sort(compareJambQuestionOrder));
     setCount((previous) => previous + 1);
     setActiveQuestionIndex(Math.min(questions.length, JAMB_INITIAL_QUESTION_PAGE_SIZE - 1));
     setSelectedAdminQuestion(added);
   };
 
   const handleAdminQuestionsReordered = (reordered: JambQuestion[]) => {
+    invalidateJambQuestionSearchCache();
     const positions = new Map(reordered.map((question) => [question.id, question.sortOrder]));
     setQuestions((previous) => previous.map((question) => {
       const position = positions.get(question.id);
       return position === undefined ? question : { ...question, sortOrder: position };
-    }).sort((a, b) => a.sortOrder - b.sortOrder));
+    }).sort(compareJambQuestionOrder));
   };
 
   useEffect(() => {
@@ -157,10 +160,11 @@ export default function JambPastQuestionsPage() {
     let active = true;
     setLoadingYears(true);
     setError(null);
-    getJambQuestionYears(subject)
-      .then((available) => {
+    getJambQuestionYearSummaries(subject)
+      .then(({ years: available, counts }) => {
         if (active) {
           setYears(available);
+          setYearCounts(counts);
           setSchemaUnavailable(false);
           setExpandedYear((previous) => previous !== null && available.includes(previous) ? previous : null);
         }
@@ -168,6 +172,7 @@ export default function JambPastQuestionsPage() {
       .catch((reason: unknown) => {
         if (!active) return;
         setYears([]);
+        setYearCounts({});
         setSchemaUnavailable(reason instanceof JambSchemaUnavailableError);
         setError(reason instanceof Error ? reason.message : "Unable to load available years.");
       })
@@ -378,7 +383,7 @@ export default function JambPastQuestionsPage() {
     setShowQuestionGrid(false);
   };
 
-  const goToNextQuestion = () => {
+  const goToNextQuestion = useCallback(() => {
     if (activeQuestionIndex < questions.length - 1) {
       setActiveQuestionIndex((value) => value + 1);
       return;
@@ -387,9 +392,9 @@ export default function JambPastQuestionsPage() {
       pendingQuestionIndexRef.current = 0;
       setOffset((value) => value + JAMB_INITIAL_QUESTION_PAGE_SIZE);
     }
-  };
+  }, [activeQuestionIndex, questions.length, offset, count]);
 
-  const goToPreviousQuestion = () => {
+  const goToPreviousQuestion = useCallback(() => {
     if (activeQuestionIndex > 0) {
       setActiveQuestionIndex((value) => value - 1);
       return;
@@ -398,19 +403,35 @@ export default function JambPastQuestionsPage() {
       pendingQuestionIndexRef.current = JAMB_INITIAL_QUESTION_PAGE_SIZE - 1;
       setOffset((value) => Math.max(0, value - JAMB_INITIAL_QUESTION_PAGE_SIZE));
     }
-  };
+  }, [activeQuestionIndex, offset]);
+
+  // Match JUPEB's arrow-key navigation without hijacking arrow keys while a
+  // learner is typing in search or any editable control.
+  useEffect(() => {
+    if (view !== "questions") return;
+    const handleQuestionNavigation = (event: KeyboardEvent) => {
+      if (showQuestionGrid || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const target = event.target;
+      if (target instanceof HTMLElement &&
+          target.closest("input, textarea, select, [contenteditable='true']")) {
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goToPreviousQuestion();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goToNextQuestion();
+      }
+    };
+    window.addEventListener("keydown", handleQuestionNavigation);
+    return () => window.removeEventListener("keydown", handleQuestionNavigation);
+  }, [view, showQuestionGrid, goToNextQuestion, goToPreviousQuestion]);
 
   const renderQuestionCard = (question: JambQuestion) => {
     const bookmarked = bookmarksReady && bookmarks.includes(question.id);
     const current = selected[question.id] ?? savedAnswers[question.id]?.selected ?? "";
     const feedback = feedbacks[question.id];
-    const imagePosition = question.imagePosition || (question.imageUrls.length > 0 ? "image-only" : "text-only");
-    const positionedImages = question.imageUrls.map((url, index) => ({
-      id: question.id + "-image-" + index,
-      src: url,
-      alt: JAMB_SUBJECT_INFO[question.subject].label + " question illustration " + (index + 1),
-    }));
-
     return (
       <article key={question.id} className="rounded-2xl border border-border bg-card p-4 chalk-texture sm:p-5">
         <div className="mb-3 flex items-start justify-between gap-3">
@@ -418,7 +439,9 @@ export default function JambPastQuestionsPage() {
             <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>
             <span>{JAMB_SUBJECT_INFO[question.subject].label}</span>
             {question.topic && <><span className="text-muted-foreground/40">·</span><span>{question.topic}</span></>}
-            {question.sourceQuestionNumber && <span>· Source Q{question.sourceQuestionNumber}</span>}
+            {question.sourceQuestionNumber && (
+              <span>· Source Q{question.sourceQuestionNumber.replace(/^Q/i, "")}</span>
+            )}
           </div>
           <button
             type="button"
@@ -433,51 +456,12 @@ export default function JambPastQuestionsPage() {
           </button>
         </div>
 
-        {isInlineImagePosition(imagePosition) ? (
-          <QuestionTextWithImage
-            content={question.question}
-            images={positionedImages}
-            imagePosition={imagePosition}
-          />
-        ) : imagePosition === "image-beside" && question.imageUrls.length > 0 ? (
-          <>
-            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div className="sm:w-1/2 sm:shrink-0">
-                <QuestionImage
-                  imageUrl={question.imageUrls[0]}
-                  alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-                  className="mb-0"
-                />
-              </div>
-              {question.question.trim() && (
-                <QuestionMath
-                  content={question.question}
-                  className="text-base font-medium leading-relaxed sm:w-1/2"
-                />
-              )}
-            </div>
-            {question.imageUrls.length > 1 && (
-              <QuestionImage
-                imageUrls={question.imageUrls.slice(1)}
-                alt={JAMB_SUBJECT_INFO[question.subject].label + " additional question illustration"}
-              />
-            )}
-          </>
-        ) : (
-          <>
-            {imagePosition !== "text-only" && question.imageUrls.length > 0 && (
-              <QuestionImage
-                imageUrls={question.imageUrls}
-                alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-              />
-            )}
-            {imagePosition !== "image-only" && question.question.trim() && (
-              <div className="mb-4 max-h-[42vh] overflow-y-auto overscroll-contain touch-pan-y pr-1">
-                <QuestionMath content={question.question} />
-              </div>
-            )}
-          </>
-        )}
+        <QuestionPrompt
+          question={question}
+          alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
+          className="mb-4"
+          textClassName="text-base font-medium leading-relaxed"
+        />
         <div className="space-y-2">
           {question.options.map((option) => {
             const isSelected = current === option.label;
@@ -897,6 +881,7 @@ export default function JambPastQuestionsPage() {
               ) : (
                 <YearAccordion
                   years={years}
+                  counts={yearCounts}
                   selectedYear={expandedYear}
                   onSelectYear={setExpandedYear}
                   onViewYear={chooseYear}

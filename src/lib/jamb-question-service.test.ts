@@ -4,7 +4,58 @@ import { describe, expect, it, vi } from "vitest";
 // of the unit test so the privacy contract is tested without backend access.
 vi.mock("@/integrations/supabase/client", () => ({ supabase: {} }));
 
-import { isJambCbtQuestionCandidate, toSafeJambQuestionPayload, type JambQuestion } from "./jamb-question-service";
+import { compareJambQuestionOrder, isJambCbtQuestionCandidate, toSafeJambQuestionPayload, type JambQuestion } from "./jamb-question-service";
+
+describe("compareJambQuestionOrder", () => {
+  const question = (
+    id: string,
+    year: number,
+    sourceQuestionNumber: string,
+    sortOrder = 0,
+  ): JambQuestion => ({
+    id,
+    subject: "physics",
+    year,
+    category: "objective",
+    question: "Which option is correct?",
+    options: [],
+    sortOrder,
+    imageUrls: [],
+    sourceQuestionNumber,
+  });
+
+  it("sorts by year descending and printed question number numerically", () => {
+    const ordered = [
+      question("q10", 2024, "10"),
+      question("q2", 2024, "2"),
+      question("q1-old", 2023, "1"),
+      question("q1-new", 2024, "1"),
+    ].sort(compareJambQuestionOrder);
+
+    expect(ordered.map((item) => item.id)).toEqual(["q1-new", "q2", "q10", "q1-old"]);
+  });
+
+  it("keeps repeated printed question numbers and lettered variants adjacent", () => {
+    const ordered = [
+      question("q29b", 2024, "Q29b"),
+      question("q30", 2024, "30"),
+      question("q29", 2024, "29"),
+      question("q29a", 2024, "29a"),
+    ].sort(compareJambQuestionOrder);
+
+    expect(ordered.map((item) => item.id)).toEqual(["q29", "q29a", "q29b", "q30"]);
+  });
+
+  it("preserves explicit positive admin sort order", () => {
+    const ordered = [
+      question("source-q3", 2024, "3", 4),
+      question("source-q9", 2024, "9", 2),
+      question("legacy-q2", 2024, "2", 0),
+    ].sort(compareJambQuestionOrder);
+
+    expect(ordered.map((item) => item.id)).toEqual(["source-q9", "legacy-q2", "source-q3"]);
+  });
+});
 
 describe("toSafeJambQuestionPayload", () => {
   it("exposes learner-facing question content but never answer-key material", () => {

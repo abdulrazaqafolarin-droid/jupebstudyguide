@@ -23,6 +23,7 @@ import { SubjectCardGrid, type SubjectCardGridItem } from "@/components/study-pa
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
+import { QUESTION_SLIDE_VARIANTS } from "@/lib/question-slide-variants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
@@ -36,12 +37,6 @@ const PAGE_VARIANTS = {
   exit: { opacity: 0, x: -20 },
 };
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
-const QUESTION_SLIDE_VARIANTS = {
-  enter: (direction: number) => ({ x: direction * 60, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (direction: number) => ({ x: direction * -60, opacity: 0 }),
-};
-
 
 function isJambSubject(value: string | null | undefined): value is JambSubject {
   return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as JambSubject));
@@ -71,7 +66,7 @@ export default function JambPastQuestionsPage() {
   const [count, setCount] = useState(0);
   const [offset, setOffset] = useState(0);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
-  const [questionDirection, setQuestionDirection] = useState(1);
+  const [questionDirection, setQuestionDirection] = useState(0);
   const [showQuestionGrid, setShowQuestionGrid] = useState(false);
   const pendingQuestionIndexRef = useRef(0);
   const answerCheckSequenceRef = useRef<Record<string, number>>({});

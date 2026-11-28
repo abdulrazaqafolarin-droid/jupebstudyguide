@@ -56,7 +56,18 @@ export function JambDailyMissionCard({ history, ready }: JambDailyMissionCardPro
   const activeMission = todayMissions.find((mission) => mission.status === "in_progress") ?? null;
   const latestMission = activeMission ?? todayMissions[0] ?? null;
   const completedToday = todayMissions.length > 0 && todayMissions.every((mission) => mission.status === "completed");
-  const summary = latestMission ? getJambMissionSummary(latestMission) : null;
+  const todayTotals = todayMissions
+    .map(getJambMissionSummary)
+    .reduce((total, result) => ({
+      questions: total.questions + result.totalQuestions,
+      answered: total.answered + result.answeredQuestions,
+      checked: total.checked + result.checkedQuestions,
+      graded: total.graded + result.gradableQuestions,
+      correct: total.correct + result.correctAnswers,
+    }), { questions: 0, answered: 0, checked: 0, graded: 0, correct: 0 });
+  const todayAccuracy = todayTotals.graded > 0
+    ? Math.round((todayTotals.correct / todayTotals.graded) * 100)
+    : null;
   const streak = missionStreak(history);
 
   const week = useMemo(() => {
@@ -133,21 +144,21 @@ export function JambDailyMissionCard({ history, ready }: JambDailyMissionCardPro
 
           {completedToday ? (
             <div>
-              <p className="text-3xl font-bold">{summary?.accuracy === null || summary?.accuracy === undefined ? "—" : `${summary.accuracy}%`}</p>
+              <p className="text-3xl font-bold">{todayAccuracy === null ? "—" : `${todayAccuracy}%`}</p>
               <p className="text-sm text-muted-foreground">
-                {summary?.accuracy === null || summary?.accuracy === undefined
+                {todayAccuracy === null
                   ? "No graded answers yet"
-                  : `Accuracy · ${summary.gradableQuestions} graded`}
+                  : `Accuracy · ${todayTotals.graded} graded`}
               </p>
             </div>
           ) : (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{summary?.answeredQuestions ?? 0} of {summary?.totalQuestions ?? 0} answered</span>
-                <span>{summary?.checkedQuestions ?? 0} checked</span>
+                <span>{todayTotals.answered} of {todayTotals.questions} answered</span>
+                <span>{todayTotals.checked} checked</span>
               </div>
               <Progress
-                value={summary && summary.totalQuestions > 0 ? (summary.answeredQuestions / summary.totalQuestions) * 100 : 0}
+                value={todayTotals.questions > 0 ? (todayTotals.answered / todayTotals.questions) * 100 : 0}
                 className="h-2"
               />
             </div>

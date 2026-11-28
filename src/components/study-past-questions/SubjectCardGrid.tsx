@@ -1,27 +1,24 @@
 import { motion, type Variants } from "framer-motion";
-
 import type { Subject } from "@/types/question";
 import { STUDY_SUBJECT_INFO } from "@/types/study-questions";
 
-interface SubjectCardGridItem {
-  subject: Subject;
+export interface SubjectCardGridItem<T extends string = Subject> {
+  subject: T;
   label: string;
   icon: string;
   description: string;
 }
 
-interface SubjectCardGridProps {
-  onSelect: (subject: Subject) => void;
-  counts?: Partial<Record<Subject, number>>;
+interface SubjectCardGridProps<T extends string = Subject> {
+  onSelect: (subject: T) => void;
+  counts?: Partial<Record<T, number>>;
   countsReady?: boolean;
-  items?: SubjectCardGridItem[];
+  items?: SubjectCardGridItem<T>[];
 }
 
 const container: Variants = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08 },
-  },
+  show: { transition: { staggerChildren: 0.08 } },
 };
 
 const item: Variants = {
@@ -36,9 +33,20 @@ const SUBJECT_COLORS: Partial<Record<Subject, { gradient: string; light: string;
   math: { gradient: "from-purple-600/40 to-pink-400/40", light: "bg-purple-500/10", accent: "border-purple-500/30" },
 };
 
-export function SubjectCardGrid<T extends string = Subject>({ onSelect, counts, countsReady = true, items }: SubjectCardGridProps<T>) {
+const FALLBACK_COLORS = {
+  gradient: "from-primary/30 to-accent/30",
+  light: "bg-primary/10",
+  accent: "border-primary/30",
+};
+
+export function SubjectCardGrid<T extends string = Subject>({
+  onSelect,
+  counts,
+  countsReady = true,
+  items,
+}: SubjectCardGridProps<T>) {
   const cards: SubjectCardGridItem<T>[] = items ?? (Object.keys(STUDY_SUBJECT_INFO) as Subject[]).map((subject) => ({
-    subject,
+    subject: subject as T,
     label: subject.charAt(0).toUpperCase() + subject.slice(1),
     icon: STUDY_SUBJECT_INFO[subject].icon,
     description: STUDY_SUBJECT_INFO[subject].description,
@@ -53,7 +61,7 @@ export function SubjectCardGrid<T extends string = Subject>({ onSelect, counts, 
     >
       {cards.map(({ subject, label, icon, description }) => {
         const count = counts?.[subject];
-        const colors = SUBJECT_COLORS[subject] ?? { gradient: "", light: "", accent: "" };
+        const colors = SUBJECT_COLORS[subject as Subject] ?? FALLBACK_COLORS;
 
         return (
           <motion.button
@@ -101,3 +109,5 @@ export function SubjectCardGrid<T extends string = Subject>({ onSelect, counts, 
     </motion.div>
   );
 }
+
+export default SubjectCardGrid;

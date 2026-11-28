@@ -429,12 +429,12 @@ export default function JambPastQuestionsPage() {
     const feedback = feedbacks[question.id];
     return (
       <article key={question.id} className="space-y-5 protected-study-content">
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-muted-foreground">
-            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>
-            <span>{JAMB_SUBJECT_INFO[question.subject].label}</span>
-            {question.topic && <><span className="text-muted-foreground/40">·</span><span>{question.topic}</span></>}
-          </div>
+        {(year === null || question.topic) && (
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-muted-foreground">
+              {year === null && <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>}
+              {question.topic && <span>{question.topic}</span>}
+            </div>
           <button
             type="button"
             onClick={() => toggleJambBookmark(question.id)}
@@ -446,13 +446,15 @@ export default function JambPastQuestionsPage() {
               ? <BookmarkCheck className="h-5 w-5 text-primary" />
               : <Bookmark className="h-5 w-5 text-muted-foreground" />}
           </button>
-        </div>
+          </div>
+        )}
 
-        <QuestionPrompt
+        <div className="space-y-3">
+          <QuestionPrompt
           question={question}
           alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-          className="mb-4"
           textClassName="text-base font-medium leading-relaxed"
+          inlineMath
         />
         <div className="space-y-2">
           {question.options.map((option) => {
@@ -477,18 +479,47 @@ export default function JambPastQuestionsPage() {
         </div>
 
         {current && (
-          <div className="mt-3 rounded-xl border border-border bg-muted/50 p-3 text-xs leading-relaxed" aria-live="polite">
-            {checking[question.id] ? (
-              <span className="text-muted-foreground">Checking reviewed answer key…</span>
-            ) : feedback?.gradable ? (
-              <div className={feedback.isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}>
-                <strong>{feedback.isCorrect ? "Correct!" : "Not quite. Correct option: " + feedback.correctOption}</strong>
-                {feedback.explanation && <p className="mt-1 text-foreground"><QuestionMath content={feedback.explanation} /></p>}
+          <div className="space-y-3 pt-2" aria-live="polite">
+            <div className={[
+              "rounded-xl border p-3",
+              !feedback?.gradable
+                ? "border-border bg-muted/30"
+                : feedback.isCorrect
+                  ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
+                  : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20",
+            ].join(" ")}>
+              {checking[question.id] ? (
+                <p className="text-xs font-medium text-muted-foreground">Checking answer…</p>
+              ) : (
+                <>
+                  <p className={[
+                    "text-sm font-medium",
+                    !feedback?.gradable
+                      ? "text-muted-foreground"
+                      : feedback.isCorrect
+                        ? "text-green-700 dark:text-green-300"
+                        : "text-red-700 dark:text-red-300",
+                  ].join(" ")}>
+                    {!feedback?.gradable ? "Not scored" : feedback.isCorrect ? "Correct!" : "Incorrect"}
+                  </p>
+                  {feedback?.gradable && !feedback.isCorrect && feedback.correctOption && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      The correct answer is <span className="font-mono font-medium text-green-600 dark:text-green-400">{feedback.correctOption}</span>
+                    </p>
+                  )}
+                  {!feedback?.gradable && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {feedback?.message ?? "No verified answer key matches the listed options, so this question will not affect your score."}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+            {feedback?.gradable && feedback.explanation && (
+              <div className="rounded-xl border bg-card p-3">
+                <p className="mb-1 text-xs font-medium text-muted-foreground">Explanation</p>
+                <QuestionMath content={feedback.explanation} className="text-sm leading-relaxed" />
               </div>
-            ) : (
-              <span className="text-muted-foreground">
-                Your choice is saved. {feedback?.message ?? "Answer checking is unavailable for this question."}
-              </span>
             )}
           </div>
         )}
@@ -499,8 +530,8 @@ export default function JambPastQuestionsPage() {
             className="inline-flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <Bot className="h-4 w-4" />
-            Ask AI Tutor
-            
+            Need a deeper explanation?
+            <Sparkles className="h-3 w-3 text-accent" />
           </Link>
         </div>
       </article>

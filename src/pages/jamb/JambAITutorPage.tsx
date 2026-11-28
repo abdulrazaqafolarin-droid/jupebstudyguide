@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { BookOpen, CheckCircle, Plus, Sparkles, X } from "lucide-react";
+import { BookOpen, CheckCircle, GraduationCap, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useStudyChat } from "@/hooks/useStudyChat";
@@ -53,6 +53,7 @@ export default function JambAITutorPage({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [showTextbooks, setShowTextbooks] = useState(searchParams.get("textbooks") === "1");
   const openedTargetChatKeyRef = useRef<string | null>(null);
+  const autoTeachChatIdRef = useRef<string | null>(null);
 
   const extraSystemContext = useCallback((chat: StudyChatMeta | null) => {
     const parts: string[] = [];
@@ -114,12 +115,13 @@ export default function JambAITutorPage({
   const createChat = useCallback(async () => {
     const id = await newChat(tutorSubjectValue, syllabusTopic?.id);
     if (id) {
+      if (onClose && syllabusTopic) autoTeachChatIdRef.current = id;
       setInput("");
       setEditingIndex(null);
       setDrawerOpen(false);
     }
     return id;
-  }, [newChat, tutorSubjectValue, syllabusTopic?.id]);
+  }, [newChat, tutorSubjectValue, syllabusTopic?.id, onClose]);
 
   const requestedChatKey = syllabusTopic && tutorSubjectValue
     ? `${tutorSubjectValue}:topic:${syllabusTopic.id}`
@@ -164,6 +166,15 @@ export default function JambAITutorPage({
     listLoading, requestedChatKey, syllabusTopic, tutorSubjectValue,
     chats, activeChatId, switchChat, createChat,
   ]);
+
+  useEffect(() => {
+    const targetChatId = autoTeachChatIdRef.current;
+    if (!onClose || !targetChatId || activeChatId !== targetChatId || listLoading || messages.length > 0 || isStreaming || !syllabusTopic) return;
+    autoTeachChatIdRef.current = null;
+    void sendMessage(
+      "Teach me " + syllabusTopic.title + " from the beginning. Follow the JAMB syllabus scope step by step, explain each idea clearly, use examples, and check my understanding before moving to the next subtopic.",
+    );
+  }, [onClose, activeChatId, listLoading, messages.length, isStreaming, syllabusTopic, sendMessage]);
 
   const handleSend = useCallback(async (
     attachment: { base64: string; mimeType: string; name: string } | null,
@@ -265,6 +276,21 @@ export default function JambAITutorPage({
       onNewChat={() => { void createChat(); }}
     >
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {onClose && visibleTutorTopic && (
+          <div className="border-b border-white/5 bg-gradient-to-r from-primary/[0.08] via-accent/[0.06] to-transparent">
+            <div className="mx-auto max-w-4xl px-4 py-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15">
+                  <GraduationCap className="h-4 w-4 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <h1 className="truncate text-sm font-semibold text-foreground">{visibleTutorTopic.title}</h1>
+                  <p className="truncate text-[11px] text-muted-foreground/70">{visibleTutorSubject?.label} · JAMB syllabus</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {questionContext && (
           <div className="mx-auto w-full max-w-3xl px-4 pt-4">
             <section className="rounded-xl border border-primary/20 bg-primary/5 p-3">
@@ -293,6 +319,7 @@ export default function JambAITutorPage({
           </div>
         ) : activeChatId ? (
           <ThreadView
+            compact={Boolean(onClose)}
             messages={messages}
             isStreaming={isStreaming}
             streamError={streamError}
@@ -333,6 +360,7 @@ export default function JambAITutorPage({
 
       {activeChatId && (
         <Composer
+          compact={Boolean(onClose)}
           value={input}
           onChange={setInput}
           onSend={(attachment) => { void handleSend(attachment); }}

@@ -4,9 +4,10 @@ import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import { WorkspaceMissionHeader } from "@/components/WorkspaceMissionHeader";
 import {
   Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
-  Loader2, RefreshCw, Trophy,
+  Info, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
@@ -209,7 +210,18 @@ export default function JambDailyMissionPage() {
         backLabel="Back to JAMB workspace"
         compact
         wide
-        rightContent={<CalendarDays className="h-5 w-5 text-primary" />}
+        rightContent={(
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5 text-primary" />
+            <span
+              title="Daily mission completion is a Rutex study activity, not an official JAMB result."
+              aria-label="Daily mission completion is a Rutex study activity, not an official JAMB result."
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground"
+            >
+              <Info className="h-4 w-4" />
+            </span>
+          </div>
+        )}
       />
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-12">
@@ -230,7 +242,7 @@ export default function JambDailyMissionPage() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="font-semibold">Today's subject</h2>
-                <p className="mt-1 text-xs text-muted-foreground">Practice only · up to 10 questions · approved keys only</p>
+                
               </div>
               <span className="text-xs text-muted-foreground">{today}</span>
             </div>
@@ -297,14 +309,14 @@ export default function JambDailyMissionPage() {
                     <p className="text-[10px] text-muted-foreground">of {activeSummary.gradableQuestions} gradable</p>
                   </div>
                 ) : (
-                  <p className="text-xs text-muted-foreground">Accuracy appears after approved answer keys are checked.</p>
+                  <p className="text-xs text-muted-foreground">Accuracy updates after approved answer checks.</p>
                 )}
                 <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-secondary">
                   <div className="h-full rounded-full bg-primary transition-all" style={{ width: String(activeSummary ? (activeSummary.checkedQuestions / Math.max(1, activeSummary.totalQuestions)) * 100 : 0) + "%" }} />
                 </div>
               </div>
               {activeMission.status === "completed" && activeSummary?.accuracy === null && (
-                <p className="mt-3 text-xs text-muted-foreground">Ungraded answers remain saved and do not affect accuracy.</p>
+                <p className="mt-3 text-xs text-muted-foreground">Unverified answers are saved but not scored.</p>
               )}
             </WorkspaceMissionHeader>
 
@@ -313,41 +325,42 @@ export default function JambDailyMissionPage() {
             ) : questions.length === 0 ? (
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">The saved question set is no longer available in the published JAMB bank. Your mission record is retained; return to the hub to view other missions.</div>
             ) : (
-              <div className="space-y-4">
+              <Card className="space-y-6 p-6 md:p-8">
                 {questions.map((question, index) => {
                   const answer = activeMission.answers[question.id];
                   const canChange = activeMission.status !== "completed" || (answer?.checked && !answer.gradable);
                   const correctOption = question.options.find((option) => option.label === answer?.correctOption);
                   return (
-                    <article key={question.id} className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-                      <div className="mb-3 flex items-center justify-between gap-3">
-                        <p className="text-xs font-semibold text-muted-foreground">Question {index + 1} of {questions.length} · {question.year}</p>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            disabled={!bookmarksReady}
-                            onClick={() => void toggleBookmark(question.id)}
-                            aria-label={bookmarks.includes(question.id) ? "Remove bookmark" : "Bookmark question"}
-                            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:opacity-40"
-                          >
-                            {bookmarks.includes(question.id) ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
-                          </button>
-                          {answer?.checked && answer.gradable && (
-                            <span className={answer.isCorrect ? "rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-600" : "rounded-full bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-destructive"}>
-                              {answer.isCorrect ? "Correct" : "Review"}
-                            </span>
-                          )}
-                          {answer?.checked && !answer.gradable && (
-                            <span className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground">Not graded</span>
-                          )}
-                        </div>
+                    <fieldset key={question.id} className="space-y-3 rounded-xl border border-border p-4">
+                      <legend className="px-2 text-sm font-semibold">
+                        Question {index + 1} of {questions.length} · {JAMB_SUBJECT_INFO[question.subject].label} · {question.year}
+                      </legend>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          disabled={!bookmarksReady}
+                          onClick={() => void toggleBookmark(question.id)}
+                          aria-label={bookmarks.includes(question.id) ? "Remove bookmark" : "Bookmark question"}
+                          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:opacity-40"
+                        >
+                          {bookmarks.includes(question.id) ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+                        </button>
+                        {answer?.checked && answer.gradable && (
+                          <span className={answer.isCorrect ? "rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-600" : "rounded-full bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-destructive"}>
+                            {answer.isCorrect ? "Correct" : "Review"}
+                          </span>
+                        )}
+                        {answer?.checked && !answer.gradable && (
+                          <span className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground">Not graded</span>
+                        )}
                       </div>
                       <QuestionPrompt
                         question={question}
                         alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-                        textClassName="text-sm leading-relaxed"
+                        textClassName="font-medium leading-6"
+                        inlineMath
                       />
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {question.options.map((option) => {
                           const selected = answer?.selectedOption === option.label;
                           const isApproved = answer?.checked === true
@@ -361,6 +374,7 @@ export default function JambDailyMissionPage() {
                             <QuestionOptionButton
                               key={option.label}
                               label={option.label}
+                              variant="past-question"
                               state={
                                 isApproved ? "correct"
                                   : isIncorrectSelection ? "incorrect"
@@ -377,11 +391,8 @@ export default function JambDailyMissionPage() {
                           );
                         })}
                       </div>
-                      {checking[question.id] && <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking with the JAMB answer service…</p>}
+                      {checking[question.id] && <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking answer…</p>}
                       {answerErrors[question.id] && <p role="alert" className="mt-3 text-xs text-amber-600">{answerErrors[question.id]}</p>}
-                      {answer && !answer.checked && !checking[question.id] && (
-                        <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><RefreshCw className="h-3.5 w-3.5" /> Choose an option to save it and request a secure answer check.</p>
-                      )}
                       {answer?.checked && answer.gradable && (
                         <div className="mt-3 space-y-2 rounded-lg border border-border bg-muted/30 p-3">
                           {answer.correctOption && (
@@ -398,13 +409,12 @@ export default function JambDailyMissionPage() {
                         </div>
                       )}
                       {answer?.checked && !answer.gradable && (
-                        <p className="mt-3 text-xs text-muted-foreground">This answer is saved, but it is excluded from accuracy because an approved key is not available.</p>
+                        <p className="mt-3 text-xs text-muted-foreground">Saved, but not graded.</p>
                       )}
-                    </article>
+                    </fieldset>
                   );
                 })}
-              </div>
-            )}
+              </Card>
 
             </div>
           </section>
@@ -416,7 +426,7 @@ export default function JambDailyMissionPage() {
             <span className="text-xs text-muted-foreground">{history.length} saved</span>
           </div>
           {historyRows.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Your completed and in-progress JAMB daily practice sessions will appear here.</div>
+            <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">No missions yet.</div>
           ) : (
             <div className="space-y-2">
               {visibleHistoryRows.map((mission) => {
@@ -448,9 +458,6 @@ export default function JambDailyMissionPage() {
         </section>
 
         {!ready && <p className="text-center text-xs text-muted-foreground">Restoring your saved mission history…</p>}
-        <p className="text-center text-[10px] text-muted-foreground">
-          <Trophy className="inline h-3 w-3" /> Mission completion is a Rutex study activity, not an official JAMB result.
-        </p>
       </main>
     </div>
   );

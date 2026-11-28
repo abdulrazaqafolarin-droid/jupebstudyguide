@@ -80,7 +80,6 @@ function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonPr
           tag={`Topic ${topic.number}`}
           description={topic.sectionTitle}
           subtopics={topic.outline}
-          objectives={topic.objectives}
           actionLabel="Start Learning This Topic"
           onStart={() => navigate(`/jamb/ai?subject=${topic.subject}&topic=${encodeURIComponent(topic.id)}`)}
         />
@@ -100,7 +99,7 @@ function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonPr
       day={task.day}
       subjectName={syllabusSubject.label}
       subjectIcon={syllabusSubject.icon}
-      subjectClassName="bg-secondary"
+      subjectClassName={`subject-${task.subject}`}
       isCompleted={task.isCompleted}
       masteryScore={task.masteryScore}
       canAdvance={canAdvance || task.isCompleted}
@@ -188,6 +187,7 @@ function JambPlanCard({
 }
 
 export default function Jamb30DaySyllabusPage() {
+  const navigate = useNavigate();
   const [showNewSession, setShowNewSession] = useState(false);
   const {
     sessions,

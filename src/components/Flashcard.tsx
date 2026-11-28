@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import { Question, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, Loader2 } from 'lucide-react';
@@ -29,6 +30,7 @@ interface FlashcardProps {
 }
 
 export const Flashcard = ({ question, onAnswer, showControls = true }: FlashcardProps) => {
+  const reduceMotion = useReducedMotion();
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -227,6 +229,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                           state={state}
                           selected={isSelected}
                           disabled={selectedOption !== null}
+                          reduceMotion={Boolean(reduceMotion)}
                           animationDelayMs={oi * 60}
                           onClick={() => handleOptionClick(option.label)}
                         >

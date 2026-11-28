@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import { WorkspaceMissionHeader } from "@/components/WorkspaceMissionHeader";
 import {
@@ -408,10 +408,6 @@ export default function JambDailyMissionPage() {
               </div>
             )}
 
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => navigate("/jamb/daily-mission")}>Mission hub & history</Button>
-              <Button variant="outline" onClick={() => navigate("/jamb/past-questions")}>Browse past questions</Button>
-            </div>
             </div>
           </section>
         )}

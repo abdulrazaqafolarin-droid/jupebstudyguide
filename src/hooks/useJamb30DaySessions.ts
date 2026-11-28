@@ -39,8 +39,11 @@ export function useJamb30DaySessions() {
     [stored],
   );
   const sessionsRef = useRef(sessions);
-  sessionsRef.current = sessions;
   const lastSuccessfulHash = useRef("");
+
+  useEffect(() => {
+    sessionsRef.current = sessions;
+  }, [sessions]);
 
   // Ignore malformed local JSON entries without allowing them to reach the UI
   // or the merge routine. The cloud-read gate still protects remote writes.

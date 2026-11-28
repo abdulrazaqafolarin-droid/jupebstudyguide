@@ -8,7 +8,7 @@ import { SyllabusSessionListLayout } from "@/components/syllabus/SyllabusSession
 import { SyllabusDayLayout } from "@/components/syllabus/SyllabusDayLayout";
 import { SyllabusTopicAccordion } from "@/components/syllabus/SyllabusTopicAccordion";
 import { useJamb30DaySessions } from "@/hooks/useJamb30DaySessions";
-import { JAMB_SYLLABUS, JAMB_SYLLABUS_VERIFIED } from "@/lib/jamb-syllabus";
+import { JAMB_SYLLABUS } from "@/lib/jamb-syllabus";
 import {
   JAMB_PLAN_DAYS,
   getJambStudySessionProgress,

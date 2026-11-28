@@ -385,12 +385,22 @@ export default function JambStudyPage() {
                   >
                     <StudyFlashcardSurface
                       ariaLabel="JAMB revision question"
-                      className="min-h-[520px]"
-                      contentClassName="p-4 sm:p-6 space-y-4"
+                      className="min-h-[320px]"
+                      contentClassName="flex min-h-[320px] flex-col space-y-4 p-6"
                     >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{subjectInfo?.label} · {question.year}</span>
+                    <span className={cn(
+                      "rounded-full px-3 py-1.5 text-sm font-medium",
+                      selectedSubject === "use_of_english"
+                        ? "bg-primary/10 text-primary"
+                        : "subject-" + selectedSubject,
+                    )}>
+                      {subjectInfo?.icon} {subjectInfo?.label}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {question.year}{question.topic ? " · " + question.topic : ""}
+                    </span>
                     <span className="text-xs text-muted-foreground">{currentIndex + 1} / {queue.length}</span>
                   </div>
                   <button type="button" onClick={() => toggleBookmark(question.id)} disabled={!bookmarksReady} aria-label={currentBookmark ? "Remove bookmark" : "Bookmark question"} aria-pressed={currentBookmark} className="rounded-lg p-2 hover:bg-accent disabled:opacity-50">
@@ -403,7 +413,7 @@ export default function JambStudyPage() {
                   {question.imageUrls.map((imageUrl) => <QuestionImage key={imageUrl} imageUrl={imageUrl} />)}
                 </div>
 
-                <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[280px] pr-1 scrollbar-thin">
+                <div className="flashcard-scroll-region max-h-[min(32dvh,280px)] flex-1 space-y-2.5 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin">
                   {question.options.map((option, optionIndex) => {
                     const isSelected = selectedOption === option.label;
                     const hasApprovedResult = feedback?.gradable === true;

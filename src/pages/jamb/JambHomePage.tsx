@@ -14,6 +14,7 @@ import { DashboardProgressPanel } from "@/components/DashboardProgressPanel";
 import StreakDisplay from "@/components/StreakDisplay";
 import { SubjectCard } from "@/components/SubjectCard";
 import AchievementsPanel from "@/components/AchievementsPanel";
+import AchievementPopup from "@/components/AchievementPopup";
 import { LeaderboardPanelFrame } from "@/components/LeaderboardPanelFrame";
 import type { Achievement, AchievementStats } from "@/hooks/useAchievements";
 import { getJambAchievementProgress, getJambActivityStats as getJambAchievementActivity } from "@/lib/jamb-analytics";
@@ -137,6 +138,9 @@ export default function JambHomePage() {
   const { sessions: jambStudySessions } = useJamb30DaySessions();
   const [programmeOnboarding, setProgrammeOnboarding] = useState<{ completedAt: string | null; finalized: boolean } | null>(null);
   const [nudgeDismissed, setNudgeDismissed] = useUserStorage<boolean>("onboarding-nudge-dismissed:jamb", false);
+  const [seenAchievementIds, setSeenAchievementIds, { isReady: seenAchievementIdsReady }] =
+    useUserStorage<string[] | null>("jamb-seen-achievement-ids", null);
+  const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement[]>([]);
   const showSetupNudge = !nudgeDismissed && Boolean(programmeOnboarding?.completedAt) && !programmeOnboarding?.finalized;
 
   useEffect(() => {
@@ -174,6 +178,31 @@ export default function JambHomePage() {
   }), [savedAnswers, bookmarks, dailyMissionHistory]);
   const achievementsReady = progressReady && bookmarksReady && missionHistoryReady;
 
+  // Keep the same new-achievement celebration as JUPEB, but track JAMB
+  // unlocks in their own per-user storage namespace.
+  useEffect(() => {
+    if (!achievementsReady || !seenAchievementIdsReady) return;
+    const unlocked = getJambAchievementProgress(achievementMetrics).filter((item) => item.unlocked);
+    const currentIds = unlocked.map((item) => item.id);
+
+    if (seenAchievementIds === null) {
+      setSeenAchievementIds(currentIds);
+      return;
+    }
+
+    const seen = new Set(seenAchievementIds);
+    const newlyUnlockedItems = unlocked.filter((item) => !seen.has(item.id));
+    if (newlyUnlockedItems.length > 0) {
+      setNewlyUnlocked(newlyUnlockedItems.map(toJambPanelAchievement));
+    }
+    setSeenAchievementIds(currentIds);
+  }, [
+    achievementsReady,
+    achievementMetrics,
+    seenAchievementIdsReady,
+    seenAchievementIds,
+    setSeenAchievementIds,
+  ]);
 
   useEffect(() => {
     if (!reviewProgressReady) return;
@@ -239,6 +268,7 @@ export default function JambHomePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <AchievementPopup achievements={newlyUnlocked} onClose={() => setNewlyUnlocked([])} />
       {/* Hero — shares the JUPEB dashboard's visual language and proportions. */}
       <WorkspaceHomeHero>
           <div className="text-center">

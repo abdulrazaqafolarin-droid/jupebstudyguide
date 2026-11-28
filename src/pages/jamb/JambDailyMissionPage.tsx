@@ -415,6 +415,7 @@ export default function JambDailyMissionPage() {
                   );
                 })}
               </Card>
+            )}
 
             </div>
           </section>

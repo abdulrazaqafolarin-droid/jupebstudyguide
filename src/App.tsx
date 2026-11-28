@@ -63,6 +63,7 @@ const JambCbtSetupPage = lazy(() => import("./pages/jamb/JambCbtSetupPage"));
 const JambCbtPage = lazy(() => import("./pages/jamb/JambCbtPage"));
 const JambAITutorPage = lazy(() => import("./pages/jamb/JambAITutorPage"));
 const JambSyllabusPage = lazy(() => import("./pages/jamb/JambSyllabusPage"));
+const Jamb30DaySyllabusPage = lazy(() => import("./pages/jamb/Jamb30DaySyllabusPage"));
 const JambAchievementsPage = lazy(() => import("./pages/jamb/JambAchievementsPage"));
 const JambStatsPage = lazy(() => import("./pages/jamb/JambStatsPage"));
 const JambLeaderboardPage = lazy(() => import("./pages/jamb/JambLeaderboardPage"));
@@ -247,6 +248,7 @@ function AnimatedRoutes() {
             <Route path="/jamb/cbt/setup" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambCbtSetupPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/cbt/:attemptId" element={<ProtectedRoute><ErrorBoundary><JambCbtPage /></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/syllabus" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambSyllabusPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
+            <Route path="/jamb/30-day-syllabus" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><Jamb30DaySyllabusPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/achievements" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambAchievementsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/stats" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambStatsPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />
             <Route path="/jamb/leaderboard" element={<ProtectedRoute><ErrorBoundary><ProtectedLayout><JambLeaderboardPage /></ProtectedLayout></ErrorBoundary></ProtectedRoute>} />

@@ -171,6 +171,7 @@ export default function JambSyllabusPage() {
                     description=""
                     subtopics={subject.generalObjectives}
                     subtopicsHeading="Candidates should be able to:"
+                    showDefaultAction={false}
                   />
                 )}
 
@@ -182,6 +183,7 @@ export default function JambSyllabusPage() {
                     description=""
                     subtopics={subject.examinationStructure}
                     subtopicsHeading="Format:"
+                    showDefaultAction={false}
                   />
                 )}
 

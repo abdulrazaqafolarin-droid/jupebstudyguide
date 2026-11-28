@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import {
@@ -371,155 +371,192 @@ export default function JambStudyPage() {
                     </Link>
                   </Button>
                 </div>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={question.id}
-                    className="mx-auto w-full max-w-2xl"
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: 24 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={shouldReduceMotion ? undefined : { opacity: 0, x: -24 }}
-                    transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.23, 1, 0.32, 1] }}
+                <div className="mx-auto w-full max-w-2xl">
+                  <StudyFlashcardSurface
+                    ariaLabel="JAMB revision question"
+                    className="min-h-[320px]"
+                    contentClassName="flex min-h-[320px] flex-col p-6"
                   >
-                    <StudyFlashcardSurface
-                      ariaLabel="JAMB revision question"
-                      className="min-h-[320px]"
-                      contentClassName="flex min-h-[320px] flex-col space-y-4 p-6"
-                    >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className={cn(
-                      "rounded-full px-3 py-1.5 text-sm font-medium",
-                      selectedSubject === "use_of_english"
-                        ? "bg-primary/10 text-primary"
-                        : "subject-" + selectedSubject,
-                    )}>
-                      {subjectInfo?.icon} {subjectInfo?.label}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {question.year}{question.topic ? " · " + question.topic : ""}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{currentIndex + 1} / {queue.length}</span>
-                  </div>
-                  <button type="button" onClick={() => toggleBookmark(question.id)} disabled={!bookmarksReady} aria-label={currentBookmark ? "Remove bookmark" : "Bookmark question"} aria-pressed={currentBookmark} className="rounded-lg p-2 hover:bg-accent disabled:opacity-50">
-                    {currentBookmark ? <BookmarkCheck className="h-5 w-5 text-primary" /> : <Bookmark className="h-5 w-5 text-muted-foreground" />}
-                  </button>
-                </div>
-
-                <QuestionPrompt
-                  question={question}
-                  alt="Illustration for JAMB revision question"
-                  textClassName="text-lg font-medium leading-relaxed"
-                />
-
-                <div className="flashcard-scroll-region max-h-[min(32dvh,280px)] flex-1 space-y-2.5 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin">
-                  {question.options.map((option, optionIndex) => {
-                    const isSelected = selectedOption === option.label;
-                    const hasApprovedResult = feedback?.gradable === true;
-                    const isCorrectOption = feedback?.gradable === true && feedback.correctOption === option.label;
-                    const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
-                    const isUngradableResult = feedback !== null && feedback.gradable === false;
-                    const isPendingSelection = isSelected && feedback === null;
-                    const state = isCorrectOption
-                      ? "correct"
-                      : isWrongSelection
-                        ? "incorrect"
-                        : isPendingSelection || (isUngradableResult && isSelected)
-                          ? "selected"
-                          : hasApprovedResult || isUngradableResult
-                            ? "muted"
-                            : "default";
-
-                    return (
-                      <StudyFlashcardOption
-                        key={option.label}
-                        label={option.label}
-                        state={state}
-                        selected={isSelected}
-                        disabled={Boolean(feedback) || checking}
-                        reduceMotion={Boolean(shouldReduceMotion)}
-                        animationDelayMs={optionIndex * 60}
-                        onClick={() => !feedback && !checking && setSelectedOption(option.label)}
-                      >
-                        <QuestionMath content={option.text} inline />
-                      </StudyFlashcardOption>
-                    );
-                  })}
-                </div>
-
-                {!feedback ? (
-                  <Button className="w-full" onClick={() => void checkAnswer()} disabled={!selectedOption || checking}>
-                    {checking ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking with JAMB answer service…</> : "Check answer"}
-                  </Button>
-                ) : feedback.gradable ? (
-                  <div className={cn(
-                    "mt-6 p-5 rounded-2xl border-2 animate-scale-in",
-                    feedback.isCorrect
-                      ? "bg-gradient-to-br from-accent/10 to-accent/5 border-accent/40"
-                      : "bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/40",
-                  )}>
-                    <div className="flex items-start gap-3">
-                      <div className={cn(
-                        "w-12 h-12 rounded-xl flex items-center justify-center shrink-0",
-                        feedback.isCorrect ? "bg-accent/20" : "bg-destructive/20",
+                    <div className="mb-4 flex items-center justify-between border-b border-border/50 pb-3">
+                      <span className={cn(
+                        "rounded-full px-3 py-1.5 text-sm font-medium",
+                        selectedSubject === "use_of_english"
+                          ? "bg-primary/10 text-primary"
+                          : "subject-" + selectedSubject,
                       )}>
-                        {feedback.isCorrect
-                          ? <Check className="h-6 w-6 text-accent" />
-                          : <X className="h-6 w-6 text-destructive" />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className={cn(
-                          "font-bold text-lg mb-2",
-                          feedback.isCorrect ? "text-accent" : "text-destructive",
-                        )}>
-                          {feedback.isCorrect ? "Correct!" : "Not quite right"}
-                        </p>
-                        {feedback.explanation && (
-                          <div className="text-sm leading-relaxed text-foreground/90 mb-4 bg-background/50 rounded-xl p-3 border border-border/30">
-                            <QuestionMath content={feedback.explanation} />
-                          </div>
-                        )}
-                        <Link
-                          to={"/jamb/ai?subject=" + question.subject + "&questionId=" + encodeURIComponent(question.id)}
-                          className="inline-flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/10 hover:text-primary/80"
+                        {subjectInfo?.icon} {subjectInfo?.label}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground">
+                          {question.year}{question.topic ? " · " + question.topic : ""}
+                        </span>
+                        <span className="text-xs tabular-nums text-muted-foreground">
+                          {currentIndex + 1} / {queue.length}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => toggleBookmark(question.id)}
+                          disabled={!bookmarksReady}
+                          aria-label={currentBookmark ? "Remove bookmark" : "Bookmark question"}
+                          aria-pressed={currentBookmark}
+                          className="rounded-lg p-2 transition-colors hover:bg-accent disabled:opacity-50"
                         >
-                          <Bot className="h-4 w-4" />
-                          <span>Need a deeper explanation?</span>
-                          <Sparkles className="h-3 w-3 text-accent" />
-                        </Link>
-                      </div>
-                    </div>
-                    <p className="text-sm font-medium mb-3">How well did you know this?</p>
-                    <div className="flex gap-2 justify-center flex-wrap">
-                      {RATINGS.map((rating) => (
-                        <button key={rating.value} type="button" onClick={() => rateCard(rating.value)} className={rating.className}>
-                          {rating.label}
+                          {currentBookmark
+                            ? <BookmarkCheck className="h-5 w-5 text-primary" />
+                            : <Bookmark className="h-5 w-5 text-muted-foreground" />}
                         </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mt-6 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-amber-500/5 p-5 animate-scale-in">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600">
-                        <BookOpen className="h-6 w-6" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="mb-2 text-lg font-bold text-amber-700 dark:text-amber-400">This question is not gradable yet</p>
-                        <p className="text-sm leading-relaxed text-foreground/90">{feedback.message ?? "Its answer key has not passed independent review. Your selection is saved, but no answer will be revealed and the card will not be marked as mastered."}</p>
                       </div>
                     </div>
-                    <Button variant="outline" className="mt-4 w-full" onClick={nextCard}>Skip this card without scheduling</Button>
-                  </div>
-                )}
 
-                {feedback?.gradable && (
-                  <div className="flex justify-end border-t border-border pt-3">
-                    <Button size="sm" variant="outline" onClick={nextCard}>Next card <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>
-                  </div>
-                )}
-                    </StudyFlashcardSurface>
-                  </motion.div>
-                </AnimatePresence>
+                    <div className="flex flex-col gap-3">
+                      <div
+                        aria-label="Scrollable question"
+                        data-flashcard-scroll-region="question"
+                        className="flashcard-scroll-region max-h-[min(28dvh,240px)] shrink-0 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin"
+                      >
+                        <QuestionPrompt
+                          question={question}
+                          alt="Illustration for JAMB revision question"
+                          textClassName="text-lg font-medium leading-relaxed"
+                        />
+                      </div>
+
+                      <div
+                        aria-label="Scrollable answer options"
+                        data-flashcard-scroll-region="options"
+                        className="flashcard-scroll-region max-h-[min(32dvh,280px)] space-y-2.5 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin"
+                      >
+                        {question.options.map((option, optionIndex) => {
+                          const isSelected = selectedOption === option.label;
+                          const hasApprovedResult = feedback?.gradable === true;
+                          const isCorrectOption = feedback?.gradable === true && feedback.correctOption === option.label;
+                          const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
+                          const isUngradableResult = feedback !== null && feedback.gradable === false;
+                          const isPendingSelection = isSelected && feedback === null;
+                          const state = isCorrectOption
+                            ? "correct"
+                            : isWrongSelection
+                              ? "incorrect"
+                              : isPendingSelection || (isUngradableResult && isSelected)
+                                ? "selected"
+                                : hasApprovedResult || isUngradableResult
+                                  ? "muted"
+                                  : "default";
+
+                          return (
+                            <StudyFlashcardOption
+                              key={option.label}
+                              label={option.label}
+                              state={state}
+                              selected={isSelected}
+                              disabled={Boolean(feedback) || checking}
+                              reduceMotion={Boolean(shouldReduceMotion)}
+                              animationDelayMs={optionIndex * 60}
+                              onClick={() => !feedback && !checking && setSelectedOption(option.label)}
+                            >
+                              <QuestionMath content={option.text} inline />
+                            </StudyFlashcardOption>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {!feedback && (
+                      <Button className="mt-5 w-full" onClick={() => void checkAnswer()} disabled={!selectedOption || checking}>
+                        {checking
+                          ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking answer…</>
+                          : "Check answer"}
+                      </Button>
+                    )}
+                  </StudyFlashcardSurface>
+
+                  {feedback?.gradable && (
+                    <div className={cn(
+                      "mt-6 rounded-2xl border-2 p-5 animate-scale-in",
+                      feedback.isCorrect
+                        ? "border-accent/40 bg-gradient-to-br from-accent/10 to-accent/5"
+                        : "border-destructive/40 bg-gradient-to-br from-destructive/10 to-destructive/5",
+                    )}>
+                      <div className="flex items-start gap-3">
+                        <div className={cn(
+                          "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                          feedback.isCorrect ? "bg-accent/20" : "bg-destructive/20",
+                        )}>
+                          {feedback.isCorrect
+                            ? <Check className="h-6 w-6 text-accent" />
+                            : <X className="h-6 w-6 text-destructive" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className={cn(
+                            "mb-2 flex items-center gap-2 text-lg font-bold",
+                            feedback.isCorrect ? "text-accent" : "text-destructive",
+                          )}>
+                            {feedback.isCorrect ? "Perfect!" : "Not quite right"}
+                          </p>
+                          {feedback.explanation && (
+                            <div className="mb-4 rounded-xl border border-border/30 bg-background/50 p-3 text-sm leading-relaxed text-foreground/90">
+                              <QuestionMath content={feedback.explanation} />
+                            </div>
+                          )}
+                          <Link
+                            to={"/jamb/ai?subject=" + question.subject + "&questionId=" + encodeURIComponent(question.id)}
+                            className="inline-flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+                          >
+                            <Bot className="h-4 w-4" />
+                            <span>Need a deeper explanation?</span>
+                            <Sparkles className="h-3 w-3 text-accent" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {feedback && !feedback.gradable && (
+                    <div className="mt-6 animate-scale-in rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-amber-500/5 p-5">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600">
+                          <BookOpen className="h-6 w-6" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="mb-2 text-lg font-bold text-amber-700 dark:text-amber-400">Not scored</p>
+                          <p className="text-sm leading-relaxed text-foreground/90">
+                            {feedback.message ?? "This answer key has not been independently reviewed. Your selection is saved, but no answer is revealed or scheduled as mastered."}
+                          </p>
+                        </div>
+                      </div>
+                      <Button variant="outline" className="mt-4 w-full" onClick={nextCard}>
+                        Skip this card without scheduling
+                      </Button>
+                    </div>
+                  )}
+
+                  {feedback?.gradable && (
+                    <>
+                      <div className="mt-6 animate-in-up">
+                        <p className="mb-4 text-center text-sm text-muted-foreground">
+                          How well did you know this?
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {RATINGS.map((rating) => (
+                            <button
+                              key={rating.value}
+                              type="button"
+                              onClick={() => rateCard(rating.value)}
+                              className={rating.className}
+                            >
+                              {rating.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="mt-6 flex justify-end border-t border-border pt-3">
+                        <Button size="sm" variant="outline" onClick={nextCard}>
+                          Next card <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </>
             ) : loadingQuestions ? (
               <div className="flex justify-center py-12"><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>

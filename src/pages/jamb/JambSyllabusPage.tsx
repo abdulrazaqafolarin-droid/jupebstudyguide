@@ -151,6 +151,20 @@ export default function JambSyllabusPage() {
                 icon={subject.icon}
                 title={subject.label}
                 metadata={`${topics.length} topics | ${summary.completed}/${summary.total} complete`}
+                badges={(
+                  <>
+                    {subject.compulsory && (
+                      <span className="rounded-full border border-primary/20 bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                        Compulsory
+                      </span>
+                    )}
+                    {!subject.questionBankAvailable && (
+                      <span className="rounded-full border border-border/50 bg-secondary px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        {subject.questionSourcePackAvailable ? "Source awaiting review" : "Question bank pending"}
+                      </span>
+                    )}
+                  </>
+                )}
                 expanded={isExpanded}
                 onToggle={() => setExpandedSubject(isExpanded ? null : subject.id)}
                 gradientClassName={meta.gradient}
@@ -174,42 +188,66 @@ export default function JambSyllabusPage() {
                       subtopics={outline.slice(1)}
                       subtopicsHeading="Contents:"
                       subtopicStyle="chips"
-                      extraContent={topic.objectives && topic.objectives.length > 0 ? (
+                      extraContent={(topic.objectives && topic.objectives.length > 0) || subject.questionBankAvailable ? (
                         <details className="rounded-lg border border-border/50 px-3 py-2">
                           <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
-                            Learning objectives
+                            More topic details
                           </summary>
-                          <ul className="mt-2 space-y-1.5">
-                            {topic.objectives.map((objective) => (
-                              <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-                                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                                {objective}
-                              </li>
-                            ))}
-                          </ul>
+                          <div className="mt-2 space-y-3">
+                            {topic.objectives && topic.objectives.length > 0 && (
+                              <div>
+                                <p className="mb-1.5 text-xs font-medium text-muted-foreground">Learning objectives</p>
+                                <ul className="space-y-1.5">
+                                  {topic.objectives.map((objective) => (
+                                    <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
+                                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                                      {objective}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            <div className="flex flex-wrap items-center gap-2">
+                              {subject.questionBankAvailable && (
+                                <Button asChild size="sm" variant="outline" className="h-8 text-xs">
+                                  <Link to={"/jamb/past-questions?subject=" + subject.id}>
+                                    Practice questions <ExternalLink className="ml-1 h-3 w-3" />
+                                  </Link>
+                                </Button>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 text-xs text-muted-foreground"
+                                onClick={() => cycleTopicState(topic.id)}
+                                disabled={!isReady}
+                              >
+                                {state === "not_started" ? "Mark as started" : state === "in_progress" ? "Mark complete" : "Reopen topic"}
+                              </Button>
+                            </div>
+                          </div>
                         </details>
-                      ) : undefined}
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 text-xs text-muted-foreground"
+                          onClick={() => cycleTopicState(topic.id)}
+                          disabled={!isReady}
+                        >
+                          {state === "not_started" ? "Mark as started" : state === "in_progress" ? "Mark complete" : "Reopen topic"}
+                        </Button>
+                      )}
                       actionContent={(
-                        <div className="space-y-2">
-                          <Button
-                            asChild
-                            className="w-full gap-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90"
-                          >
-                            <Link to={"/jamb/ai?subject=" + subject.id + "&topic=" + encodeURIComponent(topic.id)}>
-                              <Sparkles className="h-3.5 w-3.5" />
-                              Study this topic with AI
-                            </Link>
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-full text-xs text-muted-foreground"
-                            onClick={() => cycleTopicState(topic.id)}
-                            disabled={!isReady}
-                          >
-                            {state === "not_started" ? "Mark as started" : state === "in_progress" ? "Mark complete" : "Reopen topic"}
-                          </Button>
-                        </div>
+                        <Button
+                          asChild
+                          className="w-full gap-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90"
+                        >
+                          <Link to={"/jamb/ai?subject=" + subject.id + "&topic=" + encodeURIComponent(topic.id)}>
+                            <Sparkles className="h-3.5 w-3.5" />
+                            Study this topic with AI
+                          </Link>
+                        </Button>
                       )}
                     />
                   );

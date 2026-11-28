@@ -72,12 +72,24 @@ def main() -> int:
     # Allow the bundled WKWebView to paint before taking a visual checkpoint.
     time.sleep(15)
     SCREENSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    run(
-        ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)],
-        timeout_seconds=45,
-    )
-    if not SCREENSHOT_PATH.is_file() or SCREENSHOT_PATH.stat().st_size < 10_000:
-        raise RuntimeError("Simulator screenshot was missing or unexpectedly small")
+    screenshot_command = ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)]
+    screenshot_error: Exception | None = None
+    for attempt in range(1, 3):
+        try:
+            if SCREENSHOT_PATH.exists():
+                SCREENSHOT_PATH.unlink()
+            run(screenshot_command, timeout_seconds=90)
+            if SCREENSHOT_PATH.is_file() and SCREENSHOT_PATH.stat().st_size >= 10_000:
+                screenshot_error = None
+                break
+            screenshot_error = RuntimeError("Simulator screenshot was missing or unexpectedly small")
+        except (RuntimeError, subprocess.CalledProcessError) as error:
+            screenshot_error = error
+        if attempt < 2:
+            print(f"Screenshot attempt {attempt} failed: {screenshot_error}; retrying once.", flush=True)
+            time.sleep(5)
+    if screenshot_error is not None:
+        raise RuntimeError(f"Simulator screenshot failed after two attempts: {screenshot_error}") from screenshot_error
 
     log_command = [
         "xcrun", "simctl", "spawn", udid, "log", "show",

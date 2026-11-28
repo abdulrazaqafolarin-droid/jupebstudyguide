@@ -99,6 +99,7 @@ export function WorkspacePageHeader({
             {title}
           </h1>
         </div>
+        {rightContent}
       </div>
     </header>
   );

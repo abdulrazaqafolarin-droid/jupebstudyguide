@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { BookOpen, Plus, Sparkles, X } from "lucide-react";
+import { BookOpen, CheckCircle, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useStudyChat } from "@/hooks/useStudyChat";
@@ -22,6 +22,7 @@ function isJambSubject(value: string | null): value is (typeof JAMB_QUESTION_BAN
 interface JambAITutorPageProps {
   embeddedSubject?: string;
   embeddedTopicId?: string;
+  embeddedDay?: number;
   onClose?: () => void;
   onComplete?: () => void;
 }
@@ -29,6 +30,7 @@ interface JambAITutorPageProps {
 export default function JambAITutorPage({
   embeddedSubject,
   embeddedTopicId,
+  embeddedDay,
   onClose,
   onComplete,
 }: JambAITutorPageProps) {
@@ -231,10 +233,21 @@ export default function JambAITutorPage({
       backTo="/jamb"
       backLabel={onClose ? "Back to lesson" : "Back to JAMB workspace"}
       onBack={onClose}
+      lessonMode={Boolean(onClose)}
+      lessonBadge={onClose ? (
+        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+          {visibleTutorSubject?.icon ?? "📘"} Day {embeddedDay ?? ""}
+        </span>
+      ) : undefined}
       headerActions={onComplete ? (
-        <Button size="sm" onClick={onComplete} className="h-7 shrink-0 px-2 text-xs">
-          Finish learning
-        </Button>
+        <button
+          type="button"
+          onClick={onComplete}
+          className="flex items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
+        >
+          <CheckCircle className="h-3.5 w-3.5" />
+          Done
+        </button>
       ) : undefined}
       historyLabel="JAMB tutor history"
       title={activeChatMeta?.title ?? "Study Chat"}

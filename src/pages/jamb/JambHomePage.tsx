@@ -21,6 +21,7 @@ import { useJambBookmarks } from "@/hooks/useJambBookmarks";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambReviewProgress } from "@/hooks/useJambReviewProgress";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
+import { useJamb30DaySessions } from "@/hooks/useJamb30DaySessions";
 import {
   JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, JAMB_TARGET_EXAM_YEAR,
 } from "@/lib/jamb-config";
@@ -134,6 +135,7 @@ function JambMilestonesPanel({ metrics, ready }: { metrics: JambAchievementMetri
 export default function JambHomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { sessions: jambStudySessions } = useJamb30DaySessions();
   const [programmeOnboarding, setProgrammeOnboarding] = useState<{ completedAt: string | null; finalized: boolean } | null>(null);
   const [nudgeDismissed, setNudgeDismissed] = useUserStorage<boolean>("onboarding-nudge-dismissed:jamb", false);
   const showSetupNudge = !nudgeDismissed && Boolean(programmeOnboarding?.completedAt) && !programmeOnboarding?.finalized;
@@ -302,7 +304,7 @@ export default function JambHomePage() {
               <span className="text-gradient-gold block mt-2">Spaced Repetition</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-in-up stagger-4">
-              Study Use of English, Physics, Chemistry, Biology & Mathematics past questions with scientifically proven learning techniques. Never forget what you've learned.
+              Study your JAMB past questions with scientifically proven learning techniques. Never forget what you've learned.
             </p>
             <div className="flex flex-wrap justify-center gap-4 animate-in-up stagger-5">
               <Button
@@ -311,7 +313,7 @@ export default function JambHomePage() {
                 className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 hover:scale-105 active:scale-95 transition-all duration-200 glow-gold animate-pulse-glow shadow-lg shadow-primary/25"
               >
                 <CalendarDays className="w-5 h-5 mr-2" />
-                30 Days Syllabus
+                {jambStudySessions.length > 0 ? "Continue 30-Day Syllabus" : "30-Day Syllabus Plan"}
               </Button>
               <Button
                 size="lg"

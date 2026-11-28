@@ -465,7 +465,7 @@ export default function JambPastQuestionsPage() {
                 selected={isSelected}
                 disabled={Boolean(checking[question.id])}
                 onClick={() => void saveAnswer(question.id, option.label)}
-                contentClassName="break-words text-pretty"
+                contentClassName="font-normal"
               >
                 <QuestionMath content={option.text} inline />
               </QuestionOptionButton>

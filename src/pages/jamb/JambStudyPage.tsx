@@ -38,11 +38,11 @@ type AnswerFeedback = {
 };
 
 const PAGE_SIZE = 30;
-const RATINGS: Array<{ value: JambReviewQuality; label: string; detail: string; className: string }> = [
-  { value: 1, label: "Again", detail: "I did not recall it", className: "px-4 py-2.5 rounded-xl bg-destructive/15 hover:bg-destructive/25 text-destructive border border-destructive/20 hover:border-destructive/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
-  { value: 3, label: "Hard", detail: "Needed effort", className: "px-4 py-2.5 rounded-xl bg-primary/15 hover:bg-primary/25 text-primary border border-primary/20 hover:border-primary/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
-  { value: 4, label: "Good", detail: "Recalled it", className: "px-4 py-2.5 rounded-xl bg-accent/15 hover:bg-accent/25 text-accent border border-accent/20 hover:border-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
-  { value: 5, label: "Easy", detail: "Knew it well", className: "px-5 py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent/80 text-accent-foreground font-bold shadow-md shadow-accent/30 hover:shadow-lg hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
+const RATINGS: Array<{ value: JambReviewQuality; label: string; className: string }> = [
+  { value: 1, label: "Didn't know", className: "px-4 py-2.5 rounded-xl bg-destructive/15 hover:bg-destructive/25 text-destructive transition-all duration-200 text-sm font-medium border border-destructive/20 hover:border-destructive/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
+  { value: 3, label: "Hard", className: "px-4 py-2.5 rounded-xl bg-primary/15 hover:bg-primary/25 text-primary transition-all duration-200 text-sm font-medium border border-primary/20 hover:border-primary/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
+  { value: 4, label: "Good", className: "px-4 py-2.5 rounded-xl bg-accent/15 hover:bg-accent/25 text-accent transition-all duration-200 text-sm font-medium border border-accent/20 hover:border-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
+  { value: 5, label: "Easy!", className: "px-5 py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent/80 text-accent-foreground transition-all duration-200 text-sm font-bold shadow-md shadow-accent/30 hover:shadow-lg hover:shadow-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95" },
 ];
 
 function isJambSubject(value: string | null): value is JambSubject {
@@ -506,8 +506,7 @@ export default function JambStudyPage() {
                     <div className="flex gap-2 justify-center flex-wrap">
                       {RATINGS.map((rating) => (
                         <button key={rating.value} type="button" onClick={() => rateCard(rating.value)} className={rating.className}>
-                          <span className="block text-sm font-medium">{rating.label}</span>
-                          <span className="mt-0.5 block text-[10px] opacity-80">{rating.detail}</span>
+                          {rating.label}
                         </button>
                       ))}
                     </div>

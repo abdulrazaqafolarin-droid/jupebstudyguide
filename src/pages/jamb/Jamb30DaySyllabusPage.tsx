@@ -57,7 +57,7 @@ function calculateStreak(tasks: JambDailyTask[]) {
   const yesterdayKey = localDateKey(yesterday);
   if (completedDates[0] !== todayKey && completedDates[0] !== yesterdayKey) return 0;
   let streak = 1;
-  let cursor = new Date(`${completedDates[0]}T00:00:00`);
+  const cursor = new Date(`${completedDates[0]}T00:00:00`);
   for (const date of completedDates.slice(1)) {
     cursor.setDate(cursor.getDate() - 1);
     if (localDateKey(cursor) !== date) break;

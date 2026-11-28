@@ -307,7 +307,7 @@ export default function JambStatsPage() {
 
         {/* Subject detail cards */}
         <div className="grid grid-cols-2 gap-3">
-          {subjectRows.map((row, index) => {
+          {subjectRows.map((row) => {
             const info = JAMB_SUBJECT_INFO[row.subject];
             const percent = row.total > 0 ? Math.round((row.mastered / row.total) * 100) : 0;
             return (
@@ -315,7 +315,6 @@ export default function JambStatsPage() {
                 key={row.subject}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.17 + index * 0.03 }}
                 className="bg-card rounded-2xl border p-4 space-y-2"
               >
                 <div className="flex items-center gap-2">

@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
+import { Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, type JambSubject } from "@/lib/jamb-config";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
+import { WorkspaceSetupPanel } from "@/components/WorkspaceSetupPanel";
 import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
 import { getJambCbtAvailableQuestionCount } from "@/lib/jamb-question-service";
 
@@ -90,23 +91,11 @@ export default function JambCbtSetupPage() {
           Back
         </Link>
 
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 chalk-texture md:p-8">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
-
-          <div className="relative">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
-                <Target className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <div>
-                  <h1 className="text-xl font-bold">CBT Practice</h1>
-                  <p className="text-sm text-muted-foreground">Choose a subject and a practice length.</p>
-                </div>
-              </div>
-            </div>
-
+        <WorkspaceSetupPanel
+          title="CBT Practice"
+          description="Choose a subject and a practice length."
+          icon={<Target className="h-5 w-5 text-primary" />}
+        >
             <section className="mt-6">
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Subject</h2>
               <div className="grid grid-cols-2 gap-3">
@@ -212,8 +201,7 @@ export default function JambCbtSetupPage() {
                 <><ShieldCheck className="mr-2 h-4 w-4" />Start timed practice</>
               )}
             </Button>
-          </div>
-        </div>
+        </WorkspaceSetupPanel>
       </div>
     </main>
   );

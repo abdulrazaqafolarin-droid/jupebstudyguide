@@ -8,7 +8,7 @@ import { SyllabusSessionListLayout } from "@/components/syllabus/SyllabusSession
 import { SyllabusDayLayout } from "@/components/syllabus/SyllabusDayLayout";
 import { SyllabusTopicAccordion } from "@/components/syllabus/SyllabusTopicAccordion";
 import { useJamb30DaySessions } from "@/hooks/useJamb30DaySessions";
-import { JAMB_SYLLABUS } from "@/lib/jamb-syllabus";
+import { JAMB_SYLLABUS, JAMB_SYLLABUS_VERIFIED } from "@/lib/jamb-syllabus";
 import {
   JAMB_PLAN_DAYS,
   getJambStudySessionProgress,
@@ -257,7 +257,7 @@ export default function Jamb30DaySyllabusPage() {
               30,
             );
           }}
-          onCancel={() => window.history.back()}
+          onCancel={() => navigate("/jamb")}
         />
       </div>
     );
@@ -267,7 +267,7 @@ export default function Jamb30DaySyllabusPage() {
     <SyllabusSessionListLayout
       sessionsCount={sortedSessions.length}
       programmeName="JAMB"
-      onBack={() => window.history.back()}
+      onBack={() => navigate("/jamb")}
       onNewSession={() => setShowNewSession(true)}
       modal={(
         <ProgrammeNewSessionModal<JambPlanSubject>

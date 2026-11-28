@@ -33,8 +33,8 @@ function toJambAchievementBadge(item: JambAchievementProgressItem): Achievement 
     id: item.id,
     name: item.label,
     description: item.description,
-    icon: item.category === "Consistency" ? "🔥" : item.category === "Organisation" ? "🔖" : "📘",
-    rarity: "common",
+    icon: item.icon,
+    rarity: item.rarity,
     condition: () => item.unlocked,
     getProgress: () => ({ current: item.current, max: item.target }),
   };

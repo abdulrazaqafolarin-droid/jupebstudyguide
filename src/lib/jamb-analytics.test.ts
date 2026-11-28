@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  JAMB_ACHIEVEMENTS,
   getJambAchievementProgress,
   getJambActivityStats,
   getJambRecentDailyActivity,
@@ -53,6 +54,14 @@ describe("JAMB activity analytics", () => {
     expect(daily).toHaveLength(7);
     expect(daily.find((day) => day.date === "2026-01-03")?.count).toBe(2);
     expect(daily[6].date).toBe("2026-01-05");
+  });
+
+  it("assigns each JAMB milestone distinct badge artwork and graduated rarity tiers", () => {
+    const icons = JAMB_ACHIEVEMENTS.map((achievement) => achievement.icon);
+    const rarities = new Set(JAMB_ACHIEVEMENTS.map((achievement) => achievement.rarity));
+
+    expect(new Set(icons).size).toBe(icons.length);
+    expect(rarities).toEqual(new Set(["common", "uncommon", "rare", "epic", "legendary"]));
   });
 
   it("unlocks milestones only when JAMB activity thresholds are met", () => {

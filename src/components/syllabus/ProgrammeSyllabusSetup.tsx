@@ -47,14 +47,15 @@ export function ProgrammeSyllabusSetup<T extends string>({
 
   const toggleSubject = (subject: T) => {
     setError("");
-    setSelected((previous) => {
-      if (previous.includes(subject)) return previous.filter((item) => item !== subject);
-      if (previous.length >= maximumOptionalSelections) {
-        setError(`Select no more than ${maximumOptionalSelections} optional subjects.`);
-        return previous;
-      }
-      return [...previous, subject];
-    });
+    if (selected.includes(subject)) {
+      setSelected((previous) => previous.filter((item) => item !== subject));
+      return;
+    }
+    if (selected.length >= maximumOptionalSelections) {
+      setError(`Select no more than ${maximumOptionalSelections} optional subjects.`);
+      return;
+    }
+    setSelected((previous) => previous.includes(subject) ? previous : [...previous, subject]);
   };
 
   const handleStart = () => {

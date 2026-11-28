@@ -178,16 +178,8 @@ export default function JambAchievementsPage() {
         )}
 
         <p className="text-center text-[11px] text-muted-foreground">
-          Rutex practice milestones are not official JAMB awards or exam grades.
+          App milestones are not official JAMB grades.
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link to="/jamb/past-questions" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">
-            <BookOpen className="h-4 w-4" /> Continue JAMB practice
-          </Link>
-          <Link to="/jamb/stats" className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-accent">
-            <Award className="h-4 w-4" /> View study stats
-          </Link>
-        </div>
       </main>
     </div>
   );

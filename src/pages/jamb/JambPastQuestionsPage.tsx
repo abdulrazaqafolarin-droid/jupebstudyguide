@@ -446,11 +446,10 @@ export default function JambPastQuestionsPage() {
 
         <div className="space-y-3">
           <QuestionPrompt
-          question={question}
-          alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-          textClassName="text-base font-medium leading-relaxed"
-          inlineMath
-        />
+            question={question}
+            alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
+            textClassName="text-base font-medium leading-relaxed"
+          />
         <div className="space-y-2">
           {question.options.map((option) => {
             const isSelected = current === option.label;

@@ -405,11 +405,9 @@ export default function JambCbtPage() {
             </div>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-secondary">
-            <motion.div
-              initial={false}
-              animate={{ width: `${((current + 1) / payload.questions.length) * 100}%` }}
-              transition={{ duration: shouldReduceMotion ? 0 : 0.35, ease: [0.23, 1, 0.32, 1] }}
-              className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent"
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-500 ease-out"
+              style={{ width: `${((current + 1) / payload.questions.length) * 100}%` }}
             />
           </div>
         </div>

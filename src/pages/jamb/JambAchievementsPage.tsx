@@ -121,15 +121,17 @@ export default function JambAchievementsPage() {
           )}
         />
 
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search achievements..."
-            className="bg-background pl-9"
-            aria-label="Search achievements"
-          />
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search achievements..."
+              className="bg-background pl-9"
+              aria-label="Search achievements"
+            />
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter achievements by category">

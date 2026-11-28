@@ -188,55 +188,47 @@ export default function JambSyllabusPage() {
                       subtopics={outline.slice(1)}
                       subtopicsHeading="Contents:"
                       subtopicStyle="chips"
-                      extraContent={(topic.objectives && topic.objectives.length > 0) || subject.questionBankAvailable ? (
-                        <details className="rounded-lg border border-border/50 px-3 py-2">
-                          <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
-                            More topic details
-                          </summary>
-                          <div className="mt-2 space-y-3">
-                            {topic.objectives && topic.objectives.length > 0 && (
-                              <div>
-                                <p className="mb-1.5 text-xs font-medium text-muted-foreground">Learning objectives</p>
-                                <ul className="space-y-1.5">
-                                  {topic.objectives.map((objective) => (
-                                    <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-                                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                                      {objective}
-                                    </li>
-                                  ))}
-                                </ul>
+                      extraContent={(
+                        <>
+                          {(topic.objectives && topic.objectives.length > 0) || subject.questionBankAvailable ? (
+                            <details className="rounded-lg border border-border/50 px-3 py-2">
+                              <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+                                More topic details
+                              </summary>
+                              <div className="mt-2 space-y-3">
+                                {topic.objectives && topic.objectives.length > 0 && (
+                                  <div>
+                                    <p className="mb-1.5 text-xs font-medium text-muted-foreground">Learning objectives</p>
+                                    <ul className="space-y-1.5">
+                                      {topic.objectives.map((objective) => (
+                                        <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
+                                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                                          {objective}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {subject.questionBankAvailable && (
+                                  <Button asChild size="sm" variant="outline" className="h-8 text-xs">
+                                    <Link to={"/jamb/past-questions?subject=" + subject.id}>
+                                      Practice questions <ExternalLink className="ml-1 h-3 w-3" />
+                                    </Link>
+                                  </Button>
+                                )}
                               </div>
-                            )}
-                            <div className="flex flex-wrap items-center gap-2">
-                              {subject.questionBankAvailable && (
-                                <Button asChild size="sm" variant="outline" className="h-8 text-xs">
-                                  <Link to={"/jamb/past-questions?subject=" + subject.id}>
-                                    Practice questions <ExternalLink className="ml-1 h-3 w-3" />
-                                  </Link>
-                                </Button>
-                              )}
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 text-xs text-muted-foreground"
-                                onClick={() => cycleTopicState(topic.id)}
-                                disabled={!isReady}
-                              >
-                                {state === "not_started" ? "Mark as started" : state === "in_progress" ? "Mark complete" : "Reopen topic"}
-                              </Button>
-                            </div>
-                          </div>
-                        </details>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 text-xs text-muted-foreground"
-                          onClick={() => cycleTopicState(topic.id)}
-                          disabled={!isReady}
-                        >
-                          {state === "not_started" ? "Mark as started" : state === "in_progress" ? "Mark complete" : "Reopen topic"}
-                        </Button>
+                            </details>
+                          ) : null}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 text-xs text-muted-foreground"
+                            onClick={() => cycleTopicState(topic.id)}
+                            disabled={!isReady}
+                          >
+                            {state === "not_started" ? "Mark as started" : state === "in_progress" ? "Mark complete" : "Reopen topic"}
+                          </Button>
+                        </>
                       )}
                       actionContent={(
                         <Button

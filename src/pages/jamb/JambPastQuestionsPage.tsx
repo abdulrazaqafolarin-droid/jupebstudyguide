@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft, Bookmark, BookmarkCheck, BookOpen, Bot,
   CalendarDays, Check, ChevronLeft, ChevronRight, FileCheck2,
-  Grid3X3, Loader2, Search, Shield, ShieldAlert, X,
+  Grid3X3, Loader2, Search, Shield, ShieldAlert, Sparkles, X,
 } from "lucide-react";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";

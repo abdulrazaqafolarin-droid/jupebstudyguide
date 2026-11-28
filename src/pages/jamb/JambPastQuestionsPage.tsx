@@ -19,6 +19,7 @@ import {
   type JambQuestion, type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
+import { SubjectCardGrid, type SubjectCardGridItem } from "@/components/study-past-questions/SubjectCardGrid";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { Button } from "@/components/ui/button";
@@ -35,20 +36,6 @@ const PAGE_VARIANTS = {
 };
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
 
-const SUBJECT_GRID_VARIANTS = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-const SUBJECT_CARD_VARIANTS = {
-  hidden: { opacity: 0, y: 24, scale: 0.95 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] as const } },
-};
-const SUBJECT_CARD_COLORS: Record<JambSubject, { gradient: string; light: string; accent: string }> = {
-  physics: { gradient: "from-blue-600/40 to-cyan-400/40", light: "bg-blue-500/10", accent: "border-blue-500/30" },
-  chemistry: { gradient: "from-emerald-600/40 to-teal-400/40", light: "bg-emerald-500/10", accent: "border-emerald-500/30" },
-  biology: { gradient: "from-green-600/40 to-lime-400/40", light: "bg-green-500/10", accent: "border-green-500/30" },
-  use_of_english: { gradient: "from-primary/30 to-accent/30", light: "bg-primary/10", accent: "border-primary/30" },
-};
 
 function isJambSubject(value: string | null | undefined): value is JambSubject {
   return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as JambSubject));
@@ -757,57 +744,17 @@ export default function JambPastQuestionsPage() {
                 <h2 className="text-2xl font-bold">Subjects</h2>
                 <span className="text-xs text-muted-foreground">{totalPublished.toLocaleString()} questions total</span>
               </div>
-              <motion.div
-                variants={SUBJECT_GRID_VARIANTS}
-                initial="hidden"
-                animate="show"
-                className="grid grid-cols-2 gap-4 md:grid-cols-4"
-              >
-                {JAMB_QUESTION_BANK_SUBJECTS.map((item) => {
-                  const info = JAMB_SUBJECT_INFO[item];
-                  const colors = SUBJECT_CARD_COLORS[item];
-                  const count = summaries.find((row) => row.subject === item)?.count;
-                  return (
-                    <motion.button
-                      type="button"
-                      key={item}
-                      variants={SUBJECT_CARD_VARIANTS}
-                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => chooseSubject(item)}
-                      className="relative group flex flex-col items-start overflow-hidden rounded-2xl border border-border/60 bg-card p-5 text-left"
-                    >
-                      <div className={"absolute inset-0 bg-gradient-to-br " + colors.gradient + " opacity-20 transition-opacity duration-500 group-hover:opacity-30"} />
-                      <div className={"absolute inset-0 " + colors.light + " opacity-0 transition-opacity duration-500 group-hover:opacity-100"} />
-                      <div className={"absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r " + colors.gradient + " origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"} />
-                      <div className="relative z-10">
-                        <div className={"mb-3 flex h-12 w-12 items-center justify-center rounded-xl border text-2xl " + colors.light + " " + colors.accent}>
-                          {info.icon}
-                        </div>
-                        <h3 className="text-base font-semibold">{info.label}</h3>
-                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{info.description}</p>
-                        {count !== undefined ? (
-                          <span className="mt-3 block text-xs tabular-nums text-muted-foreground/60">
-                            {count} question{count !== 1 ? "s" : ""}
-                          </span>
-                        ) : !loading ? (
-                          <span className="mt-3 block text-xs text-muted-foreground/60">0 questions</span>
-                        ) : (
-                          <span className="mt-3 block text-xs text-muted-foreground/60">Loading question coverage…</span>
-                        )}
-                      </div>
-                      <div className="relative z-10 mt-4 flex w-full items-center justify-between">
-                        <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-                          <BookOpen className="h-3.5 w-3.5" /> Start Practice
-                        </span>
-                        <span className="text-[10px] text-muted-foreground/40 group-hover:text-muted-foreground/70">
-                          {count ? `${Math.ceil(count / 10)} min` : "—"}
-                        </span>
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+              <SubjectCardGrid<JambSubject>
+                onSelect={chooseSubject}
+                counts={Object.fromEntries(summaries.map((row) => [row.subject, row.count])) as Partial<Record<JambSubject, number>>}
+                countsReady={!loading}
+                items={JAMB_QUESTION_BANK_SUBJECTS.map((item): SubjectCardGridItem<JambSubject> => ({
+                  subject: item,
+                  label: JAMB_SUBJECT_INFO[item].label,
+                  icon: JAMB_SUBJECT_INFO[item].icon,
+                  description: JAMB_SUBJECT_INFO[item].description,
+                }))}
+              />
 
             </motion.section>
           )}

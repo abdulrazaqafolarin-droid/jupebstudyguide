@@ -15,7 +15,6 @@ interface SessionListViewProps {
   onResumeSession: (id: string) => void;
   onDeleteSession: (id: string) => void;
   onBack: () => void;
-  onStartTeaching?: (session: StudySessionData, day: number) => void;
 }
 
 export function SessionListView({
@@ -28,7 +27,6 @@ export function SessionListView({
   onResumeSession,
   onDeleteSession,
   onBack,
-  onStartTeaching,
 }: SessionListViewProps) {
   const [showNewModal, setShowNewModal] = useState(false);
 
@@ -59,7 +57,6 @@ export function SessionListView({
           onPause={onPauseSession}
           onResume={onResumeSession}
           onDelete={onDeleteSession}
-          onStartTeaching={onStartTeaching}
         />
       ))}
     </SyllabusSessionListLayout>

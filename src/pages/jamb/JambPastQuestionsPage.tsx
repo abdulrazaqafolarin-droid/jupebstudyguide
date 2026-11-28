@@ -260,8 +260,6 @@ export default function JambPastQuestionsPage() {
   }, [view, subject, year, searchParams, setSearchParams]);
 
   const subjectInfo = JAMB_SUBJECT_INFO[subject];
-  const pageNumber = Math.floor(offset / JAMB_INITIAL_QUESTION_PAGE_SIZE) + 1;
-  const totalPages = Math.max(1, Math.ceil(count / JAMB_INITIAL_QUESTION_PAGE_SIZE));
   const totalPublished = summaries.reduce((sum, row) => sum + row.count, 0);
   const visibleQuestions = view === "bookmarks" ? bookmarkQuestions : questions;
   const empty = !loading && visibleQuestions.length === 0;
@@ -943,7 +941,7 @@ export default function JambPastQuestionsPage() {
                           Question {offset + activeQuestionIndex + 1} of {count.toLocaleString()}
                         </span>
                         <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                          {answeredOnPage}/{questions.length} on this page
+                          {answeredOnPage}/{questions.length}
                         </span>
                       </div>
                       <div className="h-1.5 overflow-hidden rounded-full bg-muted/50">

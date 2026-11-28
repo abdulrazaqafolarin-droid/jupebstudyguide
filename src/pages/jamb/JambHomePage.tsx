@@ -295,7 +295,7 @@ export default function JambHomePage() {
             </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 animate-in-up stagger-2">
               <GraduationCap className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-primary">JAMB UTME Past Questions</span>
+              <span className="text-sm font-medium text-primary">JAMB Past Questions</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-[1.1] animate-in-up stagger-3">
               Master Your Exams with
@@ -344,7 +344,7 @@ export default function JambHomePage() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold">Finish setting up</p>
-                <p className="text-xs text-muted-foreground">Study preferences, chat and notifications — about 1 minute.</p>
+                <p className="text-xs text-muted-foreground">Theme, study plan & chat — about 1 minute.</p>
               </div>
               <Button
                 size="sm"

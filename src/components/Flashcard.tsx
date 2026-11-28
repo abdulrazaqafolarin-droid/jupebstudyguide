@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useReducedMotion } from 'framer-motion';
 import { Question, SUBJECT_INFO } from '@/types/question';
 import { cn } from '@/lib/utils';
 import { RotateCcw, Check, X, Lightbulb, Bot, Sparkles, ChevronDown, Loader2 } from 'lucide-react';
@@ -7,6 +8,8 @@ import { AITutor } from './AITutor';
 import { QuestionMath } from './QuestionMath';
 import { MathRenderer } from './MathRenderer';
 import { QuestionPrompt } from './QuestionPrompt';
+import { StudyFlashcardSurface } from './StudyFlashcardSurface';
+import { StudyFlashcardOption } from './StudyFlashcardOption';
 import { streamChat } from '@/lib/ai-service';
 import type { AIChatMessage } from '@/lib/ai-service';
 
@@ -27,6 +30,7 @@ interface FlashcardProps {
 }
 
 export const Flashcard = ({ question, onAnswer, showControls = true }: FlashcardProps) => {
+  const reduceMotion = useReducedMotion();
   const [isFlipped, setIsFlipped] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -163,12 +167,10 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
           } : undefined}
         >
           {/* Keep both faces mounted for the original two-sided 3D flip. */}
-          <div className="flashcard-face relative min-h-[320px] rounded-2xl border-2 border-border shadow-xl overflow-hidden">
-            {/* Card background with subtle gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-secondary/30" />
-            <div className="absolute inset-0 chalk-texture opacity-30" />
-            
-            <div className="relative p-6 flex flex-col">
+          <StudyFlashcardSurface
+            className="min-h-[320px]"
+            contentClassName="flex min-h-[320px] flex-col p-6"
+          >
               {/* Header */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/50">
                 <span className={cn(
@@ -212,42 +214,27 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                       const isSelected = selectedOption === option.label;
                       const isCorrectOption = option.label === question.correctAnswer;
                       const showResult = selectedOption !== null;
+                      const state = !showResult
+                        ? "default"
+                        : isCorrectOption
+                          ? "correct"
+                          : isSelected
+                            ? "incorrect"
+                            : "muted";
 
                       return (
-                        <button
+                        <StudyFlashcardOption
                           key={option.label}
-                          onClick={() => handleOptionClick(option.label)}
+                          label={option.label}
+                          state={state}
+                          selected={isSelected}
                           disabled={selectedOption !== null}
-                          style={{ animationDelay: `${oi * 0.06}s` }}
-                          className={cn(
-                            'w-full p-3.5 rounded-xl text-left transition-all duration-300',
-                            'flex items-start gap-3 border-2',
-                            !showResult && 'border-border/60 bg-background/60 hover:border-primary/60 hover:bg-primary/5 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 active:translate-y-0',
-                            'active:scale-[0.99]',
-                            showResult && isCorrectOption && 'border-accent bg-accent/15 shadow-lg shadow-accent/20',
-                            showResult && isSelected && !isCorrectOption && 'border-destructive bg-destructive/15 shadow-lg shadow-destructive/10',
-                            showResult && !isSelected && !isCorrectOption && 'border-border/30 opacity-50 scale-[0.98]',
-                            'animate-in-up'
-                          )}
+                          reduceMotion={Boolean(reduceMotion)}
+                          animationDelayMs={oi * 60}
+                          onClick={() => handleOptionClick(option.label)}
                         >
-                          <span className={cn(
-                            'flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-sm transition-all duration-200',
-                            !showResult && 'bg-secondary/80 text-foreground group-hover:bg-secondary',
-                            showResult && isCorrectOption && 'bg-accent text-accent-foreground scale-110',
-                            showResult && isSelected && !isCorrectOption && 'bg-destructive text-destructive-foreground scale-110',
-                            showResult && !isSelected && !isCorrectOption && 'bg-secondary/50 text-muted-foreground'
-                          )}>
-                            {showResult && isCorrectOption ? <Check className="w-4 h-4" /> : 
-                             showResult && isSelected && !isCorrectOption ? <X className="w-4 h-4" /> :
-                             option.label}
-                          </span>
-                          <span className={cn(
-                            'text-sm leading-relaxed pt-1 flex-1 min-w-0 transition-opacity duration-200',
-                            showResult && !isSelected && !isCorrectOption && 'opacity-60'
-                          )}>
-                            <QuestionMath content={option.text} inline />
-                          </span>
-                        </button>
+                          <QuestionMath content={option.text} inline />
+                        </StudyFlashcardOption>
                       );
                     })}
                   </div>
@@ -261,16 +248,15 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                   </div>
                 )}
               </div>
-            </div>
-          </div>
+          </StudyFlashcardSurface>
 
           {/* Back of card (for essay questions) */}
           {!hasOptions && (
-            <div className="flashcard-face flashcard-back min-h-[320px] rounded-2xl border-2 border-accent/30 shadow-xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-card via-card to-accent/10" />
-              <div className="absolute inset-0 chalk-texture opacity-30" />
-              
-              <div className="relative h-full min-h-[320px] p-6 flex flex-col">
+            <StudyFlashcardSurface
+              tone="answer"
+              className="flashcard-back min-h-[320px]"
+              contentClassName="flex h-full min-h-[320px] flex-col p-6"
+            >
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-accent/30">
                   <span className={cn(
                     'px-3 py-1.5 rounded-full text-sm font-medium bg-accent/20 text-accent'
@@ -329,8 +315,7 @@ export const Flashcard = ({ question, onAnswer, showControls = true }: Flashcard
                 <div className="mt-3 pt-2 text-center text-muted-foreground">
                   <p className="text-sm">Click to see question again</p>
                 </div>
-              </div>
-            </div>
+            </StudyFlashcardSurface>
           )}
         </div>
       </div>

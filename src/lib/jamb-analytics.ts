@@ -18,11 +18,11 @@ export interface JambAchievementMetrics extends JambActivityStats {
 }
 
 export const JAMB_ANSWER_MILESTONES = [
-  { id: "first", label: "First answer", target: 1, description: "Save your first practice answer" },
-  { id: "ten", label: "Getting started", target: 10, description: "Save 10 practice answers" },
-  { id: "fifty", label: "Consistent learner", target: 50, description: "Save 50 practice answers" },
-  { id: "hundred", label: "Question explorer", target: 100, description: "Save 100 practice answers" },
-  { id: "five-hundred", label: "JAMB champion", target: 500, description: "Save 500 practice answers" },
+  { id: "first", label: "First answer", target: 1, description: "Save your first practice answer", icon: "🌱", rarity: "common" },
+  { id: "ten", label: "Getting started", target: 10, description: "Save 10 practice answers", icon: "📚", rarity: "common" },
+  { id: "fifty", label: "Consistent learner", target: 50, description: "Save 50 practice answers", icon: "🔥", rarity: "uncommon" },
+  { id: "hundred", label: "Question explorer", target: 100, description: "Save 100 practice answers", icon: "💯", rarity: "rare" },
+  { id: "five-hundred", label: "JAMB champion", target: 500, description: "Save 500 practice answers", icon: "🏆", rarity: "legendary" },
 ] as const;
 
 export type JambAchievementMetric = "answers" | "longestStreak" | "bookmarks" | "missions";
@@ -34,6 +34,8 @@ export interface JambAchievementDefinition {
   target: number;
   metric: JambAchievementMetric;
   category: "Practice" | "Consistency" | "Organisation";
+  icon: string;
+  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
 }
 
 export const JAMB_ACHIEVEMENTS: readonly JambAchievementDefinition[] = [
@@ -42,13 +44,13 @@ export const JAMB_ACHIEVEMENTS: readonly JambAchievementDefinition[] = [
     metric: "answers",
     category: "Practice",
   })),
-  { id: "three-day-streak", label: "Three-day rhythm", description: "Study on three consecutive days", target: 3, metric: "longestStreak", category: "Consistency" },
-  { id: "seven-day-streak", label: "A full week", description: "Study on seven consecutive days", target: 7, metric: "longestStreak", category: "Consistency" },
-  { id: "ten-bookmarks", label: "Save for later", description: "Bookmark 10 JAMB questions", target: 10, metric: "bookmarks", category: "Organisation" },
-  { id: "twenty-five-bookmarks", label: "Personal question library", description: "Bookmark 25 JAMB questions", target: 25, metric: "bookmarks", category: "Organisation" },
-  { id: "first-daily-mission", label: "Mission started", description: "Complete your first JAMB daily mission", target: 1, metric: "missions", category: "Consistency" },
-  { id: "five-daily-missions", label: "Five focused sessions", description: "Complete five JAMB daily missions", target: 5, metric: "missions", category: "Consistency" },
-  { id: "twenty-daily-missions", label: "Practice regular", description: "Complete twenty JAMB daily missions", target: 20, metric: "missions", category: "Consistency" },
+  { id: "three-day-streak", label: "Three-day rhythm", description: "Study on three consecutive days", target: 3, metric: "longestStreak", category: "Consistency", icon: "⚡", rarity: "common" },
+  { id: "seven-day-streak", label: "A full week", description: "Study on seven consecutive days", target: 7, metric: "longestStreak", category: "Consistency", icon: "💪", rarity: "uncommon" },
+  { id: "ten-bookmarks", label: "Save for later", description: "Bookmark 10 JAMB questions", target: 10, metric: "bookmarks", category: "Organisation", icon: "🔖", rarity: "common" },
+  { id: "twenty-five-bookmarks", label: "Personal question library", description: "Bookmark 25 JAMB questions", target: 25, metric: "bookmarks", category: "Organisation", icon: "📖", rarity: "rare" },
+  { id: "first-daily-mission", label: "Mission started", description: "Complete your first JAMB daily mission", target: 1, metric: "missions", category: "Consistency", icon: "🎯", rarity: "common" },
+  { id: "five-daily-missions", label: "Five focused sessions", description: "Complete five JAMB daily missions", target: 5, metric: "missions", category: "Consistency", icon: "🧭", rarity: "uncommon" },
+  { id: "twenty-daily-missions", label: "Practice regular", description: "Complete twenty JAMB daily missions", target: 20, metric: "missions", category: "Consistency", icon: "🏅", rarity: "epic" },
 ];
 
 function localDateKey(date: Date): string {

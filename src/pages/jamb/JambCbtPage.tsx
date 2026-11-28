@@ -1,24 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionMath } from "@/components/QuestionMath";
-import { QuestionOptionButton } from "@/components/QuestionOptionButton";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { QuestionImage } from "@/components/QuestionImage";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
+import { JAMB_SUBJECT_INFO, type JambSubject } from "@/lib/jamb-config";
 
 interface AttemptQuestion {
   sequence: number;
   question_id: string;
-  subject: string;
+  subject: JambSubject;
   question_snapshot: {
     question: string;
     options: Array<{ label: string; text: string }>;
     imageUrls?: string[];
     year?: number;
+    topic?: string | null;
   };
 }
 interface AttemptPayload {
@@ -231,16 +234,14 @@ export default function JambCbtPage() {
           initial={shouldReduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: [0.23, 1, 0.32, 1] }}
-          className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 text-center chalk-texture md:p-8"
+          className="relative mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-8 text-center chalk-texture"
         >
-          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
+          <div className="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
           <div className="relative">
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Attempt submitted
-            </div>
-            <h1 className="text-2xl font-bold">Practice submitted</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Your server-verified JAMB result is ready.</p>
+            <div className="mb-4 text-6xl">🎯</div>
+            <h1 className="mb-1 text-2xl font-bold">Practice complete</h1>
+            <p className="text-sm text-muted-foreground">JAMB CBT result</p>
 
             <ProgressRing
               progress={result?.score ?? 0}
@@ -276,11 +277,16 @@ export default function JambCbtPage() {
             </div>
 
             <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
-              Questions without independently reviewed answer keys are excluded from the score. Your ungraded answers are still available in the review below.
+              Unverified answer keys are excluded; ungraded answers remain in the review below.
             </p>
-            <Button asChild size="lg" className="mt-6 w-full bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90">
-              <Link to="/jamb">Return to JAMB home</Link>
-            </Button>
+            <div className="mt-6 flex gap-3">
+              <Button asChild size="lg" variant="outline" className="flex-1">
+                <Link to="/jamb">Back to Home</Link>
+              </Button>
+              <Button asChild size="lg" className="flex-1 bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90">
+                <Link to="/jamb/cbt/setup">Try Again</Link>
+              </Button>
+            </div>
           </div>
         </motion.section>
 
@@ -399,36 +405,35 @@ export default function JambCbtPage() {
             </div>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-secondary">
-            <motion.div
-              initial={false}
-              animate={{ width: `${((current + 1) / payload.questions.length) * 100}%` }}
-              transition={{ duration: shouldReduceMotion ? 0 : 0.35, ease: [0.23, 1, 0.32, 1] }}
-              className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent"
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-500 ease-out"
+              style={{ width: `${((current + 1) / payload.questions.length) * 100}%` }}
             />
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.section
-            key={question.sequence}
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
-            transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="rounded-2xl border border-border bg-card p-6 chalk-texture"
-          >
+        <section
+          key={question.sequence}
+          className="rounded-2xl border border-border bg-card p-6 chalk-texture animate-scale-in"
+        >
             <div className="mb-4 flex items-center justify-between gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {question.subject} · {question.question_snapshot.year ?? "JAMB practice"}
+              <span
+                className={`rounded-full px-3 py-1 text-sm font-medium subject-${question.subject}`}
+                title={question.question_snapshot.year ? `Source year ${question.question_snapshot.year}` : undefined}
+              >
+                {JAMB_SUBJECT_INFO[question.subject].icon} {question.question_snapshot.topic?.trim() || JAMB_SUBJECT_INFO[question.subject].label}
               </span>
-              <span className="text-[11px] text-muted-foreground">{saving ? "Saving answer…" : "Changes saved"}</span>
             </div>
-            <div className="text-lg font-medium leading-relaxed">
-              <QuestionMath content={question.question_snapshot.question} />
-            </div>
-            {question.question_snapshot.imageUrls?.map((imageUrl) => (
-              <QuestionImage key={imageUrl} imageUrl={imageUrl} alt="JAMB question illustration" />
-            ))}
+            <QuestionPrompt
+              question={{
+                id: question.question_id,
+                question: question.question_snapshot.question,
+                imageUrls: question.question_snapshot.imageUrls ?? [],
+                imagePosition: null,
+              }}
+              alt="JAMB question illustration"
+              textClassName="text-lg font-medium leading-relaxed"
+            />
             <div className="mt-6 space-y-3">
               {question.question_snapshot.options.map((option) => (
                 <QuestionOptionButton
@@ -466,8 +471,7 @@ export default function JambCbtPage() {
                 </Button>
               )}
             </div>
-          </motion.section>
-        </AnimatePresence>
+        </section>
 
         <motion.section
           initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { BookOpen, Plus, Sparkles, X } from "lucide-react";
+import { BookOpen, CheckCircle, Plus, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useStudyChat } from "@/hooks/useStudyChat";
@@ -19,13 +19,27 @@ function isJambSubject(value: string | null): value is (typeof JAMB_QUESTION_BAN
   return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as (typeof JAMB_QUESTION_BANK_SUBJECTS)[number]));
 }
 
-export default function JambAITutorPage() {
+interface JambAITutorPageProps {
+  embeddedSubject?: string;
+  embeddedTopicId?: string;
+  embeddedDay?: number;
+  onClose?: () => void;
+  onComplete?: () => void;
+}
+
+export default function JambAITutorPage({
+  embeddedSubject,
+  embeddedTopicId,
+  embeddedDay,
+  onClose,
+  onComplete,
+}: JambAITutorPageProps) {
   const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
-  const requestedSubject = searchParams.get("subject")?.toLowerCase() ?? null;
+  const requestedSubject = (embeddedSubject ?? searchParams.get("subject"))?.toLowerCase() ?? null;
   const subject = isJambSubject(requestedSubject) ? requestedSubject : undefined;
   const syllabusSubject = requestedSubject ? getJambSyllabusSubject(requestedSubject) : undefined;
-  const requestedTopicId = searchParams.get("topic");
+  const requestedTopicId = embeddedTopicId ?? searchParams.get("topic");
   const syllabusTopic = requestedSubject && requestedTopicId
     ? getJambSyllabusTopic(requestedSubject, requestedTopicId)
     : undefined;
@@ -39,6 +53,7 @@ export default function JambAITutorPage() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [showTextbooks, setShowTextbooks] = useState(searchParams.get("textbooks") === "1");
   const openedTargetChatKeyRef = useRef<string | null>(null);
+  const autoTeachChatIdRef = useRef<string | null>(null);
 
   const extraSystemContext = useCallback((chat: StudyChatMeta | null) => {
     const parts: string[] = [];
@@ -100,12 +115,13 @@ export default function JambAITutorPage() {
   const createChat = useCallback(async () => {
     const id = await newChat(tutorSubjectValue, syllabusTopic?.id);
     if (id) {
+      if (onClose && syllabusTopic) autoTeachChatIdRef.current = id;
       setInput("");
       setEditingIndex(null);
       setDrawerOpen(false);
     }
     return id;
-  }, [newChat, tutorSubjectValue, syllabusTopic?.id]);
+  }, [newChat, tutorSubjectValue, syllabusTopic?.id, onClose]);
 
   const requestedChatKey = syllabusTopic && tutorSubjectValue
     ? `${tutorSubjectValue}:topic:${syllabusTopic.id}`
@@ -150,6 +166,15 @@ export default function JambAITutorPage() {
     listLoading, requestedChatKey, syllabusTopic, tutorSubjectValue,
     chats, activeChatId, switchChat, createChat,
   ]);
+
+  useEffect(() => {
+    const targetChatId = autoTeachChatIdRef.current;
+    if (!onClose || !targetChatId || activeChatId !== targetChatId || listLoading || messages.length > 0 || isStreaming || !syllabusTopic) return;
+    autoTeachChatIdRef.current = null;
+    void sendMessage(
+      "Teach me " + syllabusTopic.title + " from the beginning. Follow the JAMB syllabus scope step by step, explain each idea clearly, use examples, and check my understanding before moving to the next subtopic.",
+    );
+  }, [onClose, activeChatId, listLoading, messages.length, isStreaming, syllabusTopic, sendMessage]);
 
   const handleSend = useCallback(async (
     attachment: { base64: string; mimeType: string; name: string } | null,
@@ -217,7 +242,24 @@ export default function JambAITutorPage() {
     <StudyChatShell
       programId="jamb"
       backTo="/jamb"
-      backLabel="Back to JAMB workspace"
+      backLabel={onClose ? "Back to lesson" : "Back to JAMB workspace"}
+      onBack={onClose}
+      lessonMode={Boolean(onClose)}
+      lessonBadge={onClose ? (
+        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+          {visibleTutorSubject?.icon ?? "📘"} Day {embeddedDay ?? ""}
+        </span>
+      ) : undefined}
+      headerActions={onComplete ? (
+        <button
+          type="button"
+          onClick={onComplete}
+          className="flex items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
+        >
+          <CheckCircle className="h-3.5 w-3.5" />
+          Done
+        </button>
+      ) : undefined}
       historyLabel="JAMB tutor history"
       title={activeChatMeta?.title ?? "Study Chat"}
       subtitle={
@@ -235,24 +277,21 @@ export default function JambAITutorPage() {
     >
       <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {questionContext && (
-          <div className="mx-auto w-full max-w-3xl px-4 pt-4">
-            <section className="rounded-xl border border-primary/20 bg-primary/5 p-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 shrink-0 text-primary" />
-                <p className="min-w-0 flex-1 truncate text-xs font-semibold text-primary">
-                  Opened from a JAMB question{questionContextTitle ? ` · ${questionContextTitle}` : ""}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => { setQuestionContext(""); setQuestionContextTitle(""); }}
-                  aria-label="Remove question context"
-                  className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">{questionContext}</p>
-            </section>
+          <div className="mx-auto w-full max-w-3xl px-4 pt-3">
+            <details className="rounded-lg border border-border/50 bg-card/50 px-3 py-2">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-medium text-muted-foreground">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                Question context{questionContextTitle ? ` · ${questionContextTitle}` : ""}
+              </summary>
+              <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">{questionContext}</p>
+              <button
+                type="button"
+                onClick={() => { setQuestionContext(""); setQuestionContextTitle(""); }}
+                className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <X className="h-3 w-3" /> Remove context
+              </button>
+            </details>
           </div>
         )}
 
@@ -262,6 +301,7 @@ export default function JambAITutorPage() {
           </div>
         ) : activeChatId ? (
           <ThreadView
+            compact={Boolean(onClose)}
             messages={messages}
             isStreaming={isStreaming}
             streamError={streamError}
@@ -302,6 +342,7 @@ export default function JambAITutorPage() {
 
       {activeChatId && (
         <Composer
+          compact={Boolean(onClose)}
           value={input}
           onChange={setInput}
           onSend={(attachment) => { void handleSend(attachment); }}

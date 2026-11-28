@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Bookmark, BookOpen, Flame, Search, Star, Trophy, Award } from "lucide-react";
+import { Bookmark, BookOpen, Flame, Info, Search, Star, Trophy, Award } from "lucide-react";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+import WorkspaceAchievementProgress from "@/components/WorkspaceAchievementProgress";
 import { Button } from "@/components/ui/button";
 import AchievementBadge from "@/components/AchievementBadge";
 import type { Achievement, AchievementStats } from "@/hooks/useAchievements";
@@ -33,8 +33,8 @@ function toJambAchievementBadge(item: JambAchievementProgressItem): Achievement 
     id: item.id,
     name: item.label,
     description: item.description,
-    icon: item.category === "Consistency" ? "🔥" : item.category === "Organisation" ? "🔖" : "📘",
-    rarity: "common",
+    icon: item.icon,
+    rarity: item.rarity,
     condition: () => item.unlocked,
     getProgress: () => ({ current: item.current, max: item.target }),
   };
@@ -83,17 +83,29 @@ export default function JambAchievementsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <WorkspacePageHeader title="Achievements" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} />
+      <WorkspacePageHeader
+        title="Achievements"
+        backTo="/jamb"
+        backLabel="Back to JAMB workspace"
+        icon={Trophy}
+        rightContent={(
+          <span
+            title="App milestones are not official JAMB grades."
+            aria-label="App milestones are not official JAMB grades."
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground"
+          >
+            <Info className="h-4 w-4" />
+          </span>
+        )}
+      />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <section className="space-y-4 rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <span className="text-2xl font-bold tabular-nums">{ready ? unlockedCount : "—"}</span>
-              <span className="text-muted-foreground">/{achievements.length}</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Achievements unlocked</p>
-            </div>
-            <div className="flex flex-wrap items-center justify-end gap-1.5">
+        <WorkspaceAchievementProgress
+          unlockedCount={ready ? unlockedCount : "—"}
+          totalCount={achievements.length}
+          percentage={ready ? percentage : 0}
+          badges={(
+            <>
               {categoryStats.filter((category) => ready && category.unlocked > 0).map((category) => (
                 <span
                   key={category.value}
@@ -102,31 +114,24 @@ export default function JambAchievementsPage() {
                   {category.value === "Practice" ? <BookOpen className="h-3 w-3" />
                     : category.value === "Consistency" ? <Flame className="h-3 w-3" />
                       : <Bookmark className="h-3 w-3" />}
-                  {ready ? `${category.unlocked}/${category.total}` : "—"}
+                  {category.unlocked}/{category.total}
                 </span>
               ))}
-            </div>
-          </div>
+            </>
+          )}
+        />
 
-          <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${ready ? percentage : 0}%` }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="h-full rounded-full bg-gradient-to-r from-primary via-accent to-primary"
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search achievements..."
+              className="bg-background pl-9"
+              aria-label="Search achievements"
             />
           </div>
-        </section>
-
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search achievements..."
-            className="bg-background pl-9"
-            aria-label="Search achievements"
-          />
         </div>
 
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter achievements by category">
@@ -188,17 +193,6 @@ export default function JambAchievementsPage() {
           </div>
         )}
 
-        <p className="text-center text-[11px] text-muted-foreground">
-          Rutex practice milestones are not official JAMB awards or exam grades.
-        </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link to="/jamb/past-questions" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">
-            <BookOpen className="h-4 w-4" /> Continue JAMB practice
-          </Link>
-          <Link to="/jamb/stats" className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-accent">
-            <Award className="h-4 w-4" /> View study stats
-          </Link>
-        </div>
       </main>
     </div>
   );

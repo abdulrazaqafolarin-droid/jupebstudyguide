@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Crown, Swords, Search, Trophy, Star } from 'lucide-react';
 import { WorkspacePageHeader } from '@/components/WorkspacePageHeader';
+import WorkspaceAchievementProgress from '@/components/WorkspaceAchievementProgress';
 import { cn } from '@/lib/utils';
 
 const RARITIES = ['all', 'legendary', 'epic', 'rare', 'uncommon', 'common'] as const;
@@ -66,36 +67,30 @@ export default function AchievementsPage() {
       <WorkspacePageHeader title="Achievements" backTo="/" backLabel="Back to JUPEB workspace" icon={Trophy} />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Stats header */}
-        <div className="bg-card rounded-xl border border-border p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-2xl font-bold">{stats.unlocked}</span>
-              <span className="text-muted-foreground">/{stats.total}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {(['legendary', 'epic', 'rare'] as const).map(r => stats.byRarity[r] > 0 && (
-                <span key={r} className={cn(
-                  'text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1',
-                  r === 'legendary' && 'bg-yellow-500/20 text-yellow-500',
-                  r === 'epic' && 'bg-purple-500/20 text-purple-400',
-                  r === 'rare' && 'bg-blue-500/20 text-blue-400',
-                )}>
-                  {r === 'legendary' && <Crown className="w-3 h-3" />}
-                  {r === 'epic' && <Swords className="w-3 h-3" />}
-                  {stats.byRarity[r]}/{stats.totalByRarity[r]}
+        <WorkspaceAchievementProgress
+          unlockedCount={stats.unlocked}
+          totalCount={stats.total}
+          percentage={pct}
+          badges={(
+            <>
+              {(['legendary', 'epic', 'rare'] as const).map((rarity) => stats.byRarity[rarity] > 0 && (
+                <span
+                  key={rarity}
+                  className={cn(
+                    "flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    rarity === "legendary" && "bg-yellow-500/20 text-yellow-500",
+                    rarity === "epic" && "bg-purple-500/20 text-purple-400",
+                    rarity === "rare" && "bg-blue-500/20 text-blue-400",
+                  )}
+                >
+                  {rarity === "legendary" && <Crown className="h-3 w-3" />}
+                  {rarity === "epic" && <Swords className="h-3 w-3" />}
+                  {stats.byRarity[rarity]}/{stats.totalByRarity[rarity]}
                 </span>
               ))}
-            </div>
-          </div>
-
-          <div className="relative w-full h-3 bg-secondary rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-        </div>
+            </>
+          )}
+        />
 
         {/* Search + Filter */}
         <div className="flex flex-col sm:flex-row gap-3">

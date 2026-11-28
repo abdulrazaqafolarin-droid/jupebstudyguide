@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft, Bookmark, BookmarkCheck, BookOpen, Bot,
   CalendarDays, Check, ChevronLeft, ChevronRight, FileCheck2,
-  Grid3X3, Loader2, Search, Shield, ShieldAlert, X,
+  Grid3X3, Loader2, Search, Shield, ShieldAlert, Sparkles, X,
 } from "lucide-react";
 import { useJambPracticeProgress } from "@/hooks/useJambPracticeProgress";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
@@ -19,8 +19,11 @@ import {
   type JambQuestion, type JambSubjectSummary,
 } from "@/lib/jamb-question-service";
 import { YearAccordion } from "@/components/study-past-questions/YearAccordion";
+import { SubjectCardGrid, type SubjectCardGridItem } from "@/components/study-past-questions/SubjectCardGrid";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
+import { QUESTION_SLIDE_VARIANTS } from "@/lib/question-slide-variants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { JambAdminQuestionPanel } from "@/components/study-past-questions/JambAdminQuestionPanel";
@@ -34,21 +37,6 @@ const PAGE_VARIANTS = {
   exit: { opacity: 0, x: -20 },
 };
 const PAGE_TRANSITION = { duration: 0.2, ease: [0.23, 1, 0.32, 1] as const };
-
-const SUBJECT_GRID_VARIANTS = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-const SUBJECT_CARD_VARIANTS = {
-  hidden: { opacity: 0, y: 24, scale: 0.95 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] as const } },
-};
-const SUBJECT_CARD_COLORS: Record<JambSubject, { gradient: string; light: string; accent: string }> = {
-  physics: { gradient: "from-blue-600/40 to-cyan-400/40", light: "bg-blue-500/10", accent: "border-blue-500/30" },
-  chemistry: { gradient: "from-emerald-600/40 to-teal-400/40", light: "bg-emerald-500/10", accent: "border-emerald-500/30" },
-  biology: { gradient: "from-green-600/40 to-lime-400/40", light: "bg-green-500/10", accent: "border-green-500/30" },
-  use_of_english: { gradient: "from-primary/30 to-accent/30", light: "bg-primary/10", accent: "border-primary/30" },
-};
 
 function isJambSubject(value: string | null | undefined): value is JambSubject {
   return Boolean(value && JAMB_QUESTION_BANK_SUBJECTS.includes(value as JambSubject));
@@ -78,6 +66,7 @@ export default function JambPastQuestionsPage() {
   const [count, setCount] = useState(0);
   const [offset, setOffset] = useState(0);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+  const [questionDirection, setQuestionDirection] = useState(0);
   const [showQuestionGrid, setShowQuestionGrid] = useState(false);
   const pendingQuestionIndexRef = useRef(0);
   const answerCheckSequenceRef = useRef<Record<string, number>>({});
@@ -272,8 +261,6 @@ export default function JambPastQuestionsPage() {
   }, [view, subject, year, searchParams, setSearchParams]);
 
   const subjectInfo = JAMB_SUBJECT_INFO[subject];
-  const pageNumber = Math.floor(offset / JAMB_INITIAL_QUESTION_PAGE_SIZE) + 1;
-  const totalPages = Math.max(1, Math.ceil(count / JAMB_INITIAL_QUESTION_PAGE_SIZE));
   const totalPublished = summaries.reduce((sum, row) => sum + row.count, 0);
   const visibleQuestions = view === "bookmarks" ? bookmarkQuestions : questions;
   const empty = !loading && visibleQuestions.length === 0;
@@ -379,11 +366,13 @@ export default function JambPastQuestionsPage() {
 
   const goToQuestion = (index: number) => {
     if (index < 0 || index >= questions.length) return;
+    setQuestionDirection(index >= activeQuestionIndex ? 1 : -1);
     setActiveQuestionIndex(index);
     setShowQuestionGrid(false);
   };
 
   const goToNextQuestion = useCallback(() => {
+    setQuestionDirection(1);
     if (activeQuestionIndex < questions.length - 1) {
       setActiveQuestionIndex((value) => value + 1);
       return;
@@ -395,6 +384,7 @@ export default function JambPastQuestionsPage() {
   }, [activeQuestionIndex, questions.length, offset, count]);
 
   const goToPreviousQuestion = useCallback(() => {
+    setQuestionDirection(-1);
     if (activeQuestionIndex > 0) {
       setActiveQuestionIndex((value) => value - 1);
       return;
@@ -429,97 +419,101 @@ export default function JambPastQuestionsPage() {
   }, [view, showQuestionGrid, goToNextQuestion, goToPreviousQuestion]);
 
   const renderQuestionCard = (question: JambQuestion) => {
-    const bookmarked = bookmarksReady && bookmarks.includes(question.id);
     const current = selected[question.id] ?? savedAnswers[question.id]?.selected ?? "";
     const feedback = feedbacks[question.id];
     return (
-      <article key={question.id} className="rounded-2xl border border-border bg-card p-4 chalk-texture sm:p-5">
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-muted-foreground">
-            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">{question.year}</span>
-            <span>{JAMB_SUBJECT_INFO[question.subject].label}</span>
-            {question.topic && <><span className="text-muted-foreground/40">·</span><span>{question.topic}</span></>}
-            {question.sourceQuestionNumber && (
-              <span>· Source Q{question.sourceQuestionNumber.replace(/^Q/i, "")}</span>
+      <article key={question.id} className="space-y-5 protected-study-content">
+        {(year === null || question.topic) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {year === null && (
+              <span
+                className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary"
+                title={"Source year " + question.year}
+              >
+                {question.year}
+              </span>
+            )}
+            {question.topic && (
+              <span className={`rounded-full px-3 py-1 text-sm font-medium subject-${question.subject}`}>
+                {JAMB_SUBJECT_INFO[question.subject].icon} {question.topic}
+              </span>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => toggleJambBookmark(question.id)}
-            aria-pressed={bookmarked}
-            aria-label={bookmarked ? "Remove bookmark" : "Bookmark question"}
-            className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-95"
-          >
-            {bookmarked
-              ? <BookmarkCheck className="h-5 w-5 text-primary" />
-              : <Bookmark className="h-5 w-5 text-muted-foreground" />}
-          </button>
-        </div>
+        )}
 
-        <QuestionPrompt
-          question={question}
-          alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
-          className="mb-4"
-          textClassName="text-base font-medium leading-relaxed"
-        />
+        <div className="space-y-3">
+          <QuestionPrompt
+            question={question}
+            alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
+            textClassName="text-base font-medium leading-relaxed"
+          />
         <div className="space-y-2">
           {question.options.map((option) => {
             const isSelected = current === option.label;
             const isApproved = feedback?.gradable === true && feedback.correctOption === option.label;
             const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
             return (
-              <button
+              <QuestionOptionButton
                 key={option.label}
-                type="button"
-                aria-pressed={isSelected}
+                label={option.label}
+                variant="past-question"
+                state={isApproved ? "correct" : isWrongSelection ? "incorrect" : isSelected ? "selected" : "default"}
+                selected={isSelected}
                 disabled={Boolean(checking[question.id])}
                 onClick={() => void saveAnswer(question.id, option.label)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm text-left transition-all active:scale-[0.97] disabled:cursor-wait disabled:opacity-80 ${
-                  isApproved
-                    ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20 text-green-700 dark:text-green-300 font-medium"
-                    : isWrongSelection
-                      ? "border-red-500/50 bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-300 font-medium"
-                      : isSelected
-                        ? "border-primary/50 bg-primary/5 text-primary font-medium"
-                        : "border-border bg-card hover:bg-accent/50"
-                }`}
+                contentClassName="font-normal"
               >
-                <span
-                  className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
-                    isApproved
-                      ? "bg-green-600 text-white"
-                      : isWrongSelection
-                        ? "bg-red-600 text-white"
-                        : isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {option.label}
-                </span>
-                <span className="text-pretty break-words flex-1 min-w-0">
-                  <QuestionMath content={option.text} inline />
-                </span>
-                {isApproved && <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>}
-                {isWrongSelection && <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>}
-              </button>
+                <QuestionMath content={option.text} inline />
+              </QuestionOptionButton>
             );
           })}
         </div>
+        </div>
 
         {current && (
-          <div className="mt-3 rounded-xl border border-border bg-muted/50 p-3 text-xs leading-relaxed" aria-live="polite">
-            {checking[question.id] ? (
-              <span className="text-muted-foreground">Checking reviewed answer key…</span>
-            ) : feedback?.gradable ? (
-              <div className={feedback.isCorrect ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}>
-                <strong>{feedback.isCorrect ? "Correct!" : "Not quite. Correct option: " + feedback.correctOption}</strong>
-                {feedback.explanation && <p className="mt-1 text-foreground"><QuestionMath content={feedback.explanation} /></p>}
+          <div className="space-y-3 pt-2" aria-live="polite">
+            <div className={[
+              "rounded-xl border p-3",
+              !feedback?.gradable
+                ? "border-border bg-muted/30"
+                : feedback.isCorrect
+                  ? "border-green-500/30 bg-green-50/50 dark:bg-green-950/20"
+                  : "border-red-500/30 bg-red-50/50 dark:bg-red-950/20",
+            ].join(" ")}>
+              {checking[question.id] ? (
+                <p className="text-xs font-medium text-muted-foreground">Checking answer…</p>
+              ) : !feedback ? (
+                <p className="text-sm font-medium text-muted-foreground">Answer saved.</p>
+              ) : (
+                <>
+                  <p className={[
+                    "text-sm font-medium",
+                    !feedback.gradable
+                      ? "text-muted-foreground"
+                      : feedback.isCorrect
+                        ? "text-green-700 dark:text-green-300"
+                        : "text-red-700 dark:text-red-300",
+                  ].join(" ")}>
+                    {!feedback.gradable ? "Not scored" : feedback.isCorrect ? "Correct!" : "Incorrect"}
+                  </p>
+                  {feedback.gradable && !feedback.isCorrect && feedback.correctOption && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      The correct answer is <span className="font-mono font-medium text-green-600 dark:text-green-400">{feedback.correctOption}</span>
+                    </p>
+                  )}
+                  {!feedback.gradable && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {feedback.message ?? "No verified answer key matches the listed options, so this question will not affect your score."}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+            {feedback?.gradable && feedback.explanation && (
+              <div className="rounded-xl border bg-card p-3">
+                <p className="mb-1 text-xs font-medium text-muted-foreground">Explanation</p>
+                <QuestionMath content={feedback.explanation} className="text-sm leading-relaxed" />
               </div>
-            ) : (
-              <span className="text-muted-foreground">
-                Your choice ({current}) is saved. {feedback?.message ?? "Select an option to check your saved response against the currently approved answer key."}
-              </span>
             )}
           </div>
         )}
@@ -531,7 +525,7 @@ export default function JambPastQuestionsPage() {
           >
             <Bot className="h-4 w-4" />
             Need a deeper explanation?
-            <span aria-hidden="true">✦</span>
+            <Sparkles className="h-3 w-3 text-accent" />
           </Link>
         </div>
       </article>
@@ -574,7 +568,7 @@ export default function JambPastQuestionsPage() {
               </Link>
               <div className="flex-1 text-center">
                 <h1 className="text-sm font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Study Past Questions</h1>
-                <p className="text-[10px] text-muted-foreground/60 -mt-0.5">JAMB UTME Exam Prep</p>
+                <p className="text-[10px] text-muted-foreground/60 -mt-0.5">JAMB Exam Prep</p>
               </div>
               <div className="flex items-center gap-1">
                 <button
@@ -757,57 +751,17 @@ export default function JambPastQuestionsPage() {
                 <h2 className="text-2xl font-bold">Subjects</h2>
                 <span className="text-xs text-muted-foreground">{totalPublished.toLocaleString()} questions total</span>
               </div>
-              <motion.div
-                variants={SUBJECT_GRID_VARIANTS}
-                initial="hidden"
-                animate="show"
-                className="grid grid-cols-2 gap-4 md:grid-cols-4"
-              >
-                {JAMB_QUESTION_BANK_SUBJECTS.map((item) => {
-                  const info = JAMB_SUBJECT_INFO[item];
-                  const colors = SUBJECT_CARD_COLORS[item];
-                  const count = summaries.find((row) => row.subject === item)?.count;
-                  return (
-                    <motion.button
-                      type="button"
-                      key={item}
-                      variants={SUBJECT_CARD_VARIANTS}
-                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => chooseSubject(item)}
-                      className="relative group flex flex-col items-start overflow-hidden rounded-2xl border border-border/60 bg-card p-5 text-left"
-                    >
-                      <div className={"absolute inset-0 bg-gradient-to-br " + colors.gradient + " opacity-20 transition-opacity duration-500 group-hover:opacity-30"} />
-                      <div className={"absolute inset-0 " + colors.light + " opacity-0 transition-opacity duration-500 group-hover:opacity-100"} />
-                      <div className={"absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r " + colors.gradient + " origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"} />
-                      <div className="relative z-10">
-                        <div className={"mb-3 flex h-12 w-12 items-center justify-center rounded-xl border text-2xl " + colors.light + " " + colors.accent}>
-                          {info.icon}
-                        </div>
-                        <h3 className="text-base font-semibold">{info.label}</h3>
-                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{info.description}</p>
-                        {count !== undefined ? (
-                          <span className="mt-3 block text-xs tabular-nums text-muted-foreground/60">
-                            {count} question{count !== 1 ? "s" : ""}
-                          </span>
-                        ) : !loading ? (
-                          <span className="mt-3 block text-xs text-muted-foreground/60">0 questions</span>
-                        ) : (
-                          <span className="mt-3 block text-xs text-muted-foreground/60">Loading question coverage…</span>
-                        )}
-                      </div>
-                      <div className="relative z-10 mt-4 flex w-full items-center justify-between">
-                        <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-                          <BookOpen className="h-3.5 w-3.5" /> Start Practice
-                        </span>
-                        <span className="text-[10px] text-muted-foreground/40 group-hover:text-muted-foreground/70">
-                          {count ? `${Math.ceil(count / 10)} min` : "—"}
-                        </span>
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+              <SubjectCardGrid<JambSubject>
+                onSelect={chooseSubject}
+                counts={Object.fromEntries(summaries.map((row) => [row.subject, row.count])) as Partial<Record<JambSubject, number>>}
+                countsReady={!loading}
+                items={JAMB_QUESTION_BANK_SUBJECTS.map((item): SubjectCardGridItem<JambSubject> => ({
+                  subject: item,
+                  label: JAMB_SUBJECT_INFO[item].label,
+                  icon: JAMB_SUBJECT_INFO[item].icon,
+                  description: JAMB_SUBJECT_INFO[item].description,
+                }))}
+              />
 
             </motion.section>
           )}
@@ -1018,10 +972,10 @@ export default function JambPastQuestionsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-center justify-between gap-2">
                         <span className="truncate text-xs tabular-nums text-muted-foreground">
-                          Question {offset + activeQuestionIndex + 1} of {count.toLocaleString()}
+                          Q{offset + activeQuestionIndex + 1}/{count.toLocaleString()}
                         </span>
                         <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-                          {answeredOnPage}/{questions.length} on this page
+                          {answeredOnPage}/{questions.length}
                         </span>
                       </div>
                       <div className="h-1.5 overflow-hidden rounded-full bg-muted/50">
@@ -1038,22 +992,45 @@ export default function JambPastQuestionsPage() {
                       onClick={() => setShowQuestionGrid(true)}
                       className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-95"
                       aria-label="Jump to question"
+                      title="Jump to question"
                     >
                       <Grid3X3 className="h-5 w-5 text-muted-foreground" />
                     </button>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{count.toLocaleString()} published questions</span>
-                    <span>Page {pageNumber} of {totalPages}</span>
+                    {activeQuestion && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => toggleJambBookmark(activeQuestion.id)}
+                          aria-pressed={bookmarksReady && bookmarks.includes(activeQuestion.id)}
+                          aria-label={bookmarksReady && bookmarks.includes(activeQuestion.id) ? "Remove bookmark" : "Bookmark question"}
+                          title={bookmarksReady && bookmarks.includes(activeQuestion.id) ? "Remove bookmark" : "Bookmark question"}
+                          className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-[0.97]"
+                          disabled={!bookmarksReady}
+                        >
+                          {bookmarksReady && bookmarks.includes(activeQuestion.id)
+                            ? <BookmarkCheck className="h-5 w-5 text-primary" />
+                            : <Bookmark className="h-5 w-5 text-muted-foreground" />}
+                        </button>
+                        <Link
+                          to={`/jamb/ai?subject=${activeQuestion.subject}&questionId=${encodeURIComponent(activeQuestion.id)}`}
+                          aria-label="Ask AI Tutor"
+                          title="Ask AI Tutor"
+                          className="shrink-0 rounded-lg p-2 transition-colors hover:bg-accent active:scale-[0.97]"
+                        >
+                          <Bot className="h-5 w-5 text-muted-foreground" />
+                        </Link>
+                      </>
+                    )}
                   </div>
 
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeQuestion.id}
-                      initial={{ opacity: 0, x: 24 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -24 }}
+                      custom={questionDirection}
+                      variants={QUESTION_SLIDE_VARIANTS}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
                       transition={PAGE_TRANSITION}
                     >
                       {renderQuestionCard(activeQuestion)}
@@ -1088,10 +1065,6 @@ export default function JambPastQuestionsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                    <span>{answeredOnPage} of {questions.length} loaded questions answered</span>
-                    <span>Page {pageNumber}/{totalPages}</span>
-                  </div>
                 </>
               ) : null}
             </motion.section>

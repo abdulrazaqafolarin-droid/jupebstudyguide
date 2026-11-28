@@ -1,71 +1,56 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, ChevronDown, Clock, BarChart3, GraduationCap, Search, Sparkles } from 'lucide-react';
-import { WorkspacePageHeader } from '@/components/WorkspacePageHeader';
-import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { SYLLABUSES } from '@/types/syllabus';
-import type { Subject } from '@/types/question';
-import { Input } from '@/components/ui/input';
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Clock, GraduationCap, Search, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+import { SyllabusSubjectAccordion } from "@/components/syllabus/SyllabusSubjectAccordion";
+import { SyllabusTopicAccordion } from "@/components/syllabus/SyllabusTopicAccordion";
+import { Input } from "@/components/ui/input";
+import { SYLLABUSES } from "@/types/syllabus";
+import type { Subject } from "@/types/question";
 
 const SUBJECT_META: Record<Subject, { label: string; icon: string; gradient: string; border: string }> = {
-  physics: { label: 'Physics', icon: '\u269B\uFE0F', gradient: 'from-physics/10 to-physics/5', border: 'border-physics/30' },
-  chemistry: { label: 'Chemistry', icon: '\u{1F52A}', gradient: 'from-chemistry/10 to-chemistry/5', border: 'border-chemistry/30' },
-  biology: { label: 'Biology', icon: '\u{1F9EC}', gradient: 'from-biology/10 to-biology/5', border: 'border-biology/30' },
-  math: { label: 'Mathematics', icon: '\u{1F4D0}', gradient: 'from-math/10 to-math/5', border: 'border-math/30' },
+  physics: { label: "Physics", icon: "⚛️", gradient: "from-physics/10 to-physics/5", border: "border-physics/30" },
+  chemistry: { label: "Chemistry", icon: "🔬", gradient: "from-chemistry/10 to-chemistry/5", border: "border-chemistry/30" },
+  biology: { label: "Biology", icon: "🧬", gradient: "from-biology/10 to-biology/5", border: "border-biology/30" },
+  math: { label: "Mathematics", icon: "📐", gradient: "from-math/10 to-math/5", border: "border-math/30" },
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
-  intermediate: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
-  advanced: 'text-rose-500 bg-rose-500/10 border-rose-500/20',
+  beginner: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+  intermediate: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+  advanced: "text-rose-500 bg-rose-500/10 border-rose-500/20",
 };
 
+const SUBJECTS = Object.keys(SYLLABUSES) as Subject[];
 const stagger = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.04 } },
 };
 
-const itemAnim = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0 },
-};
-
 export default function SyllabusPage() {
   const navigate = useNavigate();
   const [expandedSubject, setExpandedSubject] = useState<Subject | null>(null);
-  const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
-  const [search, setSearch] = useState('');
-
-  const subjects = Object.keys(SYLLABUSES) as Subject[];
+  const [search, setSearch] = useState("");
 
   const filteredSubjects = useMemo(() => {
-    if (!search.trim()) return subjects;
-    const q = search.toLowerCase();
-    return subjects.filter(subj => {
-      const topics = SYLLABUSES[subj];
-      return subj.includes(q) ||
-        SUBJECT_META[subj]?.label.toLowerCase().includes(q) ||
-        topics?.some(t =>
-          t.name.toLowerCase().includes(q) ||
-          t.description.toLowerCase().includes(q) ||
-          t.subtopics.some(s => s.toLowerCase().includes(q))
+    if (!search.trim()) return SUBJECTS;
+    const query = search.toLowerCase();
+    return SUBJECTS.filter((subject) => {
+      const topics = SYLLABUSES[subject];
+      return subject.includes(query) ||
+        SUBJECT_META[subject].label.toLowerCase().includes(query) ||
+        topics.some((topic) =>
+          topic.name.toLowerCase().includes(query) ||
+          topic.description.toLowerCase().includes(query) ||
+          topic.subtopics.some((subtopic) => subtopic.toLowerCase().includes(query)),
         );
     });
-  }, [search, subjects]);
+  }, [search]);
 
-  const toggleTopic = (id: string) => {
-    setExpandedTopics(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  };
-
-  const totalTopics = subjects.reduce((sum, s) => sum + SYLLABUSES[s].length, 0);
-  const totalHours = subjects.reduce((sum, s) =>
-    sum + SYLLABUSES[s].reduce((h, t) => h + t.estimatedHours, 0), 0
-  );
+  const totalTopics = SUBJECTS.reduce((sum, subject) => sum + SYLLABUSES[subject].length, 0);
+  const totalHours = SUBJECTS.reduce((sum, subject) =>
+    sum + SYLLABUSES[subject].reduce((hours, topic) => hours + topic.estimatedHours, 0), 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,170 +71,71 @@ export default function SyllabusPage() {
         transition={{ delay: 0.1 }}
         className="max-w-4xl mx-auto px-4 py-6 space-y-6"
       >
-        {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="Search topics, subjects, or subtopics..."
             className="pl-9 bg-secondary/30 border-border/50"
           />
         </div>
 
-        {/* Subjects */}
         <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-4">
           {filteredSubjects.map((subject) => {
             const meta = SUBJECT_META[subject];
             const topics = SYLLABUSES[subject];
             const isExpanded = expandedSubject === subject;
-            const subjHours = topics.reduce((s, t) => s + t.estimatedHours, 0);
+            const subjectHours = topics.reduce((sum, topic) => sum + topic.estimatedHours, 0);
+            const difficultySummary = ["beginner", "intermediate", "advanced"]
+              .map((difficulty) => {
+                const count = topics.filter((topic) => topic.difficulty === difficulty).length;
+                return count ? `${count} ${difficulty}` : null;
+              })
+              .filter(Boolean)
+              .join(", ");
 
             return (
-              <motion.div key={subject} variants={itemAnim} className="relative">
-                <button
-                  onClick={() => setExpandedSubject(isExpanded ? null : subject)}
-                  className={cn(
-                    "w-full text-left p-4 rounded-xl border transition-all",
-                    "hover:shadow-sm",
-                    isExpanded
-                      ? `${meta.gradient} ${meta.border} shadow-sm`
-                      : 'bg-card border-border/50 hover:border-border'
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{meta.icon}</span>
-                      <div>
-                        <h2 className="font-semibold">{meta.label}</h2>
-                        <p className="text-xs text-muted-foreground">
-                          {topics.length} topics | ~{subjHours}h | {
-                            ['beginner', 'intermediate', 'advanced'].map(d => {
-                              const count = topics.filter(t => t.difficulty === d).length;
-                              return count ? `${count} ${d}` : null;
-                            }).filter(Boolean).join(', ')
-                          }
-                        </p>
-                      </div>
-                    </div>
-                    <motion.div
-                      animate={{ rotate: isExpanded ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                    </motion.div>
-                  </div>
-                </button>
-
-                {/* Topic list */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="mt-2 space-y-2 pl-4">
-                        {topics.map((topic, idx) => {
-                          const topicOpen = expandedTopics.has(topic.id);
-                          return (
-                            <motion.div
-                              key={topic.id}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.02 }}
-                              className={cn(
-                                "rounded-xl border transition-all",
-                                topicOpen
-                                  ? 'bg-secondary/20 border-border/80'
-                                  : 'bg-card/50 border-border/30 hover:bg-secondary/10'
-                              )}
-                            >
-                              <button
-                                onClick={() => toggleTopic(topic.id)}
-                                className="w-full flex items-center justify-between p-3.5 text-left"
-                              >
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-medium text-sm">{topic.name}</span>
-                                    <span className={cn(
-                                      'text-[10px] font-medium px-1.5 py-0.5 rounded-full border',
-                                      DIFFICULTY_COLORS[topic.difficulty]
-                                    )}>
-                                      {topic.difficulty}
-                                    </span>
-                                  </div>
-                                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{topic.description}</p>
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0 ml-3">
-                                  <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Clock className="w-3 h-3" /> {topic.estimatedHours}h
-                                  </span>
-                                  <ChevronDown className={cn(
-                                    "w-4 h-4 text-muted-foreground transition-transform duration-200",
-                                    topicOpen && 'rotate-180'
-                                  )} />
-                                </div>
-                              </button>
-
-                              <AnimatePresence>
-                                {topicOpen && (
-                                  <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="overflow-hidden"
-                                  >
-                                    <div className="px-3.5 pb-3.5 space-y-2">
-                                      <p className="text-sm text-muted-foreground">{topic.description}</p>
-                                      <button
-                                        type="button"
-                                        onClick={() => navigate(`/study-chat?topic=${topic.id}&subject=${subject}`)}
-                                        className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
-                                      >
-                                        <Sparkles className="h-3.5 w-3.5" />
-                                        Study this topic with AI
-                                      </button>
-                                      <div>
-                                        <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1.5">
-                                          <BarChart3 className="w-3 h-3" /> Subtopics:
-                                        </p>
-                                        <div className="flex flex-wrap gap-1.5">
-                                          {topic.subtopics.map((st) => (
-                                            <button
-                                              key={st}
-                                              type="button"
-                                              onClick={() => navigate(`/study-chat?topic=${topic.id}&subject=${subject}&sub=${encodeURIComponent(st)}`)}
-                                              title={`Study "${st}" with AI`}
-                                              className="group/sub flex items-center gap-1 rounded-full bg-secondary/50 px-2 py-0.5 text-xs text-muted-foreground border border-border/30 transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-foreground"
-                                            >
-                                              <Sparkles className="h-2.5 w-2.5 text-primary opacity-0 transition-opacity group-hover/sub:opacity-100" />
-                                              {st}
-                                            </button>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+              <SyllabusSubjectAccordion
+                key={subject}
+                icon={meta.icon}
+                title={meta.label}
+                metadata={`${topics.length} topics | ~${subjectHours}h | ${difficultySummary}`}
+                expanded={isExpanded}
+                onToggle={() => setExpandedSubject(isExpanded ? null : subject)}
+                gradientClassName={meta.gradient}
+                borderClassName={meta.border}
+              >
+                {topics.map((topic) => (
+                  <SyllabusTopicAccordion
+                    key={topic.name}
+                    id={topic.name}
+                    title={topic.name}
+                    tag={topic.difficulty}
+                    tagClassName={DIFFICULTY_COLORS[topic.difficulty]}
+                    description={topic.description}
+                    subtopics={topic.subtopics}
+                    subtopicStyle="chips"
+                    meta={<><Clock className="w-3 h-3" /> {topic.estimatedHours}h</>}
+                    actionContent={(
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/study-chat?topic=${encodeURIComponent(topic.id)}&subject=${subject}`)}
+                        className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Study this topic with AI
+                      </button>
+                    )}
+                    onSubtopicClick={(subtopic) => navigate(`/study-chat?topic=${encodeURIComponent(topic.id)}&subject=${subject}&sub=${encodeURIComponent(subtopic)}`)}
+                  />
+                ))}
+              </SyllabusSubjectAccordion>
             );
           })}
 
           {filteredSubjects.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
-              <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p className="text-sm">No subjects match "{search}"</p>
             </div>
           )}

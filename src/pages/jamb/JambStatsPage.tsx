@@ -195,7 +195,7 @@ export default function JambStatsPage() {
   }, [cbtHistoryForUser]);
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your JAMB learning analytics" compact />
+      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your learning analytics" compact />
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {bankError && (
@@ -307,7 +307,7 @@ export default function JambStatsPage() {
 
         {/* Subject detail cards */}
         <div className="grid grid-cols-2 gap-3">
-          {subjectRows.map((row, index) => {
+          {subjectRows.map((row) => {
             const info = JAMB_SUBJECT_INFO[row.subject];
             const percent = row.total > 0 ? Math.round((row.mastered / row.total) * 100) : 0;
             return (
@@ -315,7 +315,6 @@ export default function JambStatsPage() {
                 key={row.subject}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.17 + index * 0.03 }}
                 className="bg-card rounded-2xl border p-4 space-y-2"
               >
                 <div className="flex items-center gap-2">
@@ -329,33 +328,11 @@ export default function JambStatsPage() {
                 <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
                   <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: percent + "%" }} />
                 </div>
-                <p className="text-[10px] text-muted-foreground">{row.mastered} mastered · {row.due} due</p>
               </motion.div>
             );
           })}
         </div>
 
-        <div className="rounded-xl border border-border/50 bg-card p-4 flex items-start gap-3">
-          <Award className="w-4 h-4 mt-0.5 text-primary" />
-          <div>
-            <p className="text-xs font-semibold">About your JAMB stats</p>
-            <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-              Practice activity, spaced-repetition mastery and timed CBT scores are measured separately. Only server-approved answer keys can grade a question or contribute to a CBT score.
-            </p>
-            {publishedQuestionCount === 0 && !loadingBank && (
-              <p className="mt-1 text-[11px] text-muted-foreground">The JAMB bank has no published questions yet. Statistics will fill in as reviewed questions are approved and published.</p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Link to="/jamb/past-questions" className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">
-            Continue practice
-          </Link>
-          <Link to="/jamb/cbt/setup" className="rounded-lg border border-border px-4 py-2.5 text-sm font-semibold hover:bg-accent">
-            Timed CBT
-          </Link>
-        </div>
       </main>
     </div>
   );

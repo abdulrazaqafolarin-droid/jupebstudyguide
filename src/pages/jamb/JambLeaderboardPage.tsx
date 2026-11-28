@@ -1,23 +1,59 @@
 import { Link } from "react-router-dom";
-import { Trophy } from "lucide-react";
+import { Star, Timer, TrendingUp, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+import WeeklyCountdown from "@/components/WeeklyCountdown";
+import { getWeekBoundaries } from "@/lib/weekBoundary";
 
 export default function JambLeaderboardPage() {
+  const { end: currentWeekEnd } = getWeekBoundaries();
+
   return (
     <div className="min-h-screen bg-background">
-      <WorkspacePageHeader title="Leaderboard" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} iconClassName="text-accent" />
+      <WorkspacePageHeader
+        title="Leaderboard"
+        backTo="/jamb"
+        backLabel="Back to JAMB workspace"
+        icon={Trophy}
+        iconClassName="text-accent"
+      />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <div className="py-12 text-center">
-          <Trophy className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
-          <p className="text-muted-foreground">No verified rankings yet</p>
-          <p className="mx-auto mb-4 mt-1 max-w-xl text-xs text-muted-foreground/70">
-            JAMB rankings will appear when independently verified practice and CBT results can be compared safely. Unverified answers and scores will not be included.
-          </p>
-          <Button asChild>
-            <Link to="/jamb/past-questions">Go Study Now</Link>
-          </Button>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="bg-card rounded-xl border border-border/50 p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+              <Timer className="w-4 h-4" />
+              Week ends in
+            </div>
+            <WeeklyCountdown weekEnd={currentWeekEnd} className="text-lg" />
+          </div>
+
+          <div className="bg-gradient-to-br from-primary/10 to-accent/5 rounded-xl border border-primary/20 p-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              Your Rank
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Your rank will appear here.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
+            <Star className="w-4 h-4 text-primary" />
+            This Week&apos;s Rankings
+          </h2>
+          <div className="text-center py-12">
+            <Trophy className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
+            <p className="text-sm font-medium">No verified JAMB scores yet</p>
+            <p className="text-xs text-muted-foreground mt-1 mb-4">
+              Rankings appear after eligible JAMB scores are verified.
+            </p>
+            <Button asChild>
+              <Link to="/jamb/past-questions">Go Study Now</Link>
+            </Button>
+          </div>
         </div>
       </main>
     </div>

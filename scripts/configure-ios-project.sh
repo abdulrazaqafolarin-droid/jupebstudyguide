@@ -45,79 +45,40 @@ with path.open("wb") as destination:
 print("Configured iOS display name, URL callback scheme and privacy descriptions.")
 PY
 
-# Replace the Capacitor template icon with the app's real Rutex logo.
+# Preserve the committed Rutex icon and splash artwork. This workflow validates
+# the asset catalogs but must not rewrite their image bytes from dist/; doing so
+# causes unrelated binary branding changes on every successful simulator build.
 ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
-ICON_SOURCE="$(find dist/assets -maxdepth 1 -type f -name 'rutex-logo-*.jpg' -print -quit)"
-if [[ ! -d "$ICON_SET" || -z "$ICON_SOURCE" ]]; then
-  echo "::error::The generated iOS AppIcon set or the built Rutex logo asset is missing."
-  exit 1
-fi
-ICON_FILENAME="$(python3 - "$ICON_SET/Contents.json" <<'PY'
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as source:
-    data = json.load(source)
-images = data.get("images", [])
-if len(images) != 1 or images[0].get("idiom") != "universal":
-    raise SystemExit("Unexpected iOS AppIcon catalog structure; refusing to replace it blindly")
-print(images[0].get("filename", ""))
-PY
-)"
-if [[ -z "$ICON_FILENAME" ]]; then
-  echo "::error::The iOS AppIcon catalog has no universal image filename."
-  exit 1
-fi
-ICON_TARGET="$ICON_SET/$ICON_FILENAME"
-sips -s format png "$ICON_SOURCE" --out "$ICON_TARGET" >/dev/null
-ICON_WIDTH="$(sips -g pixelWidth "$ICON_TARGET" | awk '/pixelWidth/ { print $2 }')"
-ICON_HEIGHT="$(sips -g pixelHeight "$ICON_TARGET" | awk '/pixelHeight/ { print $2 }')"
-if [[ "$ICON_WIDTH" != "1024" || "$ICON_HEIGHT" != "1024" ]]; then
-  sips -z 1024 1024 "$ICON_TARGET" >/dev/null
-fi
-echo "Installed the 1024x1024 Rutex logo as the native iOS home-screen icon."
-
-# Replace the generic Capacitor launch artwork with the same Rutex source.
 SPLASH_SET="ios/App/App/Assets.xcassets/Splash.imageset"
-if [[ ! -d "$SPLASH_SET" ]]; then
-  echo "::error::The generated iOS Splash imageset is missing."
-  exit 1
-fi
-python3 - "$SPLASH_SET/Contents.json" "$SPLASH_SET" "$ICON_SOURCE" <<'PY'
+python3 - "$ICON_SET/Contents.json" "$ICON_SET" "$SPLASH_SET/Contents.json" "$SPLASH_SET" <<'PY'
 import json
-import subprocess
 import sys
 from pathlib import Path
 
-contents_path = Path(sys.argv[1])
-asset_dir = Path(sys.argv[2])
-source = Path(sys.argv[3])
-with contents_path.open(encoding="utf-8") as handle:
-    catalog = json.load(handle)
-images = [
-    image for image in catalog.get("images", [])
-    if image.get("idiom") == "universal" and image.get("filename")
-]
-if len(images) < 1:
-    raise SystemExit("The iOS Splash imageset has no universal image entries")
-
-for image in images:
-    target = asset_dir / image["filename"]
-    subprocess.run(
-        ["sips", "-s", "format", "png", str(source), "--out", str(target)],
-        check=True,
-        stdout=subprocess.DEVNULL,
-    )
-    subprocess.run(
-        ["sips", "-z", "2732", "2732", str(target)],
-        check=True,
-        stdout=subprocess.DEVNULL,
-    )
-    dimensions = subprocess.check_output(
-        ["sips", "-g", "pixelWidth", "-g", "pixelHeight", str(target)],
-        text=True,
-    )
-    if "pixelWidth: 2732" not in dimensions or "pixelHeight: 2732" not in dimensions:
-        raise SystemExit(f"Unexpected splash image dimensions: {target}")
-print(f"Installed Rutex splash artwork in {len(images)} iOS image slots.")
+for contents_arg, directory_arg, expected_count in (
+    (sys.argv[1], sys.argv[2], 1),
+    (sys.argv[3], sys.argv[4], 3),
+):
+    contents = Path(contents_arg)
+    directory = Path(directory_arg)
+    if not contents.is_file() or not directory.is_dir():
+        raise SystemExit(f"Missing iOS asset catalog: {directory}")
+    with contents.open(encoding="utf-8") as handle:
+        catalog = json.load(handle)
+    images = [
+        item for item in catalog.get("images", [])
+        if item.get("idiom") == "universal" and item.get("filename")
+    ]
+    if len(images) != expected_count:
+        raise SystemExit(
+            f"Unexpected universal image count in {contents}: "
+            f"expected {expected_count}, got {len(images)}"
+        )
+    for item in images:
+        image = directory / item["filename"]
+        if not image.is_file() or image.stat().st_size < 10_000:
+            raise SystemExit(f"Missing or invalid iOS artwork: {image}")
+    print(f"Validated {len(images)} committed iOS artwork file(s) in {directory}.")
 PY
 
 cat > "$ENTITLEMENTS" <<'PLIST'

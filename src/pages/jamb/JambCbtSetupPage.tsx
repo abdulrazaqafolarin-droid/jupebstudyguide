@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock3, Info, Loader2, ShieldCheck, Target } from "lucide-react";
+import { ArrowLeft, Clock3, Loader2, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { JAMB_CBT_PRACTICE_PRESETS, JAMB_SUBJECT_INFO, JAMB_QUESTION_BANK_SUBJECTS, type JambSubject } from "@/lib/jamb-config";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
+import { WorkspaceSetupPanel } from "@/components/WorkspaceSetupPanel";
 import { useJambStudyPreferences } from "@/hooks/useJambStudyPreferences";
 import { getJambCbtAvailableQuestionCount } from "@/lib/jamb-question-service";
 
@@ -90,23 +91,11 @@ export default function JambCbtSetupPage() {
           Back
         </Link>
 
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 chalk-texture md:p-8">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
-
-          <div className="relative">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
-                <Target className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <div>
-                  <h1 className="text-xl font-bold">CBT Practice</h1>
-                  <p className="text-sm text-muted-foreground">Choose a subject and a practice length.</p>
-                </div>
-              </div>
-            </div>
-
+        <WorkspaceSetupPanel
+          title="CBT Practice"
+          description="Pick a subject and how many questions you want."
+          icon={<Target className="h-5 w-5 text-primary" />}
+        >
             <section className="mt-6">
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Subject</h2>
               <div className="grid grid-cols-2 gap-3">
@@ -133,7 +122,7 @@ export default function JambCbtSetupPage() {
             </section>
 
             <section className="mt-6">
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Practice length</h2>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Question count</h2>
               <div className="flex flex-wrap gap-2">
                 {JAMB_CBT_PRACTICE_PRESETS.map((item, index) => {
                   const selected = presetIndex === index;
@@ -148,10 +137,10 @@ export default function JambCbtSetupPage() {
                       }}
                       aria-pressed={selected}
                       className={cn(
-                        "px-5 py-2.5 rounded-xl border-2 font-semibold transition-all",
+                        "rounded-xl border-2 px-5 py-2.5 font-semibold transition-all",
                         selected
                           ? "border-primary bg-primary/10 text-primary"
-                          : "border-border hover:border-primary/50 text-foreground",
+                          : "border-border text-foreground hover:border-primary/50",
                         starting && "cursor-not-allowed opacity-60",
                       )}
                     >
@@ -161,59 +150,65 @@ export default function JambCbtSetupPage() {
                   );
                 })}
               </div>
-              <div className="mt-4 flex items-center gap-2 rounded-xl border border-border/60 bg-secondary/30 p-3 text-xs leading-relaxed text-muted-foreground">
-                <Clock3 className="h-4 w-4 shrink-0 text-primary" />
-                The {preset.questionCount}-question session runs for {preset.durationMinutes} minutes. The timer starts on the server when the attempt is created and will not restart if you refresh.
-              </div>
-              <div className="mt-3 rounded-xl border border-border bg-secondary/20 p-3 text-xs leading-relaxed" aria-live="polite">
-                {availabilityLoading ? (
-                  <span className="text-muted-foreground">Checking reviewed JAMB CBT questions for {JAMB_SUBJECT_INFO[subject].label}…</span>
-                ) : availabilityError ? (
-                  <span className="text-destructive">Could not check question availability. Refresh this page and try again.</span>
-                ) : availableQuestions < preset.questionCount ? (
-                  <span className="text-muted-foreground">
-                    {availableQuestions} eligible A–D or A–E questions are published for {JAMB_SUBJECT_INFO[subject].label}. This preset needs {preset.questionCount}; practice will unlock after enough questions are reviewed and published.
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">
-                    {availableQuestions} eligible A–D or A–E questions are available for {JAMB_SUBJECT_INFO[subject].label}.
-                  </span>
-                )}
-              </div>
             </section>
 
-            <section className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
-              <div className="flex items-start gap-2">
-                <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-                <div>
-                  <p className="text-sm font-semibold">Practice session, not a full UTME mock</p>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    This is single-subject practice, not a complete UTME mock. Full-mock settings remain disabled pending official format verification.
-                  </p>
+            <section className="mt-6 rounded-xl border border-border bg-secondary/30 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Practice size</span>
                 </div>
+                <span className="text-2xl font-bold text-primary tabular-nums">{preset.questionCount}</span>
               </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {JAMB_SUBJECT_INFO[subject].label} · {preset.durationMinutes} min
+              </p>
+              <p
+                className={cn(
+                  "mt-2 text-xs leading-relaxed",
+                  availabilityError ? "text-destructive" : "text-muted-foreground",
+                )}
+                aria-live="polite"
+              >
+                {availabilityLoading
+                  ? "Checking reviewed questions…"
+                  : availabilityError
+                    ? "Question availability could not be checked. Refresh and try again."
+                    : availableQuestions < preset.questionCount
+                      ? availableQuestions + " eligible questions available · " + preset.questionCount + " required"
+                      : availableQuestions + " eligible questions available"}
+              </p>
+              <details className="mt-3 rounded-lg border border-border/60 bg-background/50 px-3 py-2">
+                <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <Clock3 className="h-3.5 w-3.5 text-primary" />
+                  Session details
+                </summary>
+                <div className="mt-2 space-y-2 text-[11px] leading-relaxed text-muted-foreground">
+                  <p>The server timer starts when the attempt is created and does not restart if you refresh.</p>
+                  <p>This is single-subject practice, not a full UTME mock. Full-mock settings remain disabled pending official format verification.</p>
+                </div>
+              </details>
             </section>
 
             <Button
               onClick={startPractice}
               disabled={starting || !enoughQuestions}
               size="lg"
-              className="mt-6 w-full bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90"
+              className="mt-6 w-full bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90"
             >
               {starting ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Preparing session…</>
               ) : availabilityLoading ? (
-                "Checking question availability…"
+                "Checking availability…"
               ) : availabilityError ? (
                 "Availability unavailable"
               ) : availableQuestions < preset.questionCount ? (
-                "Awaiting reviewed questions"
+                "Not enough questions"
               ) : (
                 <><ShieldCheck className="mr-2 h-4 w-4" />Start timed practice</>
               )}
             </Button>
-          </div>
-        </div>
+        </WorkspaceSetupPanel>
       </div>
     </main>
   );

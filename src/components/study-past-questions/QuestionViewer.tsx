@@ -12,8 +12,10 @@ import { cn } from "@/lib/utils";
 import { ImageAnswerInput } from "./ImageAnswerInput";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
+import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { gradeAnswer, gradeObjectiveAnswer, percentageScore } from "@/lib/answer-scoring";
 import { getStudyQuestionDisplayNumber } from "@/lib/study-question-numbering";
+import { QUESTION_SLIDE_VARIANTS } from "@/lib/question-slide-variants";
 
 interface AnswerEntry {
   questionId: string;
@@ -32,12 +34,6 @@ interface QuestionViewerProps {
   isBookmarked?: (id: string) => boolean;
   onToggleBookmark?: (id: string) => void;
 }
-
-const SLIDE_VARIANTS = {
-  enter: (dir: number) => ({ x: dir * 60, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir * -60, opacity: 0 }),
-};
 
 export function QuestionViewer({
   questions,
@@ -377,7 +373,7 @@ export function QuestionViewer({
           <motion.div
             key={question.id}
             custom={direction}
-            variants={SLIDE_VARIANTS}
+            variants={QUESTION_SLIDE_VARIANTS}
             initial="enter"
             animate="center"
             exit="exit"
@@ -467,41 +463,26 @@ export function QuestionViewer({
                       const isSelected = answers[question.id] === opt.label;
                       const isCorrect = question.correctAnswer?.toUpperCase() === opt.label.toUpperCase();
                       const showFeedback = answers[question.id] !== undefined;
+                      const state = showFeedback && isAnswerGradable && isCorrect
+                        ? "correct"
+                        : showFeedback && isAnswerGradable && isSelected
+                          ? "incorrect"
+                          : isSelected
+                            ? "selected"
+                            : "default";
                       return (
-                        <button
+                        <QuestionOptionButton
                           key={opt.label}
+                          label={opt.label}
+                          variant="past-question"
+                          state={state}
+                          selected={isSelected}
+                          disabled={submitted}
                           onClick={() => handleMCQSelect(opt.label)}
-                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm text-left transition-all active:scale-[0.97] ${
-                            showFeedback && isAnswerGradable && isCorrect
-                              ? "border-green-500/50 bg-green-50/50 dark:bg-green-950/20 text-green-700 dark:text-green-300 font-medium"
-                              : showFeedback && isAnswerGradable && isSelected
-                              ? "border-red-500/50 bg-red-50/50 dark:bg-red-950/20 text-red-700 dark:text-red-300 font-medium"
-                              : isSelected
-                              ? "border-primary/50 bg-primary/5 text-primary font-medium"
-                              : "border-border bg-card hover:bg-accent/50"
-                          }`}
+                          contentClassName="font-normal"
                         >
-                          <span
-                            className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
-                              showFeedback && isAnswerGradable && isCorrect
-                                ? "bg-green-600 text-white"
-                                : showFeedback && isAnswerGradable && isSelected
-                                ? "bg-red-600 text-white"
-                                : isSelected
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground"
-                            }`}
-                          >
-                          {opt.label}
-                            </span>
-                          <span className="text-pretty break-words flex-1 min-w-0"><QuestionMath content={opt.text} inline /></span>
-                          {showFeedback && isAnswerGradable && isCorrect && (
-                            <span className="ml-auto text-xs font-medium text-green-600 dark:text-green-400">Correct</span>
-                          )}
-                          {showFeedback && isAnswerGradable && isSelected && !isCorrect && (
-                            <span className="ml-auto text-xs font-medium text-red-600 dark:text-red-400">Wrong</span>
-                          )}
-                        </button>
+                          <QuestionMath content={opt.text} inline />
+                        </QuestionOptionButton>
                       );
                     })}
                     </div>

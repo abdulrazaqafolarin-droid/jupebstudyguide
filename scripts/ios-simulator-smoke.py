@@ -38,6 +38,44 @@ def run(
         ) from error
 
 
+def runtime_version_key(runtime: str) -> tuple[int, ...]:
+    """Return the numeric iOS runtime version for deterministic newest-first selection."""
+    marker = ".iOS-"
+    if marker not in runtime:
+        return (0,)
+    parts = runtime.split(marker, 1)[1].split("-")
+    try:
+        return tuple(int(part) for part in parts)
+    except ValueError:
+        return (0,)
+
+
+def capture_runtime_logs(udid: str, window: str = "3m") -> None:
+    """Persist simulator diagnostics on both successful and failed launches."""
+    RUNTIME_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    command = [
+        "xcrun", "simctl", "spawn", udid, "log", "show",
+        "--last", window, "--style", "compact",
+        "--predicate",
+        'process == "App" OR process == "WebContent" OR process == "SpringBoard" '
+        'OR subsystem CONTAINS[c] "WebKit" OR subsystem CONTAINS[c] "CoreSimulator"',
+    ]
+    try:
+        result = run(
+            command,
+            timeout_seconds=30,
+            check=False,
+            capture_output=True,
+        )
+        RUNTIME_LOG_PATH.write_text(result.stdout or "", encoding="utf-8")
+    except RuntimeError as error:
+        RUNTIME_LOG_PATH.write_text(
+            f"Runtime log capture skipped: {error}\n",
+            encoding="utf-8",
+        )
+        print("Runtime log capture timed out; diagnostic note was saved.", flush=True)
+
+
 def main() -> int:
     if not APP_PATH.is_dir():
         raise SystemExit(f"Built iOS app is missing: {APP_PATH}")
@@ -50,7 +88,11 @@ def main() -> int:
     )
     devices_data = json.loads(devices_result.stdout)
     candidates = [
-        device
+        {
+            "runtime": runtime,
+            "runtime_version": runtime_version_key(runtime),
+            "device": device,
+        }
         for runtime, devices in devices_data.get("devices", {}).items()
         if runtime.startswith("com.apple.CoreSimulator.SimRuntime.iOS-")
         for device in devices
@@ -58,47 +100,65 @@ def main() -> int:
     ]
     if not candidates:
         raise SystemExit("No available iPhone simulator was found")
-    candidates.sort(key=lambda device: device.get("name", ""), reverse=True)
-    device = candidates[0]
+
+    # Prefer the newest installed iOS runtime, then a standard iPhone 17 Pro.
+    # The former name-only sort selected iPhone Air on an older runtime.
+    candidates.sort(
+        key=lambda candidate: (
+            candidate["runtime_version"],
+            candidate["device"].get("name") == "iPhone 17 Pro",
+            candidate["device"].get("name") == "iPhone 17",
+        ),
+        reverse=True,
+    )
+    selected = candidates[0]
+    device = selected["device"]
     udid = device["udid"]
-    print(f"Using {device['name']} ({udid}), current state: {device.get('state')}", flush=True)
+    print(
+        f"Using {device['name']} on {selected['runtime']} ({udid}), "
+        f"current state: {device.get('state')}",
+        flush=True,
+    )
 
     if device.get("state") != "Booted":
         run(["xcrun", "simctl", "boot", udid], timeout_seconds=45)
     run(["xcrun", "simctl", "bootstatus", udid, "-b"], timeout_seconds=180)
-    run(["xcrun", "simctl", "install", udid, str(APP_PATH)], timeout_seconds=120)
-    run(["xcrun", "simctl", "launch", udid, BUNDLE_ID], timeout_seconds=60)
+
+    try:
+        run(["xcrun", "simctl", "install", udid, str(APP_PATH)], timeout_seconds=120)
+        run(["xcrun", "simctl", "launch", udid, BUNDLE_ID], timeout_seconds=120)
+    except (RuntimeError, subprocess.CalledProcessError) as error:
+        capture_runtime_logs(udid)
+        raise RuntimeError(
+            f"{error}. Simulator diagnostics saved to {RUNTIME_LOG_PATH}"
+        ) from error
 
     # Allow the bundled WKWebView to paint before taking a visual checkpoint.
     time.sleep(15)
     SCREENSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    run(
-        ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)],
-        timeout_seconds=45,
-    )
-    if not SCREENSHOT_PATH.is_file() or SCREENSHOT_PATH.stat().st_size < 10_000:
-        raise RuntimeError("Simulator screenshot was missing or unexpectedly small")
+    screenshot_command = ["xcrun", "simctl", "io", udid, "screenshot", str(SCREENSHOT_PATH)]
+    screenshot_error: Exception | None = None
+    for attempt in range(1, 3):
+        try:
+            if SCREENSHOT_PATH.exists():
+                SCREENSHOT_PATH.unlink()
+            run(screenshot_command, timeout_seconds=90)
+            if SCREENSHOT_PATH.is_file() and SCREENSHOT_PATH.stat().st_size >= 10_000:
+                screenshot_error = None
+                break
+            screenshot_error = RuntimeError("Simulator screenshot was missing or unexpectedly small")
+        except (RuntimeError, subprocess.CalledProcessError) as error:
+            screenshot_error = error
+        if attempt < 2:
+            print(f"Screenshot attempt {attempt} failed: {screenshot_error}; retrying once.", flush=True)
+            time.sleep(5)
+    if screenshot_error is not None:
+        capture_runtime_logs(udid)
+        raise RuntimeError(
+            f"Simulator screenshot failed after two attempts: {screenshot_error}"
+        ) from screenshot_error
 
-    log_command = [
-        "xcrun", "simctl", "spawn", udid, "log", "show",
-        "--last", "1m", "--style", "compact",
-        "--predicate",
-        'process == "App" OR process == "WebContent" OR subsystem CONTAINS[c] "WebKit"',
-    ]
-    try:
-        log_result = run(
-            log_command,
-            timeout_seconds=25,
-            check=False,
-            capture_output=True,
-        )
-        RUNTIME_LOG_PATH.write_text(log_result.stdout or "", encoding="utf-8")
-    except RuntimeError as error:
-        RUNTIME_LOG_PATH.write_text(
-            f"Runtime log capture skipped: {error}\n",
-            encoding="utf-8",
-        )
-        print("Runtime log capture timed out; keeping the verified screenshot.", flush=True)
+    capture_runtime_logs(udid, window="1m")
 
     # App installation, launch and screenshot are the release gate. Cleanup
     # is best-effort and is itself time-bounded.

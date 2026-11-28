@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
+import { WorkspaceMissionHeader } from "@/components/WorkspaceMissionHeader";
 import {
   Bookmark, BookmarkCheck, CalendarDays, CheckCircle2,
-  Clock3, Loader2, RefreshCw, ShieldCheck, Target, Trophy,
+  Info, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { QuestionMath } from "@/components/QuestionMath";
-import { QuestionImage } from "@/components/QuestionImage";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { useJambDailyMissions } from "@/hooks/useJambDailyMissions";
 import { useJambBookmarks } from "@/hooks/useJambBookmarks";
@@ -208,31 +210,21 @@ export default function JambDailyMissionPage() {
         backLabel="Back to JAMB workspace"
         compact
         wide
-        rightContent={<CalendarDays className="h-5 w-5 text-primary" />}
+        rightContent={(
+          <div className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5 text-primary" />
+            <span
+              title="Daily mission completion is a Rutex study activity, not an official JAMB result."
+              aria-label="Daily mission completion is a Rutex study activity, not an official JAMB result."
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground"
+            >
+              <Info className="h-4 w-4" />
+            </span>
+          </div>
+        )}
       />
 
       <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 pb-12">
-        <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Target className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-lg font-bold">Build a daily practice habit</h2>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Choose a subject and practise with up to 10 reviewed questions.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1"><ShieldCheck className="h-3.5 w-3.5" /> Answers checked by the JAMB service</span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1"><Clock3 className="h-3.5 w-3.5" /> Up to 10 questions</span>
-          </div>
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-            Syllabus-led lessons remain disabled pending official source verification. Only approved answer keys count towards accuracy.
-          </p>
-        </section>
-
         {!remoteSupported && (
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-muted-foreground">
             Cloud sync is unavailable; your missions remain saved on this device.
@@ -249,7 +241,8 @@ export default function JambDailyMissionPage() {
           <section className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="font-semibold">Choose today's subject</h2>
+                <h2 className="font-semibold">Today's subject</h2>
+                
               </div>
               <span className="text-xs text-muted-foreground">{today}</span>
             </div>
@@ -296,71 +289,78 @@ export default function JambDailyMissionPage() {
         {activeMission && (
           <section className="space-y-4">
             <div className="mx-auto w-full max-w-3xl space-y-4">
-            <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{JAMB_SUBJECT_INFO[activeMission.subject].label}</span>
-                <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{formatDate(activeMission.localDate)}</span>
-                <span className={activeMission.status === "completed" ? "rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600" : "rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"}>
-                  {activeMission.status === "completed" ? "Completed" : "In progress"}
-                </span>
-              </div>
-              <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-bold">Today's practice set</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">{activeSummary?.checkedQuestions ?? 0} of {activeSummary?.totalQuestions ?? activeMission.questionIds.length} answer checks completed</p>
-                </div>
-                {activeSummary?.accuracy !== null && activeSummary?.accuracy !== undefined && (
-                  <div className="text-right">
+              <WorkspaceMissionHeader
+              badges={(
+                <>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">{JAMB_SUBJECT_INFO[activeMission.subject].label}</span>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">{formatDate(activeMission.localDate)}</span>
+                  <span className={activeMission.status === "completed" ? "rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white" : "rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground"}>
+                    {activeMission.status === "completed" ? "Completed" : "In progress"}
+                  </span>
+                </>
+              )}
+              title="Today's practice set"
+              description={(activeSummary?.checkedQuestions ?? 0) + " of " + (activeSummary?.totalQuestions ?? activeMission.questionIds.length) + " answer checks completed"}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                {activeSummary?.accuracy !== null && activeSummary?.accuracy !== undefined ? (
+                  <div>
                     <p className="text-2xl font-bold tabular-nums">{activeSummary.accuracy}%</p>
                     <p className="text-[10px] text-muted-foreground">of {activeSummary.gradableQuestions} gradable</p>
                   </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Accuracy updates after approved answer checks.</p>
                 )}
-              </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-secondary">
-                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${activeSummary ? (activeSummary.checkedQuestions / Math.max(1, activeSummary.totalQuestions)) * 100 : 0}%` }} />
+                <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-secondary">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: String(activeSummary ? (activeSummary.checkedQuestions / Math.max(1, activeSummary.totalQuestions)) * 100 : 0) + "%" }} />
+                </div>
               </div>
               {activeMission.status === "completed" && activeSummary?.accuracy === null && (
-                <p className="mt-3 text-xs text-muted-foreground">This mission is complete, but no accuracy score is shown because the checked questions did not have approved answer keys.</p>
+                <p className="mt-3 text-xs text-muted-foreground">Unverified answers are saved but not scored.</p>
               )}
-            </div>
+            </WorkspaceMissionHeader>
 
             {loadingQuestions ? (
               <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Restoring mission questions…</div>
             ) : questions.length === 0 ? (
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-muted-foreground">The saved question set is no longer available in the published JAMB bank. Your mission record is retained; return to the hub to view other missions.</div>
             ) : (
-              <div className="space-y-4">
+              <Card className="space-y-6 p-6 md:p-8">
                 {questions.map((question, index) => {
                   const answer = activeMission.answers[question.id];
                   const canChange = activeMission.status !== "completed" || (answer?.checked && !answer.gradable);
                   const correctOption = question.options.find((option) => option.label === answer?.correctOption);
                   return (
-                    <article key={question.id} className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-                      <div className="mb-3 flex items-center justify-between gap-3">
-                        <p className="text-xs font-semibold text-muted-foreground">Question {index + 1} of {questions.length} · {question.year}</p>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            disabled={!bookmarksReady}
-                            onClick={() => void toggleBookmark(question.id)}
-                            aria-label={bookmarks.includes(question.id) ? "Remove bookmark" : "Bookmark question"}
-                            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:opacity-40"
-                          >
-                            {bookmarks.includes(question.id) ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
-                          </button>
-                          {answer?.checked && answer.gradable && (
-                            <span className={answer.isCorrect ? "rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-600" : "rounded-full bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-destructive"}>
-                              {answer.isCorrect ? "Correct" : "Review"}
-                            </span>
-                          )}
-                          {answer?.checked && !answer.gradable && (
-                            <span className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground">Not graded</span>
-                          )}
-                        </div>
+                    <fieldset key={question.id} className="space-y-3 rounded-xl border border-border p-4">
+                      <legend className="px-2 text-sm font-semibold">
+                        Question {index + 1} of {questions.length} · {JAMB_SUBJECT_INFO[question.subject].label} · {question.year}
+                      </legend>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          disabled={!bookmarksReady}
+                          onClick={() => void toggleBookmark(question.id)}
+                          aria-label={bookmarks.includes(question.id) ? "Remove bookmark" : "Bookmark question"}
+                          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:opacity-40"
+                        >
+                          {bookmarks.includes(question.id) ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+                        </button>
+                        {answer?.checked && answer.gradable && (
+                          <span className={answer.isCorrect ? "rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-600" : "rounded-full bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-destructive"}>
+                            {answer.isCorrect ? "Correct" : "Review"}
+                          </span>
+                        )}
+                        {answer?.checked && !answer.gradable && (
+                          <span className="rounded-full border border-border px-2 py-1 text-[10px] text-muted-foreground">Not graded</span>
+                        )}
                       </div>
-                      <div className="mb-4 text-sm leading-relaxed"><QuestionMath content={question.question} /></div>
-                      {question.imageUrls.map((url) => <QuestionImage key={url} imageUrl={url} alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"} />)}
-                      <div className="space-y-3">
+                      <QuestionPrompt
+                        question={question}
+                        alt={JAMB_SUBJECT_INFO[question.subject].label + " question illustration"}
+                        textClassName="font-medium leading-6"
+                        inlineMath
+                      />
+                      <div className="space-y-2">
                         {question.options.map((option) => {
                           const selected = answer?.selectedOption === option.label;
                           const isApproved = answer?.checked === true
@@ -374,6 +374,7 @@ export default function JambDailyMissionPage() {
                             <QuestionOptionButton
                               key={option.label}
                               label={option.label}
+                              variant="past-question"
                               state={
                                 isApproved ? "correct"
                                   : isIncorrectSelection ? "incorrect"
@@ -390,11 +391,8 @@ export default function JambDailyMissionPage() {
                           );
                         })}
                       </div>
-                      {checking[question.id] && <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking with the JAMB answer service…</p>}
+                      {checking[question.id] && <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking answer…</p>}
                       {answerErrors[question.id] && <p role="alert" className="mt-3 text-xs text-amber-600">{answerErrors[question.id]}</p>}
-                      {answer && !answer.checked && !checking[question.id] && (
-                        <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><RefreshCw className="h-3.5 w-3.5" /> Choose an option to save it and request a secure answer check.</p>
-                      )}
                       {answer?.checked && answer.gradable && (
                         <div className="mt-3 space-y-2 rounded-lg border border-border bg-muted/30 p-3">
                           {answer.correctOption && (
@@ -411,18 +409,14 @@ export default function JambDailyMissionPage() {
                         </div>
                       )}
                       {answer?.checked && !answer.gradable && (
-                        <p className="mt-3 text-xs text-muted-foreground">This answer is saved, but it is excluded from accuracy because an approved key is not available.</p>
+                        <p className="mt-3 text-xs text-muted-foreground">Saved, but not graded.</p>
                       )}
-                    </article>
+                    </fieldset>
                   );
                 })}
-              </div>
+              </Card>
             )}
 
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => navigate("/jamb/daily-mission")}>Mission hub & history</Button>
-              <Button variant="outline" onClick={() => navigate("/jamb/past-questions")}>Browse past questions</Button>
-            </div>
             </div>
           </section>
         )}
@@ -433,7 +427,7 @@ export default function JambDailyMissionPage() {
             <span className="text-xs text-muted-foreground">{history.length} saved</span>
           </div>
           {historyRows.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Your completed and in-progress JAMB daily practice sessions will appear here.</div>
+            <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">No missions yet.</div>
           ) : (
             <div className="space-y-2">
               {visibleHistoryRows.map((mission) => {
@@ -465,9 +459,6 @@ export default function JambDailyMissionPage() {
         </section>
 
         {!ready && <p className="text-center text-xs text-muted-foreground">Restoring your saved mission history…</p>}
-        <p className="text-center text-[10px] text-muted-foreground">
-          <Trophy className="inline h-3 w-3" /> Mission completion is a Rutex study activity, not an official JAMB result.
-        </p>
       </main>
     </div>
   );

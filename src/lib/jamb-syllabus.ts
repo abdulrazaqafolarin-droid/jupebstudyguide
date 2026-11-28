@@ -649,7 +649,7 @@ export const JAMB_SYLLABUS: Record<JambSyllabusSubjectId, JambSyllabusSubject> =
 };
 
 export const JAMB_SYLLABUS_REVIEW_NOTICE =
-  "This catalogue combines the five 2025-created source PDFs supplied by the owner with JAMB-hosted IBASS references. Physics now follows the current 39-topic JAMB-hosted IBASS structure checked on 19 November 2026, and Use of English follows the JAMB-hosted PDF checked on 18 November 2026; both uploaded copies materially differ. Biology has an official IBASS link but still needs complete line-by-line reconciliation. Chemistry (18 topics) and Mathematics (23 topics) now match current IBASS-derived top-level listings in heading/order, with JAMB-hosted source links recorded; direct PDF retrieval and line-by-line objective reconciliation remain pending. This catalogue is not certified as the 2027 syllabus or a verified complete current syllabus.";
+  "This catalogue is still under source review and is not certified as the complete current JAMB syllabus.";
 
 export const JAMB_SYLLABUS_VERSION = "mixed-sources-checked-2026-11-19";
 export const JAMB_SYLLABUS_VERIFIED = false;

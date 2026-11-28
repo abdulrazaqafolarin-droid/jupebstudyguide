@@ -250,6 +250,10 @@
     @apply bg-[hsl(var(--math))] text-white;
   }
 
+  .subject-use_of_english {
+    @apply bg-primary text-primary-foreground;
+  }
+
   /* Glow effects */
   .glow-gold {
     box-shadow: var(--shadow-glow);

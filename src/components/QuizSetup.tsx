@@ -3,6 +3,7 @@ import { Subject, SUBJECT_INFO } from '@/types/question';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { SelectableSubjectCard } from '@/components/SelectableSubjectCard';
+import { WorkspaceSetupPanel } from '@/components/WorkspaceSetupPanel';
 import { ArrowLeft, Target, Sparkles } from 'lucide-react';
 
 export interface QuizPlan {
@@ -66,18 +67,11 @@ export const QuizSetup = ({ available, onStart, onBack }: QuizSetupProps) => {
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
-      <div className="bg-card rounded-2xl border border-border p-6 md:p-8 chalk-texture">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-            <Target className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold">Build your quiz</h2>
-            <p className="text-sm text-muted-foreground">
-              Pick subjects and how many questions you want from each.
-            </p>
-          </div>
-        </div>
+      <WorkspaceSetupPanel
+        title="Build your quiz"
+        description="Pick subjects and how many questions you want from each."
+        icon={<Target className="h-5 w-5 text-primary" />}
+      >
 
         {/* Subjects */}
         <section className="mt-6">
@@ -209,7 +203,7 @@ export const QuizSetup = ({ available, onStart, onBack }: QuizSetupProps) => {
         >
           Start Quiz
         </Button>
-      </div>
+      </WorkspaceSetupPanel>
     </div>
   );
 };

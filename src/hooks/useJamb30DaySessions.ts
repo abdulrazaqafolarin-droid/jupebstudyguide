@@ -253,6 +253,6 @@ export function useJamb30DaySessions() {
     renameSession,
     pauseSession,
     resumeSession,
-    isLoaded: Boolean(!authLoading && storageReady && (!user?.id || readyUserId === user.id)),
+    isLoaded: Boolean(!authLoading && storageReady),
   };
 }

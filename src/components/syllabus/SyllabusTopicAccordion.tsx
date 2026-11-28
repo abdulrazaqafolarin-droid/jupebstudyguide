@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, ChevronUp, PlayCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, PlayCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import QuestionMath from "@/components/QuestionMath";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,7 @@ interface SyllabusTopicAccordionProps {
   actionLabel?: string;
   showDefaultAction?: boolean;
   onStart?: () => void;
+  onSubtopicClick?: (subtopic: string) => void;
 }
 
 /** Shared JUPEB/JAMB topic disclosure, metadata, motion and action layout. */
@@ -38,6 +39,7 @@ export function SyllabusTopicAccordion({
   actionLabel = "Start Learning This Topic",
   showDefaultAction = true,
   onStart,
+  onSubtopicClick,
 }: SyllabusTopicAccordionProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -94,9 +96,22 @@ export function SyllabusTopicAccordion({
               {subtopicStyle === "chips" ? (
                 <div className="flex flex-wrap gap-1.5">
                   {subtopics.map((subtopic, index) => (
-                    <span key={index} className="rounded-full bg-secondary/50 px-2 py-1 text-xs text-muted-foreground border border-border/30">
-                      <QuestionMath inline content={subtopic} />
-                    </span>
+                    onSubtopicClick ? (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => onSubtopicClick(subtopic)}
+                        title={`Study "${subtopic}" with AI`}
+                        className="group/sub flex items-center gap-1 rounded-full bg-secondary/50 px-2 py-0.5 text-xs text-muted-foreground border border-border/30 transition-colors hover:border-primary/50 hover:bg-primary/5 hover:text-foreground"
+                      >
+                        <Sparkles className="h-2.5 w-2.5 text-primary opacity-0 transition-opacity group-hover/sub:opacity-100" />
+                        <QuestionMath inline content={subtopic} />
+                      </button>
+                    ) : (
+                      <span key={index} className="rounded-full bg-secondary/50 px-2 py-1 text-xs text-muted-foreground border border-border/30">
+                        <QuestionMath inline content={subtopic} />
+                      </span>
+                    )
                   ))}
                 </div>
               ) : (

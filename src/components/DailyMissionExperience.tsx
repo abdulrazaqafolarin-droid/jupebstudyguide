@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, BookOpen, CheckCircle2, CircleHelp, RotateCcw, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { WorkspaceMissionHeader } from "@/components/WorkspaceMissionHeader";
 import { Badge } from "@/components/ui/badge";
 import { SUBJECT_INFO, type Question } from "@/types/question";
 import type { DailyMissionRecord } from "@/lib/daily-mission-engine";
@@ -89,20 +90,18 @@ export function DailyMissionExperience({
           <ArrowLeft className="h-4 w-4" /> Back to dashboard
         </Button>
 
-        <Card className="overflow-hidden border-border">
-          <div className="bg-gradient-to-br from-primary/15 via-card to-accent/10 p-6 md:p-8">
-            <div className="flex flex-wrap items-center gap-2">
+        <WorkspaceMissionHeader
+          badges={(
+            <>
               <Badge variant="outline">{mission.localDate}</Badge>
               <Badge variant="secondary">Day {mission.syllabusDay}</Badge>
               <Badge variant="outline">{mission.difficulty} difficulty</Badge>
               {mission.stage === "completed" && <Badge className="bg-emerald-600">Completed</Badge>}
-            </div>
-            <h1 className="mt-4 text-2xl font-bold md:text-3xl"><QuestionMath inline content={mission.topicName} /></h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              One focused lesson, then questions. You need at least 70% accuracy to complete today's mission.
-            </p>
-          </div>
-        </Card>
+            </>
+          )}
+          title={<QuestionMath inline content={mission.topicName} />}
+          description="One focused lesson, then questions. You need at least 70% accuracy to complete today's mission."
+        />
 
         {mission.stage === "lesson" && (
           <Card className="space-y-5 p-6 md:p-8">

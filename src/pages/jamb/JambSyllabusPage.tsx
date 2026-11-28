@@ -12,6 +12,7 @@ import { SyllabusTopicAccordion } from "@/components/syllabus/SyllabusTopicAccor
 import {
   JAMB_SYLLABUS,
   JAMB_SYLLABUS_REVIEW_NOTICE,
+  JAMB_SYLLABUS_VERIFIED,
   JAMB_SYLLABUS_SUBJECTS,
   type JambSyllabusSubjectId,
 } from "@/lib/jamb-syllabus";
@@ -103,7 +104,7 @@ export default function JambSyllabusPage() {
         transition={{ delay: 0.1 }}
         className="max-w-4xl mx-auto px-4 py-6 space-y-6"
       >
-        {!JAMB_SYLLABUS_REVIEW_NOTICE.includes("certified as the complete") ? null : (
+        {!JAMB_SYLLABUS_VERIFIED && (
           <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
             <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-amber-600" />
             <span>{JAMB_SYLLABUS_REVIEW_NOTICE}</span>

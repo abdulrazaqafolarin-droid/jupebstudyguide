@@ -164,96 +164,87 @@ export default function JambSyllabusPage() {
                 borderClassName={meta.border}
               >
                 {subject.generalObjectives.length > 0 && (
-                  <div className="rounded-xl border border-border/50 bg-card p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <BookOpen className="w-4 h-4 text-primary" />
-                      <h3 className="text-xs font-semibold">General objectives</h3>
-                    </div>
-                    <ul className="space-y-1.5">
-                      {subject.generalObjectives.map((objective) => (
-                        <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                          {objective}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <SyllabusTopicAccordion
+                    id={subject.id + "-general-objectives"}
+                    title="General objectives"
+                    tag="Overview"
+                    description=""
+                    subtopics={subject.generalObjectives}
+                    subtopicsHeading="Candidates should be able to:"
+                  />
                 )}
 
                 {subject.examinationStructure && (
-                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
-                    <h3 className="text-xs font-semibold text-primary">JAMB examination structure</h3>
-                    <ul className="mt-2 space-y-1.5">
-                      {subject.examinationStructure.map((item) => (
-                        <li key={item} className="text-xs leading-relaxed text-muted-foreground">{item}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  <SyllabusTopicAccordion
+                    id={subject.id + "-exam-structure"}
+                    title="Examination structure"
+                    tag="Exam"
+                    description=""
+                    subtopics={subject.examinationStructure}
+                    subtopicsHeading="Format:"
+                  />
                 )}
 
-                {subject.sections.map((section) => (
-                  <div key={section.id} className="space-y-2">
-                    <h3 className="text-sm font-semibold border-b border-border/50 pb-2">{section.title}</h3>
-                    {section.topics.map((topic) => {
-                      const state = getTopicState(topic.id);
-                      const outline = topic.outline.filter(Boolean);
-                      const firstOutline = outline[0] ?? "";
-                      return (
-                        <SyllabusTopicAccordion
-                          key={topic.id}
-                          id={topic.id}
-                          title={`${topic.number}. ${topic.title}`}
-                          tag={STATUS_LABEL[state]}
-                          tagClassName={STATUS_STYLE[state]}
-                          description={firstOutline}
-                          subtopics={outline.slice(1)}
-                          subtopicsHeading="Contents:"
-                          subtopicStyle="chips"
-                          meta={topic.sourcePages.length > 0
-                            ? <span>p. {topic.sourcePages.join(", ")}</span>
-                            : undefined}
-                          extraContent={topic.objectives && topic.objectives.length > 0 ? (
-                            <div>
-                              <p className="text-xs font-medium text-muted-foreground mb-1.5">Objectives</p>
-                              <ul className="space-y-1.5">
-                                {topic.objectives.map((objective) => (
-                                  <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-                                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                                    {objective}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ) : undefined}
-                          actionContent={(
-                            <div className="flex flex-wrap gap-2">
-                              <Button
-                                size="sm"
-                                variant={state === "completed" ? "outline" : "default"}
-                                onClick={() => cycleTopicState(topic.id)}
-                                disabled={!isReady}
-                              >
-                                {state === "not_started" ? "Start topic" : state === "in_progress" ? "Mark complete" : "Reopen"}
-                              </Button>
-                              <Button asChild size="sm" variant="outline">
-                                <Link to={`/jamb/ai?subject=${subject.id}&topic=${encodeURIComponent(topic.id)}`}>
-                                  <Sparkles className="mr-1.5 h-3.5 w-3.5" /> AI Tutor
-                                </Link>
-                              </Button>
-                              {subject.questionBankAvailable && (
-                                <Button asChild size="sm" variant="ghost">
-                                  <Link to={`/jamb/past-questions?subject=${subject.id}`}>
-                                    <BookOpen className="mr-1.5 h-3.5 w-3.5" /> Practice
-                                  </Link>
-                                </Button>
-                              )}
-                            </div>
+                {subject.sections.flatMap((section) =>
+                  section.topics.map((topic) => ({ topic, sectionTitle: section.title })),
+                ).map(({ topic, sectionTitle }) => {
+                  const state = getTopicState(topic.id);
+                  const outline = topic.outline.filter(Boolean);
+                  const firstOutline = outline[0] ?? "";
+                  return (
+                    <SyllabusTopicAccordion
+                      key={topic.id}
+                      id={topic.id}
+                      title={topic.number + ". " + topic.title}
+                      tag={STATUS_LABEL[state]}
+                      tagClassName={STATUS_STYLE[state]}
+                      description={[sectionTitle, firstOutline].filter(Boolean).join(" · ")}
+                      subtopics={outline.slice(1)}
+                      subtopicsHeading="Contents:"
+                      subtopicStyle="chips"
+                      meta={topic.sourcePages.length > 0
+                        ? <span>p. {topic.sourcePages.join(", ")}</span>
+                        : undefined}
+                      extraContent={topic.objectives && topic.objectives.length > 0 ? (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-1.5">Objectives</p>
+                          <ul className="space-y-1.5">
+                            {topic.objectives.map((objective) => (
+                              <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
+                                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                                {objective}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : undefined}
+                      actionContent={(
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            size="sm"
+                            variant={state === "completed" ? "outline" : "default"}
+                            onClick={() => cycleTopicState(topic.id)}
+                            disabled={!isReady}
+                          >
+                            {state === "not_started" ? "Start topic" : state === "in_progress" ? "Mark complete" : "Reopen"}
+                          </Button>
+                          <Button asChild size="sm" variant="outline">
+                            <Link to={"/jamb/ai?subject=" + subject.id + "&topic=" + encodeURIComponent(topic.id)}>
+                              <Sparkles className="mr-1.5 h-3.5 w-3.5" /> AI Tutor
+                            </Link>
+                          </Button>
+                          {subject.questionBankAvailable && (
+                            <Button asChild size="sm" variant="ghost">
+                              <Link to={"/jamb/past-questions?subject=" + subject.id}>
+                                <BookOpen className="mr-1.5 h-3.5 w-3.5" /> Practice
+                              </Link>
+                            </Button>
                           )}
-                        />
-                      );
-                    })}
-                  </div>
-                ))}
+                        </div>
+                      )}
+                    />
+                  );
+                })}
 
                 {subject.officialSourceUrl && (
                   <div className="border-t border-border/50 pt-3">

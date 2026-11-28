@@ -77,6 +77,7 @@ export function SyllabusTopicAccordion({
               <QuestionMath inline content={description} />
             </p>
           )}
+          {actionContent}
           {subtopics.length > 0 && (
             <div>
               <h4 className="text-xs font-medium text-muted-foreground mb-1.5">{subtopicsHeading}</h4>
@@ -101,7 +102,7 @@ export function SyllabusTopicAccordion({
             </div>
           )}
           {extraContent}
-          {actionContent ?? (
+          {!actionContent && (
             <Button
               size="lg"
               className="w-full gap-2 bg-gradient-to-r from-primary to-accent hover:opacity-90"

@@ -314,11 +314,11 @@ export default function JambHomePage() {
             <div className="flex flex-wrap justify-center gap-4 animate-in-up stagger-5">
               <Button
                 size="lg"
-                onClick={() => navigate("/jamb/syllabus")}
+                onClick={() => navigate("/jamb/30-day-syllabus")}
                 className="bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90 hover:scale-105 active:scale-95 transition-all duration-200 glow-gold animate-pulse-glow shadow-lg shadow-primary/25"
               >
                 <CalendarDays className="w-5 h-5 mr-2" />
-                JAMB Syllabus
+                30 Days Syllabus
               </Button>
               <Button
                 size="lg"

@@ -8,12 +8,14 @@ import { SyllabusSessionListLayout } from "@/components/syllabus/SyllabusSession
 import { SyllabusDayLayout } from "@/components/syllabus/SyllabusDayLayout";
 import { SyllabusTopicAccordion } from "@/components/syllabus/SyllabusTopicAccordion";
 import { useJamb30DaySessions } from "@/hooks/useJamb30DaySessions";
+import JambAITutorPage from "@/pages/jamb/JambAITutorPage";
 import { JAMB_SYLLABUS } from "@/lib/jamb-syllabus";
 import {
   JAMB_PLAN_DAYS,
   getJambStudySessionProgress,
   type JambDailyTask,
   type JambPlanSubject,
+  type JambPlanTopic,
   type JambStudySession,
 } from "@/lib/jamb-30-day-syllabus";
 import type { SyllabusSubjectChoice } from "@/components/syllabus/ProgrammeSyllabusSetup";
@@ -67,7 +69,8 @@ interface JambDayLessonProps {
 }
 
 function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonProps) {
-  const navigate = useNavigate();
+  const [teachingTopic, setTeachingTopic] = useState<JambPlanTopic | null>(null);
+  const [teachingCompleted, setTeachingCompleted] = useState(false);
   const syllabusSubject = JAMB_SYLLABUS[task.subject];
 
   const topicsContent = task.topics.length > 0 ? (
@@ -81,7 +84,7 @@ function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonPr
           description={topic.sectionTitle}
           subtopics={topic.outline}
           actionLabel="Start Learning This Topic"
-          onStart={() => navigate(`/jamb/ai?subject=${topic.subject}&topic=${encodeURIComponent(topic.id)}`)}
+          onStart={() => setTeachingTopic(topic)}
         />
       ))}
     </div>
@@ -93,6 +96,18 @@ function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonPr
       </p>
     </div>
   );
+
+  const tutorOverlay = teachingTopic ? (
+    <JambAITutorPage
+      embeddedSubject={teachingTopic.subject}
+      embeddedTopicId={teachingTopic.id}
+      onClose={() => setTeachingTopic(null)}
+      onComplete={() => {
+        setTeachingCompleted(true);
+        setTeachingTopic(null);
+      }}
+    />
+  ) : undefined;
 
   return (
     <SyllabusDayLayout
@@ -109,6 +124,8 @@ function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonPr
       checkpointQuestions={task.checkpointQuestions}
       onComplete={onComplete}
       onBack={onBack}
+      fullScreenOverlay={tutorOverlay}
+      markAllObjectivesComplete={teachingCompleted}
     />
   );
 }

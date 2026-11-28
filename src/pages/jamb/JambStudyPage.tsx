@@ -8,8 +8,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { QuestionImage } from "@/components/QuestionImage";
 import { QuestionMath } from "@/components/QuestionMath";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { StudyFlashcardSurface } from "@/components/StudyFlashcardSurface";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { getJambActivityStats } from "@/lib/jamb-analytics";
@@ -408,10 +408,11 @@ export default function JambStudyPage() {
                   </button>
                 </div>
 
-                <div className="space-y-3">
-                  <QuestionMath content={question.question} className="text-lg font-medium leading-relaxed" />
-                  {question.imageUrls.map((imageUrl) => <QuestionImage key={imageUrl} imageUrl={imageUrl} />)}
-                </div>
+                <QuestionPrompt
+                  question={question}
+                  alt="Illustration for JAMB revision question"
+                  textClassName="text-lg font-medium leading-relaxed"
+                />
 
                 <div className="flashcard-scroll-region max-h-[min(32dvh,280px)] flex-1 space-y-2.5 overflow-y-auto overscroll-contain touch-pan-y pr-1 scrollbar-thin">
                   {question.options.map((option, optionIndex) => {

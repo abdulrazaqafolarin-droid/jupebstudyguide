@@ -29,15 +29,15 @@ const item: Variants = {
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] } },
 };
 
-const SUBJECT_COLORS: Record<Subject, { gradient: string; light: string; accent: string }> = {
+const SUBJECT_COLORS: Partial<Record<Subject, { gradient: string; light: string; accent: string }>> = {
   physics: { gradient: "from-blue-600/40 to-cyan-400/40", light: "bg-blue-500/10", accent: "border-blue-500/30" },
   chemistry: { gradient: "from-emerald-600/40 to-teal-400/40", light: "bg-emerald-500/10", accent: "border-emerald-500/30" },
   biology: { gradient: "from-green-600/40 to-lime-400/40", light: "bg-green-500/10", accent: "border-green-500/30" },
   math: { gradient: "from-purple-600/40 to-pink-400/40", light: "bg-purple-500/10", accent: "border-purple-500/30" },
 };
 
-export function SubjectCardGrid({ onSelect, counts, countsReady = true, items }: SubjectCardGridProps) {
-  const cards = items ?? (Object.keys(STUDY_SUBJECT_INFO) as Subject[]).map((subject) => ({
+export function SubjectCardGrid<T extends string = Subject>({ onSelect, counts, countsReady = true, items }: SubjectCardGridProps<T>) {
+  const cards: SubjectCardGridItem<T>[] = items ?? (Object.keys(STUDY_SUBJECT_INFO) as Subject[]).map((subject) => ({
     subject,
     label: subject.charAt(0).toUpperCase() + subject.slice(1),
     icon: STUDY_SUBJECT_INFO[subject].icon,

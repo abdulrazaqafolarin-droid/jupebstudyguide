@@ -3,7 +3,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const subjectItemVariants = {\n  hidden: { opacity: 0, y: 12 },\n  show: { opacity: 1, y: 0 },\n};\n\ninterface SyllabusSubjectAccordionProps {
+const subjectItemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0 },
+};
+
+interface SyllabusSubjectAccordionProps {
   icon: string;
   title: string;
   metadata: string;

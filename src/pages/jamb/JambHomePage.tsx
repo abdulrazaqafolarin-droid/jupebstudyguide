@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserStorage } from "@/hooks/useUserStorage";
 import { Link, useNavigate } from "react-router-dom";
@@ -141,6 +141,7 @@ export default function JambHomePage() {
   const [seenAchievementIds, setSeenAchievementIds, { isReady: seenAchievementIdsReady }] =
     useUserStorage<string[] | null>("jamb-seen-achievement-ids", null);
   const [newlyUnlocked, setNewlyUnlocked] = useState<Achievement[]>([]);
+  const clearNewlyUnlocked = useCallback(() => setNewlyUnlocked([]), []);
   const showSetupNudge = !nudgeDismissed && Boolean(programmeOnboarding?.completedAt) && !programmeOnboarding?.finalized;
 
   useEffect(() => {
@@ -268,7 +269,7 @@ export default function JambHomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AchievementPopup achievements={newlyUnlocked} onClose={() => setNewlyUnlocked([])} />
+      <AchievementPopup achievements={newlyUnlocked} onClose={clearNewlyUnlocked} />
       {/* Hero — shares the JUPEB dashboard's visual language and proportions. */}
       <WorkspaceHomeHero>
           <div className="text-center">

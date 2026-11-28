@@ -5,8 +5,8 @@ import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, Loade
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { QuestionMath } from "@/components/QuestionMath";
+import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
-import { QuestionImage } from "@/components/QuestionImage";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ProgressRing";
 
@@ -426,12 +426,16 @@ export default function JambCbtPage() {
               </span>
               <span className="text-[11px] text-muted-foreground">{saving ? "Saving answer…" : "Changes saved"}</span>
             </div>
-            <div className="text-lg font-medium leading-relaxed">
-              <QuestionMath content={question.question_snapshot.question} />
-            </div>
-            {question.question_snapshot.imageUrls?.map((imageUrl) => (
-              <QuestionImage key={imageUrl} imageUrl={imageUrl} alt="JAMB question illustration" />
-            ))}
+            <QuestionPrompt
+              question={{
+                id: question.question_id,
+                question: question.question_snapshot.question,
+                imageUrls: question.question_snapshot.imageUrls ?? [],
+                imagePosition: null,
+              }}
+              alt="JAMB question illustration"
+              textClassName="text-lg font-medium leading-relaxed"
+            />
             <div className="mt-6 space-y-3">
               {question.question_snapshot.options.map((option) => (
                 <QuestionOptionButton

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ExternalLink, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { ProgrammeSyllabusSetup } from "@/components/syllabus/ProgrammeSyllabusSetup";
 import { ProgrammeNewSessionModal } from "@/components/syllabus/ProgrammeNewSessionModal";
 import { SyllabusSessionCard, type SyllabusSessionDayView, type SyllabusSessionSubjectView } from "@/components/syllabus/SyllabusSessionCard";
@@ -29,21 +29,17 @@ function JambSyllabusReviewNotice() {
   if (JAMB_SYLLABUS_VERIFIED) return null;
 
   return (
-    <div
-      role="note"
-      className="flex w-full max-w-lg flex-wrap items-center gap-2 text-[11px] text-muted-foreground"
+    <a
+      href="https://ibass.jamb.gov.ng/e-syllabus"
+      target="_blank"
+      rel="noreferrer"
+      aria-label={JAMB_SYLLABUS_REVIEW_NOTICE}
+      title={JAMB_SYLLABUS_REVIEW_NOTICE}
+      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 transition-colors hover:bg-amber-500/10"
     >
-      <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-amber-600" />
-      <span>{JAMB_SYLLABUS_REVIEW_NOTICE}</span>
-      <a
-        href="https://ibass.jamb.gov.ng/e-syllabus"
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
-      >
-        IBASS <ExternalLink className="h-3 w-3" />
-      </a>
-    </div>
+      <ShieldAlert className="h-4 w-4" />
+      <span className="sr-only">Open official JAMB syllabus source</span>
+    </a>
   );
 }
 

@@ -6,6 +6,7 @@ import {
   getJambStudySessionProgress,
   mergeJambStudySessions,
   normalizeJambPlanSubjects,
+  reorderJambStudySessionSubjects,
   type JambStudySession,
 } from "@/lib/jamb-30-day-syllabus";
 
@@ -93,5 +94,46 @@ describe("JAMB 30-day syllabus plan", () => {
     expect(merged).toHaveLength(1);
     expect(merged[0].progress.dailyTasks[0].isCompleted).toBe(true);
     expect(merged[0].progress.overallProgress).toBeCloseTo(100 / 30);
+  });
+
+  it("reorders only remaining days and preserves completed day content", () => {
+    const subjects = ["use_of_english", "physics", "chemistry", "biology"] as const;
+    const tasks = generateJamb30DayTasks(subjects);
+    const firstDay = {
+      ...tasks[0],
+      isCompleted: true,
+      completedAt: "2026-11-28T09:00:00.000Z",
+      masteryScore: 100,
+    };
+    const session: JambStudySession = {
+      id: "priority-plan",
+      name: "Priority plan",
+      subjects: [...subjects],
+      status: "active",
+      startDate: "2026-11-28",
+      dailyGoalMinutes: 45,
+      createdAt: "2026-11-28T08:00:00.000Z",
+      updatedAt: "2026-11-28T09:00:00.000Z",
+      progress: {
+        subjects: [...subjects],
+        currentDay: 2,
+        dailyTasks: [firstDay, ...tasks.slice(1)],
+        startedAt: "2026-11-28T08:00:00.000Z",
+        overallProgress: 100 / 30,
+        subjectProgress: {
+          use_of_english: 0, math: 0, physics: 0, chemistry: 0, biology: 0,
+        },
+      },
+    };
+
+    const reordered = reorderJambStudySessionSubjects(
+      session,
+      ["biology", "chemistry", "physics", "use_of_english"],
+    );
+
+    expect(reordered.subjects).toEqual(["biology", "chemistry", "physics", "use_of_english"]);
+    expect(reordered.progress.dailyTasks[0]).toEqual(firstDay);
+    expect(reordered.progress.dailyTasks[1].topics[0].subject).toBe("biology");
+    expect(reordered.progress.dailyTasks).toHaveLength(30);
   });
 });

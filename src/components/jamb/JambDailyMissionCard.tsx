@@ -112,7 +112,7 @@ export function JambDailyMissionCard({ history, ready }: JambDailyMissionCardPro
     <DashboardPanelShell
       icon={CalendarDays}
       title="Daily Mission"
-      description="A focused practice set, adaptive questions, and answer checks."
+      description="A focused practice set with adaptive questions."
       trailing={latestMission ? (
         <Badge variant={completedToday ? "default" : "outline"} className="hidden text-xs sm:inline-flex">
           {completedToday ? "Completed today" : "In progress"}

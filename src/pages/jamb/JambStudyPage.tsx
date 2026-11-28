@@ -566,8 +566,8 @@ export default function JambStudyPage() {
                 <h3 className="font-semibold">{mode === "review" ? "All due questions reviewed" : "No reviewed questions available yet"}</h3>
                 <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
                   {mode === "review"
-                    ? "You have completed this review queue. Return later when more questions are due, or switch to Learn All."
-                    : "Revision cards use only published JAMB questions. New source candidates will not appear until an administrator has reviewed and published them."}
+                    ? "You're all caught up. Come back when more questions are due."
+                    : "Reviewed JAMB questions will appear here as they are published."}
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {mode === "review" && <Button variant="outline" onClick={() => { setMode("learn"); setCurrentIndex(0); }}>Learn All</Button>}

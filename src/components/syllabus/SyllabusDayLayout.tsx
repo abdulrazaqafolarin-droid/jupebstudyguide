@@ -9,7 +9,6 @@ import QuestionMath from "@/components/QuestionMath";
 
 interface SyllabusDayLayoutProps {
   day: number;
-  totalDays?: number;
   subjectName: string;
   subjectIcon: string;
   subjectClassName?: string;
@@ -31,7 +30,6 @@ interface SyllabusDayLayoutProps {
  */
 export function SyllabusDayLayout({
   day,
-  totalDays = 30,
   subjectName,
   subjectIcon,
   subjectClassName,

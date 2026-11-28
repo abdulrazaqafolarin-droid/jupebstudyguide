@@ -231,16 +231,14 @@ export default function JambCbtPage() {
           initial={shouldReduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: [0.23, 1, 0.32, 1] }}
-          className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 text-center chalk-texture md:p-8"
+          className="relative mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-8 text-center chalk-texture"
         >
-          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
+          <div className="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
           <div className="relative">
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Attempt submitted
-            </div>
-            <h1 className="text-2xl font-bold">Practice submitted</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Your server-verified JAMB result is ready.</p>
+            <div className="mb-4 text-6xl">🎯</div>
+            <h1 className="mb-1 text-2xl font-bold">Practice complete</h1>
+            <p className="text-sm text-muted-foreground">JAMB CBT result</p>
 
             <ProgressRing
               progress={result?.score ?? 0}
@@ -276,11 +274,16 @@ export default function JambCbtPage() {
             </div>
 
             <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
-              Questions without independently reviewed answer keys are excluded from the score. Your ungraded answers are still available in the review below.
+              Unverified answer keys are excluded; ungraded answers remain in the review below.
             </p>
-            <Button asChild size="lg" className="mt-6 w-full bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90">
-              <Link to="/jamb">Return to JAMB home</Link>
-            </Button>
+            <div className="mt-6 flex gap-3">
+              <Button asChild size="lg" variant="outline" className="flex-1">
+                <Link to="/jamb">Back to Home</Link>
+              </Button>
+              <Button asChild size="lg" className="flex-1 bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90">
+                <Link to="/jamb/cbt/setup">Try Again</Link>
+              </Button>
+            </div>
           </div>
         </motion.section>
 

@@ -248,7 +248,7 @@ export function useJamb30DaySessions() {
 
   const canAdvanceToDay = useCallback((sessionId: string, day: number) => {
     const session = sessions.find((item) => item.id === sessionId);
-    if (!session || day < 1 || day > TOTAL_DAYS) return false;
+    if (!session || session.status === "paused" || day < 1 || day > TOTAL_DAYS) return false;
     if (day === 1) return true;
     const previous = session.progress.dailyTasks.find((task) => task.day === day - 1);
     return Boolean(previous?.isCompleted) && (previous?.masteryScore ?? 0) >= 70;

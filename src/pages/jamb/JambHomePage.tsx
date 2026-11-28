@@ -455,15 +455,15 @@ export default function JambHomePage() {
             </motion.button>
             <motion.button
               type="button"
-              onClick={() => navigate("/jamb/daily-mission")}
+              onClick={() => navigate("/jamb/past-questions")}
               className="p-4 rounded-xl border border-biology/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-biology hover:bg-biology/5"
               variants={cardVariants}
               whileHover={{ scale: 1.05, y: -4, transition: fastSpring }}
               whileTap={{ scale: 0.95, transition: fastSpring }}
             >
-              <CalendarDays className="w-7 h-7 mx-auto text-biology" />
-              <p className="font-medium mt-2">Daily Mission</p>
-              <p className="text-xs text-muted-foreground">Daily practice set</p>
+              <BookOpen className="w-7 h-7 mx-auto text-biology" />
+              <p className="font-medium mt-2">Past Questions</p>
+              <p className="text-xs text-muted-foreground">Practise by subject</p>
             </motion.button>
             <motion.button
               type="button"

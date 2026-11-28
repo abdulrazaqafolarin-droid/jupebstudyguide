@@ -115,7 +115,7 @@ function JambDayLesson({ task, canAdvance, onBack, onComplete }: JambDayLessonPr
       day={task.day}
       subjectName={syllabusSubject.label}
       subjectIcon={syllabusSubject.icon}
-      subjectClassName={`subject-${task.subject}`}
+      subjectClassName={task.subject === "use_of_english" ? "bg-primary/20 text-primary" : `subject-${task.subject}`}
       isCompleted={task.isCompleted}
       masteryScore={task.masteryScore}
       canAdvance={canAdvance || task.isCompleted}

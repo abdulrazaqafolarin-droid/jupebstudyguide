@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { JAMB_SYLLABUS_SUBJECTS } from "@/lib/jamb-syllabus";
 import {
   generateJamb30DayTasks,
+  isJambStudySession,
   getJambPlanTopicPool,
   getJambStudySessionProgress,
   mergeJambStudySessions,
@@ -135,5 +136,36 @@ describe("JAMB 30-day syllabus plan", () => {
     expect(reordered.progress.dailyTasks[0]).toEqual(firstDay);
     expect(reordered.progress.dailyTasks[1].topics[0].subject).toBe("biology");
     expect(reordered.progress.dailyTasks).toHaveLength(30);
+    const originalTopicIds = tasks.flatMap((task) => task.topics.map((topic) => topic.id)).sort();
+    const reorderedTopicIds = reordered.progress.dailyTasks.flatMap((task) => task.topics.map((topic) => topic.id)).sort();
+    expect(reorderedTopicIds).toEqual(originalTopicIds);
+  });
+
+  it("accepts a complete valid JAMB session and rejects malformed remote records", () => {
+    const subjects = ["use_of_english", "physics", "chemistry", "biology"] as const;
+    const tasks = generateJamb30DayTasks(subjects);
+    const session: JambStudySession = {
+      id: "validated-plan",
+      name: "Validated plan",
+      subjects: [...subjects],
+      status: "active",
+      startDate: "2026-11-28",
+      dailyGoalMinutes: 60,
+      createdAt: "2026-11-28T08:00:00.000Z",
+      updatedAt: "2026-11-28T08:00:00.000Z",
+      progress: {
+        subjects: [...subjects],
+        currentDay: 1,
+        dailyTasks: tasks,
+        startedAt: "2026-11-28T08:00:00.000Z",
+        overallProgress: 0,
+        subjectProgress: {
+          use_of_english: 0, math: 0, physics: 0, chemistry: 0, biology: 0,
+        },
+      },
+    };
+    expect(isJambStudySession(session)).toBe(true);
+    expect(isJambStudySession({ ...session, subjects: ["physics"] })).toBe(false);
+    expect(isJambStudySession({ ...session, progress: { ...session.progress, dailyTasks: [] } })).toBe(false);
   });
 });

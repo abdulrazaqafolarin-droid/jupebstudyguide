@@ -195,7 +195,7 @@ export default function JambStatsPage() {
   }, [cbtHistoryForUser]);
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your JAMB learning analytics" compact />
+      <WorkspacePageHeader title="Study Stats" onBack={() => navigate(-1)} backLabel="Go back" subtitle="Your learning analytics" compact />
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {bankError && (

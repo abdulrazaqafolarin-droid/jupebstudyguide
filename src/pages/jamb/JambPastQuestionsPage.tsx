@@ -459,6 +459,7 @@ export default function JambPastQuestionsPage() {
               <QuestionOptionButton
                 key={option.label}
                 label={option.label}
+                variant="past-question"
                 state={isApproved ? "correct" : isWrongSelection ? "incorrect" : isSelected ? "selected" : "default"}
                 selected={isSelected}
                 disabled={Boolean(checking[question.id])}

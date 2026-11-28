@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  BookOpen, ExternalLink, GraduationCap, Search, ShieldAlert, Sparkles,
+  ExternalLink, GraduationCap, Search, ShieldAlert, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,6 +96,29 @@ export default function JambSyllabusPage() {
         compact
         animated
         wide
+        rightContent={!JAMB_SYLLABUS_VERIFIED ? (
+          <a
+            href="https://ibass.jamb.gov.ng/e-syllabus"
+            target="_blank"
+            rel="noreferrer"
+            aria-label={JAMB_SYLLABUS_REVIEW_NOTICE}
+            title={JAMB_SYLLABUS_REVIEW_NOTICE}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-600 transition-colors hover:bg-amber-500/10"
+          >
+            <ShieldAlert className="h-4 w-4" />
+          </a>
+        ) : (
+          <a
+            href="https://ibass.jamb.gov.ng/e-syllabus"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open official JAMB syllabus source"
+            title="Open official JAMB syllabus source"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        )}
       />
 
       <motion.main
@@ -104,21 +127,6 @@ export default function JambSyllabusPage() {
         transition={{ delay: 0.1 }}
         className="max-w-4xl mx-auto px-4 py-6 space-y-6"
       >
-        {!JAMB_SYLLABUS_VERIFIED && (
-          <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-            <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-amber-600" />
-            <span>{JAMB_SYLLABUS_REVIEW_NOTICE}</span>
-            <a
-              href="https://ibass.jamb.gov.ng/e-syllabus"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
-            >
-              IBASS <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-        )}
-
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -142,57 +150,19 @@ export default function JambSyllabusPage() {
                 key={subject.id}
                 icon={subject.icon}
                 title={subject.label}
-                metadata={`${topics.length} topics · ${summary.completed}/${summary.total} complete`}
-                trailing={<span className="text-[10px] tabular-nums text-muted-foreground">{summary.percentage}%</span>}
-                badges={(
-                  <>
-                    {subject.compulsory && (
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                        Compulsory
-                      </span>
-                    )}
-                    {!subject.questionBankAvailable && (
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border/50">
-                        {subject.questionSourcePackAvailable ? "Source awaiting review" : "Question bank pending"}
-                      </span>
-                    )}
-                  </>
-                )}
+                metadata={`${topics.length} topics | ${summary.completed}/${summary.total} complete`}
                 expanded={isExpanded}
                 onToggle={() => setExpandedSubject(isExpanded ? null : subject.id)}
                 gradientClassName={meta.gradient}
                 borderClassName={meta.border}
               >
-                {subject.generalObjectives.length > 0 && (
-                  <SyllabusTopicAccordion
-                    id={subject.id + "-general-objectives"}
-                    title="General objectives"
-                    tag="Overview"
-                    description=""
-                    subtopics={subject.generalObjectives}
-                    subtopicsHeading="Candidates should be able to:"
-                    showDefaultAction={false}
-                  />
-                )}
-
-                {subject.examinationStructure && (
-                  <SyllabusTopicAccordion
-                    id={subject.id + "-exam-structure"}
-                    title="Examination structure"
-                    tag="Exam"
-                    description=""
-                    subtopics={subject.examinationStructure}
-                    subtopicsHeading="Format:"
-                    showDefaultAction={false}
-                  />
-                )}
-
                 {subject.sections.flatMap((section) =>
                   section.topics.map((topic) => ({ topic, sectionTitle: section.title })),
                 ).map(({ topic, sectionTitle }) => {
                   const state = getTopicState(topic.id);
                   const outline = topic.outline.filter(Boolean);
                   const firstOutline = outline[0] ?? "";
+
                   return (
                     <SyllabusTopicAccordion
                       key={topic.id}
@@ -204,13 +174,12 @@ export default function JambSyllabusPage() {
                       subtopics={outline.slice(1)}
                       subtopicsHeading="Contents:"
                       subtopicStyle="chips"
-                      meta={topic.sourcePages.length > 0
-                        ? <span>p. {topic.sourcePages.join(", ")}</span>
-                        : undefined}
                       extraContent={topic.objectives && topic.objectives.length > 0 ? (
-                        <div>
-                          <p className="text-xs font-medium text-muted-foreground mb-1.5">Objectives</p>
-                          <ul className="space-y-1.5">
+                        <details className="rounded-lg border border-border/50 px-3 py-2">
+                          <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+                            Learning objectives
+                          </summary>
+                          <ul className="mt-2 space-y-1.5">
                             {topic.objectives.map((objective) => (
                               <li key={objective} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
                                 <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
@@ -218,47 +187,72 @@ export default function JambSyllabusPage() {
                               </li>
                             ))}
                           </ul>
-                        </div>
+                        </details>
                       ) : undefined}
                       actionContent={(
-                        <div className="flex flex-wrap gap-2">
+                        <div className="space-y-2">
+                          <Button
+                            asChild
+                            className="w-full gap-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground hover:opacity-90"
+                          >
+                            <Link to={"/jamb/ai?subject=" + subject.id + "&topic=" + encodeURIComponent(topic.id)}>
+                              <Sparkles className="h-3.5 w-3.5" />
+                              Study this topic with AI
+                            </Link>
+                          </Button>
                           <Button
                             size="sm"
-                            variant={state === "completed" ? "outline" : "default"}
+                            variant="ghost"
+                            className="h-8 w-full text-xs text-muted-foreground"
                             onClick={() => cycleTopicState(topic.id)}
                             disabled={!isReady}
                           >
-                            {state === "not_started" ? "Start topic" : state === "in_progress" ? "Mark complete" : "Reopen"}
+                            {state === "not_started" ? "Mark as started" : state === "in_progress" ? "Mark complete" : "Reopen topic"}
                           </Button>
-                          <Button asChild size="sm" variant="outline">
-                            <Link to={"/jamb/ai?subject=" + subject.id + "&topic=" + encodeURIComponent(topic.id)}>
-                              <Sparkles className="mr-1.5 h-3.5 w-3.5" /> AI Tutor
-                            </Link>
-                          </Button>
-                          {subject.questionBankAvailable && (
-                            <Button asChild size="sm" variant="ghost">
-                              <Link to={"/jamb/past-questions?subject=" + subject.id}>
-                                <BookOpen className="mr-1.5 h-3.5 w-3.5" /> Practice
-                              </Link>
-                            </Button>
-                          )}
                         </div>
                       )}
                     />
                   );
                 })}
 
-                {subject.officialSourceUrl && (
-                  <div className="border-t border-border/50 pt-3">
-                    <a
-                      href={subject.officialSourceUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                    >
-                      Open JAMB IBASS PDF <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
+                {(subject.generalObjectives.length > 0 || subject.examinationStructure || subject.officialSourceUrl) && (
+                  <details className="rounded-xl border border-border/50 bg-card/50 p-3">
+                    <summary className="cursor-pointer text-xs font-medium text-muted-foreground">
+                      Additional syllabus information
+                    </summary>
+                    <div className="mt-3 space-y-3">
+                      {subject.generalObjectives.length > 0 && (
+                        <div>
+                          <p className="mb-1.5 text-xs font-medium">General objectives</p>
+                          <ul className="space-y-1.5">
+                            {subject.generalObjectives.map((objective) => (
+                              <li key={objective} className="text-xs leading-relaxed text-muted-foreground">{objective}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {subject.examinationStructure && (
+                        <div>
+                          <p className="mb-1.5 text-xs font-medium">Examination structure</p>
+                          <ul className="space-y-1.5">
+                            {subject.examinationStructure.map((item) => (
+                              <li key={item} className="text-xs leading-relaxed text-muted-foreground">{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {subject.officialSourceUrl && (
+                        <a
+                          href={subject.officialSourceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                        >
+                          Official syllabus source <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
+                  </details>
                 )}
               </SyllabusSubjectAccordion>
             );
@@ -266,7 +260,6 @@ export default function JambSyllabusPage() {
 
           {filteredSubjects.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
-              <BookOpen className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p className="text-sm">No subjects match "{search}"</p>
             </div>
           )}

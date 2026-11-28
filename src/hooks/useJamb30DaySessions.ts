@@ -123,6 +123,7 @@ export function useJamb30DaySessions() {
             user_id: user.id,
             exam_program_id: "jamb",
             sessions: payload as unknown as Json,
+            updated_at: new Date().toISOString(),
           },
           { onConflict: "user_id,exam_program_id" },
         );

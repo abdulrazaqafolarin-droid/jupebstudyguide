@@ -15,6 +15,7 @@ import { QuestionPrompt } from "@/components/QuestionPrompt";
 import { QuestionOptionButton } from "@/components/QuestionOptionButton";
 import { gradeAnswer, gradeObjectiveAnswer, percentageScore } from "@/lib/answer-scoring";
 import { getStudyQuestionDisplayNumber } from "@/lib/study-question-numbering";
+import { QUESTION_SLIDE_VARIANTS } from "@/lib/question-slide-variants";
 
 interface AnswerEntry {
   questionId: string;
@@ -33,12 +34,6 @@ interface QuestionViewerProps {
   isBookmarked?: (id: string) => boolean;
   onToggleBookmark?: (id: string) => void;
 }
-
-const SLIDE_VARIANTS = {
-  enter: (dir: number) => ({ x: dir * 60, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir * -60, opacity: 0 }),
-};
 
 export function QuestionViewer({
   questions,
@@ -378,7 +373,7 @@ export function QuestionViewer({
           <motion.div
             key={question.id}
             custom={direction}
-            variants={SLIDE_VARIANTS}
+            variants={QUESTION_SLIDE_VARIANTS}
             initial="enter"
             animate="center"
             exit="exit"

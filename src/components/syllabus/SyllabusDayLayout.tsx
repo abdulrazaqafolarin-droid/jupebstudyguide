@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, BookOpen, CheckCircle, Lock, MessageCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,8 @@ interface SyllabusDayLayoutProps {
   checkpointQuestions: string[];
   onComplete: (masteryScore: number) => void;
   onBack: () => void;
+  fullScreenOverlay?: ReactNode;
+  markAllObjectivesComplete?: boolean;
 }
 
 /**
@@ -42,6 +44,8 @@ export function SyllabusDayLayout({
   checkpointQuestions,
   onComplete,
   onBack,
+  fullScreenOverlay,
+  markAllObjectivesComplete = false,
 }: SyllabusDayLayoutProps) {
   const [selfAssessment, setSelfAssessment] = useState<Record<string, boolean>>({});
   const [notes, setNotes] = useState("");
@@ -50,12 +54,22 @@ export function SyllabusDayLayout({
   const allObjectivesChecked = learningObjectives.length > 0 &&
     learningObjectives.every((_, index) => selfAssessment[`obj-${index}`]);
 
+  useEffect(() => {
+    if (markAllObjectivesComplete) {
+      setSelfAssessment(Object.fromEntries(
+        learningObjectives.map((_, index) => ["obj-" + index, true]),
+      ));
+    }
+  }, [markAllObjectivesComplete, learningObjectives]);
+
   const complete = () => {
     const score = learningObjectives.length > 0
       ? (checkedCount / learningObjectives.length) * 100
       : 100;
     onComplete(Math.round(score));
   };
+
+  if (fullScreenOverlay) return <>{fullScreenOverlay}</>;
 
   if (!canAdvance && !isCompleted) {
     return (
@@ -182,6 +196,9 @@ export function SyllabusDayLayout({
               <div key={index} className="p-4 bg-secondary/30 rounded-lg">
                 <p className="text-sm font-medium mb-2">
                   <QuestionMath inline content={question} />
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Start learning a topic above to get help with this question.
                 </p>
               </div>
             ))}

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ExternalLink, ShieldAlert } from "lucide-react";
 import { ProgrammeSyllabusSetup } from "@/components/syllabus/ProgrammeSyllabusSetup";
 import { ProgrammeNewSessionModal } from "@/components/syllabus/ProgrammeNewSessionModal";
 import { SyllabusSessionCard, type SyllabusSessionDayView, type SyllabusSessionSubjectView } from "@/components/syllabus/SyllabusSessionCard";
@@ -9,7 +10,11 @@ import { SyllabusDayLayout } from "@/components/syllabus/SyllabusDayLayout";
 import { SyllabusTopicAccordion } from "@/components/syllabus/SyllabusTopicAccordion";
 import { useJamb30DaySessions } from "@/hooks/useJamb30DaySessions";
 import JambAITutorPage from "@/pages/jamb/JambAITutorPage";
-import { JAMB_SYLLABUS } from "@/lib/jamb-syllabus";
+import {
+  JAMB_SYLLABUS,
+  JAMB_SYLLABUS_REVIEW_NOTICE,
+  JAMB_SYLLABUS_VERIFIED,
+} from "@/lib/jamb-syllabus";
 import {
   JAMB_PLAN_DAYS,
   getJambStudySessionProgress,
@@ -19,6 +24,28 @@ import {
   type JambStudySession,
 } from "@/lib/jamb-30-day-syllabus";
 import type { SyllabusSubjectChoice } from "@/components/syllabus/ProgrammeSyllabusSetup";
+
+function JambSyllabusReviewNotice() {
+  if (JAMB_SYLLABUS_VERIFIED) return null;
+
+  return (
+    <div
+      role="note"
+      className="flex w-full max-w-lg flex-wrap items-center gap-2 text-[11px] text-muted-foreground"
+    >
+      <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-amber-600" />
+      <span>{JAMB_SYLLABUS_REVIEW_NOTICE}</span>
+      <a
+        href="https://ibass.jamb.gov.ng/e-syllabus"
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+      >
+        IBASS <ExternalLink className="h-3 w-3" />
+      </a>
+    </div>
+  );
+}
 
 const JAMB_SUBJECT_CHOICES: SyllabusSubjectChoice<JambPlanSubject>[] =
   (Object.keys(JAMB_SYLLABUS) as JambPlanSubject[]).map((id) => ({
@@ -260,7 +287,8 @@ export default function Jamb30DaySyllabusPage() {
 
   if (sessions.length === 0) {
     return (
-      <div className="min-h-screen bg-background p-4 md:p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-4 md:p-8 flex flex-col items-center justify-center gap-4">
+        <JambSyllabusReviewNotice />
         <ProgrammeSyllabusSetup<JambPlanSubject>
           title="30-Day JAMB Syllabus"
           requiredSubjects={REQUIRED_SUBJECTS}
@@ -301,6 +329,7 @@ export default function Jamb30DaySyllabusPage() {
         />
       )}
     >
+      <JambSyllabusReviewNotice />
       {sortedSessions.map((session) => (
         <JambPlanCard
           key={session.id}

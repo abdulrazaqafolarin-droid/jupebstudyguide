@@ -120,7 +120,7 @@ function JambMilestonesPanel({ metrics, ready }: { metrics: JambAchievementMetri
 
   return (
     <AchievementsPanel
-      title="JAMB Achievements"
+      title="Achievements"
       linkTo="/jamb/achievements"
       unlockedAchievements={unlocked}
       lockedAchievements={locked}

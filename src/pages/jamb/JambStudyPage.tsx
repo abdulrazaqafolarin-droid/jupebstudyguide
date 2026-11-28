@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { QuestionMath } from "@/components/QuestionMath";
 import { QuestionPrompt } from "@/components/QuestionPrompt";
+import { StudyFlashcardOption } from "@/components/StudyFlashcardOption";
 import { StudyFlashcardSurface } from "@/components/StudyFlashcardSurface";
 import { SelectableSubjectCard } from "@/components/SelectableSubjectCard";
 import { getJambActivityStats } from "@/lib/jamb-analytics";
@@ -422,49 +423,29 @@ export default function JambStudyPage() {
                     const isWrongSelection = feedback?.gradable === true && isSelected && feedback.isCorrect === false;
                     const isUngradableResult = feedback !== null && feedback.gradable === false;
                     const isPendingSelection = isSelected && feedback === null;
+                    const state = isCorrectOption
+                      ? "correct"
+                      : isWrongSelection
+                        ? "incorrect"
+                        : isPendingSelection || (isUngradableResult && isSelected)
+                          ? "selected"
+                          : hasApprovedResult || isUngradableResult
+                            ? "muted"
+                            : "default";
 
                     return (
-                      <button
+                      <StudyFlashcardOption
                         key={option.label}
-                        type="button"
-                        aria-pressed={isSelected}
-                        onClick={() => !feedback && !checking && setSelectedOption(option.label)}
+                        label={option.label}
+                        state={state}
+                        selected={isSelected}
                         disabled={Boolean(feedback) || checking}
-                        style={{ animationDelay: shouldReduceMotion ? "0ms" : `${optionIndex * 0.06}s` }}
-                        className={cn(
-                          "w-full p-3.5 rounded-xl text-left transition-all duration-300 flex items-start gap-3 border-2 active:scale-[0.99]",
-                          !feedback && !isSelected && "border-border/60 bg-background/60 hover:border-primary/60 hover:bg-primary/5 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 active:translate-y-0",
-                          isPendingSelection && "border-primary bg-primary/10 shadow-md shadow-primary/5",
-                          hasApprovedResult && isCorrectOption && "border-accent bg-accent/15 shadow-lg shadow-accent/20",
-                          hasApprovedResult && isWrongSelection && "border-destructive bg-destructive/15 shadow-lg shadow-destructive/10",
-                          hasApprovedResult && !isSelected && !isCorrectOption && "border-border/30 opacity-50 scale-[0.98]",
-                          isUngradableResult && isSelected && "border-primary bg-primary/10 shadow-md shadow-primary/5",
-                          isUngradableResult && !isSelected && "border-border/30 opacity-50 scale-[0.98]",
-                          !shouldReduceMotion && "animate-in-up",
-                          shouldReduceMotion && "motion-reduce:animate-none",
-                        )}
+                        reduceMotion={Boolean(shouldReduceMotion)}
+                        animationDelayMs={optionIndex * 60}
+                        onClick={() => !feedback && !checking && setSelectedOption(option.label)}
                       >
-                        <span className={cn(
-                          "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-sm transition-all duration-200",
-                          !feedback && !isSelected && "bg-secondary/80 text-foreground",
-                          isPendingSelection && "bg-primary text-primary-foreground",
-                          hasApprovedResult && isCorrectOption && "bg-accent text-accent-foreground scale-110",
-                          hasApprovedResult && isWrongSelection && "bg-destructive text-destructive-foreground scale-110",
-                          hasApprovedResult && !isSelected && !isCorrectOption && "bg-secondary/50 text-muted-foreground",
-                          isUngradableResult && isSelected && "bg-primary text-primary-foreground",
-                          isUngradableResult && !isSelected && "bg-secondary/50 text-muted-foreground",
-                        )}>
-                          {isCorrectOption ? <Check className="h-4 w-4" />
-                            : isWrongSelection ? <X className="h-4 w-4" />
-                              : option.label}
-                        </span>
-                        <span className={cn(
-                          "text-sm leading-relaxed pt-1 flex-1 min-w-0 transition-opacity duration-200",
-                          (hasApprovedResult || isUngradableResult) && !isSelected && "opacity-60",
-                        )}>
-                          <QuestionMath content={option.text} inline />
-                        </span>
-                      </button>
+                        <QuestionMath content={option.text} inline />
+                      </StudyFlashcardOption>
                     );
                   })}
                 </div>

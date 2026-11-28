@@ -46,14 +46,15 @@ export function ProgrammeNewSessionModal<T extends string>({
 
   const handleToggle = (subject: T) => {
     setError("");
-    setSelected((previous) => {
-      if (previous.includes(subject)) return previous.filter((item) => item !== subject);
-      if (previous.length >= maximumSelections) {
-        setError(`You can select a maximum of ${maximumSelections} subjects`);
-        return previous;
-      }
-      return [...previous, subject];
-    });
+    if (selected.includes(subject)) {
+      setSelected((previous) => previous.filter((item) => item !== subject));
+      return;
+    }
+    if (selected.length >= maximumSelections) {
+      setError(`You can select a maximum of ${maximumSelections} subjects`);
+      return;
+    }
+    setSelected((previous) => previous.includes(subject) ? previous : [...previous, subject]);
   };
 
   const handleCreate = () => {

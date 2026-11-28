@@ -18,6 +18,7 @@ interface SyllabusTopicAccordionProps {
   extraContent?: ReactNode;
   actionContent?: ReactNode;
   actionLabel?: string;
+  showDefaultAction?: boolean;
   onStart?: () => void;
 }
 
@@ -35,6 +36,7 @@ export function SyllabusTopicAccordion({
   extraContent,
   actionContent,
   actionLabel = "Start Learning This Topic",
+  showDefaultAction = true,
   onStart,
 }: SyllabusTopicAccordionProps) {
   const [expanded, setExpanded] = useState(false);
@@ -86,7 +88,6 @@ export function SyllabusTopicAccordion({
               <QuestionMath inline content={description} />
             </p>
           )}
-          {actionContent}
           {subtopics.length > 0 && (
             <div>
               <h4 className="text-xs font-medium text-muted-foreground mb-1.5">{subtopicsHeading}</h4>
@@ -111,7 +112,8 @@ export function SyllabusTopicAccordion({
             </div>
           )}
           {extraContent}
-          {!actionContent && (
+          {actionContent}
+          {!actionContent && showDefaultAction && (
             <Button
               size="lg"
               className="w-full gap-2 bg-gradient-to-r from-primary to-accent hover:opacity-90"

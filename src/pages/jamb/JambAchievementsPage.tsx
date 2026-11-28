@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Bookmark, BookOpen, Flame, Search, Star, Trophy, Award } from "lucide-react";
+import { Bookmark, BookOpen, Flame, Info, Search, Star, Trophy, Award } from "lucide-react";
 import { WorkspacePageHeader } from "@/components/WorkspacePageHeader";
 import WorkspaceAchievementProgress from "@/components/WorkspaceAchievementProgress";
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,21 @@ export default function JambAchievementsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <WorkspacePageHeader title="Achievements" backTo="/jamb" backLabel="Back to JAMB workspace" icon={Trophy} />
+      <WorkspacePageHeader
+        title="Achievements"
+        backTo="/jamb"
+        backLabel="Back to JAMB workspace"
+        icon={Trophy}
+        rightContent={(
+          <span
+            title="App milestones are not official JAMB grades."
+            aria-label="App milestones are not official JAMB grades."
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground"
+          >
+            <Info className="h-4 w-4" />
+          </span>
+        )}
+      />
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         <WorkspaceAchievementProgress
@@ -177,9 +191,6 @@ export default function JambAchievementsPage() {
           </div>
         )}
 
-        <p className="text-center text-[11px] text-muted-foreground">
-          App milestones are not official JAMB grades.
-        </p>
       </main>
     </div>
   );

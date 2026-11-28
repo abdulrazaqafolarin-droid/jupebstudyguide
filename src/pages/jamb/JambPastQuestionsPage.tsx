@@ -965,11 +965,6 @@ export default function JambPastQuestionsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{count.toLocaleString()} published questions</span>
-                    <span>Page {pageNumber} of {totalPages}</span>
-                  </div>
-
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeQuestion.id}
@@ -1010,10 +1005,6 @@ export default function JambPastQuestionsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                    <span>{answeredOnPage} of {questions.length} loaded questions answered</span>
-                    <span>Page {pageNumber}/{totalPages}</span>
-                  </div>
                 </>
               ) : null}
             </motion.section>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNotificationsContext } from "@/contexts/NotificationsContext";
 import { useUserStorage } from "@/hooks/useUserStorage";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, type Variants, type Transition } from "framer-motion";
@@ -135,6 +136,7 @@ function JambMilestonesPanel({ metrics, ready }: { metrics: JambAchievementMetri
 export default function JambHomePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { push: pushNotification } = useNotificationsContext();
   const { sessions: jambStudySessions } = useJamb30DaySessions();
   const [programmeOnboarding, setProgrammeOnboarding] = useState<{ completedAt: string | null; finalized: boolean } | null>(null);
   const [nudgeDismissed, setNudgeDismissed] = useUserStorage<boolean>("onboarding-nudge-dismissed:jamb", false);
@@ -204,6 +206,17 @@ export default function JambHomePage() {
     seenAchievementIds,
     setSeenAchievementIds,
   ]);
+
+  useEffect(() => {
+    newlyUnlocked.forEach((achievement) => {
+      pushNotification({
+        kind: "achievement",
+        title: `🏆 ${achievement.name} unlocked!`,
+        body: achievement.description,
+        dedupe: `jamb-achievement:${achievement.id}`,
+      });
+    });
+  }, [newlyUnlocked, pushNotification]);
 
   useEffect(() => {
     if (!reviewProgressReady) return;

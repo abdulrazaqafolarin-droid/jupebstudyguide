@@ -10,7 +10,6 @@ interface SyllabusDayViewProps {
   canAdvance: boolean;
   onComplete: (masteryScore: number) => void;
   onBack: () => void;
-  onAskTutor: (topic: SyllabusTopic, question: string) => void;
 }
 
 export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
@@ -18,21 +17,10 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
   canAdvance,
   onComplete,
   onBack,
-  onAskTutor,
 }) => {
   const [teachingTopic, setTeachingTopic] = useState<SyllabusTopic | null>(null);
+  const [teachingCompleted, setTeachingCompleted] = useState(false);
   const subjectInfo = SUBJECT_INFO[task.subject];
-
-  if (teachingTopic) {
-    return (
-      <AITeachingPage
-        task={task}
-        topic={teachingTopic}
-        onBack={() => setTeachingTopic(null)}
-        onComplete={() => setTeachingTopic(null)}
-      />
-    );
-  }
 
   const topicsContent = task.topics.length > 0 ? (
     <div className="space-y-4">
@@ -44,10 +32,7 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
           tag={topic.difficulty}
           description={topic.description}
           subtopics={topic.subtopics}
-          onStart={() => {
-            setTeachingTopic(topic);
-            onAskTutor(topic, "");
-          }}
+          onStart={() => setTeachingTopic(topic)}
         />
       ))}
     </div>
@@ -59,6 +44,18 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
       </p>
     </div>
   );
+
+  const tutorOverlay = teachingTopic ? (
+    <AITeachingPage
+      task={task}
+      topic={teachingTopic}
+      onBack={() => setTeachingTopic(null)}
+      onComplete={() => {
+        setTeachingCompleted(true);
+        setTeachingTopic(null);
+      }}
+    />
+  ) : undefined;
 
   return (
     <SyllabusDayLayout
@@ -75,6 +72,8 @@ export const SyllabusDayView: React.FC<SyllabusDayViewProps> = ({
       checkpointQuestions={task.checkpointQuestions}
       onComplete={onComplete}
       onBack={onBack}
+      fullScreenOverlay={tutorOverlay}
+      markAllObjectivesComplete={teachingCompleted}
     />
   );
 };

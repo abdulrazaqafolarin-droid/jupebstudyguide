@@ -288,17 +288,6 @@ export default function JambStudyPage() {
       <main className="max-w-4xl mx-auto px-4 py-8 pb-24 space-y-6">
         {!selectedSubject ? (
           <>
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Brain className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="font-bold text-lg">Build long-term recall</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">Study objective JAMB questions, rate how well you recalled each answer, and revisit cards when they are due.</p>
-                </div>
-              </div>
-            </section>
             <section className="space-y-3">
               <h2 className="font-semibold">Choose a subject</h2>
               <div className="grid grid-cols-2 gap-3">

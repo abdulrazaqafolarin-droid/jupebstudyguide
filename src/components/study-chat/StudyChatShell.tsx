@@ -52,7 +52,18 @@ export function StudyChatShell({
   children,
 }: StudyChatShellProps) {
   const programmeName = programId === "jamb" ? "JAMB" : "JUPEB";
-  const backButton = onBack ? (
+  const backButton = lessonMode ? (
+    <button
+      type="button"
+      onClick={onBack}
+      className="flex items-center gap-1.5 text-xs text-muted-foreground/80 transition-colors hover:text-foreground"
+      aria-label={backLabel}
+      title={backLabel}
+    >
+      <ArrowLeft className="h-3.5 w-3.5" />
+      <span>Back</span>
+    </button>
+  ) : onBack ? (
     <button
       type="button"
       onClick={onBack}
